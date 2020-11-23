@@ -231,7 +231,7 @@ export default class BaseLayout_Modal_Buildings
                 let y = parseFloat($(e.currentTarget).attr('data-y'));
 
                 let position    = this.baseLayout.satisfactoryMap.unproject([x, y]);
-                    this.baseLayout.satisfactoryMap.setView(position, 9);
+                    this.baseLayout.satisfactoryMap.leafletMap.setView(position, 9);
             }.bind(this));
         }
     }

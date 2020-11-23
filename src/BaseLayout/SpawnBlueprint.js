@@ -136,7 +136,7 @@ export default class BaseLayout_Spawn_Blueprint
 
                 // Zoom on center?
                 let centerPosition = this.baseLayout.satisfactoryMap.unproject(this.centerObject.transform.translation);
-                    this.baseLayout.satisfactoryMap.setView(centerPosition, 7);
+                    this.baseLayout.satisfactoryMap.leafletMap.setView(centerPosition, 7);
 
                 setTimeout(resolve, 50);
             }.bind(this)).then(function(){
