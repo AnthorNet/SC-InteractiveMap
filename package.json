@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "private": true,
     "devDependencies": {
+        "@sentry/webpack-plugin": "^1.13.0",
         "merge-json-webpack-plugin": "^5.0.1",
         "copy-webpack-plugin": "^6.3.2",
         "terser-webpack-plugin": "^5.0.3",
