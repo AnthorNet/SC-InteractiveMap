@@ -1,0 +1,14 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/ResourceSink/Build_ResourceSink.Build_ResourceSink_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-520, 600], [-520, -700],
+                    [900, -700], [900, 135],
+                    [510, 135], [510, 600]
+                ]
+            }
+        ]
+    }
+}

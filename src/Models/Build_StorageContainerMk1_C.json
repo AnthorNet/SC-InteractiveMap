@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/StorageContainerMk1/Build_StorageContainerMk1.Build_StorageContainerMk1_C": {
+        "scale": 0.95,
+        "forms": [
+            {
+                "points": [
+                    [-250, -440], [-120, -440], [-120, -500], [120, -500], [120, -440], [250, -440], [250, 440], [120, 440], [120, 500], [-120, 500], [-120, 440], [-250, 440]
+                ]
+            }
+        ]
+    }
+}

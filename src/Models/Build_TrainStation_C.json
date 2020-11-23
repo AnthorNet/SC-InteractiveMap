@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C": {
+        "scale": 0.98,
+        "forms": [
+            {
+                "points": [
+                    [-800, -1600], [800, -1600], [800, 1600], [-800, 1600]
+                ]
+            }
+        ]
+    }
+}

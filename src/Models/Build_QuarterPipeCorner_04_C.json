@@ -1,0 +1,19 @@
+{
+    "/Game/FactoryGame/Buildable/Building/Foundation/Build_QuarterPipeCorner_04.Build_QuarterPipeCorner_04_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-400, -400], [400, -400],
+                    [400, -350],
+                    [380, -270],
+                    [335, -100], [280, 0], [160, 160], [0, 280],
+                    [-100, 335],
+                    [-270, 380],
+                    [-350, 400],
+                    [-400, 400]
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/ConveyorPoleWall/Build_ConveyorPoleWall.Build_ConveyorPoleWall_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [0, -50], [260, -50], [260, 50], [0, 50]
+                ]
+            }
+        ]
+    }
+}

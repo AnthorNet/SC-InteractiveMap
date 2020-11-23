@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Building/Stair/Build_Stairs_Left_01.Build_Stairs_Left_01_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-200, -400], [400, -400], [400, 400], [200, 400], [200, -200], [-200, -200]
+                ]
+            }
+        ]
+    }
+}

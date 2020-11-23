@@ -1,0 +1,21 @@
+{
+    "name": "SCIM-build",
+    "author": "AnthorNet",
+    "description": "SCIM webpack builder.",
+    "version": "1.0.0",
+    "private": true,
+    "devDependencies": {
+        "merge-json-webpack-plugin": "^5.0.1",
+        "copy-webpack-plugin": "^6.3.2",
+        "terser-webpack-plugin": "^5.0.3",
+        "json-minimizer-webpack-plugin": "^2.0.0",
+        "webpack": "^5.5.0",
+        "webpack-cli": "^4.2.0"
+    },
+    "scripts": {
+        "build-SCIM": "webpack"
+    },
+    "main": "webpack.config.js",
+    "keywords": [],
+    "license": "ISC"
+}

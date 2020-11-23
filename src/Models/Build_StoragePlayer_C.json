@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StoragePlayer.Build_StoragePlayer_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-100, -100], [-100, 100], [0, 100], [0, -100]
+                ]
+            }
+        ]
+    }
+}

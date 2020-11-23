@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall.Build_PowerPoleWall_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [0, -30], [100, -30], [100, 30], [0, 30]
+                ]
+            }
+        ]
+    }
+}
