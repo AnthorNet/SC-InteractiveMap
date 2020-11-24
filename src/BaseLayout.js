@@ -4338,9 +4338,9 @@ export default class BaseLayout
     //TODO: Use map cache?
     getMarkerIcon(outsideColor, insideColor, iconImage)
     {
-        let icon = this.satisfactoryMap.svgIconMarker.replaceAll('{outsideColor}', outsideColor)
-                                                     .replaceAll('{insideColor}', insideColor)
-                                                     .replaceAll('{iconImage}', iconImage);
+        let icon = this.satisfactoryMap.svgIconMarker.replace(/{outsideColor}/g, outsideColor)
+                                                     .replace(/{insideColor}/g, insideColor)
+                                                     .replace(/{iconImage}/g, iconImage);
 
         return L.divIcon({
             className   : "leaflet-data-marker",
