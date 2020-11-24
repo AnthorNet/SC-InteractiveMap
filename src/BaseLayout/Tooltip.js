@@ -140,7 +140,7 @@ export default class BaseLayout_Tooltip
 
             // VOLUME
             let maxFluid        = Math.PI * Math.pow((1.3 / 2), 2) * splineData.distanceAlt * 1000; // Use straigth calculation
-            let currentFluid    = maxFluid; // Until we get fluidBox method working!
+            let currentFluid    = maxFluid; //TODO: Until we get fluidBox method working!
             let itemType        = null;
 
             let fluidBox        = this.baseLayout.getObjectProperty(currentObject, 'mFluidBox');
@@ -309,6 +309,9 @@ export default class BaseLayout_Tooltip
             return this.setBuildingPumpTooltipContent(currentObject, buildingData);
         }
 
+        let itemType                = null;
+        let purity                  = 'normal';
+        let extractionRate          = 60;
         let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
 
             if(currentObject.className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
@@ -316,18 +319,8 @@ export default class BaseLayout_Tooltip
                 extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractResourceNode');
             }
 
-        let itemType                = null;
-        let purity                  = 'normal';
-
             if(extractResourceNode !== null && this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
             {
-                /*
-                if(currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
-                {
-                    this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].setOpacity(collectedOpacity);
-                }
-                */
-
                 if(this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.purity !== undefined)
                 {
                     purity = this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.purity;
@@ -339,26 +332,26 @@ export default class BaseLayout_Tooltip
                 }
             }
 
-        let craftingTime        = 60 / buildingData.extractionRate[purity];
+            if(buildingData.extractionRate !== undefined && buildingData.extractionRate[purity] !== undefined)
+            {
+                extractionRate      = buildingData.extractionRate[purity];
+            }
+
         let clockSpeed          = null;
         let powerUsed           = null;
-        let productionRatio     = buildingData.extractionRate[purity];
+
+        let craftingTime        = 60 / extractionRate;
 
         if(currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
         {
             clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
             powerUsed           = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
-            productionRatio     = 60 * clockSpeed;
-
-            if(buildingData.extractionRate !== undefined && buildingData.extractionRate[purity] !== undefined)
-            {
-                productionRatio     = buildingData.extractionRate[purity] * clockSpeed;
-            }
+            extractionRate     *= clockSpeed;
         }
 
         if(buildingData.mManufacturingSpeedMultiplier !== undefined)
         {
-            productionRatio *= buildingData.mManufacturingSpeedMultiplier;
+            extractionRate *= buildingData.mManufacturingSpeedMultiplier;
         }
 
         let content     = [];
@@ -377,7 +370,7 @@ export default class BaseLayout_Tooltip
                 {
                     content.push('<div style="border-bottom: 1px solid #e7e7e7;line-height: 1;font-size: 13px;letter-spacing: -0.05em;" class="pb-2 mb-2">');
                     content.push('<div><strong>' + this.baseLayout.itemsData[itemType].name + '</strong></div>');
-                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round(productionRatio * 100) / 100) + '</strong> per minute</span>');
+                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round(extractionRate * 100) / 100) + '</strong> per minute</span>');
                     content.push('</div>');
 
                     let inventoryOut    = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
