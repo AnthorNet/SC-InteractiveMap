@@ -1,9 +1,11 @@
+import BaseLayout_Statistics_Player_Inventory   from '../BaseLayout/StatisticsPlayerInventory.js';
+
 export default class BaseLayout_Map_Options
 {
     constructor(options)
     {
         this.baseLayout                         = options.baseLayout;
-        
+
         this.defaultInventorySize               = 16;
         this.defaultArmSlots                    = 1;
 
