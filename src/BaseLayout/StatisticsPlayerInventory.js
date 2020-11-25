@@ -9,7 +9,7 @@ export default class BaseLayout_Statistics_Player_Inventory
     {
         $('#statisticsPlayerInventory').empty();
 
-        if(this.baseLayout.playersInventory.length > 0)
+        if(this.baseLayout.playersInventory !== undefined && this.baseLayout.playersInventory.length > 0)
         {
             let updateSizeHtml  = [];
             let unlockSubSystem = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
