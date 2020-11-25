@@ -332,7 +332,7 @@ export default class BaseLayout_Tooltip
                 }
             }
 
-            if(buildingData.extractionRate !== undefined && buildingData.extractionRate[purity] !== undefined)
+            if(buildingData !== undefined && buildingData.extractionRate !== undefined && buildingData.extractionRate[purity] !== undefined)
             {
                 extractionRate      = buildingData.extractionRate[purity];
             }
