@@ -349,7 +349,7 @@ export default class BaseLayout_Tooltip
             extractionRate     *= clockSpeed;
         }
 
-        if(buildingData.mManufacturingSpeedMultiplier !== undefined)
+        if(buildingData !== undefined && buildingData.mManufacturingSpeedMultiplier !== undefined)
         {
             extractionRate *= buildingData.mManufacturingSpeedMultiplier;
         }
