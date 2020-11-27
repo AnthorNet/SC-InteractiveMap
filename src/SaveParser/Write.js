@@ -900,6 +900,9 @@ export default class SaveParser_Write
                             property += this.writeString(currentProperty.value.values[iMapProperty].key.levelName);
                             property += this.writeString(currentProperty.value.values[iMapProperty].key.pathName);
                             break;
+                        case 'EnumProperty':
+                             property += this.writeString(currentProperty.value.values[iMapProperty].key.name);
+                            break;
 
                         default:
                             console.log('Missing ' + currentProperty.value.type + ' in ' + currentProperty.name);

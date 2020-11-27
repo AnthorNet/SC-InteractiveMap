@@ -672,6 +672,11 @@ export default class SaveParser_Read
                                 pathName    : this.readString()
                             };
                             break;
+                        case 'EnumProperty':
+                            mapPropertyKey = {
+                                name        : this.readString()
+                            };
+                            break;
                         default:
                             bootbox.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                             if(typeof Sentry !== 'undefined')
