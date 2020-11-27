@@ -860,7 +860,7 @@ export default class BaseLayout
             this.saveGameRailSwitches[currentObject.pathName] = currentObject;
         }
 
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C')
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' || currentObject.className === '/Game/FactoryGame/Events/Art/Buildables/PowerLineLights/Build_xmassLightsLine.Build_XmassLightsLine_C')
         {
             let building = this.addPlayerPowerLine(currentObject);
 
@@ -4110,7 +4110,7 @@ export default class BaseLayout
                 let powerline = L.polyline([
                     this.satisfactoryMap.unproject(currentObjectSourceOuterPath.transform.translation),
                     this.satisfactoryMap.unproject(currentObjectTargetOuterPath.transform.translation)
-                ], {pathName: currentObject.pathName, color: '#0000ff', weight: 1, interactive: false, altitude: ((currentObjectSourceOuterPath.transform.translation[2] + currentObjectTargetOuterPath.transform.translation[2]) / 2)});
+                ], {pathName: currentObject.pathName, color: ((currentObject.className === '/Game/FactoryGame/Events/Art/Buildables/PowerLineLights/Build_xmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff'), weight: 1, interactive: false, altitude: ((currentObjectSourceOuterPath.transform.translation[2] + currentObjectTargetOuterPath.transform.translation[2]) / 2)});
 
                 this.playerLayers.playerPowerGridLayer.elements.push(powerline);
 
@@ -7322,7 +7322,7 @@ export default class BaseLayout
                     let currentObject       = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
                     let currentObjectData   = this.getBuildingDataFromClassName(currentObject.className);
 
-                        if(currentObjectData !== null && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C')
+                        if(currentObjectData !== null && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && currentObject.className !== '/Game/FactoryGame/Events/Art/Buildables/PowerLineLights/Build_xmassLightsLine.Build_XmassLightsLine_C')
                         {
                             if(
                                     currentObject.className.search('/Game/FactoryGame/Buildable/Building/Ramp/Build_') !== - 1
@@ -7454,7 +7454,7 @@ export default class BaseLayout
                 let currentObject   = this.saveGameParser.getTargetObject(markersSelected[i].options.pathName);
                 let mSplineData     = this.getObjectProperty(currentObject, 'mSplineData');
 
-                if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C')
+                if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' || currentObject.className === '/Game/FactoryGame/Events/Art/Buildables/PowerLineLights/Build_xmassLightsLine.Build_XmassLightsLine_C')
                 {
                     continue;
                 }

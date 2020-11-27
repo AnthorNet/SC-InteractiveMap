@@ -70,7 +70,7 @@ export default class BaseLayout_Spawn_Blueprint
                 {
                     let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.clipboard.data[i].parent.className);
 
-                        if(currentObjectData !== null && this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C')
+                        if(currentObjectData !== null && this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Events/Art/Buildables/PowerLineLights/Build_xmassLightsLine.Build_XmassLightsLine_C')
                         {
                             if(
                                     this.clipboard.data[i].parent.className.search('/Game/FactoryGame/Buildable/Building/Ramp/Build_') !== - 1
@@ -104,7 +104,7 @@ export default class BaseLayout_Spawn_Blueprint
 
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    if(this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C')
+                    if(this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Events/Art/Buildables/PowerLineLights/Build_xmassLightsLine.Build_XmassLightsLine_C')
                     {
                         this.clipboard.data[i].parent.transform.translation[0] -= centerX;
                         this.clipboard.data[i].parent.transform.translation[1] -= centerY;
@@ -236,7 +236,7 @@ export default class BaseLayout_Spawn_Blueprint
                         this.clipboard.data[i].parent.outerPathName = pathNameConversion[this.clipboard.data[i].parent.outerPathName];
                     }
 
-                    if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && this.clipboard.data[i].parent.extra !== undefined)
+                    if((this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' || this.clipboard.data[i].parent.className === '/Game/FactoryGame/Events/Art/Buildables/PowerLineLights/Build_xmassLightsLine.Build_XmassLightsLine_C') && this.clipboard.data[i].parent.extra !== undefined)
                     {
                         if(this.clipboard.data[i].parent.extra.sourcePathName !== undefined)
                         {
