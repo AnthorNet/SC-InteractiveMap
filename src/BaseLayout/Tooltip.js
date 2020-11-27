@@ -60,7 +60,7 @@ export default class BaseLayout_Tooltip
                         case '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C':
                             return this.setBeaconTooltipContent(currentObject);
                         case '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C':
-                            return this.setBuildingExtractionTooltipContent(currentObject, this.baseLayout.toolsData.portableMiner);
+                            return this.setBuildingExtractionTooltipContent(currentObject, this.baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C);
                         case '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C':
                         case '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C':
                         case '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C':
@@ -332,7 +332,7 @@ export default class BaseLayout_Tooltip
                 }
             }
 
-            if(buildingData !== undefined && buildingData.extractionRate !== undefined && buildingData.extractionRate[purity] !== undefined)
+            if(buildingData.extractionRate !== undefined && buildingData.extractionRate[purity] !== undefined)
             {
                 extractionRate      = buildingData.extractionRate[purity];
             }
@@ -349,7 +349,7 @@ export default class BaseLayout_Tooltip
             extractionRate     *= clockSpeed;
         }
 
-        if(buildingData !== undefined && buildingData.mManufacturingSpeedMultiplier !== undefined)
+        if(buildingData.mManufacturingSpeedMultiplier !== undefined)
         {
             extractionRate *= buildingData.mManufacturingSpeedMultiplier;
         }
