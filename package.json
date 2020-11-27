@@ -10,7 +10,6 @@
         "copy-webpack-plugin": "^6.3.2",
         "terser-webpack-plugin": "^5.0.3",
         "json-minimizer-webpack-plugin": "^2.0.0",
-        "content-replace-webpack-plugin": "^1.0.0",
         "webpack": "^5.6.0",
         "webpack-cli": "^4.2.0"
     },

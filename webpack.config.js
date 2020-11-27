@@ -12,19 +12,14 @@ const CopyPlugin                    = require("copy-webpack-plugin");
 module.exports = env => {
     return {
         mode            : 'production',
-        devtool         : 'source-map',
+        devtool         : 'hidden-source-map',
         performance     : { hints: false },
         context         : path.resolve(__dirname, 'src'),
         entry           : {
-            //SaveParser      : './SaveParser.js',
-            //BaseLayout      : './BaseLayout.js',
-            //Map             : './Map.js',
             SCIM            : './SCIM.js'
         },
 
         output          : {
-            //library         : '[name]',
-
             path            : path.resolve(__dirname, 'build'),
             filename        : './[name].js'
         },
@@ -62,7 +57,6 @@ module.exports = env => {
                 // webpack specific configuration
                 validate: true,
                 include: path.resolve(__dirname, 'build'),
-                //include: path.resolve(__dirname, 'src'),
                 ignore: ['node_modules', 'webpack.config.js']
             })
         ]
