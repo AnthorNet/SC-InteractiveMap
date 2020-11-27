@@ -4,7 +4,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Satisfactory-Calculator Interactive Map][./img/readmeImage.jpg]](https://satisfactory-calculator.com/en/interactive-map)
+[![SCIM](./img/readmeImage.jpg)](https://satisfactory-calculator.com/en/interactive-map)
 
 The interactive map acts as a 2d map rendering engine and a save editor for Satisfactory.
 A game from [Coffee Stain Studios](https://www.coffeestainstudios.com/)
