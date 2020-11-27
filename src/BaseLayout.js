@@ -2801,14 +2801,15 @@ export default class BaseLayout
     {
         let selectOptions   = [];
         let itemsCategories = {
-            'ore'               : 'Ores',
-            'material'          : 'Materials',
-            'component'         : 'Components',
-            'fuel'              : 'Fuels',
-            'ammo'              : 'Ammos',
-            'special'           : 'Special',
-            'waste'             : 'Waste',
-            'mods'              : 'Modded items'
+            ore                 : 'Ores',
+            material            : 'Materials',
+            component           : 'Components',
+            fuel                : 'Fuels',
+            ammo                : 'Ammos',
+            special             : 'Special',
+            ficsmas             : 'FICSMAS Holiday Event',
+            waste               : 'Waste',
+            mods                : 'Modded items'
         };
 
         for(let category in itemsCategories)
