@@ -420,6 +420,7 @@ export default class SaveParser_Write
 
                     break;
                 case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
+                case '/Game/FactoryGame/Events/Art/Buildables/PowerLineLights/Build_xmassLightsLine.Build_XmassLightsLine_C':
                     entity += this.writeInt(currentObject.extra.count);
                     entity += this.writeString(currentObject.extra.sourceLevelName);
                     entity += this.writeString(currentObject.extra.sourcePathName);

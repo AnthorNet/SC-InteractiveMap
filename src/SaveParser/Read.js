@@ -348,6 +348,7 @@ export default class SaveParser_Read
 
                     break;
                 case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
+                case '/Game/FactoryGame/Events/Art/Buildables/PowerLineLights/Build_xmassLightsLine.Build_XmassLightsLine_C':
                     this.saveParser.objects[objectKey].extra           = {
                         count               : this.readInt(),
                         sourceLevelName     : this.readString(),
