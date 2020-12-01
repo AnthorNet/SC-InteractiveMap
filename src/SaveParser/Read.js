@@ -877,6 +877,7 @@ export default class SaveParser_Read
                     case 'FFCompostingTask': // MOD: ???
                     case 'FFSeedExtrationTask': // MOD: ???
                     case 'FFSlugBreedTask': // MOD: ???
+                    case 'FFSlimeProcessingTask': // MOD: ???
                     case 'SInventory': // MOD: ???
                         currentProperty.value.values = [];
                         while(true)
