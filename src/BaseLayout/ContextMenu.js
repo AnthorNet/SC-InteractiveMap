@@ -38,7 +38,7 @@ export default class BaseLayout_ContextMenu
                     buildingData                = this.baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C;
                     break;
                 case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
-                case '/Game/FactoryGame/Events/Art/Buildables/PowerLineLights/Build_xmassLightsLine.Build_XmassLightsLine_C':
+                case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
                     return false;
                 case '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C':
                 case '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C':
