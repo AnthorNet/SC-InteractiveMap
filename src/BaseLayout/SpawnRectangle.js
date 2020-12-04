@@ -9,10 +9,10 @@ export default class BaseLayout_Spawn_Rectangle
         this.marker             = options.marker;
         this.layerId            = null;
 
-        this.minWidth           = options.minWidth;
-        this.maxWidth           = options.maxWidth;
-        this.minHeight          = options.minHeight;
-        this.maxHeight          = options.maxHeight;
+        this.minWidth           = parseInt(options.minWidth);
+        this.maxWidth           = parseInt(options.maxWidth);
+        this.minHeight          = parseInt(options.minHeight);
+        this.maxHeight          = parseInt(options.maxHeight);
 
         this.useDirection       = options.useDirection,
 
@@ -25,20 +25,21 @@ export default class BaseLayout_Spawn_Rectangle
         this.maxWidth           = (this.maxWidth - 1) / 2;
 
         this.minHeight          = Math.max(1, (2* Math.floor(this.minHeight/2) + 1));
-        this.maxHeight          = Math.min(65, (2* Math.floor(this.maxHeight/2) + 1));
 
         if(this.useDirection === false)
         {
+            this.maxHeight      = Math.min(65, (2* Math.floor(this.maxHeight/2) + 1));
+
             this.maxWidth       = Math.max(this.minWidth + 1, this.maxWidth);
             this.maxHeight      = Math.max(this.minHeight + 1, this.maxHeight);
+
+            this.minHeight      = (this.minHeight - 1) / 2;
+            this.maxHeight      = (this.maxHeight - 1) / 2;
         }
-
-        this.minHeight          = (this.minHeight - 1) / 2;
-        this.maxHeight          = (this.maxHeight - 1) / 2;
-
-        if(this.useDirection === true)
+        else
         {
-            this.maxHeight     *= 2;
+            this.minHeight      = (this.minHeight - 1);
+            this.maxHeight      = Math.min(65, this.maxHeight);
         }
 
         this.centerObject       = this.baseLayout.saveGameParser.getTargetObject(this.marker.relatedTarget.options.pathName);
