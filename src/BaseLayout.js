@@ -685,6 +685,7 @@ export default class BaseLayout
             // Skip after keeping track of max ID
             if([
                 '/Script/FactoryGame.FGPowerCircuit',
+                '/Script/FactoryGame.FGPipeNetwork',
                 '/Script/FactoryGame.FGPowerConnectionComponent',
                 '/Script/FactoryGame.FGTargetPointLinkedList',
                 '/Game/FactoryGame/Buildable/Vehicle/BP_VehicleTargetPoint.BP_VehicleTargetPoint_C'
@@ -966,6 +967,13 @@ export default class BaseLayout
                         this.buildingsData[currentObject.className] = newBuildingData;
 
                     return this.addGenericBuilding(currentObject, newBuildingData, resolve, skipMod);
+                }
+                else
+                {
+                    if(this.useDebug === true)
+                    {
+                        console.log('Unknown?', currentObject);
+                    }
                 }
             }
 
