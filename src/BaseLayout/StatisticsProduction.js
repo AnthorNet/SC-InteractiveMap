@@ -54,6 +54,26 @@ export default class BaseLayout_Statistics_Production
                                     buildingIsOn = this.baseLayout.getBuildingIsOn(currentObject);
                                 }
 
+                            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Holiday/Build_TreeGiftProducer/Build_TreeGiftProducer.Build_TreeGiftProducer_C')
+                            {
+                                if(playerProduction['/Game/FactoryGame/Events/Christmas/Parts/Desc_Gift.Desc_Gift_C'] === undefined)
+                                {
+                                    playerProduction['/Game/FactoryGame/Events/Christmas/Parts/Desc_Gift.Desc_Gift_C'] = {
+                                        name        : this.baseLayout.itemsData.Desc_Gift_C.name,
+                                        image       : this.baseLayout.itemsData.Desc_Gift_C.image,
+                                        category    : this.baseLayout.itemsData.Desc_Gift_C.category,
+                                        produced    : 15,
+                                        offProduced : 0,
+                                        consumed    : 0,
+                                        offConsumed : 0
+                                    };
+                                }
+                                else
+                                {
+                                    playerProduction['/Game/FactoryGame/Events/Christmas/Parts/Desc_Gift.Desc_Gift_C'].produced    += 15;
+                                }
+                            }
+
                             if(buildingData.category === 'extraction')
                             {
                                 let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
