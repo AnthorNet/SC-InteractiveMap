@@ -14,11 +14,12 @@ export default class SCIM
 
         this.staticAssetsUrl            = "https://static.satisfactory-calculator.com";
         this.mapDataUrl                 = "https://satisfactory-calculator.com/" + this.language + "/interactive-map/index/json";
-        this.gameDataUrl                = "https://satisfactory-calculator.com/" + this.language + "/interactive-map/index/data";
+        this.gameDataUrl                = "https://satisfactory-calculator.com/" + this.language + "/api/game";
         this.modsDataUrl                = "https://satisfactory-calculator.com/" + this.language + "/mods/index/json";
 
         this.collectedOpacity           = 0.3;
 
+        // Updater notice
         this.scriptsVERSION             = Math.floor(Math.random() * Math.floor(999));
         this.urlScriptsVERSION          = null;
         this.intervalScriptsVERSION     = null;

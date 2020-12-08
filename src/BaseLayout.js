@@ -590,7 +590,8 @@ export default class BaseLayout
                 '/Game/FactoryGame/Schematics/Progression/BP_SchematicManager.BP_SchematicManager_C',
                 '/Game/FactoryGame/Recipes/Research/BP_ResearchManager.BP_ResearchManager_C',
                 '/Game/FactoryGame/Unlocks/BP_UnlockSubsystem.BP_UnlockSubsystem_C',
-,
+                '/Game/FactoryGame/Events/BP_EventSubsystem.BP_EventSubsystem_C',
+
                 '/Game/FactoryGame/Schematics/Progression/BP_GamePhaseManager.BP_GamePhaseManager_C',
                 '/Game/FactoryGame/-Shared/Blueprint/BP_StorySubsystem.BP_StorySubsystem_C',
                 '/Game/FactoryGame/-Shared/Blueprint/BP_TimeOfDaySubsystem.BP_TimeOfDaySubsystem_C',
@@ -1513,7 +1514,7 @@ export default class BaseLayout
                                 {
                                     this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                                         className   : "leaflet-data-marker",
-                                        html        : this.satisfactoryMap.availableIcons['playerItemsPickupLayer'].options.html.replace(this.itemsData.Desc_Cable_C.image, this.itemsData[itemId].image),
+                                        html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, this.itemsData[itemId].image),
                                         iconAnchor  : [48, 78],
                                         iconSize    : [50, 80]
                                     });
@@ -1524,7 +1525,7 @@ export default class BaseLayout
                                     {
                                         this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                                             className   : "leaflet-data-marker",
-                                            html        : this.satisfactoryMap.availableIcons['playerItemsPickupLayer'].options.html.replace(this.itemsData.Desc_Cable_C.image, this.toolsData[itemId].image),
+                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, this.toolsData[itemId].image),
                                             iconAnchor  : [48, 78],
                                             iconSize    : [50, 80]
                                         });
@@ -1533,7 +1534,7 @@ export default class BaseLayout
                                     {
                                         this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                                             className   : "leaflet-data-marker",
-                                            html        : this.satisfactoryMap.availableIcons['playerItemsPickupLayer'].options.html.replace(this.itemsData.Desc_Cable_C.image, 'https://static.satisfactory-calculator.com/img/mapUnknownIcon.png'),
+                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, 'https://static.satisfactory-calculator.com/img/mapUnknownIcon.png'),
                                             iconAnchor  : [48, 78],
                                             iconSize    : [50, 80]
                                         });
