@@ -111,6 +111,10 @@ export default class BaseLayout_Statistics_Power
                                     {
                                         powerGenerated = 20 * Math.pow(clockSpeed, 1/1.3);
                                     }
+                                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
+                                    {
+                                        powerGenerated = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.321928);
+                                    }
 
                                 let fuelClass           = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
                                     if(fuelClass !== null && this.baseLayout.getObjectProperty(currentObject, 'mIsProductionPaused') === null)

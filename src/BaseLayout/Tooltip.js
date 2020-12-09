@@ -913,6 +913,11 @@ export default class BaseLayout_Tooltip
         let fuelEnergyValue     = null;
         let powerGenerated      = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.3);
 
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
+            {
+                powerGenerated = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.321928);
+            }
+
         let fuelClass           = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
 
             craftingTime       /= clockSpeed; // Overclocking...
@@ -1038,7 +1043,12 @@ export default class BaseLayout_Tooltip
                     }
                 }
 
-                content.push(this.setTooltipFooter({circuitId: this.baseLayout.getObjectCircuitID(currentObject), clockSpeed: clockSpeed, powerGenerated: powerGenerated, fuelEnergyValue: fuelEnergyValue}));
+                let tooltipFooterOptions = {circuitId: this.baseLayout.getObjectCircuitID(currentObject), clockSpeed: clockSpeed, powerGenerated: powerGenerated, fuelEnergyValue: fuelEnergyValue};
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
+                    {
+                        tooltipFooterOptions.mPowerProductionExponent = 1.321928;
+                    }
+                    content.push(this.setTooltipFooter(tooltipFooterOptions));
 
             content.push('</div>');
             content.push('<div style="height: 37px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/outputBottom.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding-top: 18px;"><strong style="font-size: 12px;">INPUT</strong></div>');
@@ -1277,7 +1287,13 @@ export default class BaseLayout_Tooltip
         }
         if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
         {
-            html += '<td class="text-center text-warning small px-1">' + +(Math.round((options.fuelEnergyValue / options.powerGenerated) * Math.pow(options.clockSpeed, -1/1.3) * 100) / 100) + 's</td>';
+            let mPowerProductionExponent = 1.3;
+                if(options.mPowerProductionExponent !== undefined)
+                {
+                    mPowerProductionExponent = options.mPowerProductionExponent;
+                }
+
+            html += '<td class="text-center text-warning small px-1">' + +(Math.round((options.fuelEnergyValue / options.powerGenerated) * Math.pow(options.clockSpeed, -1/mPowerProductionExponent) * 100) / 100) + 's</td>';
         }
 
         html += '</tr></table></div>';
