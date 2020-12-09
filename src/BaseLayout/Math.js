@@ -145,8 +145,8 @@ export default class BaseLayout_Math
         }
         if(y < -1.57079632679)
         {
-                y       = -Math.PI - y;
-                sign    = -1;
+            y       = -Math.PI - y;
+            sign    = -1;
         }
 
         let y2  = y * y;
@@ -170,23 +170,63 @@ export default class BaseLayout_Math
             }
 
         let y       = value - (2 * Math.PI) * quotient;
-        let sign    = 1;
 
         // Map y to [-pi/2,pi/2] with sin(y) = sin(Value).
         if(y > 1.57079632679)
         {
             y       = Math.PI - y;
-            sign    = -1;
         }
         if(y < -1.57079632679)
         {
-                y       = -Math.PI - y;
-                sign    = -1;
+            y       = -Math.PI - y;
         }
 
         let y2  = y * y;
 
         // 11-degree minimax approximation
         return ( ( ( ( (-2.3889859e-08 * y2 + 2.7525562e-06) * y2 - 0.00019840874 ) * y2 + 0.0083333310 ) * y2 - 0.16666667 ) * y2 + 1 ) * y;
+    }
+
+    // See: https://www.nayuki.io/page/srgb-transform-library
+    static RGBToLinearColor(x)
+    {
+        x /= 255.0;
+
+        if(x <= 0) { return 0; }
+        if(x >= 1) { return 1; }
+        if(x < 0.04045) { return x / 12.92; }
+
+        return Math.pow((x + 0.055) / 1.055, 2.4);
+    }
+
+    static linearColorToRGB(x)
+    {
+        if(this.colorTable === undefined)
+        {
+            this.colorTable = [];
+            for(let i = 0; i <= 255; i++)
+            {
+                this.colorTable.push(this.RGBToLinearColor(i));
+            }
+        }
+
+        if(x <= 0) { return 0; }
+        if(x >= 1) { return 255; }
+
+        let y = 0;
+            for(let i = this.colorTable.length >>> 1; i != 0; i >>>= 1)
+            {
+                if(this.colorTable[y | i] <= x)
+                {
+                    y |= i;
+                }
+            }
+
+        if((x - this.colorTable[y]) <= (this.colorTable[y + 1] - x))
+        {
+            return y;
+        }
+
+        return y + 1;
     }
 }

@@ -83,7 +83,6 @@ export default class BaseLayout
         this.useDetailedModels                  = (this.localStorage !== null && this.localStorage.getItem('mapUseDetailedModels') !== null) ? (this.localStorage.getItem('mapUseDetailedModels') === 'true') : true;
         this.useSmoothFactor                    = (this.localStorage !== null && this.localStorage.getItem('mapUseSmoothFactor') !== null) ? parseInt(this.localStorage.getItem('mapUseSmoothFactor')) : 1;
 
-        this.totalColorSlot                     = 16;
         this.availablePowerConnection           = ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.SlidingShoe'];
         this.availableBeltConnection            = ['.ConveyorAny0', '.ConveyorAny1', '.Input0', '.Input1', '.Input2', '.Input3', '.InPut3', '.Input4', '.Input5', '.Input6', '.Output0', '.Output1', '.Output2', '.Output3'];
         this.availableRailwayConnection         = ['.TrackConnection0', '.TrackConnection1'];
@@ -1596,7 +1595,7 @@ export default class BaseLayout
         let mCompassColor   = this.getObjectProperty(currentObject, 'mCompassColor');
             if(mCompassColor !== null)
             {
-                beaconColor = 'rgb(' + Math.round(mCompassColor.values.r * 255) + ', ' + Math.round(mCompassColor.values.g * 255) + ', ' + Math.round(mCompassColor.values.b * 255) + ')';
+                beaconColor = 'rgb(' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.r) + ', ' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.g) + ', ' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.b) + ')';
             }
 
         let beacon          = L.marker(
@@ -2151,7 +2150,7 @@ export default class BaseLayout
                         case 'paste':
                             let colorSlotOptions = [];
                                 colorSlotOptions.push({text: 'No foundation helper', value: 'NONE'});
-                                for(let slotIndex = 0; slotIndex < this.totalColorSlot; slotIndex++)
+                                for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots(); slotIndex++)
                                 {
                                     colorSlotOptions.push({text: 'Slot #' + (slotIndex + 1), value: slotIndex});
                                 }
@@ -3181,33 +3180,32 @@ export default class BaseLayout
             }
 
             let slotColor = this.getObjectPrimaryColor(currentObject);
-
-            switch(buildingData.category)
-            {
-                case 'pad':
-                case 'walkway':
-                case 'stair':
-                    marker.setStyle({
-                        color: 'rgb(' + slotColor.r * 255 + ', ' + slotColor.g * 255 + ', ' + slotColor.b * 255 + ')',
-                        fillColor: ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
-                        fillOpacity: mapOpacity
-                    });
-                    break;
-                case 'wall':
-                    marker.setStyle({
-                        color: 'rgb(' + slotColor.r * 255 + ', ' + slotColor.g * 255 + ', ' + slotColor.b * 255 + ')',
-                        fillColor: 'rgb(' + slotColor.r * 255 + ', ' + slotColor.g * 255 + ', ' + slotColor.b * 255 + ')',
-                        fillOpacity: mapOpacity
-                    });
-                    break;
-                default:
-                    marker.setStyle({
-                        color: buildingData.mapColor,
-                        fillColor: 'rgb(' + slotColor.r * 255 + ', ' + slotColor.g * 255 + ', ' + slotColor.b * 255 + ')',
-                        fillOpacity: mapOpacity
-                    });
-                    break;
-            }
+                switch(buildingData.category)
+                {
+                    case 'pad':
+                    case 'walkway':
+                    case 'stair':
+                        marker.setStyle({
+                            color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                            fillColor: ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
+                            fillOpacity: mapOpacity
+                        });
+                        break;
+                    case 'wall':
+                        marker.setStyle({
+                            color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                            fillColor: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                            fillOpacity: mapOpacity
+                        });
+                        break;
+                    default:
+                        marker.setStyle({
+                            color: buildingData.mapColor,
+                            fillColor: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                            fillOpacity: mapOpacity
+                        });
+                        break;
+                }
         }
 
         if(marker.options.extraMarker !== undefined)
@@ -3779,8 +3777,7 @@ export default class BaseLayout
                 beltCorridor.on('mouseover', function(marker){
                     let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
                     let slotColor           = this.getObjectPrimaryColor(currentObject);
-
-                    marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r * 255 + ', ' + slotColor.g * 255 + ', ' + slotColor.b * 255 + ')', opacity: 0.5});
+                        marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')', opacity: 0.5});
                 }.bind(this));
                 beltCorridor.on('mouseout', function(marker){
                     let mouseOutStyle       = {opacity: 0.9};
@@ -5653,90 +5650,47 @@ export default class BaseLayout
         }
     }
 
-    getColorSlots(totalColorSlot)
+
+
+    getColorSlots()
     {
+        let totalColorSlot                  = BaseLayout_Map_ColorSlots.getTotalColorSlots();
         let playerColors                    = [];
         let buildableSubsystem              = this.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.BuildableSubsystem');
         let mColorSlotsPrimary_Linear       = null;
         let mColorSlotsSecondary_Linear     = null;
 
         // NEW
-        if(buildableSubsystem !== null)
-        {
-            mColorSlotsPrimary_Linear       = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
-            mColorSlotsSecondary_Linear     = this.getObjectProperty(buildableSubsystem, 'mColorSlotsSecondary_Linear');
-        }
-
-        // Auto fix our messes...
-        if(mColorSlotsPrimary_Linear !== null && mColorSlotsPrimary_Linear.values.length === 0)
-        {
-            for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
+            if(buildableSubsystem !== null)
             {
-                mColorSlotsPrimary_Linear.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex)));
-                mColorSlotsPrimary_Linear.values[slotIndex].a   = 1;
+                mColorSlotsPrimary_Linear       = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
+                mColorSlotsSecondary_Linear     = this.getObjectProperty(buildableSubsystem, 'mColorSlotsSecondary_Linear');
             }
-
-            mColorSlotsPrimary_Linear.values.push({r: 0.1882353127002716, g: 0.1882353127002716, b: 0.1882353127002716, a: 1});
-            mColorSlotsPrimary_Linear.values.push({r: 1, g: 0, b: 0.9294118285179138, a: 1});
-        }
-        if(mColorSlotsSecondary_Linear !== null && mColorSlotsSecondary_Linear.values.length === 0)
-        {
-            for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
-            {
-                mColorSlotsSecondary_Linear.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex)));
-                mColorSlotsSecondary_Linear.values[slotIndex].a   = 1;
-            }
-
-            mColorSlotsSecondary_Linear.values.push({r: 0.1098039299249649, g: 0.1098039299249649, b: 0.1098039299249649, a: 1});
-            mColorSlotsSecondary_Linear.values.push({r: 0.9529412388801575, g: 0.3019607961177826, b: 0.06666667014360428, a: 1});
-        }
 
         for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
         {
             playerColors.push({
-                primaryColor: this.getDefaultPrimaryColorSlot(slotIndex),
-                secondaryColor: this.getDefaultSecondaryColorSlot(slotIndex)
+                primaryColor    : this.getDefaultPrimaryColorSlot(slotIndex),
+                secondaryColor  : this.getDefaultSecondaryColorSlot(slotIndex)
             });
             playerColors[slotIndex].primaryColor.a      = 1;
             playerColors[slotIndex].secondaryColor.a    = 1;
 
-            if(mColorSlotsPrimary_Linear !== null || mColorSlotsSecondary_Linear !== null)
+            if(mColorSlotsPrimary_Linear !== null && mColorSlotsPrimary_Linear.values[slotIndex] !== undefined)
             {
-                if(mColorSlotsPrimary_Linear !== null && mColorSlotsPrimary_Linear.values[slotIndex] !== undefined)
-                {
-                    playerColors[slotIndex].primaryColor = mColorSlotsPrimary_Linear.values[slotIndex];
-                }
-                if(mColorSlotsSecondary_Linear !== null && mColorSlotsSecondary_Linear.values[slotIndex] !== undefined)
-                {
-                    playerColors[slotIndex].secondaryColor = mColorSlotsSecondary_Linear.values[slotIndex];
-                }
+                playerColors[slotIndex].primaryColor    = {
+                    r : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].r),
+                    g : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].g),
+                    b : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].b)
+                };
             }
-            else
+            if(mColorSlotsSecondary_Linear !== null && mColorSlotsSecondary_Linear.values[slotIndex] !== undefined)
             {
-                if(buildableSubsystem !== null && buildableSubsystem.properties.length > 0)
-                {
-                    for(let i = 0; i < buildableSubsystem.properties.length; i++)
-                    {
-                        if(buildableSubsystem.properties[i].name === 'mColorSlotsPrimary' && buildableSubsystem.properties[i].index === slotIndex)
-                        {
-                            playerColors[slotIndex].primaryColor = {
-                                r: buildableSubsystem.properties[i].value.values.r / 255,
-                                g: buildableSubsystem.properties[i].value.values.g / 255,
-                                b: buildableSubsystem.properties[i].value.values.b / 255,
-                                a: 1
-                            };
-                        }
-                        if(buildableSubsystem.properties[i].name === 'mColorSlotsSecondary' && buildableSubsystem.properties[i].index === slotIndex)
-                        {
-                            playerColors[slotIndex].secondaryColor = {
-                                r: buildableSubsystem.properties[i].value.values.r / 255,
-                                g: buildableSubsystem.properties[i].value.values.g / 255,
-                                b: buildableSubsystem.properties[i].value.values.b / 255,
-                                a: 1
-                            };
-                        }
-                    }
-                }
+                playerColors[slotIndex].secondaryColor  = {
+                    r: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].r),
+                    g: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].g),
+                    b: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].b),
+                };
             }
         }
 
@@ -5764,10 +5718,19 @@ export default class BaseLayout
             {r: 0.9254901960784314, g: 0.8431372549019608, b: 0.3215686274509804},
             {r: 0.3058823529411765, g: 0.30980392156862746, b: 0.26666666666666666},
             {r: 0.47058823529411764, g: 0.09803921568627451, b: 0.41568627450980394},
-            {r: 0.22352942824363708, g: 0.22352942824363708, b: 0.22352942824363708}
+            {r: 0.22352942824363708, g: 0.22352942824363708, b: 0.22352942824363708},
+
+            // Hidden slots
+            {r: 0.1882353127002716, g: 0.1882353127002716, b: 0.1882353127002716},
+            {r: 1, g: 0, b: 0.9294118285179138}
         ];
 
-        return (defaultColors[index] !== undefined) ? defaultColors[index] : defaultColors[0];
+        let returnColor = (defaultColors[index] !== undefined) ? defaultColors[index] : defaultColors[0];
+            return {
+                r: BaseLayout_Math.linearColorToRGB(returnColor.r),
+                g: BaseLayout_Math.linearColorToRGB(returnColor.g),
+                b: BaseLayout_Math.linearColorToRGB(returnColor.b)
+            };
     }
 
     getDefaultSecondaryColorSlot(index)
@@ -5791,86 +5754,19 @@ export default class BaseLayout
             {r: 0.1098039299249649, g: 0.12941177189350128, b: 0.25882354378700256},
             {r: 0.1098039299249649, g: 0.12941177189350128, b: 0.25882354378700256},
             {r: 0.1098039299249649, g: 0.12941177189350128, b: 0.25882354378700256},
-            {r: 0.7843137979507446, g: 0.7921569347381592, b: 0.874509871006012}
+            {r: 0.7843137979507446, g: 0.7921569347381592, b: 0.874509871006012},
+
+            // Hidden slots
+            {r: 0.1098039299249649, g: 0.1098039299249649, b: 0.1098039299249649},
+            {r: 0.9529412388801575, g: 0.3019607961177826, b: 0.06666667014360428}
         ];
 
-        return (defaultColors[index] !== undefined) ? defaultColors[index] : defaultColors[0];
-    }
-
-    rgbToHsl(rgbObj)
-    {
-        let l, s, h;
-        let rgb         = [rgbObj.r, rgbObj.g, rgbObj.b];
-        let min         = rgb[0];
-        let max         = rgb[0];
-        let maxcolor    = 0;
-        for(let i = 0; i < rgb.length - 1; i++)
-        {
-            if(rgb[i + 1] <= min) {min = rgb[i + 1];}
-            if(rgb[i + 1] >= max) {max = rgb[i + 1];maxcolor = i + 1;}
-        }
-
-        if (maxcolor === 0)
-        {
-            h = (rgb[1] - rgb[2]) / (max - min);
-        }
-        if(maxcolor === 1)
-        {
-            h = 2 + (rgb[2] - rgb[0]) / (max - min);
-        }
-        if(maxcolor === 2)
-        {
-            h = 4 + (rgb[0] - rgb[1]) / (max - min);
-        }
-        if(isNaN(h)) {h = 0;}
-        h = h * 60;
-        if (h < 0) {h = h + 360; }
-        l = (min + max) / 2;
-        if(min === max)
-        {
-            s = 0;
-        }
-        else
-        {
-            if (l < 0.5) {
-                s = (max - min) / (max + min);
-            }
-            else
-            {
-                s = (max - min) / (2 - max - min);
-            }
-        }
-
-        return {h : h, s : s, l : l};
-    }
-
-    hslToRgb(hslObj)
-    {
-        let t1, t2;
-        let hue = hslObj.h / 60;
-
-        if( hslObj.l <= 0.5 )
-        {
-            t2 = hslObj.l * (hslObj.s + 1);
-        }
-        else
-        {
-            t2 = hslObj.l + hslObj.s - (hslObj.l * hslObj.s);
-        }
-
-        t1 = hslObj.l * 2 - t2;
-
-        return {r : this.hueToRgb(t1, t2, hue + 2), g : this.hueToRgb(t1, t2, hue), b : this.hueToRgb(t1, t2, hue - 2)};
-    }
-
-    hueToRgb(t1, t2, hue)
-    {
-        if (hue < 0) hue += 6;
-        if (hue >= 6) hue -= 6;
-        if (hue < 1) return (t2 - t1) * hue + t1;
-        else if(hue < 3) return t2;
-        else if(hue < 4) return (t2 - t1) * (4 - hue) + t1;
-        else return t1;
+        let returnColor = (defaultColors[index] !== undefined) ? defaultColors[index] : defaultColors[0];
+            return {
+                r: BaseLayout_Math.linearColorToRGB(returnColor.r),
+                g: BaseLayout_Math.linearColorToRGB(returnColor.g),
+                b: BaseLayout_Math.linearColorToRGB(returnColor.b)
+            };
     }
 
     getObjectPrimaryColorSlot(currentObject, raw = false)
@@ -5905,20 +5801,12 @@ export default class BaseLayout
                 let mColorSlotsPrimary_Linear       = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
                     if(mColorSlotsPrimary_Linear !== null && mColorSlotsPrimary_Linear.values[colorSlot] !== undefined)
                     {
-                        return mColorSlotsPrimary_Linear.values[colorSlot];
-                    }
-
-                for(let i = 0; i < buildableSubsystem.properties.length; i++)
-                {
-                    if(buildableSubsystem.properties[i].name === 'mColorSlotsPrimary' && buildableSubsystem.properties[i].index === colorSlot)
-                    {
                         return {
-                            r: buildableSubsystem.properties[i].value.values.r / 255,
-                            g: buildableSubsystem.properties[i].value.values.g / 255,
-                            b: buildableSubsystem.properties[i].value.values.b / 255
+                            r: BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[colorSlot].r),
+                            g: BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[colorSlot].g),
+                            b: BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[colorSlot].b)
                         };
                     }
-                }
             }
 
         return this.getDefaultPrimaryColorSlot(colorSlot);
@@ -5929,16 +5817,16 @@ export default class BaseLayout
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
         let slotIndex           = this.getObjectPrimaryColorSlot(currentObject);
-        let playerColors        = this.getColorSlots(this.totalColorSlot);
+        let playerColors        = this.getColorSlots();
         let selectOptions       = [];
 
-        for(let i = 0; i < this.totalColorSlot; i++)
+        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots(); slotIndex++)
         {
             selectOptions.push({
-                primaryColor: 'rgb(' + playerColors[i].primaryColor.r * 255 + ', ' + playerColors[i].primaryColor.g * 255 + ', ' + playerColors[i].primaryColor.b * 255 + ')',
-                secondaryColor: 'rgb(' + playerColors[i].secondaryColor.r * 255 + ', ' + playerColors[i].secondaryColor.g * 255 + ', ' + playerColors[i].secondaryColor.b * 255 + ')',
-                value: i,
-                text: (i + 1)
+                primaryColor    : 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
+                secondaryColor  : 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
+                value           : slotIndex,
+                text            : (slotIndex + 1)
             });
         }
 
@@ -6000,6 +5888,8 @@ export default class BaseLayout
             }.bind(this)
         });
     }
+
+
 
     getObjectProperty(currentObject, propertyName, defaultPropertyValue = null)
     {
@@ -6922,16 +6812,16 @@ export default class BaseLayout
                         return;
 
                     case 'color':
-                        let playerColors        = this.getColorSlots(this.totalColorSlot);
+                        let playerColors        = this.getColorSlots();
                         let selectOptionsColors = [];
 
-                        for(let i = 0; i < this.totalColorSlot; i++)
+                        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots(); slotIndex++)
                         {
                             selectOptionsColors.push({
-                                primaryColor: 'rgb(' + playerColors[i].primaryColor.r * 255 + ', ' + playerColors[i].primaryColor.g * 255 + ', ' + playerColors[i].primaryColor.b * 255 + ')',
-                                secondaryColor: 'rgb(' + playerColors[i].secondaryColor.r * 255 + ', ' + playerColors[i].secondaryColor.g * 255 + ', ' + playerColors[i].secondaryColor.b * 255 + ')',
-                                value: i,
-                                text: (i + 1)
+                                primaryColor: 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
+                                secondaryColor: 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
+                                value: slotIndex,
+                                text: (slotIndex + 1)
                             });
                         }
 
@@ -6960,16 +6850,16 @@ export default class BaseLayout
                         return;
 
                     case 'helpers':
-                        let playerColorsHelpers = this.getColorSlots(this.totalColorSlot);
+                        let playerColorsHelpers = this.getColorSlots();
                         let selectOptions       = [];
 
-                        for(let i = 0; i < this.totalColorSlot; i++)
+                        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots(); slotIndex++)
                         {
                             selectOptions.push({
-                                primaryColor: 'rgb(' + playerColorsHelpers[i].primaryColor.r * 255 + ', ' + playerColorsHelpers[i].primaryColor.g * 255 + ', ' + playerColorsHelpers[i].primaryColor.b * 255 + ')',
-                                secondaryColor: 'rgb(' + playerColorsHelpers[i].secondaryColor.r * 255 + ', ' + playerColorsHelpers[i].secondaryColor.g * 255 + ', ' + playerColorsHelpers[i].secondaryColor.b * 255 + ')',
-                                value: i,
-                                text: (i + 1)
+                                primaryColor: 'rgb(' + playerColorsHelpers[slotIndex].primaryColor.r + ', ' + playerColorsHelpers[slotIndex].primaryColor.g + ', ' + playerColorsHelpers[slotIndex].primaryColor.b + ')',
+                                secondaryColor: 'rgb(' + playerColorsHelpers[slotIndex].secondaryColor.r + ', ' + playerColorsHelpers[slotIndex].secondaryColor.g + ', ' + playerColorsHelpers[slotIndex].secondaryColor.b + ')',
+                                value: slotIndex,
+                                text: (slotIndex + 1)
                             });
                         }
 
