@@ -246,27 +246,50 @@ export default class BaseLayout_Map_Options
 
 
 
-            let header          = this.baseLayout.saveGameParser.getHeader();
-            let newSessionName  = $('#inputSessionName').val();
+            let header                  = this.baseLayout.saveGameParser.getHeader();
 
-            if(newSessionName !== header.sessionName) // Update filename only if session has changed
+            /*
+                Name must be at least 3 characters
+                * Name can contain but not be equal to any of the following restricted names
+                static const TCHAR* RestrictedNames[] = {   TEXT("CON"), TEXT("PRN"), TEXT("AUX"), TEXT("CLOCK$"), TEXT("NUL"),
+                                                 TEXT("COM1"), TEXT("COM2"), TEXT("COM3"), TEXT("COM4"),   TEXT("COM5"), TEXT("COM6"), TEXT("COM7"), TEXT("COM8"), TEXT("COM9"),
+                                                 TEXT("LPT1"), TEXT("LPT2"), TEXT("LPT3"), TEXT("LPT4"),   TEXT("LPT5"), TEXT("LPT6"), TEXT("LPT7"), TEXT("LPT8"), TEXT("LPT9") };
+
+                * Name can't contain any of the following characters
+                RestrictedChars[] = TEXT("/?:&\\*\"<>|%#@^");
+            */
+            let newSessionName          = $('#inputSessionName').removeClass('is-invalid').val();
+            
+            let isValidNewSessionName   = true;
+            let sessionNameRegex        = /[\/?:&\\*"<>|%#@^]/;
+                if([...newSessionName].length <= 4 || sessionNameRegex.test(newSessionName) === true || newSessionName === "CLOCK$")
+                {
+                    $('#inputSessionName').addClass('is-invalid')
+                    isValidNewSessionName = false;
+                }
+
+            if(isValidNewSessionName === true && newSessionName !== header.sessionName) // Update filename only if session has changed
             {
                 this.baseLayout.saveGameParser.fileName = newSessionName + '.sav';
                 header.mapOptions                       = header.mapOptions.replace('?sessionName=' + header.sessionName + '?', '?sessionName=' + newSessionName + '?');
                 header.sessionName                      = newSessionName;
                 $('#saveGameInformation strong').html(newSessionName);
+
+                for(let i = 0; i < this.baseLayout.gameMode.length; i++)
+                {
+                    this.baseLayout.setObjectProperty(this.baseLayout.gameMode[i], 'mSaveSessionName', newSessionName, 'StrProperty');
+                }
             }
 
             for(let i = 0; i < this.baseLayout.gameState.length; i++)
             {
-                this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mReplicatedSessionName', newSessionName, 'StrProperty');
+                if(isValidNewSessionName === true)
+                {
+                    this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mReplicatedSessionName', newSessionName, 'StrProperty');
+                }
+
                 this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mCheatNoCost', (($('#inputCheatNoCost').is(':checked') === true) ? 1 : 0), 'BoolProperty');
                 this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
-            }
-
-            for(let i = 0; i < this.baseLayout.gameMode.length; i++)
-            {
-                this.baseLayout.setObjectProperty(this.baseLayout.gameMode[i], 'mSaveSessionName', newSessionName, 'StrProperty');
             }
 
             this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
