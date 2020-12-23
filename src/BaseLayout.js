@@ -823,11 +823,10 @@ export default class BaseLayout
         if(currentObject.className === '/Script/FactoryGame.FGItemPickup_Spawnable' || currentObject.className === '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C')
         {
             let building = this.addItemPickup(currentObject);
-
-            if(resolve === false)
-            {
-                return {layer: 'playerItemsPickupLayer', marker: building};
-            }
+                if(resolve === false)
+                {
+                    return {layer: 'playerItemsPickupLayer', marker: building};
+                }
 
             return resolve();
         }
@@ -835,11 +834,10 @@ export default class BaseLayout
         if(currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C')
         {
             let building = this.addPlayerBeacon(currentObject);
-
-            if(resolve === false)
-            {
-                return {layer: 'playerOrientationLayer', marker: building};
-            }
+                if(resolve === false)
+                {
+                    return {layer: 'playerOrientationLayer', marker: building};
+                }
 
             return resolve();
         }
@@ -847,11 +845,10 @@ export default class BaseLayout
         if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
         {
             let building = this.addPlayerLootCrate(currentObject);
-
-            if(resolve === false)
-            {
-                return {layer: 'playerCratesLayer', marker: building};
-            }
+                if(resolve === false)
+                {
+                    return {layer: 'playerCratesLayer', marker: building};
+                }
 
             return resolve();
         }
@@ -864,11 +861,10 @@ export default class BaseLayout
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' || currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
         {
             let building = this.addPlayerPowerLine(currentObject);
-
-            if(resolve === false)
-            {
-                return {layer: 'playerPowerGridLayer', marker: building};
-            }
+                if(resolve === false)
+                {
+                    return {layer: 'playerPowerGridLayer', marker: building};
+                }
 
             return resolve();
         }
@@ -895,11 +891,10 @@ export default class BaseLayout
         if(currentObject.className.search('Train/Track/Build_RailroadTrack') !== -1)
         {
             let building = this.addPlayerTrack(currentObject);
-
-            if(resolve === false)
-            {
-                return {layer: 'playerTracksLayer', marker: building};
-            }
+                if(resolve === false)
+                {
+                    return {layer: 'playerTracksLayer', marker: building};
+                }
 
             return resolve();
         }
@@ -907,11 +902,10 @@ export default class BaseLayout
         if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
         {
             let playerState = this.addPlayerPosition(currentObject, ((this.ownPlayerPath === currentObject.pathName) ? true : false));
-
-            if(resolve === false)
-            {
-                return {layer: 'playerPositionLayer', marker: playerState};
-            }
+                if(resolve === false)
+                {
+                    return {layer: 'playerPositionLayer', marker: playerState};
+                }
 
             return resolve();
         }
@@ -920,18 +914,17 @@ export default class BaseLayout
         if(currentObject.className.search('/Game/FactoryGame/Character/Creature/Wildlife/') !== -1 || currentObject.className.search('/Game/FactoryGame/Character/Creature/Enemy/') !== -1)
         {
             let building = this.addPlayerFauna(currentObject);
-
-            if(resolve === false)
-            {
-                if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
+                if(resolve === false)
                 {
-                    return {layer: 'playerSpaceRabbitLayer', marker: building};
+                    if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
+                    {
+                        return {layer: 'playerSpaceRabbitLayer', marker: building};
+                    }
+                    else
+                    {
+                        return {layer: 'playerFaunaLayer', marker: building};
+                    }
                 }
-                else
-                {
-                    return {layer: 'playerFaunaLayer', marker: building};
-                }
-            }
 
             return resolve();
         }
@@ -4103,37 +4096,43 @@ export default class BaseLayout
     {
         this.setupSubLayer('playerPowerGridLayer');
 
+        // Orphaned power lines from Area Action?
+        if(currentObject.extra.sourcePathName === '' || currentObject.extra.targetPathName === '')
+        {
+            return false;
+        }
+
         let currentObjectSource = this.saveGameParser.getTargetObject(currentObject.extra.sourcePathName);
         let currentObjectTarget = this.saveGameParser.getTargetObject(currentObject.extra.targetPathName);
 
-        if(currentObjectSource !== null && currentObjectTarget !== null)
-        {
-            let currentObjectSourceOuterPath    = this.saveGameParser.getTargetObject(currentObjectSource.outerPathName);
-            let currentObjectTargetOuterPath    = this.saveGameParser.getTargetObject(currentObjectTarget.outerPathName);
-
-            if(currentObjectSourceOuterPath !== null && currentObjectSourceOuterPath.transform !== undefined && currentObjectTargetOuterPath !== null && currentObjectTargetOuterPath.transform !== undefined)
+            if(currentObjectSource !== null && currentObjectTarget !== null)
             {
-                let powerline = L.polyline([
-                    this.satisfactoryMap.unproject(currentObjectSourceOuterPath.transform.translation),
-                    this.satisfactoryMap.unproject(currentObjectTargetOuterPath.transform.translation)
-                ], {pathName: currentObject.pathName, color: ((currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff'), weight: 1, interactive: false, altitude: ((currentObjectSourceOuterPath.transform.translation[2] + currentObjectTargetOuterPath.transform.translation[2]) / 2)});
+                let currentObjectSourceOuterPath    = this.saveGameParser.getTargetObject(currentObjectSource.outerPathName);
+                let currentObjectTargetOuterPath    = this.saveGameParser.getTargetObject(currentObjectTarget.outerPathName);
 
-                this.playerLayers.playerPowerGridLayer.elements.push(powerline);
+                    if(currentObjectSourceOuterPath !== null && currentObjectSourceOuterPath.transform !== undefined && currentObjectTargetOuterPath !== null && currentObjectTargetOuterPath.transform !== undefined)
+                    {
+                        let powerline = L.polyline([
+                            this.satisfactoryMap.unproject(currentObjectSourceOuterPath.transform.translation),
+                            this.satisfactoryMap.unproject(currentObjectTargetOuterPath.transform.translation)
+                        ], {pathName: currentObject.pathName, color: ((currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff'), weight: 1, interactive: false, altitude: ((currentObjectSourceOuterPath.transform.translation[2] + currentObjectTargetOuterPath.transform.translation[2]) / 2)});
 
-                this.playerLayers.playerPowerGridLayer.distance += Math.sqrt(
-                    ((currentObjectSourceOuterPath.transform.translation[0] - currentObjectTargetOuterPath.transform.translation[0]) * (currentObjectSourceOuterPath.transform.translation[0] - currentObjectTargetOuterPath.transform.translation[0]))
-                  + ((currentObjectSourceOuterPath.transform.translation[1] - currentObjectTargetOuterPath.transform.translation[1]) * (currentObjectSourceOuterPath.transform.translation[1] - currentObjectTargetOuterPath.transform.translation[1]))
-                ) / 100;
+                        this.playerLayers.playerPowerGridLayer.elements.push(powerline);
 
-                return powerline;
+                        this.playerLayers.playerPowerGridLayer.distance += Math.sqrt(
+                            ((currentObjectSourceOuterPath.transform.translation[0] - currentObjectTargetOuterPath.transform.translation[0]) * (currentObjectSourceOuterPath.transform.translation[0] - currentObjectTargetOuterPath.transform.translation[0]))
+                          + ((currentObjectSourceOuterPath.transform.translation[1] - currentObjectTargetOuterPath.transform.translation[1]) * (currentObjectSourceOuterPath.transform.translation[1] - currentObjectTargetOuterPath.transform.translation[1]))
+                        ) / 100;
+
+                        return powerline;
+                    }
+                    else
+                    {
+                        console.log('addPlayerPowerLine', currentObjectSource, currentObjectSourceOuterPath, currentObjectTarget, currentObjectTargetOuterPath);
+                    }
+
+                    return false;
             }
-            else
-            {
-                console.log('addPlayerPowerLine', currentObjectSource, currentObjectSourceOuterPath, currentObjectTarget, currentObjectTargetOuterPath);
-            }
-
-            return false;
-        }
     }
 
     downgradePowerPole(marker)

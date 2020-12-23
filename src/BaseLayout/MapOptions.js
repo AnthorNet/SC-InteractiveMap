@@ -249,7 +249,7 @@ export default class BaseLayout_Map_Options
             let header                  = this.baseLayout.saveGameParser.getHeader();
 
             /*
-                Name must be at least 3 characters
+                * Name must be at least 3 characters
                 * Name can contain but not be equal to any of the following restricted names
                 static const TCHAR* RestrictedNames[] = {   TEXT("CON"), TEXT("PRN"), TEXT("AUX"), TEXT("CLOCK$"), TEXT("NUL"),
                                                  TEXT("COM1"), TEXT("COM2"), TEXT("COM3"), TEXT("COM4"),   TEXT("COM5"), TEXT("COM6"), TEXT("COM7"), TEXT("COM8"), TEXT("COM9"),
@@ -259,7 +259,7 @@ export default class BaseLayout_Map_Options
                 RestrictedChars[] = TEXT("/?:&\\*\"<>|%#@^");
             */
             let newSessionName          = $('#inputSessionName').removeClass('is-invalid').val();
-            
+
             let isValidNewSessionName   = true;
             let sessionNameRegex        = /[\/?:&\\*"<>|%#@^]/;
                 if([...newSessionName].length <= 4 || sessionNameRegex.test(newSessionName) === true || newSessionName === "CLOCK$")
