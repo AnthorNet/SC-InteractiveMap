@@ -377,6 +377,11 @@ export default class SaveParser_Write
                 }
         }
 
+        if(currentObject.shouldBeNulled !== undefined && currentObject.shouldBeNulled === true)
+        {
+            return this.writeInt(this.currentEntityLength) + entity;
+        }
+
         entity += this.writeProperties(currentObject);
         entity += this.writeString('None');
 

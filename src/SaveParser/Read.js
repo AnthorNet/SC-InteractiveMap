@@ -272,6 +272,12 @@ export default class SaveParser_Read
             }
         }
 
+        if((this.currentByte - startByte) === entityLength)
+        {
+            this.saveParser.objects[objectKey].shouldBeNulled = true;
+            return;
+        }
+
         // Read properties
         while(true)
         {
