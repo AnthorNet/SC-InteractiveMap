@@ -5651,7 +5651,7 @@ export default class BaseLayout
 
 
 
-    getColorSlots()
+    getColorSlots(returnOnlyIfAvailable)
     {
         let totalColorSlot                  = BaseLayout_Map_ColorSlots.getTotalColorSlots();
         let playerColors                    = [];
@@ -5659,11 +5659,19 @@ export default class BaseLayout
         let mColorSlotsPrimary_Linear       = null;
         let mColorSlotsSecondary_Linear     = null;
 
-        // NEW
+            // NEW
             if(buildableSubsystem !== null)
             {
                 mColorSlotsPrimary_Linear       = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
                 mColorSlotsSecondary_Linear     = this.getObjectProperty(buildableSubsystem, 'mColorSlotsSecondary_Linear');
+            }
+
+            if(returnOnlyIfAvailable !== undefined && returnOnlyIfAvailable === true)
+            {
+                if(mColorSlotsPrimary_Linear === null || mColorSlotsSecondary_Linear === null)
+                {
+                    return null;
+                }
             }
 
         for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)

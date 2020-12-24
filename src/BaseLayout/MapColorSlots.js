@@ -15,7 +15,17 @@ export default class BaseLayout_Map_ColorSlots
         $('#statisticsModalColorSlots').empty();
 
         let html            = [];
-        let playerColors    = this.baseLayout.getColorSlots();
+        let playerColors    = this.baseLayout.getColorSlots(true);
+
+            if(playerColors === null)
+            {
+                $('#statisticsModalColorSlots').html('<div class="row">'
+                                           + '    <div class="col-12">'
+                                           + '        <div class="alert alert-danger text-center">Please ensure you have unlocked the color gun in game to be able to edit your color slot from the interactive map.</div>'
+                                           + '    </div>'
+                                           + '</div>');
+                return;
+            }
 
         for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots(); slotIndex++)
         {
@@ -135,7 +145,7 @@ export default class BaseLayout_Map_ColorSlots
                         }
                 }
 
-            playerColors = this.baseLayout.getColorSlots();
+            playerColors = this.baseLayout.getColorSlots(true);
         }.bind(this));
 
         $('#statisticsModalColorSlots .selectColorSlot').hover(
