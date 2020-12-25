@@ -21,7 +21,7 @@ export default class BaseLayout_Map_ColorSlots
             {
                 $('#statisticsModalColorSlots').html('<div class="row">'
                                            + '    <div class="col-12">'
-                                           + '        <div class="alert alert-danger text-center">Please ensure you have unlocked the color gun in game to be able to edit your color slot from the interactive map.</div>'
+                                           + '        <div class="alert alert-danger text-center">Please ensure you have unlocked/crafted/used the color gun in game to be able to edit your color slot from the interactive map.</div>'
                                            + '    </div>'
                                            + '</div>');
                 return;
