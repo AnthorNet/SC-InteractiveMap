@@ -5691,6 +5691,7 @@ export default class BaseLayout
                         mColorSlotsPrimary_Linear.value.values.push({r: 1, g: 0, b: 0.9294118285179138, a: 1});
 
                         buildableSubsystem.properties.push(mColorSlotsPrimary_Linear);
+                        mColorSlotsPrimary_Linear = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
                     }
 
                     if(mColorSlotsSecondary_Linear === null)
@@ -5718,6 +5719,7 @@ export default class BaseLayout
                         mColorSlotsSecondary_Linear.value.values.push({r: 0.9529412388801575, g: 0.3019607961177826, b: 0.06666667014360428, a: 1});
 
                         buildableSubsystem.properties.push(mColorSlotsSecondary_Linear);
+                        mColorSlotsSecondary_Linear = this.getObjectProperty(buildableSubsystem, 'mColorSlotsSecondary_Linear');
                     }
                 }
             }
