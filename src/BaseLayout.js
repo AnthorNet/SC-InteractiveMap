@@ -5651,7 +5651,7 @@ export default class BaseLayout
 
 
 
-    getColorSlots(returnOnlyIfAvailable)
+    getColorSlots(createIfNotExisting)
     {
         let totalColorSlot                  = BaseLayout_Map_ColorSlots.getTotalColorSlots();
         let playerColors                    = [];
@@ -5659,18 +5659,66 @@ export default class BaseLayout
         let mColorSlotsPrimary_Linear       = null;
         let mColorSlotsSecondary_Linear     = null;
 
-            // NEW
             if(buildableSubsystem !== null)
             {
                 mColorSlotsPrimary_Linear       = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
                 mColorSlotsSecondary_Linear     = this.getObjectProperty(buildableSubsystem, 'mColorSlotsSecondary_Linear');
-            }
 
-            if(returnOnlyIfAvailable !== undefined && returnOnlyIfAvailable === true)
-            {
-                if(mColorSlotsPrimary_Linear === null || mColorSlotsSecondary_Linear === null)
+                if(createIfNotExisting !== undefined && createIfNotExisting === true)
                 {
-                    return null;
+                    if(mColorSlotsPrimary_Linear === null)
+                    {
+                        mColorSlotsPrimary_Linear = {
+                            name                    : "mColorSlotsPrimary_Linear",
+                            propertyGuid1           : 0,
+                            propertyGuid2           : 0,
+                            propertyGuid3           : 0,
+                            propertyGuid4           : 0,
+                            structureName           : "mColorSlotsPrimary_Linear",
+                            structureSubType        : "LinearColor",
+                            structureType           : "StructProperty",
+                            type                    : "ArrayProperty",
+                            value                   : {type: "StructProperty", values: []}
+                        };
+
+                        for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
+                        {
+                            mColorSlotsPrimary_Linear.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
+                            mColorSlotsPrimary_Linear.value.values[slotIndex].a   = 1;
+                        }
+
+                        mColorSlotsPrimary_Linear.value.values.push({r: 0.1882353127002716, g: 0.1882353127002716, b: 0.1882353127002716, a: 1});
+                        mColorSlotsPrimary_Linear.value.values.push({r: 1, g: 0, b: 0.9294118285179138, a: 1});
+
+                        buildableSubsystem.properties.push(mColorSlotsPrimary_Linear);
+                    }
+
+                    if(mColorSlotsSecondary_Linear === null)
+                    {
+                        mColorSlotsSecondary_Linear = {
+                            name                    : "mColorSlotsSecondary_Linear",
+                            propertyGuid1           : 0,
+                            propertyGuid2           : 0,
+                            propertyGuid3           : 0,
+                            propertyGuid4           : 0,
+                            structureName           : "mColorSlotsSecondary_Linear",
+                            structureSubType        : "LinearColor",
+                            structureType           : "StructProperty",
+                            type                    : "ArrayProperty",
+                            value                   : {type: "StructProperty", values: []}
+                        };
+
+                        for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
+                        {
+                            mColorSlotsSecondary_Linear.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
+                            mColorSlotsSecondary_Linear.value.values[slotIndex].a   = 1;
+                        }
+
+                        mColorSlotsSecondary_Linear.value.values.push({r: 0.1098039299249649, g: 0.1098039299249649, b: 0.1098039299249649, a: 1});
+                        mColorSlotsSecondary_Linear.value.values.push({r: 0.9529412388801575, g: 0.3019607961177826, b: 0.06666667014360428, a: 1});
+
+                        buildableSubsystem.properties.push(mColorSlotsSecondary_Linear);
+                    }
                 }
             }
 
@@ -5704,7 +5752,7 @@ export default class BaseLayout
         return playerColors;
     }
 
-    getDefaultPrimaryColorSlot(index)
+    getDefaultPrimaryColorSlot(index, raw = false)
     {
         let defaultColors    = [
             {r: 0.9529411764705882, g: 0.30196078431372547, b: 0.06666666666666667},
@@ -5733,6 +5781,12 @@ export default class BaseLayout
         ];
 
         let returnColor = (defaultColors[index] !== undefined) ? defaultColors[index] : defaultColors[0];
+
+            if(raw === true)
+            {
+                return returnColor;
+            }
+
             return {
                 r: BaseLayout_Math.linearColorToRGB(returnColor.r),
                 g: BaseLayout_Math.linearColorToRGB(returnColor.g),
@@ -5740,7 +5794,7 @@ export default class BaseLayout
             };
     }
 
-    getDefaultSecondaryColorSlot(index)
+    getDefaultSecondaryColorSlot(index, raw = false)
     {
         let defaultColors    = [
             {r: 0.11372549019607843, g: 0.13333333333333333, b: 0.2627450980392157},
@@ -5769,6 +5823,12 @@ export default class BaseLayout
         ];
 
         let returnColor = (defaultColors[index] !== undefined) ? defaultColors[index] : defaultColors[0];
+
+            if(raw === true)
+            {
+                return returnColor;
+            }
+
             return {
                 r: BaseLayout_Math.linearColorToRGB(returnColor.r),
                 g: BaseLayout_Math.linearColorToRGB(returnColor.g),

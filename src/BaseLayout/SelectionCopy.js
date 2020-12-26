@@ -38,7 +38,10 @@ export default class BaseLayout_Selection_Copy
                 let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
 
                 /*
-                if(currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C')
+                if(
+                        currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C'
+                     || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerPoleMk1/Build_PowerPoleMk1.Build_PowerPoleMk1_C'
+                )
                 {
                     console.log([Math.round(currentObject.transform.translation[0]), Math.round(currentObject.transform.translation[1])]);
                 }
