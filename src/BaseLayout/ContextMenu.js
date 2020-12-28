@@ -13,18 +13,17 @@ export default class BaseLayout_ContextMenu
         if(currentObject !== null)
         {
             let faunaData   = this.baseLayout.getFaunaDataFromClassName(currentObject.className);
-
-            if(faunaData !== null)
-            {
-                contextMenu.push({
-                    text: 'Update "' + faunaData.name + '" position',
-                    callback: this.baseLayout.updateObjectPosition.bind(this.baseLayout)
-                });
-                contextMenu.push({
-                    text: 'Delete "' + faunaData.name + '"',
-                    callback: this.baseLayout.deleteFauna.bind(this.baseLayout)
-                });
-            }
+                if(faunaData !== null)
+                {
+                    contextMenu.push({
+                        text: 'Update "' + faunaData.name + '" position',
+                        callback: this.baseLayout.updateObjectPosition.bind(this.baseLayout)
+                    });
+                    contextMenu.push({
+                        text: 'Delete "' + faunaData.name + '"',
+                        callback: this.baseLayout.deleteFauna.bind(this.baseLayout)
+                    });
+                }
 
             let buildingData = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -73,6 +72,12 @@ export default class BaseLayout_ContextMenu
                     contextMenu.push({
                         text: 'Delete "Dropped Items"',
                         callback: this.baseLayout.deleteItemPickUp.bind(this.baseLayout)
+                    });
+                    break;
+                case '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C':
+                    contextMenu.push({
+                        text: 'Update "' + buildingData.name + '" phase',
+                        callback: this.baseLayout.updateSpaceElevatorPhase.bind(this.baseLayout)
                     });
                     break;
             }

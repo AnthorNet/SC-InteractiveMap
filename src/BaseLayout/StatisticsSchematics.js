@@ -18,16 +18,6 @@ export default class BaseLayout_Statistics_Schematics
          * className: "/Game/FactoryGame/-Shared/Blueprint/BP_StorySubsystem.BP_StorySubsystem_C" / pathName: "Persistent_Level:PersistentLevel.StorySubsystem"
          * className: "/Game/FactoryGame/Unlocks/BP_UnlockSubsystem.BP_UnlockSubsystem_C" / pathName: "Persistent_Level:PersistentLevel.UnlockSubsystem"
          */
-
-        /*
-         * className: "/Game/FactoryGame/Schematics/Progression/BP_GamePhaseManager.BP_GamePhaseManager_C"
-         * pathName: "Persistent_Level:PersistentLevel.GamePhaseManager"
-         *
-         * EGP_EarlyGame        = 0 UMETA( DisplayName = "Establishing Phase" ) Up to tier 2
-         * EGP_MidGame          = 1 UMETA( DisplayName = "Development Phase" ), Up to tier 4
-         * EGP_LateGame         = 2 UMETA( DisplayName = "Expansion Phase" ), Up to tier 6
-         * EGP_EndGame          = 3 UMETA( DisplayName = "Retention Phase" ), Up to tier 7
-         */
     }
 
     parseSchematics(selectedTier = 0)
