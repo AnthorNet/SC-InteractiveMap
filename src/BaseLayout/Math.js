@@ -214,7 +214,7 @@ export default class BaseLayout_Math
         if(x >= 1) { return 255; }
 
         let y = 0;
-            for(let i = this.colorTable.length >>> 1; i != 0; i >>>= 1)
+            for(let i = this.colorTable.length >>> 1; i !== 0; i >>>= 1)
             {
                 if(this.colorTable[y | i] <= x)
                 {

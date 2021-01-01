@@ -5659,6 +5659,8 @@ export default class BaseLayout
         let mColorSlotsPrimary_Linear       = null;
         let mColorSlotsSecondary_Linear     = null;
 
+            console.log(buildableSubsystem);
+
             if(buildableSubsystem !== null)
             {
                 mColorSlotsPrimary_Linear       = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
@@ -5952,6 +5954,25 @@ export default class BaseLayout
                         }
                     }
                 }
+
+                let mPrimaryColor   = this.getObjectProperty(currentObject, 'mPrimaryColor');
+                    if(mPrimaryColor !== null)
+                    {
+                        mPrimaryColor.values = {
+                            r: BaseLayout_Math.RGBToLinearColor(playerColors[slotIndex].primaryColor.r),
+                            g: BaseLayout_Math.RGBToLinearColor(playerColors[slotIndex].primaryColor.g),
+                            b: BaseLayout_Math.RGBToLinearColor(playerColors[slotIndex].primaryColor.b)
+                        }
+                    }
+                let mSecondaryColor = this.getObjectProperty(currentObject, 'mSecondaryColor');
+                    if(mSecondaryColor !== null)
+                    {
+                        mSecondaryColor.values = {
+                            r: BaseLayout_Math.RGBToLinearColor(playerColors[slotIndex].secondaryColor.r),
+                            g: BaseLayout_Math.RGBToLinearColor(playerColors[slotIndex].secondaryColor.g),
+                            b: BaseLayout_Math.RGBToLinearColor(playerColors[slotIndex].secondaryColor.b)
+                        }
+                    }
 
                 marker.relatedTarget.fire('mouseout'); // Trigger a redraw
             }.bind(this)
