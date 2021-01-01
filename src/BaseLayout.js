@@ -5659,8 +5659,6 @@ export default class BaseLayout
         let mColorSlotsPrimary_Linear       = null;
         let mColorSlotsSecondary_Linear     = null;
 
-            console.log(buildableSubsystem);
-
             if(buildableSubsystem !== null)
             {
                 mColorSlotsPrimary_Linear       = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');

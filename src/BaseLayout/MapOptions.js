@@ -288,15 +288,47 @@ export default class BaseLayout_Map_Options
                     this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mReplicatedSessionName', newSessionName, 'StrProperty');
                 }
 
-                this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mCheatNoCost', (($('#inputCheatNoCost').is(':checked') === true) ? 1 : 0), 'BoolProperty');
-                this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+                if($('#inputCheatNoCost').is(':checked') === true)
+                {
+                    this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mCheatNoCost', 1, 'BoolProperty');
+                }
+                else
+                {
+                    this.baseLayout.deleteObjectProperty(this.baseLayout.gameState[i], 'mCheatNoCost');
+                }
+
+                if($('#inputCheatNoPower').is(':checked') === true)
+                {
+                    this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+                }
+                else
+                {
+                    this.baseLayout.deleteObjectProperty(this.baseLayout.gameState[i], 'mCheatNoPower');
+                }
+
             }
 
             this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
             this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', (($('#inputBuildingOverclockUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
             this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', (($('#inputGameStateMapUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoCost', (($('#inputCheatNoCost').is(':checked') === true) ? 1 : 0), 'BoolProperty');
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+
+            if($('#inputCheatNoCost').is(':checked') === true)
+            {
+                this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoCost', (($('#inputCheatNoCost').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+            }
+            else
+            {
+                this.baseLayout.deleteObjectProperty(unlockSubSystem, 'mCheatNoCost');
+            }
+
+            if($('#inputCheatNoPower').is(':checked') === true)
+            {
+                this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+            }
+            else
+            {
+                this.baseLayout.deleteObjectProperty(unlockSubSystem, 'mCheatNoPower');
+            }
         }.bind(this));
 
         $('#resetFogOfWar').on('click', function(){
