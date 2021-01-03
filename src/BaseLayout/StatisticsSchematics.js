@@ -11,13 +11,14 @@ export default class BaseLayout_Statistics_Schematics
         this.availableSchematics    = null;
         this.purchasedSchematics    = null;
 
-        /*
-         * className: "/Script/FactoryGame.FGRecipeManager" / pathName: "Persistent_Level:PersistentLevel.recipeManager"
-         * className: "/Game/FactoryGame/Recipes/Research/BP_ResearchManager.BP_ResearchManager_C" / pathName: "Persistent_Level:PersistentLevel.ResearchManager"
-         * className: "/Game/FactoryGame/Schematics/Progression/BP_SchematicManager.BP_SchematicManager_C" / pathName: "Persistent_Level:PersistentLevel.schematicManager"
-         * className: "/Game/FactoryGame/-Shared/Blueprint/BP_StorySubsystem.BP_StorySubsystem_C" / pathName: "Persistent_Level:PersistentLevel.StorySubsystem"
-         * className: "/Game/FactoryGame/Unlocks/BP_UnlockSubsystem.BP_UnlockSubsystem_C" / pathName: "Persistent_Level:PersistentLevel.UnlockSubsystem"
-         */
+        if(this.baseLayout.useDebug === true)
+        {
+            //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.recipeManager"));
+            console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager"));
+            console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.ResearchManager"));
+            //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.StorySubsystem"));
+            console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem"));
+        }
     }
 
     parseSchematics(selectedTier = 0)
@@ -256,7 +257,7 @@ export default class BaseLayout_Statistics_Schematics
         html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
         for(let i = 0; i < categories.length; i++)
         {
-            html.push('<li class="nav-item"><a class="nav-link ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedMAM-' + i + '" role="tab">' + categories[i] + '</a></li>');
+            html.push('<li class="nav-item"><a class="nav-link px-3 ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedMAM-' + i + '" role="tab">' + categories[i] + '</a></li>');
         }
         html.push('</ul>');
 
@@ -485,43 +486,6 @@ export default class BaseLayout_Statistics_Schematics
         return '';
     }
 
-    /* Availble aren't used anymore?
-    getAvailableSchematics()
-    {
-        if(this.availableSchematics === null)
-        {
-            let availableAlternate      = [];
-            let schematicManager        = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
-                if(schematicManager !== null)
-                {
-                    let mAvailableSchematics    = this.baseLayout.getObjectProperty(schematicManager, 'mAvailableSchematics');
-                        if(mAvailableSchematics !== null)
-                        {
-                            for(let i = 0; i < mAvailableSchematics.values.length; i++)
-                            {
-                                availableAlternate.push(mAvailableSchematics.values[i].pathName);
-
-                                let schematicId = mAvailableSchematics.values[i].pathName.split('.').pop();
-                                    if(this.baseLayout.schematicsData[schematicId] === undefined && schematicId !== 'Research_HardDrive_0_C' && mAvailableSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false)
-                                    {
-                                        if(typeof Sentry !== 'undefined')
-                                        {
-                                            Sentry.setContext('className', {className: mAvailableSchematics.values[i].pathName});
-                                            Sentry.captureMessage('Missing schematic className: ' + mAvailableSchematics.values[i].pathName);
-                                        }
-                                        console.log('Missing schematic className: ' + mAvailableSchematics.values[i].pathName);
-                                    }
-                            }
-                        }
-                }
-
-            this.availableSchematics = availableAlternate;
-        }
-
-        return this.availableSchematics;
-    }
-    */
-
     getPurchasedSchematics()
     {
         if(this.purchasedSchematics === null)
@@ -696,7 +660,6 @@ export default class BaseLayout_Statistics_Schematics
                     }
 
                     let unlockSubSystem     = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
-
                         if(unlockSubSystem !== null)
                         {
                             switch(currentStatus)
@@ -763,6 +726,85 @@ export default class BaseLayout_Statistics_Schematics
                                     }
                                     break;
                             }
+                        }
+
+                    let researchManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.ResearchManager");
+                        if(researchManager !== null)
+                        {
+                            let currentResearch = currentSchematic.split('.');
+                                currentResearch = currentResearch.pop();
+                                currentResearch = currentResearch.split('_');
+
+                                if(currentResearch[0] === 'Research')
+                                {
+                                    // Initiate MAM if needed
+                                    let mUnlockedResearchTrees  = this.baseLayout.getObjectProperty(researchManager, 'mUnlockedResearchTrees');
+                                    let mIsActivated            = this.baseLayout.getObjectProperty(researchManager, 'mIsActivated');
+
+                                        if(mUnlockedResearchTrees === null)
+                                        {
+                                            this.baseLayout.setObjectProperty(researchManager, 'mUnlockedResearchTrees', {type: 'ObjectProperty', values: []}, 'ArrayProperty');
+                                            mUnlockedResearchTrees  = this.baseLayout.getObjectProperty(researchManager, 'mUnlockedResearchTrees');
+                                        }
+                                        if(mIsActivated === null)
+                                        {
+                                            this.baseLayout.setObjectProperty(researchManager, 'mIsActivated', 1, 'BoolProperty');
+                                        }
+
+                                    let currentTree     = null;
+                                        switch(currentResearch[1])
+                                        {
+                                            //{levelName: "", pathName: "/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_HardDrive.BPD_ResearchTree_HardDrive_C"}
+                                            case 'AlienOrganisms':
+                                                currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_AlienOrganisms.BPD_ResearchTree_AlienOrganisms_C';
+                                                break;
+                                            case 'Caterium':
+                                                currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_Caterium.BPD_ResearchTree_Caterium_C';
+                                                break;
+                                            case 'FlowerPetals':
+                                                currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_FlowerPetals.BPD_ResearchTree_FlowerPetals_C';
+                                                break;
+                                            case 'Mycelia':
+                                                currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_Mycelia.BPD_ResearchTree_Mycelia_C';
+                                                break;
+                                            case 'Nutrients':
+                                                currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_Nutrients.BPD_ResearchTree_Nutrients_C';
+                                                break;
+                                            case 'PowerSlugs':
+                                                currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_PowerSlugs.BPD_ResearchTree_PowerSlugs_C';
+                                                break;
+                                            case 'Quartz':
+                                                currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_Quartz.BPD_ResearchTree_Quartz_C';
+                                                break;
+                                            case 'Sulfur':
+                                                currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_Sulfur.BPD_ResearchTree_Sulfur_C';
+                                                break;
+                                            case 'XMas':
+                                                currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_XMas.BPD_ResearchTree_XMas_C';
+                                                break;
+                                        }
+
+                                    if(currentTree !== null)
+                                    {
+                                        let isUnlocked                      = false;
+                                        let mUnlockedResearchTreesValues    = mUnlockedResearchTrees.values;
+                                            for(let j = 0; j < mUnlockedResearchTreesValues.length; j++)
+                                            {
+                                                console.log(mUnlockedResearchTreesValues[j].pathName);
+
+                                                if(mUnlockedResearchTreesValues[j].pathName === currentTree)
+                                                {
+                                                    isUnlocked = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            if(isUnlocked === false)
+                                            {
+                                                mUnlockedResearchTreesValues.push({levelName: "", pathName: currentTree});
+                                            }
+                                    }
+                                }
                         }
                 }
         }
