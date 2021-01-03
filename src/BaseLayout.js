@@ -5853,6 +5853,11 @@ export default class BaseLayout
                 return parseInt(colorSlot.value);
             }
 
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C')
+        {
+            return 17;
+        }
+
         return 0;
     }
 
