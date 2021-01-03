@@ -366,70 +366,70 @@ export default class BaseLayout_Map_Options
 
                 // Reset MAM
                 let researchManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.ResearchManager");
-                if(researchManager !== null)
-                {
-                    researchManager.properties  = [];
-                }
+                    if(researchManager !== null)
+                    {
+                        researchManager.properties  = [];
+                    }
 
                 // Reset schematic manager
                 let schematicManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
-                if(schematicManager !== null)
-                {
-                    this.baseLayout.deleteObjectProperty(schematicManager, 'mPaidOffSchematic');
-                    this.baseLayout.deleteObjectProperty(schematicManager, 'mActiveSchematic');
-
-                    let mAvailableSchematics = this.baseLayout.getObjectProperty(schematicManager, 'mAvailableSchematics');
-                    if(mAvailableSchematics !== null)
+                    if(schematicManager !== null)
                     {
-                        mAvailableSchematics.values  = [];
-                        for(let j = 0; j < this.defaultAvailableSchematics.length; j++)
+                        this.baseLayout.deleteObjectProperty(schematicManager, 'mPaidOffSchematic');
+                        this.baseLayout.deleteObjectProperty(schematicManager, 'mActiveSchematic');
+
+                        let mAvailableSchematics = this.baseLayout.getObjectProperty(schematicManager, 'mAvailableSchematics');
+                        if(mAvailableSchematics !== null)
                         {
-                            mAvailableSchematics.values.push({levelName: "", pathName: this.defaultAvailableSchematics[j]});
+                            mAvailableSchematics.values  = [];
+                            for(let j = 0; j < this.defaultAvailableSchematics.length; j++)
+                            {
+                                mAvailableSchematics.values.push({levelName: "", pathName: this.defaultAvailableSchematics[j]});
+                            }
+                        }
+
+                        let mPurchasedSchematics = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
+                        if(mPurchasedSchematics !== null)
+                        {
+                            mPurchasedSchematics.values  = [];
+                            for(let j = 0; j < this.defaultPurchasedSchematics.length; j++)
+                            {
+                                mPurchasedSchematics.values.push({levelName: "", pathName: this.defaultPurchasedSchematics[j]});
+                            }
                         }
                     }
-
-                    let mPurchasedSchematics = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
-                    if(mPurchasedSchematics !== null)
-                    {
-                        mPurchasedSchematics.values  = [];
-                        for(let j = 0; j < this.defaultPurchasedSchematics.length; j++)
-                        {
-                            mPurchasedSchematics.values.push({levelName: "", pathName: this.defaultPurchasedSchematics[j]});
-                        }
-                    }
-                }
 
                 // Reset recipes manager
                 let recipeManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.recipeManager");
-                if(recipeManager !== null)
-                {
-                    let mAvailableRecipes = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableRecipes');
-                    if(mAvailableRecipes !== null)
+                    if(recipeManager !== null)
                     {
-                        mAvailableRecipes.values  = [];
-                        for(let j = 0; j < this.defaultAvailableRecipes.length; j++)
+                        let mAvailableRecipes = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableRecipes');
+                        if(mAvailableRecipes !== null)
                         {
-                            mAvailableRecipes.values.push({levelName: "", pathName: this.defaultAvailableRecipes[j]});
+                            mAvailableRecipes.values  = [];
+                            for(let j = 0; j < this.defaultAvailableRecipes.length; j++)
+                            {
+                                mAvailableRecipes.values.push({levelName: "", pathName: this.defaultAvailableRecipes[j]});
+                            }
                         }
                     }
-                }
 
                 // Reset game phase
                 let gamePhaseManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.GamePhaseManager");
-                if(gamePhaseManager !== null)
-                {
-                    gamePhaseManager.properties = [];
-                }
+                    if(gamePhaseManager !== null)
+                    {
+                        gamePhaseManager.properties = [];
+                    }
 
                 // Reset tutorial manager
                 let tutorialIntroManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.TutorialIntroManager");
-                if(tutorialIntroManager !== null)
-                {
-                    tutorialIntroManager.properties = [];
-                    tutorialIntroManager.properties.push({name: "mHasCompletedIntroTutorial", type: "BoolProperty", index: 0, value: 1});
-                    tutorialIntroManager.properties.push({name: "mHasCompletedIntroSequence", type: "BoolProperty", index: 0, value: 1});
-                    tutorialIntroManager.properties.push({name: "mTradingPostLevel", type: "IntProperty", index: 0, value: 6});
-                }
+                    if(tutorialIntroManager !== null)
+                    {
+                        tutorialIntroManager.properties = [];
+                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroTutorial", type: "BoolProperty", index: 0, value: 1});
+                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroSequence", type: "BoolProperty", index: 0, value: 1});
+                        tutorialIntroManager.properties.push({name: "mTradingPostLevel", type: "IntProperty", index: 0, value: 6});
+                    }
 
                 // Reset players tutorials
                 for(let i = 0; i < this.baseLayout.playersState.length; i++)

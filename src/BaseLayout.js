@@ -5718,7 +5718,7 @@ export default class BaseLayout
                 }
             }
 
-        for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
+        for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
         {
             playerColors.push({
                 primaryColor    : this.getDefaultPrimaryColorSlot(slotIndex),
@@ -5727,20 +5727,22 @@ export default class BaseLayout
             playerColors[slotIndex].primaryColor.a      = 1;
             playerColors[slotIndex].secondaryColor.a    = 1;
 
-            if(mColorSlotsPrimary_Linear !== null && mColorSlotsPrimary_Linear.values[slotIndex] !== undefined)
+            if(mColorSlotsPrimary_Linear !== null)
             {
                 playerColors[slotIndex].primaryColor    = {
                     r : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].r),
                     g : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].g),
-                    b : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].b)
+                    b : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].b),
+                    a : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].a)
                 };
             }
-            if(mColorSlotsSecondary_Linear !== null && mColorSlotsSecondary_Linear.values[slotIndex] !== undefined)
+            if(mColorSlotsSecondary_Linear !== null)
             {
                 playerColors[slotIndex].secondaryColor  = {
                     r: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].r),
                     g: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].g),
                     b: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].b),
+                    a: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].a)
                 };
             }
         }
@@ -5772,8 +5774,8 @@ export default class BaseLayout
             {r: 0.22352942824363708, g: 0.22352942824363708, b: 0.22352942824363708, a: 1},
 
             // Hidden slots
-            {r: 0.1098039299249649, g: 0.1098039299249649, b: 0.1098039299249649, a: 1},
-            {r: 0.9529412388801575, g: 0.3019607961177826, b: 0.06666667014360428, a: 1}
+            {r: 0.1098039299249649, g: 0.1098039299249649, b: 0.1098039299249649, a: 1},    // Foundations
+            {r: 0.9529412388801575, g: 0.3019607961177826, b: 0.06666667014360428, a: 1}    // Pipes
         ];
 
         let returnColor = (defaultColors[index] !== undefined) ? defaultColors[index] : defaultColors[0];
@@ -5814,8 +5816,8 @@ export default class BaseLayout
             {r: 0.7843137979507446, g: 0.7921569347381592, b: 0.874509871006012, a: 1},
 
             // Hidden slots
-            {r: 0.1882353127002716, g: 0.1882353127002716, b: 0.1882353127002716, a: 1},
-            {r: 1, g: 0, b: 0.9294118285179138, a: 1}
+            {r: 0.1882353127002716, g: 0.1882353127002716, b: 0.1882353127002716, a: 1},    // Foundations
+            {r: 1, g: 0, b: 0.9294118285179138, a: 1}                                       // Pipes
         ];
 
         let returnColor = (defaultColors[index] !== undefined) ? defaultColors[index] : defaultColors[0];
@@ -6074,7 +6076,6 @@ export default class BaseLayout
             currentObject.properties.push({
                 name: propertyName,
                 type: propertyType,
-                index: 0,
                 value: propertyValue
             });
         }

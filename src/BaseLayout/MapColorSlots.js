@@ -35,13 +35,26 @@ export default class BaseLayout_Map_ColorSlots
 
             if(slotIndex === 0)
             {
-                html.push('<div class="d-flex flex-row selectColorSlot active" style="' + style + 'position: relative;width: 96px;height: 96px;border: 3px solid #FFFFFF;border-radius: 5px;margin: 2px;" data-slot=' + slotIndex + '></div>');
+                html.push('<div class="d-flex flex-row selectColorSlot active align-items-center" style="' + style + 'position: relative;width: 96px;height: 96px;border: 3px solid #FFFFFF;border-radius: 5px;margin: 2px;" data-slot="' + slotIndex + '"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">#' + (slotIndex + 1) + '</strong></div></div>');
             }
             else
             {
-                html.push('<div class="d-flex flex-row selectColorSlot" style="' + style + 'position: relative;width: 96px;height: 96px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot=' + slotIndex + '></div>');
+                html.push('<div class="d-flex flex-row selectColorSlot align-items-center" style="' + style + 'position: relative;width: 96px;height: 96px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="' + slotIndex + '"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">#' + (slotIndex + 1) + '</strong></div></div>');
             }
         }
+
+        html.push('</div>');
+
+        // Add hidden slots
+        html.push('<div class="d-flex flex-row">');
+            html.push('<div class="d-flex flex-row selectColorSlot align-items-center" style="background: linear-gradient(135deg, rgb(' + playerColors[16].primaryColor.r + ', ' + playerColors[16].primaryColor.g + ', ' + playerColors[16].primaryColor.b + ') 0%,'
+                          + 'rgb(' + playerColors[16].primaryColor.r + ', ' + playerColors[16].primaryColor.g + ', ' + playerColors[16].primaryColor.b + ') 50%,'
+                          + 'rgb(' + playerColors[16].secondaryColor.r + ', ' + playerColors[16].secondaryColor.g + ', ' + playerColors[16].secondaryColor.b + ') 51%,'
+                          + 'rgb(' + playerColors[16].secondaryColor.r + ', ' + playerColors[16].secondaryColor.g + ', ' + playerColors[16].secondaryColor.b + ') 100%);position: relative;width: 196px;height: 48px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="16"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">Foundations</strong></div></div>');
+            html.push('<div class="d-flex flex-row selectColorSlot align-items-center" style="background: linear-gradient(135deg, rgb(' + playerColors[17].primaryColor.r + ', ' + playerColors[17].primaryColor.g + ', ' + playerColors[17].primaryColor.b + ') 0%,'
+                          + 'rgb(' + playerColors[17].primaryColor.r + ', ' + playerColors[17].primaryColor.g + ', ' + playerColors[17].primaryColor.b + ') 50%,'
+                          + 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ') 51%,'
+                          + 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ') 100%);position: relative;width: 196px;height: 48px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="17"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">Pipes</strong></div></div>');
         html.push('</div>');
 
         $('#statisticsModalColorSlots').html('<div class="row">'
@@ -74,14 +87,14 @@ export default class BaseLayout_Map_ColorSlots
                                            + '</div>');
 
         let primaryColorPicker      = new iro.ColorPicker('#primaryColorPicker', {
-            width: 240,
+            width: 294,
             display: 'inline-block',
             color: 'rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ')',
             borderWidth: 1,
             borderColor: "#000000"
         });
         let secondaryColorPicker    = new iro.ColorPicker('#secondaryColorPicker', {
-            width: 240,
+            width: 294,
             display: 'inline-block',
             color: 'rgb(' + playerColors[0].secondaryColor.r + ', ' + playerColors[0].secondaryColor.g + ', ' + playerColors[0].secondaryColor.b + ')',
             borderWidth: 1,
