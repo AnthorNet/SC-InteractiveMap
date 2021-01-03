@@ -31,6 +31,8 @@ import BaseLayout_Modal_Trains                  from './BaseLayout/ModalTrains.j
 import BaseLayout_Map_ColorSlots                from './BaseLayout/MapColorSlots.js';
 import BaseLayout_Map_Options                   from './BaseLayout/MapOptions.js';
 
+import Building_SpaceElevator                   from './Building/SpaceElevator.js';
+
 export default class BaseLayout
 {
     constructor(options)
@@ -5986,8 +5988,10 @@ export default class BaseLayout
 
             if(phaseManager !== null)
             {
+                Building_SpaceElevator.initiatePhaseManager(this);
+
                 let mGamePhase          = this.getObjectProperty(phaseManager, 'mGamePhase');
-                //let mGamePhaseCosts     = this.getObjectProperty(phaseManager, 'mGamePhaseCosts'); //TODO: Reset?
+                let mGamePhaseCosts     = this.getObjectProperty(phaseManager, 'mGamePhaseCosts'); //TODO: Reset?
 
                 bootbox.form({
                     title: 'Update "<strong>' + buildingData.name + '</strong>" phase',
