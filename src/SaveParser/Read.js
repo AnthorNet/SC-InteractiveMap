@@ -586,11 +586,27 @@ export default class SaveParser_Read
                         this.readInt(); // 0
                         currentProperty.structureSubType    = this.readString();
 
-                        //currentProperty.propertyGuid        = this.readHex(16);
-                        currentProperty.propertyGuid1        = this.readInt();
-                        currentProperty.propertyGuid2        = this.readInt();
-                        currentProperty.propertyGuid3        = this.readInt();
-                        currentProperty.propertyGuid4        = this.readInt();
+                        let propertyGuid1 = this.readInt();
+                        let propertyGuid2 = this.readInt();
+                        let propertyGuid3 = this.readInt();
+                        let propertyGuid4 = this.readInt();
+                            if(propertyGuid1 !== 0)
+                            {
+                                currentProperty.propertyGuid1 = propertyGuid1;
+                            }
+                            if(propertyGuid2 !== 0)
+                            {
+                                currentProperty.propertyGuid2 = propertyGuid2;
+                            }
+                            if(propertyGuid3 !== 0)
+                            {
+                                currentProperty.propertyGuid3 = propertyGuid3;
+                            }
+                            if(propertyGuid4 !== 0)
+                            {
+                                currentProperty.propertyGuid4 = propertyGuid4;
+                            }
+                            
                         this.skipBytes(1);
 
                         for(let i = 0; i < currentArrayPropertyCount; i++)

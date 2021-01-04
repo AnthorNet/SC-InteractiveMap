@@ -514,15 +514,7 @@ export default class SaveParser_Write
         // Reset to get property length...
         let startCurrentPropertyBufferLength    = this.currentBufferLength;
             this.currentBufferLength            = 0;
-
-        if(currentProperty.index !== undefined)
-        {
-            property = this.writeInt(currentProperty.index, false);
-        }
-        else
-        {
-            property = this.writeInt(0, false);
-        }
+            property                            = this.writeInt( ((currentProperty.index !== undefined) ? currentProperty.index : 0), false);
 
         switch(currentProperty.type)
         {
@@ -830,11 +822,11 @@ export default class SaveParser_Write
                         let structure   = this.writeInt(0);
                             structure  += this.writeString(currentProperty.structureSubType);
 
-                            //structure += this.writeHex(currentProperty.propertyGuid);
-                            structure  += this.writeInt(currentProperty.propertyGuid1);
-                            structure  += this.writeInt(currentProperty.propertyGuid2);
-                            structure  += this.writeInt(currentProperty.propertyGuid3);
-                            structure  += this.writeInt(currentProperty.propertyGuid4);
+                            structure  += this.writeInt( ((currentProperty.propertyGuid1 !== undefined) ? currentProperty.propertyGuid1 : 0) );
+                            structure  += this.writeInt( ((currentProperty.propertyGuid2 !== undefined) ? currentProperty.propertyGuid2 : 0) );
+                            structure  += this.writeInt( ((currentProperty.propertyGuid3 !== undefined) ? currentProperty.propertyGuid3 : 0) );
+                            structure  += this.writeInt( ((currentProperty.propertyGuid4 !== undefined) ? currentProperty.propertyGuid4 : 0) );
+
                             structure  += this.writeByte(0);
 
                         let structureSizeLength      = this.currentEntityLength;
