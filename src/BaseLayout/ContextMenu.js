@@ -1,3 +1,5 @@
+import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
+
 export default class BaseLayout_ContextMenu
 {
     constructor(options)
@@ -76,8 +78,8 @@ export default class BaseLayout_ContextMenu
                     break;
                 case '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C':
                     contextMenu.push({
-                        text: 'Update "' + buildingData.name + '" phase',
-                        callback: this.baseLayout.updateSpaceElevatorPhase.bind(this.baseLayout)
+                        text        : 'Update "' + buildingData.name + '" phase',
+                        callback    : Building_SpaceElevator.updatePhase
                     });
                     break;
             }

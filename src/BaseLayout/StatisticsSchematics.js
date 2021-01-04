@@ -1,6 +1,8 @@
 /* global Intl, Sentry */
 import BaseLayout_Statistics_Player_Inventory   from '../BaseLayout/StatisticsPlayerInventory.js';
 
+import Building_MAM                             from '../Building/MAM.js';
+
 export default class BaseLayout_Statistics_Schematics
 {
     constructor(options)
@@ -728,7 +730,7 @@ export default class BaseLayout_Statistics_Schematics
                             }
                         }
 
-                    let researchManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.ResearchManager");
+                    let researchManager = Building_MAM.getManager(this.baseLayout);
                         if(researchManager !== null)
                         {
                             let currentResearch = currentSchematic.split('.');
@@ -737,21 +739,10 @@ export default class BaseLayout_Statistics_Schematics
 
                                 if(currentResearch[0] === 'Research')
                                 {
-                                    // Initiate MAM if needed
+                                        Building_MAM.initiate(this.baseLayout);
                                     let mUnlockedResearchTrees  = this.baseLayout.getObjectProperty(researchManager, 'mUnlockedResearchTrees');
-                                    let mIsActivated            = this.baseLayout.getObjectProperty(researchManager, 'mIsActivated');
-
-                                        if(mUnlockedResearchTrees === null)
-                                        {
-                                            this.baseLayout.setObjectProperty(researchManager, 'mUnlockedResearchTrees', {type: 'ObjectProperty', values: []}, 'ArrayProperty');
-                                            mUnlockedResearchTrees  = this.baseLayout.getObjectProperty(researchManager, 'mUnlockedResearchTrees');
-                                        }
-                                        if(mIsActivated === null)
-                                        {
-                                            this.baseLayout.setObjectProperty(researchManager, 'mIsActivated', 1, 'BoolProperty');
-                                        }
-
-                                    let currentTree     = null;
+                                    let currentTree             = null;
+                                    
                                         switch(currentResearch[1])
                                         {
                                             //{levelName: "", pathName: "/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_HardDrive.BPD_ResearchTree_HardDrive_C"}

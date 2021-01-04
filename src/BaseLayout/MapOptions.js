@@ -1,5 +1,8 @@
 import BaseLayout_Statistics_Player_Inventory   from '../BaseLayout/StatisticsPlayerInventory.js';
 
+import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
+import Building_MAM                             from '../Building/MAM.js';
+
 export default class BaseLayout_Map_Options
 {
     constructor(options)
@@ -365,11 +368,7 @@ export default class BaseLayout_Map_Options
                 }
 
                 // Reset MAM
-                let researchManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.ResearchManager");
-                    if(researchManager !== null)
-                    {
-                        researchManager.properties  = [];
-                    }
+                Building_MAM.reset(this.baseLayout);
 
                 // Reset schematic manager
                 let schematicManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
@@ -415,11 +414,7 @@ export default class BaseLayout_Map_Options
                     }
 
                 // Reset game phase
-                let gamePhaseManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.GamePhaseManager");
-                    if(gamePhaseManager !== null)
-                    {
-                        gamePhaseManager.properties = [];
-                    }
+                Building_SpaceElevator.reset(this.baseLayout);
 
                 // Reset tutorial manager
                 let tutorialIntroManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.TutorialIntroManager");

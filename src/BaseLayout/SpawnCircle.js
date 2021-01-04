@@ -17,8 +17,7 @@ export default class BaseLayout_Spawn_Circle
         this.useOwnMaterials    = options.useOwnMaterials;
 
         this.minRadius          = Math.max(1, this.minRadius);
-        this.maxRadius          = Math.min(256, this.maxRadius);
-        this.maxRadius          = Math.max(this.minRadius + 1, this.maxRadius);
+        this.maxRadius          = Math.min(256, Math.max(this.minRadius, this.maxRadius));
 
         this.arcAngle           = Math.max(0, Math.min(360, parseInt(this.arcAngle)));
 

@@ -31,8 +31,6 @@ import BaseLayout_Modal_Trains                  from './BaseLayout/ModalTrains.j
 import BaseLayout_Map_ColorSlots                from './BaseLayout/MapColorSlots.js';
 import BaseLayout_Map_Options                   from './BaseLayout/MapOptions.js';
 
-import Building_SpaceElevator                   from './Building/SpaceElevator.js';
-
 export default class BaseLayout
 {
     constructor(options)
@@ -1327,8 +1325,10 @@ export default class BaseLayout
                 outerPathName: pathName, pathName: pathName + '.mInventory',
                 properties: [
                     {
-                        index: 0, name: "mInventoryStacks", propertyGuid1: 0,propertyGuid2: 0,propertyGuid3: 0,propertyGuid4: 0,
-                        structureName: "mInventoryStacks", structureSize: 138, structureSubType: "InventoryStack", structureType: "StructProperty",
+                        index: 0, name: "mInventoryStacks",
+                        structureName: "mInventoryStacks",
+                        structureSubType: "InventoryStack",
+                        structureType: "StructProperty",
                         type: "ArrayProperty",
                         value: {
                             type: "StructProperty",
@@ -1727,11 +1727,7 @@ export default class BaseLayout
                     value: {type: "StructProperty", values: []}, // Push items
                     structureName: "mInventoryStacks",
                     structureType: "StructProperty",
-                    structureSubType: "InventoryStack",
-                    propertyGuid1: 0,
-                    propertyGuid2: 0,
-                    propertyGuid3: 0,
-                    propertyGuid4: 0
+                    structureSubType: "InventoryStack"
                 },
                 {
                     name: "mArbitrarySlotSizes",
@@ -2238,7 +2234,7 @@ export default class BaseLayout
                                             return;
                                         }
 
-                                        values.minRadius = Math.max(3, Math.min(values.minRadius, values.maxRadius - 1));
+                                        values.minRadius = Math.max(3, Math.min(values.minRadius, values.maxRadius));
                                     }
                                     else
                                     {
@@ -5691,10 +5687,6 @@ export default class BaseLayout
                         {
                             mColorSlotsPrimary_Linear = {
                                 name                    : "mColorSlotsPrimary_Linear",
-                                propertyGuid1           : 0,
-                                propertyGuid2           : 0,
-                                propertyGuid3           : 0,
-                                propertyGuid4           : 0,
                                 structureName           : "mColorSlotsPrimary_Linear",
                                 structureSubType        : "LinearColor",
                                 structureType           : "StructProperty",
@@ -5715,10 +5707,6 @@ export default class BaseLayout
                         {
                             mColorSlotsSecondary_Linear = {
                                 name                    : "mColorSlotsSecondary_Linear",
-                                propertyGuid1           : 0,
-                                propertyGuid2           : 0,
-                                propertyGuid3           : 0,
-                                propertyGuid4           : 0,
                                 structureName           : "mColorSlotsSecondary_Linear",
                                 structureSubType        : "LinearColor",
                                 structureType           : "StructProperty",
@@ -6032,73 +6020,6 @@ export default class BaseLayout
             }.bind(this)
         });
     }
-
-    /*
-     * className: "/Game/FactoryGame/Schematics/Progression/BP_GamePhaseManager.BP_GamePhaseManager_C"
-     * pathName: "Persistent_Level:PersistentLevel.GamePhaseManager"
-     *
-     * EGP_EarlyGame        = 0 UMETA( DisplayName = "Establishing Phase" ) Up to tier 2
-     * EGP_MidGame          = 1 UMETA( DisplayName = "Development Phase" ), Up to tier 4
-     * EGP_LateGame         = 2 UMETA( DisplayName = "Expansion Phase" ), Up to tier 6
-     * EGP_EndGame          = 3 UMETA( DisplayName = "Retention Phase" ), Up to tier 7
-     */
-    updateSpaceElevatorPhase(marker)
-    {
-        let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
-        let phaseManager        = this.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.GamePhaseManager');
-
-            if(phaseManager !== null)
-            {
-                Building_SpaceElevator.initiatePhaseManager(this);
-
-                let mGamePhase          = this.getObjectProperty(phaseManager, 'mGamePhase');
-                let mGamePhaseCosts     = this.getObjectProperty(phaseManager, 'mGamePhaseCosts'); //TODO: Reset?
-
-                bootbox.form({
-                    title: 'Update "<strong>' + buildingData.name + '</strong>" phase',
-                    container: '#leafletMap', backdrop: false,
-                    centerVertical: true,
-                    scrollable: true,
-                    inputs: [{
-                        name: 'mGamePhase',
-                        inputType: 'select',
-                        inputOptions: [{
-                                value       : 'EGP_EarlyGame',
-                                text        : 'Establishing Phase (Tier 1 & 2)'
-                            },
-                            {
-                                value       : 'EGP_MidGame',
-                                text        : 'Development Phase (Tier 3 & 4)'
-                            },
-                            {
-                                value       : 'EGP_LateGame',
-                                text        : 'Expansion Phase (Tier 5 & 6)'
-                            },
-                            {
-                                value       : 'EGP_EndGame',
-                                text        : 'Retention Phase (Tier 7)'
-                            }],
-                        value: mGamePhase.valueName
-                    }],
-                    callback: function(values)
-                    {
-                        if(values === null)
-                        {
-                            return;
-                        }
-
-                        mGamePhase.valueName = values.mGamePhase;
-                    }.bind(this)
-                });
-            }
-            else
-            {
-                bootbox.alert("Could not find 'Persistent_Level:PersistentLevel.GamePhaseManager'");
-            }
-    }
-
-
 
     getObjectProperty(currentObject, propertyName, defaultPropertyValue = null)
     {

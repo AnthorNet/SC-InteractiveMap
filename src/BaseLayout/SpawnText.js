@@ -205,9 +205,7 @@ export default class BaseLayout_Spawn_Text
                                     wasPlacedInLevel    : 0,
                                     children            : [],
                                     properties          : [
-                                        {name: "mSplineData", type: "ArrayProperty", index: 0, value: {type: "StructProperty", values: []}, structureName: "mSplineData", structureType: "StructProperty", structureSubType: "SplinePointData", propertyGuid1: 0, propertyGuid2: 0, propertyGuid3: 0, propertyGuid4: 0},
-                                        //{name: "mPrimaryColor", type: "StructProperty", index: 0, value: {…}},
-                                        //{name: "mSecondaryColor", type: "StructProperty", index: 0, value: {…}},
+                                        {name: "mSplineData", type: "ArrayProperty", index: 0, value: {type: "StructProperty", values: []}, structureName: "mSplineData", structureType: "StructProperty", structureSubType: "SplinePointData"},
                                         {name: "mBuiltWithRecipe", type: "ObjectProperty", index: 0, value: {levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Recipe_Pipeline.Recipe_Pipeline_C"}},
                                         {name: "mBuildTimeStamp", type: "FloatProperty", index: 0, value: 0}
                                     ],
