@@ -53,6 +53,7 @@ export default class BaseLayout_Statistics_Schematics
         {
             html.push('<div class="tab-pane fade ' + ( (selectedTier === i) ? 'show active' : '' ) + '" id="playerUnlockedSchematics-' + i + '" role="tabpanel">');
             html.push('<table class="table mb-0">');
+            html.push('<tr><td></td><td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + i + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
 
             let currentTierData   = {};
                 for(let schematicId in this.baseLayout.schematicsData)
@@ -106,6 +107,15 @@ export default class BaseLayout_Statistics_Schematics
 
         $('#statisticsModalSchematics').html(html.join(''));
 
+        $('#statisticsModalSchematics .updateAllAlternativeStatus').on('click', function(e){
+            $('#statisticsModalSchematics .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + '][data-tier=' + $(e.currentTarget).attr('data-tier') + ']').each(function(index, el){
+                this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+            }.bind(this));
+
+            // Reset status
+            this.parseSchematics(parseInt($(e.currentTarget).attr('data-tier')));
+        }.bind(this)).css('cursor', 'pointer');
+
         $('#statisticsModalSchematics .updateAlternativeStatus').on('click', function(e){
             this.switchSchematic($(e.currentTarget).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
 
@@ -126,6 +136,7 @@ export default class BaseLayout_Statistics_Schematics
             html.push('<div class="card-body text-center">You can click on the status of the recipe to update its current state.</div>');
 
             html.push('<table class="table mb-0">');
+            html.push('<tr><td></td><td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
 
         let schematicsDataKey = Object.keys(this.baseLayout.schematicsData).sort(function(a,b){
                 return this.baseLayout.schematicsData[a].name.localeCompare(this.baseLayout.schematicsData[b].name);
@@ -205,13 +216,13 @@ export default class BaseLayout_Statistics_Schematics
                 if(currentSchematic.className !== undefined && purchasedAlternate.includes(currentSchematic.className))
                 {
                     this.baseLayout.collectedSchematics.addCollected(className);
-                    html.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased" data-tier="' + currentSchematic.category + '"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
+                    html.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
                 }
                 else
                 {
                     if(currentSchematic.className !== undefined)
                     {
-                        html.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available" data-tier="' + currentSchematic.category + '"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
+                        html.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
                     }
                     else
                     {
@@ -226,6 +237,15 @@ export default class BaseLayout_Statistics_Schematics
         html.push('</table>');
 
         $('#statisticsModalAlternateRecipes').html(html.join(''));
+
+        $('#statisticsModalAlternateRecipes .updateAllAlternativeStatus').on('click', function(e){
+            $('#statisticsModalAlternateRecipes .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + ']').each(function(index, el){
+                this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+            }.bind(this));
+
+            // Reset status
+            this.parseAlternateRecipes();
+        }.bind(this)).css('cursor', 'pointer');
 
         $('#statisticsModalAlternateRecipes .updateAlternativeStatus').on('click', function(e){
             this.switchSchematic($(e.currentTarget).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
@@ -268,6 +288,7 @@ export default class BaseLayout_Statistics_Schematics
         {
             html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedMAM-' + i + '" role="tabpanel">');
             html.push('<table class="table mb-0">');
+            html.push('<tr><td></td><td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
 
             let currentTierData   = {};
                 for(let schematicId in this.baseLayout.schematicsData)
@@ -324,6 +345,15 @@ export default class BaseLayout_Statistics_Schematics
 
         $('#statisticsModalMAM').html(html.join(''));
 
+        $('#statisticsModalMAM .updateAllAlternativeStatus').on('click', function(e){
+            $('#statisticsModalMAM .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + '][data-tier="' + $(e.currentTarget).attr('data-tier') + '"]').each(function(index, el){
+                this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+            }.bind(this));
+
+            // Reset status
+            this.parseMAM($(e.currentTarget).attr('data-tier'));
+        }.bind(this)).css('cursor', 'pointer');
+
         $('#statisticsModalMAM .updateAlternativeStatus').on('click', function(e){
             this.switchSchematic($(e.currentTarget).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
 
@@ -365,6 +395,7 @@ export default class BaseLayout_Statistics_Schematics
         {
             html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedAwesomeSink-' + i + '" role="tabpanel">');
             html.push('<table class="table mb-0">');
+            html.push('<tr><td></td><td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
 
             let currentTierData   = {};
                 for(let schematicId in this.baseLayout.schematicsData)
@@ -420,6 +451,15 @@ export default class BaseLayout_Statistics_Schematics
         html.push('</div>');
 
         $('#statisticsModalAwesomeSink').html(html.join(''));
+
+        $('#statisticsModalAwesomeSink .updateAllAlternativeStatus').on('click', function(e){
+            $('#statisticsModalAwesomeSink .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + '][data-tier="' + $(e.currentTarget).attr('data-tier') + '"]').each(function(index, el){
+                this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+            }.bind(this));
+
+            // Reset status
+            this.parseAwesomeSink($(e.currentTarget).attr('data-tier'));
+        }.bind(this)).css('cursor', 'pointer');
 
         $('#statisticsModalAwesomeSink .updateAlternativeStatus').on('click', function(e){
             this.switchSchematic($(e.currentTarget).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
@@ -742,7 +782,7 @@ export default class BaseLayout_Statistics_Schematics
                                         Building_MAM.initiate(this.baseLayout);
                                     let mUnlockedResearchTrees  = this.baseLayout.getObjectProperty(researchManager, 'mUnlockedResearchTrees');
                                     let currentTree             = null;
-                                    
+
                                         switch(currentResearch[1])
                                         {
                                             //{levelName: "", pathName: "/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_HardDrive.BPD_ResearchTree_HardDrive_C"}
