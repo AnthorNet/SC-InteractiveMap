@@ -713,9 +713,9 @@ export default class BaseLayout_Statistics_Schematics
                                         let scannableResources = this.baseLayout.getObjectProperty(unlockSubSystem, 'mScannableResources');
                                             if(scannableResources !== null)
                                             {
-                                                for(let i = scannableResources.values.length - 1; i >= 0; i--)
+                                                for(let k = 0; k < this.baseLayout.schematicsData[schematicId].scanner.length; k++)
                                                 {
-                                                    for(let k = 0; k < this.baseLayout.schematicsData[schematicId].scanner.length; k++)
+                                                    for(let i = scannableResources.values.length - 1; i >= 0; i--)
                                                     {
                                                         if(scannableResources.values[i].pathName === this.baseLayout.schematicsData[schematicId].scanner[k])
                                                         {

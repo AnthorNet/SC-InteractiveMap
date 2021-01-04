@@ -69,7 +69,7 @@ export default class Building_SpaceElevator
         let phaseManager = Building_SpaceElevator.getManager(baseLayout);
             if(phaseManager !== null)
             {
-                let mGamePhase          = this.getObjectProperty(phaseManager, 'mGamePhase');
+                let mGamePhase          = baseLayout.getObjectProperty(phaseManager, 'mGamePhase');
                     if(mGamePhase === null)
                     {
                         phaseManager.properties.push({
@@ -82,7 +82,7 @@ export default class Building_SpaceElevator
                         });
                     }
 
-                let mGamePhaseCosts     = this.getObjectProperty(phaseManager, 'mGamePhaseCosts'); //TODO: Reset?
+                let mGamePhaseCosts     = baseLayout.getObjectProperty(phaseManager, 'mGamePhaseCosts'); //TODO: Reset?
                     if(mGamePhaseCosts === null)
                     {
                         phaseManager.properties.push({
