@@ -3160,18 +3160,26 @@ export default class BaseLayout
         }
         else
         {
-            if(buildingData !== null && buildingData.mapUseSlotColorDefault !== undefined && buildingData.mapUseSlotColorDefault === false)
+            // See also /Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_Frame_01.Build_Foundation_Frame_01_C && /Game/FactoryGame/Buildable/Building/Foundation/Build_FoundationGlass_01.Build_FoundationGlass_01_C ?
+            if(buildingData !== null && buildingData.category === 'foundation')
             {
+                let playerColors    = this.getColorSlots();
+                let primaryColor    = playerColors[16].primaryColor;
+                let markerStyle     = {
+                    color               : buildingData.mapColor,
+                    fillColor           : 'rgb(' + primaryColor.r + ', ' + primaryColor.g + ', ' + primaryColor.b + ')',
+                    fillOpacity         : mapOpacity
+                };
+
                 let haveDefaulColorSlot = this.getObjectPrimaryColorSlot(currentObject, true);
-                    if(haveDefaulColorSlot === null)
+                    if(haveDefaulColorSlot !== null)
                     {
-                        marker.setStyle({
-                            color: buildingData.mapColor,
-                            fillColor: ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
-                            fillOpacity: mapOpacity
-                        });
-                        return;
+                        let slotPrimaryColor        = this.getObjectPrimaryColor(currentObject);
+                            markerStyle.fillColor   = 'rgb(' + slotPrimaryColor.r + ', ' + slotPrimaryColor.g + ', ' + slotPrimaryColor.b + ')';
                     }
+
+                marker.setStyle(markerStyle);
+                return;
             }
 
             let slotColor = this.getObjectPrimaryColor(currentObject);
@@ -3181,23 +3189,23 @@ export default class BaseLayout
                     case 'walkway':
                     case 'stair':
                         marker.setStyle({
-                            color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
-                            fillColor: ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
-                            fillOpacity: mapOpacity
+                            color       : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                            fillColor   : ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
+                            fillOpacity : mapOpacity
                         });
                         break;
                     case 'wall':
                         marker.setStyle({
-                            color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
-                            fillColor: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
-                            fillOpacity: mapOpacity
+                            color       : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                            fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                            fillOpacity : mapOpacity
                         });
                         break;
                     default:
                         marker.setStyle({
-                            color: buildingData.mapColor,
-                            fillColor: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
-                            fillOpacity: mapOpacity
+                            color       : buildingData.mapColor,
+                            fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                            fillOpacity : mapOpacity
                         });
                         break;
                 }
@@ -5655,99 +5663,113 @@ export default class BaseLayout
 
     getColorSlots(createIfNotExisting)
     {
-        let totalColorSlot                  = BaseLayout_Map_ColorSlots.getTotalColorSlots();
-        let playerColors                    = [];
-        let buildableSubsystem              = this.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.BuildableSubsystem');
-        let mColorSlotsPrimary_Linear       = null;
-        let mColorSlotsSecondary_Linear     = null;
+        if(this.currentPlayerColors === undefined)
+        {
+            this.currentPlayerColors = null;
+        }
+        if(createIfNotExisting !== undefined && createIfNotExisting === true)
+        {
+            this.currentPlayerColors = null;
+        }
 
-            if(buildableSubsystem !== null)
-            {
-                mColorSlotsPrimary_Linear       = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
-                mColorSlotsSecondary_Linear     = this.getObjectProperty(buildableSubsystem, 'mColorSlotsSecondary_Linear');
+        if(this.currentPlayerColors === null)
+        {
+            let totalColorSlot                  = BaseLayout_Map_ColorSlots.getTotalColorSlots();
+            let playerColors                    = [];
+            let buildableSubsystem              = this.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.BuildableSubsystem');
+            let mColorSlotsPrimary_Linear       = null;
+            let mColorSlotsSecondary_Linear     = null;
 
-                if(createIfNotExisting !== undefined && createIfNotExisting === true)
+                if(buildableSubsystem !== null)
                 {
-                    if(mColorSlotsPrimary_Linear === null)
-                    {
-                        mColorSlotsPrimary_Linear = {
-                            name                    : "mColorSlotsPrimary_Linear",
-                            propertyGuid1           : 0,
-                            propertyGuid2           : 0,
-                            propertyGuid3           : 0,
-                            propertyGuid4           : 0,
-                            structureName           : "mColorSlotsPrimary_Linear",
-                            structureSubType        : "LinearColor",
-                            structureType           : "StructProperty",
-                            type                    : "ArrayProperty",
-                            value                   : {type: "StructProperty", values: []}
-                        };
+                    mColorSlotsPrimary_Linear       = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
+                    mColorSlotsSecondary_Linear     = this.getObjectProperty(buildableSubsystem, 'mColorSlotsSecondary_Linear');
 
-                        for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
+                    if(createIfNotExisting !== undefined && createIfNotExisting === true)
+                    {
+                        if(mColorSlotsPrimary_Linear === null)
                         {
-                            mColorSlotsPrimary_Linear.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
+                            mColorSlotsPrimary_Linear = {
+                                name                    : "mColorSlotsPrimary_Linear",
+                                propertyGuid1           : 0,
+                                propertyGuid2           : 0,
+                                propertyGuid3           : 0,
+                                propertyGuid4           : 0,
+                                structureName           : "mColorSlotsPrimary_Linear",
+                                structureSubType        : "LinearColor",
+                                structureType           : "StructProperty",
+                                type                    : "ArrayProperty",
+                                value                   : {type: "StructProperty", values: []}
+                            };
+
+                            for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
+                            {
+                                mColorSlotsPrimary_Linear.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
+                            }
+
+                            buildableSubsystem.properties.push(mColorSlotsPrimary_Linear);
+                            mColorSlotsPrimary_Linear = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
                         }
 
-                        buildableSubsystem.properties.push(mColorSlotsPrimary_Linear);
-                        mColorSlotsPrimary_Linear = this.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
-                    }
-
-                    if(mColorSlotsSecondary_Linear === null)
-                    {
-                        mColorSlotsSecondary_Linear = {
-                            name                    : "mColorSlotsSecondary_Linear",
-                            propertyGuid1           : 0,
-                            propertyGuid2           : 0,
-                            propertyGuid3           : 0,
-                            propertyGuid4           : 0,
-                            structureName           : "mColorSlotsSecondary_Linear",
-                            structureSubType        : "LinearColor",
-                            structureType           : "StructProperty",
-                            type                    : "ArrayProperty",
-                            value                   : {type: "StructProperty", values: []}
-                        };
-
-                        for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
+                        if(mColorSlotsSecondary_Linear === null)
                         {
-                            mColorSlotsSecondary_Linear.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
-                        }
+                            mColorSlotsSecondary_Linear = {
+                                name                    : "mColorSlotsSecondary_Linear",
+                                propertyGuid1           : 0,
+                                propertyGuid2           : 0,
+                                propertyGuid3           : 0,
+                                propertyGuid4           : 0,
+                                structureName           : "mColorSlotsSecondary_Linear",
+                                structureSubType        : "LinearColor",
+                                structureType           : "StructProperty",
+                                type                    : "ArrayProperty",
+                                value                   : {type: "StructProperty", values: []}
+                            };
 
-                        buildableSubsystem.properties.push(mColorSlotsSecondary_Linear);
-                        mColorSlotsSecondary_Linear = this.getObjectProperty(buildableSubsystem, 'mColorSlotsSecondary_Linear');
+                            for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
+                            {
+                                mColorSlotsSecondary_Linear.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
+                            }
+
+                            buildableSubsystem.properties.push(mColorSlotsSecondary_Linear);
+                            mColorSlotsSecondary_Linear = this.getObjectProperty(buildableSubsystem, 'mColorSlotsSecondary_Linear');
+                        }
                     }
+                }
+
+            for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
+            {
+                playerColors.push({
+                    primaryColor    : this.getDefaultPrimaryColorSlot(slotIndex),
+                    secondaryColor  : this.getDefaultSecondaryColorSlot(slotIndex)
+                });
+                playerColors[slotIndex].primaryColor.a      = 1;
+                playerColors[slotIndex].secondaryColor.a    = 1;
+
+                if(mColorSlotsPrimary_Linear !== null)
+                {
+                    playerColors[slotIndex].primaryColor    = {
+                        r : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].r),
+                        g : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].g),
+                        b : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].b),
+                        a : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].a)
+                    };
+                }
+                if(mColorSlotsSecondary_Linear !== null)
+                {
+                    playerColors[slotIndex].secondaryColor  = {
+                        r: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].r),
+                        g: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].g),
+                        b: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].b),
+                        a: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].a)
+                    };
                 }
             }
 
-        for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
-        {
-            playerColors.push({
-                primaryColor    : this.getDefaultPrimaryColorSlot(slotIndex),
-                secondaryColor  : this.getDefaultSecondaryColorSlot(slotIndex)
-            });
-            playerColors[slotIndex].primaryColor.a      = 1;
-            playerColors[slotIndex].secondaryColor.a    = 1;
-
-            if(mColorSlotsPrimary_Linear !== null)
-            {
-                playerColors[slotIndex].primaryColor    = {
-                    r : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].r),
-                    g : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].g),
-                    b : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].b),
-                    a : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].a)
-                };
-            }
-            if(mColorSlotsSecondary_Linear !== null)
-            {
-                playerColors[slotIndex].secondaryColor  = {
-                    r: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].r),
-                    g: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].g),
-                    b: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].b),
-                    a: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].a)
-                };
-            }
+            this.currentPlayerColors = playerColors;
         }
 
-        return playerColors;
+        return this.currentPlayerColors;
     }
 
     getDefaultPrimaryColorSlot(index, raw = false)
@@ -5896,8 +5918,41 @@ export default class BaseLayout
                 primaryColor    : 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
                 secondaryColor  : 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
                 value           : slotIndex,
-                text            : (slotIndex + 1)
+                text            : '#' + (slotIndex + 1)
             });
+        }
+
+        if(buildingData.category === 'foundation')
+        {
+            selectOptions.push({
+                fullWidth       : true,
+                primaryColor    : 'rgb(' + playerColors[16].primaryColor.r + ', ' + playerColors[16].primaryColor.g + ', ' + playerColors[16].primaryColor.b + ')',
+                secondaryColor  : 'rgb(' + playerColors[16].secondaryColor.r + ', ' + playerColors[16].secondaryColor.g + ', ' + playerColors[16].secondaryColor.b + ')',
+                value           : 16,
+                text            : 'Default foundations'
+            });
+
+            let foundationSlotIndex = this.getObjectPrimaryColorSlot(currentObject, true);
+                if(foundationSlotIndex === null)
+                {
+                    slotIndex = 16;
+                }
+        }
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C')
+        {
+            selectOptions.push({
+                fullWidth       : true,
+                primaryColor    : 'rgb(' + playerColors[17].primaryColor.r + ', ' + playerColors[17].primaryColor.g + ', ' + playerColors[17].primaryColor.b + ')',
+                secondaryColor  : 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ')',
+                value           : 17,
+                text            : 'Default pipes'
+            });
+
+            let pipeSlotIndex = this.getObjectPrimaryColorSlot(currentObject, true);
+                if(pipeSlotIndex === null)
+                {
+                    slotIndex = 17;
+                }
         }
 
         bootbox.form({
@@ -5922,7 +5977,7 @@ export default class BaseLayout
                 let colorSlot       = this.getObjectProperty(currentObject, 'mColorSlot');
                 let newSlotIndex    = parseInt(values.slotIndex);
 
-                if(colorSlot === null && newSlotIndex > 0)
+                if(colorSlot === null && newSlotIndex > 0 && newSlotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots())
                 {
                     currentObject.properties.push({
                         index: 0,

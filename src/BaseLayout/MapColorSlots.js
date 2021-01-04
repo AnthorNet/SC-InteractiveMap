@@ -148,7 +148,7 @@ export default class BaseLayout_Map_ColorSlots
                         }
                 }
 
-            playerColors = this.baseLayout.getColorSlots();
+            playerColors = this.baseLayout.getColorSlots(true);
         }.bind(this));
 
         $('#statisticsModalColorSlots .selectColorSlot').hover(
