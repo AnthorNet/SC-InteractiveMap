@@ -39,7 +39,19 @@ export default class BaseLayout_Modal_Buildings
         let buildingsList   = {};
             buildingsTabs.each(function(){
                 let currentCategory = $(this).attr('data-category');
-                    buildingsList[currentCategory] = {id: $(this).attr('id'), buildings: {}};
+
+                    if(currentCategory !== undefined)
+                    {
+                        buildingsList[currentCategory] = {id: $(this).attr('id'), buildings: {}};
+                    }
+                    else
+                    {
+                        let currentClassName = $(this).attr('data-classname');
+                            if(currentClassName !== undefined)
+                            {
+                                buildingsList[currentClassName] = {id: $(this).attr('id'), buildings: {}};
+                            }
+                    }
             });
             for(let currentCategory in buildingsList)
             {
@@ -49,28 +61,32 @@ export default class BaseLayout_Modal_Buildings
                     {
                         buildingsList[currentCategory].buildings[this.baseLayout.buildingsData[i].className] = [];
                     }
+                    if(this.baseLayout.buildingsData[i].className !== undefined && this.baseLayout.buildingsData[i].className === currentCategory)
+                    {
+                        buildingsList[currentCategory].buildings[this.baseLayout.buildingsData[i].className] = [];
+                    }
                 }
             }
 
         let markersLength = this.markers.length;
-        for(let i = 0; i < markersLength; i++)
-        {
-            let currentObject = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
-                if(currentObject !== null)
-                {
-                    for(let currentCategory in buildingsList)
+            for(let i = 0; i < markersLength; i++)
+            {
+                let currentObject = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
+                    if(currentObject !== null)
                     {
-                        for(let className in buildingsList[currentCategory].buildings)
+                        for(let currentCategory in buildingsList)
                         {
-                            if(className === currentObject.className)
+                            for(let className in buildingsList[currentCategory].buildings)
                             {
-                                buildingsList[currentCategory].buildings[className].push(currentObject);
-                                break;
+                                if(className === currentObject.className)
+                                {
+                                    buildingsList[currentCategory].buildings[className].push(currentObject);
+                                    break;
+                                }
                             }
                         }
                     }
-                }
-        }
+            }
 
         for(let currentCategory in buildingsList)
         {
@@ -97,7 +113,7 @@ export default class BaseLayout_Modal_Buildings
 
                     htmlTab.push('<div class="tab-pane fade">');
                     htmlTab.push('<table class="table">');
-                    htmlTab.push('<thead><th></th><th></th><th></th><th class="text-center">Clock speed</th><th></th></thead>');
+                    htmlTab.push('<thead><th></th><th></th><th></th><th></th><th class="text-center">Clock speed</th><th></th><th></th></thead>');
                     htmlTab.push('<tbody>');
 
                     let htmlRows = [];
