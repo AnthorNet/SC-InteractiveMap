@@ -1,4 +1,4 @@
-/* global bootbox */
+import Modal                                    from '../Modal.js';
 
 export default class Building_SpaceElevator
 {
@@ -25,31 +25,31 @@ export default class Building_SpaceElevator
             let mGamePhase          = baseLayout.getObjectProperty(phaseManager, 'mGamePhase');
             //let mGamePhaseCosts     = baseLayout.getObjectProperty(phaseManager, 'mGamePhaseCosts'); //TODO: Reset?
 
-            bootbox.form({
-                title: 'Update "<strong>' + buildingData.name + '</strong>" phase',
-                container: '#leafletMap',
-                inputs: [{
-                    name: 'mGamePhase',
-                    inputType: 'select',
-                    inputOptions: [{
-                            value       : 'EGP_EarlyGame',
-                            text        : 'Establishing Phase (Tier 1 & 2)'
-                        },
-                        {
-                            value       : 'EGP_MidGame',
-                            text        : 'Development Phase (Tier 3 & 4)'
-                        },
-                        {
-                            value       : 'EGP_LateGame',
-                            text        : 'Expansion Phase (Tier 5 & 6)'
-                        },
-                        {
-                            value       : 'EGP_EndGame',
-                            text        : 'Retention Phase (Tier 7)'
-                        }],
-                    value: mGamePhase.valueName
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" phase',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name            : 'mGamePhase',
+                    inputType       : 'select',
+                    value           : mGamePhase.valueName,
+                    inputOptions    : [{
+                        value           : 'EGP_EarlyGame',
+                        text            : 'Establishing Phase (Tier 1 & 2)'
+                    },
+                    {
+                        value           : 'EGP_MidGame',
+                        text            : 'Development Phase (Tier 3 & 4)'
+                    },
+                    {
+                        value           : 'EGP_LateGame',
+                        text            : 'Expansion Phase (Tier 5 & 6)'
+                    },
+                    {
+                        value           : 'EGP_EndGame',
+                        text            : 'Retention Phase (Tier 7)'
+                    }]
                 }],
-                callback: function(values)
+                callback    : function(values)
                 {
                     if(values === null)
                     {

@@ -1778,14 +1778,17 @@ export default class BaseLayout
         let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
 
-        bootbox.form({
+        Modal.form({
             title       : 'Pivot "' + buildingData.name + '" from the top-left corner',
             container   : '#leafletMap',
-            inputs: [
+            inputs      : [
                 {
-                    label: 'Angle (Between -180° and 180°)',
-                    name: 'angle',
-                    inputType: 'text'
+                    label       : 'Angle (Between -180° and 180°)',
+                    name        : 'angle',
+                    inputType   : 'number',
+                    min         : -180,
+                    max         : 180,
+                    value       : 0,
                 }
             ],
             callback: function(form)
@@ -1889,49 +1892,55 @@ export default class BaseLayout
 
         this.pauseMap();
 
-        bootbox.form({
+        Modal.form({
             title       : "Position",
             message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
             container   : '#leafletMap',
-            inputs: [
+            inputs      : [
                 {
-                    label: 'X',
-                    name: 'x',
-                    inputType: 'text',
-                    value: currentObject.transform.translation[0]
+                    label       : 'X',
+                    name        : 'x',
+                    inputType   : 'coordinate',
+                    value       : currentObject.transform.translation[0]
                 },
                 {
-                    label: 'Y',
-                    name: 'y',
-                    inputType: 'text',
-                    value: currentObject.transform.translation[1]
+                    label       : 'Y',
+                    name        : 'y',
+                    inputType   : 'coordinate',
+                    value       : currentObject.transform.translation[1]
                 },
                 {
-                    label: 'Z',
-                    name: 'z',
-                    inputType: 'text',
-                    value: currentObject.transform.translation[2]
+                    label       : 'Z',
+                    name        : 'z',
+                    inputType   : 'coordinate',
+                    value       : currentObject.transform.translation[2]
                 },
                 {
-                    label: 'Pitch (Angle between 0 and 360 degrees)',
-                    name: 'pitch',
-                    inputType: 'text',
-                    value: Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.pitch) * 1000) / 1000
+                    label       : 'Pitch (Angle between 0 and 360 degrees)',
+                    name        : 'pitch',
+                    inputType   : 'number',
+                    min         : 0,
+                    max         : 360,
+                    value       : Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.pitch) * 1000) / 1000
                 },
                 {
-                    label: 'Roll (Angle between -180 and 180 degrees)',
-                    name: 'roll',
-                    inputType: 'text',
-                    value: Math.round(BaseLayout_Math.normalizeEulerAxis(currentRotation.roll) * 1000) / 1000
+                    label       : 'Roll (Angle between -180 and 180 degrees)',
+                    name        : 'roll',
+                    inputType   : 'number',
+                    min         : -180,
+                    max         : 180,
+                    value       : Math.round(BaseLayout_Math.normalizeEulerAxis(currentRotation.roll) * 1000) / 1000
                 },
                 {
-                    label: 'Rotation (Angle between 0 and 360 degrees)',
-                    name: 'yaw',
-                    inputType: 'text',
-                    value: Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.yaw) * 1000) / 1000
+                    label       : 'Rotation (Angle between 0 and 360 degrees)',
+                    name        : 'yaw',
+                    inputType   : 'number',
+                    min         : 0,
+                    max         : 360,
+                    value       : Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.yaw) * 1000) / 1000
                 }
             ],
-            callback: function(form)
+            callback    : function(form)
             {
                 if(form === null || form.x === null || form.y === null || form.z === null || form.pitch === null || form.roll === null || form.yaw === null)
                 {
@@ -2004,17 +2013,17 @@ export default class BaseLayout
 
         this.pauseMap();
 
-        bootbox.form({
-            title: "Teleport player",
-            container: '#leafletMap',
-            inputs: [
+        Modal.form({
+            title       : "Teleport player",
+            container   : '#leafletMap',
+            inputs      : [
                 {
-                    name: 'playerPathName',
-                    inputType: 'select',
-                    inputOptions: selectOptions
+                    name            : 'playerPathName',
+                    inputType       : 'select',
+                    inputOptions    : selectOptions
                 }
             ],
-            callback: function(form)
+            callback    : function(form)
             {
                 if(form === null || form.playerPathName === null)
                 {
@@ -2022,24 +2031,22 @@ export default class BaseLayout
                     return;
                 }
 
-                let mOwnedPawn                                      = this.getObjectProperty(this.saveGameParser.getTargetObject(form.playerPathName), 'mOwnedPawn');
+                let mOwnedPawn = this.getObjectProperty(this.saveGameParser.getTargetObject(form.playerPathName), 'mOwnedPawn');
+                    if(mOwnedPawn !== null)
+                    {
+                        let currentPlayerPosition                           = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                            currentPlayerPosition.transform.translation     = JSON.parse(JSON.stringify(currentObject.transform.translation));
+                            currentPlayerPosition.transform.translation[2]  += 400;
 
-                if(mOwnedPawn !== null)
-                {
-                    let currentPlayerPosition                           = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-                        currentPlayerPosition.transform.translation     = JSON.parse(JSON.stringify(currentObject.transform.translation));
-                        currentPlayerPosition.transform.translation[2]  += 400;
-
-                    let currentPlayerMarker                             = this.getMarkerFromPathName(form.playerPathName, 'playerPositionLayer');
-                        currentPlayerMarker.setLatLng(this.satisfactoryMap.unproject(currentPlayerPosition.transform.translation));
-                }
-                else
-                {
-                    alert('Cannot teleport that player!');
-                }
+                        let currentPlayerMarker                             = this.getMarkerFromPathName(form.playerPathName, 'playerPositionLayer');
+                            currentPlayerMarker.setLatLng(this.satisfactoryMap.unproject(currentPlayerPosition.transform.translation));
+                    }
+                    else
+                    {
+                        Modal.alert('Cannot teleport that player!');
+                    }
 
                 this.unpauseMap();
-
                 return;
             }.bind(this)
         });
@@ -2053,7 +2060,7 @@ export default class BaseLayout
         let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
         let allFauna        = this.getFaunaDataFromClassName();
 
-        let inputOptions = [];
+        let inputOptions    = [];
             if(this.clipboard !== null && this.clipboard.originalLocationOnly === undefined)
             {
                 inputOptions.push({group: 'Clipboard', text: 'Paste ' + this.clipboard.data.length + ' items', value: 'paste'});
@@ -2092,32 +2099,32 @@ export default class BaseLayout
                 }
             }
 
-        bootbox.form({
-            title: 'Spawn around "' + buildingData.name + '"',
-            container: '#leafletMap',
-            inputs: [
+        Modal.form({
+            title       : 'Spawn around "' + buildingData.name + '"',
+            container   : '#leafletMap',
+            inputs      : [
                 {
-                    name: 'form',
-                    inputType: 'select',
-                    inputOptions: inputOptions
+                    name            : 'form',
+                    inputType       : 'select',
+                    inputOptions    : inputOptions
                 },
                 {
-                    label: 'Use materials from your containers? (Not suitable for pasting blueprints)',
-                    name: 'useOwnMaterials',
-                    inputType: 'select',
-                    inputOptions: [
+                    label           : 'Use materials from your containers? (Not suitable for pasting blueprints)',
+                    name            : 'useOwnMaterials',
+                    inputType       : 'select',
+                    inputOptions    : [
                         {
-                            text: 'Yes',
-                            value: '1'
+                            text        : 'Yes',
+                            value       : '1'
                         },
                         {
-                            text: 'No',
-                            value: '0'
+                            text        : 'No',
+                            value       : '0'
                         }
                     ]
                 }
             ],
-            callback: function(form)
+            callback    : function(form)
             {
                 if(form === null || form.form === null || form.useOwnMaterials === null)
                 {
@@ -2143,31 +2150,31 @@ export default class BaseLayout
                                     colorSlotOptions.push({text: 'Slot #' + (slotIndex + 1), value: slotIndex});
                                 }
 
-                            bootbox.form({
-                                title: "Offset clipboard center",
-                                message: "Most of the time, the clipboard calculate the center of your selection correctly. If not you can use the offset to move it.",
-                                container: '#leafletMap',
-                                inputs: [
+                            Modal.form({
+                                title       : "Offset clipboard center",
+                                message     : "Most of the time, the clipboard calculate the center of your selection correctly. If not you can use the offset to move it.",
+                                container   : '#leafletMap',
+                                inputs      : [
                                     {
-                                        label: 'X offset',
-                                        name: 'xOffset',
-                                        inputType: 'text',
-                                        value: 0
+                                        label           : 'X offset',
+                                        name            : 'xOffset',
+                                        inputType       : 'coordinate',
+                                        value           : 0
                                     },
                                     {
-                                        label: 'Y offset',
-                                        name: 'yOffset',
-                                        inputType: 'text',
-                                        value: 0
+                                        label           : 'Y offset',
+                                        name            : 'yOffset',
+                                        inputType       : 'coordinate',
+                                        value           : 0
                                     },
                                     {
-                                        label: 'Colored foundation helper',
-                                        name: 'colorSlotHelper',
-                                        inputType: 'select',
-                                        inputOptions: colorSlotOptions
+                                        label           : 'Colored foundation helper',
+                                        name            : 'colorSlotHelper',
+                                        inputType       : 'select',
+                                        inputOptions    : colorSlotOptions
                                     }
                                 ],
-                                callback: function(values)
+                                callback    : function(values)
                                 {
                                     if(values === null || values.xOffset === null || values.yOffset === null || values.colorSlotHelper === null)
                                     {
@@ -2189,29 +2196,36 @@ export default class BaseLayout
                         case 'hollowCirle':
                             let circleOptions = [];
                                 circleOptions.push({
-                                    label: 'Outer radius <em class="small">(Between 3 and 256)</em>',
-                                    name: 'maxRadius',
-                                    inputType: 'number',
-                                    value: 6
+                                    label       : 'Outer radius <em class="small">(Between 3 and 256)</em>',
+                                    name        : 'maxRadius',
+                                    inputType   : 'number',
+                                    value       : 6,
+                                    min         : 3,
+                                    max         : 256
                                 });
 
                             if(form.form === 'hollowCirle')
                             {
                                 circleOptions.push({
-                                    label: 'Inner radius <em class="small">(Between 3 and 255)</em>',
-                                    name: 'minRadius',
-                                    inputType: 'number'
+                                    label       : 'Inner radius <em class="small">(Between 3 and 255)</em>',
+                                    name        : 'minRadius',
+                                    inputType   : 'number',
+                                    value       : 6,
+                                    min         : 3,
+                                    max         : 255
                                 });
                             }
 
                             circleOptions.push({
-                                label: 'Arc angle <em class="small">(From 0 to 360°, clockwise)</em>',
-                                name: 'arcAngle',
-                                inputType: 'number',
-                                value: 360
+                                label       : 'Arc angle <em class="small">(From 0 to 360°, clockwise)</em>',
+                                name        : 'arcAngle',
+                                inputType   : 'number',
+                                value       : 360,
+                                min         : 0,
+                                max         : 360
                             });
 
-                            bootbox.form({
+                            Modal.form({
                                 title: "Circle options",
                                 container: '#leafletMap',
                                 inputs: circleOptions,
@@ -2250,38 +2264,43 @@ export default class BaseLayout
                         case 'corkScrew':
                             let corkScrewOptions = [];
                                 corkScrewOptions.push({
-                                    label: 'Outer radius <em class="small">(Between 3 and 256)</em>',
-                                    name: 'maxRadius',
-                                    inputType: 'number',
-                                    value: 6
+                                    label       : 'Outer radius <em class="small">(Between 3 and 256)</em>',
+                                    name        : 'maxRadius',
+                                    inputType   : 'number',
+                                    value       : 6,
+                                    min         : 3,
+                                    max         : 256
                                 });
                                 corkScrewOptions.push({
-                                    label: 'Inner radius <em class="small">(Between 3 and 255)</em>',
-                                    name: 'minRadius',
-                                    inputType: 'number',
-                                    value: 5
+                                    label       : 'Inner radius <em class="small">(Between 3 and 255)</em>',
+                                    name        : 'minRadius',
+                                    inputType   : 'number',
+                                    value       : 5,
+                                    min         : 3,
+                                    max         : 255
                                 });
                                 corkScrewOptions.push({
-                                    label: 'Height <em class="small">(Number of foundations)</em>',
-                                    name: 'height',
-                                    inputType: 'number',
-                                    value: 5
+                                    label       : 'Height <em class="small">(Number of foundations)</em>',
+                                    name        : 'height',
+                                    inputType   : 'number',
+                                    value       : 5,
+                                    min         : 5
                                 });
                                 corkScrewOptions.push({
-                                    label: 'Direction',
-                                    name: 'direction',
-                                    inputType: 'select',
-                                    inputOptions: [
+                                    label           : 'Direction',
+                                    name            : 'direction',
+                                    inputType       : 'select',
+                                    inputOptions    : [
                                         {text: 'Up', value: 'UP'},
                                         {text: 'Down', value: 'DOWN'}
                                     ]
                                 });
 
-                            bootbox.form({
-                                title: "Corkscrew options",
-                                container: '#leafletMap',
-                                inputs: corkScrewOptions,
-                                callback: function(values)
+                            Modal.form({
+                                title       : "Corkscrew options",
+                                container   : '#leafletMap',
+                                inputs      : corkScrewOptions,
+                                callback    : function(values)
                                 {
                                     if(values === null || values.maxRadius === null || values.minRadius === null || values.height === null || values.direction === null)
                                     {
@@ -2306,33 +2325,43 @@ export default class BaseLayout
                         case 'hollowRectangle':
                             let rectangleOptions = [];
                                 rectangleOptions.push({
-                                    label: 'Outer width <em class="small">(Between 3 and 65)</em>',
-                                    name: 'maxWidth',
-                                    inputType: 'number',
-                                    value: 6
+                                    label       : 'Outer width <em class="small">(Between 3 and 65)</em>',
+                                    name        : 'maxWidth',
+                                    inputType   : 'number',
+                                    value       : 6,
+                                    min         : 3,
+                                    max         : 65
                                 });
                                 rectangleOptions.push({
-                                    label: 'Outer length <em class="small">(Between 3 and 65)</em>',
-                                    name: 'maxHeight',
-                                    inputType: 'number',
-                                    value: 6
+                                    label       : 'Outer length <em class="small">(Between 3 and 65)</em>',
+                                    name        : 'maxHeight',
+                                    inputType   : 'number',
+                                    value       : 6,
+                                    min         : 3,
+                                    max         : 65
                                 });
 
                             if(form.form === 'hollowRectangle')
                             {
                                 rectangleOptions.push({
-                                    label: 'Inner width <em class="small">(Between 3 and 63)</em>',
-                                    name: 'minWidth',
-                                    inputType: 'number'
+                                    label       : 'Inner width <em class="small">(Between 3 and 63)</em>',
+                                    name        : 'minWidth',
+                                    inputType   : 'number',
+                                    value       : 3,
+                                    min         : 3,
+                                    max         : 63
                                 });
                                 rectangleOptions.push({
-                                    label: 'Inner length <em class="small">(Between 3 and 63)</em>',
-                                    name: 'minHeight',
-                                    inputType: 'number'
+                                    label       : 'Inner length <em class="small">(Between 3 and 63)</em>',
+                                    name        : 'minHeight',
+                                    inputType   : 'number',
+                                    value       : 3,
+                                    min         : 3,
+                                    max         : 63
                                 });
                             }
 
-                            bootbox.form({
+                            Modal.form({
                                 title: "Rectangle options",
                                 container: '#leafletMap',
                                 inputs: rectangleOptions,
@@ -2386,49 +2415,54 @@ export default class BaseLayout
                                 inputOptions.push({text: 'Dodecagon - 12 sides', value: 12});
 
                                 polygonOptions.push({
-                                    label: 'Number of sides',
-                                    name: 'numberOfSides',
-                                    inputType: 'select',
-                                    inputOptions: inputOptions,
-                                    value: 6
+                                    label           : 'Number of sides',
+                                    name            : 'numberOfSides',
+                                    inputType       : 'select',
+                                    inputOptions    : inputOptions,
+                                    value           : 6
                                 });
                                 polygonOptions.push({
-                                    label: 'Apothem length <em class="small">(Between 3 and 65)</em>',
-                                    name: 'maxSize',
-                                    inputType: 'number',
-                                    value: 6
+                                    label       : 'Apothem length <em class="small">(Between 3 and 65)</em>',
+                                    name        : 'maxSize',
+                                    inputType   : 'number',
+                                    value       : 6,
+                                    min         : 3,
+                                    max         : 65
                                 });
 
                                 if(form.form === 'hollowPolygon')
                                 {
                                     polygonOptions.push({
-                                        label: 'Inner apothem length <em class="small">(Between 3 and 63)</em>',
-                                        name: 'minSize',
-                                        inputType: 'number'
+                                        label       : 'Inner apothem length <em class="small">(Between 3 and 63)</em>',
+                                        name        : 'minSize',
+                                        inputType   : 'number',
+                                        value       : 3,
+                                        min         : 3,
+                                        max         : 63
                                     });
                                 }
 
                                 polygonOptions.push({
-                                    label: 'Minimize grid overlapping',
-                                    name: 'gridOverlapping',
-                                    inputType: 'select',
-                                    inputOptions: [
+                                    label           : 'Minimize grid overlapping',
+                                    name            : 'gridOverlapping',
+                                    inputType       : 'select',
+                                    inputOptions    : [
                                         {
-                                            text: 'Yes',
-                                            value: '1'
+                                            text        : 'Yes',
+                                            value       : '1'
                                         },
                                         {
-                                            text: 'No',
-                                            value: '0'
+                                            text        : 'No',
+                                            value       : '0'
                                         }
                                     ]
                                 });
 
-                            bootbox.form({
-                                title: "Polygon options",
-                                container: '#leafletMap',
-                                inputs: polygonOptions,
-                                callback: function(values)
+                            Modal.form({
+                                title       : "Polygon options",
+                                container   : '#leafletMap',
+                                inputs      : polygonOptions,
+                                callback    : function(values)
                                 {
                                     if(values === null || values.numberOfSides === null || values.minSize === null || values.maxSize === null || values.gridOverlapping === null)
                                     {
@@ -2457,21 +2491,27 @@ export default class BaseLayout
                         case 'road':
                             let roadOptions = [];
                                 roadOptions.push({
-                                    label: 'Width <em class="small">(Between 1 and 65)</em>',
-                                    name: 'maxWidth',
-                                    inputType: 'number'
+                                    label       : 'Width <em class="small">(Between 1 and 65)</em>',
+                                    name        : 'maxWidth',
+                                    inputType   : 'number',
+                                    value       : 2,
+                                    min         : 1,
+                                    max         : 65
                                 });
                                 roadOptions.push({
                                     label: 'Length <em class="small">(Between 1 and 65)</em>',
                                     name: 'maxHeight',
-                                    inputType: 'number'
+                                    inputType: 'number',
+                                    value       : 16,
+                                    min         : 1,
+                                    max         : 65
                                 });
 
-                            bootbox.form({
-                                title: "Road options",
-                                container: '#leafletMap',
-                                inputs: roadOptions,
-                                callback: function(values)
+                            Modal.form({
+                                title       : "Road options",
+                                container   : '#leafletMap',
+                                inputs      : roadOptions,
+                                callback    : function(values)
                                 {
                                     if(values === null || values.maxWidth === null || values.maxHeight === null)
                                     {
@@ -2726,16 +2766,15 @@ export default class BaseLayout
         let selectOptions       = this.generateInventoryOptions(false);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
 
-        bootbox.form({
-            title: 'Fill "<strong>' + buildingData.name + '</strong>" Inventory',
-            container: '#leafletMap',
-            inputs: [{
-                name: 'fillWith',
-                inputType: 'select',
-                inputOptions: selectOptions,
-                class: 'selectpicker'
+        Modal.form({
+            title       : 'Fill "<strong>' + buildingData.name + '</strong>" Inventory',
+            container   : '#leafletMap',
+            inputs      : [{
+                name            : 'fillWith',
+                inputType       : 'selectPicker',
+                inputOptions    : selectOptions
             }],
-            callback: function(values)
+            callback    : function(values)
             {
                 if(values === null)
                 {
@@ -3261,18 +3300,18 @@ export default class BaseLayout
 
         this.pauseMap();
 
-        bootbox.form({
+        Modal.form({
             title       : 'Update "' + buildingData.name + '" recipe',
             container   : '#leafletMap',
-            inputs: [
+            inputs      : [
                 {
-                    name: 'recipe',
-                    inputType: 'select',
-                    inputOptions: selectOptions,
-                    value: ((mCurrentRecipe !== null) ? mCurrentRecipe.pathName : 'NULL')
+                    name            : 'recipe',
+                    inputType       : 'select',
+                    inputOptions    : selectOptions,
+                    value           : ((mCurrentRecipe !== null) ? mCurrentRecipe.pathName : 'NULL')
                 }
             ],
-            callback: function(form)
+            callback    : function(form)
             {
                 if(form === null || form.recipe === null)
                 {
@@ -5370,32 +5409,34 @@ export default class BaseLayout
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
 
-        bootbox.form({
-            title: 'Update "<strong>' + buildingData.name + '</strong>" clock speed',
-            container: '#leafletMap',
-            inputs: [
+        Modal.form({
+            title       : 'Update "<strong>' + buildingData.name + '</strong>" clock speed',
+            container   : '#leafletMap',
+            inputs      : [
                 {
-                    name: 'clockSpeed',
-                    inputType: 'number',
-                    value: this.getClockSpeed(currentObject) * 100
+                    name        : 'clockSpeed',
+                    inputType   : 'number',
+                    value       : this.getClockSpeed(currentObject) * 100,
+                    min         : 1,
+                    max         : 250
                 },
                 {
-                    label: 'Use power shards from your containers?',
-                    name: 'useOwnPowershards',
-                    inputType: 'select',
-                    inputOptions: [
+                    label       : 'Use power shards from your containers?',
+                    name        : 'useOwnPowershards',
+                    inputType   : 'select',
+                    inputOptions    : [
                         {
-                            text: 'Yes',
-                            value: '1'
+                            text    : 'Yes',
+                            value   : '1'
                         },
                         {
-                            text: 'No',
-                            value: '0'
+                            text    : 'No',
+                            value   : '0'
                         }
                     ]
                 }
             ],
-            callback: function(form)
+            callback    : function(form)
             {
                 if(form === null || form.clockSpeed === null || form.useOwnPowershards === null)
                 {
@@ -6800,18 +6841,17 @@ export default class BaseLayout
             inputOptions.push({group: 'Statistics', text: 'Show selected items storage statistics', value: 'storageStatistics'});
             inputOptions.push({group: 'Statistics', text: 'Show selected items power statistics', value: 'powerStatistics'});
 
-        bootbox.form({
+        Modal.form({
             title       : 'You have selected ' + selectedMarkersLength + ' items',
             message     : message,
             onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-            backdrop: false,
-            container: '#leafletMap',
-            inputs: [{
-                name: 'form',
-                inputType: 'select',
-                inputOptions: inputOptions
+            container   : '#leafletMap',
+            inputs      : [{
+                name            : 'form',
+                inputType       : 'select',
+                inputOptions    : inputOptions
             }],
-            callback: function(form)
+            callback    : function(form)
             {
                 if(form === null || form.form === null)
                 {
@@ -6826,11 +6866,8 @@ export default class BaseLayout
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
                             message     : 'Do you want a doggy bag with your mass-dismantling?<br /><em>(You\'ll just get a nice loot crate next to you)</em>',
                             container   : '#leafletMap',
-                            buttons: {
-                                confirm: {label: 'Yes'},
-                                cancel: {label: 'No'}
-                            },
-                            callback: function(result){
+                            buttons     : { confirm: {label: 'Yes'}, cancel: {label: 'No'} },
+                            callback    : function(result){
                                 return new BaseLayout_Selection_Delete({
                                     baseLayout      : this,
                                     markersSelected : this.markersSelected,
@@ -6845,7 +6882,7 @@ export default class BaseLayout
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
                             message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
                             onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container: '#leafletMap',
+                            container   : '#leafletMap',
                             inputs: [{
                                 label: 'X',
                                 name: 'offsetX',
@@ -6884,17 +6921,19 @@ export default class BaseLayout
                         return;
 
                     case 'rotate':
-                        bootbox.form({
+                        Modal.form({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
                             onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container: '#leafletMap',
-                            inputs: [{
-                                label: 'Rotation (Angle between 0 and 360 degrees)',
-                                name: 'angle',
-                                inputType: 'text',
-                                value: 0
+                            container   : '#leafletMap',
+                            inputs      : [{
+                                label       : 'Rotation (Angle between 0 and 360 degrees)',
+                                name        : 'angle',
+                                inputType   : 'number',
+                                value       : 0,
+                                min         : 0,
+                                max         : 360
                             }],
-                            callback: function(form)
+                            callback    : function(form)
                             {
                                 if(form === null || form.angle === null)
                                 {
@@ -6918,10 +6957,10 @@ export default class BaseLayout
                         for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.totalColorSlots; slotIndex++)
                         {
                             selectOptionsColors.push({
-                                primaryColor: 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
-                                secondaryColor: 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
-                                value: slotIndex,
-                                text: (slotIndex + 1)
+                                primaryColor    : 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
+                                secondaryColor  : 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
+                                value           : slotIndex,
+                                text            : (slotIndex + 1)
                             });
                         }
 
@@ -6954,10 +6993,10 @@ export default class BaseLayout
                         for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.totalColorSlots; slotIndex++)
                         {
                             selectOptions.push({
-                                primaryColor: 'rgb(' + playerColorsHelpers[slotIndex].primaryColor.r + ', ' + playerColorsHelpers[slotIndex].primaryColor.g + ', ' + playerColorsHelpers[slotIndex].primaryColor.b + ')',
-                                secondaryColor: 'rgb(' + playerColorsHelpers[slotIndex].secondaryColor.r + ', ' + playerColorsHelpers[slotIndex].secondaryColor.g + ', ' + playerColorsHelpers[slotIndex].secondaryColor.b + ')',
-                                value: slotIndex,
-                                text: (slotIndex + 1)
+                                primaryColor    : 'rgb(' + playerColorsHelpers[slotIndex].primaryColor.r + ', ' + playerColorsHelpers[slotIndex].primaryColor.g + ', ' + playerColorsHelpers[slotIndex].primaryColor.b + ')',
+                                secondaryColor  : 'rgb(' + playerColorsHelpers[slotIndex].secondaryColor.r + ', ' + playerColorsHelpers[slotIndex].secondaryColor.g + ', ' + playerColorsHelpers[slotIndex].secondaryColor.b + ')',
+                                value           : slotIndex,
+                                text            : (slotIndex + 1)
                             });
                         }
 
@@ -6999,16 +7038,18 @@ export default class BaseLayout
                         return this.upgradePowerPolesSelection();
 
                     case 'updateClockSpeed':
-                        bootbox.form({
+                        Modal.form({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
                             onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container: '#leafletMap',
-                            inputs: [
+                            container   : '#leafletMap',
+                            inputs      : [
                                 {
-                                    label: 'Offset clock speed (Percentage)',
-                                    name: 'offset',
-                                    inputType: 'text',
-                                    value: 0
+                                    label       : 'Offset clock speed (Percentage)',
+                                    name        : 'offset',
+                                    inputType   : 'number',
+                                    value       : 0,
+                                    min         : 0,
+                                    max         : 250
                                 },
                                 {
                                     label: 'Use power shards from your containers?',
@@ -7016,12 +7057,12 @@ export default class BaseLayout
                                     inputType: 'select',
                                     inputOptions: [
                                         {
-                                            text: 'Yes',
-                                            value: '1'
+                                            text    : 'Yes',
+                                            value   : '1'
                                         },
                                         {
-                                            text: 'No',
-                                            value: '0'
+                                            text    : 'No',
+                                            value   : '0'
                                         }
                                     ]
                                 }
