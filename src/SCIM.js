@@ -1,6 +1,8 @@
-import Map from './Map.js';
-import SaveParser from './SaveParser.js';
-import BaseLayout from './BaseLayout.js';
+import Map                                      from './Map.js';
+import SaveParser                               from './SaveParser.js';
+import BaseLayout                               from './BaseLayout.js';
+
+import Modal                                    from './Modal.js';
 
 export default class SCIM
 {
@@ -162,19 +164,13 @@ export default class SCIM
 
     checkVersion(currentVersion)
     {
+        let alertMessage = "Good news, a new version of the interactive map was released! Please refresh your page / browser cache to make sure you'll get the latest fixes and features.";
+
         if(currentVersion !== undefined && currentVersion !== null)
         {
             if(currentVersion > this.scriptsVERSION)
             {
-                if($.fn.modal)
-                {
-                    $('#newMapRelease').modal({backdrop: 'static', keyboard: false});
-                }
-                else
-                {
-                    alert("Good news, a new version of the interactive map was released! Please refresh your page / browser cache to make sure you'll get the latest fixes and features.");
-                }
-
+                Modal.alert(alertMessage);
                 return false;
             }
         }
@@ -185,15 +181,7 @@ export default class SCIM
                 $.get(this.urlScriptsVERSION, function(data){
                     if(data > this.scriptsVERSION)
                     {
-                        if($.fn.modal)
-                        {
-                            $('#newMapRelease').modal({backdrop: 'static', keyboard: false});
-                        }
-                        else
-                        {
-                            alert("Good news, a new version of the interactive map was released! Please refresh your page / browser cache to make sure you'll get the latest fixes and features.");
-                        }
-
+                        Modal.alert(alertMessage);
                         clearInterval(this.intervalScriptsVERSION);
                         return false;
                     }

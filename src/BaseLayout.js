@@ -1,4 +1,4 @@
-/* global L, Promise, bootbox, Infinity, Intl, Sentry */
+/* global L, Promise, Infinity, Intl, Sentry */
 
 import BaseLayout_Spawn_Circle                  from './BaseLayout/SpawnCircle.js';
 //import BaseLayout_Spawn_CorkScrew               from './BaseLayout/SpawnCorkScrew.js';
@@ -25,6 +25,7 @@ import BaseLayout_Statistics_Power              from './BaseLayout/StatisticsPow
 import BaseLayout_Statistics_Collectables       from './BaseLayout/StatisticsCollectables.js';
 import BaseLayout_Statistics_Schematics         from './BaseLayout/StatisticsSchematics.js';
 
+import Modal                                    from './Modal.js';
 import Modal_Buildings                          from './Modal/Buildings.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
@@ -1779,8 +1780,7 @@ export default class BaseLayout
 
         bootbox.form({
             title       : 'Pivot "' + buildingData.name + '" from the top-left corner',
-            container   : '#leafletMap', backdrop: false,
-            centerVertical: true,
+            container   : '#leafletMap',
             inputs: [
                 {
                     label: 'Angle (Between -180° and 180°)',
@@ -1892,8 +1892,7 @@ export default class BaseLayout
         bootbox.form({
             title       : "Position",
             message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
-            container   : '#leafletMap', backdrop: false,
-            centerVertical: true,
+            container   : '#leafletMap',
             inputs: [
                 {
                     label: 'X',
@@ -2007,8 +2006,7 @@ export default class BaseLayout
 
         bootbox.form({
             title: "Teleport player",
-            container: '#leafletMap', backdrop: false,
-            centerVertical: true,
+            container: '#leafletMap',
             inputs: [
                 {
                     name: 'playerPathName',
@@ -2096,8 +2094,7 @@ export default class BaseLayout
 
         bootbox.form({
             title: 'Spawn around "' + buildingData.name + '"',
-            container: '#leafletMap', backdrop: false,
-            centerVertical: true,
+            container: '#leafletMap',
             inputs: [
                 {
                     name: 'form',
@@ -2149,8 +2146,7 @@ export default class BaseLayout
                             bootbox.form({
                                 title: "Offset clipboard center",
                                 message: "Most of the time, the clipboard calculate the center of your selection correctly. If not you can use the offset to move it.",
-                                container: '#leafletMap', backdrop: false,
-                                centerVertical: true,
+                                container: '#leafletMap',
                                 inputs: [
                                     {
                                         label: 'X offset',
@@ -2217,8 +2213,7 @@ export default class BaseLayout
 
                             bootbox.form({
                                 title: "Circle options",
-                                container: '#leafletMap', backdrop: false,
-                                centerVertical: true,
+                                container: '#leafletMap',
                                 inputs: circleOptions,
                                 callback: function(values)
                                 {
@@ -2284,8 +2279,7 @@ export default class BaseLayout
 
                             bootbox.form({
                                 title: "Corkscrew options",
-                                container: '#leafletMap', backdrop: false,
-                                centerVertical: true,
+                                container: '#leafletMap',
                                 inputs: corkScrewOptions,
                                 callback: function(values)
                                 {
@@ -2340,8 +2334,7 @@ export default class BaseLayout
 
                             bootbox.form({
                                 title: "Rectangle options",
-                                container: '#leafletMap', backdrop: false,
-                                centerVertical: true,
+                                container: '#leafletMap',
                                 inputs: rectangleOptions,
                                 callback: function(values)
                                 {
@@ -2433,8 +2426,7 @@ export default class BaseLayout
 
                             bootbox.form({
                                 title: "Polygon options",
-                                container: '#leafletMap', backdrop: false,
-                                centerVertical: true,
+                                container: '#leafletMap',
                                 inputs: polygonOptions,
                                 callback: function(values)
                                 {
@@ -2477,8 +2469,7 @@ export default class BaseLayout
 
                             bootbox.form({
                                 title: "Road options",
-                                container: '#leafletMap', backdrop: false,
-                                centerVertical: true,
+                                container: '#leafletMap',
                                 inputs: roadOptions,
                                 callback: function(values)
                                 {
@@ -2570,8 +2561,7 @@ export default class BaseLayout
                             bootbox.form({
                                 title: "Pipe text options",
                                 message: '<div class="alert alert-danger text-center">Work in progress...</div>',
-                                container: '#leafletMap', backdrop: false,
-                                centerVertical: true,
+                                container: '#leafletMap',
                                 inputs: pipeTextOptions,
                                 callback: function(values)
                                 {
@@ -2670,9 +2660,7 @@ export default class BaseLayout
 
         bootbox.form({
             title: '"<strong>' + buildingData.name + '</strong>" Inventory',
-            //container: '#leafletMap', backdrop: false,
-            centerVertical: true,
-            scrollable: true,
+            //container: '#leafletMap',
             inputs: inventoryOptions,
             callback: function(values)
             {
@@ -2711,7 +2699,7 @@ export default class BaseLayout
                                     if(this.ficsitRadioactiveAlert === undefined)
                                     {
                                         this.ficsitRadioactiveAlert = true;
-                                        bootbox.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
+                                        Modal.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
                                     }
                                 }
                             }
@@ -2740,9 +2728,7 @@ export default class BaseLayout
 
         bootbox.form({
             title: 'Fill "<strong>' + buildingData.name + '</strong>" Inventory',
-            container: '#leafletMap', backdrop: false,
-            centerVertical: true,
-            scrollable: true,
+            container: '#leafletMap',
             inputs: [{
                 name: 'fillWith',
                 inputType: 'select',
@@ -2781,7 +2767,7 @@ export default class BaseLayout
                                     if(this.ficsitRadioactiveAlert === undefined)
                                     {
                                         this.ficsitRadioactiveAlert = true;
-                                        bootbox.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
+                                        Modal.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
                                     }
                                 }
                             }
@@ -3277,8 +3263,7 @@ export default class BaseLayout
 
         bootbox.form({
             title       : 'Update "' + buildingData.name + '" recipe',
-            container   : '#leafletMap', backdrop: false,
-            centerVertical: true,
+            container   : '#leafletMap',
             inputs: [
                 {
                     name: 'recipe',
@@ -5387,8 +5372,7 @@ export default class BaseLayout
 
         bootbox.form({
             title: 'Update "<strong>' + buildingData.name + '</strong>" clock speed',
-            container: '#leafletMap', backdrop: false,
-            centerVertical: true,
+            container: '#leafletMap',
             inputs: [
                 {
                     name: 'clockSpeed',
@@ -5945,9 +5929,7 @@ export default class BaseLayout
 
         bootbox.form({
             title: 'Update "<strong>' + buildingData.name + '</strong>" color slot',
-            container: '#leafletMap', backdrop: false,
-            centerVertical: true,
-            scrollable: true,
+            container: '#leafletMap',
             inputs: [{
                 name: 'slotIndex',
                 inputType: 'select',
@@ -6822,8 +6804,8 @@ export default class BaseLayout
             title       : 'You have selected ' + selectedMarkersLength + ' items',
             message     : message,
             onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-            container: '#leafletMap', backdrop: false,
-            centerVertical: true,
+            backdrop: false,
+            container: '#leafletMap',
             inputs: [{
                 name: 'form',
                 inputType: 'select',
@@ -6840,22 +6822,13 @@ export default class BaseLayout
                 switch(form.form)
                 {
                     case 'delete':
-                        bootbox.confirm({
+                        Modal.confirm({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
                             message     : 'Do you want a doggy bag with your mass-dismantling?<br /><em>(You\'ll just get a nice loot crate next to you)</em>',
-                            onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container   : '#leafletMap', backdrop: false,
-                            closeButton : false,
-                            centerVertical: true,
+                            container   : '#leafletMap',
                             buttons: {
-                                confirm: {
-                                    label: 'Yes',
-                                    className: 'btn-success'
-                                },
-                                cancel: {
-                                    label: 'No',
-                                    className: 'btn-danger'
-                                }
+                                confirm: {label: 'Yes'},
+                                cancel: {label: 'No'}
                             },
                             callback: function(result){
                                 return new BaseLayout_Selection_Delete({
@@ -6872,8 +6845,7 @@ export default class BaseLayout
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
                             message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
                             onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container: '#leafletMap', backdrop: false,
-                            centerVertical: true,
+                            container: '#leafletMap',
                             inputs: [{
                                 label: 'X',
                                 name: 'offsetX',
@@ -6915,8 +6887,7 @@ export default class BaseLayout
                         bootbox.form({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
                             onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container: '#leafletMap', backdrop: false,
-                            centerVertical: true,
+                            container: '#leafletMap',
                             inputs: [{
                                 label: 'Rotation (Angle between 0 and 360 degrees)',
                                 name: 'angle',
@@ -6956,9 +6927,7 @@ export default class BaseLayout
 
                         bootbox.form({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            container: '#leafletMap', backdrop: false,
-                            centerVertical: true,
-                            scrollable: true,
+                            container: '#leafletMap',
                             inputs: [{
                                 name: 'slotIndex',
                                 inputType: 'select',
@@ -6994,9 +6963,7 @@ export default class BaseLayout
 
                         bootbox.form({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            container: '#leafletMap', backdrop: false,
-                            centerVertical: true,
-                            scrollable: true,
+                            container: '#leafletMap',
                             inputs: [{
                                 name: 'slotIndex',
                                 inputType: 'select',
@@ -7035,8 +7002,7 @@ export default class BaseLayout
                         bootbox.form({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
                             onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container: '#leafletMap', backdrop: false,
-                            centerVertical: true,
+                            container: '#leafletMap',
                             inputs: [
                                 {
                                     label: 'Offset clock speed (Percentage)',

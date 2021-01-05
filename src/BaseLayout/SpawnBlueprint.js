@@ -1,5 +1,6 @@
-/* global bootbox, Infinity, gtag, L, streamSaver, pako */
-import BaseLayout_Math from '../BaseLayout/Math.js';
+/* global Infinity, gtag, L, streamSaver, pako */
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
+import Modal                                    from '../Modal.js';
 
 export default class BaseLayout_Spawn_Blueprint
 {
@@ -1063,7 +1064,7 @@ L.Control.ClipboardControl = L.Control.extend({
                                 this.options.baseLayout.clipboard = restored;
 
                                 $(this.options.pasteInPlaceButton).show();
-                                bootbox.alert('Imported ' + restored.data.length + ' items from the blueprint!');
+                                Modal.alert('Imported ' + restored.data.length + ' items from the blueprint!');
                             }
 
                             $('#clipboardControlModal').modal('hide');

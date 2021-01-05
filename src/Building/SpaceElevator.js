@@ -27,9 +27,7 @@ export default class Building_SpaceElevator
 
             bootbox.form({
                 title: 'Update "<strong>' + buildingData.name + '</strong>" phase',
-                container: '#leafletMap', backdrop: false,
-                centerVertical: true,
-                scrollable: true,
+                container: '#leafletMap',
                 inputs: [{
                     name: 'mGamePhase',
                     inputType: 'select',

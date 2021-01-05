@@ -1,5 +1,6 @@
-/* global bootbox, gtag */
-import BaseLayout_Math from './Math.js';
+/* global gtag */
+import BaseLayout_Math                          from './Math.js';
+import Modal                                    from '../Modal.js';
 
 export default class BaseLayout_Spawn_Circle
 {
@@ -74,7 +75,7 @@ export default class BaseLayout_Spawn_Circle
                             let result = this.baseLayout.removeFromStorage(this.centerObject);
                                 if(result === false)
                                 {
-                                    bootbox.alert("We could not find enough materials and stopped your construction!");
+                                    Modal.alert("We could not find enough materials and stopped your construction!");
                                     return this.release(); // Don't have materials, stop it...
                                 }
                         }
