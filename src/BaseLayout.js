@@ -2138,7 +2138,7 @@ export default class BaseLayout
                         case 'paste':
                             let colorSlotOptions = [];
                                 colorSlotOptions.push({text: 'No foundation helper', value: 'NONE'});
-                                for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots(); slotIndex++)
+                                for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.totalColorSlots; slotIndex++)
                                 {
                                     colorSlotOptions.push({text: 'Slot #' + (slotIndex + 1), value: slotIndex});
                                 }
@@ -5654,7 +5654,7 @@ export default class BaseLayout
 
         if(this.currentPlayerColors === null)
         {
-            let totalColorSlot                  = BaseLayout_Map_ColorSlots.getTotalColorSlots();
+            let totalColorSlot                  = BaseLayout_Map_ColorSlots.totalColorSlots;
             let playerColors                    = [];
             let buildableSubsystem              = this.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.BuildableSubsystem');
             let mColorSlotsPrimary_Linear       = null;
@@ -5884,7 +5884,7 @@ export default class BaseLayout
         let playerColors        = this.getColorSlots();
         let selectOptions       = [];
 
-        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots(); slotIndex++)
+        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.totalColorSlots; slotIndex++)
         {
             selectOptions.push({
                 primaryColor    : 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
@@ -5947,7 +5947,7 @@ export default class BaseLayout
                 let colorSlot       = this.getObjectProperty(currentObject, 'mColorSlot');
                 let newSlotIndex    = parseInt(values.slotIndex);
 
-                if(colorSlot === null && newSlotIndex > 0 && newSlotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots())
+                if(colorSlot === null && newSlotIndex > 0 && newSlotIndex < BaseLayout_Map_ColorSlots.totalColorSlots)
                 {
                     currentObject.properties.push({
                         index: 0,
@@ -6915,7 +6915,7 @@ export default class BaseLayout
                         let playerColors        = this.getColorSlots();
                         let selectOptionsColors = [];
 
-                        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots(); slotIndex++)
+                        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.totalColorSlots; slotIndex++)
                         {
                             selectOptionsColors.push({
                                 primaryColor: 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
@@ -6951,7 +6951,7 @@ export default class BaseLayout
                         let playerColorsHelpers = this.getColorSlots();
                         let selectOptions       = [];
 
-                        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots(); slotIndex++)
+                        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.totalColorSlots; slotIndex++)
                         {
                             selectOptions.push({
                                 primaryColor: 'rgb(' + playerColorsHelpers[slotIndex].primaryColor.r + ', ' + playerColorsHelpers[slotIndex].primaryColor.g + ', ' + playerColorsHelpers[slotIndex].primaryColor.b + ')',

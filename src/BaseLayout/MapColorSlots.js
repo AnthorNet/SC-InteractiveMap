@@ -3,7 +3,7 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 export default class BaseLayout_Map_ColorSlots
 {
-    static getTotalColorSlots(){ return 16; }
+    static get totalColorSlots(){ return 16; }
 
     constructor(options)
     {
@@ -17,7 +17,7 @@ export default class BaseLayout_Map_ColorSlots
         let html            = [];
         let playerColors    = this.baseLayout.getColorSlots(true);
 
-        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.getTotalColorSlots(); slotIndex++)
+        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.totalColorSlots; slotIndex++)
         {
             if(slotIndex % 4 === 0)
             {

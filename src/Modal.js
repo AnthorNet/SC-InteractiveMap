@@ -1,27 +1,33 @@
 export default class Modal
 {
-    static defaultOptions = {
-        container   : 'body',
-        message     : '',
-        closeButton : true,
-        backdrop    : false
-    };
+    static get defaultOptions()
+    {
+        return {
+            container   : 'body',
+            message     : '',
+            closeButton : true,
+            backdrop    : false
+        };
+    }
 
-    static templates = {
-        modal       : '<div class="modal fade" tabindex="-1" role="dialog">' +
-                      '    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">' +
-                      '        <div class="modal-content">' +
-                      '            <div class="modal-body"></div>' +
-                      '        </div>' +
-                      '    </div>' +
-                      '</div>',
-        header      : '<div class="modal-header">' +
-                      '    <h5 class="modal-title"></h5>' +
-                      '</div>',
-        footer      : '<div class="modal-footer"></div>',
-        button      : '<button type="button" class="btn"></button>',
-        closeButton : '<button type="button" class="close">&times;</button>',
-    };
+    static get templates()
+    {
+        return {
+            modal       : '<div class="modal fade" tabindex="-1" role="dialog">' +
+                          '    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">' +
+                          '        <div class="modal-content">' +
+                          '            <div class="modal-body"></div>' +
+                          '        </div>' +
+                          '    </div>' +
+                          '</div>',
+            header      : '<div class="modal-header">' +
+                          '    <h5 class="modal-title"></h5>' +
+                          '</div>',
+            footer      : '<div class="modal-footer"></div>',
+            button      : '<button type="button" class="btn"></button>',
+            closeButton : '<button type="button" class="close">&times;</button>',
+        };
+    }
 
     static modal(options)
     {
@@ -185,6 +191,11 @@ export default class Modal
         };
 
         return Modal.modal(options);
+    }
+
+    static form(options)
+    {
+        
     }
 
     static processCallback(e, modalContent, callback)
