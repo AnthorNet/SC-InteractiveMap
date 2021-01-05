@@ -25,8 +25,8 @@ import BaseLayout_Statistics_Power              from './BaseLayout/StatisticsPow
 import BaseLayout_Statistics_Collectables       from './BaseLayout/StatisticsCollectables.js';
 import BaseLayout_Statistics_Schematics         from './BaseLayout/StatisticsSchematics.js';
 
-import BaseLayout_Modal_Buildings               from './BaseLayout/ModalBuildings.js';
-import BaseLayout_Modal_Trains                  from './BaseLayout/ModalTrains.js';
+import Modal_Buildings                          from './Modal/Buildings.js';
+import Modal_Trains                             from './Modal/Trains.js';
 
 import BaseLayout_Map_ColorSlots                from './BaseLayout/MapColorSlots.js';
 import BaseLayout_Map_Options                   from './BaseLayout/MapOptions.js';
@@ -1108,13 +1108,13 @@ export default class BaseLayout
                     mapOptions.parse();
             }.bind(this));
             $('#buildingsModal').on('show.bs.modal', function(){
-                let modalBuildings = new BaseLayout_Modal_Buildings({
+                let modalBuildings = new Modal_Buildings({
                         baseLayout      : this
                     });
                     modalBuildings.parse();
             }.bind(this));
             $('#trainsModal').on('show.bs.modal', function(){
-                let modalTrains = new BaseLayout_Modal_Trains({
+                let modalTrains = new Modal_Trains({
                         baseLayout      : this
                     });
                     modalTrains.parse();

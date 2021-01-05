@@ -1,5 +1,5 @@
 /* global gtag */
-export default class BaseLayout_Modal_Trains
+export default class Modal_Trains
 {
     constructor(options)
     {

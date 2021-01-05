@@ -1,5 +1,5 @@
 /* global gtag, Intl */
-export default class BaseLayout_Modal_Buildings
+export default class Modal_Buildings
 {
     constructor(options)
     {
