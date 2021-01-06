@@ -2534,52 +2534,52 @@ export default class BaseLayout
                         case 'pipeText':
                             let pipeTextOptions = [];
                                 pipeTextOptions.push({
-                                    label: 'Line 1',
-                                    name: 'line1',
-                                    inputType: 'text',
-                                    value: 'Default text'
+                                    label           : 'Line 1',
+                                    name            : 'line1',
+                                    inputType       : 'text',
+                                    value           : 'Default text'
                                 });
                                 pipeTextOptions.push({
-                                    label: 'Line 2',
-                                    name: 'line2',
-                                    inputType: 'text'
+                                    label           : 'Line 2',
+                                    name            : 'line2',
+                                    inputType       : 'text'
                                 });
                                 pipeTextOptions.push({
-                                    label: 'Line 3',
-                                    name: 'line3',
-                                    inputType: 'text'
+                                    label           : 'Line 3',
+                                    name            : 'line3',
+                                    inputType       : 'text'
                                 });
                                 pipeTextOptions.push({
-                                    label: 'Line 4',
-                                    name: 'line4',
-                                    inputType: 'text'
+                                    label           : 'Line 4',
+                                    name            : 'line4',
+                                    inputType       : 'text'
                                 });
                                 pipeTextOptions.push({
-                                    label: 'Line 5',
-                                    name: 'line5',
-                                    inputType: 'text'
+                                    label           : 'Line 5',
+                                    name            : 'line5',
+                                    inputType       : 'text'
                                 });
                                 pipeTextOptions.push({
-                                    label: 'Letter spacing',
-                                    name: 'letterSpacing',
-                                    inputType: 'number',
-                                    value: 100
+                                    label           : 'Letter spacing',
+                                    name            : 'letterSpacing',
+                                    inputType       : 'number',
+                                    value           : 100
                                 });
                                 pipeTextOptions.push({
-                                    label: 'Font',
-                                    name: 'font',
-                                    inputType: 'select',
-                                    inputOptions: [
+                                    label           : 'Font',
+                                    name            : 'font',
+                                    inputType       : 'select',
+                                    inputOptions    : [
                                         {text: 'Default font (By dontpokejosh)', value: 'dontpokejosh'},
                                         {text: 'Default font (By ShinoHarvest)', value: 'ShinoHarvest'}
                                     ],
                                     value: 'dontpokejosh'
                                 });
                                 pipeTextOptions.push({
-                                    label: 'Text alignment from foundation',
-                                    name: 'textAlign',
-                                    inputType: 'select',
-                                    inputOptions: [
+                                    label           : 'Text alignment from foundation',
+                                    name            : 'textAlign',
+                                    inputType       : 'select',
+                                    inputOptions    : [
                                         {text: 'Left', value: 'left'},
                                         {text: 'Center', value: 'center'},
                                         {text: 'Right', value: 'right'}
@@ -2587,10 +2587,10 @@ export default class BaseLayout
                                     value: 'center'
                                 });
                                 pipeTextOptions.push({
-                                    label: 'Depth alignment from foundation',
-                                    name: 'depthAlign',
-                                    inputType: 'select',
-                                    inputOptions: [
+                                    label           : 'Depth alignment from foundation',
+                                    name            : 'depthAlign',
+                                    inputType       : 'select',
+                                    inputOptions    : [
                                         {text: 'Foreground', value: 300},
                                         {text: 'Middle', value: 0},
                                         {text: 'Background', value: -300}
@@ -2598,12 +2598,12 @@ export default class BaseLayout
                                     value: 0
                                 });
 
-                            bootbox.form({
-                                title: "Pipe text options",
-                                message: '<div class="alert alert-danger text-center">Work in progress...</div>',
-                                container: '#leafletMap',
-                                inputs: pipeTextOptions,
-                                callback: function(values)
+                            Modal.form({
+                                title       : "Pipe text options",
+                                message     : '<div class="alert alert-danger text-center">Work in progress...</div>',
+                                container   : '#leafletMap',
+                                inputs      : pipeTextOptions,
+                                callback    : function(values)
                                 {
                                     if(values === null || values.line1 === null || values.line2 === null || values.line3 === null || values.line4 === null || values.line5 === null || values.font === null || values.letterSpacing === null || values.textAlign === null || values.depthAlign === null)
                                     {
@@ -2676,12 +2676,10 @@ export default class BaseLayout
         for(let i = 0; i < buildingData.maxSlot; i++)
         {
             let newInventorySlot = {
-                prependLabel: true,
-                label: '#' + (i + 1),
-                name: 'slot' + (i + 1),
-                inputType: 'select',
-                inputOptions: selectOptions,
-                class: 'selectpicker'
+                label           : '#' + (i + 1),
+                name            : 'slot' + (i + 1),
+                inputType       : 'inventoryItem',
+                inputOptions    : selectOptions
             };
 
             if(inventory[i] !== undefined && inventory[i] !== null)
@@ -2698,11 +2696,11 @@ export default class BaseLayout
             inventoryOptions.push(newInventorySlot);
         }
 
-        bootbox.form({
-            title: '"<strong>' + buildingData.name + '</strong>" Inventory',
-            //container: '#leafletMap',
-            inputs: inventoryOptions,
-            callback: function(values)
+        Modal.form({
+            title       : '"<strong>' + buildingData.name + '</strong>" Inventory',
+            container   : '#leafletMap',
+            inputs      : inventoryOptions,
+            callback    : function(values)
             {
                 if(values === null)
                 {
@@ -5968,17 +5966,16 @@ export default class BaseLayout
                 }
         }
 
-        bootbox.form({
-            title: 'Update "<strong>' + buildingData.name + '</strong>" color slot',
-            container: '#leafletMap',
-            inputs: [{
-                name: 'slotIndex',
-                inputType: 'select',
-                inputOptions: selectOptions,
-                replaceWith: 'colorSlots',
-                value: slotIndex
+        Modal.form({
+            title       : 'Update "<strong>' + buildingData.name + '</strong>" color slot',
+            container   : '#leafletMap',
+            inputs      : [{
+                name            : 'slotIndex',
+                inputType       : 'colorSlots',
+                inputOptions    : selectOptions,
+                value           : slotIndex
             }],
-            callback: function(values)
+            callback    : function(values)
             {
                 if(values === null)
                 {
@@ -6878,28 +6875,28 @@ export default class BaseLayout
                         return;
 
                     case 'offset':
-                        bootbox.form({
+                        Modal.form({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
                             message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
                             onEscape    : this.cancelSelectMultipleMarkers.bind(this),
                             container   : '#leafletMap',
-                            inputs: [{
-                                label: 'X',
-                                name: 'offsetX',
-                                inputType: 'text',
-                                value: 0
+                            inputs      : [{
+                                label       : 'X',
+                                name        : 'offsetX',
+                                inputType   : 'coordinate',
+                                value       : 0
                             },
                             {
-                                label: 'Y',
-                                name: 'offsetY',
-                                inputType: 'text',
-                                value: 0
+                                label       : 'Y',
+                                name        : 'offsetY',
+                                inputType   : 'coordinate',
+                                value       : 0
                             },
                             {
-                                label: 'Z',
-                                name: 'offsetZ',
-                                inputType: 'text',
-                                value: 0
+                                label       : 'Z',
+                                name        : 'offsetZ',
+                                inputType   : 'coordinate',
+                                value       : 0
                             }],
                             callback: function(form)
                             {
@@ -6964,16 +6961,15 @@ export default class BaseLayout
                             });
                         }
 
-                        bootbox.form({
+                        Modal.form({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            container: '#leafletMap',
-                            inputs: [{
-                                name: 'slotIndex',
-                                inputType: 'select',
-                                inputOptions: selectOptionsColors,
-                                replaceWith: 'colorSlots'
+                            container   : '#leafletMap',
+                            inputs      : [{
+                                name            : 'slotIndex',
+                                inputType       : 'colorSlots',
+                                inputOptions    : selectOptionsColors
                             }],
-                            callback: function(form)
+                            callback    : function(form)
                             {
                                 if(form === null || form.slotIndex === null)
                                 {
@@ -7000,16 +6996,15 @@ export default class BaseLayout
                             });
                         }
 
-                        bootbox.form({
+                        Modal.form({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            container: '#leafletMap',
-                            inputs: [{
-                                name: 'slotIndex',
-                                inputType: 'select',
-                                inputOptions: selectOptions,
-                                replaceWith: 'colorSlots'
+                            container   : '#leafletMap',
+                            inputs      : [{
+                                name            : 'slotIndex',
+                                inputType       : 'colorSlots',
+                                inputOptions    : selectOptions
                             }],
-                            callback: function(form)
+                            callback    : function(form)
                             {
                                 if(form === null || form.slotIndex === null)
                                 {

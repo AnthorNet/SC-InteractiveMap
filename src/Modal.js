@@ -35,6 +35,8 @@ export default class Modal
                 text            : '<input class="form-control text-center" autocomplete="off" type="text" />',
                 select          : '<select class="form-control"></select>',
                 selectPicker    : '<select class="form-control selectpicker"></select>',
+                colorSlots      : '<select class="form-control"></select>',
+                inventoryItem   : '<select class="form-control selectpicker"></select>',
                 option          : '<option></option>',
             }
         };
@@ -224,48 +226,17 @@ export default class Modal
 
                         switch(input.inputType)
                         {
+                            case 'inventoryItem':
+                                values['QTY_' + input.name] = input.element.find('input[name=' + 'QTY_' + input.name + ']').val();
                             case 'select':
                             case 'selectPicker':
+                            case 'colorSlots':
+                            case 'inventoryItem':
                                 values[input.name] = input.element.find('select').val();
                                 break;
                             default:
                                 values[input.name] = input.element.find('input').val();
                         }
-                    /*
-                    if (inputs[i].options.inputType === 'checkbox') {
-                        values[inputs[i].options.name] = inputs[i].input.find('input:checked').map(function () {
-                            return $(this).val();
-                        }).get();
-                    }
-                    else if (inputs[i].options.inputType === 'radio') {
-                        values[inputs[i].options.name] = inputs[i].input.find('input:checked').val();
-                    }
-                    else {
-                        if (inputs[i].input[0].checkValidity && !inputs[i].input[0].checkValidity()) {
-                            // prevents button callback from being called
-                            return false;
-                        }
-                        else {
-                            if (inputs[i].options.inputType === 'select' && inputs[i].multiple === true) {
-                                values[inputs[i].options.name] = inputs[i].input.find('option:selected').map(function () {
-                                    return $(this).val();
-                                }).get();
-                            }
-                            else
-                            {
-                                if(inputs[i].options.inputType === 'select' && inputs[i].options.qty !== undefined)
-                                {
-                                    values['QTY_' + inputs[i].options.name] = inputs[i].input.find('input[name=' + 'QTY_' + inputs[i].options.name + ']').val();
-                                    values[inputs[i].options.name] = inputs[i].input.find('select').val();
-                                }
-                                else
-                                {
-                                    values[inputs[i].options.name] = inputs[i].input.val();
-                                }
-                            }
-                        }
-                    }
-                    */
                 }
 
             form.find('.selectpicker').selectpicker('destroy');
@@ -316,6 +287,8 @@ export default class Modal
             {
                 case 'select':
                 case 'selectPicker':
+                case 'colorSlots':
+                case 'inventoryItem':
                     let optionGroups = {};
                         $.each(options.inputOptions, function(_, option){
                             let element     = input;
@@ -358,60 +331,125 @@ export default class Modal
 
         // Add form group and label
         let group = $(Modal.templates.formGroup);
-            if(options.label !== undefined)
+            if(options.label !== undefined && options.inputType !== 'inventoryItem')
             {
                 group.prepend('<label>' + options.label + '</label>');
             }
 
-            if(options.inputType === 'coordinate')
+        // Custom fields
+        if(options.inputType === 'coordinate')
+        {
+            input = $('<div class="input-group"></div>').append(input);
+            input.prepend('<div class="input-group-prepend"><button class="btn btn-outline-secondary text-white" type="button">-8m</button><button class="btn btn-outline-secondary text-white" type="button">-4m</button><button class="btn btn-outline-secondary text-white" type="button">-1m</button></div>');
+            input.append('<div class="input-group-append"><button class="btn btn-outline-secondary text-white" type="button">+1m</button><button class="btn btn-outline-secondary text-white" type="button">+4m</button><button class="btn btn-outline-secondary text-white" type="button">+8m</button></div>');
+
+            input.find('.input-group-prepend > button:eq(0)').click(function(){
+                let clicked = input.find('input');
+                    clicked.val(parseFloat(clicked.val()) - 800);
+            });
+            input.find('.input-group-prepend > button:eq(1)').click(function(){
+                let clicked = input.find('input');
+                    clicked.val(parseFloat(clicked.val()) - 400);
+            });
+            input.find('.input-group-prepend > button:eq(2)').click(function(){
+                let clicked = input.find('input');
+                    clicked.val(parseFloat(clicked.val()) - 100);
+            });
+            input.find('.input-group-append > button:eq(0)').click(function(){
+                let clicked = input.find('input');
+                    clicked.val(parseFloat(clicked.val()) + 100);
+            });
+            input.find('.input-group-append > button:eq(1)').click(function(){
+                let clicked = input.find('input');
+                    clicked.val(parseFloat(clicked.val()) + 400);
+            });
+            input.find('.input-group-append > button:eq(2)').click(function(){
+                let clicked = input.find('input');
+                    clicked.val(parseFloat(clicked.val()) + 800);
+            });
+        }
+
+        if(options.inputType === 'number')
+        {
+            input = $('<div class="input-group"></div>').append(input);
+            input.prepend('<div class="input-group-prepend"><button class="btn btn-outline-secondary text-white" type="button">-</button></div>');
+            input.append('<div class="input-group-append"><button class="btn btn-outline-secondary text-white" type="button">+</button></div>');
+
+            input.find('.input-group-prepend > button').click(function(){
+                let clicked = input.find('input');
+                    clicked.val(Math.max(options.min, Math.min(options.max, parseInt(clicked.val()) - 1)));
+            });
+            input.find('.input-group-append > button').click(function(){
+                let clicked = input.find('input');
+                    clicked.val(Math.max(options.min, Math.min(options.max, parseInt(clicked.val()) + 1)));
+            });
+        }
+
+        if(options.inputType === 'colorSlots')
+        {
+            let html            = new Array();
+            let totalColorSlot  = options.inputOptions.length;
+
+            for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
             {
-                input = $('<div class="input-group"></div>').append(input);
-                input.prepend('<div class="input-group-prepend"><button class="btn btn-outline-secondary text-white" type="button">-8m</button><button class="btn btn-outline-secondary text-white" type="button">-4m</button><button class="btn btn-outline-secondary text-white" type="button">-1m</button></div>');
-                input.append('<div class="input-group-append"><button class="btn btn-outline-secondary text-white" type="button">+1m</button><button class="btn btn-outline-secondary text-white" type="button">+4m</button><button class="btn btn-outline-secondary text-white" type="button">+8m</button></div>');
+                if(slotIndex % 4 === 0) //slotIndex === 0 || slotIndex === 4 || slotIndex === 8 || slotIndex === 12)
+                {
+                    if(slotIndex > 0)
+                    {
+                        html.push('</div>');
+                    }
+                    html.push('<div class="d-flex flex-row justify-content-center">');
+                }
 
-                input.find('.input-group-prepend > button:eq(0)').click(function(){
-                    let clicked = input.find('input');
-                        clicked.val(parseFloat(clicked.val()) - 800);
-                });
-                input.find('.input-group-prepend > button:eq(1)').click(function(){
-                    let clicked = input.find('input');
-                        clicked.val(parseFloat(clicked.val()) - 400);
-                });
-                input.find('.input-group-prepend > button:eq(2)').click(function(){
-                    let clicked = input.find('input');
-                        clicked.val(parseFloat(clicked.val()) - 100);
-                });
-                input.find('.input-group-append > button:eq(0)').click(function(){
-                    let clicked = input.find('input');
-                        clicked.val(parseFloat(clicked.val()) + 100);
-                });
-                input.find('.input-group-append > button:eq(1)').click(function(){
-                    let clicked = input.find('input');
-                        clicked.val(parseFloat(clicked.val()) + 400);
-                });
-                input.find('.input-group-append > button:eq(2)').click(function(){
-                    let clicked = input.find('input');
-                        clicked.val(parseFloat(clicked.val()) + 800);
-                });
+                let backgroundStyle = 'background: linear-gradient(135deg, ' + options.inputOptions[slotIndex].primaryColor + ' 0%, ' + options.inputOptions[slotIndex].primaryColor + ' 50%, ' + options.inputOptions[slotIndex].secondaryColor + ' 51%, ' + options.inputOptions[slotIndex].secondaryColor + ' 100%);';
+                let borderStyle     = 'border: 1px solid #000000;';
+                let sizeStyle       = 'width: 96px;height: 96px;';
+
+                    if(slotIndex === options.value)
+                    {
+                        borderStyle     = 'border: 3px solid #FFFFFF;';
+                    }
+                    if(options.inputOptions[slotIndex].fullWidth !== undefined && options.inputOptions[slotIndex].fullWidth === true)
+                    {
+                        sizeStyle       = 'width: 396px;height: 48px;';
+                    }
+
+                    html.push('<div class="d-flex flex-row modal-selectColorSlot align-items-center" style="position: relative;' + backgroundStyle + sizeStyle + borderStyle + 'border-radius: 5px;margin: 2px;" data-slot="' + slotIndex + '">');
+                        html.push('<div class="w-100 text-center">');
+                            html.push('<strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">' + options.inputOptions[slotIndex].text + '</strong>');
+                        html.push('</div>');
+                    html.push('</div>');
             }
+            html.push('</div>');
 
-            if(options.inputType === 'number')
+            group.append(html.join(''));
+            input.hide();
+
+            group.find('.modal-selectColorSlot').click(function(){
+                group.find('.modal-selectColorSlot').css('border', '1px solid #000000');
+                $(this).css('border', '3px solid #FFFFFF');
+                let newSlotIndex = $(this).attr('data-slot');
+                    input.find('option[value="' + newSlotIndex + '"]').prop('selected', true);
+            });
+        }
+
+        if(options.inputType === 'inventoryItem')
+        {
+            input = $('<div class="input-group"></div>').append(input);
+            input.prepend('<div class="input-group-prepend"><span class="input-group-text text-center" style="width: 60px;display: inline-block;">' + options.label + '</span></div>');
+
+            if(options.qty !== undefined)
             {
-                input = $('<div class="input-group"></div>').append(input);
-                input.prepend('<div class="input-group-prepend"><button class="btn btn-outline-secondary text-white" type="button">-</button></div>');
-                input.append('<div class="input-group-append"><button class="btn btn-outline-secondary text-white" type="button">+</button></div>');
+                let qty = $(Modal.templates.input.text);
+                    qty.attr('name', 'QTY_' + options.name);
+                    qty.val(options.qty);
+                    qty.css('min-width', '80px').css('width', '80px').css('flex-grow', '0');
 
-                input.find('.input-group-prepend > button').click(function(){
-                    let clicked = input.find('input');
-                        clicked.val(Math.max(options.min, Math.min(options.max, parseInt(clicked.val()) - 1)));
-                });
-                input.find('.input-group-append > button').click(function(){
-                    let clicked = input.find('input');
-                        clicked.val(Math.max(options.min, Math.min(options.max, parseInt(clicked.val()) + 1)));
-                });
+                    input.find('.input-group-prepend').after(qty);
             }
+        }
 
-            return group.append(input);
+        return group.append(input);
     }
 
     static prepareButton(buttonKey, options)
