@@ -987,6 +987,10 @@ export default class SaveParser_Write
                     }
                 }
                 break;
+            case 255:
+                property += this.writeInt(currentProperty.valueType);
+                property += this.writeString(currentProperty.value);
+                break;
         }
 
         return property;

@@ -323,8 +323,8 @@ export default class SaveParser_Read
             {
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C':
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C':
-                    this.saveParser.objects[objectKey].extra       = {count: this.readInt(), game: []};
-                    let gameLength                      = this.readInt();
+                    this.saveParser.objects[objectKey].extra    = {count: this.readInt(), game: []};
+                    let gameLength                              = this.readInt();
 
                     for(let i = 0; i < gameLength; i++)
                     {
@@ -336,13 +336,13 @@ export default class SaveParser_Read
 
                     break;
                 case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                    let missingPlayerState          = (startByte + entityLength) - this.currentByte;
-                    this.saveParser.objects[objectKey].missing = this.readHex(missingPlayerState); //TODO: Not 0 here so bypass that special case, but why?
+                    let missingPlayerState                      = (startByte + entityLength) - this.currentByte;
+                    this.saveParser.objects[objectKey].missing  = this.readHex(missingPlayerState); //TODO: Not 0 here so bypass that special case, but why?
 
                     break;
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
-                    this.saveParser.objects[objectKey].extra   = {count: this.readInt(), circuits: []};
-                    let circuitsLength              = this.readInt();
+                    this.saveParser.objects[objectKey].extra    = {count: this.readInt(), circuits: []};
+                    let circuitsLength                          = this.readInt();
 
                         for(let i = 0; i < circuitsLength; i++)
                         {
@@ -356,7 +356,7 @@ export default class SaveParser_Read
                     break;
                 case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
                 case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
-                    this.saveParser.objects[objectKey].extra           = {
+                    this.saveParser.objects[objectKey].extra        = {
                         count               : this.readInt(),
                         sourceLevelName     : this.readString(),
                         sourcePathName      : this.readString(),
@@ -382,8 +382,8 @@ export default class SaveParser_Read
                 case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
-                    this.saveParser.objects[objectKey].extra   = {count: this.readInt(), objects: []};
-                    let objectLength                = this.readInt();
+                    this.saveParser.objects[objectKey].extra    = {count: this.readInt(), objects: []};
+                    let objectLength                            = this.readInt();
 
                     for(let i = 0; i < objectLength; i++)
                     {
@@ -396,20 +396,20 @@ export default class SaveParser_Read
                     break;
                 default:
                     let missingBytes = (startByte + entityLength) - this.currentByte;
-                    if(missingBytes > 4)
-                    {
-                        this.saveParser.objects[objectKey].missing = this.readHex(missingBytes); // TODO
+                        if(missingBytes > 4)
+                        {
+                            this.saveParser.objects[objectKey].missing = this.readHex(missingBytes); // TODO
 
-                        console.log(
-                            'MISSING ' + missingBytes + '  BYTES',
-                            this.saveParser.objects[objectKey].className,
-                            this.saveParser.objects[objectKey]
-                        );
-                    }
-                    else
-                    {
-                        this.skipBytes(4);
-                    }
+                            console.log(
+                                'MISSING ' + missingBytes + '  BYTES',
+                                this.saveParser.objects[objectKey].className,
+                                this.saveParser.objects[objectKey]
+                            );
+                        }
+                        else
+                        {
+                            this.skipBytes(4);
+                        }
 
                     break;
             }
@@ -1024,6 +1024,8 @@ export default class SaveParser_Read
                 }
                 break;
             case 255:
+                currentProperty.valueType       = this.readInt();
+                currentProperty.value           = this.readString();
                 break;
             default:
                 Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
