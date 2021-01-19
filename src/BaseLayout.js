@@ -29,6 +29,8 @@ import Modal                                    from './Modal.js';
 import Modal_Buildings                          from './Modal/Buildings.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
+import Building_Locomotive                      from './Building/Locomotive.js';
+
 import BaseLayout_Map_ColorSlots                from './BaseLayout/MapColorSlots.js';
 import BaseLayout_Map_Options                   from './BaseLayout/MapOptions.js';
 
@@ -722,7 +724,11 @@ export default class BaseLayout
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
             {
                 this.gameState.push(currentObject);
-                this.ownPlayerPath = currentObject.extra.game[0].pathName;
+
+                if(currentObject.extra.game.length > 0) // In case the player isn't correctly registered
+                {
+                    this.ownPlayerPath = currentObject.extra.game[0].pathName;
+                }
                 continue;
             }
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C')
@@ -2755,11 +2761,10 @@ export default class BaseLayout
     fillPlayerStorageBuildingInventory(marker, inventoryProperty = 'mStorageInventory')
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
-        {
-            inventoryProperty   = 'mInventory';
-        }
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
+            {
+                inventoryProperty   = 'mInventory';
+            }
 
         let selectOptions       = this.generateInventoryOptions(false);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
@@ -2779,39 +2784,47 @@ export default class BaseLayout
                     return;
                 }
 
-                let currentItem = this.getItemDataFromClassName(values.fillWith);
-                let stack       = (currentItem !== null && currentItem.stack !== undefined) ? currentItem.stack : 100;
-
-                let oldInventory = this.getObjectInventory(currentObject, inventoryProperty, true);
-
-                for(let i = 0; i < oldInventory.properties.length; i++)
-                {
-                    if(oldInventory.properties[i].name === 'mInventoryStacks')
+                let currentItem     = this.getItemDataFromClassName(values.fillWith);
+                let stack           = (currentItem !== null && currentItem.stack !== undefined) ? currentItem.stack : 100;
+                let storageObjects  = [currentObject];
+                    // Switch to freight wagon when locomotive was selected
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
                     {
-                        oldInventory = oldInventory.properties[i].value.values;
-
-                        for(let j = 0; j < buildingData.maxSlot; j++)
-                        {
-                            if(oldInventory[j] !== undefined)
-                            {
-                                if(oldInventory[j][0].value.itemName !== '/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C')
-                                {
-                                    oldInventory[j][0].value.itemName = values.fillWith;
-                                    this.setObjectProperty(oldInventory[j][0].value, 'NumItems', stack, 'IntProperty');
-                                }
-                                else
-                                {
-                                    if(this.ficsitRadioactiveAlert === undefined)
-                                    {
-                                        this.ficsitRadioactiveAlert = true;
-                                        Modal.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
-                                    }
-                                }
-                            }
-
-                        }
-                        break;
+                        storageObjects      = Building_Locomotive.getFreightWagons(this, currentObject);
                     }
+
+                for(let i = 0; i < storageObjects.length; i++)
+                {
+                    let oldInventory = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
+                        for(let j = 0; j < oldInventory.properties.length; j++)
+                        {
+                            if(oldInventory.properties[j].name === 'mInventoryStacks')
+                            {
+                                oldInventory = oldInventory.properties[j].value.values;
+
+                                for(let k = 0; k < buildingData.maxSlot; k++)
+                                {
+                                    if(oldInventory[k] !== undefined)
+                                    {
+                                        if(oldInventory[k][0].value.itemName !== '/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C')
+                                        {
+                                            oldInventory[k][0].value.itemName = values.fillWith;
+                                            this.setObjectProperty(oldInventory[k][0].value, 'NumItems', stack, 'IntProperty');
+                                        }
+                                        else
+                                        {
+                                            if(this.ficsitRadioactiveAlert === undefined)
+                                            {
+                                                this.ficsitRadioactiveAlert = true;
+                                                Modal.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
+                                            }
+                                        }
+                                    }
+
+                                }
+                                break;
+                            }
+                        }
                 }
 
                 this.ficsitRadioactiveAlert = undefined;
@@ -3165,6 +3178,10 @@ export default class BaseLayout
         if(currentObject === null)
         {
             currentObject       = this.saveGameParser.getTargetObject(marker.options.pathName);
+        }
+        if(currentObject === null)
+        {
+            return; //TODO: ???
         }
 
         let mapOpacity = (buildingData !== null && buildingData.mapOpacity !== undefined) ? buildingData.mapOpacity : 0.2;

@@ -190,6 +190,14 @@ export default class BaseLayout_ContextMenu
                         });
                     }
 
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                    {
+                        contextMenu.push({
+                            text: 'Fill "' + buildingData.name + '" inventory',
+                            callback: this.baseLayout.fillPlayerStorageBuildingInventory.bind(this.baseLayout)
+                        });
+                    }
+
                     if((buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C') && buildingData.maxFluid === undefined) //TODO: Handle fluid storage...
                     {
                         contextMenu.push({separator: true});
