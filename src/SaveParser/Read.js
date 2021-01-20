@@ -1024,8 +1024,16 @@ export default class SaveParser_Read
                 }
                 break;
             case 255:
-                currentProperty.valueType       = this.readInt();
-                currentProperty.value           = this.readString();
+                // Broke during engine upgrade?
+                if(this.saveParser.header.buildVersion > 140822)
+                {
+                    currentProperty.hasCultureInvariantString   = this.readInt();
+
+                    if(currentProperty.hasCultureInvariantString === 1)
+                    {
+                        currentProperty.value = this.readString();
+                    }
+                }
                 break;
             default:
                 Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');

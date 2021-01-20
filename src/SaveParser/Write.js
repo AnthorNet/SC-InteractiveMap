@@ -988,8 +988,16 @@ export default class SaveParser_Write
                 }
                 break;
             case 255:
-                property += this.writeInt(currentProperty.valueType);
-                property += this.writeString(currentProperty.value);
+                // Broke during engine upgrade?
+                if(this.saveParser.header.buildVersion > 140822)
+                {
+                    property += this.writeInt(currentProperty.hasCultureInvariantString);
+
+                    if(currentProperty.hasCultureInvariantString === 1)
+                    {
+                        property += this.writeString(currentProperty.value);
+                    }
+                }
                 break;
         }
 
