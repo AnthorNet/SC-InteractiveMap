@@ -1025,7 +1025,8 @@ export default class SaveParser_Read
                 break;
             case 255:
                 // Broke during engine upgrade?
-                if(this.saveParser.header.buildVersion > 140822)
+                // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
+                if(this.saveParser.header.buildVersion >= 140822)
                 {
                     currentProperty.hasCultureInvariantString   = this.readInt();
 
