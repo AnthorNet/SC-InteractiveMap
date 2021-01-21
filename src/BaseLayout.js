@@ -2728,7 +2728,7 @@ export default class BaseLayout
         });
     }
 
-    fillPlayerStorageBuildingInventory(marker, inventoryProperty = 'mStorageInventory')
+    fillPlayerStorageBuildingInventoryModal(marker, inventoryProperty = 'mStorageInventory')
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
             if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
@@ -2754,60 +2754,83 @@ export default class BaseLayout
                     return;
                 }
 
-                let currentItem     = this.getItemDataFromClassName(values.fillWith);
-                let stack           = (currentItem !== null && currentItem.stack !== undefined) ? currentItem.stack : 100;
-                let storageObjects  = [currentObject];
-                    // Switch to freight wagon when locomotive was selected
-                    if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
-                    {
-                        storageObjects      = Building_Locomotive.getFreightWagons(this, currentObject);
-                    }
-
-                for(let i = 0; i < storageObjects.length; i++)
-                {
-                    /*
-                     *  {
-                            "name": "mAdjustedSizeDiff",
-                            "type": "IntProperty",
-                            "value": -31
-                        }
-                     */
-                    let oldInventory = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
-                        for(let j = 0; j < oldInventory.properties.length; j++)
-                        {
-                            if(oldInventory.properties[j].name === 'mInventoryStacks')
-                            {
-                                oldInventory = oldInventory.properties[j].value.values;
-
-                                for(let k = 0; k < buildingData.maxSlot; k++)
-                                {
-                                    if(oldInventory[k] !== undefined)
-                                    {
-                                        if(oldInventory[k][0].value.itemName !== '/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C')
-                                        {
-                                            oldInventory[k][0].value.itemName = values.fillWith;
-                                            this.setObjectProperty(oldInventory[k][0].value, 'NumItems', stack, 'IntProperty');
-                                        }
-                                        else
-                                        {
-                                            if(this.ficsitRadioactiveAlert === undefined)
-                                            {
-                                                this.ficsitRadioactiveAlert = true;
-                                                Modal.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
-                                            }
-                                        }
-                                    }
-
-                                }
-                                break;
-                            }
-                        }
-                }
-
+                this.fillPlayerStorageBuildingInventory(currentObject, values.fillWith, inventoryProperty);
                 this.ficsitRadioactiveAlert = undefined;
             }.bind(this)
         });
     }
+
+    fillPlayerStorageBuildingInventory(currentObject, fillWith, inventoryProperty = 'mStorageInventory')
+    {
+        let currentItem     = this.getItemDataFromClassName(fillWith);
+        let stack           = (currentItem !== null && currentItem.stack !== undefined) ? currentItem.stack : 100;
+        let storageObjects  = [currentObject];
+            // Switch to freight wagons when locomotive was selected
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+            {
+                storageObjects      = Building_Locomotive.getFreightWagons(this, currentObject);
+            }
+
+        for(let i = 0; i < storageObjects.length; i++)
+        {
+            // Skip fluid Freight Wagon
+            if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+            {
+                let storage           = this.getObjectProperty(storageObjects[i], inventoryProperty);
+                    if(storage !== null)
+                    {
+                        let storageObject = this.saveGameParser.getTargetObject(storage.pathName);
+                            if(storageObject !== null)
+                            {
+                                let mAdjustedSizeDiff = this.getObjectProperty(storageObject, 'mAdjustedSizeDiff');
+                                    if(mAdjustedSizeDiff !== null && mAdjustedSizeDiff === -31)
+                                    {
+                                        continue;
+                                    }
+                            }
+
+                    }
+            }
+
+            let buildingData    = this.getBuildingDataFromClassName(storageObjects[i].className);
+                if(buildingData.maxSlot === undefined)
+                {
+                    continue;
+                }
+
+            let oldInventory    = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
+                for(let j = 0; j < oldInventory.properties.length; j++)
+                {
+                    if(oldInventory.properties[j].name === 'mInventoryStacks')
+                    {
+                        oldInventory = oldInventory.properties[j].value.values;
+
+                        for(let k = 0; k < buildingData.maxSlot; k++)
+                        {
+                            if(oldInventory[k] !== undefined)
+                            {
+                                if(oldInventory[k][0].value.itemName !== '/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C')
+                                {
+                                    oldInventory[k][0].value.itemName = fillWith;
+                                    this.setObjectProperty(oldInventory[k][0].value, 'NumItems', stack, 'IntProperty');
+                                }
+                                else
+                                {
+                                    if(this.ficsitRadioactiveAlert === undefined)
+                                    {
+                                        this.ficsitRadioactiveAlert = true;
+                                        Modal.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
+                                    }
+                                }
+                            }
+
+                        }
+                        break;
+                    }
+                }
+        }
+    }
+
 
     generateInventoryOptions(addNULL = true)
     {
@@ -6457,19 +6480,6 @@ export default class BaseLayout
 	//e.target._tooltip = null;
     }
 
-    setColorLuminance(hex, lum = 0)
-    {
-	let rgb = "#", c, i;
-	for(i = 0; i < 3; i++)
-        {
-		c = parseInt(hex.substr(i*2,2), 16);
-		c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
-		rgb += ("00"+c).substr(c.length);
-	}
-
-	return rgb;
-    }
-
 
     // EDIT/DELETE FUNCTIONS
     getMarkerFromPathName(pathName, filterLayerId = null)
@@ -6755,6 +6765,8 @@ export default class BaseLayout
 
             inputOptions.push({group: 'Foundations', text: 'Convert "Glass Foundation 8m x 1m" to "Foundation 8m x 1m"', value: 'upgradeGlass8x1ToFoundation8x1'});
 
+            inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorageInventories'});
+
             inputOptions.push({group: 'Statistics', text: 'Show selected items production statistics', value: 'productionStatistics'});
             inputOptions.push({group: 'Statistics', text: 'Show selected items storage statistics', value: 'storageStatistics'});
             inputOptions.push({group: 'Statistics', text: 'Show selected items power statistics', value: 'powerStatistics'});
@@ -7004,6 +7016,29 @@ export default class BaseLayout
                     case 'upgradeGlass8x1ToFoundation8x1':
                         return this.selectionGlass8x1ToFoundation8x1();
 
+                    case 'fillStorageInventories':
+                        Modal.form({
+                            title       : 'You have selected ' + selectedMarkersLength + ' items',
+                            onEscape    : this.cancelSelectMultipleMarkers.bind(this),
+                            container   : '#leafletMap',
+                            inputs      : [{
+                                name            : 'fillWith',
+                                inputType       : 'selectPicker',
+                                inputOptions    : this.generateInventoryOptions(false)
+                            }],
+                            callback: function(form)
+                            {
+                                if(form === null || form.fillWith === null)
+                                {
+                                    this.cancelSelectMultipleMarkers();
+                                    return;
+                                }
+
+                               return this.fillStorageInventoriesSelection(form.fillWith);
+                            }.bind(this)
+                        });
+                        return;
+
                     case 'productionStatistics':
                         return this.showSelectionProductionStatistics();
                     case 'storageStatistics':
@@ -7013,6 +7048,35 @@ export default class BaseLayout
                 }
             }.bind(this)
         });
+    }
+
+    fillStorageInventoriesSelection(fillWith, inventoryProperty = 'mStorageInventory')
+    {
+        if(this.markersSelected)
+        {
+            for(let i = 0; i < this.markersSelected.length; i++)
+            {
+                let currentObject = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
+                    if(currentObject !== null)
+                    {
+                        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
+                        {
+                            inventoryProperty   = 'mInventory';
+                        }
+
+                        // Skip locomotive to avoid double freight wagons...
+                        if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                        {
+                            continue;
+                        }
+
+                        this.fillPlayerStorageBuildingInventory(currentObject, fillWith, inventoryProperty);
+                    }
+            }
+        }
+
+        this.ficsitRadioactiveAlert = undefined;
+        this.cancelSelectMultipleMarkers();
     }
 
     downgradeSelection(callbackName)

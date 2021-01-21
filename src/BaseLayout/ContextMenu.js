@@ -194,21 +194,43 @@ export default class BaseLayout_ContextMenu
                     {
                         contextMenu.push({
                             text: 'Fill "' + buildingData.name + '" inventory',
-                            callback: this.baseLayout.fillPlayerStorageBuildingInventory.bind(this.baseLayout)
+                            callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal.bind(this.baseLayout)
                         });
                     }
 
-                    if((buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C') && buildingData.maxFluid === undefined) //TODO: Handle fluid storage...
+                    if((buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')) //TODO: Handle fluid storage...
                     {
-                        contextMenu.push({separator: true});
-                        contextMenu.push({
-                            text: 'Edit "' + buildingData.name + '" inventory',
-                            callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
-                        });
-                        contextMenu.push({
-                            text: 'Fill "' + buildingData.name + '" inventory',
-                            callback: this.baseLayout.fillPlayerStorageBuildingInventory.bind(this.baseLayout)
-                        });
+                        let inventoryType = 'solid';
+                            if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+                            {
+                                let storage           = this.baseLayout.getObjectProperty(currentObject, 'mStorageInventory');
+                                    if(storage !== null)
+                                    {
+                                        let storageObject = this.baseLayout.saveGameParser.getTargetObject(storage.pathName);
+                                            if(storageObject !== null)
+                                            {
+                                                let mAdjustedSizeDiff = this.baseLayout.getObjectProperty(storageObject, 'mAdjustedSizeDiff');
+                                                    if(mAdjustedSizeDiff !== null && mAdjustedSizeDiff === -31)
+                                                    {
+                                                        inventoryType = 'liquid';
+                                                    }
+                                            }
+
+                                    }
+                            }
+
+                            if(inventoryType === 'solid')
+                            {
+                                contextMenu.push({separator: true});
+                                contextMenu.push({
+                                    text: 'Edit "' + buildingData.name + '" inventory',
+                                    callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
+                                });
+                                contextMenu.push({
+                                    text: 'Fill "' + buildingData.name + '" inventory',
+                                    callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal.bind(this.baseLayout)
+                                });
+                            }
                     }
 
                     if(
