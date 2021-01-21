@@ -2795,6 +2795,13 @@ export default class BaseLayout
 
                 for(let i = 0; i < storageObjects.length; i++)
                 {
+                    /*
+                     *  {
+                            "name": "mAdjustedSizeDiff",
+                            "type": "IntProperty",
+                            "value": -31
+                        }
+                     */
                     let oldInventory = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
                         for(let j = 0; j < oldInventory.properties.length; j++)
                         {

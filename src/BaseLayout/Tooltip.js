@@ -196,7 +196,7 @@ export default class BaseLayout_Tooltip
                         content.push('<div style="position: absolute;margin-top: 40px;margin-left: 198px;">');
                         content.push('<div style="position: relative;width: ' + imageSize + 'px;height: ' + imageSize + 'px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (imageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + itemType.color + ';"></div></div>');
                         content.push('</div>');
-                        content.push('<div style="position: absolute;margin-top: 40px;margin-left: 198px;width: ' + imageSize + 'px;height: ' + imageSize + 'px;"><img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/pumpDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + imageSize + 'px;height: ' + imageSize + 'px;" /></div>');
+                        content.push('<div style="position: absolute;margin-top: 40px;margin-left: 198px;width: ' + imageSize + 'px;height: ' + imageSize + 'px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + imageSize + 'px;height: ' + imageSize + 'px;" /></div>');
                 }
 
                 if(itemType !== null && itemType.color !== undefined)
@@ -501,7 +501,7 @@ export default class BaseLayout_Tooltip
                 content.push('<div style="position: relative;width: 104px;height: 104px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (104 - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + this.baseLayout.itemsData[itemType].color + ';"></div></div>');
                 content.push('</div>');
         }
-        content.push('<div style="position: absolute;margin-top: 20px;margin-left: 355px;width: 104px;height: 104px;"><img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/pumpDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: 104px;height: 104px;" /></div>');
+        content.push('<div style="position: absolute;margin-top: 20px;margin-left: 355px;width: 104px;height: 104px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: 104px;height: 104px;" /></div>');
 
         // AMOUNT
         content.push('<div style="position: absolute;margin-top: 155px;margin-left: 355px;width: 104px;color: #FFFFFF;text-align: center;font-size: 13px;">');
@@ -531,7 +531,10 @@ export default class BaseLayout_Tooltip
 
     setBuildingStorageTooltipContent(currentObject, buildingData)
     {
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C')
+        if([
+            '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C',
+            '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'
+        ].includes(currentObject.className) === true)
         {
             return this.setBuildingFluidStorageTooltipContent(currentObject, buildingData);
         }
@@ -545,7 +548,7 @@ export default class BaseLayout_Tooltip
         }
 
             // HEADER
-            content.push('<div style="position: absolute;margin-top: -20px;width: 480px;text-align: center;color: #FFFFFF;text-shadow: 2px 2px 2px #000000;">');
+            content.push('<div style="position: absolute;margin-top: -10px;width: 480px;text-align: center;color: #FFFFFF;text-shadow: 2px 2px 2px #000000;">');
             content.push('<strong>' + buildingData.name + '</strong>');
             content.push('</div>');
 
@@ -567,20 +570,25 @@ export default class BaseLayout_Tooltip
                 content.push('</div>');
             }
 
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/TruckStation/Build_TruckStation.Build_TruckStation_C')
+            if(buildingData.category === 'dockstation')
             {
-                content.push('<div style="padding-top: 10px;padding-bottom: 10px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
+                let colSize = 'col-12';
+
+                content.push('<div style="padding-top: 10px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
                 content.push('<div class="row">');
 
-                    content.push('<div class="col-6">');
-                    content.push('<div style="margin: 0 auto;width: 115px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/vehicleFuelBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding: 38px;">');
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/TruckStation/Build_TruckStation.Build_TruckStation_C')
+                    {
+                        colSize = 'col-6';
 
-                    content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'), 1, 40));
+                        content.push('<div class="' + colSize + '">');
+                            content.push('<div style="margin: 0 auto;width: 115px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/vehicleFuelBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding: 38px;">');
+                                content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'), 1, 40));
+                            content.push('</div>');
+                        content.push('</div>');
+                    }
 
-                    content.push('</div>');
-                    content.push('</div>');
-
-                    content.push('<div class="col-6">');
+                    content.push('<div class="' + colSize + '">');
 
                     let mIsInLoadMode = this.baseLayout.getObjectProperty(currentObject, 'mIsInLoadMode');
                         if(mIsInLoadMode !== null && mIsInLoadMode === 0)
@@ -595,42 +603,59 @@ export default class BaseLayout_Tooltip
                     content.push('</div>');
 
                 content.push('</div>');
-                content.push('</div>');
-            }
 
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
-            {
-                content.push('<div style="padding-top: 10px;padding-bottom: 10px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
-                content.push('<div class="row">');
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
+                {
+                    content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericBottomBackground.png?v=' + this.baseLayout.scriptVersion + ') bottom no-repeat;padding-bottom: 25px;">');
 
-                    content.push('<div class="col-12">');
+                    let maxFluid        = buildingData.maxFluid; // Use straigth calculation
+                    let inventory       = this.baseLayout.getObjectInventory(currentObject, 'mInventory');
 
-                    let mIsInLoadMode = this.baseLayout.getObjectProperty(currentObject, 'mIsInLoadMode');
-                        if(mIsInLoadMode !== null && mIsInLoadMode === 0)
+                    if(inventory !== null && inventory.length > 0)
+                    {
+                        let itemType        = this.baseLayout.getItemDataFromClassName(inventory[0].className);
+                        let currentFluid    = inventory[0].qty;
+
+                        if(itemType !== null && itemType.color !== undefined && currentFluid > 0)
                         {
-                            content.push('<div style="margin: 0 auto;width: 153px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/vehicleUnloadMode.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;"></div>');
+                            let imageSize       = 196;
+                            let volumeHeight    = Math.round(currentFluid / maxFluid * imageSize);
+
+                                content.push('<div style="height: 230px;width:230px;margin: 0 auto;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidBackground.png?v=' + this.baseLayout.scriptVersion + ')">');
+                                    content.push('<div style="position: absolute;margin-top: 12px;margin-left: 17px;">');
+                                        content.push('<div style="position: relative;width: ' + imageSize + 'px;height: ' + imageSize + 'px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (imageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + itemType.color + ';"></div></div>');
+                                    content.push('</div>');
+                                    content.push('<div style="position: absolute;margin-top: 12px;margin-left: 17px;width: ' + imageSize + 'px;height: ' + imageSize + 'px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + imageSize + 'px;height: ' + imageSize + 'px;" /></div>');
+                                content.push('</div>');
                         }
-                        else
+
+                        if(itemType !== null)
                         {
-                            content.push('<div style="margin: 0 auto;width: 153px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/vehicleLoadMode.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;"></div>');
+                            content.push('<div style="padding-top: 25px;color: #FFFFFF;text-align: center;font-size: 13px;">');
+                            content.push('<strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentFluid / 100) / 10) + ' m³ of ' + itemType.name + '</strong>');
+                            content.push('</div>');
                         }
+                    }
 
                     content.push('</div>');
+                }
 
-                content.push('</div>');
                 content.push('</div>');
             }
 
-            // INVENTORY
-            content.push('<div style="padding-top: 25px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageTopBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;">');
-            content.push('<div style="padding-bottom: 34px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageBottomBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat bottom;">');
-            content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
-            content.push('<div style="margin: 0 auto;width: 400px;text-align: center;">');
-            content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, inventoryKey), ((buildingData.maxSlot !== undefined) ? buildingData.maxSlot : null)));
-            content.push('</div>');
-            content.push('</div>');
-            content.push('</div>');
-            content.push('</div>');
+            if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
+            {
+                // INVENTORY
+                content.push('<div style="padding-top: 35px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageTopBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;">');
+                    content.push('<div style="padding-bottom: 34px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageBottomBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat bottom;">');
+                        content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
+                            content.push('<div style="margin: 0 auto;width: 400px;text-align: center;">');
+                                content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, inventoryKey), ((buildingData.maxSlot !== undefined) ? buildingData.maxSlot : null)));
+                            content.push('</div>');
+                        content.push('</div>');
+                    content.push('</div>');
+                content.push('</div>');
+            }
 
         return '<div style="width: 480px;padding-top: 25px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericTopBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">\
                 ' + content.join('') + '\
@@ -648,14 +673,16 @@ export default class BaseLayout_Tooltip
 
         // VOLUME
         let maxFluid        = buildingData.maxFluid; // Use straigth calculation
-        let currentFluid    = maxFluid; // Until we get fluidBox method working!
+        let currentFluid    = maxFluid; //TODO: Until we get fluidBox method working!
         let itemType        = null;
 
+        /*
         let fluidBox        = this.baseLayout.getObjectProperty(currentObject, 'mFluidBox');
             if(fluidBox === null)
             {
                 fluidBox = {value: 0};
             }
+        */
 
         // Get fluid type
         let pipeNetworkId   = null;
@@ -701,10 +728,10 @@ export default class BaseLayout_Tooltip
                     content.push('<div style="position: absolute;margin-top: 35px;margin-left: 37px;">');
                     content.push('<div style="position: relative;width: ' + imageSize + 'px;height: ' + imageSize + 'px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (imageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + itemType.color + ';"></div></div>');
                     content.push('</div>');
-                    content.push('<div style="position: absolute;margin-top: 35px;margin-left: 37px;width: ' + imageSize + 'px;height: ' + imageSize + 'px;"><img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/pumpDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + imageSize + 'px;height: ' + imageSize + 'px;" /></div>');
+                    content.push('<div style="position: absolute;margin-top: 35px;margin-left: 37px;width: ' + imageSize + 'px;height: ' + imageSize + 'px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + imageSize + 'px;height: ' + imageSize + 'px;" /></div>');
             }
 
-            if(itemType !== null && itemType.color !== undefined)
+            if(itemType !== null)
             {
                 content.push('<div style="position: absolute;margin-top: 355px;margin-left: 10px;width: 250px;color: #5b5b5b;text-align: center;font-size: 13px;">');
                 content.push('<strong>' + itemType.name + '</strong>');
@@ -1070,7 +1097,7 @@ export default class BaseLayout_Tooltip
                         content.push('<div style="position: relative;width: 96px;height: 96px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (96 - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + this.baseLayout.itemsData.Desc_Water_C.color + ';"></div></div>');
                         content.push('</div>');
                 }
-                content.push('<div style="position: absolute;margin-top: 41px;margin-left: 107px;width: 96px;height: 96px;"><img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/pumpDome.png?v=' + this.baseLayout.scriptVersion + '" width="96" height="96" /></div>');
+                content.push('<div style="position: absolute;margin-top: 41px;margin-left: 107px;width: 96px;height: 96px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" width="96" height="96" /></div>');
 
                 // AMOUNT
                 content.push('<div style="position: absolute;margin-top: 175px;margin-left: 107px;width: 96px;color: #FFFFFF;text-align: center;font-size: 13px;">');
