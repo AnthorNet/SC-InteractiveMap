@@ -1498,7 +1498,7 @@ export default class BaseLayout
     {
         let mPickupItems = this.getObjectProperty(currentObject, 'mPickupItems');
 
-            if(mPickupItems !== null && mPickupItems.values[0].value.properties[0].value > 0)
+            if(mPickupItems !== null && mPickupItems.values[0].value.properties[0] !== null && mPickupItems.values[0].value.properties[0].value > 0)
             {
                 let itemId = this.getItemDataFromClassName(mPickupItems.values[0].value.itemName);
                     if(itemId !== null)
