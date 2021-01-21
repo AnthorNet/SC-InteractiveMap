@@ -80,7 +80,10 @@ export default class BaseLayout_Tooltip
                                         case 'storage':
                                         case 'dockstation':
                                         case 'vehicle':
-                                            return this.setBuildingStorageTooltipContent(currentObject, buildingData);
+                                            if(currentObject.className !== '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                                            {
+                                                return this.setBuildingStorageTooltipContent(currentObject, buildingData);
+                                            }
                                         default:
                                             return this.setBuildingTooltipContent(currentObject, buildingData);
                                     }
