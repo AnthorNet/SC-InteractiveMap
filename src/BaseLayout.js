@@ -2684,45 +2684,47 @@ export default class BaseLayout
                 }
 
                 let oldInventory = this.getObjectInventory(currentObject, inventoryProperty, true);
-
-                for(let i = 0; i < oldInventory.properties.length; i++)
-                {
-                    if(oldInventory.properties[i].name === 'mInventoryStacks')
+                    for(let i = 0; i < oldInventory.properties.length; i++)
                     {
-                        oldInventory = oldInventory.properties[i].value.values;
-
-                        for(let j = 0; j < buildingData.maxSlot; j++)
+                        if(oldInventory.properties[i].name === 'mInventoryStacks')
                         {
-                            if(oldInventory[j] !== undefined)
+                            oldInventory = oldInventory.properties[i].value.values;
+
+                            for(let j = 0; j < buildingData.maxSlot; j++)
                             {
-                                if(oldInventory[j][0].value.itemName !== '/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C' || this.useDebug === true)
+                                if(oldInventory[j] !== undefined)
                                 {
-                                    if(values['slot' + (j + 1)] === 'NULL')
+                                    if(oldInventory[j][0].value.itemName !== '/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C' || this.useDebug === true)
                                     {
-                                        oldInventory[j][0].value.itemName = "";
-                                        this.setObjectProperty(oldInventory[j][0].value, 'NumItems', 0, 'IntProperty');
+                                        if(values['slot' + (j + 1)] === 'NULL')
+                                        {
+                                            oldInventory[j][0].value.itemName = "";
+                                            this.setObjectProperty(oldInventory[j][0].value, 'NumItems', 0, 'IntProperty');
+                                        }
+                                        else
+                                        {
+                                            oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
+                                            this.setObjectProperty(oldInventory[j][0].value, 'NumItems', Math.max(1, parseInt(values['QTY_slot' + (j + 1)])), 'IntProperty');
+                                        }
                                     }
                                     else
                                     {
-                                        oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
-                                        this.setObjectProperty(oldInventory[j][0].value, 'NumItems', Math.max(1, parseInt(values['QTY_slot' + (j + 1)])), 'IntProperty');
+                                        if(this.ficsitRadioactiveAlert === undefined)
+                                        {
+                                            this.ficsitRadioactiveAlert = true;
+                                            Modal.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
+                                        }
                                     }
                                 }
-                                else
-                                {
-                                    if(this.ficsitRadioactiveAlert === undefined)
-                                    {
-                                        this.ficsitRadioactiveAlert = true;
-                                        Modal.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
-                                    }
-                                }
+
                             }
-
+                            break;
                         }
-                        break;
                     }
-                }
 
+                delete this.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
+                this.radioactivityLayerNeedsUpdate = true;
+                this.getObjectRadioactivity(currentObject, inventoryProperty);
                 this.ficsitRadioactiveAlert = undefined;
             }.bind(this)
         });
@@ -2755,6 +2757,7 @@ export default class BaseLayout
                 }
 
                 this.fillPlayerStorageBuildingInventory(currentObject, values.fillWith, inventoryProperty);
+                this.updateRadioactivityLayer();
                 this.ficsitRadioactiveAlert = undefined;
             }.bind(this)
         });
@@ -2828,6 +2831,10 @@ export default class BaseLayout
                         break;
                     }
                 }
+
+                delete this.playerLayers.playerRadioactivityLayer.elements[storageObjects[i].pathName];
+                this.radioactivityLayerNeedsUpdate = true;
+                this.getObjectRadioactivity(storageObjects[i], inventoryProperty);
         }
     }
 
@@ -7075,6 +7082,7 @@ export default class BaseLayout
             }
         }
 
+        this.updateRadioactivityLayer();
         this.ficsitRadioactiveAlert = undefined;
         this.cancelSelectMultipleMarkers();
     }
