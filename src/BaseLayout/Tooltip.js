@@ -539,12 +539,34 @@ export default class BaseLayout_Tooltip
             return this.setBuildingFluidStorageTooltipContent(currentObject, buildingData);
         }
 
+        let inventoryType   = 'solid';
         let inventoryKey    = 'mStorageInventory';
         let content         = [];
 
         if(buildingData.category === 'dockstation' || currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
         {
             inventoryKey = 'mInventory';
+        }
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
+        {
+            inventoryType = 'liquid';
+        }
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+        {
+            let storage           = this.baseLayout.getObjectProperty(currentObject, inventoryKey);
+                if(storage !== null)
+                {
+                    let storageObject = this.baseLayout.saveGameParser.getTargetObject(storage.pathName);
+                        if(storageObject !== null)
+                        {
+                            let mAdjustedSizeDiff = this.baseLayout.getObjectProperty(storageObject, 'mAdjustedSizeDiff');
+                                if(mAdjustedSizeDiff !== null && mAdjustedSizeDiff === -31)
+                                {
+                                    inventoryType = 'liquid';
+                                }
+                        }
+
+                }
         }
 
             // HEADER
@@ -554,7 +576,7 @@ export default class BaseLayout_Tooltip
 
             if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C' || buildingData.category === 'vehicle')
             {
-                content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
+                content.push('<div style="padding-top: 10px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
                 content.push('<div style="color: #FFFFFF;text-shadow: 2px 2px 2px #000000;line-height: 16px;font-size: 12px;" class="text-center">Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm</div>');
                 content.push('</div>');
             }
@@ -570,7 +592,7 @@ export default class BaseLayout_Tooltip
                 content.push('</div>');
             }
 
-            if(buildingData.category === 'dockstation')
+            if(buildingData.category === 'dockstation' || inventoryType === 'liquid')
             {
                 let colSize = 'col-12';
 
@@ -604,12 +626,12 @@ export default class BaseLayout_Tooltip
 
                 content.push('</div>');
 
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
+                if(inventoryType === 'liquid')
                 {
-                    content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericBottomBackground.png?v=' + this.baseLayout.scriptVersion + ') bottom no-repeat;padding-bottom: 25px;">');
+                    content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericBottomBackground.png?v=' + this.baseLayout.scriptVersion + ') bottom no-repeat;padding-bottom: 10px;">');
 
                     let maxFluid        = buildingData.maxFluid; // Use straigth calculation
-                    let inventory       = this.baseLayout.getObjectInventory(currentObject, 'mInventory');
+                    let inventory       = this.baseLayout.getObjectInventory(currentObject, inventoryKey);
 
                     if(inventory !== null && inventory.length > 0)
                     {
@@ -643,10 +665,10 @@ export default class BaseLayout_Tooltip
                 content.push('</div>');
             }
 
-            if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
+            if(inventoryType === 'solid')
             {
                 // INVENTORY
-                content.push('<div style="padding-top: 35px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageTopBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;">');
+                content.push('<div style="padding-top: 25px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageTopBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;">');
                     content.push('<div style="padding-bottom: 34px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageBottomBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat bottom;">');
                         content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
                             content.push('<div style="margin: 0 auto;width: 400px;text-align: center;">');

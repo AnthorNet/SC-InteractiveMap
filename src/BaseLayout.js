@@ -5050,34 +5050,29 @@ export default class BaseLayout
     // Inventory
     getObjectInventory(currentObject, inventoryPropertyName = 'mInventory', raw = false)
     {
-        for(let i = 0; i < currentObject.properties.length; i++)
-        {
-            if(currentObject.properties[i].name === inventoryPropertyName)
+        let inventory = this.getObjectProperty(currentObject, inventoryPropertyName);
+            if(inventory !== null)
             {
-                let inventoryObject = this.saveGameParser.getTargetObject(currentObject.properties[i].value.pathName);
-
-                if(inventoryObject !== null)
-                {
-                    if(raw === false)
+                let inventoryObject = this.saveGameParser.getTargetObject(inventory.pathName);
+                    if(inventoryObject !== null)
                     {
-                        return this.getObjectTargetInventory(inventoryObject);
+                        if(raw === false)
+                        {
+                            return this.getObjectTargetInventory(inventoryObject);
+                        }
+                        else
+                        {
+                            return inventoryObject;
+                        }
                     }
-                    else
-                    {
-                        return inventoryObject;
-                    }
-                }
             }
-        }
 
         if(raw === false)
         {
             return [];
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
     getObjectRadioactivity(currentObject, inventoryPropertyName = 'mInventory')
     {
