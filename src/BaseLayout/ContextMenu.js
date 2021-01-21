@@ -1,4 +1,7 @@
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
+import Building_Conveyor                        from '../Building/Conveyor.js';
+import Building_Pipeline                        from '../Building/Pipeline.js';
+import Building_PowerPole                       from '../Building/PowerPole.js';
 
 export default class BaseLayout_ContextMenu
 {
@@ -101,13 +104,10 @@ export default class BaseLayout_ContextMenu
                             callback: this.baseLayout.pivotPlayerFoundation.bind(this.baseLayout)
                         });
 
-                        //if(currentObject.className.search('Building/Ramp/Build_Ramp_') === -1)
-                        {
-                            contextMenu.push({
-                                text: 'Spawn around "' + buildingData.name + '"',
-                                callback: this.baseLayout.spawnAroundFoundation.bind(this.baseLayout)
-                            });
-                        }
+                        contextMenu.push({
+                            text: 'Spawn around "' + buildingData.name + '"',
+                            callback: this.baseLayout.spawnAroundFoundation.bind(this.baseLayout)
+                        });
 
                         contextMenu.push({
                             text: 'Teleport player on "' + buildingData.name + '"',
@@ -212,14 +212,14 @@ export default class BaseLayout_ContextMenu
                     }
 
                     if(
-                            currentObject.className.search('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') !== -1
-                         || currentObject.className.search('/Game/FactoryGame/Buildable/Factory/ConveyorLift') !== -1
+                            currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true
+                         || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorLift') === true
                     )
                     {
-                        let usePool = this.baseLayout.availableBelts;
-                            if(currentObject.className.search('/Game/FactoryGame/Buildable/Factory/ConveyorLift') !== -1)
+                        let usePool = Building_Conveyor.availableConveyorBelts;
+                            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorLift') === true)
                             {
-                                usePool = this.baseLayout.availableLifts;
+                                usePool = Building_Conveyor.availableConveyorLifts;
                             }
                         let poolIndex   = usePool.indexOf(currentObject.className);
 
@@ -234,7 +234,7 @@ export default class BaseLayout_ContextMenu
                                     {
                                         contextMenu.push({
                                             text: 'Downgrade to "' + downgradeData.name + '"',
-                                            callback: this.baseLayout.downgradeBelt.bind(this.baseLayout)
+                                            callback: Building_Conveyor.downgradeConveyor
                                         });
                                     }
                             }
@@ -245,23 +245,23 @@ export default class BaseLayout_ContextMenu
                                     {
                                         contextMenu.push({
                                             text: 'Upgrade to "' + upgradeData.name + '"',
-                                            callback: this.baseLayout.upgradeBelt.bind(this.baseLayout)
+                                            callback: Building_Conveyor.upgradeConveyor
                                         });
                                     }
                             }
                         }
                     }
 
-                    if(currentObject.className.search('/Game/FactoryGame/Buildable/Factory/PowerPole') !== -1)
+                    if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PowerPole') === true)
                     {
-                        let usePool         = this.baseLayout.availablePowerPoles;
-                            if(currentObject.className.search('/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_') !== -1)
+                        let usePool         = Building_PowerPole.availablePowerPoles;
+                            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_') === true)
                             {
-                                usePool = this.baseLayout.availablePowerPolesWall;
+                                usePool = Building_PowerPole.availablePowerPolesWall;
                             }
-                            if(currentObject.className.search('/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_') !== -1)
+                            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_') === true)
                             {
-                                usePool = this.baseLayout.availablePowerPolesWallDouble;
+                                usePool = Building_PowerPole.availablePowerPolesWallDouble;
                             }
                         let poolIndex   = usePool.indexOf(currentObject.className);
 
@@ -276,7 +276,7 @@ export default class BaseLayout_ContextMenu
                                     {
                                         contextMenu.push({
                                             text: 'Downgrade to "' + downgradeData.name + '"',
-                                            callback: this.baseLayout.downgradePowerPole.bind(this.baseLayout)
+                                            callback: Building_PowerPole.downgradePowerPole
                                         });
                                     }
                             }
@@ -287,7 +287,48 @@ export default class BaseLayout_ContextMenu
                                     {
                                         contextMenu.push({
                                             text: 'Upgrade to "' + upgradeData.name + '"',
-                                            callback: this.baseLayout.upgradePowerPole.bind(this.baseLayout)
+                                            callback: Building_PowerPole.upgradePowerPole
+                                        });
+                                    }
+                            }
+                        }
+                    }
+
+                    if(
+                            currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/Pipeline') === true
+                         || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PipePump') === true
+                    )
+                    {
+                        let usePool     = Building_Pipeline.availablePipelines;
+                            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PipePump') === true)
+                            {
+                                usePool = Building_Pipeline.availablePipePumps;
+                            }
+                        let poolIndex   = usePool.indexOf(currentObject.className);
+
+                        if(poolIndex > 0 || poolIndex < (usePool.length - 1))
+                        {
+                            contextMenu.push({separator: true});
+
+                            if(poolIndex > 0)
+                            {
+                                let downgradeData = this.baseLayout.getBuildingDataFromClassName(usePool[poolIndex - 1]);
+                                    if(downgradeData !== null)
+                                    {
+                                        contextMenu.push({
+                                            text: 'Downgrade to "' + downgradeData.name + '"',
+                                            callback: Building_Pipeline.downgradePipeline
+                                        });
+                                    }
+                            }
+                            if(poolIndex < (usePool.length - 1))
+                            {
+                                let upgradeData = this.baseLayout.getBuildingDataFromClassName(usePool[poolIndex + 1]);
+                                    if(upgradeData !== null)
+                                    {
+                                        contextMenu.push({
+                                            text: 'Upgrade to "' + upgradeData.name + '"',
+                                            callback: Building_Pipeline.upgradePipeline
                                         });
                                     }
                             }

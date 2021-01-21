@@ -1,4 +1,4 @@
-/* global L, Promise, Infinity, Intl, Sentry */
+/* global L, Promise, Infinity, Intl, Sentry, parseFloat */
 
 import BaseLayout_Spawn_Circle                  from './BaseLayout/SpawnCircle.js';
 //import BaseLayout_Spawn_CorkScrew               from './BaseLayout/SpawnCorkScrew.js';
@@ -92,36 +92,6 @@ export default class BaseLayout
         this.availablePlatformConnection        = ['.PlatformConnection0', '.PlatformConnection1'];
         this.availablePipeConnection            = ['.PipeInputFactory', '.PipeOutputFactory', '.PipelineConnection0', '.PipelineConnection1', '.FGPipeConnectionFactory', '.Connection0', '.Connection1', '.Connection2', '.Connection3', '.ConnectionAny0', '.ConnectionAny1'];
         this.availableHyperPipeConnection       = ['.PipeHyperConnection0', '.PipeHyperConnection1', '.PipeHyperStartConnection'];
-
-        this.availableBelts                     = [
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk1/Build_ConveyorBeltMk1.Build_ConveyorBeltMk1_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk2/Build_ConveyorBeltMk2.Build_ConveyorBeltMk2_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk3/Build_ConveyorBeltMk3.Build_ConveyorBeltMk3_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk4/Build_ConveyorBeltMk4.Build_ConveyorBeltMk4_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk5/Build_ConveyorBeltMk5.Build_ConveyorBeltMk5_C'
-        ];
-        this.availableLifts                     = [
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk1/Build_ConveyorLiftMk1.Build_ConveyorLiftMk1_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk2/Build_ConveyorLiftMk2.Build_ConveyorLiftMk2_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk3/Build_ConveyorLiftMk3.Build_ConveyorLiftMk3_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk4/Build_ConveyorLiftMk4.Build_ConveyorLiftMk4_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk5/Build_ConveyorLiftMk5.Build_ConveyorLiftMk5_C'
-        ];
-        this.availablePowerPoles                = [
-            '/Game/FactoryGame/Buildable/Factory/PowerPoleMk1/Build_PowerPoleMk1.Build_PowerPoleMk1_C',
-            '/Game/FactoryGame/Buildable/Factory/PowerPoleMk2/Build_PowerPoleMk2.Build_PowerPoleMk2_C',
-            '/Game/FactoryGame/Buildable/Factory/PowerPoleMk3/Build_PowerPoleMk3.Build_PowerPoleMk3_C'
-        ];
-        this.availablePowerPolesWall            = [
-            '/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall.Build_PowerPoleWall_C',
-            '/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall_Mk2.Build_PowerPoleWall_Mk2_C',
-            '/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall_Mk3.Build_PowerPoleWall_Mk3_C'
-        ];
-        this.availablePowerPolesWallDouble      = [
-            '/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble.Build_PowerPoleWallDouble_C',
-            '/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble_Mk2.Build_PowerPoleWallDouble_Mk2_C',
-            '/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble_Mk3.Build_PowerPoleWallDouble_Mk3_C'
-        ];
 
         this.detailedModels                     = {};
         this.pipeLetters                        = null;
@@ -3859,38 +3829,6 @@ export default class BaseLayout
         return false;
     }
 
-    downgradeBelt(marker)
-    {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let usePool         = this.availableBelts;
-            if(currentObject.className.search('/Game/FactoryGame/Buildable/Factory/ConveyorLift') !== -1)
-            {
-                usePool = this.availableLifts;
-            }
-        let poolIndex       = usePool.indexOf(currentObject.className);
-
-        if(poolIndex > 0)
-        {
-            currentObject.className = usePool[poolIndex - 1];
-        }
-    }
-
-    upgradeBelt(marker)
-    {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let usePool         = this.availableBelts;
-            if(currentObject.className.search('/Game/FactoryGame/Buildable/Factory/ConveyorLift') !== -1)
-            {
-                usePool = this.availableLifts;
-            }
-        let poolIndex       = usePool.indexOf(currentObject.className);
-
-        if(poolIndex < (usePool.length - 1))
-        {
-            currentObject.className = usePool[poolIndex + 1];
-        }
-    }
-
     unlinkObjectComponentConnection(currentObject)
     {
         for(let i = 0; i < currentObject.children.length; i++)
@@ -4185,46 +4123,6 @@ export default class BaseLayout
 
                     return false;
             }
-    }
-
-    downgradePowerPole(marker)
-    {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let usePool         = this.availablePowerPoles;
-            if(currentObject.className.search('/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_') !== -1)
-            {
-                usePool = this.availablePowerPolesWall;
-            }
-            if(currentObject.className.search('/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_') !== -1)
-            {
-                usePool = this.availablePowerPolesWallDouble;
-            }
-        let poolIndex       = usePool.indexOf(currentObject.className);
-
-        if(poolIndex > 0)
-        {
-            currentObject.className = usePool[poolIndex - 1];
-        }
-    }
-
-    upgradePowerPole(marker)
-    {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let usePool         = this.availablePowerPoles;
-            if(currentObject.className.search('/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_') !== -1)
-            {
-                usePool = this.availablePowerPolesWall;
-            }
-            if(currentObject.className.search('/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_') !== -1)
-            {
-                usePool = this.availablePowerPolesWallDouble;
-            }
-        let poolIndex       = usePool.indexOf(currentObject.className);
-
-        if(poolIndex < (usePool.length - 1))
-        {
-            currentObject.className = usePool[poolIndex + 1];
-        }
     }
 
     deletePlayerWiresFromPowerConnection(currentObjectPowerConnection)
@@ -6845,11 +6743,15 @@ export default class BaseLayout
             inputOptions.push({group: 'Blueprints', text: 'Add "Foundation 8m x 2m" helpers on selection boundaries', value: 'helpers'});
             inputOptions.push({group: 'Blueprints', text: 'Copy selected items', value: 'copy'});
 
-            inputOptions.push({group: 'Downgrade/Upgrade', text: 'Offset selected items clock speed', value: 'updateClockSpeed'});
-            inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected belts/lifts', value: 'downgradeBelts'});
-            inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected belts/lifts', value: 'upgradeBelts'});
-            inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected power poles', value: 'downgradePowerPoles'});
-            inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected power poles', value: 'upgradePowerPoles'});
+            inputOptions.push({group: 'Overclocking', text: 'Offset selected items clock speed', value: 'updateClockSpeed'});
+
+            inputOptions.push({group: 'Downgrade', text: 'Downgrade selected belts/lifts', value: 'downgradeBelts'});
+            inputOptions.push({group: 'Downgrade', text: 'Downgrade selected power poles', value: 'downgradePowerPoles'});
+            inputOptions.push({group: 'Downgrade', text: 'Downgrade selected pipelines/pumps', value: 'downgradePipes'});
+
+            inputOptions.push({group: 'Upgrade', text: 'Upgrade selected belts/lifts', value: 'upgradeBelts'});
+            inputOptions.push({group: 'Upgrade', text: 'Upgrade selected power poles', value: 'upgradePowerPoles'});
+            inputOptions.push({group: 'Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'upgradePipes'});
 
             inputOptions.push({group: 'Foundations', text: 'Convert "Glass Foundation 8m x 1m" to "Foundation 8m x 1m"', value: 'upgradeGlass8x1ToFoundation8x1'});
 
@@ -7042,14 +6944,19 @@ export default class BaseLayout
                             });
 
                     case 'downgradeBelts':
-                        return this.downgradeBeltsSelection();
+                        return this.downgradeSelection('downgradeConveyor');
                     case 'upgradeBelts':
-                        return this.upgradeBeltsSelection();
+                        return this.upgradeSelection('upgradeConveyor');
 
                     case 'downgradePowerPoles':
-                        return this.downgradePowerPolesSelection();
+                        return this.downgradeSelection('downgradePowerPole');
                     case 'upgradePowerPoles':
-                        return this.upgradePowerPolesSelection();
+                        return this.upgradeSelection('upgradePowerPole');
+
+                    case 'downgradePipes':
+                        return this.downgradeSelection('downgradePipeline');
+                    case 'upgradePipes':
+                        return this.upgradeSelection('upgradePipeline');
 
                     case 'updateClockSpeed':
                         Modal.form({
@@ -7108,100 +7015,48 @@ export default class BaseLayout
         });
     }
 
-    downgradeBeltsSelection()
+    downgradeSelection(callbackName)
     {
         if(this.markersSelected)
         {
             for(let i = 0; i < this.markersSelected.length; i++)
             {
                 let contextMenu = this.getContextMenu(this.markersSelected[i]);
-
-                if(contextMenu !== false)
-                {
-                    // Search for a downgrade callback in contextmenu...
-                    for(let j = 0; j < contextMenu.length; j++)
+                    if(contextMenu !== false)
                     {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.search('downgradeBelt') !== -1)
+                        // Search for a downgrade callback in contextmenu...
+                        for(let j = 0; j < contextMenu.length; j++)
                         {
-                            contextMenu[j].callback({relatedTarget: this.markersSelected[i]});
+                            if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name === callbackName)
+                            {
+                                contextMenu[j].callback({relatedTarget: this.markersSelected[i], baseLayout: this});
+                            }
                         }
                     }
-                }
             }
         }
 
         this.cancelSelectMultipleMarkers();
     }
 
-    upgradeBeltsSelection()
+    upgradeSelection(callbackName)
     {
         if(this.markersSelected)
         {
             for(let i = 0; i < this.markersSelected.length; i++)
             {
                 let contextMenu = this.getContextMenu(this.markersSelected[i]);
-
-                if(contextMenu !== false)
-                {
-                    // Search for a downgrade callback in contextmenu...
-                    for(let j = 0; j < contextMenu.length; j++)
+                    if(contextMenu !== false)
                     {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.search('upgradeBelt') !== -1)
+                        // Search for a downgrade callback in contextmenu...
+                        for(let j = 0; j < contextMenu.length; j++)
                         {
-                            contextMenu[j].callback({relatedTarget: this.markersSelected[i]});
+                            if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name === callbackName)
+                            {
+                                contextMenu[j].callback({relatedTarget: this.markersSelected[i], baseLayout: this});
+                            }
                         }
                     }
-                }
-            }
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    downgradePowerPolesSelection()
-    {
-        if(this.markersSelected)
-        {
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                let contextMenu = this.getContextMenu(this.markersSelected[i]);
-
-                if(contextMenu !== false)
-                {
-                    // Search for a downgrade callback in contextmenu...
-                    for(let j = 0; j < contextMenu.length; j++)
-                    {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.search('downgradePowerPole') !== -1)
-                        {
-                            contextMenu[j].callback({relatedTarget: this.markersSelected[i]});
-                        }
-                    }
-                }
-            }
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    upgradePowerPolesSelection()
-    {
-        if(this.markersSelected)
-        {
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                let contextMenu = this.getContextMenu(this.markersSelected[i]);
-
-                if(contextMenu !== false)
-                {
-                    // Search for a downgrade callback in contextmenu...
-                    for(let j = 0; j < contextMenu.length; j++)
-                    {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.search('upgradePowerPole') !== -1)
-                        {
-                            contextMenu[j].callback({relatedTarget: this.markersSelected[i]});
-                        }
-                    }
-                }
             }
         }
 
