@@ -52,7 +52,7 @@ module.exports = env => {
                 url: env.SENTRY_URL,
                 authToken: env.SENTRY_AUTH_TOKEN,
                 org: "sentry",
-                project: "scim",
+                project: "satisfactory-calculator",
 
                 // webpack specific configuration
                 validate: true,
