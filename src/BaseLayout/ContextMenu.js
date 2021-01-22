@@ -90,8 +90,9 @@ export default class BaseLayout_ContextMenu
             if(buildingData !== null && buildingData.className !== '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
             {
                     if(
-                            currentObject.className.search('Building/Foundation/Build_Foundation') !== -1
-                         || currentObject.className.search('Building/Ramp/Build_Ramp_') !== -1
+                            currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation') === true
+                         || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_') === true
+                         || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') === true
                     )
                     {
                         contextMenu.push({

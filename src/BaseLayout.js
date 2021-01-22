@@ -940,7 +940,7 @@ export default class BaseLayout
                 }
                 else
                 {
-                    if(this.useDebug === true)
+                    if(this.useDebug === true && currentObject.className.startsWith('/Game/FactoryGame/Equipment/') === false)
                     {
                         console.log('Unknown?', currentObject);
                     }
@@ -3587,14 +3587,14 @@ export default class BaseLayout
         )
         {
             let mRailroadTrack = this.getObjectProperty(currentObject, 'mRailroadTrack');
-            if(mRailroadTrack !== null)
-            {
-                let railroadTrackMarker = this.getMarkerFromPathName(mRailroadTrack.pathName, layerId);
-                if(railroadTrackMarker !== null)
+                if(mRailroadTrack !== null)
                 {
-                    this.deleteGenericBuilding({relatedTarget: railroadTrackMarker});
+                    let railroadTrackMarker = this.getMarkerFromPathName(mRailroadTrack.pathName, layerId);
+                        if(railroadTrackMarker !== null)
+                        {
+                            this.deleteGenericBuilding({relatedTarget: railroadTrackMarker});
+                        }
                 }
-            }
 
             this.deleteSaveGameSign(currentObject);
         }
@@ -3621,14 +3621,13 @@ export default class BaseLayout
                 for(let i = 0; i < currentObject.extra.items.length; i++)
                 {
                     let currentItemData = this.getItemDataFromClassName(currentObject.extra.items[i].name);
-
-                    if(currentItemData !== null)
-                    {
-                        if(currentItemData.radioactiveDecay !== undefined)
+                        if(currentItemData !== null)
                         {
-                            delete this.playerLayers.playerRadioactivityLayer.elements[pathName + '_' + i];
+                            if(currentItemData.radioactiveDecay !== undefined)
+                            {
+                                delete this.playerLayers.playerRadioactivityLayer.elements[pathName + '_' + i];
+                            }
                         }
-                    }
                 }
             }
         }

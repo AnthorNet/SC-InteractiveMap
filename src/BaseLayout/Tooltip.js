@@ -5,8 +5,12 @@ export default class BaseLayout_Tooltip
 {
     constructor(options)
     {
-        this.baseLayout = options.baseLayout;
-        this.target     = options.target;
+        this.baseLayout                     = options.baseLayout;
+        this.target                         = options.target;
+
+        this.defaultTextStyle               = 'color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;';
+        this.genericTooltipBackgroundStyle  = 'border: 25px solid #7f7f7f;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png?v=' + this.baseLayout.scriptVersion + ') 25 repeat;background: #7f7f7f;margin: -7px;' + this.defaultTextStyle;
+        this.genericStorageBackgroundStyle  = 'border: 20px solid #373737;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericStorageBackground.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #373737;background-clip: padding-box;';
     }
 
     getTooltip(currentObject)
@@ -111,15 +115,13 @@ export default class BaseLayout_Tooltip
         content.push('<div class="text-small">' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[0])) + ' / ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[1])) + '</div>');
         content.push('<div class="text-small">Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm</div>');
 
-        return '<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericLeftBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat left;margin: -7px;padding-left: 25px;">\
-                <div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericRightBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat right;padding-right: 25px;">\
-                <div style="position: relative;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleHorizontalBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-x;height: 50px;" >\
-                <div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center"><div style="color: #FFFFFF;text-shadow: 2px 2px 2px #000000;line-height: 16px;font-size: 12px;" >\
-               ' + content.join('') + '\
-               </div></div></div>\
-               </div>\
-               </div>\
-               </div>';
+        return '<div class="d-flex" style="' + this.genericTooltipBackgroundStyle + '">\
+                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                        <div style="color: #FFFFFF;text-shadow: 2px 2px 2px #000000;line-height: 16px;font-size: 12px;" >\
+                            ' + content.join('') + '\
+                        </div>\
+                    </div>\
+                </div>';
     }
 
     setPipelineTooltipContent(currentObject)
@@ -282,26 +284,22 @@ export default class BaseLayout_Tooltip
         let content         = [];
 
             // HEADER
-            content.push('<div style="position: absolute;margin-top: -20px;width: 480px;text-align: center;color: #FFFFFF;text-shadow: 2px 2px 2px #000000;">');
-            content.push('<strong>' + beltData.name + distance + '</strong>');
-            content.push('</div>');
+            content.push('<div><strong>' + beltData.name + distance + '</strong></div>');
 
             // INVENTORY
-            content.push('<div style="padding-top: 25px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageTopBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;">');
-            content.push('<div style="padding-bottom: 34px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageBottomBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat bottom;">');
-            content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
-            content.push('<div style="margin: 0 auto;width: 400px;text-align: center;">');
-            if(beltInventory.length > 0)
-            {
-                content.push(this.baseLayout.setInventoryTableSlot(beltInventory));
-            }
-            content.push('</div>');
-            content.push('</div>');
-            content.push('</div>');
+            content.push('<div style="' + this.genericStorageBackgroundStyle + '" class="mt-3">');
+                content.push('<div style="margin: 0 auto;width: 400px;">');
+                    if(beltInventory.length > 0)
+                    {
+                        content.push(this.baseLayout.setInventoryTableSlot(beltInventory));
+                    }
+                content.push('</div>');
             content.push('</div>');
 
-        return '<div style="width: 480px;padding-top: 25px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericTopBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">\
-                ' + content.join('') + '\
+        return '<div class="d-flex" style="' + this.genericTooltipBackgroundStyle + '">\
+                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                        ' + content.join('') + '\
+                    </div>\
                 </div>';
     }
 
@@ -570,25 +568,17 @@ export default class BaseLayout_Tooltip
         }
 
             // HEADER
-            content.push('<div style="position: absolute;margin-top: -10px;width: 480px;text-align: center;color: #FFFFFF;text-shadow: 2px 2px 2px #000000;">');
-            content.push('<strong>' + buildingData.name + '</strong>');
-            content.push('</div>');
+            content.push('<div><strong>' + buildingData.name + '</strong></div>');
 
             if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C' || buildingData.category === 'vehicle')
             {
-                content.push('<div style="padding-top: 10px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
-                content.push('<div style="color: #FFFFFF;text-shadow: 2px 2px 2px #000000;line-height: 16px;font-size: 12px;" class="text-center">Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm</div>');
-                content.push('</div>');
+                content.push('<div>Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm</div>');
             }
 
             if(buildingData.category === 'vehicle' && currentObject.className.search('/Game/FactoryGame/Buildable/Vehicle/Train/') === -1 && currentObject.className !== '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C')
             {
-                content.push('<div style="padding-top: 10px;padding-bottom: 10px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
                 content.push('<div style="margin: 0 auto;width: 115px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/vehicleFuelBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding: 38px;">');
-
-                content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'), 1, 40));
-
-                content.push('</div>');
+                    content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'), 1, 40));
                 content.push('</div>');
             }
 
@@ -596,7 +586,6 @@ export default class BaseLayout_Tooltip
             {
                 let colSize = 'col-12';
 
-                content.push('<div style="padding-top: 10px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
                 content.push('<div class="row">');
 
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/TruckStation/Build_TruckStation.Build_TruckStation_C')
@@ -628,8 +617,6 @@ export default class BaseLayout_Tooltip
 
                 if(inventoryType === 'liquid')
                 {
-                    content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericBottomBackground.png?v=' + this.baseLayout.scriptVersion + ') bottom no-repeat;padding-bottom: 10px;">');
-
                     let maxFluid        = buildingData.maxFluid; // Use straigth calculation
                     let inventory       = this.baseLayout.getObjectInventory(currentObject, inventoryKey);
 
@@ -653,34 +640,26 @@ export default class BaseLayout_Tooltip
 
                         if(itemType !== null)
                         {
-                            content.push('<div style="padding-top: 25px;color: #FFFFFF;text-align: center;font-size: 13px;">');
-                            content.push('<strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentFluid / 100) / 10) + ' m³ of ' + itemType.name + '</strong>');
-                            content.push('</div>');
+                            content.push('<div class="pt-3"><strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentFluid / 100) / 10) + ' m³ of ' + itemType.name + '</strong></div>');
                         }
                     }
-
-                    content.push('</div>');
                 }
-
-                content.push('</div>');
             }
 
             if(inventoryType === 'solid')
             {
                 // INVENTORY
-                content.push('<div style="padding-top: 25px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageTopBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;">');
-                    content.push('<div style="padding-bottom: 34px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageBottomBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat bottom;">');
-                        content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/storageMiddleBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
-                            content.push('<div style="margin: 0 auto;width: 400px;text-align: center;">');
-                                content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, inventoryKey), ((buildingData.maxSlot !== undefined) ? buildingData.maxSlot : null)));
-                            content.push('</div>');
-                        content.push('</div>');
+                content.push('<div style="' + this.genericStorageBackgroundStyle + '" class="mt-3">');
+                    content.push('<div style="margin: 0 auto;width: 400px;">');
+                        content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, inventoryKey), ((buildingData.maxSlot !== undefined) ? buildingData.maxSlot : null)));
                     content.push('</div>');
                 content.push('</div>');
             }
 
-        return '<div style="width: 480px;padding-top: 25px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericTopBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">\
-                ' + content.join('') + '\
+        return '<div class="d-flex" style="' + this.genericTooltipBackgroundStyle + '">\
+                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                        ' + content.join('') + '\
+                    </div>\
                 </div>';
     }
 
@@ -1173,7 +1152,7 @@ export default class BaseLayout_Tooltip
                 direction = '<i class="fas fa-location-arrow" style="transform: rotate(' + angle + 'deg)"></i>&nbsp;&nbsp;&nbsp;';
         }
 
-        content.push('<div class="text-center"><strong>' + direction + inverted +  buildingData.name + '</strong></div>');
+        content.push('<div><strong>' + direction + inverted +  buildingData.name + '</strong></div>');
 
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
         {
@@ -1200,7 +1179,7 @@ export default class BaseLayout_Tooltip
             let buildingName = this.baseLayout.getSaveGameSign(currentObject, 'mStationName');
                 if(buildingName !== null)
                 {
-                    content.push('<div class="text-center"><em>' + buildingName + '</em></div>');
+                    content.push('<div><em>' + buildingName + '</em></div>');
                 }
         }
 
@@ -1209,35 +1188,20 @@ export default class BaseLayout_Tooltip
             let locomotiveName  = this.baseLayout.getSaveGameSign(currentObject, 'mTrainName');
                 if(locomotiveName !== null)
                 {
-                    content.push('<div class="text-center"><em>' + locomotiveName + '</em></div>');
+                    content.push('<div><em>' + locomotiveName + '</em></div>');
                 }
         }
 
-        let html = '';
-
         if(buildingData.image !== undefined)
         {
-            html += '<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericLeftBackground178.png?v=' + this.baseLayout.scriptVersion + ') no-repeat left;margin: -7px;padding-left: 24px;">';
-            html += '<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericRightBackground178.png?v=' + this.baseLayout.scriptVersion + ') no-repeat right;padding-right: 24px;">';
-
-            html += '<div style="position: relative;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleHorizontalBackground178.png?v=' + this.baseLayout.scriptVersion + ') repeat-x;" >';
-            html += '<div class="text-center"><img src="' + buildingData.image + '" style="width: 128px;height: 128px;" /></div>';
-        }
-        else
-        {
-            html += '<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericLeftBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat left;margin: -7px;padding-left: 24px;">';
-            html += '<div style="background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericRightBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat right;padding-right: 24px;">';
-
-            html += '<div style="position: relative;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/genericMiddleHorizontalBackground.png?v=' + this.baseLayout.scriptVersion + ') repeat-x;" >';
+            content.push('<div class="pt-3"><img src="' + buildingData.image + '" style="width: 128px;height: 128px;" /></div>');
         }
 
-        html += '<div class="d-flex" style="height: 50px;"><div class="justify-content-center align-self-center w-100 text-center"><div style="color: #FFFFFF;text-shadow: 2px 2px 2px #000000;line-height: 16px;font-size: 12px;" >\
-                       ' + content.join('') + '\
-                       </div></div></div>\
-                       </div>';
-        html += '</div></div>';
-
-        return html;
+        return '<div class="d-flex" style="' + this.genericTooltipBackgroundStyle + '">\
+                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                        ' + content.join('') + '\
+                    </div>\
+                </div>';
     }
 
     getOverclockingPanel(currentObject, top = 370, left = 32)
