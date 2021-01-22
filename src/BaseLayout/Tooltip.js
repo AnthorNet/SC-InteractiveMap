@@ -1090,10 +1090,9 @@ export default class BaseLayout_Tooltip
         {
             let rotation  = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
             let angle     = rotation.yaw - 45;
-
-                if(currentObject.className.search('Building/Ramp/Build_Ramp_') !== -1)
+                if(buildingData.mapCorrectedAngle !== undefined)
                 {
-                    angle -= 90;
+                    angle += buildingData.mapCorrectedAngle;
                 }
 
                 direction = '<i class="fas fa-location-arrow" style="transform: rotate(' + angle + 'deg)"></i>&nbsp;&nbsp;&nbsp;';
