@@ -930,11 +930,11 @@ export default class BaseLayout_Tooltip
         let maxFluid            = (buildingData.maxFluid !== undefined) ? buildingData.maxFluid : 50000;
 
         // VOLUME
-        if(buildingData.waterUsed !== undefined)
+        if(buildingData.supplementalLoadType !== undefined)
         {
                 for(let i = 0; i < inventoryIn.length; i++)
                 {
-                    if(inventoryIn[i] !== null && inventoryIn[i].className === this.baseLayout.itemsData.Desc_Water_C.className)
+                    if(inventoryIn[i] !== null && inventoryIn[i].className === this.baseLayout.itemsData[buildingData.supplementalLoadType].className)
                     {
                         currentFluid = inventoryIn[i].qty;
                         break;
@@ -945,30 +945,6 @@ export default class BaseLayout_Tooltip
                 currentFluid        = +(Math.round((currentFluid / 1000) * 100) / 100);
                 maxFluid            = +(Math.round((maxFluid / 1000) * 100) / 100);
         }
-
-        /*
-        if(buildingData.category === 'generator')
-        {
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
-            {
-                let inventoryOut    = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
-                    content        += '<div class="text-center"><table class="mr-auto ml-auto mb-3"><tr><td>' + this.baseLayout.setInventoryTableSlot(inventoryIn, 2, 64) + '</td><td><i class="fas fa-arrow-alt-right"></i></td><td>' + this.baseLayout.setInventoryTableSlot(inventoryOut, 1, 64) + '</td></tr></table></div>';
-            }
-            else
-            {
-                if(buildingData.waterUsed !== undefined)
-                {
-                    content        += '<div class="mt-3 mb-3">' + this.baseLayout.setInventoryTableSlot(inventoryIn, 2, 64, 'justify-content-center') + '</div>';
-                }
-                else
-                {
-                    content        += '<div class="mt-3 mb-3">' + this.baseLayout.setInventoryTableSlot(inventoryIn, 1, 64, 'justify-content-center') + '</div>';
-                }
-            }
-
-
-        }
-        */
 
         let content     = [];
 
@@ -1058,15 +1034,15 @@ export default class BaseLayout_Tooltip
             content.push('</div>');
 
             // VOLUME
-            if(buildingData.waterUsed !== undefined)
+            if(buildingData.supplementalLoadType !== undefined && buildingData.supplementalLoadAmount !== undefined)
             {
                 // DOME
-                if(this.baseLayout.itemsData.Desc_Water_C.color !== undefined && currentFluid > 0)
+                if(this.baseLayout.itemsData[buildingData.supplementalLoadType].color !== undefined && currentFluid > 0)
                 {
                     let volumeHeight = Math.round(currentFluid / maxFluid * 96);
 
                         content.push('<div style="position: absolute;margin-top: 41px;margin-left: 107px;">');
-                        content.push('<div style="position: relative;width: 96px;height: 96px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (96 - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + this.baseLayout.itemsData.Desc_Water_C.color + ';"></div></div>');
+                        content.push('<div style="position: relative;width: 96px;height: 96px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (96 - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + this.baseLayout.itemsData[buildingData.supplementalLoadType].color + ';"></div></div>');
                         content.push('</div>');
                 }
                 content.push('<div style="position: absolute;margin-top: 41px;margin-left: 107px;width: 96px;height: 96px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" width="96" height="96" /></div>');
@@ -1077,7 +1053,7 @@ export default class BaseLayout_Tooltip
                 content.push('</div>');
 
                 // CONSUMPTION
-                let waterConsumed   = buildingData.waterUsed * Math.pow(clockSpeed, -1/1.3);
+                let waterConsumed   = buildingData.supplementalLoadAmount * Math.pow(clockSpeed, -1/1.3);
                     content.push('<div style="position: absolute;margin-top: 245px;margin-left: 107px;width: 96px;text-align: center;font-size: 13px;color: #5b5b5b;">');
                     content.push('<span class="small">Consumption:</span><br /><i class="fas fa-industry-alt"></i><br /><strong>' + waterConsumed + 'm³</strong>');
                     content.push('</div>');
@@ -1096,7 +1072,7 @@ export default class BaseLayout_Tooltip
             content.push(this.getOverclockingPanel(currentObject));
             content.push(this.getStandByPanel(currentObject));
 
-        if(buildingData.waterUsed !== undefined)
+        if(buildingData.supplementalLoadType !== undefined)
         {
             return '<div style="position: relative;width: 500px;height: 490px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/generatorWaterBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">' + content.join('') + '</div>';
         }

@@ -297,39 +297,37 @@ export default class BaseLayout_Statistics_Production
                                             playerProduction[fuelItem.className].offConsumed    += offFuelConsumed;
                                         }
 
-                                        if(buildingData.waterUsed !== undefined)
+                                        if(buildingData.supplementalLoadType !== undefined && buildingData.supplementalLoadAmount !== undefined)
                                         {
-                                            let waterClassName      = '/Game/FactoryGame/Resource/RawResources/Water/Desc_Water.Desc_Water_C';
+                                            let supplementalLoadConsumed    = 0;
+                                            let offSupplementalLoadConsumed = 0;
+                                                if(buildingIsOn === true)
+                                                {
+                                                    supplementalLoadConsumed = buildingData.supplementalLoadAmount * Math.pow(clockSpeed, 1/1.3);
+                                                }
+                                                else
+                                                {
+                                                    offSupplementalLoadConsumed = buildingData.supplementalLoadAmount * Math.pow(clockSpeed, 1/1.3);
+                                                }
 
-                                            let waterConsumed       = 0;
-                                            let offWaterConsumed    = 0;
-
-                                            if(buildingIsOn === true)
-                                            {
-                                                waterConsumed = buildingData.waterUsed * Math.pow(clockSpeed, 1/1.3) * 1000;
-                                            }
-                                            else
-                                            {
-                                                offWaterConsumed = buildingData.waterUsed * Math.pow(clockSpeed, 1/1.3) * 1000;
-                                            }
-
-                                            if(playerProduction[waterClassName] === undefined)
-                                            {
-                                                playerProduction[waterClassName] = {
-                                                    name        : this.baseLayout.itemsData['Desc_Water_C'].name,
-                                                    image       : this.baseLayout.itemsData['Desc_Water_C'].image,
-                                                    category    : this.baseLayout.itemsData['Desc_Water_C'].category,
-                                                    produced    : 0,
-                                                    offProduced : 0,
-                                                    consumed    : waterConsumed,
-                                                    offConsumed : offWaterConsumed
-                                                };
-                                            }
-                                            else
-                                            {
-                                                playerProduction[waterClassName].consumed       += waterConsumed;
-                                                playerProduction[waterClassName].offConsumed    += offWaterConsumed;
-                                            }
+                                            let supplementalLoadClassName   = this.baseLayout.itemsData[buildingData.supplementalLoadType].className;
+                                                if(playerProduction[supplementalLoadClassName] === undefined)
+                                                {
+                                                    playerProduction[supplementalLoadClassName] = {
+                                                        name        : this.baseLayout.itemsData[buildingData.supplementalLoadType].name,
+                                                        image       : this.baseLayout.itemsData[buildingData.supplementalLoadType].image,
+                                                        category    : this.baseLayout.itemsData[buildingData.supplementalLoadType].category,
+                                                        produced    : 0,
+                                                        offProduced : 0,
+                                                        consumed    : supplementalLoadConsumed,
+                                                        offConsumed : offSupplementalLoadConsumed
+                                                    };
+                                                }
+                                                else
+                                                {
+                                                    playerProduction[supplementalLoadClassName].consumed       += supplementalLoadConsumed;
+                                                    playerProduction[supplementalLoadClassName].offConsumed    += offSupplementalLoadConsumed;
+                                                }
                                         }
                                     }
                                 }
