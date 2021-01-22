@@ -2725,6 +2725,7 @@ export default class BaseLayout
                 delete this.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
                 this.radioactivityLayerNeedsUpdate = true;
                 this.getObjectRadioactivity(currentObject, inventoryProperty);
+                this.updateRadioactivityLayer();
                 this.ficsitRadioactiveAlert = undefined;
             }.bind(this)
         });
