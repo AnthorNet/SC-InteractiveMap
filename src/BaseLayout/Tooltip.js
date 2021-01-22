@@ -10,7 +10,7 @@ export default class BaseLayout_Tooltip
 
         this.defaultTextStyle               = 'color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;';
         this.genericTooltipBackgroundStyle  = 'border: 25px solid #7f7f7f;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png?v=' + this.baseLayout.scriptVersion + ') 25 repeat;background: #7f7f7f;margin: -7px;' + this.defaultTextStyle;
-        this.genericStorageBackgroundStyle  = 'border: 20px solid #373737;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericStorageBackground.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #373737;background-clip: padding-box;';
+        this.genericStorageBackgroundStyle  = 'border: 19px solid #373737;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericStorageBackground.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #373737;background-clip: padding-box;';
     }
 
     getTooltip(currentObject)
@@ -196,7 +196,7 @@ export default class BaseLayout_Tooltip
                     let volumeHeight    = Math.round(currentFluid / maxFluid * imageSize);
 
                         content.push('<div style="position: absolute;margin-top: 40px;margin-left: 198px;">');
-                        content.push('<div style="position: relative;width: ' + imageSize + 'px;height: ' + imageSize + 'px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (imageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + itemType.color + ';"></div></div>');
+                            content.push('<div style="position: relative;width: ' + imageSize + 'px;height: ' + imageSize + 'px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (imageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + itemType.color + ';"></div></div>');
                         content.push('</div>');
                         content.push('<div style="position: absolute;margin-top: 40px;margin-left: 198px;width: ' + imageSize + 'px;height: ' + imageSize + 'px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + imageSize + 'px;height: ' + imageSize + 'px;" /></div>');
                 }
@@ -230,7 +230,7 @@ export default class BaseLayout_Tooltip
 
         }
 
-        return '<div style="position: relative;width: 350px;height: 270px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/pipeBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">' + content.join('') + '</div>';
+        return '<div style="position: relative;width: 350px;height: 270px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/pipelineBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">' + content.join('') + '</div>';
     }
 
     setBeltTooltipContent(currentObject)
@@ -476,9 +476,6 @@ export default class BaseLayout_Tooltip
                     content.push('</div>');
 
                     content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td><div class="d-flex flex-row" style="position:relative;margin: 1px;width: 64px;height: 64px;border: 1px solid #000000;border-radius:50%;padding: 5px;background-color: #FFFFFF;"><img src="' + this.baseLayout.itemsData[itemType].image + '" class="img-fluid" /></div></td></tr></table></div>');
-
-
-                        //content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td>' + this.baseLayout.setInventoryTableSlot(inventoryOut, 1, 48, 'justify-content-center') + '</td></tr></table></div>');
                 }
 
                 let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
@@ -577,9 +574,7 @@ export default class BaseLayout_Tooltip
 
             if(buildingData.category === 'vehicle' && currentObject.className.search('/Game/FactoryGame/Buildable/Vehicle/Train/') === -1 && currentObject.className !== '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C')
             {
-                content.push('<div style="margin: 0 auto;width: 115px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/vehicleFuelBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding: 38px;">');
-                    content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'), 1, 40));
-                content.push('</div>');
+                content.push(this.setInventoryFuel(currentObject));
             }
 
             if(buildingData.category === 'dockstation' || inventoryType === 'liquid')
@@ -593,24 +588,12 @@ export default class BaseLayout_Tooltip
                         colSize = 'col-6';
 
                         content.push('<div class="' + colSize + '">');
-                            content.push('<div style="margin: 0 auto;width: 115px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/vehicleFuelBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding: 38px;">');
-                                content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'), 1, 40));
-                            content.push('</div>');
+                            content.push(this.setInventoryFuel(currentObject));
                         content.push('</div>');
                     }
 
                     content.push('<div class="' + colSize + '">');
-
-                    let mIsInLoadMode = this.baseLayout.getObjectProperty(currentObject, 'mIsInLoadMode');
-                        if(mIsInLoadMode !== null && mIsInLoadMode === 0)
-                        {
-                            content.push('<div style="margin: 0 auto;width: 153px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/vehicleUnloadMode.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;"></div>');
-                        }
-                        else
-                        {
-                            content.push('<div style="margin: 0 auto;width: 153px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/vehicleLoadMode.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;"></div>');
-                        }
-
+                        content.push(this.setStationLoadMode(currentObject));
                     content.push('</div>');
 
                 content.push('</div>');
@@ -627,15 +610,7 @@ export default class BaseLayout_Tooltip
 
                         if(itemType !== null && itemType.color !== undefined && currentFluid > 0)
                         {
-                            let imageSize       = 196;
-                            let volumeHeight    = Math.round(currentFluid / maxFluid * imageSize);
-
-                                content.push('<div style="height: 230px;width:230px;margin: 0 auto;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidBackground.png?v=' + this.baseLayout.scriptVersion + ')">');
-                                    content.push('<div style="position: absolute;margin-top: 12px;margin-left: 17px;">');
-                                        content.push('<div style="position: relative;width: ' + imageSize + 'px;height: ' + imageSize + 'px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (imageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + itemType.color + ';"></div></div>');
-                                    content.push('</div>');
-                                    content.push('<div style="position: absolute;margin-top: 12px;margin-left: 17px;width: ' + imageSize + 'px;height: ' + imageSize + 'px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + imageSize + 'px;height: ' + imageSize + 'px;" /></div>');
-                                content.push('</div>');
+                            content.push(this.setLiquidDome(230, currentFluid, maxFluid, itemType.color));
                         }
 
                         if(itemType !== null)
@@ -668,7 +643,7 @@ export default class BaseLayout_Tooltip
         let content = [];
 
         // HEADER
-        content.push('<div style="position: absolute;margin-top: 2px;width: 270px;text-align: center;color: #FFFFFF;text-shadow: 2px 2px 2px #000000;">');
+        content.push('<div style="position: absolute;margin-top: 2px;width: 270px;text-align: center;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;">');
         content.push('<strong>' + buildingData.name + '</strong>');
         content.push('</div>');
 
@@ -723,39 +698,35 @@ export default class BaseLayout_Tooltip
 
             if(itemType !== null && itemType.color !== undefined && currentFluid > 0)
             {
-                let imageSize       = 196;
-                let volumeHeight    = Math.round(currentFluid / maxFluid * imageSize);
-
-                    content.push('<div style="position: absolute;margin-top: 35px;margin-left: 37px;">');
-                    content.push('<div style="position: relative;width: ' + imageSize + 'px;height: ' + imageSize + 'px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (imageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + itemType.color + ';"></div></div>');
-                    content.push('</div>');
-                    content.push('<div style="position: absolute;margin-top: 35px;margin-left: 37px;width: ' + imageSize + 'px;height: ' + imageSize + 'px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + imageSize + 'px;height: ' + imageSize + 'px;" /></div>');
+                content.push('<div style="position: absolute;margin-top: 25px;margin-left: 20px;">');
+                    content.push(this.setLiquidDome(230, currentFluid, maxFluid, itemType.color));
+                content.push('</div>');
             }
 
             if(itemType !== null)
             {
                 content.push('<div style="position: absolute;margin-top: 355px;margin-left: 10px;width: 250px;color: #5b5b5b;text-align: center;font-size: 13px;">');
-                content.push('<strong>' + itemType.name + '</strong>');
+                    content.push('<strong>' + itemType.name + '</strong>');
                 content.push('</div>');
             }
         }
 
         // AMOUNT
         content.push('<div style="position: absolute;margin-top: 270px;margin-left: 40px;width: 210px;color: #FFFFFF;text-align: center;font-size: 13px;">');
-        content.push('<span class="small">Current amount:</span><br /><strong><strong class="text-info">???</strong> / ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(maxFluid / 100) / 10) + ' m³</strong>');
+            content.push('<span class="small">Current amount:</span><br /><strong><strong class="text-info">???</strong> / ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(maxFluid / 100) / 10) + ' m³</strong>');
         content.push('</div>');
 
         if(buildingData.maxFlowRate !== undefined)
         {
-            content.push('<div style="position: absolute;margin-top: 150px;margin-left: 193px;width: 70px;text-align: center;font-size: 11px;color: #5b5b5b;">');
+            content.push('<div style="position: absolute;margin-top: 390px;margin-left: 0px;width: 135px;text-align: center;font-size: 11px;color: #5b5b5b;">');
             content.push('<span class="small">Flow Rate</span><br /><i class="fas fa-chevron-right"></i><br /><strong><strong class="text-info">???</strong> m³/min</strong>');
             content.push('</div>');
-            content.push('<div style="position: absolute;margin-top: 150px;margin-left: 263px;width: 70px;text-align: center;font-size: 11px;color: #5b5b5b;border-left: 1px solid #5b5b5b;">');
+            content.push('<div style="position: absolute;margin-top: 390px;margin-left: 135px;width: 135px;text-align: center;font-size: 11px;color: #5b5b5b;border-left: 1px solid #5b5b5b;">');
             content.push('<span class="small">Max Flow Rate</span><br /><i class="fas fa-chevron-double-right"></i><br /><strong><strong class="text-info">' + buildingData.maxFlowRate / 1000 + '</strong> m³/min</strong>');
             content.push('</div>');
         }
 
-        return '<div style="width: 270px;height: 474px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/fluidStorageBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">\
+        return '<div style="width: 270px;height: 474px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/fluidStorageBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">\
                 ' + content.join('') + '\
                 </div>';
     }
@@ -1245,16 +1216,57 @@ export default class BaseLayout_Tooltip
     getStandByPanel(currentObject, top = 360, left = 415)
     {
         let content             = [];
-
-            content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px;">');
+        let imageFile           = 'standByOn.png';
             if(this.baseLayout.getBuildingIsOn(currentObject) === false)
             {
-                content.push('<img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/standByOff.png?v=' + this.baseLayout.scriptVersion + '" />');
+                imageFile = 'standByOff.png';
             }
-            else
+
+            content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px;">');
+                content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/' + imageFile + '?v=' + this.baseLayout.scriptVersion + '" />');
+            content.push('</div>');
+
+        return content.join('');
+    }
+
+    setInventoryFuel(currentObject)
+    {
+        let content = [];
+            content.push('<div style="margin: 0 auto;width: 115px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/vehicleFuelBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding: 38px;">');
+                content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'), 1, 40));
+            content.push('</div>');
+
+        return content.join('');
+    }
+
+    setStationLoadMode(currentObject)
+    {
+        let mIsInLoadMode   = this.baseLayout.getObjectProperty(currentObject, 'mIsInLoadMode');
+        let imageFile       = 'stationLoadMode.png';
+            if(mIsInLoadMode !== null && mIsInLoadMode === 0)
             {
-                content.push('<img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/standByOn.png?v=' + this.baseLayout.scriptVersion + '" />');
+                imageFile = 'stationUnloadMode.png';
             }
+
+        return '<div style="margin: 0 auto;width: 153px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/' + imageFile + '?v=' + this.baseLayout.scriptVersion + ') no-repeat;"></div>';
+    }
+
+    setLiquidDome(backgroundImageSize, currentFluid, maxFluid, color)
+    {
+        let content             = [];
+            backgroundImageSize = Math.min(backgroundImageSize, 230);
+        let imageRatio          = backgroundImageSize / 230
+        let domeImageSize       = 196 * imageRatio;
+
+        let volumeHeight        = Math.round(currentFluid / maxFluid * domeImageSize);
+
+            content.push('<div style="height: ' + backgroundImageSize + 'px;width:' + backgroundImageSize + 'px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidBackground.png?v=' + this.baseLayout.scriptVersion + ');" class="d-inline-block">');
+                content.push('<div style="position: absolute;margin-top: ' + 12 * imageRatio + 'px;margin-left: ' + 17 * imageRatio + 'px;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;border-radius: 50%;overflow: hidden;">');
+                    content.push('<div style="margin-top: ' + (domeImageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + color + ';"></div>');
+                content.push('</div>');
+                content.push('<div style="position: absolute;margin-top: ' + 12 * imageRatio + 'px;margin-left: ' + 17 * imageRatio + 'px;">');
+                    content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" width="' + domeImageSize + '" height="' + domeImageSize + '" />');
+                content.push('</div>');
             content.push('</div>');
 
         return content.join('');
@@ -1262,57 +1274,57 @@ export default class BaseLayout_Tooltip
 
     setTooltipFooter(options)
     {
-        let html = '<div class="mt-1"><table class="mr-auto ml-auto"><tr>';
+        let content = [];
+            content.push('<div class="mt-1"><table class="mr-auto ml-auto"><tr>');
 
-        if(options.circuitId !== undefined && options.circuitId !== null)
-        {
-            html += '<td class="text-center mb-1 px-1"><i class="fas fa-plug"></td>';
-        }
-
-        if(options.powerUsed !== undefined || options.powerGenerated !== undefined)
-        {
-            html += '<td class="text-center mb-1 px-1"><i class="fas fa-bolt"></td>';
-        }
-        if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
-        {
-            html += '<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>';
-        }
-        if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
-        {
-            html += '<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>';
-        }
-
-        html += '</tr><tr>';
-
-        if(options.circuitId !== undefined && options.circuitId !== null)
-        {
-            html += '<td class="text-center text-warning small px-1">#' + options.circuitId.split('_').pop() + '</td>';
-        }
-
-        if(options.powerUsed !== undefined)
-        {
-            html += '<td class="text-center text-warning small px-1">' + +(Math.round(options.powerUsed * 100) / 100) + 'MW</td>';
-        }
-        if(options.powerGenerated !== undefined)
-        {
-            html += '<td class="text-center text-warning small px-1">' + +(Math.round(options.powerGenerated * 100) / 100) + 'MW</td>';
-        }
-        if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
-        {
-            html += '<td class="text-center text-warning small px-1">' + +(Math.round(options.craftingTime * options.clockSpeed * 100) / 100) + 's</td>';
-        }
-        if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
-        {
-            let mPowerProductionExponent = 1.3;
-                if(options.mPowerProductionExponent !== undefined)
+                if(options.circuitId !== undefined && options.circuitId !== null)
                 {
-                    mPowerProductionExponent = options.mPowerProductionExponent;
+                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-plug"></td>');
+                }
+                if(options.powerUsed !== undefined || options.powerGenerated !== undefined)
+                {
+                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-bolt"></td>');
+                }
+                if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
+                {
+                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
+                }
+                if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
+                {
+                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
                 }
 
-            html += '<td class="text-center text-warning small px-1">' + +(Math.round((options.fuelEnergyValue / options.powerGenerated) * Math.pow(options.clockSpeed, -1/mPowerProductionExponent) * 100) / 100) + 's</td>';
-        }
+            content.push('</tr><tr>');
 
-        html += '</tr></table></div>';
-        return html;
+                if(options.circuitId !== undefined && options.circuitId !== null)
+                {
+                    content.push('<td class="text-center text-warning small px-1">#' + options.circuitId.split('_').pop() + '</td>');
+                }
+                if(options.powerUsed !== undefined)
+                {
+                    content.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerUsed * 100) / 100) + 'MW</td>');
+                }
+                if(options.powerGenerated !== undefined)
+                {
+                    content.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerGenerated * 100) / 100) + 'MW</td>');
+                }
+                if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
+                {
+                    content.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.craftingTime * options.clockSpeed * 100) / 100) + 's</td>');
+                }
+                if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
+                {
+                    let mPowerProductionExponent = 1.3;
+                        if(options.mPowerProductionExponent !== undefined)
+                        {
+                            mPowerProductionExponent = options.mPowerProductionExponent;
+                        }
+
+                    content.push('<td class="text-center text-warning small px-1">' + +(Math.round((options.fuelEnergyValue / options.powerGenerated) * Math.pow(options.clockSpeed, -1/mPowerProductionExponent) * 100) / 100) + 's</td>');
+                }
+
+            content.push('</tr></table></div>');
+
+        return content.join('');
     }
 }
