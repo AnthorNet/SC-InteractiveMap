@@ -34,7 +34,7 @@ export default class Building_Conveyor
             }
 
         let poolIndex       = usePool.indexOf(currentObject.className);
-            if(poolIndex > 0)
+            if(poolIndex !== -1 && poolIndex > 0)
             {
                 currentObject.className = usePool[poolIndex - 1];
             }
@@ -52,7 +52,7 @@ export default class Building_Conveyor
             }
 
         let poolIndex       = usePool.indexOf(currentObject.className);
-            if(poolIndex < (usePool.length - 1))
+            if(poolIndex !== -1 && poolIndex < (usePool.length - 1))
             {
                 currentObject.className = usePool[poolIndex + 1];
             }

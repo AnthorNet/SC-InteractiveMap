@@ -246,7 +246,7 @@ export default class BaseLayout_ContextMenu
                             }
                         let poolIndex   = usePool.indexOf(currentObject.className);
 
-                        if(poolIndex > 0 || poolIndex < (usePool.length - 1))
+                        if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
                         {
                             contextMenu.push({separator: true});
 
@@ -288,7 +288,7 @@ export default class BaseLayout_ContextMenu
                             }
                         let poolIndex   = usePool.indexOf(currentObject.className);
 
-                        if(poolIndex > 0 || poolIndex < (usePool.length - 1))
+                        if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
                         {
                             contextMenu.push({separator: true});
 
@@ -329,7 +329,7 @@ export default class BaseLayout_ContextMenu
                             }
                         let poolIndex   = usePool.indexOf(currentObject.className);
 
-                        if(poolIndex > 0 || poolIndex < (usePool.length - 1))
+                        if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
                         {
                             contextMenu.push({separator: true});
 
