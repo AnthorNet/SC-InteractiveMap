@@ -6,8 +6,8 @@ export default class Spawn_Circle
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
         this.marker             = options.marker;
+        this.baseLayout         = options.marker.baseLayout;
         this.layerId            = null;
 
         this.minRadius          = options.minRadius;
@@ -99,11 +99,11 @@ export default class Spawn_Circle
                                 if(this.direction === 'UP')
                                 {
                                     angle += 180;
-                                    newFoundation.transform.translation[2] += radius * this.centerObjectHeight;
+                                    newFoundation.transform.translation[2] += (radius - this.minRadius) * this.centerObjectHeight;
                                 }
-                                else
+                                if(this.direction === 'DOWN')
                                 {
-                                    newFoundation.transform.translation[2] -= radius * this.centerObjectHeight;
+                                    newFoundation.transform.translation[2] -= (radius - this.minRadius) * this.centerObjectHeight;
                                 }
                             }
 

@@ -2,18 +2,21 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import Modal                                    from '../Modal.js';
 
-export default class BaseLayout_Spawn_Polygon
+export default class Spawn_Polygon
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
         this.marker             = options.marker;
+        this.baseLayout         = options.marker.baseLayout;
         this.layerId            = null;
 
         this.numberOfSides      = options.numberOfSides;
+
         this.minSize            = parseInt(options.minSize);
         this.maxSize            = parseInt(options.maxSize);
+
         this.gridOverlapping    = options.gridOverlapping;
+        this.direction          = options.direction;
 
         this.useOwnMaterials    = options.useOwnMaterials;
 
@@ -22,14 +25,22 @@ export default class BaseLayout_Spawn_Polygon
         this.maxSize            = Math.max((this.minSize + 1), Math.min(this.maxSize, 65));
 
         this.centerObject       = this.baseLayout.saveGameParser.getTargetObject(this.marker.relatedTarget.options.pathName);
+        this.centerObjectHeight = 400;
         this.centerYaw          = BaseLayout_Math.getQuaternionToEuler(this.centerObject.transform.rotation).yaw;
 
         this.sideAngle          = (360 / this.numberOfSides);
 
         let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.centerObject.className);
-            if(currentObjectData !== null && currentObjectData.mapLayer !== undefined)
+            if(currentObjectData !== null)
             {
-                this.layerId = currentObjectData.mapLayer;
+                if(currentObjectData !== null && currentObjectData.mapLayer !== undefined)
+                {
+                    this.layerId = currentObjectData.mapLayer;
+                }
+                if(currentObjectData.height !== undefined)
+                {
+                    this.centerObjectHeight = currentObjectData.height * 100;
+                }
             }
 
             if(typeof gtag === 'function')
@@ -97,6 +108,19 @@ export default class BaseLayout_Spawn_Polygon
                     let rotation                                = BaseLayout_Math.getPointRotation([centerX - 400, positionY], [centerX, centerY], centerRotation);
                         newFoundation.transform.translation[0]  = rotation[0];
                         newFoundation.transform.translation[1]  = rotation[1];
+
+                        if(this.centerObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_') === true || this.centerObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') === true)
+                        {
+                            if(this.direction === 'UP')
+                            {
+                                newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, angle + 180);
+                                newFoundation.transform.translation[2] += (minSize - this.minSize) * this.centerObjectHeight;
+                            }
+                            if(this.direction === 'DOWN')
+                            {
+                                newFoundation.transform.translation[2] -= (minSize - this.minSize) * this.centerObjectHeight;
+                            }
+                        }
 
                     this.baseLayout.saveGameParser.addObject(newFoundation);
                     results.push(this.baseLayout.parseObject(newFoundation));

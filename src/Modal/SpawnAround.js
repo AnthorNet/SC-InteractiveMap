@@ -1,9 +1,11 @@
 import Modal                                    from '../Modal.js';
 
+import BaseLayout_Map_ColorSlots                from '../BaseLayout/MapColorSlots.js';
+
 import Spawn_Circle                             from '../Spawn/Circle.js';
 //import BaseLayout_Spawn_CorkScrew               from '../BaseLayout/SpawnCorkScrew.js';
 import BaseLayout_Spawn_Rectangle               from '../BaseLayout/SpawnRectangle.js';
-import BaseLayout_Spawn_Polygon                 from '../BaseLayout/SpawnPolygon.js';
+import Spawn_Polygon                            from '../Spawn/Polygon.js';
 import BaseLayout_Spawn_Blueprint               from '../BaseLayout/SpawnBlueprint.js';
 import BaseLayout_Spawn_Text                    from '../BaseLayout/SpawnText.js';
 
@@ -212,7 +214,6 @@ export default class Modal_SpawnAround
                                     }
 
                                     return new Spawn_Circle({
-                                        baseLayout      : baseLayout,
                                         marker          : marker,
                                         minRadius       : values.minRadius,
                                         maxRadius       : values.maxRadius,
@@ -367,6 +368,7 @@ export default class Modal_SpawnAround
                         case 'hollowPolygon':
                             let polygonOptions  = [];
                             let inputOptions    = [];
+                                inputOptions.push({text: 'Triangle - 3 sides', value: 3});
                                 inputOptions.push({text: 'Pentagon - 5 sides', value: 5});
                                 inputOptions.push({text: 'Hexagon - 6 sides', value: 6});
                                 inputOptions.push({text: 'Heptagon - 7 sides', value: 7});
@@ -404,6 +406,19 @@ export default class Modal_SpawnAround
                                     });
                                 }
 
+                                if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_') === true || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') === true)
+                                {
+                                    polygonOptions.push({
+                                        label           : 'Direction',
+                                        name            : 'direction',
+                                        inputType       : 'select',
+                                        inputOptions    : [
+                                            {text: 'Up', value: 'UP'},
+                                            {text: 'Down', value: 'DOWN'}
+                                        ]
+                                    });
+                                }
+
                                 polygonOptions.push({
                                     label           : 'Minimize grid overlapping',
                                     name            : 'gridOverlapping',
@@ -427,13 +442,13 @@ export default class Modal_SpawnAround
                                         values.minSize = 1;
                                     }
 
-                                    return new BaseLayout_Spawn_Polygon({
-                                        baseLayout      : baseLayout,
+                                    return new Spawn_Polygon({
                                         marker          : marker,
 
                                         numberOfSides   : values.numberOfSides,
                                         minSize         : values.minSize,
                                         maxSize         : values.maxSize,
+                                        direction       : values.direction,
                                         gridOverlapping : values.gridOverlapping,
 
                                         useOwnMaterials : form.useOwnMaterials
