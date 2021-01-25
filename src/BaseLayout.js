@@ -2087,7 +2087,7 @@ export default class BaseLayout
                 {
                     label           : 'Use materials from your containers? (Not suitable for pasting blueprints)',
                     name            : 'useOwnMaterials',
-                    inputType       : 'toggle',
+                    inputType       : 'toggle'
                 }
             ],
             callback    : function(form)
@@ -2411,17 +2411,8 @@ export default class BaseLayout
                                 polygonOptions.push({
                                     label           : 'Minimize grid overlapping',
                                     name            : 'gridOverlapping',
-                                    inputType       : 'select',
-                                    inputOptions    : [
-                                        {
-                                            text        : 'Yes',
-                                            value       : '1'
-                                        },
-                                        {
-                                            text        : 'No',
-                                            value       : '0'
-                                        }
-                                    ]
+                                    inputType       : 'toggle',
+                                    value           : 1
                                 });
 
                             Modal.form({
@@ -5358,17 +5349,7 @@ export default class BaseLayout
                 {
                     label       : 'Use power shards from your containers?',
                     name        : 'useOwnPowershards',
-                    inputType   : 'select',
-                    inputOptions    : [
-                        {
-                            text    : 'Yes',
-                            value   : '1'
-                        },
-                        {
-                            text    : 'No',
-                            value   : '0'
-                        }
-                    ]
+                    inputType   : 'toggle'
                 }
             ],
             callback    : function(form)
@@ -6982,19 +6963,9 @@ export default class BaseLayout
                                     max         : 250
                                 },
                                 {
-                                    label: 'Use power shards from your containers?',
-                                    name: 'useOwnPowershards',
-                                    inputType: 'select',
-                                    inputOptions: [
-                                        {
-                                            text    : 'Yes',
-                                            value   : '1'
-                                        },
-                                        {
-                                            text    : 'No',
-                                            value   : '0'
-                                        }
-                                    ]
+                                    label       : 'Use power shards from your containers?',
+                                    name        : 'useOwnPowershards',
+                                    inputType   : 'toggle'
                                 }
                             ],
                             callback: function(form)

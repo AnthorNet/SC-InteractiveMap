@@ -335,13 +335,17 @@ export default class Modal
                     break;
                 case 'toggle':
                     input.removeAttr('name');
-                    input.find('input').attr('name', options.name);
-                    input.find('input[type=checkbox]').attr('id', options.name);
+                    input.find('input').attr('name', options.name)
+                                       .attr('id', options.name);
                     input.find('label').attr('for', options.name);
 
                     if(options.label !== undefined)
                     {
                         input.find('label').html(options.label);
+                    }
+                    if(options.value !== undefined && options.value === 1)
+                    {
+                        input.find('input').prop('checked', true);
                     }
                     break;
                 default:
