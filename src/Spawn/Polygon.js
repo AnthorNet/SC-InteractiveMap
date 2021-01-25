@@ -20,7 +20,7 @@ export default class Spawn_Polygon
 
         this.useOwnMaterials    = options.useOwnMaterials;
 
-        this.numberOfSides      = Math.max(5, Math.min(this.numberOfSides, 12));
+        this.numberOfSides      = Math.max(3, Math.min(this.numberOfSides, 12));
         this.minSize            = Math.max(3, Math.min(this.minSize, 63));
         this.maxSize            = Math.max((this.minSize + 1), Math.min(this.maxSize, 65));
 

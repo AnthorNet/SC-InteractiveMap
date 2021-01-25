@@ -4,7 +4,7 @@ import BaseLayout_Map_ColorSlots                from '../BaseLayout/MapColorSlot
 
 import Spawn_Circle                             from '../Spawn/Circle.js';
 //import BaseLayout_Spawn_CorkScrew               from '../BaseLayout/SpawnCorkScrew.js';
-import BaseLayout_Spawn_Rectangle               from '../BaseLayout/SpawnRectangle.js';
+import Spawn_Rectangle                          from '../Spawn/Rectangle.js';
 import Spawn_Polygon                            from '../Spawn/Polygon.js';
 import BaseLayout_Spawn_Blueprint               from '../BaseLayout/SpawnBlueprint.js';
 import BaseLayout_Spawn_Text                    from '../BaseLayout/SpawnText.js';
@@ -324,6 +324,19 @@ export default class Modal_SpawnAround
                                 });
                             }
 
+                            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_') === true || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') === true)
+                            {
+                                rectangleOptions.push({
+                                    label           : 'Direction',
+                                    name            : 'direction',
+                                    inputType       : 'select',
+                                    inputOptions    : [
+                                        {text: 'Up', value: 'UP'},
+                                        {text: 'Down', value: 'DOWN'}
+                                    ]
+                                });
+                            }
+
                             Modal.form({
                                 title: "Rectangle options",
                                 container: '#leafletMap',
@@ -351,14 +364,12 @@ export default class Modal_SpawnAround
                                         values.minHeight    = 1;
                                     }
 
-                                    return new BaseLayout_Spawn_Rectangle({
-                                        baseLayout      : baseLayout,
+                                    return new Spawn_Rectangle({
                                         marker          : marker,
                                         minWidth        : values.minWidth,
                                         maxWidth        : values.maxWidth,
                                         minHeight       : values.minHeight,
                                         maxHeight       : values.maxHeight,
-                                        useDirection    : false,
                                         useOwnMaterials : form.useOwnMaterials
                                     });
                                 }.bind(baseLayout)
@@ -475,6 +486,19 @@ export default class Modal_SpawnAround
                                     max         : 65
                                 });
 
+                                if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_') === true || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') === true)
+                                {
+                                    roadOptions.push({
+                                        label           : 'Direction',
+                                        name            : 'direction',
+                                        inputType       : 'select',
+                                        inputOptions    : [
+                                            {text: 'Up', value: 'UP'},
+                                            {text: 'Down', value: 'DOWN'}
+                                        ]
+                                    });
+                                }
+
                             Modal.form({
                                 title       : "Road options",
                                 container   : '#leafletMap',
@@ -486,14 +510,14 @@ export default class Modal_SpawnAround
                                         return;
                                     }
 
-                                    return new BaseLayout_Spawn_Rectangle({
-                                        baseLayout      : baseLayout,
+                                    return new Spawn_Rectangle({
                                         marker          : marker,
                                         minWidth        : 1,
                                         maxWidth        : values.maxWidth,
                                         minHeight       : 1,
                                         maxHeight       : values.maxHeight,
-                                        useDirection    : true,
+                                        isRoad          : true,
+                                        direction       : values.direction,
                                         useOwnMaterials : form.useOwnMaterials
                                     });
                                 }.bind(baseLayout)
