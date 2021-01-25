@@ -1856,8 +1856,16 @@ export default class BaseLayout
 
     updateObjectPosition(marker)
     {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let currentRotation = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
+        let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
+
+        let currentRotation     = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
+        let currentRotationYaw  = Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.yaw) * 1000) / 1000
+            if(buildingData !== null && buildingData.mapCorrectedAngle !== undefined)
+            {
+                currentRotationYaw += buildingData.mapCorrectedAngle;
+                currentRotationYaw  = BaseLayout_Math.clampEulerAxis(currentRotationYaw);
+            }
 
         this.pauseMap();
 
@@ -1906,7 +1914,7 @@ export default class BaseLayout
                     inputType   : 'number',
                     min         : 0,
                     max         : 360,
-                    value       : Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.yaw) * 1000) / 1000
+                    value       : currentRotationYaw
                 }
             ],
             callback    : function(form)
@@ -1923,6 +1931,12 @@ export default class BaseLayout
                 form.pitch                              = parseFloat(form.pitch);
                 form.roll                               = parseFloat(form.roll);
                 form.yaw                                = parseFloat(form.yaw);
+
+                if(buildingData !== null && buildingData.mapCorrectedAngle !== undefined)
+                {
+                    form.yaw -= buildingData.mapCorrectedAngle;
+                    form.yaw  = BaseLayout_Math.clampEulerAxis(form.yaw);
+                }
 
                 if(this.history !== null)
                 {
