@@ -821,8 +821,6 @@ export default class BaseLayout_Statistics_Schematics
                                         let mUnlockedResearchTreesValues    = mUnlockedResearchTrees.values;
                                             for(let j = 0; j < mUnlockedResearchTreesValues.length; j++)
                                             {
-                                                console.log(mUnlockedResearchTreesValues[j].pathName);
-
                                                 if(mUnlockedResearchTreesValues[j].pathName === currentTree)
                                                 {
                                                     isUnlocked = true;
