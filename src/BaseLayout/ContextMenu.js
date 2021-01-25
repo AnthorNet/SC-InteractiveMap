@@ -3,6 +3,8 @@ import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 
+import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
+
 export default class BaseLayout_ContextMenu
 {
     constructor(options)
@@ -109,7 +111,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 text: 'Spawn around "' + buildingData.name + '"',
-                                callback: this.baseLayout.spawnAroundFoundation.bind(this.baseLayout)
+                                callback: Modal_SpawnAround.getHTML
                             });
                         }
 
