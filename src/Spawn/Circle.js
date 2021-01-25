@@ -99,11 +99,11 @@ export default class Spawn_Circle
                                 if(this.direction === 'UP')
                                 {
                                     angle += 180;
-                                    newFoundation.transform.translation[2] += (radius - this.minRadius) * this.centerObjectHeight;
+                                    newFoundation.transform.translation[2] += (radius - (this.minRadius - 1)) * this.centerObjectHeight;
                                 }
                                 if(this.direction === 'DOWN')
                                 {
-                                    newFoundation.transform.translation[2] -= (radius - this.minRadius) * this.centerObjectHeight;
+                                    newFoundation.transform.translation[2] -= (radius - (this.minRadius - 1)) * this.centerObjectHeight;
                                 }
                             }
 

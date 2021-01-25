@@ -114,11 +114,11 @@ export default class Spawn_Polygon
                             if(this.direction === 'UP')
                             {
                                 newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, angle + 180);
-                                newFoundation.transform.translation[2] += (minSize - this.minSize) * this.centerObjectHeight;
+                                newFoundation.transform.translation[2] += (minSize - (this.minSize - 1)) * this.centerObjectHeight;
                             }
                             if(this.direction === 'DOWN')
                             {
-                                newFoundation.transform.translation[2] -= (minSize - this.minSize) * this.centerObjectHeight;
+                                newFoundation.transform.translation[2] -= (minSize - (this.minSize - 1)) * this.centerObjectHeight;
                             }
                         }
 
