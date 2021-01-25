@@ -105,10 +105,13 @@ export default class BaseLayout_ContextMenu
                             callback: this.baseLayout.pivotPlayerFoundation.bind(this.baseLayout)
                         });
 
-                        contextMenu.push({
-                            text: 'Spawn around "' + buildingData.name + '"',
-                            callback: this.baseLayout.spawnAroundFoundation.bind(this.baseLayout)
-                        });
+                        if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal') === false && currentObject.className.search('_Corner_') === -1)
+                        {
+                            contextMenu.push({
+                                text: 'Spawn around "' + buildingData.name + '"',
+                                callback: this.baseLayout.spawnAroundFoundation.bind(this.baseLayout)
+                            });
+                        }
 
                         contextMenu.push({
                             text: 'Teleport player on "' + buildingData.name + '"',

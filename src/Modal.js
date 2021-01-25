@@ -32,7 +32,8 @@ export default class Modal
             form        : '<form></form>',
             formGroup   : '<div class="form-group"></div>',
             input       : {
-                text            : '<input class="form-control text-center" autocomplete="off" type="text" />',
+                text            : '<input class="form-control text-center" autocomplete="off" type="text">',
+                toggle          : '<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" value="1"><label class="custom-control-label">Toggle label</label></div>',
                 select          : '<select class="form-control"></select>',
                 selectPicker    : '<select class="form-control selectpicker"></select>',
                 colorSlots      : '<select class="form-control"></select>',
@@ -234,6 +235,13 @@ export default class Modal
                             case 'inventoryItem':
                                 values[input.name] = input.element.find('select').val();
                                 break;
+                            case 'toggle':
+                                values[input.name] = 0;
+                                if(input.element.find('input').is(':checked'))
+                                {
+                                    values[input.name] = 1;
+                                }
+                                break;
                             default:
                                 values[input.name] = input.element.find('input').val();
                         }
@@ -325,13 +333,24 @@ export default class Modal
 
                     input.find('option[value="' + options.value + '"]').prop('selected', true);
                     break;
+                case 'toggle':
+                    input.removeAttr('name');
+                    input.find('input').attr('name', options.name);
+                    input.find('input[type=checkbox]').attr('id', options.name);
+                    input.find('label').attr('for', options.name);
+
+                    if(options.label !== undefined)
+                    {
+                        input.find('label').html(options.label);
+                    }
+                    break;
                 default:
                     input.val(options.value);
             }
 
         // Add form group and label
         let group = $(Modal.templates.formGroup);
-            if(options.label !== undefined && options.inputType !== 'inventoryItem')
+            if(options.label !== undefined && ['inventoryItem', 'toggle'].includes(options.inputType) === false)
             {
                 group.prepend('<label>' + options.label + '</label>');
             }

@@ -2087,17 +2087,7 @@ export default class BaseLayout
                 {
                     label           : 'Use materials from your containers? (Not suitable for pasting blueprints)',
                     name            : 'useOwnMaterials',
-                    inputType       : 'select',
-                    inputOptions    : [
-                        {
-                            text        : 'Yes',
-                            value       : '1'
-                        },
-                        {
-                            text        : 'No',
-                            value       : '0'
-                        }
-                    ]
+                    inputType       : 'toggle',
                 }
             ],
             callback    : function(form)
