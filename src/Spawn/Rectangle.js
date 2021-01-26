@@ -17,29 +17,17 @@ export default class Spawn_Rectangle
 
         this.useOwnMaterials    = options.useOwnMaterials;
 
-        this.isRoad             = (options.isRoad !== undefined) ? options.isRoad : false;
-        this.direction          = options.direction;
-
         this.minWidth           = (Math.max(1, (2* Math.floor(this.minWidth / 2) + 1)) - 1) / 2;
         this.maxWidth           = (Math.min(65, (2* Math.floor(this.maxWidth/2) + 1)) - 1) / 2;
 
-        this.minHeight          = Math.max(1, (2* Math.floor(this.minHeight/2) + 1));
+        this.minHeight          = Math.max(1, (2* Math.floor(this.minHeight / 2) + 1));
+        this.maxHeight          = Math.min(65, (2* Math.floor(this.maxHeight/2) + 1));
 
-        if(this.isRoad === true)
-        {
-            this.minHeight      = (this.minHeight - 1);
-            this.maxHeight      = Math.min(65, this.maxHeight);
-        }
-        else
-        {
-            this.maxHeight      = Math.min(65, (2* Math.floor(this.maxHeight/2) + 1));
+        this.maxWidth           = Math.max(this.minWidth + 1, this.maxWidth);
+        this.maxHeight          = Math.max(this.minHeight + 1, this.maxHeight);
 
-            this.maxWidth       = Math.max(this.minWidth + 1, this.maxWidth);
-            this.maxHeight      = Math.max(this.minHeight + 1, this.maxHeight);
-
-            this.minHeight      = (this.minHeight - 1) / 2;
-            this.maxHeight      = (this.maxHeight - 1) / 2;
-        }
+        this.minHeight          = (this.minHeight - 1) / 2;
+        this.maxHeight          = (this.maxHeight - 1) / 2;
 
         this.centerObject       = this.baseLayout.saveGameParser.getTargetObject(this.marker.relatedTarget.options.pathName);
         this.centerObjectHeight = 400;
@@ -52,10 +40,6 @@ export default class Spawn_Rectangle
                 if(currentObjectData !== null && currentObjectData.mapLayer !== undefined)
                 {
                     this.layerId = currentObjectData.mapLayer;
-                }
-                if(currentObjectData.height !== undefined)
-                {
-                    this.centerObjectHeight = currentObjectData.height * 100;
                 }
                 if(currentObjectData.height !== undefined)
                 {
@@ -92,21 +76,8 @@ export default class Spawn_Rectangle
         for(width; width <= this.maxWidth; width++)
         {
             let results     = [];
-            let minHeight   = -this.maxHeight;
-            let maxHeight   = this.maxHeight;
-                if(this.isRoad === true)
-                {
-                    if(this.direction === 'DOWN')
-                    {
-                        minHeight = 0;
-                    }
-                    else
-                    {
-                        maxHeight = 0;
-                    }
-                }
 
-            for(let height = minHeight; height <= maxHeight; height++)
+            for(let height = -this.maxHeight; height <= this.maxHeight; height++)
             {
                 if(width === 0 && height === 0)
                 {

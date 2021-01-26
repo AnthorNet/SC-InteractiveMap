@@ -3,8 +3,9 @@ import Modal                                    from '../Modal.js';
 import BaseLayout_Map_ColorSlots                from '../BaseLayout/MapColorSlots.js';
 
 import Spawn_Circle                             from '../Spawn/Circle.js';
-import Spawn_Rectangle                          from '../Spawn/Rectangle.js';
 import Spawn_Polygon                            from '../Spawn/Polygon.js';
+import Spawn_Rectangle                          from '../Spawn/Rectangle.js';
+import Spawn_Road                               from '../Spawn/Road.js';
 import BaseLayout_Spawn_Blueprint               from '../BaseLayout/SpawnBlueprint.js';
 import BaseLayout_Spawn_Text                    from '../BaseLayout/SpawnText.js';
 
@@ -410,9 +411,9 @@ export default class Modal_SpawnAround
                                     max         : 65
                                 });
                                 roadOptions.push({
-                                    label: 'Length <em class="small">(Between 1 and 65)</em>',
-                                    name: 'maxHeight',
-                                    inputType: 'number',
+                                    label       : 'Length <em class="small">(Between 1 and 65)</em>',
+                                    name        : 'maxHeight',
+                                    inputType   : 'number',
                                     value       : 16,
                                     min         : 1,
                                     max         : 65
@@ -431,6 +432,15 @@ export default class Modal_SpawnAround
                                     });
                                 }
 
+                                roadOptions.push({
+                                    label       : 'Curvature <em class="small">(Between -360 and 360°)</em>',
+                                    name        : 'curvature',
+                                    inputType   : 'number',
+                                    value       : 0,
+                                    min         : -360,
+                                    max         : 360
+                                });
+
                             Modal.form({
                                 title       : "Road options",
                                 container   : '#leafletMap',
@@ -442,14 +452,12 @@ export default class Modal_SpawnAround
                                         return;
                                     }
 
-                                    return new Spawn_Rectangle({
+                                    return new Spawn_Road({
                                         marker          : marker,
-                                        minWidth        : 1,
                                         maxWidth        : values.maxWidth,
-                                        minHeight       : 1,
                                         maxHeight       : values.maxHeight,
-                                        isRoad          : true,
                                         direction       : values.direction,
+                                        curvature       : values.curvature,
                                         useOwnMaterials : form.useOwnMaterials
                                     });
                                 }.bind(baseLayout)
