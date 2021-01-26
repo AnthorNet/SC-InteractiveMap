@@ -3,7 +3,6 @@ import Modal                                    from '../Modal.js';
 import BaseLayout_Map_ColorSlots                from '../BaseLayout/MapColorSlots.js';
 
 import Spawn_Circle                             from '../Spawn/Circle.js';
-//import BaseLayout_Spawn_CorkScrew               from '../BaseLayout/SpawnCorkScrew.js';
 import Spawn_Rectangle                          from '../Spawn/Rectangle.js';
 import Spawn_Polygon                            from '../Spawn/Polygon.js';
 import BaseLayout_Spawn_Blueprint               from '../BaseLayout/SpawnBlueprint.js';
@@ -33,13 +32,6 @@ export default class Modal_SpawnAround
             inputOptions.push({group: 'Geometric form', text: 'Plain regular polygon', value: 'plainPolygon'});
             inputOptions.push({group: 'Geometric form', text: 'Hollow regular polygon', value: 'hollowPolygon'});
             inputOptions.push({group: 'Geometric form', text: 'Road', value: 'road'});
-
-            /*
-            if(currentObject.className.search('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') !== -1)
-            {
-                inputOptions.push({group: 'Geometric form', text: 'Corkscrew road', value: 'corkScrew'});
-            }
-            */
 
             inputOptions.push({group: 'Geometric form', text: 'Pipe Text', value: 'pipeText'});
 
@@ -218,66 +210,6 @@ export default class Modal_SpawnAround
                                         minRadius       : values.minRadius,
                                         maxRadius       : values.maxRadius,
                                         arcAngle        : values.arcAngle,
-                                        direction       : values.direction,
-                                        useOwnMaterials : form.useOwnMaterials
-                                    });
-                                }.bind(baseLayout)
-                            });
-                            break;
-                        case 'corkScrew':
-                            let corkScrewOptions = [];
-                                corkScrewOptions.push({
-                                    label       : 'Outer radius <em class="small">(Between 3 and 256)</em>',
-                                    name        : 'maxRadius',
-                                    inputType   : 'number',
-                                    value       : 6,
-                                    min         : 3,
-                                    max         : 256
-                                });
-                                corkScrewOptions.push({
-                                    label       : 'Inner radius <em class="small">(Between 3 and 255)</em>',
-                                    name        : 'minRadius',
-                                    inputType   : 'number',
-                                    value       : 5,
-                                    min         : 3,
-                                    max         : 255
-                                });
-                                corkScrewOptions.push({
-                                    label       : 'Height <em class="small">(Number of foundations)</em>',
-                                    name        : 'height',
-                                    inputType   : 'number',
-                                    value       : 5,
-                                    min         : 5
-                                });
-                                corkScrewOptions.push({
-                                    label           : 'Direction',
-                                    name            : 'direction',
-                                    inputType       : 'select',
-                                    inputOptions    : [
-                                        {text: 'Up', value: 'UP'},
-                                        {text: 'Down', value: 'DOWN'}
-                                    ]
-                                });
-
-                            Modal.form({
-                                title       : "Corkscrew options",
-                                container   : '#leafletMap',
-                                inputs      : corkScrewOptions,
-                                callback    : function(values)
-                                {
-                                    if(values === null || values.maxRadius === null || values.minRadius === null || values.height === null || values.direction === null)
-                                    {
-                                        return;
-                                    }
-
-                                    values.minRadius = Math.max(3, Math.min(values.minRadius, values.maxRadius - 1));
-
-                                    return new BaseLayout_Spawn_CorkScrew({
-                                        baseLayout      : baseLayout,
-                                        marker          : marker,
-                                        minRadius       : values.minRadius,
-                                        maxRadius       : values.maxRadius,
-                                        height          : values.height,
                                         direction       : values.direction,
                                         useOwnMaterials : form.useOwnMaterials
                                     });
