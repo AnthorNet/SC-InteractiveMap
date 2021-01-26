@@ -318,10 +318,9 @@ export default class SaveParser_Write
             header += this.writeLong(this.saveParser.header.saveDateTime, false);
             header += this.writeByte(this.saveParser.header.sessionVisibility, false);
 
-            //TODO: Wait for CSS answer
             if(this.saveParser.header.saveHeaderType > 6)
             {
-                header += this.writeInt(this.saveParser.header.unk1, false);
+                header += this.writeInt(this.saveParser.header.fEditorObjectVersion, false);
             }
 
         this.saveBinary += header;
