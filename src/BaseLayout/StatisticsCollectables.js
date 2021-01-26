@@ -31,16 +31,19 @@ export default class BaseLayout_Statistics_Collectables
                                     for(let m = 0; m < playerCollectables[className].markers.length; m++)
                                     {
                                         let collectedStatus = this.getStatusFromPathName(playerCollectables[className].markers[m].pathName, className);
-
-                                        if(collectedStatus === true)
-                                        {
-                                            playerCollectables[className].used++;
-
+                                            if(collectedStatus === true)
+                                            {
+                                                playerCollectables[className].used++;
+                                            }
                                             if(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName] !== undefined)
                                             {
-                                                this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(window.SCIM.collectedOpacity);
+                                                let updatedOpacity = 1;
+                                                    if(collectedStatus === true)
+                                                    {
+                                                        updatedOpacity = window.SCIM.collectedOpacity;
+                                                    }
+                                                    this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(updatedOpacity);
                                             }
-                                        }
                                     }
                                 }
                             }
@@ -80,16 +83,19 @@ export default class BaseLayout_Statistics_Collectables
                                 for(let m = 0; m < playerCollectables[className].markers.length; m++)
                                 {
                                     let collectedStatus = this.getStatusFromPathName(playerCollectables[className].markers[m].pathName, className);
-
-                                    if(collectedStatus === true)
-                                    {
-                                        playerCollectables[className].used++;
-
+                                        if(collectedStatus === true)
+                                        {
+                                            playerCollectables[className].used++;
+                                        }
                                         if(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName] !== undefined)
                                         {
-                                            this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(window.SCIM.collectedOpacity);
+                                            let updatedOpacity = 1;
+                                                if(collectedStatus === true)
+                                                {
+                                                    updatedOpacity = window.SCIM.collectedOpacity;
+                                                }
+                                                this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(updatedOpacity);
                                         }
-                                    }
                                 }
                             }
                         }

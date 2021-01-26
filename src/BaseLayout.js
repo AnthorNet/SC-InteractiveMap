@@ -4805,26 +4805,37 @@ export default class BaseLayout
                 if(totalPowerShards > 0)
                 {
                     let potentialInventory = this.getObjectInventory(currentObject, 'mInventoryPotential', true);
-                        for(let i = 0; i < potentialInventory.properties.length; i++)
+                        if(potentialInventory !== null)
                         {
-                            if(potentialInventory.properties[i].name === 'mInventoryStacks')
+                            for(let i = 0; i < potentialInventory.properties.length; i++)
                             {
-                                for(let j = 0; j < totalPowerShards; j++)
+                                if(potentialInventory.properties[i].name === 'mInventoryStacks')
                                 {
-                                    if(parseInt(form.useOwnPowershards) === 1)
+                                    for(let j = 0; j < totalPowerShards; j++)
                                     {
-                                        let result = this.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
-                                            if(result === false)
-                                            {
-                                                clockSpeed = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
-                                                break;
-                                            }
-                                    }
+                                        if(parseInt(form.useOwnPowershards) === 1)
+                                        {
+                                            let result = this.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
+                                                if(result === false)
+                                                {
+                                                    clockSpeed = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
+                                                    break;
+                                                }
+                                        }
 
-                                    potentialInventory.properties[i].value.values[j][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                    this.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, 'NumItems', 1, 'IntProperty');
+                                        potentialInventory.properties[i].value.values[j][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
+                                        this.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, 'NumItems', 1, 'IntProperty');
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            if(typeof Sentry !== 'undefined')
+                            {
+                                Sentry.setContext('currentProperty', currentObject);
+                            }
+                            throw new Error('Cannot overclock?');
                         }
                 }
 
