@@ -33,6 +33,12 @@ export default class SaveParser_Read
         this.saveParser.header.saveDateTime         = this.readLong();
         this.saveParser.header.sessionVisibility    = this.readByte();
 
+        //TODO: Wait for CSS answer
+        if(this.saveParser.header.saveHeaderType > 6)
+        {
+            this.saveParser.header.unk1                 = this.readInt();
+        }
+
         console.log(this.saveParser.header);
 
         this.parseObjects();
