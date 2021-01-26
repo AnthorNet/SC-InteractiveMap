@@ -600,10 +600,10 @@ export default class BaseLayout_Tooltip
 
                 if(inventoryType === 'liquid')
                 {
-                    let maxFluid        = buildingData.maxFluid; // Use straigth calculation
+                    let maxFluid        = buildingData.maxFluid; // Use straight calculation
                     let inventory       = this.baseLayout.getObjectInventory(currentObject, inventoryKey);
 
-                    if(inventory !== null && inventory.length > 0)
+                    if(inventory !== null && inventory.length > 0 && inventory[0] !== null)
                     {
                         let itemType        = this.baseLayout.getItemDataFromClassName(inventory[0].className);
                         let currentFluid    = inventory[0].qty;
