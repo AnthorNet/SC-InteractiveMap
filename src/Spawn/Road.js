@@ -43,8 +43,6 @@ export default class Spawn_Road
                 {
                     this.correctedCenterYaw = currentObjectData.mapCorrectedAngle;
                 }
-
-                this.centerObject.transform.rotation
             }
 
             if(typeof gtag === 'function')
@@ -60,7 +58,19 @@ export default class Spawn_Road
         $('#liveLoader').show()
                         .find('.progress-bar').css('width', '0%');
 
-        this.history = [];
+        this.history        = [];
+        this.startPosition  = [
+                    (this.maxWidth * 800) + this.centerObject.transform.translation[0],
+                    this.centerObject.transform.translation[1]
+        ];
+
+        if(this.curvature >= 0)
+        {
+            this.startPosition  = [
+                (-this.maxWidth * 800) + this.centerObject.transform.translation[0],
+                this.centerObject.transform.translation[1]
+            ];
+        }
 
         if(this.direction === 'DOWN')
         {
@@ -74,14 +84,14 @@ export default class Spawn_Road
     {
         for(height; height <= maxHeight; height++)
         {
-            let results     = [];
-                for(let width = -this.maxWidth; width <= this.maxWidth; width++)
+            let results = [];
+                if(this.curvature >= 0)
                 {
-                    let result = this.spawnFoundation(width, height);
-                        if(result !== null)
-                        {
-                            results.push(result);
-                        }
+                    results = this.loopPositiveCurvature(height);
+                }
+                else
+                {
+                    results = this.loopNegativeCurvature(height);
                 }
 
             return new Promise(function(resolve){
@@ -105,14 +115,14 @@ export default class Spawn_Road
     {
         for(height; height >= maxHeight; height--)
         {
-            let results     = [];
-                for(let width = -this.maxWidth; width <= this.maxWidth; width++)
+            let results = [];
+                if(this.curvature >= 0)
                 {
-                    let result = this.spawnFoundation(width, height);
-                        if(result !== null)
-                        {
-                            results.push(result);
-                        }
+                    results = this.loopPositiveCurvature(height);
+                }
+                else
+                {
+                    results = this.loopNegativeCurvature(height);
                 }
 
             return new Promise(function(resolve){
@@ -130,6 +140,36 @@ export default class Spawn_Road
         }
 
         return this.release();
+    }
+
+    loopNegativeCurvature(height)
+    {
+        let results     = [];
+            for(let width = this.maxWidth; width >= -this.maxWidth; width--)
+            {
+                let result = this.spawnFoundation(width, height);
+                    if(result !== null)
+                    {
+                        results.push(result);
+                    }
+            }
+
+        return results;
+    }
+
+    loopPositiveCurvature(height)
+    {
+        let results     = [];
+            for(let width = -this.maxWidth; width <= this.maxWidth; width++)
+            {
+                let result = this.spawnFoundation(width, height);
+                    if(result !== null)
+                    {
+                        results.push(result);
+                    }
+            }
+
+        return results;
     }
 
     spawnFoundation(width, height)
@@ -154,21 +194,245 @@ export default class Spawn_Road
             newFoundation.pathName  = this.baseLayout.generateNewPathName(this.centerObject);
 
         // Calculate new position
-        let rotation                = BaseLayout_Math.getPointRotation(
-                [
-                    (width * 800) + newFoundation.transform.translation[0],
-                    (height * 800) + newFoundation.transform.translation[1]
-                ],
-                newFoundation.transform.translation,
-                BaseLayout_Math.getNewQuaternionRotate(newFoundation.transform.rotation, this.correctedCenterYaw)
-            );
-            newFoundation.transform.translation[0]  = rotation[0];
-            newFoundation.transform.translation[1]  = rotation[1];
+        if(this.curvature === 0 || height === 0)
+        {
+            let rotation                = BaseLayout_Math.getPointRotation(
+                    [
+                        (width * 800) + newFoundation.transform.translation[0],
+                        (height * 800) + newFoundation.transform.translation[1]
+                    ],
+                    newFoundation.transform.translation,
+                    BaseLayout_Math.getNewQuaternionRotate(newFoundation.transform.rotation, this.correctedCenterYaw)
+                );
+                newFoundation.transform.translation[0]  = rotation[0];
+                newFoundation.transform.translation[1]  = rotation[1];
+        }
 
-            if(this.centerObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_') === true || this.centerObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') === true)
+        if(this.curvature > 0 && height !== 0 && this.direction === 'UP')
+        {
+            // Apply bottom-left pivot to start of the line
+            if(width === -this.maxWidth)
             {
-                newFoundation.transform.translation[2] -= height * this.centerObjectHeight;
+                if(this.correctedCenterYaw !== 0)
+                {
+                    this.centerObject.transform.rotation = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, this.correctedCenterYaw);
+                }
+
+                let translatedCenter    = BaseLayout_Math.getPointRotation(
+                        [this.centerObject.transform.translation[0] - ((height === -1) ? (-width * 800) : 0), this.centerObject.transform.translation[1] - 800],
+                        this.centerObject.transform.translation,
+                        this.centerObject.transform.rotation
+                    );
+                let pivotedCenter       = BaseLayout_Math.getPointRotation(
+                        [translatedCenter[0] - 400, translatedCenter[1] + 400],
+                        translatedCenter,
+                        this.centerObject.transform.rotation
+                    );
+
+                    newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, this.curvatureAngle);
+
+                let newCenter       = BaseLayout_Math.getPointRotation(
+                        [pivotedCenter[0] + 400, pivotedCenter[1] - 400],
+                        pivotedCenter,
+                        newFoundation.transform.rotation
+                    );
+
+                    if(this.correctedCenterYaw !== 0)
+                    {
+                        newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(newFoundation.transform.rotation, -this.correctedCenterYaw);
+                        this.centerObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, -this.correctedCenterYaw);
+                    }
+
+                newFoundation.transform.translation[0] = newCenter[0];
+                newFoundation.transform.translation[1] = newCenter[1];
+
+                this.centerObject = JSON.parse(JSON.stringify(newFoundation));
             }
+            else
+            {
+                let rotation                = BaseLayout_Math.getPointRotation(
+                    [
+                        (800 * (width + this.maxWidth)) + newFoundation.transform.translation[0],
+                        newFoundation.transform.translation[1]
+                    ],
+                    newFoundation.transform.translation,
+                    BaseLayout_Math.getNewQuaternionRotate(newFoundation.transform.rotation, this.correctedCenterYaw)
+                );
+                newFoundation.transform.translation[0]  = rotation[0];
+                newFoundation.transform.translation[1]  = rotation[1];
+            }
+        }
+
+        if(this.curvature > 0 && height !== 0 && this.direction === 'DOWN')
+        {
+            // Apply top-left pivot to start of the line
+            if(width === -this.maxWidth)
+            {
+                if(this.correctedCenterYaw !== 0)
+                {
+                    this.centerObject.transform.rotation = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, this.correctedCenterYaw);
+                }
+
+                let translatedCenter    = BaseLayout_Math.getPointRotation(
+                        [this.centerObject.transform.translation[0] - ((height === -1) ? (-width * 800) : 0), this.centerObject.transform.translation[1] + 800],
+                        this.centerObject.transform.translation,
+                        this.centerObject.transform.rotation
+                    );
+                let pivotedCenter       = BaseLayout_Math.getPointRotation(
+                        [translatedCenter[0] - 400, translatedCenter[1] - 400],
+                        translatedCenter,
+                        this.centerObject.transform.rotation
+                    );
+
+                    newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, -this.curvatureAngle);
+
+                let newCenter       = BaseLayout_Math.getPointRotation(
+                        [pivotedCenter[0] + 400, pivotedCenter[1] + 400],
+                        pivotedCenter,
+                        newFoundation.transform.rotation
+                    );
+
+                    if(this.correctedCenterYaw !== 0)
+                    {
+                        newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(newFoundation.transform.rotation, -this.correctedCenterYaw);
+                        this.centerObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, -this.correctedCenterYaw);
+                    }
+
+                newFoundation.transform.translation[0] = newCenter[0];
+                newFoundation.transform.translation[1] = newCenter[1];
+
+                this.centerObject = JSON.parse(JSON.stringify(newFoundation));
+            }
+            else
+            {
+                let rotation                = BaseLayout_Math.getPointRotation(
+                    [
+                        (800 * (width + this.maxWidth)) + newFoundation.transform.translation[0],
+                        newFoundation.transform.translation[1]
+                    ],
+                    newFoundation.transform.translation,
+                    BaseLayout_Math.getNewQuaternionRotate(newFoundation.transform.rotation, this.correctedCenterYaw)
+                );
+                newFoundation.transform.translation[0]  = rotation[0];
+                newFoundation.transform.translation[1]  = rotation[1];
+            }
+        }
+
+        if(this.curvature < 0 && height !== 0 && this.direction === 'UP')
+        {
+            // Apply bottom-right pivot to start of the line
+            if(width === this.maxWidth)
+            {
+                if(this.correctedCenterYaw !== 0)
+                {
+                    this.centerObject.transform.rotation = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, this.correctedCenterYaw);
+                }
+
+                let translatedCenter    = BaseLayout_Math.getPointRotation(
+                        [this.centerObject.transform.translation[0] + ((height === -1) ? (width * 800) : 0), this.centerObject.transform.translation[1] - 800],
+                        this.centerObject.transform.translation,
+                        this.centerObject.transform.rotation
+                    );
+                let pivotedCenter       = BaseLayout_Math.getPointRotation(
+                        [translatedCenter[0] + 400, translatedCenter[1] + 400],
+                        translatedCenter,
+                        this.centerObject.transform.rotation
+                    );
+
+                    newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, -this.curvatureAngle);
+
+                let newCenter       = BaseLayout_Math.getPointRotation(
+                        [pivotedCenter[0] - 400, pivotedCenter[1] - 400],
+                        pivotedCenter,
+                        newFoundation.transform.rotation
+                    );
+
+                    if(this.correctedCenterYaw !== 0)
+                    {
+                        newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(newFoundation.transform.rotation, -this.correctedCenterYaw);
+                        this.centerObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, -this.correctedCenterYaw);
+                    }
+
+                newFoundation.transform.translation[0] = newCenter[0];
+                newFoundation.transform.translation[1] = newCenter[1];
+
+                this.centerObject = JSON.parse(JSON.stringify(newFoundation));
+            }
+            else
+            {
+                let rotation                = BaseLayout_Math.getPointRotation(
+                    [
+                        newFoundation.transform.translation[0] - (800 * (this.maxWidth - width)),
+                        newFoundation.transform.translation[1]
+                    ],
+                    newFoundation.transform.translation,
+                    BaseLayout_Math.getNewQuaternionRotate(newFoundation.transform.rotation, this.correctedCenterYaw)
+                );
+                newFoundation.transform.translation[0]  = rotation[0];
+                newFoundation.transform.translation[1]  = rotation[1];
+            }
+        }
+
+        if(this.curvature < 0 && height !== 0 && this.direction === 'DOWN')
+        {
+            // Apply top-right pivot to start of the line
+            if(width === this.maxWidth)
+            {
+                if(this.correctedCenterYaw !== 0)
+                {
+                    this.centerObject.transform.rotation = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, this.correctedCenterYaw);
+                }
+
+                let translatedCenter    = BaseLayout_Math.getPointRotation(
+                        [this.centerObject.transform.translation[0] + ((height === -1) ? (width * 800) : 0), this.centerObject.transform.translation[1] + 800],
+                        this.centerObject.transform.translation,
+                        this.centerObject.transform.rotation
+                    );
+                let pivotedCenter       = BaseLayout_Math.getPointRotation(
+                        [translatedCenter[0] + 400, translatedCenter[1] - 400],
+                        translatedCenter,
+                        this.centerObject.transform.rotation
+                    );
+
+                    newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, this.curvatureAngle);
+
+                let newCenter       = BaseLayout_Math.getPointRotation(
+                        [pivotedCenter[0] - 400, pivotedCenter[1] + 400],
+                        pivotedCenter,
+                        newFoundation.transform.rotation
+                    );
+
+                    if(this.correctedCenterYaw !== 0)
+                    {
+                        newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(newFoundation.transform.rotation, -this.correctedCenterYaw);
+                        this.centerObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, -this.correctedCenterYaw);
+                    }
+
+                newFoundation.transform.translation[0] = newCenter[0];
+                newFoundation.transform.translation[1] = newCenter[1];
+
+                this.centerObject = JSON.parse(JSON.stringify(newFoundation));
+            }
+            else
+            {
+                let rotation                = BaseLayout_Math.getPointRotation(
+                    [
+                        newFoundation.transform.translation[0] - (800 * (this.maxWidth - width)),
+                        newFoundation.transform.translation[1]
+                    ],
+                    newFoundation.transform.translation,
+                    BaseLayout_Math.getNewQuaternionRotate(newFoundation.transform.rotation, this.correctedCenterYaw)
+                );
+                newFoundation.transform.translation[0]  = rotation[0];
+                newFoundation.transform.translation[1]  = rotation[1];
+            }
+        }
+
+        // Apply new altitude
+        if(this.centerObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_') === true || this.centerObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') === true)
+        {
+            newFoundation.transform.translation[2] -= height * this.centerObjectHeight;
+        }
 
         this.baseLayout.saveGameParser.addObject(newFoundation);
         this.history.push({
