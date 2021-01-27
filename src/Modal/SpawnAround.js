@@ -6,8 +6,8 @@ import Spawn_Circle                             from '../Spawn/Circle.js';
 import Spawn_Polygon                            from '../Spawn/Polygon.js';
 import Spawn_Rectangle                          from '../Spawn/Rectangle.js';
 import Spawn_Road                               from '../Spawn/Road.js';
-import BaseLayout_Spawn_Blueprint               from '../BaseLayout/SpawnBlueprint.js';
-import BaseLayout_Spawn_Text                    from '../BaseLayout/SpawnText.js';
+import Spawn_Blueprint                          from '../Spawn/Blueprint.js';
+import Spawn_Text                               from '../Spawn/Text.js';
 
 export default class Modal_SpawnAround
 {
@@ -124,7 +124,7 @@ export default class Modal_SpawnAround
                                         return;
                                     }
 
-                                    return new BaseLayout_Spawn_Blueprint({
+                                    return new Spawn_Blueprint({
                                         baseLayout          : baseLayout,
                                         marker              : marker,
                                         clipboard           : baseLayout.clipboard,
@@ -542,8 +542,7 @@ export default class Modal_SpawnAround
                                         return;
                                     }
 
-                                    return new BaseLayout_Spawn_Text({
-                                        baseLayout      : baseLayout,
+                                    return new Spawn_Text({
                                         marker          : marker,
 
                                         line1           : values.line1,

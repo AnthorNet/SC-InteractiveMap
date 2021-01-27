@@ -1,12 +1,12 @@
 /* global gtag, Infinity */
 import BaseLayout_Math from '../BaseLayout/Math.js';
 
-export default class BaseLayout_Spawn_Text
+export default class Spawn_Text
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
         this.marker             = options.marker;
+        this.baseLayout         = options.marker.baseLayout;
 
         this.line1              = options.line1;
         this.line2              = options.line2;
@@ -22,6 +22,16 @@ export default class BaseLayout_Spawn_Text
         this.useOwnMaterials    = options.useOwnMaterials;
 
         this.centerObject       = this.baseLayout.saveGameParser.getTargetObject(this.marker.relatedTarget.options.pathName);
+        this.correctedCenterYaw = 0;
+
+        let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.centerObject.className);
+            if(currentObjectData !== null)
+            {
+                if(currentObjectData.mapCorrectedAngle !== undefined)
+                {
+                    this.correctedCenterYaw = currentObjectData.mapCorrectedAngle;
+                }
+            }
 
         if(typeof gtag === 'function')
         {
@@ -218,13 +228,14 @@ export default class BaseLayout_Spawn_Text
                                 newPipe.children.push({levelName: "Persistent_Level", pathName: newPipe.pathName + ".PipelineConnection1"});
 
                             // Calculate new position
+                            let centerRotation                      = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, this.correctedCenterYaw);
                             let rotation                            = BaseLayout_Math.getPointRotation(
                                     [
                                         currentPipe.x + (currentLine[j].width / 2) + startOffset + this.centerObject.transform.translation[0],
                                         currentPipe.y + this.centerObject.transform.translation[1] + parseFloat(this.depthAlign)
                                     ],
                                     this.centerObject.transform.translation,
-                                    this.centerObject.transform.rotation
+                                    centerRotation
                                 );
                                 newPipe.transform.translation[0]  = rotation[0];
                                 newPipe.transform.translation[1]  = rotation[1];
@@ -240,7 +251,7 @@ export default class BaseLayout_Spawn_Text
                                         let currentSplineRotation   = BaseLayout_Math.getPointRotation(
                                             [currentPipe.spline[l][currentSplineProperty].x, currentPipe.spline[l][currentSplineProperty].y],
                                             [0, 0],
-                                            this.centerObject.transform.rotation
+                                            centerRotation
                                         );
                                         let currentSplineValue      = {x: currentSplineRotation[0], y: currentSplineRotation[1], z: currentPipe.spline[l][currentSplineProperty].z};
 

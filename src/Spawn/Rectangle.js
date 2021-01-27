@@ -49,8 +49,6 @@ export default class Spawn_Rectangle
                 {
                     this.correctedCenterYaw = currentObjectData.mapCorrectedAngle;
                 }
-
-                this.centerObject.transform.rotation
             }
 
             if(typeof gtag === 'function')

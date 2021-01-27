@@ -2,7 +2,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import Modal                                    from '../Modal.js';
 
-export default class BaseLayout_Spawn_Blueprint
+export default class Spawn_Blueprint
 {
     constructor(options)
     {
@@ -1124,7 +1124,7 @@ L.Control.ClipboardControl = L.Control.extend({
     _pasteInPlace: function(){
         if(this.options.baseLayout.clipboard !== null)
         {
-            new BaseLayout_Spawn_Blueprint({
+            new Spawn_Blueprint({
                 baseLayout          : this.options.baseLayout,
                 marker              : null,
                 clipboard           : this.options.baseLayout.clipboard
