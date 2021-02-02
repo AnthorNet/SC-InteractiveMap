@@ -419,19 +419,15 @@ export default class Modal_SpawnAround
                                     max         : 65
                                 });
 
-                                if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_') === true || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') === true)
-                                {
-                                    roadOptions.push({
-                                        label           : 'Direction',
-                                        name            : 'direction',
-                                        inputType       : 'select',
-                                        inputOptions    : [
-                                            {text: 'Up', value: 'UP'},
-                                            {text: 'Down', value: 'DOWN'}
-                                        ]
-                                    });
-                                }
-
+                                roadOptions.push({
+                                    label           : 'Direction',
+                                    name            : 'direction',
+                                    inputType       : 'select',
+                                    inputOptions    : [
+                                        {text: 'Up', value: 'UP'},
+                                        {text: 'Down', value: 'DOWN'}
+                                    ]
+                                });
                                 roadOptions.push({
                                     label       : 'Curvature <em class="small">(Between -360 and 360°)</em>',
                                     name        : 'curvature',

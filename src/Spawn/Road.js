@@ -18,7 +18,7 @@ export default class Spawn_Road
         this.maxWidth           = (Math.min(65, (2* Math.floor(this.maxWidth / 2) + 1)) - 1) / 2;
         this.maxHeight          = Math.min(65, this.maxHeight);
 
-        this.direction          = options.direction;
+        this.direction          = (options.direction !== undefined) ? options.direction : 'UP';
         this.curvature          = Math.max(-360, Math.min(360, parseInt(options.curvature)));
 
         this.curvatureAngle     = Math.abs(this.curvature) / this.maxHeight;

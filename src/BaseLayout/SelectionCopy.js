@@ -37,7 +37,6 @@ export default class BaseLayout_Selection_Copy
                 let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
                 let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-                /*
                 if(
                         currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C'
                      || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerPoleMk1/Build_PowerPoleMk1.Build_PowerPoleMk1_C'

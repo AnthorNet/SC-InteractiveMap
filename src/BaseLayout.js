@@ -2217,7 +2217,7 @@ export default class BaseLayout
             }
 
             let buildingData    = this.getBuildingDataFromClassName(storageObjects[i].className);
-                if(buildingData.maxSlot === undefined)
+                if(buildingData === null || buildingData.maxSlot === undefined)
                 {
                     continue;
                 }
