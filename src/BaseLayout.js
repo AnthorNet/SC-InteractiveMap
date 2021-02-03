@@ -4829,14 +4829,6 @@ export default class BaseLayout
                                 }
                             }
                         }
-                        else
-                        {
-                            if(typeof Sentry !== 'undefined')
-                            {
-                                Sentry.setContext('currentProperty', currentObject);
-                            }
-                            throw new Error('Cannot overclock?');
-                        }
                 }
 
                 this.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
