@@ -657,6 +657,7 @@ export default class SaveParser_Write
                     case 'FFSeedExtrationTask': // MOD: ???
                     case 'FFSlugBreedTask': // MOD: ???
                     case 'FFSlimeProcessingTask': // MOD: ???
+                    case 'FFPlotTask': // MOD: ???
                     case 'SInventory': // MOD: ???
                         let currentBufferStartingLength     = this.currentBufferLength;
                         let structPropertyBufferLength      = this.currentEntityLength;
