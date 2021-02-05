@@ -403,20 +403,20 @@ export default class Modal_SpawnAround
                         case 'road':
                             let roadOptions = [];
                                 roadOptions.push({
-                                    label       : 'Width <em class="small">(Between 1 and 65)</em>',
+                                    label       : 'Width <em class="small">(Between 1 and 255)</em>',
                                     name        : 'maxWidth',
                                     inputType   : 'number',
                                     value       : 2,
                                     min         : 1,
-                                    max         : 65
+                                    max         : 255
                                 });
                                 roadOptions.push({
-                                    label       : 'Length <em class="small">(Between 1 and 65)</em>',
+                                    label       : 'Length <em class="small">(Between 1 and 255)</em>',
                                     name        : 'maxHeight',
                                     inputType   : 'number',
                                     value       : 16,
                                     min         : 1,
-                                    max         : 65
+                                    max         : 255
                                 });
 
                                 roadOptions.push({
