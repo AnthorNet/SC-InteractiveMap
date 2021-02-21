@@ -206,15 +206,14 @@ export default class Modal_Buildings
                                 htmlRow.push('<td class="text-center">' + Math.round(clockSpeed * 1000) / 10 + '%</td>');
 
                             let circuitId       = this.baseLayout.getObjectCircuitID(currentObject);
-
-                            if(circuitId !== null)
-                            {
-                                htmlRow.push('<td class="text-center">#' + circuitId.split('_').pop() + '</td>');
-                            }
-                            else
-                            {
-                                htmlRow.push('<td></td>');
-                            }
+                                if(circuitId !== null)
+                                {
+                                    htmlRow.push('<td class="text-center">#' + circuitId + '</td>');
+                                }
+                                else
+                                {
+                                    htmlRow.push('<td></td>');
+                                }
 
                             htmlRow.push('<td class="text-right"><i class="fas fa-search-location" style="cursor: pointer;font-size: 24px;" data-x="' + currentObject.transform.translation[0] + '" data-y="' + currentObject.transform.translation[1] + '"></i></td>');
                             htmlRow.push('</tr>');

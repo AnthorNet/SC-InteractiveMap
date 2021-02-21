@@ -35,7 +35,7 @@ export default class BaseLayout_Statistics_Power
     parse()
     {
         let circuits                = {};
-            circuits['GLOBAL']      = {
+            circuits['0']             = {
                                         playerPowerUsed         : 0,
                                         playerPowerUsedMax      : 0,
                                         playerPowerGenerated    : 0,
@@ -84,7 +84,7 @@ export default class BaseLayout_Statistics_Power
                                     if(buildingPowerInfo !== null)
                                     {
                                         let buildingConsumption     = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption', maxPowerUser);
-                                            circuits['GLOBAL'].playerPowerUsed        += buildingConsumption;
+                                            circuits['0'].playerPowerUsed        += buildingConsumption;
 
                                             if(objectCircuitID !== null)
                                             {
@@ -92,7 +92,7 @@ export default class BaseLayout_Statistics_Power
                                             }
                                     }
 
-                                    circuits['GLOBAL'].playerPowerUsedMax += maxPowerUser;
+                                    circuits['0'].playerPowerUsedMax += maxPowerUser;
 
                                     if(objectCircuitID !== null)
                                     {
@@ -125,9 +125,9 @@ export default class BaseLayout_Statistics_Power
                                         {
                                             fuelEnergyValue = fuelItem.energy;
 
-                                            if(circuits['GLOBAL'].playerFuel[fuelItem.className] === undefined)
+                                            if(circuits['0'].playerFuel[fuelItem.className] === undefined)
                                             {
-                                                circuits['GLOBAL'].playerFuel[fuelItem.className] = {
+                                                circuits['0'].playerFuel[fuelItem.className] = {
                                                     name            : fuelItem.name,
                                                     buildingName    : buildingData.name,
                                                     buildingCount   : 1,
@@ -139,9 +139,9 @@ export default class BaseLayout_Statistics_Power
                                             }
                                             else
                                             {
-                                                circuits['GLOBAL'].playerFuel[fuelItem.className].buildingCount++;
-                                                circuits['GLOBAL'].playerFuel[fuelItem.className].consumed += (60 / (fuelEnergyValue / powerGenerated));
-                                                circuits['GLOBAL'].playerFuel[fuelItem.className].powerGenerated += powerGenerated;
+                                                circuits['0'].playerFuel[fuelItem.className].buildingCount++;
+                                                circuits['0'].playerFuel[fuelItem.className].consumed += (60 / (fuelEnergyValue / powerGenerated));
+                                                circuits['0'].playerFuel[fuelItem.className].powerGenerated += powerGenerated;
                                             }
 
                                             if(objectCircuitID !== null)
@@ -166,7 +166,7 @@ export default class BaseLayout_Statistics_Power
                                                 }
                                             }
 
-                                            circuits['GLOBAL'].playerPowerGenerated += powerGenerated;
+                                            circuits['0'].playerPowerGenerated += powerGenerated;
 
                                             if(objectCircuitID !== null)
                                             {
@@ -177,9 +177,9 @@ export default class BaseLayout_Statistics_Power
 
                                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
                                 {
-                                    if(circuits['GLOBAL'].playerFuel[buildingData.className] === undefined)
+                                    if(circuits['0'].playerFuel[buildingData.className] === undefined)
                                     {
-                                        circuits['GLOBAL'].playerFuel[buildingData.className] = {
+                                        circuits['0'].playerFuel[buildingData.className] = {
                                             name            : buildingData.name,
                                             buildingName    : null,
                                             buildingCount   : 1,
@@ -190,8 +190,8 @@ export default class BaseLayout_Statistics_Power
                                     }
                                     else
                                     {
-                                        circuits['GLOBAL'].playerFuel[buildingData.className].buildingCount++;
-                                        circuits['GLOBAL'].playerFuel[buildingData.className].powerGenerated += powerGenerated;
+                                        circuits['0'].playerFuel[buildingData.className].buildingCount++;
+                                        circuits['0'].playerFuel[buildingData.className].powerGenerated += powerGenerated;
                                     }
 
                                     if(objectCircuitID !== null)
@@ -214,7 +214,7 @@ export default class BaseLayout_Statistics_Power
                                         }
                                     }
 
-                                    circuits['GLOBAL'].playerPowerGenerated += powerGenerated;
+                                    circuits['0'].playerPowerGenerated += powerGenerated;
 
                                     if(objectCircuitID !== null)
                                     {
@@ -234,7 +234,7 @@ export default class BaseLayout_Statistics_Power
                                     {
                                         if(potentialInventory[i] !== null && potentialInventory[i].className === '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C')
                                         {
-                                            circuits['GLOBAL'].playerPowerShards++;
+                                            circuits['0'].playerPowerShards++;
 
                                             if(objectCircuitID !== null)
                                             {
@@ -252,13 +252,13 @@ export default class BaseLayout_Statistics_Power
 
         for(let circuitId in circuits)
         {
-            if(circuitId === 'GLOBAL')
+            if(circuitId === '0')
             {
                 html.push('<h5 class="text-warning">All power circuits</h5>');
             }
             else
             {
-                html.push('<h5 class="text-warning">Power circuit #' + circuitId.split('_').pop() + '</h5>');
+                html.push('<h5 class="text-warning">Power circuit #' + circuitId + '</h5>');
             }
 
             html.push('<table class="table table-borderless">');

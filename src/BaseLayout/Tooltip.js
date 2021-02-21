@@ -1273,7 +1273,7 @@ export default class BaseLayout_Tooltip
 
                 if(options.circuitId !== undefined && options.circuitId !== null)
                 {
-                    content.push('<td class="text-center text-warning small px-1">#' + options.circuitId.split('_').pop() + '</td>');
+                    content.push('<td class="text-center text-warning small px-1">#' + options.circuitId + '</td>');
                 }
                 if(options.powerUsed !== undefined)
                 {

@@ -593,6 +593,9 @@ export default class BaseLayout
                 '/Script/FactoryGame.FGTargetPointLinkedList',
                 '/Game/FactoryGame/Buildable/Vehicle/BP_VehicleTargetPoint.BP_VehicleTargetPoint_C',
 
+                '/Script/FactoryGame.FGDroneAction_RequestDocking',
+                '/Script/FactoryGame.FGDroneAction_TraversePath',
+
                 // MODS
                 '/Game/EfficiencyCheckerMod/Buildings/EfficiencyChecker/Build_Pipeline_Stub.Build_Pipeline_Stub_C'
             ].includes(currentObject.className))
@@ -5429,7 +5432,7 @@ export default class BaseLayout
                                         {
                                             if(mComponents.values[j].pathName === currentObject.pathName)
                                             {
-                                                return circuitSubSystem.extra.circuits[i].pathName;
+                                                return circuitSubSystem.extra.circuits[i].circuitId;
                                             }
 
                                             componentsArray.push(mComponents.values[j].pathName);
@@ -5439,7 +5442,7 @@ export default class BaseLayout
                                         {
                                             if(componentsArray.includes(currentObject.children[j].pathName))
                                             {
-                                                return circuitSubSystem.extra.circuits[i].pathName;
+                                                return circuitSubSystem.extra.circuits[i].circuitId;
                                             }
                                         }
                                 }
