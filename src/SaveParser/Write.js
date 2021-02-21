@@ -649,6 +649,7 @@ export default class SaveParser_Write
                     case 'InventoryStack':
                     case 'ProjectileData':
                     case 'TrainSimulationData':
+                    case 'DroneTripInformation':
                     case 'ResearchData':
                     case 'Hotbar':
                     case 'EnabledCheats': // MOD: Satisfactory Helper
@@ -849,6 +850,11 @@ export default class SaveParser_Write
                                     break;
                                 case 'Guid':
                                     structure += this.writeHex(currentProperty.value.values[i]);
+                                    break;
+                                case 'Vector':
+                                    structure += this.writeFloat(currentProperty.value.values[i].x);
+                                    structure += this.writeFloat(currentProperty.value.values[i].y);
+                                    structure += this.writeFloat(currentProperty.value.values[i].z);
                                     break;
                                 case 'LinearColor':
                                     structure += this.writeFloat(currentProperty.value.values[i].r);

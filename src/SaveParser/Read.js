@@ -170,24 +170,23 @@ export default class SaveParser_Read
         for(let i = 0; i < this.saveParser.countObjects; i++)
         {
             let objectType = this.readInt();
-
-            if(objectType === 1)
-            {
-                this.saveParser.objects[i] = this.readActorV5();
-                this.saveParser.objectsHashMap[this.saveParser.objects[i].pathName] = i;
-            }
-            else
-            {
-                if(objectType === 0)
+                if(objectType === 1)
                 {
-                    this.saveParser.objects[i] = this.readObjectV5();
+                    this.saveParser.objects[i] = this.readActorV5();
                     this.saveParser.objectsHashMap[this.saveParser.objects[i].pathName] = i;
                 }
                 else
                 {
-                    console.log('Unknown object type', objectType);
+                    if(objectType === 0)
+                    {
+                        this.saveParser.objects[i] = this.readObjectV5();
+                        this.saveParser.objectsHashMap[this.saveParser.objects[i].pathName] = i;
+                    }
+                    else
+                    {
+                        console.log('Unknown object type', objectType);
+                    }
                 }
-            }
         }
 
         let countEntities   = this.readInt();
@@ -260,11 +259,9 @@ export default class SaveParser_Read
         let entityLength                            = this.readInt();
         let startByte                               = this.currentByte;
 
-            this.saveParser.objects[objectKey].children        = [];
-            this.saveParser.objects[objectKey].properties      = [];
-
         if(this.saveParser.objects[objectKey].type === 1)
         {
+            this.saveParser.objects[objectKey].children         = [];
             this.saveParser.objects[objectKey].entityLevelName  = this.readString();
             this.saveParser.objects[objectKey].entityPathName   = this.readString();
 
@@ -285,14 +282,14 @@ export default class SaveParser_Read
         }
 
         // Read properties
+        this.saveParser.objects[objectKey].properties       = [];
         while(true)
         {
             let property = this.readPropertyV5();
-
-                    if(property === null)
-                    {
-                        break;
-                    }
+                if(property === null)
+                {
+                    break;
+                }
 
                 this.saveParser.objects[objectKey].properties.push(property);
         }
@@ -340,9 +337,11 @@ export default class SaveParser_Read
                     }
 
                     break;
+                //TODO: Not 0 here so bypass that special case, but why? We mainly do not want to get warned here...
                 case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
+                case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
                     let missingPlayerState                      = (startByte + entityLength) - this.currentByte;
-                    this.saveParser.objects[objectKey].missing  = this.readHex(missingPlayerState); //TODO: Not 0 here so bypass that special case, but why?
+                    this.saveParser.objects[objectKey].missing  = this.readHex(missingPlayerState);
 
                     break;
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
@@ -407,7 +406,6 @@ export default class SaveParser_Read
 
                             console.log(
                                 'MISSING ' + missingBytes + '  BYTES',
-                                this.saveParser.objects[objectKey].className,
                                 this.saveParser.objects[objectKey]
                             );
                         }
@@ -434,7 +432,7 @@ export default class SaveParser_Read
 
         currentProperty.type    = this.readString();
 
-        this.skipBytes(4); // // Length of the property, this is calculated when writing back ;)
+        this.skipBytes(4); // Length of the property, this is calculated when writing back ;)
 
         let index = this.readInt();
             if(index !== 0)
@@ -587,9 +585,10 @@ export default class SaveParser_Read
                     case 'StructProperty':
                         currentProperty.structureName       = this.readString();
                         currentProperty.structureType       = this.readString();
-                        this.readInt(); // structureSize
 
+                        this.readInt(); // structureSize
                         this.readInt(); // 0
+
                         currentProperty.structureSubType    = this.readString();
 
                         let propertyGuid1 = this.readInt();
@@ -629,6 +628,13 @@ export default class SaveParser_Read
                                     break;
                                 case 'Guid':
                                     currentProperty.value.values.push(this.readHex(16));
+                                    break;
+                                case 'Vector':
+                                    currentProperty.value.values.push({
+                                        x           : this.readFloat(),
+                                        y           : this.readFloat(),
+                                        z           : this.readFloat()
+                                    });
                                     break;
                                 case 'LinearColor':
                                     currentProperty.value.values.push({
@@ -746,11 +752,10 @@ export default class SaveParser_Read
                             while(true)
                             {
                                 let subMapProperty = this.readPropertyV5();
-
-                                if(subMapProperty === null)
-                                {
-                                    break;
-                                }
+                                    if(subMapProperty === null)
+                                    {
+                                        break;
+                                    }
 
                                 mapPropertySubProperties.push(subMapProperty);
                             }
@@ -898,6 +903,7 @@ export default class SaveParser_Read
                     case 'InventoryStack':
                     case 'ProjectileData':
                     case 'TrainSimulationData':
+                    case 'DroneTripInformation':
                     case 'ResearchData':
                     case 'Hotbar':
                     case 'EnabledCheats': // MOD: Satisfactory Helper
@@ -912,12 +918,16 @@ export default class SaveParser_Read
                         while(true)
                         {
                             let subStructProperty = this.readPropertyV5();
-                                if(subStructProperty === null){ break; }
-                            currentProperty.value.values.push(subStructProperty);
-                                if(subStructProperty.value.properties !== undefined && subStructProperty.value.properties.length === 1 && subStructProperty.value.properties[0] === null)
+                                if(subStructProperty === null)
                                 {
                                     break;
                                 }
+
+                            currentProperty.value.values.push(subStructProperty);
+                            if(subStructProperty.value.properties !== undefined && subStructProperty.value.properties.length === 1 && subStructProperty.value.properties[0] === null)
+                            {
+                                break;
+                            }
                         }
 
                         break;
