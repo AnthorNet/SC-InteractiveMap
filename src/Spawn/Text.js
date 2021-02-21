@@ -176,22 +176,26 @@ export default class Spawn_Text
                 }
 
                 // Spawn a new pipe circuit!
-                let newPipeNetworkID                = this.baseLayout.getIncrementalIdFromInternalPointer('/Script/FactoryGame.FGPipeNetwork');;
+                let newPipeNetworkID                = Object.keys(this.baseLayout.saveGamePipeNetworks);
+                    newPipeNetworkID                = (newPipeNetworkID.length > 0) ? (parseInt(newPipeNetworkID.reduce(function(a, b){ return parseInt(a) > parseInt(b) ? parseInt(a) : parseInt(b) })) + 1) : 1;
                 let mFluidIntegrantScriptInterfaces = {name: "mFluidIntegrantScriptInterfaces", type: "ArrayProperty", index: 0, value: {type: "InterfaceProperty", values: []}};
                 let newPipeNetwork                  = {
-                    type: 1,
-                    className: '/Script/FactoryGame.FGPipeNetwork',
-                    levelName: 'Persistent_Level',
-                    pathName: 'Persistent_Level:PersistentLevel.FGPipeNetwork_' + newPipeNetworkID,
-                    needTransform: 0,
-                    transform: {rotation: [0, 0, 0, 1], translation: [0, 0, 0], scale3d: [1, 1, 1]},
-                    wasPlacedInLevel: 0,
-                    children: [],
-                    properties: [{name: "mPipeNetworkID", type: "IntProperty", index: 0, value: newPipeNetworkID}, mFluidIntegrantScriptInterfaces],
-                    entityLevelName: "", entityPathName: ""
+                    type                                : 1,
+                    className                           : '/Script/FactoryGame.FGPipeNetwork',
+                    levelName                           : 'Persistent_Level',
+                    pathName                            : this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.FGPipeNetwork_XXX'}),
+                    needTransform                       : 0,
+                    transform                           : {rotation: [0, 0, 0, 1], translation: [0, 0, 0], scale3d: [1, 1, 1]},
+                    wasPlacedInLevel                    : 0,
+                    children                            : [],
+                    properties                          : [{name: "mPipeNetworkID", type: "IntProperty", index: 0, value: newPipeNetworkID}, mFluidIntegrantScriptInterfaces],
+                    entityLevelName                     : "",
+                    entityPathName                      : ""
                 };
+                console.log(newPipeNetwork);
 
                 this.baseLayout.saveGameParser.addObject(newPipeNetwork);
+                this.baseLayout.saveGamePipeNetworks[newPipeNetworkID] = newPipeNetwork.pathName;
 
                 // Spawn pipes...
                 for(let j = 0; j < currentLine.length; j++)

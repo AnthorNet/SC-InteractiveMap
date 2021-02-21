@@ -1209,8 +1209,7 @@ export default class BaseLayout
         let layerId         = 'playerFaunaLayer';
         let faunaData       = this.getFaunaDataFromClassName(className);
 
-        let newFaunaId      = this.getIncrementalIdFromInternalPointer(className);
-        let pathName        = faunaData.pathName + newFaunaId;
+        let pathName        = this.generateFastPathName({pathName: faunaData.pathName + 'XXX'});
 
         let newFauna = {
             children: [{levelName: 'Persistent_Level', pathName: pathName + '.HealthComponent'}],
@@ -1606,64 +1605,63 @@ export default class BaseLayout
             }
         }
 
-        let crateID = this.getIncrementalIdFromInternalPointer('/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C');
-
-        let newLootCrate = {
+        let cratePathName   = this.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.BP_Crate_C_XXX'});
+        let newLootCrate    = {
             type: 1,
-            className: "/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C",
-            levelName: "Persistent_Level",
-            pathName: "Persistent_Level:PersistentLevel.BP_Crate_C_" + crateID,
-            needTransform: 1,
-            transform: {
-                rotation: playerRotation,
-                translation: [
+            className           : "/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C",
+            levelName           : "Persistent_Level",
+            pathName            : cratePathName,
+            needTransform       : 1,
+            transform           : {
+                rotation            : playerRotation,
+                translation         : [
                     playerPosition[0] + (Math.floor(Math.random() * (1600 + 1)) - 400),
                     playerPosition[1] + (Math.floor(Math.random() * (1600 + 1)) - 400),
                     playerPosition[2] + Math.floor(Math.random() * (800 + 1))
                 ],
-                scale3d: [1, 1, 1]
+                scale3d             : [1, 1, 1]
             },
-            wasPlacedInLevel: 0,
-            children: [{levelName: "Persistent_Level", pathName: "Persistent_Level:PersistentLevel.BP_Crate_C_" + crateID + ".inventory"}],
-            properties: [{
-                name: "mInventory",
-                type: "ObjectProperty",
-                index: 0,
-                value: {levelName: "Persistent_Level", pathName: "Persistent_Level:PersistentLevel.BP_Crate_C_" + crateID + ".inventory"}
+            wasPlacedInLevel        : 0,
+            children                : [{levelName: "Persistent_Level", pathName: cratePathName + ".inventory"}],
+            properties              : [{
+                name                    : "mInventory",
+                type                    : "ObjectProperty",
+                index                   : 0,
+                value                   : {levelName: "Persistent_Level", pathName: cratePathName + ".inventory"}
             }],
-            entityLevelName: "",
-            entityPathName: ""
+            entityLevelName         : "",
+            entityPathName          : ""
         };
         this.saveGameParser.addObject(newLootCrate);
 
         let newLootCrateInventory = {
-            type: 0,
-            className: "/Script/FactoryGame.FGInventoryComponent",
-            levelName: "Persistent_Level",
-            pathName: "Persistent_Level:PersistentLevel.BP_Crate_C_" + crateID + ".inventory",
-            outerPathName: "Persistent_Level:PersistentLevel.BP_Crate_C_" + crateID,
-            children: [],
-            properties: [
+            type                    : 0,
+            className               : "/Script/FactoryGame.FGInventoryComponent",
+            levelName               : "Persistent_Level",
+            pathName                : cratePathName + ".inventory",
+            outerPathName           : cratePathName,
+            children                : [],
+            properties              : [
                 {
-                    name: "mInventoryStacks",
-                    type: "ArrayProperty",
-                    index: 0,
-                    value: {type: "StructProperty", values: []}, // Push items
-                    structureName: "mInventoryStacks",
-                    structureType: "StructProperty",
-                    structureSubType: "InventoryStack"
+                    name                : "mInventoryStacks",
+                    type                : "ArrayProperty",
+                    index               : 0,
+                    value               : {type: "StructProperty", values: []}, // Push items
+                    structureName       : "mInventoryStacks",
+                    structureType       : "StructProperty",
+                    structureSubType    : "InventoryStack"
                 },
                 {
-                    name: "mArbitrarySlotSizes",
-                    type: "ArrayProperty",
-                    index: 0,
-                    value: {type: "IntProperty", values: []} // Push 0 value for each slot used
+                    name                : "mArbitrarySlotSizes",
+                    type                : "ArrayProperty",
+                    index               : 0,
+                    value               : {type: "IntProperty", values: []} // Push 0 value for each slot used
                 },
                 {
-                    name: "mAllowedItemDescriptors",
-                    type: "ArrayProperty",
-                    index: 0,
-                    value: {type: "ObjectProperty", values: [{levelName: "", pathName: ""}]}
+                    name                : "mAllowedItemDescriptors",
+                    type                : "ArrayProperty",
+                    index               : 0,
+                    value               : {type: "ObjectProperty", values: [{levelName: "", pathName: ""}]}
                 }
             ]
         };
