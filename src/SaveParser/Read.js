@@ -911,6 +911,8 @@ export default class SaveParser_Read
                     case 'InventoryStack':
                     case 'ProjectileData':
                     case 'TrainSimulationData':
+                    case 'DroneDockingStateInfo':
+                    case 'DroneTripInformation':
                     case 'ResearchData':
                     case 'Hotbar':
                     case 'EnabledCheats': // MOD: Satisfactory Helper
