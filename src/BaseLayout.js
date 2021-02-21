@@ -39,7 +39,6 @@ export default class BaseLayout
         this.satisfactoryMap                    = options.satisfactoryMap;
         this.saveGameParser                     = options.saveGameParser;
 
-        this.saveGameInternalPointer            = {};
         this.saveGameSigns                      = [];
         this.saveGamePipeNetworks               = {};
         this.saveGameRailSwitches               = {};
@@ -100,11 +99,11 @@ export default class BaseLayout
         this.playerLayers                       = {
             playerRadioactivityLayer                : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: {}},
 
-            playerFoundationsLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerDecorationsLayer', elements: [], useAltitude: true, filters: []},
-            playerPillarsLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerDecorationsLayer', elements: [], useAltitude: true, filters: []},
-            playerWallsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerDecorationsLayer', elements: [], useAltitude: true, filters: []},
-            playerWalkwaysLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerDecorationsLayer', elements: [], useAltitude: true, filters: []},
-            playerStatuesLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerDecorationsLayer', elements: [], useAltitude: true},
+            playerFoundationsLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
+            playerPillarsLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
+            playerWallsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
+            playerWalkwaysLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
+            playerStatuesLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true},
 
             playerHUBTerminalLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], useAltitude: true},
             playerUnknownLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], useAltitude: true},
@@ -124,6 +123,7 @@ export default class BaseLayout
             playerStoragesLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], useAltitude: true, filters: []},
 
             playerVehiculesLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0, useAltitude: true, filters: []},
+            playerDronesLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0, useAltitude: true, filters: []},
             playerBeltsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], distance: 0, useAltitude: true, filters: []},
             playerPipesLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], distance: 0, useAltitude: true, filters: []},
             playerPipesHyperLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], distance: 0, useAltitude: true, filters: []},
@@ -290,22 +290,6 @@ export default class BaseLayout
                         this.toolsData      = data.toolsData;
                         this.recipesData    = data.recipesData;
                         this.schematicsData = data.schematicsData;
-
-                        for(let recipeId in this.recipesData)
-                        {
-                            if(this.recipesData[recipeId].className !== undefined && this.recipesData[recipeId].className.startsWith('/Game/FactoryGame/') === false)
-                            {
-                                this.recipesData[recipeId].className = '/Game/FactoryGame/Recipes/' + this.recipesData[recipeId].className;
-                            }
-                        }
-
-                        for(let schematicId in this.schematicsData)
-                        {
-                            if(this.schematicsData[schematicId].className !== undefined && this.schematicsData[schematicId].className.startsWith('/Game/FactoryGame/Schematics/') === false)
-                            {
-                                this.schematicsData[schematicId].className = '/Game/FactoryGame/Schematics/' + this.schematicsData[schematicId].className;
-                            }
-                        }
 
                         this.loadDetailedModels();
                     }.bind(this));
@@ -580,6 +564,8 @@ export default class BaseLayout
                 '/Script/FactoryGame.FGTrainPlatformConnection',
 
                 '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C',
+                '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C',
+                '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C',
                 '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C',
 
                 '/Game/FactoryGame/World/Hazard/SporeCloudPlant/BP_SporeFlower.BP_SporeFlower_C',
@@ -602,41 +588,16 @@ export default class BaseLayout
                 '/Game/FactoryGame/Buildable/Factory/Mam/Build_MamIntegrated.Build_MamIntegrated_C',
                 '/Game/FactoryGame/Buildable/Factory/HubTerminal/Build_HubTerminal.Build_HubTerminal_C',
 
+                '/Script/FactoryGame.FGPowerCircuit',
+                '/Script/FactoryGame.FGPowerConnectionComponent',
+                '/Script/FactoryGame.FGTargetPointLinkedList',
+                '/Game/FactoryGame/Buildable/Vehicle/BP_VehicleTargetPoint.BP_VehicleTargetPoint_C',
+
                 // MODS
                 '/Game/EfficiencyCheckerMod/Buildings/EfficiencyChecker/Build_Pipeline_Stub.Build_Pipeline_Stub_C'
             ].includes(currentObject.className))
             {
                 continue;
-            }
-
-            // Keep track of className max number
-            if(this.saveGameInternalPointer[currentObject.className] === undefined)
-            {
-                this.saveGameInternalPointer[currentObject.className] = 0;
-            }
-            let currentObjectMax = currentObject.pathName.split('_').pop();
-            if(isNaN(currentObjectMax) === true)
-            {
-                currentObjectMax = currentObject.pathName.match(/\d+$/);
-
-                if(currentObjectMax !== null)
-                {
-                    this.saveGameInternalPointer[currentObject.className] = Math.max(this.saveGameInternalPointer[currentObject.className], parseInt(currentObjectMax[0]) + 1);
-                }
-            }
-            else
-            {
-                // Specific case for when the mPipeNetworkID don't have the same id as the pathName...
-                if(currentObject.className === '/Script/FactoryGame.FGPipeNetwork')
-                {
-                    let mPipeNetworkID = this.getObjectProperty(currentObject, 'mPipeNetworkID');
-                        if(mPipeNetworkID !== null)
-                        {
-                            Math.max(parseInt(mPipeNetworkID), parseInt(currentObjectMax));
-                        }
-                }
-
-                this.saveGameInternalPointer[currentObject.className] = Math.max(this.saveGameInternalPointer[currentObject.className], parseInt(currentObjectMax) + 1);
             }
 
             if(currentObject.className === '/Script/FactoryGame.FGPipeNetwork')
@@ -646,17 +607,7 @@ export default class BaseLayout
                     {
                         this.saveGamePipeNetworks[mPipeNetworkID] = currentObject.pathName;
                     }
-            }
 
-            // Skip after keeping track of max ID
-            if([
-                '/Script/FactoryGame.FGPowerCircuit',
-                '/Script/FactoryGame.FGPipeNetwork',
-                '/Script/FactoryGame.FGPowerConnectionComponent',
-                '/Script/FactoryGame.FGTargetPointLinkedList',
-                '/Game/FactoryGame/Buildable/Vehicle/BP_VehicleTargetPoint.BP_VehicleTargetPoint_C'
-            ].includes(currentObject.className))
-            {
                 continue;
             }
 
@@ -5812,29 +5763,21 @@ export default class BaseLayout
         return null;
     }
 
-    getIncrementalIdFromInternalPointer(className)
+    generateFastPathName(currentObject)
     {
-        if(this.saveGameInternalPointer[className] === undefined)
-        {
-            this.saveGameInternalPointer[className] = 1;
-        }
-        else
-        {
-            this.saveGameInternalPointer[className]++;
-        }
-
-        return parseInt((' ' + this.saveGameInternalPointer[className]).slice(1));
-    }
-
-    generateNewPathName(currentObject)
-    {
-        let newId       = this.getIncrementalIdFromInternalPointer(currentObject.className);
         let pathName    = JSON.parse(JSON.stringify(currentObject.pathName.split('_')));
             pathName.pop();
-            pathName.push(newId);
+            pathName.push(Math.floor(Math.random() * Math.floor(2147483647)));
 
-        //return ' ' + pathName.join('_').slice(1);
-        return pathName.join('_');
+        let newPathName = pathName.join('_');
+
+            if(this.saveGameParser.objectsHashMap[newPathName] !== undefined)
+            {
+                console.log('Collision detected', newPathName);
+                return this.generateFastPathName(currentObject);
+            }
+
+        return newPathName;
     }
 
     // CONTEXT MENU
@@ -6739,14 +6682,14 @@ export default class BaseLayout
                     ],
                     entityLevelName: "Persistent_Level", entityPathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"
                 };
-                fakeFoundation.pathName = this.generateNewPathName(fakeFoundation);
+                fakeFoundation.pathName = this.generateFastPathName(fakeFoundation);
 
             this.saveGameParser.addObject(fakeFoundation);
             let resultCenter = this.parseObject(fakeFoundation);
                 this.addElementToLayer(resultCenter.layer, resultCenter.marker);
 
             let newFoundationTopLeft                    = JSON.parse(JSON.stringify(fakeFoundation));
-                newFoundationTopLeft.pathName           = this.generateNewPathName(fakeFoundation);
+                newFoundationTopLeft.pathName           = this.generateFastPathName(fakeFoundation);
             let translationRotationTopLeft              = BaseLayout_Math.getPointRotation(
                     [
                         (fakeFoundation.transform.translation[0] - (centerX - selectionBoundaries.minX) - 800),
@@ -6762,7 +6705,7 @@ export default class BaseLayout
                     this.addElementToLayer(resultTopLeft.layer, resultTopLeft.marker);
 
             let newFoundationTopRight                   = JSON.parse(JSON.stringify(fakeFoundation));
-                newFoundationTopRight.pathName          = this.generateNewPathName(fakeFoundation);
+                newFoundationTopRight.pathName          = this.generateFastPathName(fakeFoundation);
             let translationRotationTopRight             = BaseLayout_Math.getPointRotation(
                     [
                         (fakeFoundation.transform.translation[0] + (selectionBoundaries.maxX - centerX) + 800),
@@ -6778,7 +6721,7 @@ export default class BaseLayout
                     this.addElementToLayer(resultTopRight.layer, resultTopRight.marker);
 
             let newFoundationBottomLeft                 = JSON.parse(JSON.stringify(fakeFoundation));
-                newFoundationBottomLeft.pathName        = this.generateNewPathName(fakeFoundation);
+                newFoundationBottomLeft.pathName        = this.generateFastPathName(fakeFoundation);
             let translationRotationBottomLeft           = BaseLayout_Math.getPointRotation(
                     [
                         (fakeFoundation.transform.translation[0] - (centerX - selectionBoundaries.minX) - 800),
@@ -6795,7 +6738,7 @@ export default class BaseLayout
 
 
             let newFoundationBottomRight                = JSON.parse(JSON.stringify(fakeFoundation));
-                newFoundationBottomRight.pathName       = this.generateNewPathName(fakeFoundation);
+                newFoundationBottomRight.pathName       = this.generateFastPathName(fakeFoundation);
             let translationRotationBottomRight          = BaseLayout_Math.getPointRotation(
                     [
                         (fakeFoundation.transform.translation[0] + (selectionBoundaries.maxX - centerX) + 800),

@@ -191,7 +191,7 @@ export default class Spawn_Road
         }
 
         let newFoundation           = JSON.parse(JSON.stringify(this.centerObject));
-            newFoundation.pathName  = this.baseLayout.generateNewPathName(this.centerObject);
+            newFoundation.pathName  = this.baseLayout.generateFastPathName(this.centerObject);
 
         // Calculate new position
         if(this.curvature === 0 || height === 0)

@@ -98,7 +98,7 @@ export default class Spawn_Rectangle
                 }
 
                 let newFoundation           = JSON.parse(JSON.stringify(this.centerObject));
-                    newFoundation.pathName  = this.baseLayout.generateNewPathName(this.centerObject);
+                    newFoundation.pathName  = this.baseLayout.generateFastPathName(this.centerObject);
 
                 // Calculate new position
                 let rotation                = BaseLayout_Math.getPointRotation(

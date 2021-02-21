@@ -90,7 +90,7 @@ export default class Spawn_Circle
                         }
 
                         let newFoundation                           = JSON.parse(JSON.stringify(this.centerObject));
-                            newFoundation.pathName                  = this.baseLayout.generateNewPathName(this.centerObject);
+                            newFoundation.pathName                  = this.baseLayout.generateFastPathName(this.centerObject);
                             newFoundation.transform.translation[0]  = Math.cos(angle * Math.PI / 180) * (radius * 800) + this.centerObject.transform.translation[0];
                             newFoundation.transform.translation[1]  = Math.sin(angle * Math.PI / 180) * (radius * 800) + this.centerObject.transform.translation[1];
 

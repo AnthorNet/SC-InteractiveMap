@@ -168,11 +168,11 @@ export default class Spawn_Blueprint
 
             for(let i = 0; i < this.clipboard.data.length; i++)
             {
-                let newPathName         = this.baseLayout.generateNewPathName(this.clipboard.data[i].parent);
+                let newPathName         = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
 
                     while(pathNameToConvert.includes(newPathName))
                     {
-                        newPathName = this.baseLayout.generateNewPathName(this.clipboard.data[i].parent);
+                        newPathName = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
                     }
 
                     pathNameConversion[this.clipboard.data[i].parent.pathName] = newPathName;
@@ -194,14 +194,14 @@ export default class Spawn_Blueprint
 
                     if(pathNameConversion[oldPathName] === undefined)
                     {
-                        let newPathName         = this.baseLayout.generateNewPathName({
+                        let newPathName         = this.baseLayout.generateFastPathName({
                             className: this.clipboard.hiddenConnections[pathName].className,
                             pathName: oldPathName
                         });
 
                             while(pathNameToConvert.includes(newPathName))
                             {
-                                newPathName = this.baseLayout.generateNewPathName({
+                                newPathName = this.baseLayout.generateFastPathName({
                                     className: this.clipboard.hiddenConnections[pathName].className,
                                     pathName: oldPathName
                                 });
@@ -237,7 +237,11 @@ export default class Spawn_Blueprint
                         this.clipboard.data[i].parent.outerPathName = pathNameConversion[this.clipboard.data[i].parent.outerPathName];
                     }
 
-                    if((this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' || this.clipboard.data[i].parent.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') && this.clipboard.data[i].parent.extra !== undefined)
+                    // Power lines connections
+                    if(
+                            (this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' || this.clipboard.data[i].parent.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
+                         && this.clipboard.data[i].parent.extra !== undefined
+                    )
                     {
                         if(this.clipboard.data[i].parent.extra.sourcePathName !== undefined)
                         {
@@ -262,6 +266,7 @@ export default class Spawn_Blueprint
                             }
                         }
                     }
+
                     // Wagons connections
                     if(this.clipboard.data[i].parent.extra !== undefined)
                     {
@@ -387,6 +392,7 @@ export default class Spawn_Blueprint
                         }
                     }
 
+                    // Vehicles waypoints
                     if(this.clipboard.data[i].linkedList !== undefined)
                     {
                         this.clipboard.data[i] = JSON.stringify(this.clipboard.data[i]);
@@ -617,7 +623,7 @@ export default class Spawn_Blueprint
                     for(let j = 0; j < currentClipboard.targetPoints.length; j++)
                     {
                         let currentTargetPoint  = currentClipboard.targetPoints[j];
-                        let newNodePathName     = this.baseLayout.generateNewPathName(currentTargetPoint);
+                        let newNodePathName     = this.baseLayout.generateFastPathName(currentTargetPoint);
 
                             targetConversion[currentTargetPoint.pathName]   = newNodePathName;
 
@@ -851,6 +857,10 @@ export default class Spawn_Blueprint
             }
         }
 
+        // Update altitude slider
+        this.baseLayout.altitudeSliderControl.updateSliderAltitudes(this.baseLayout.minAltitude, this.baseLayout.maxAltitude);
+
+
         if(this.useHistory === true && this.baseLayout.history !== null && this.historyPathName.length > 0)
         {
             this.baseLayout.history.add({
@@ -883,7 +893,7 @@ export default class Spawn_Blueprint
 
         // TOP LEFT
         let newFoundationTopLeft                    = JSON.parse(JSON.stringify(this.centerObject));
-            newFoundationTopLeft.pathName           = this.baseLayout.generateNewPathName(this.centerObject);
+            newFoundationTopLeft.pathName           = this.baseLayout.generateFastPathName(this.centerObject);
         let translationRotationTopLeft              = BaseLayout_Math.getPointRotation(
                 [
                     (this.centerObject.transform.translation[0] - (centerX - this.clipboard.minX) - 800),
@@ -900,7 +910,7 @@ export default class Spawn_Blueprint
 
         // TOP RIGHT
         let newFoundationTopRight                   = JSON.parse(JSON.stringify(this.centerObject));
-            newFoundationTopRight.pathName          = this.baseLayout.generateNewPathName(this.centerObject);
+            newFoundationTopRight.pathName          = this.baseLayout.generateFastPathName(this.centerObject);
         let translationRotationTopRight             = BaseLayout_Math.getPointRotation(
                 [
                     (this.centerObject.transform.translation[0] + (this.clipboard.maxX - centerX) + 800),
@@ -917,7 +927,7 @@ export default class Spawn_Blueprint
 
         // BOTTOM LEFT
         let newFoundationBottomLeft                 = JSON.parse(JSON.stringify(this.centerObject));
-            newFoundationBottomLeft.pathName        = this.baseLayout.generateNewPathName(this.centerObject);
+            newFoundationBottomLeft.pathName        = this.baseLayout.generateFastPathName(this.centerObject);
         let translationRotationBottomLeft           = BaseLayout_Math.getPointRotation(
                 [
                     (this.centerObject.transform.translation[0] - (centerX - this.clipboard.minX) - 800),
@@ -934,7 +944,7 @@ export default class Spawn_Blueprint
 
         // BOTTOM RIGHT
         let newFoundationBottomRight                = JSON.parse(JSON.stringify(this.centerObject));
-            newFoundationBottomRight.pathName       = this.baseLayout.generateNewPathName(this.centerObject);
+            newFoundationBottomRight.pathName       = this.baseLayout.generateFastPathName(this.centerObject);
         let translationRotationBottomRight          = BaseLayout_Math.getPointRotation(
                 [
                     (this.centerObject.transform.translation[0] + (this.clipboard.maxX - centerX) + 800),

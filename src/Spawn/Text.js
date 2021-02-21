@@ -222,7 +222,7 @@ export default class Spawn_Text
                                     entityLevelName     : "Persistent_Level",
                                     entityPathName      : "Persistent_Level:PersistentLevel.BuildableSubsystem"
                                 }));
-                                newPipe.pathName  = this.baseLayout.generateNewPathName(newPipe);
+                                newPipe.pathName  = this.baseLayout.generateFastPathName(newPipe);
 
                                 newPipe.children.push({levelName: "Persistent_Level", pathName: newPipe.pathName + ".PipelineConnection0"});
                                 newPipe.children.push({levelName: "Persistent_Level", pathName: newPipe.pathName + ".PipelineConnection1"});

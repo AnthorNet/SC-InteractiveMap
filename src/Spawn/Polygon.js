@@ -95,7 +95,7 @@ export default class Spawn_Polygon
                     }
 
                     let newFoundation                       = JSON.parse(JSON.stringify(this.centerObject));
-                        newFoundation.pathName              = this.baseLayout.generateNewPathName(this.centerObject);
+                        newFoundation.pathName              = this.baseLayout.generateFastPathName(this.centerObject);
                         newFoundation.transform.rotation    = centerRotation;
 
                     // Calculate new position
