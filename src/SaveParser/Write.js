@@ -649,8 +649,6 @@ export default class SaveParser_Write
                     case 'InventoryStack':
                     case 'ProjectileData':
                     case 'TrainSimulationData':
-                    case 'DroneDockingStateInfo':
-                    case 'DroneTripInformation':
                     case 'ResearchData':
                     case 'Hotbar':
                     case 'EnabledCheats': // MOD: Satisfactory Helper
@@ -849,20 +847,28 @@ export default class SaveParser_Write
                                     structure += this.writeString(currentProperty.value.values[i].levelName);
                                     structure += this.writeString(currentProperty.value.values[i].pathName);
                                     break;
+
                                 case 'Guid':
                                     structure += this.writeHex(currentProperty.value.values[i]);
                                     break;
+
+                                case 'FINNetworkTrace': // MOD: FicsIt-Networks
+                                    structure += this.writeFINNetworkTrace(currentProperty.value.values[i]);
+                                    break;
+
                                 case 'Vector':
                                     structure += this.writeFloat(currentProperty.value.values[i].x);
                                     structure += this.writeFloat(currentProperty.value.values[i].y);
                                     structure += this.writeFloat(currentProperty.value.values[i].z);
                                     break;
+
                                 case 'LinearColor':
                                     structure += this.writeFloat(currentProperty.value.values[i].r);
                                     structure += this.writeFloat(currentProperty.value.values[i].g);
                                     structure += this.writeFloat(currentProperty.value.values[i].b);
                                     structure += this.writeFloat(currentProperty.value.values[i].a);
                                     break;
+
                                 default:
                                     for(let j = 0; j < currentProperty.value.values[i].length; j++)
                                     {

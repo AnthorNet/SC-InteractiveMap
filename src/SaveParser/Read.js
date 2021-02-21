@@ -626,9 +626,15 @@ export default class SaveParser_Read
                                         pathName      : this.readString()
                                     });
                                     break;
+
                                 case 'Guid':
                                     currentProperty.value.values.push(this.readHex(16));
                                     break;
+
+                                case 'FINNetworkTrace': // MOD: FicsIt-Networks
+                                    currentProperty.value.values.push(this.readFINNetworkTrace());
+                                    break;
+
                                 case 'Vector':
                                     currentProperty.value.values.push({
                                         x           : this.readFloat(),
@@ -636,6 +642,7 @@ export default class SaveParser_Read
                                         z           : this.readFloat()
                                     });
                                     break;
+
                                 case 'LinearColor':
                                     currentProperty.value.values.push({
                                         r : this.readFloat(),
@@ -644,20 +651,21 @@ export default class SaveParser_Read
                                         a : this.readFloat()
                                     });
                                     break;
+
                                 default:
                                     let subStructProperties = [];
-                                    while(true)
-                                    {
-                                        let subStructProperty = this.readPropertyV5();
+                                        while(true)
+                                        {
+                                            let subStructProperty = this.readPropertyV5();
 
-                                            if(subStructProperty === null)
-                                            {
-                                                break;
-                                            }
+                                                if(subStructProperty === null)
+                                                {
+                                                    break;
+                                                }
 
-                                        subStructProperties.push(subStructProperty);
-                                    }
-                                    currentProperty.value.values.push(subStructProperties);
+                                            subStructProperties.push(subStructProperty);
+                                        }
+                                        currentProperty.value.values.push(subStructProperties);
                                     break;
                             }
                         }
@@ -903,8 +911,6 @@ export default class SaveParser_Read
                     case 'InventoryStack':
                     case 'ProjectileData':
                     case 'TrainSimulationData':
-                    case 'DroneDockingStateInfo':
-                    case 'DroneTripInformation':
                     case 'ResearchData':
                     case 'Hotbar':
                     case 'EnabledCheats': // MOD: Satisfactory Helper
