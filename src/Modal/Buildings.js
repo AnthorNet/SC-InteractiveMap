@@ -10,13 +10,28 @@ export default class Modal_Buildings
             this.markers = [];
             for(let layerId in this.baseLayout.playerLayers)
             {
-                let layerLength = this.baseLayout.playerLayers[layerId].elements.length;
+                if([
+                    'playerRadioactivityLayer', 'playerFoundationsLayer', 'playerWallsLayer',
+                    'playerLightsLayer', 'playerPillarsLayer', 'playerWalkwaysLayer',
+                    'playerStatuesLayer', 'playerHUBTerminalLayer', 'playerUnknownLayer',
+                    'playerOrientationLayer', 'playerCratesLayer', 'playerLightsLayer',
+                    'playerPillarsLayer', 'playerWalkwaysLayer', 'playerStatuesLayer',
+                    'playerHUBTerminalLayer', 'playerUnknownLayer', 'playerOrientationLayer',
+                    'playerCratesLayer'
+                ].includes(layerId))
+                {
+                    continue;
+                }
 
-                    for(let i = 0; i < layerLength; i++)
+                let layerLength = this.baseLayout.playerLayers[layerId].elements.length;
+                    if(layerLength > 0)
                     {
-                        if(this.baseLayout.playerLayers[layerId].elements[i].options.pathName !== undefined)
+                        for(let i = 0; i < layerLength; i++)
                         {
-                            this.markers.push(this.baseLayout.playerLayers[layerId].elements[i]);
+                            if(this.baseLayout.playerLayers[layerId].elements[i].options.pathName !== undefined)
+                            {
+                                this.markers.push(this.baseLayout.playerLayers[layerId].elements[i]);
+                            }
                         }
                     }
             }
@@ -121,7 +136,6 @@ export default class Modal_Buildings
                     {
                         let htmlRow         = [];
                         let currentObject   = buildingsList[currentCategory].buildings[className][i];
-                        let pathNameId      = JSON.parse(JSON.stringify(currentObject.pathName.split('_'))).pop();
 
                             htmlRow.push('<tr>');
                             if(this.baseLayout.getBuildingIsOn(currentObject) === false)
@@ -141,7 +155,7 @@ export default class Modal_Buildings
                                 htmlRow.push('<td width="1"><i class="fas fa-plug text-success"></i></td>');
                             }
 
-                            htmlRow.push('<td>#' + pathNameId + '</td>');
+                            htmlRow.push('<td>#' + (i + 1) + '</td>');
 
                             htmlRow.push('<td>');
 
@@ -218,7 +232,7 @@ export default class Modal_Buildings
                             htmlRow.push('<td class="text-right"><i class="fas fa-search-location" style="cursor: pointer;font-size: 24px;" data-x="' + currentObject.transform.translation[0] + '" data-y="' + currentObject.transform.translation[1] + '"></i></td>');
                             htmlRow.push('</tr>');
 
-                            htmlRows[pathNameId] = htmlRow.join('');
+                            htmlRows.push(htmlRow.join(''));
                     }
                     htmlTab.push(htmlRows.join(''));
                     htmlTab.push('</tbody></table>');
