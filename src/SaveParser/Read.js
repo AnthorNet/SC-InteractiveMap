@@ -226,11 +226,34 @@ export default class SaveParser_Read
     }
 
     // V5 Functions
+    readObjectV5()
+    {
+        let object                  = {type : 0};
+            object.className        = this.readString();
+
+            let levelName           = this.readString();
+                if(levelName !== 'Persistent_Level')
+                {
+                    object.levelName     = levelName;
+                }
+
+            object.pathName         = this.readString();
+            object.outerPathName    = this.readString();
+
+        return object;
+    }
+
     readActorV5()
     {
         let actor               = {type : 1};
             actor.className     = this.readString();
-            actor.levelName     = this.readString();
+
+        let levelName           = this.readString();
+            if(levelName !== 'Persistent_Level')
+            {
+                actor.levelName     = levelName;
+            }
+
             actor.pathName      = this.readString();
 
         let needTransform       = this.readInt();
@@ -254,17 +277,6 @@ export default class SaveParser_Read
         return actor;
     }
 
-    readObjectV5()
-    {
-        return {
-            type            : 0,
-            className       : this.readString(),
-            levelName       : this.readString(),
-            pathName        : this.readString(),
-            outerPathName   : this.readString()
-        };
-    }
-
     readEntityV5(objectKey)
     {
         let entityLength                            = this.readInt();
@@ -272,18 +284,22 @@ export default class SaveParser_Read
 
         if(this.saveParser.objects[objectKey].type === 1)
         {
-            this.saveParser.objects[objectKey].children         = [];
             this.saveParser.objects[objectKey].entityLevelName  = this.readString();
             this.saveParser.objects[objectKey].entityPathName   = this.readString();
 
             let countChild  = this.readInt();
-            for(let i = 0; i < countChild; i++)
-            {
-                this.saveParser.objects[objectKey].children.push({
-                    levelName   : this.readString(),
-                    pathName    : this.readString()
-                });
-            }
+                if(countChild > 0)
+                {
+                    this.saveParser.objects[objectKey].children = [];
+
+                    for(let i = 0; i < countChild; i++)
+                    {
+                        this.saveParser.objects[objectKey].children.push({
+                            levelName   : this.readString(),
+                            pathName    : this.readString()
+                        });
+                    }
+                }
         }
 
         if((this.currentByte - startByte) === entityLength)

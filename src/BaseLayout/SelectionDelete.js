@@ -174,7 +174,6 @@ export default class BaseLayout_Selection_Delete
                     let newItem = [{
                         name: "Item",
                         type: "StructProperty",
-                        index: 0,
                         value: {
                             type: "InventoryItem",
                             unk1: 0,

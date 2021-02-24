@@ -1234,23 +1234,23 @@ export default class BaseLayout
 
         let pathName        = this.generateFastPathName({pathName: faunaData.pathName + 'XXX'});
 
-        let newFauna = {
-            children: [{levelName: 'Persistent_Level', pathName: pathName + '.HealthComponent'}],
-            className: className,
-            levelName: 'Persistent_Level', pathName: pathName,
-            entityLevelName: '', entityPathName: '',
-            properties: [{name: 'mHealthComponent', type: 'ObjectProperty', index: 0, value: {levelName: 'Persistent_Level', pathName: pathName + '.HealthComponent'}}],
-            needTransform: 1,
-            transform: {
-                rotation: [0, -0, currentObject.transform.rotation[2], currentObject.transform.rotation[3]],
-                scale3d: [1, 1, 1],
-                translation: [
+        let newFauna        = {
+            type                : 1,
+            children            : [{levelName: 'Persistent_Level', pathName: pathName + '.HealthComponent'}],
+            className           : className,
+            pathName            : pathName,
+            entityLevelName     : '',
+            entityPathName      : '',
+            properties          : [{name: 'mHealthComponent', type: 'ObjectProperty', value: {levelName: 'Persistent_Level', pathName: pathName + '.HealthComponent'}}],
+            transform           : {
+                rotation            : [0, -0, currentObject.transform.rotation[2], currentObject.transform.rotation[3]],
+                scale3d             : [1, 1, 1],
+                translation         : [
                     currentObject.transform.translation[0] + (Math.floor(Math.random() * (800 + 1)) - 400),
                     currentObject.transform.translation[1] + (Math.floor(Math.random() * (800 + 1)) - 400),
                     currentObject.transform.translation[2] + 450 + ( (faunaData.zOffset !== undefined) ? faunaData.zOffset : 0 )
                 ]
-            },
-            type: 1, wasPlacedInLevel: 0
+            }
         };
 
         if(className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
@@ -1259,19 +1259,19 @@ export default class BaseLayout
 
             newFauna.children.unshift({levelName: 'Persistent_Level', pathName: pathName + '.mInventory'});
 
-            newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', index: 0, value: {levelName: 'Persistent_Level', pathName: this.ownPlayerPath.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', 'Persistent_Level:PersistentLevel.Char_Player_C_')}});
-            newFauna.properties.push({name: 'mLootTableIndex', type: 'IntProperty', index: 0, value: 0});
-            newFauna.properties.push({name: 'mLootTimerHandle', type: 'StructProperty', index: 0, value: {handle: 'None', type: 'TimerHandle'}});
-            newFauna.properties.push({name: 'mIsPersistent', type: 'BoolProperty', index: 0, value: 1});
+            newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {levelName: 'Persistent_Level', pathName: this.ownPlayerPath.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', 'Persistent_Level:PersistentLevel.Char_Player_C_')}});
+            newFauna.properties.push({name: 'mLootTableIndex', type: 'IntProperty', value: 0});
+            newFauna.properties.push({name: 'mLootTimerHandle', type: 'StructProperty', value: {handle: 'None', type: 'TimerHandle'}});
+            newFauna.properties.push({name: 'mIsPersistent', type: 'BoolProperty', value: 1});
 
-            let newSpaceRabbitInventory = {
-                children: [],
-                className: '/Script/FactoryGame.FGInventoryComponent',
-                levelName: 'Persistent_Level',
-                outerPathName: pathName, pathName: pathName + '.mInventory',
-                properties: [
+            let newSpaceRabbitInventory     = {
+                type            : 0,
+                children        : [],
+                className       : '/Script/FactoryGame.FGInventoryComponent',
+                outerPathName   : pathName, pathName: pathName + '.mInventory',
+                properties      : [
                     {
-                        index: 0, name: "mInventoryStacks",
+                        name: "mInventoryStacks",
                         structureName: "mInventoryStacks",
                         structureSubType: "InventoryStack",
                         structureType: "StructProperty",
@@ -1279,33 +1279,33 @@ export default class BaseLayout
                         value: {
                             type: "StructProperty",
                             values: [[{
-                                index: 0, name: "Item", type: "StructProperty",
+                                name: "Item",
+                                type: "StructProperty",
                                 value: {
                                     itemName: "", levelName: "", pathName: "",
                                     type: "InventoryItem",
                                     unk1: 0,
-                                    properties: [{index: 0, name: "NumItems", type: "IntProperty", value: 0}]
+                                    properties: [{name: "NumItems", type: "IntProperty", value: 0}]
                                 }
                             }]]
                         }
                     },
-                    { name: '"mArbitrarySlotSizes', type: 'ArrayProperty', index: 0, value: {type: 'IntProperty', values: [0]} },
-                    { name: 'mAllowedItemDescriptors', type: 'ArrayProperty', index: 0, value: {type: 'ObjectProperty', values: [{levelName: '', pathName: ''}]} }
-                ],
-                type: 0
+                    { name: '"mArbitrarySlotSizes', type: 'ArrayProperty', value: {type: 'IntProperty', values: [0]} },
+                    { name: 'mAllowedItemDescriptors', type: 'ArrayProperty', value: {type: 'ObjectProperty', values: [{levelName: '', pathName: ''}]} }
+                ]
             };
 
             this.saveGameParser.addObject(newSpaceRabbitInventory);
         }
 
         this.saveGameParser.addObject({
-            className: '/Script/FactoryGame.FGHealthComponent', levelName: 'Persistent_Level',
+            className: '/Script/FactoryGame.FGHealthComponent',
             outerPathName: pathName, pathName: pathName + '.HealthComponent',
-            children: [], properties: [], type: 0
+            properties: [], type: 0
         });
 
         let newCreatureSpawnerId = "Persistent_Exploration_2:PersistentLevel.BP_CreatureSpawner432";
-        newFauna.properties.push({name: "mOwningSpawner", type: "ObjectProperty", index: 0, value: {levelName: "Persistent_Exploration_2", pathName: newCreatureSpawnerId}});
+        newFauna.properties.push({name: "mOwningSpawner", type: "ObjectProperty", value: {levelName: "Persistent_Exploration_2", pathName: newCreatureSpawnerId}});
 
         this.saveGameParser.addObject(newFauna);
         this.addElementToLayer(layerId, this.addPlayerFauna(newFauna));
@@ -1630,11 +1630,9 @@ export default class BaseLayout
 
         let cratePathName   = this.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.BP_Crate_C_XXX'});
         let newLootCrate    = {
-            type: 1,
+            type                : 1,
             className           : "/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C",
-            levelName           : "Persistent_Level",
             pathName            : cratePathName,
-            needTransform       : 1,
             transform           : {
                 rotation            : playerRotation,
                 translation         : [
@@ -1644,7 +1642,6 @@ export default class BaseLayout
                 ],
                 scale3d             : [1, 1, 1]
             },
-            wasPlacedInLevel        : 0,
             children                : [{levelName: "Persistent_Level", pathName: cratePathName + ".inventory"}],
             properties              : [{
                 name                    : "mInventory",
@@ -1660,7 +1657,6 @@ export default class BaseLayout
         let newLootCrateInventory = {
             type                    : 0,
             className               : "/Script/FactoryGame.FGInventoryComponent",
-            levelName               : "Persistent_Level",
             pathName                : cratePathName + ".inventory",
             outerPathName           : cratePathName,
             children                : [],
@@ -4694,14 +4690,12 @@ export default class BaseLayout
 
         // Property didn't exists, so we're pushing it inside properties to turning the machine OFF.
         currentObject.properties.push({
-            index: 0,
             name: 'mIsProductionPaused',
             type: 'BoolProperty',
             value: 1
         });
         /*
         currentObject.properties.push({
-            index: 0,
             name: 'mTimeSinceStartStopProducing',
             type: 'FloatProperty',
             value: 0
@@ -5290,7 +5284,6 @@ export default class BaseLayout
                 if(colorSlot === null && newSlotIndex > 0 && newSlotIndex < BaseLayout_Map_ColorSlots.totalColorSlots)
                 {
                     currentObject.properties.push({
-                        index: 0,
                         name: 'mColorSlot',
                         type: 'ByteProperty',
                         value: {
@@ -6662,26 +6655,26 @@ export default class BaseLayout
                 }
 
 
-            let fakeFoundation      = {
-                    type: 1,
-                    className: "/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x2_01.Build_Foundation_8x2_01_C",
-                    levelName: "Persistent_Level", pathName: "Persistent_Level:PersistentLevel.Build_Foundation_8x2_01_C_XXX",
-                    needTransform: 1,
-                    transform: {
-                        rotation: [0, 0, 0, 1],
-                        translation: [centerX, centerY, minZ + 100],
-                        scale3d: [1, 1, 1]
+            let fakeFoundation  = {
+                    type            : 1,
+                    className       : "/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x2_01.Build_Foundation_8x2_01_C",
+                    pathName        : "Persistent_Level:PersistentLevel.Build_Foundation_8x2_01_C_XXX",
+                    transform       : {
+                        rotation        : [0, 0, 0, 1],
+                        translation     : [centerX, centerY, minZ + 100],
+                        scale3d         : [1, 1, 1]
                     },
-                    wasPlacedInLevel: 0, children: [],
-                    properties: [
+                    children        : [],
+                    properties      : [
                         { name: "mPrimaryColor", type: "StructProperty", value: { type: "LinearColor", values: { r: 0.10946200042963028, g: 0.10946200042963028, b: 0.10946200042963028, a: 1 } } },
                         { name: "mSecondaryColor", type: "StructProperty", value: { type: "LinearColor", values: { r: 0.10946200042963028, g: 0.10946200042963028, b: 0.10946200042963028, a: 1 } } },
-                        {name: "mColorSlot", type: "ByteProperty", index: 0, value: {enumName: "None", value: parseFloat(colorSlotHelper)}},
+                        {name: "mColorSlot", type: "ByteProperty", value: {enumName: "None", value: parseFloat(colorSlotHelper)}},
                         { name: "mBuildingID", type: "IntProperty", value: 25 },
                         { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
                         { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
                     ],
-                    entityLevelName: "Persistent_Level", entityPathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"
+                    entityLevelName : "Persistent_Level",
+                    entityPathName  : "Persistent_Level:PersistentLevel.BuildableSubsystem"
                 };
                 fakeFoundation.pathName = this.generateFastPathName(fakeFoundation);
 

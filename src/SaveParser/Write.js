@@ -330,7 +330,16 @@ export default class SaveParser_Write
     {
         let object  = this.writeInt(0, false);
             object += this.writeString(currentObject.className, false);
-            object += this.writeString(currentObject.levelName, false);
+
+            if(currentObject.levelName !== undefined)
+            {
+                object += this.writeString(currentObject.levelName, false);
+            }
+            else
+            {
+                object += this.writeString('Persistent_Level', false);
+            }
+
             object += this.writeString(currentObject.pathName, false);
             object += this.writeString(currentObject.outerPathName, false);
 
@@ -341,7 +350,16 @@ export default class SaveParser_Write
     {
         let actor  = this.writeInt(1, false);
             actor += this.writeString(currentActor.className, false);
-            actor += this.writeString(currentActor.levelName, false);
+
+            if(currentActor.levelName !== undefined)
+            {
+                actor += this.writeString(currentActor.levelName, false);
+            }
+            else
+            {
+                actor += this.writeString('Persistent_Level', false);
+            }
+
             actor += this.writeString(currentActor.pathName, false);
 
             if(currentActor.needTransform !== undefined)
@@ -389,13 +407,20 @@ export default class SaveParser_Write
             entity += this.writeString(currentObject.entityLevelName);
             entity += this.writeString(currentObject.entityPathName);
 
-            let countChild  = currentObject.children.length;
-                entity += this.writeInt(countChild);
-                for(let i = 0; i < countChild; i++)
-                {
-                    entity += this.writeString(currentObject.children[i].levelName);
-                    entity += this.writeString(currentObject.children[i].pathName);
-                }
+            if(currentObject.children !== undefined)
+            {
+                let countChild  = currentObject.children.length;
+                    entity += this.writeInt(countChild);
+                    for(let i = 0; i < countChild; i++)
+                    {
+                        entity += this.writeString(currentObject.children[i].levelName);
+                        entity += this.writeString(currentObject.children[i].pathName);
+                    }
+            }
+            else
+            {
+                entity += this.writeInt(0);
+            }
         }
 
         if(currentObject.shouldBeNulled !== undefined && currentObject.shouldBeNulled === true)

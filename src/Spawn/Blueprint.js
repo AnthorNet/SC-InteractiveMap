@@ -543,25 +543,22 @@ export default class Spawn_Blueprint
                     let newPipeNetwork      = {
                         type                    : 1,
                         className               : '/Script/FactoryGame.FGPipeNetwork',
-                        levelName               : 'Persistent_Level',
                         pathName                : this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.FGPipeNetwork_XXX'}),
-                        needTransform           : 0,
                         transform               : {rotation: [0, 0, 0, 1], translation: [0, 0, 0], scale3d: [1, 1, 1]},
-                        wasPlacedInLevel        : 0,
                         children                : [],
-                        properties              : [{name: "mPipeNetworkID", type: "IntProperty", index: 0, value: newPipeNetworkID}],
+                        properties              : [{name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}],
                         entityLevelName         : "",
                         entityPathName          : ""
                     };
 
                     if(this.clipboard.pipes[pipeNetworkID].fluid !== null)
                     {
-                        newPipeNetwork.properties.push({name: "mFluidDescriptor", type: "ObjectProperty", index: 0, value: {levelName: "", pathName: this.clipboard.pipes[pipeNetworkID].fluid}});
+                        newPipeNetwork.properties.push({name: "mFluidDescriptor", type: "ObjectProperty", value: {levelName: "", pathName: this.clipboard.pipes[pipeNetworkID].fluid}});
                     }
 
                     if(this.clipboard.pipes[pipeNetworkID].interface.length > 0)
                     {
-                        let mFluidIntegrantScriptInterfaces = {name: "mFluidIntegrantScriptInterfaces", type: "ArrayProperty", index: 0, value: {type: "InterfaceProperty", values: []}};
+                        let mFluidIntegrantScriptInterfaces = {name: "mFluidIntegrantScriptInterfaces", type: "ArrayProperty", value: {type: "InterfaceProperty", values: []}};
 
                             for(let i = 0; i < this.clipboard.pipes[pipeNetworkID].interface.length; i++)
                             {
@@ -887,7 +884,7 @@ export default class Spawn_Blueprint
         let centerX             = ((this.clipboard.minX + this.clipboard.maxX) / 2) + this.xOffset;
         let centerY             = ((this.clipboard.minY + this.clipboard.maxY) / 2) + this.yOffset;
 
-        this.centerObject.properties.push({name: "mColorSlot", type: "ByteProperty", index: 0, value: {enumName: "None", value: parseFloat(colorSlotHelper)}});
+        this.centerObject.properties.push({name: "mColorSlot", type: "ByteProperty", value: {enumName: "None", value: parseFloat(colorSlotHelper)}});
 
         // Delete and add again!
         let resultCenter = this.baseLayout.parseObject(this.centerObject);

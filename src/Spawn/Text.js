@@ -178,17 +178,14 @@ export default class Spawn_Text
                 // Spawn a new pipe circuit!
                 let newPipeNetworkID                = Object.keys(this.baseLayout.saveGamePipeNetworks);
                     newPipeNetworkID                = (newPipeNetworkID.length > 0) ? (parseInt(newPipeNetworkID.reduce(function(a, b){ return parseInt(a) > parseInt(b) ? parseInt(a) : parseInt(b) })) + 1) : 1;
-                let mFluidIntegrantScriptInterfaces = {name: "mFluidIntegrantScriptInterfaces", type: "ArrayProperty", index: 0, value: {type: "InterfaceProperty", values: []}};
+                let mFluidIntegrantScriptInterfaces = {name: "mFluidIntegrantScriptInterfaces", type: "ArrayProperty", value: {type: "InterfaceProperty", values: []}};
                 let newPipeNetwork                  = {
                     type                                : 1,
                     className                           : '/Script/FactoryGame.FGPipeNetwork',
-                    levelName                           : 'Persistent_Level',
                     pathName                            : this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.FGPipeNetwork_XXX'}),
-                    needTransform                       : 0,
                     transform                           : {rotation: [0, 0, 0, 1], translation: [0, 0, 0], scale3d: [1, 1, 1]},
-                    wasPlacedInLevel                    : 0,
                     children                            : [],
-                    properties                          : [{name: "mPipeNetworkID", type: "IntProperty", index: 0, value: newPipeNetworkID}, mFluidIntegrantScriptInterfaces],
+                    properties                          : [{name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}, mFluidIntegrantScriptInterfaces],
                     entityLevelName                     : "",
                     entityPathName                      : ""
                 };
@@ -212,16 +209,13 @@ export default class Spawn_Text
                             let newPipe     = JSON.parse(JSON.stringify({
                                     type                : 1,
                                     className           : "/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C",
-                                    levelName           : "Persistent_Level",
                                     pathName            : "Persistent_Level:PersistentLevel.Build_Pipeline_C_XXX",
-                                    needTransform       : 1,
                                     transform           : {rotation: [0, 0, 0, 1], translation: [], scale3d: this.centerObject.transform.scale3d},
-                                    wasPlacedInLevel    : 0,
                                     children            : [],
                                     properties          : [
-                                        {name: "mSplineData", type: "ArrayProperty", index: 0, value: {type: "StructProperty", values: []}, structureName: "mSplineData", structureType: "StructProperty", structureSubType: "SplinePointData"},
-                                        {name: "mBuiltWithRecipe", type: "ObjectProperty", index: 0, value: {levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Recipe_Pipeline.Recipe_Pipeline_C"}},
-                                        {name: "mBuildTimeStamp", type: "FloatProperty", index: 0, value: 0}
+                                        {name: "mSplineData", type: "ArrayProperty", value: {type: "StructProperty", values: []}, structureName: "mSplineData", structureType: "StructProperty", structureSubType: "SplinePointData"},
+                                        {name: "mBuiltWithRecipe", type: "ObjectProperty", value: {levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Recipe_Pipeline.Recipe_Pipeline_C"}},
+                                        {name: "mBuildTimeStamp", type: "FloatProperty", value: 0}
                                     ],
                                     entityLevelName     : "Persistent_Level",
                                     entityPathName      : "Persistent_Level:PersistentLevel.BuildableSubsystem"
@@ -262,7 +256,6 @@ export default class Spawn_Text
                                         currentSpline.push({
                                             name: currentSplineProperty,
                                             type: "StructProperty",
-                                            index: 0,
                                             value: { type: "Vector", values: currentSplineValue }
                                         });
                                     }
@@ -271,22 +264,18 @@ export default class Spawn_Text
                             }
 
                             let PipelineConnection0 = {
-                                    type: 0,
-                                    className: "/Script/FactoryGame.FGPipeConnectionComponent",
-                                    levelName: "Persistent_Level",
-                                    pathName: newPipe.pathName + ".PipelineConnection0",
-                                    outerPathName: newPipe.pathName,
-                                    children: [],
-                                    properties: [{name: "mPipeNetworkID", type: "IntProperty", index: 0, value: newPipeNetworkID}]
+                                    type                : 0,
+                                    className           : "/Script/FactoryGame.FGPipeConnectionComponent",
+                                    pathName            : newPipe.pathName + ".PipelineConnection0",
+                                    outerPathName       : newPipe.pathName,
+                                    properties          : [{name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}]
                                 };
                             let PipelineConnection1 = {
-                                    type: 0,
-                                    className: "/Script/FactoryGame.FGPipeConnectionComponent",
-                                    levelName: "Persistent_Level",
-                                    pathName: newPipe.pathName + ".PipelineConnection1",
-                                    outerPathName: newPipe.pathName,
-                                    children: [],
-                                    properties: [{name: "mPipeNetworkID", type: "IntProperty", index: 0, value: newPipeNetworkID}]
+                                    type                : 0,
+                                    className           : "/Script/FactoryGame.FGPipeConnectionComponent",
+                                    pathName            : newPipe.pathName + ".PipelineConnection1",
+                                    outerPathName       : newPipe.pathName,
+                                    properties          : [{name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}]
                                 };
 
                             // Add to save game

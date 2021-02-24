@@ -188,14 +188,12 @@ export default class BaseLayout_Statistics_Collectables
                         if(playerCollectables[className].markers[m].defaultValue !== undefined)
                         {
                             let defaultProperty = {
-                                index: 0,
                                 name: "mPickupItems",
                                 type: "StructProperty",
                                 value: {
                                     type: "InventoryStack",
                                     values: [
                                         {
-                                            index: 0,
                                             name: "NumItems",
                                             type: "IntProperty",
                                             value: playerCollectables[className].markers[m].defaultValue

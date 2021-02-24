@@ -133,7 +133,6 @@ export default class BaseLayout_Statistics_Player_Inventory
                                     for(let k = 0; k < count; k++)
                                     {
                                         armSlot.properties[j].value.values.push([{
-                                            index: 0,
                                             name: "Item",
                                             type: "StructProperty",
                                             value: {
@@ -142,7 +141,7 @@ export default class BaseLayout_Statistics_Player_Inventory
                                                 pathName: "",
                                                 type: "InventoryItem",
                                                 unk1: 0,
-                                                properties: [{index: 0, name: "NumItems", type: "IntProperty", value: 0}]
+                                                properties: [{name: "NumItems", type: "IntProperty", value: 0}]
                                             }
                                         }]);
                                     }
@@ -219,7 +218,6 @@ export default class BaseLayout_Statistics_Player_Inventory
                                     for(let k = 0; k < count; k++)
                                     {
                                         inventory.properties[j].value.values.push([{
-                                            index: 0,
                                             name: "Item",
                                             type: "StructProperty",
                                             value: {
@@ -228,7 +226,7 @@ export default class BaseLayout_Statistics_Player_Inventory
                                                 pathName: "",
                                                 type: "InventoryItem",
                                                 unk1: 0,
-                                                properties: [{index: 0, name: "NumItems", type: "IntProperty", value: 0}]
+                                                properties: [{name: "NumItems", type: "IntProperty", value: 0}]
                                             }
                                         }]);
                                     }

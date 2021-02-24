@@ -46,7 +46,7 @@ export default class Building_SpaceElevator
                     },
                     {
                         value           : 'EGP_EndGame',
-                        text            : 'Retention Phase (Tier 7)'
+                        text            : 'Retention Phase (Tier 7 & 8)'
                     }]
                 }],
                 callback    : function(values)

@@ -421,9 +421,9 @@ export default class BaseLayout_Map_Options
                     if(tutorialIntroManager !== null)
                     {
                         tutorialIntroManager.properties = [];
-                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroTutorial", type: "BoolProperty", index: 0, value: 1});
-                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroSequence", type: "BoolProperty", index: 0, value: 1});
-                        tutorialIntroManager.properties.push({name: "mTradingPostLevel", type: "IntProperty", index: 0, value: 6});
+                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroTutorial", type: "BoolProperty", value: 1});
+                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroSequence", type: "BoolProperty", value: 1});
+                        tutorialIntroManager.properties.push({name: "mTradingPostLevel", type: "IntProperty", value: 6});
                     }
 
                 // Reset players tutorials
