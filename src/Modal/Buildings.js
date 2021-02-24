@@ -11,13 +11,9 @@ export default class Modal_Buildings
             for(let layerId in this.baseLayout.playerLayers)
             {
                 if([
-                    'playerRadioactivityLayer', 'playerFoundationsLayer', 'playerWallsLayer',
-                    'playerLightsLayer', 'playerPillarsLayer', 'playerWalkwaysLayer',
-                    'playerStatuesLayer', 'playerHUBTerminalLayer', 'playerUnknownLayer',
-                    'playerOrientationLayer', 'playerCratesLayer', 'playerLightsLayer',
-                    'playerPillarsLayer', 'playerWalkwaysLayer', 'playerStatuesLayer',
-                    'playerHUBTerminalLayer', 'playerUnknownLayer', 'playerOrientationLayer',
-                    'playerCratesLayer'
+                    'playerRadioactivityLayer', 'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
+                    'playerPillarsLayer', 'playerWalkwaysLayer', 'playerUnknownLayer', 'playerOrientationLayer',
+                    'playerStatuesLayer', 'playerHUBTerminalLayer', 'playerLightsLayer'
                 ].includes(layerId))
                 {
                     continue;
