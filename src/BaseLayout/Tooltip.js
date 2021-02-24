@@ -784,7 +784,7 @@ export default class BaseLayout_Tooltip
 
                     let consumptionRatio = 60 / craftingTime * recipeItem.ingredients[itemClassName];
 
-                        if(currentItem.category === 'liquid')
+                        if(currentItem.category === 'liquid' || currentItem.category === 'gas')
                         {
                             content.push('<strong>' + +(Math.round((recipeItem.ingredients[itemClassName] / 1000) * 100) / 100) + 'm³ ' + currentItem.name + '</strong><br />');
                             content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio / 1000 * 100) / 100) + 'm³</strong> per minute</span>');
@@ -820,7 +820,7 @@ export default class BaseLayout_Tooltip
 
                         if(currentItem !== null)
                         {
-                            if(currentItem.category === 'liquid')
+                            if(currentItem.category === 'liquid' || currentItem.category === 'gas')
                             {
                                 content.push('<strong>' + +(Math.round((recipeItem.produce[className] / 1000) * 100) / 100) + 'm³ ' + currentItem.name + '</strong><br />');
                             }
@@ -838,7 +838,7 @@ export default class BaseLayout_Tooltip
                         {
                             let productionRatio = 60 / craftingTime * recipeItem.produce[className];
 
-                            if(currentItem.category === 'liquid')
+                            if(currentItem.category === 'liquid' || currentItem.category === 'gas')
                             {
                                 content.push('<span class="small"><strong class="text-warning">' + +(Math.round((productionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span><br />');
                             }
@@ -870,7 +870,7 @@ export default class BaseLayout_Tooltip
                                 }
                             }
 
-                        if(currentItem.category === 'liquid') //TODO: Refinery by-product?!
+                        if(currentItem.category === 'liquid' || currentItem.category === 'gas') //TODO: Refinery by-product?!
                         {
                             content.push('<td class="text-center"><div class="small">Fluid</div>');
                                 content.push('<table class="mx-auto"><tr><td>' + this.baseLayout.getInventoryImage(currentInventoryOut, 48, 'badge-primary') + '</td></tr></table>');
@@ -914,10 +914,22 @@ export default class BaseLayout_Tooltip
         let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
         let fuelEnergyValue     = null;
         let powerGenerated      = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.3);
+        let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.powerInfo');
 
             if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
             {
                 powerGenerated = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.321928);
+            }
+
+        let mBaseProduction             = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
+            if(mBaseProduction !== null)
+            {
+                powerGenerated = mBaseProduction;
+            }
+        let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
+            if(mDynamicProductionCapacity !== null)
+            {
+                powerGenerated = mDynamicProductionCapacity;
             }
 
         let fuelClass           = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
@@ -976,14 +988,14 @@ export default class BaseLayout_Tooltip
                         {
                             let consumptionRatio = (60 / (fuelEnergyValue / powerGenerated) * Math.pow(clockSpeed, -1/1.3));
 
-                            if(fuelItem.category === 'liquid')
-                            {
-                                content.push('<span class="small"><strong class="text-warning">' + +(Math.round((consumptionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span><br />');
-                            }
-                            else
-                            {
-                                content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio * 100) / 100) + '</strong> Parts per minute</span><br />');
-                            }
+                                if(fuelItem.category === 'liquid' || fuelItem.category === 'gas')
+                                {
+                                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round((consumptionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span><br />');
+                                }
+                                else
+                                {
+                                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio * 100) / 100) + '</strong> Parts per minute</span><br />');
+                                }
                         }
                 }
 

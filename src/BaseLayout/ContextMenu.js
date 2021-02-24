@@ -87,6 +87,15 @@ export default class BaseLayout_ContextMenu
                         callback    : Building_SpaceElevator.updatePhase
                     });
                     break;
+                case '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C':
+                case '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C':
+                case '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C':
+                case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
+                    contextMenu.push({
+                        text: 'Teleport player (Debug only)',
+                        callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                    });
+                    break;
             }
 
             if(buildingData !== null && buildingData.className !== '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')

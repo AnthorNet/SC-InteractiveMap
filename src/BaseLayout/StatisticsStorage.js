@@ -10,6 +10,15 @@ export default class BaseLayout_Statistics_Storage
             this.markers = [];
             for(let layerId in this.baseLayout.playerLayers)
             {
+                if([
+                    'playerRadioactivityLayer', 'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
+                    'playerPillarsLayer', 'playerWalkwaysLayer', 'playerOrientationLayer',
+                    'playerStatuesLayer', 'playerHUBTerminalLayer'
+                ].includes(layerId))
+                {
+                    continue;
+                }
+
                 let layerLength = this.baseLayout.playerLayers[layerId].elements.length;
 
                     for(let i = 0; i < layerLength; i++)

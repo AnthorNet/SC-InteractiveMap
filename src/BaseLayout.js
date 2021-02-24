@@ -100,6 +100,7 @@ export default class BaseLayout
             playerRadioactivityLayer                : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: {}},
 
             playerFoundationsLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
+            playerLightsLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerPillarsLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerWallsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerWalkwaysLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
@@ -119,6 +120,7 @@ export default class BaseLayout
             playerFuelGeneratorsLayer               : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], useAltitude: true},
             playerNuclearGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], useAltitude: true},
             playerGeoThermalGeneratorsLayer         : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], useAltitude: true},
+            playerStorageGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], useAltitude: true},
 
             playerStoragesLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], useAltitude: true, filters: []},
 
@@ -523,6 +525,24 @@ export default class BaseLayout
         {
             let currentObject = objects[i];
 
+            /**/
+            if(this.useDebug === true)
+            {
+                if([
+                    '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C',
+                    '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C',
+                    '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C'
+                ].includes(currentObject.className))
+                {
+                    if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
+                    {
+                        this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName = currentObject.pathName;
+                        this.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(this);
+                    }
+                }
+            }
+            /**/
+
             // Skip
             if([
                 '/Script/FactoryGame.FGWorldSettings',
@@ -593,6 +613,9 @@ export default class BaseLayout
                 '/Script/FactoryGame.FGTargetPointLinkedList',
                 '/Game/FactoryGame/Buildable/Vehicle/BP_VehicleTargetPoint.BP_VehicleTargetPoint_C',
 
+                '/Script/FactoryGame.FGDroneStationInfo',
+                '/Script/FactoryGame.FGDroneAction_TakeoffSequence',
+                '/Script/FactoryGame.FGDroneAction_DockingSequence',
                 '/Script/FactoryGame.FGDroneAction_RequestDocking',
                 '/Script/FactoryGame.FGDroneAction_TraversePath',
 
@@ -2066,26 +2089,15 @@ export default class BaseLayout
                             {
                                 if(oldInventory[j] !== undefined)
                                 {
-                                    if(oldInventory[j][0].value.itemName !== '/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C' || this.useDebug === true)
+                                    if(values['slot' + (j + 1)] === 'NULL')
                                     {
-                                        if(values['slot' + (j + 1)] === 'NULL')
-                                        {
-                                            oldInventory[j][0].value.itemName = "";
-                                            this.setObjectProperty(oldInventory[j][0].value, 'NumItems', 0, 'IntProperty');
-                                        }
-                                        else
-                                        {
-                                            oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
-                                            this.setObjectProperty(oldInventory[j][0].value, 'NumItems', Math.max(1, parseInt(values['QTY_slot' + (j + 1)])), 'IntProperty');
-                                        }
+                                        oldInventory[j][0].value.itemName = "";
+                                        this.setObjectProperty(oldInventory[j][0].value, 'NumItems', 0, 'IntProperty');
                                     }
                                     else
                                     {
-                                        if(this.ficsitRadioactiveAlert === undefined)
-                                        {
-                                            this.ficsitRadioactiveAlert = true;
-                                            Modal.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
-                                        }
+                                        oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
+                                        this.setObjectProperty(oldInventory[j][0].value, 'NumItems', Math.max(1, parseInt(values['QTY_slot' + (j + 1)])), 'IntProperty');
                                     }
                                 }
 
@@ -2185,19 +2197,8 @@ export default class BaseLayout
                         {
                             if(oldInventory[k] !== undefined)
                             {
-                                if(oldInventory[k][0].value.itemName !== '/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C')
-                                {
-                                    oldInventory[k][0].value.itemName = fillWith;
-                                    this.setObjectProperty(oldInventory[k][0].value, 'NumItems', stack, 'IntProperty');
-                                }
-                                else
-                                {
-                                    if(this.ficsitRadioactiveAlert === undefined)
-                                    {
-                                        this.ficsitRadioactiveAlert = true;
-                                        Modal.alert("Nuclear Waste cannot be destoyed.<br />FICSIT does not waste.");
-                                    }
-                                }
+                                oldInventory[k][0].value.itemName = fillWith;
+                                this.setObjectProperty(oldInventory[k][0].value, 'NumItems', stack, 'IntProperty');
                             }
 
                         }
@@ -2232,7 +2233,7 @@ export default class BaseLayout
             let categoryOptions = [];
                 for(let i in this.itemsData)
                 {
-                    if(this.itemsData[i].className !== undefined && this.itemsData[i].className !== null && this.itemsData[i].category !== 'liquid' && this.itemsData[i].category === category)
+                    if(this.itemsData[i].className !== undefined && this.itemsData[i].className !== null && this.itemsData[i].category !== 'liquid' && this.itemsData[i].category !== 'gas' && this.itemsData[i].category === category)
                     {
                         categoryOptions.push({
                             group: itemsCategories[category],
@@ -2327,7 +2328,6 @@ export default class BaseLayout
         let weight          = (buildingData.mapWeight !== undefined) ? buildingData.mapWeight : 1;
         let widthSize       = (buildingData.width !== undefined) ? (buildingData.width * 100) : 800;
         let lenghtSize      = (buildingData.length !== undefined) ? (buildingData.length * 100) : 800;
-        let haveWaste       = false;
 
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C')
         {
@@ -2409,15 +2409,11 @@ export default class BaseLayout
                 if(buildingData.category === 'dockstation'){ buildingInventoryProperty = 'mInventory'; }
                 if(buildingData.category === 'generator'){ buildingInventoryProperty = 'mFuelInventory'; }
 
-            haveWaste = this.getObjectRadioactivity(currentObject, buildingInventoryProperty);
+            this.getObjectRadioactivity(currentObject, buildingInventoryProperty);
         }
 
         // Create building instance
         let markerOptions   = {weight: weight};
-            if(haveWaste === true)
-            {
-                markerOptions.haveWaste = true;
-            }
 
         // Add vehicle tracks
         if(buildingData.category === 'vehicle')
@@ -3036,7 +3032,7 @@ export default class BaseLayout
             {
                 extraPathName.push(mOwningSpawner.pathName);
             }
-        let objectCircuitID = this.getObjectCircuitID(currentObject);
+        let objectCircuitID = this.getObjectCircuitID(currentObject, true);
             if(objectCircuitID !== null)
             {
                 extraPathName.push(objectCircuitID);
@@ -3082,6 +3078,7 @@ export default class BaseLayout
                         console.log('Missing children: ' + currentObject.children[i].pathName);
                     }
             }
+
             for(let j = 0; j < extraPathName.length; j++)
             {
                 html.push('<li class="nav-item"><a class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '" role="tab">' + extraPathName[j].replace('Persistent_Level:', '') + '</a></li>');
@@ -4376,8 +4373,6 @@ export default class BaseLayout
     }
     getObjectRadioactivity(currentObject, inventoryPropertyName = 'mInventory')
     {
-        let haveWaste = false;
-
         if(this.useRadioactivity === true)
         {
             for(let i = 0; i < currentObject.properties.length; i++)
@@ -4408,11 +4403,6 @@ export default class BaseLayout
                                                 {
                                                     if(currentItemData.radioactiveDecay !== undefined)
                                                     {
-                                                        if(currentItemData.className === '/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C')
-                                                        {
-                                                            haveWaste = true;
-                                                        }
-
                                                         radioactivityItems.push({
                                                             qty                 : currentInventory[k][0].value.properties[0].value,
                                                             radioactiveDecay    : currentItemData.radioactiveDecay
@@ -4427,7 +4417,7 @@ export default class BaseLayout
                                         this.addRadioactivityDot(currentObject, radioactivityItems);
                                     }
 
-                                    return haveWaste;
+                                    return;
                                 }
                             }
                         }
@@ -4436,7 +4426,7 @@ export default class BaseLayout
             }
         }
 
-        return false;
+        return;
     }
     getObjectTargetInventory(inventoryObject)
     {
@@ -4548,7 +4538,7 @@ export default class BaseLayout
         let itemUnits   = '';
         let itemStyle   = 'border-radius: 5px;';
 
-        if(itemQty !== null && inventory.category !== undefined && inventory.category === 'liquid')
+        if(itemQty !== null && inventory.category !== undefined && (inventory.category === 'liquid' || inventory.category === 'gas'))
         {
             itemQty     = Math.round(Math.round(itemQty) / 1000);
             itemUnits   = 'm³';
@@ -5412,7 +5402,7 @@ export default class BaseLayout
         return;
     }
 
-    getObjectCircuitID(currentObject)
+    getObjectCircuitID(currentObject, returnPathName)
     {
         let circuitSubSystem = this.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.CircuitSubsystem');
             if(circuitSubSystem !== null && circuitSubSystem.extra.circuits !== undefined)
@@ -5430,6 +5420,10 @@ export default class BaseLayout
                                         {
                                             if(mComponents.values[j].pathName === currentObject.pathName)
                                             {
+                                                if(returnPathName !== undefined && returnPathName === true)
+                                                {
+                                                    return circuitSubSystem.extra.circuits[i].pathName;
+                                                }
                                                 return circuitSubSystem.extra.circuits[i].circuitId;
                                             }
 
@@ -5440,6 +5434,10 @@ export default class BaseLayout
                                         {
                                             if(componentsArray.includes(currentObject.children[j].pathName))
                                             {
+                                                if(returnPathName !== undefined && returnPathName === true)
+                                                {
+                                                    return circuitSubSystem.extra.circuits[i].pathName;
+                                                }
                                                 return circuitSubSystem.extra.circuits[i].circuitId;
                                             }
                                         }
@@ -5575,6 +5573,8 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Tractor/Desc_Tractor.Desc_Tractor_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Truck/Desc_Truck.Desc_Truck_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Explorer/Desc_Explorer.Desc_Explorer_C'; }
+        if(className === '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Desc_CyberWagon.Desc_CyberWagon_C'; }
+        if(className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C'){ className = '/Game/FactoryGame/Buildable/Factory/DroneStation/Desc_DroneTransport.Desc_DroneTransport_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/Desc_Locomotive.Desc_Locomotive_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/Desc_FreightWagon.Desc_FreightWagon_C'; }
 

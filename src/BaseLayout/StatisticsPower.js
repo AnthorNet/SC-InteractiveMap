@@ -10,6 +10,15 @@ export default class BaseLayout_Statistics_Power
             this.markers = [];
             for(let layerId in this.baseLayout.playerLayers)
             {
+                if([
+                    'playerRadioactivityLayer', 'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
+                    'playerPillarsLayer', 'playerWalkwaysLayer', 'playerOrientationLayer',
+                    'playerStatuesLayer', 'playerHUBTerminalLayer'
+                ].includes(layerId))
+                {
+                    continue;
+                }
+
                 let layerLength = this.baseLayout.playerLayers[layerId].elements.length;
 
                     for(let i = 0; i < layerLength; i++)
@@ -106,6 +115,7 @@ export default class BaseLayout_Statistics_Power
                                 let fuelEnergyValue     = null;
                                 let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
                                 let powerGenerated      = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.3);
+                                let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.powerInfo');
 
                                     if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C')
                                     {
@@ -114,6 +124,19 @@ export default class BaseLayout_Statistics_Power
                                     if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
                                     {
                                         powerGenerated = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.321928);
+                                    }
+                                    if(buildingPowerInfo !== null)
+                                    {
+                                        let mBaseProduction             = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
+                                            if(mBaseProduction !== null)
+                                            {
+                                                powerGenerated = mBaseProduction;
+                                            }
+                                        let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
+                                            if(mDynamicProductionCapacity !== null)
+                                            {
+                                                powerGenerated = mDynamicProductionCapacity;
+                                            }
                                     }
 
                                 let fuelClass           = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
@@ -290,8 +313,8 @@ export default class BaseLayout_Statistics_Power
                 let unit        = ' units';
                 let style       = '';
 
-                // Update liquids to m3
-                if(currentItem.category !== undefined && currentItem.category === 'liquid')
+                // Update liquids/gas to m3
+                if(currentItem.category !== undefined && (currentItem.category === 'liquid' || currentItem.category === 'gas'))
                 {
                     currentItem.consumed    = Math.round(Math.round(currentItem.consumed) / 1000);
                     unit                    = 'm³';

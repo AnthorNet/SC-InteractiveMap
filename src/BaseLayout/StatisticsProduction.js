@@ -10,6 +10,15 @@ export default class BaseLayout_Statistics_Production
             this.markers = [];
             for(let layerId in this.baseLayout.playerLayers)
             {
+                if([
+                    'playerRadioactivityLayer', 'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
+                    'playerPillarsLayer', 'playerWalkwaysLayer', 'playerOrientationLayer',
+                    'playerStatuesLayer', 'playerHUBTerminalLayer'
+                ].includes(layerId))
+                {
+                    continue;
+                }
+
                 let layerLength = this.baseLayout.playerLayers[layerId].elements.length;
 
                     for(let i = 0; i < layerLength; i++)
@@ -128,7 +137,7 @@ export default class BaseLayout_Statistics_Production
 
                                     if(itemClassName !== null && itemType !== null)
                                     {
-                                        if(this.baseLayout.itemsData[itemType].category === 'liquid')
+                                        if(this.baseLayout.itemsData[itemType].category === 'liquid' || this.baseLayout.itemsData[itemType].category === 'gas')
                                         {
                                             productionRatio     = Math.min(600000, productionRatio);
                                             offProductionRatio  = Math.min(600000, offProductionRatio);
@@ -338,8 +347,8 @@ export default class BaseLayout_Statistics_Production
 
         for(let itemClassName in playerProduction)
         {
-            // Update liquids to m3
-            if(playerProduction[itemClassName].category !== undefined && playerProduction[itemClassName].category === 'liquid')
+            // Update liquids/gas to m3
+            if(playerProduction[itemClassName].category !== undefined && (playerProduction[itemClassName].category === 'liquid' || playerProduction[itemClassName].category === 'gas'))
             {
                 playerProduction[itemClassName].produced    = Math.round(Math.round(playerProduction[itemClassName].produced) / 1000);
                 playerProduction[itemClassName].consumed    = Math.round(Math.round(playerProduction[itemClassName].consumed) / 1000);

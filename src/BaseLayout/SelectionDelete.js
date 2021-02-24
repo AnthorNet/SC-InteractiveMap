@@ -141,7 +141,7 @@ export default class BaseLayout_Selection_Delete
 
                     let currentItemData = this.baseLayout.getItemDataFromClassName(className);
 
-                        if(currentItemData !== null && currentItemData.stack !== undefined && currentItemData.category !== 'liquid')
+                        if(currentItemData !== null && currentItemData.stack !== undefined && currentItemData.category !== 'liquid' && currentItemData.category !== 'gas')
                         {
                             if(currentItemData.stack !== undefined)
                             {
