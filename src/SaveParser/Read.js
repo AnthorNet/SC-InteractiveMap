@@ -337,7 +337,7 @@ export default class SaveParser_Read
                     }
 
                     break;
-                //TODO: Not 0 here so bypass that special case, but why? We mainly do not want to get warned here...
+                //TODO: Not 0 here so bypass those special cases, but why? We mainly do not want to get warned here...
                 case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
                 case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
                     let missingPlayerState                      = (startByte + entityLength) - this.currentByte;
@@ -652,7 +652,23 @@ export default class SaveParser_Read
                                     });
                                     break;
 
-                                default:
+                                case 'SpawnData':
+                                case 'PhaseCost':
+                                case 'ItemAmount':
+                                case 'TimeTableStop':
+                                case 'RemovedInstance':
+                                case 'SplinePointData':
+                                case 'InventoryStack':
+                                case 'ResearchData':
+                                case 'SchematicCost':
+                                case 'ItemFoundData':
+                                case 'ScannableResourcePair':
+                                case 'Hotbar':
+                                case 'PresetHotbar':
+                                case 'MessageData':
+                                case 'SplitterSortRule':
+                                case 'FeetOffset':
+                                case 'DroneTripInformation':
                                     let subStructProperties = [];
                                         while(true)
                                         {
@@ -666,6 +682,14 @@ export default class SaveParser_Read
                                             subStructProperties.push(subStructProperty);
                                         }
                                         currentProperty.value.values.push(subStructProperties);
+                                    break;
+                                default:
+                                    Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                    if(typeof Sentry !== 'undefined')
+                                    {
+                                        Sentry.setContext('currentProperty', currentProperty);
+                                    }
+                                    throw new Error('Unimplemented key structureSubType `' + currentProperty.structureSubType + '` in ArrayProperty `' + currentProperty.name + '`');
                                     break;
                             }
                         }
@@ -1179,9 +1203,9 @@ export default class SaveParser_Read
         }
         catch(error)
         {
-            this.currentByte = Math.max(0, startBytes - 256);
+            this.currentByte = Math.max(0, startBytes - 512);
 
-            let errorMessage = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(256) + '`=========`' + this.readHex(256) + '`';
+            let errorMessage = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(512) + '`=========`' + this.readHex(256) + '`';
                 console.log(errorMessage);
                 Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                 throw new Error(errorMessage);

@@ -644,36 +644,6 @@ export default class SaveParser_Write
                         property += this.writeByte(currentProperty.value.isValid);
                         break;
 
-                    case 'Transform':
-                    case 'RemovedInstanceArray':
-                    case 'InventoryStack':
-                    case 'ProjectileData':
-                    case 'TrainSimulationData':
-                    case 'DroneDockingStateInfo':
-                    case 'DroneTripInformation':
-                    case 'ResearchData':
-                    case 'Hotbar':
-                    case 'EnabledCheats': // MOD: Satisfactory Helper
-                    case 'FICFloatAttribute': // MOD: ???
-                    case 'FFCompostingTask': // MOD: ???
-                    case 'FFSeedExtrationTask': // MOD: ???
-                    case 'FFSlugBreedTask': // MOD: ???
-                    case 'FFSlimeProcessingTask': // MOD: ???
-                    case 'FFPlotTask': // MOD: ???
-                    case 'SInventory': // MOD: ???
-                        let currentBufferStartingLength     = this.currentBufferLength;
-                        let structPropertyBufferLength      = this.currentEntityLength;
-
-                        for(let i = 0; i < currentProperty.value.values.length; i++)
-                        {
-                            property += this.writeProperty(currentProperty.value.values[i]);
-                        }
-                        property += this.writeString('None');
-
-                        this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
-
-                        break;
-
                     case 'RailroadTrackPosition':
                         property += this.writeString(currentProperty.value.levelName);
                         property += this.writeString(currentProperty.value.pathName);
@@ -724,7 +694,17 @@ export default class SaveParser_Write
                         break;
 
                     default:
-                        console.log('Missing ' + currentProperty.value.type + ' in StructProperty=>' + currentProperty.name);
+                        let currentBufferStartingLength     = this.currentBufferLength;
+                        let structPropertyBufferLength      = this.currentEntityLength;
+
+                        for(let i = 0; i < currentProperty.value.values.length; i++)
+                        {
+                            property += this.writeProperty(currentProperty.value.values[i]);
+                        }
+                        property += this.writeString('None');
+
+                        this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+
                         break;
                 }
 
