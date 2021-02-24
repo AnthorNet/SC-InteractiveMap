@@ -541,24 +541,27 @@ export default class BaseLayout_Statistics_Schematics
                         {
                             for(let i = 0; i < mPurchasedSchematics.values.length; i++)
                             {
-                                purchasedAlternate.push(mPurchasedSchematics.values[i].pathName);
+                                if(purchasedAlternate.includes(mPurchasedSchematics.values[i].pathName) === false)
+                                {
+                                    purchasedAlternate.push(mPurchasedSchematics.values[i].pathName);
 
-                                let schematicId = mPurchasedSchematics.values[i].pathName.split('.').pop();
-                                    if(
-                                           this.baseLayout.schematicsData[schematicId] === undefined
-                                        && schematicId !== 'Research_HardDrive_0_C'
-                                        && schematicId !== 'ResourceSink_CyberWagon_Unlock_C'
-                                        && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
-                                        && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
-                                    )
-                                    {
-                                        if(typeof Sentry !== 'undefined' && this.baseLayout.useDebug === true)
+                                    let schematicId = mPurchasedSchematics.values[i].pathName.split('.').pop();
+                                        if(
+                                               this.baseLayout.schematicsData[schematicId] === undefined
+                                            && schematicId !== 'Research_HardDrive_0_C'
+                                            && schematicId !== 'ResourceSink_CyberWagon_Unlock_C'
+                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
+                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
+                                        )
                                         {
-                                            Sentry.setContext('className', {className: mPurchasedSchematics.values[i].pathName});
-                                            Sentry.captureMessage('Missing schematic className: ' + mPurchasedSchematics.values[i].pathName);
+                                            if(typeof Sentry !== 'undefined' && this.baseLayout.useDebug === true)
+                                            {
+                                                Sentry.setContext('className', {className: mPurchasedSchematics.values[i].pathName});
+                                                Sentry.captureMessage('Missing schematic className: ' + mPurchasedSchematics.values[i].pathName);
+                                            }
+                                            console.log('Missing schematic className: ' + mPurchasedSchematics.values[i].pathName);
                                         }
-                                        console.log('Missing schematic className: ' + mPurchasedSchematics.values[i].pathName);
-                                    }
+                                }
                             }
                         }
                 }
@@ -624,29 +627,25 @@ export default class BaseLayout_Statistics_Schematics
                                 if(schematicManager.properties[i].name === 'mAvailableSchematics')
                                 {
                                     let mAvailableSchematics = schematicManager.properties[i].value.values;
-
-                                    for(let j = 0; j < mAvailableSchematics.length; j++)
-                                    {
-                                        if(mAvailableSchematics[j].pathName === currentSchematic)
+                                        for(let j = mAvailableSchematics.length - 1; j >= 0; j--)
                                         {
-                                            schematicManager.properties[i].value.values.splice(j, 1);
-                                            break;
+                                            if(mAvailableSchematics[j].pathName === currentSchematic)
+                                            {
+                                                mAvailableSchematics.splice(j, 1);
+                                            }
                                         }
-                                    }
                                 }
 
                                 if(schematicManager.properties[i].name === 'mPurchasedSchematics')
                                 {
                                     let mPurchasedSchematics = schematicManager.properties[i].value.values;
-
-                                    for(let j = 0; j < mPurchasedSchematics.length; j++)
-                                    {
-                                        if(mPurchasedSchematics[j].pathName === currentSchematic)
+                                        for(let j = mPurchasedSchematics.length - 1; j >= 0; j--)
                                         {
-                                            schematicManager.properties[i].value.values.splice(j, 1);
-                                            break;
+                                            if(mPurchasedSchematics[j].pathName === currentSchematic)
+                                            {
+                                                mPurchasedSchematics.splice(j, 1);
+                                            }
                                         }
-                                    }
                                 }
                             }
                             break;
@@ -656,20 +655,32 @@ export default class BaseLayout_Statistics_Schematics
                                 if(schematicManager.properties[i].name === 'mAvailableSchematics')
                                 {
                                     let mAvailableSchematics = schematicManager.properties[i].value.values;
-
-                                    for(let j = 0; j < mAvailableSchematics.length; j++)
-                                    {
-                                        if(mAvailableSchematics[j].pathName === currentSchematic)
+                                        for(let j = mAvailableSchematics.length - 1; j >= 0; j--)
                                         {
-                                            schematicManager.properties[i].value.values.splice(j, 1);
-                                            break;
+                                            if(mAvailableSchematics[j].pathName === currentSchematic)
+                                            {
+                                                mAvailableSchematics.splice(j, 1);
+                                            }
                                         }
-                                    }
                                 }
 
                                 if(schematicManager.properties[i].name === 'mPurchasedSchematics')
                                 {
-                                    schematicManager.properties[i].value.values.push({levelName: "", pathName: currentSchematic});
+                                    let preventDuplicate        = false;
+                                    let mPurchasedSchematics    = schematicManager.properties[i].value.values;
+                                        for(let j = 0; j < mPurchasedSchematics.length; j++)
+                                        {
+                                            if(mPurchasedSchematics[j].pathName === currentSchematic)
+                                            {
+                                                preventDuplicate = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if(preventDuplicate === false)
+                                        {
+                                            mPurchasedSchematics.push({levelName: "", pathName: currentSchematic});
+                                        }
                                 }
                             }
                             break;
@@ -678,24 +689,33 @@ export default class BaseLayout_Statistics_Schematics
                             {
                                 if(schematicManager.properties[i].name === 'mAvailableSchematics')
                                 {
-                                    schematicManager.properties[i].value.values.push({
-                                        levelName: "",
-                                        pathName: currentSchematic
-                                    });
+                                    let preventDuplicate        = false;
+                                    let mAvailableSchematics    = schematicManager.properties[i].value.values;
+                                        for(let j = 0; j < mAvailableSchematics.length; j++)
+                                        {
+                                            if(mAvailableSchematics[j].pathName === currentSchematic)
+                                            {
+                                                preventDuplicate = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if(preventDuplicate === false)
+                                        {
+                                            mAvailableSchematics.push({levelName: "", pathName: currentSchematic});
+                                        }
                                 }
 
                                 if(schematicManager.properties[i].name === 'mPurchasedSchematics')
                                 {
                                     let mPurchasedSchematics = schematicManager.properties[i].value.values;
-
-                                    for(let j = 0; j < mPurchasedSchematics.length; j++)
-                                    {
-                                        if(mPurchasedSchematics[j].pathName === currentSchematic)
+                                        for(let j = mPurchasedSchematics.length - 1; j >= 0; j--)
                                         {
-                                            schematicManager.properties[i].value.values.splice(j, 1);
-                                            break;
+                                            if(mPurchasedSchematics[j].pathName === currentSchematic)
+                                            {
+                                                mPurchasedSchematics.splice(j, 1);
+                                            }
                                         }
-                                    }
                                 }
                             }
                             break;
