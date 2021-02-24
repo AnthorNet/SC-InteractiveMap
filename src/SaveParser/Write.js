@@ -343,7 +343,15 @@ export default class SaveParser_Write
             actor += this.writeString(currentActor.className, false);
             actor += this.writeString(currentActor.levelName, false);
             actor += this.writeString(currentActor.pathName, false);
-            actor += this.writeInt(currentActor.needTransform, false);
+
+            if(currentActor.needTransform !== undefined)
+            {
+                actor += this.writeInt(currentActor.needTransform, false);
+            }
+            else
+            {
+                actor += this.writeInt(0, false);
+            }
 
             actor += this.writeFloat(currentActor.transform.rotation[0], false);
             actor += this.writeFloat(currentActor.transform.rotation[1], false);
@@ -358,7 +366,15 @@ export default class SaveParser_Write
             actor += this.writeFloat(currentActor.transform.scale3d[1], false);
             actor += this.writeFloat(currentActor.transform.scale3d[2], false);
 
-            actor += this.writeInt(currentActor.wasPlacedInLevel, false);
+            if(currentActor.wasPlacedInLevel !== undefined)
+            {
+                actor += this.writeInt(currentActor.wasPlacedInLevel, false);
+            }
+            else
+            {
+                actor += this.writeInt(0, false);
+            }
+
 
         return actor;
     }

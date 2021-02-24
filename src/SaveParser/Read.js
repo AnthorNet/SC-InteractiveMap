@@ -228,19 +228,30 @@ export default class SaveParser_Read
     // V5 Functions
     readActorV5()
     {
-        return {
-            type                : 1,
-            className           : this.readString(),
-            levelName           : this.readString(),
-            pathName            : this.readString(),
-            needTransform       : this.readInt(),
-            transform           : {
+        let actor               = {type : 1};
+            actor.className     = this.readString();
+            actor.levelName     = this.readString();
+            actor.pathName      = this.readString();
+
+        let needTransform       = this.readInt();
+            if(needTransform !== 0)
+            {
+                actor.needTransform = needTransform;
+            }
+
+            actor.transform     = {
                 rotation            : [this.readFloat(), this.readFloat(), this.readFloat(), this.readFloat()],
                 translation         : [this.readFloat(), this.readFloat(), this.readFloat()],
                 scale3d             : [this.readFloat(), this.readFloat(), this.readFloat()]
-            },
-            wasPlacedInLevel    : this.readInt()
-        };
+            };
+
+        let wasPlacedInLevel       = this.readInt();
+            if(wasPlacedInLevel !== 0)
+            {
+                actor.wasPlacedInLevel = wasPlacedInLevel;
+            }
+
+        return actor;
     }
 
     readObjectV5()
