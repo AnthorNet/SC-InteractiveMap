@@ -16,10 +16,10 @@ export default class BaseLayout_Statistics_Schematics
         if(this.baseLayout.useDebug === true)
         {
             //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.recipeManager"));
-            console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager"));
-            console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.ResearchManager"));
+            //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager"));
+            //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.ResearchManager"));
             //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.StorySubsystem"));
-            console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem"));
+            //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem"));
         }
     }
 
@@ -169,7 +169,7 @@ export default class BaseLayout_Statistics_Schematics
 
                                 if(itemData !== null)
                                 {
-                                    if(itemData.category !== undefined && itemData.category === 'liquid')
+                                    if(itemData.category !== undefined && (itemData.category === 'liquid' || itemData.category === 'gas'))
                                     {
                                         itemProduced    = Math.round(Math.round(itemProduced) / 1000);
                                         itemUnits       = 'm³';
@@ -488,24 +488,24 @@ export default class BaseLayout_Statistics_Schematics
                         }
                 }
             }
-            if(currentSchematic.scanner !== undefined)
+            if(currentSchematic.scannerPairs !== undefined)
             {
-                for(let k = 0; k < currentSchematic.scanner.length; k++)
+                for(let k = 0; k < currentSchematic.scannerPairs.length; k++)
                 {
-                    if(currentSchematic.scanner[k] === '/Game/FactoryGame/Resource/RawResources/Geyser/Desc_Geyser.Desc_Geyser_C')
+                    if(currentSchematic.scannerPairs[k] === '/Game/FactoryGame/Resource/RawResources/Geyser/Desc_Geyser.Desc_Geyser_C')
                     {
                         unlocks.push('Object Scanner: Geyser');
                     }
                     else
                     {
-                        let currentRecipe = this.baseLayout.getItemDataFromClassName(currentSchematic.scanner[k]);
+                        let currentRecipe = this.baseLayout.getItemDataFromClassName(currentSchematic.scannerPairs[k]);
                             if(currentRecipe !== null)
                             {
                                 unlocks.push('Object Scanner: ' + currentRecipe.name);
                             }
                             else
                             {
-                                unlocks.push('Object Scanner: ' + currentSchematic.scanner[k]);
+                                unlocks.push('Object Scanner: ' + currentSchematic.scannerPairs[k]);
                             }
                     }
                 }
@@ -585,7 +585,7 @@ export default class BaseLayout_Statistics_Schematics
 
                 if(itemData !== null)
                 {
-                    if(itemData.category !== undefined && itemData.category === 'liquid')
+                    if(itemData.category !== undefined && (itemData.category === 'liquid' || itemData.category === 'gas'))
                     {
                         itemCost    = Math.round(Math.round(itemCost) / 1000);
                         itemUnits   = 'm³';
@@ -708,23 +708,6 @@ export default class BaseLayout_Statistics_Schematics
                             {
                                 case 'none': // Go to available state
                                 case 'purchased': // Go to none state
-                                    if(this.baseLayout.schematicsData[schematicId].scanner !== undefined)
-                                    {
-                                        let scannableResources = this.baseLayout.getObjectProperty(unlockSubSystem, 'mScannableResources');
-                                            if(scannableResources !== null)
-                                            {
-                                                for(let k = 0; k < this.baseLayout.schematicsData[schematicId].scanner.length; k++)
-                                                {
-                                                    for(let i = scannableResources.values.length - 1; i >= 0; i--)
-                                                    {
-                                                        if(scannableResources.values[i].pathName === this.baseLayout.schematicsData[schematicId].scanner[k])
-                                                        {
-                                                            scannableResources.values.splice(i, 1);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                    }
                                     if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
                                     {
                                         let statisticsInventory = new BaseLayout_Statistics_Player_Inventory({
@@ -741,17 +724,6 @@ export default class BaseLayout_Statistics_Schematics
                                     }
                                     break;
                                 case 'available': // Go to purchased state
-                                    if(this.baseLayout.schematicsData[schematicId].scanner !== undefined )
-                                    {
-                                        let scannableResources = this.baseLayout.getObjectProperty(unlockSubSystem, 'mScannableResources');
-                                            if(scannableResources !== null)
-                                            {
-                                                for(let k = 0; k < this.baseLayout.schematicsData[schematicId].scanner.length; k++)
-                                                {
-                                                    scannableResources.values.push({levelName: "", pathName: this.baseLayout.schematicsData[schematicId].scanner[k]});
-                                                }
-                                            }
-                                    }
                                     if(this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
                                     {
                                         let statisticsInventory = new BaseLayout_Statistics_Player_Inventory({
