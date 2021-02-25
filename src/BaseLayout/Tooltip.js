@@ -5,12 +5,15 @@ export default class BaseLayout_Tooltip
 {
     constructor(options)
     {
-        this.baseLayout                     = options.baseLayout;
-        this.target                         = options.target;
+        this.baseLayout                         = options.baseLayout;
+        this.target                             = options.target;
 
-        this.defaultTextStyle               = 'color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;';
-        this.genericTooltipBackgroundStyle  = 'border: 25px solid #7f7f7f;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png?v=' + this.baseLayout.scriptVersion + ') 25 repeat;background: #7f7f7f;margin: -7px;' + this.defaultTextStyle;
-        this.genericStorageBackgroundStyle  = 'border: 19px solid #373737;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericStorageBackground.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #373737;background-clip: padding-box;';
+        this.defaultTextStyle                   = 'color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;';
+        this.genericTooltipBackgroundStyle      = 'border: 25px solid #7f7f7f;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png?v=' + this.baseLayout.scriptVersion + ') 25 repeat;background: #7f7f7f;margin: -7px;' + this.defaultTextStyle;
+        this.genericUIBackgroundStyle           = 'border: 19px solid #ffffff;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Screen.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #ffffff;background-clip: padding-box;';
+        this.genericStorageBackgroundStyle      = 'border: 19px solid #373737;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Storage.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #373737;background-clip: padding-box;';
+        this.genericProductionBackgroundStyle   = 'width: 500px;height: 510px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
+        this.genericExtractionBackgroundStyle   = 'width: 500px;height: 510px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Extractor_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
     }
 
     getTooltip(currentObject)
@@ -749,161 +752,168 @@ export default class BaseLayout_Tooltip
         let content     = [];
 
             // HEADER
-            content.push('<div style="position: absolute;margin-top: 5px;width: 100%;text-align: center;color: #FFFFFF;text-shadow: 2px 2px 2px #000000;">');
+            content.push('<div style="position: absolute;margin-top: 10px;width: 100%;text-align: center;font-size: 16px;" class="text-warning">');
             content.push('<strong>' + buildingData.name + '</strong> ' + ( (recipeItem !== null) ? '<em class="small">(' + recipeItem.name + ')</em>' : '' ));
             content.push('</div>');
 
 
             // INPUT
-            content.push('<div style="position: absolute;margin-top: 19px;margin-left: 22px; width: 253px;height: 305px;color: #5b5b5b;">');
+            content.push('<div style="position: absolute;margin-top: 45px;margin-left: 3px; width: 196px;height: 240px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
-            content.push('<div style="height: 16px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/inputTop.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;"></div>');
-            content.push('<div style="padding: 0 16px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/inputMiddle.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;height: 232px;" class="d-flex"><div class="justify-content-center align-self-center w-100">');
 
-            if(recipeItem !== null && recipeItem.ingredients !== undefined)
-            {
-                let inventoryIn     = this.baseLayout.getObjectInventory(currentObject, 'mInputInventory');
-
-                for(let itemClassName in recipeItem.ingredients)
+                if(recipeItem !== null && recipeItem.ingredients !== undefined)
                 {
-                    let currentItem         = this.baseLayout.getItemDataFromClassName(itemClassName);
-                    let currentInventoryIn  = null;
-                        for(let i = 0; i < inventoryIn.length; i++)
+                    let inventoryIn     = this.baseLayout.getObjectInventory(currentObject, 'mInputInventory');
+                        for(let itemClassName in recipeItem.ingredients)
                         {
-                            if(inventoryIn[i] !== null && inventoryIn[i].className === itemClassName)
-                            {
-                                currentInventoryIn = inventoryIn[i];
-                                break;
-                            }
+                            let currentItem         = this.baseLayout.getItemDataFromClassName(itemClassName);
+                            let currentInventoryIn  = null;
+                                for(let i = 0; i < inventoryIn.length; i++)
+                                {
+                                    if(inventoryIn[i] !== null && inventoryIn[i].className === itemClassName)
+                                    {
+                                        currentInventoryIn = inventoryIn[i];
+                                        break;
+                                    }
+                                }
+
+                            content.push('<div style="border-top: 1px solid #e7e7e7;border-bottom: 1px solid #e7e7e7;height: 50px;padding-top: 3px;font-size: 12px;line-height: 1;margin-top: -1px;" class="d-block">');
+                            content.push('<table><tr><td>');
+                                content.push(this.baseLayout.getInventoryImage(currentInventoryIn, 40));
+                            content.push('</td><td class="align-middle pl-2 text-left">');
+
+                                let consumptionRatio = 60 / craftingTime * recipeItem.ingredients[itemClassName];
+
+                                    if(currentItem.category === 'liquid' || currentItem.category === 'gas')
+                                    {
+                                        content.push('<strong style="white-space: normal;">' + +(Math.round((recipeItem.ingredients[itemClassName] / 1000) * 100) / 100) + 'm³ ' + currentItem.name + '</strong><br />');
+                                        content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio / 1000 * 100) / 100) + 'm³</strong> per minute</span>');
+                                    }
+                                    else
+                                    {
+                                        content.push('<strong style="white-space: normal;">' + recipeItem.ingredients[itemClassName] + ' ' + currentItem.name + '</strong><br />');
+                                        content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio * 100) / 100) + '</strong> per minute</span>');
+                                    }
+
+                            content.push('</td></tr></table>');
+                            content.push('</div>');
                         }
-
-                    content.push('<div style="border-top: 1px solid #e7e7e7;border-bottom: 1px solid #e7e7e7;height: 58px;padding-top: 3px;" class="d-block">');
-                    content.push('<table><tr><td>');
-                        content.push(this.baseLayout.getInventoryImage(currentInventoryIn, 48));
-                    content.push('</td><td class="align-middle pl-2 text-left">');
-
-                    let consumptionRatio = 60 / craftingTime * recipeItem.ingredients[itemClassName];
-
-                        if(currentItem.category === 'liquid' || currentItem.category === 'gas')
-                        {
-                            content.push('<strong>' + +(Math.round((recipeItem.ingredients[itemClassName] / 1000) * 100) / 100) + 'm³ ' + currentItem.name + '</strong><br />');
-                            content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio / 1000 * 100) / 100) + 'm³</strong> per minute</span>');
-                        }
-                        else
-                        {
-                            content.push('<strong>' + recipeItem.ingredients[itemClassName] + ' ' + currentItem.name + '</strong><br />');
-                            content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio * 100) / 100) + '</strong> per minute</span>');
-                        }
-
-                    content.push('</td></tr></table>');
-                    content.push('</div>');
                 }
-            }
 
             content.push('</div></div>');
-            content.push('<div style="height: 37px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/inputBottom.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding-top: 18px;"><strong style="font-size: 12px;">INPUT</strong></div>');
+            content.push('</div>');
+            content.push('<div style="position: absolute;margin-top: 286px;margin-left: 71px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>INPUT</strong></div>');
+
+            // MIDDLE
+            content.push('<div style="position: absolute;margin-top: 75px;margin-left: 215px; width: 75px;height: 170px;color: #FFFFFF;">');
+            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
+
+                if(recipeItem !== null && recipeItem.produce !== undefined)
+                {
+                    content.push('<div style="height: 60px;width: 70px;position: relative;" class="mx-auto">');
+                    let mainItem = true;
+                        for(let className in recipeItem.produce)
+                        {
+                            let currentItem     = this.baseLayout.getItemDataFromClassName(className);
+                                if(currentItem !== null)
+                                {
+                                    if(mainItem === true)
+                                    {
+                                        content.push('<img src="' + currentItem.image + '" class="img-fluid" style="width: 48px;" />');
+                                        mainItem = false;
+                                    }
+                                    else
+                                    {
+                                        content.push('<div style="position: absolute; bottom: 0; right: 0;"><img src="' + currentItem.image + '" class="img-fluid" style="width: 28px;" /></div>');
+                                    }
+                                }
+                        }
+                    content.push('</div>');
+                }
+
+                let currentProgress = Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentManufacturingProgress', 0) * 100);
+                    content.push('<div class="progress rounded-sm mx-2 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
+
+                    if(currentProgress === 0)
+                    {
+                        content.push('<span style="font-size: 8px;" class="d-block mb-3">Idle - <span class="text-warning">' + currentProgress + '%</span></span>');
+                    }
+                    else
+                    {
+                        content.push('<span style="font-size: 8px;" class="d-block mb-3">Constructing - <span class="text-warning">' + currentProgress + '%</span></span>');
+                    }
+
+                content.push(this.setTooltipFooter({circuitId: this.baseLayout.getObjectCircuitID(currentObject), craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed}));
+
             content.push('</div></div>');
             content.push('</div>');
 
             // OUTPUT
-            content.push('<div style="position: absolute;margin-top: 19px;margin-left: 324px; width: 154px;height: 305px;color: #5b5b5b;">');
+            content.push('<div style="position: absolute;margin-top: 45px;margin-left: 302px; width: 196px;height: 240px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
-            content.push('<div style="height: 16px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/outputTop.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;"></div>');
-            content.push('<div style="padding: 0 16px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/outputMiddle.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
-
-                content.push('<div style="border-bottom: 1px solid #e7e7e7;line-height: 1;font-size: 13px;letter-spacing: -0.05em;" class="pb-2 mb-2">');
-                if(recipeItem !== null && recipeItem.produce !== undefined)
-                {
-                    for(let className in recipeItem.produce)
-                    {
-                        let currentItem     = this.baseLayout.getItemDataFromClassName(className);
-
-                        if(currentItem !== null)
-                        {
-                            if(currentItem.category === 'liquid' || currentItem.category === 'gas')
-                            {
-                                content.push('<strong>' + +(Math.round((recipeItem.produce[className] / 1000) * 100) / 100) + 'm³ ' + currentItem.name + '</strong><br />');
-                            }
-                            else
-                            {
-                                content.push('<strong>' + recipeItem.produce[className] + ' ' + currentItem.name + '</strong><br />');
-                            }
-                        }
-                    }
-                    for(let className in recipeItem.produce)
-                    {
-                        let currentItem     = this.baseLayout.getItemDataFromClassName(className);
-
-                        if(currentItem !== null)
-                        {
-                            let productionRatio = 60 / craftingTime * recipeItem.produce[className];
-
-                            if(currentItem.category === 'liquid' || currentItem.category === 'gas')
-                            {
-                                content.push('<span class="small"><strong class="text-warning">' + +(Math.round((productionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span><br />');
-                            }
-                            else
-                            {
-                                content.push('<span class="small"><strong class="text-warning">' + +(Math.round(productionRatio * 100) / 100) + '</strong> Parts per minute</span><br />');
-                            }
-                        }
-                    }
-                }
-                content.push('</div>');
 
                 if(recipeItem !== null && recipeItem.produce !== undefined)
                 {
-                    content.push('<table class="w-100 mb-3"><tr>');
-
                     let inventoryOut    = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
-
-                    for(let itemClassName in recipeItem.produce)
-                    {
-                        let currentItem         = this.baseLayout.getItemDataFromClassName(itemClassName);
-                        let currentInventoryOut = null;
-                            for(let i = 0; i < inventoryOut.length; i++)
-                            {
-                                if(inventoryOut[i] !== null && inventoryOut[i].className === itemClassName)
+                        for(let itemClassName in recipeItem.produce)
+                        {
+                            let currentItem         = this.baseLayout.getItemDataFromClassName(itemClassName);
+                            let currentInventoryOut = null;
+                                for(let i = 0; i < inventoryOut.length; i++)
                                 {
-                                    currentInventoryOut = inventoryOut[i];
-                                    break;
+                                    if(inventoryOut[i] !== null && inventoryOut[i].className === itemClassName)
+                                    {
+                                        currentInventoryOut = inventoryOut[i];
+                                        break;
+                                    }
                                 }
-                            }
 
-                        if(currentItem.category === 'liquid' || currentItem.category === 'gas') //TODO: Refinery by-product?!
-                        {
-                            content.push('<td class="text-center"><div class="small">Fluid</div>');
-                                content.push('<table class="mx-auto"><tr><td>' + this.baseLayout.getInventoryImage(currentInventoryOut, 48, 'badge-primary') + '</td></tr></table>');
-                            content.push('</td>');
-                        }
-                        else
-                        {
-                            content.push('<td class="text-center"><div class="small">Output</div>');
-                                content.push('<table class="mx-auto"><tr><td>' + this.baseLayout.getInventoryImage(currentInventoryOut, 48) + '</td></tr></table>');
-                            content.push('</td>');
-                        }
-                    }
+                            content.push('<div style="border-top: 1px solid #e7e7e7;border-bottom: 1px solid #e7e7e7;height: 50px;padding-top: 3px;font-size: 12px;line-height: 1;margin-top: -1px;" class="d-block">');
+                            content.push('<table><tr><td>');
+                                content.push(this.baseLayout.getInventoryImage(currentInventoryOut, 40));
+                            content.push('</td><td class="align-middle pl-2 text-left">');
 
-                    content.push('</tr></table>');
+                            let productionRatio = 60 / craftingTime * recipeItem.produce[itemClassName];
+
+                                if(currentItem.category === 'liquid' || currentItem.category === 'gas')
+                                {
+                                    content.push('<strong style="white-space: normal;">' + +(Math.round((recipeItem.produce[itemClassName] / 1000) * 100) / 100) + 'm³ ' + currentItem.name + '</strong><br />');
+                                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round(productionRatio / 1000 * 100) / 100) + 'm³</strong> per minute</span>');
+                                }
+                                else
+                                {
+                                    content.push('<strong style="white-space: normal;">' + recipeItem.produce[itemClassName] + ' ' + currentItem.name + '</strong><br />');
+                                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round(productionRatio * 100) / 100) + '</strong> per minute</span>');
+                                }
+
+                            content.push('</td></tr></table>');
+                            content.push('</div>');
+                        }
                 }
 
-                let currentProgress = Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentManufacturingProgress', 0) * 100);
-                    content.push('<div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
-                    content.push('<span class="small">Producing - <span class="text-warning">' + currentProgress + '%</span></span>');
-
-                content.push(this.setTooltipFooter({circuitId: this.baseLayout.getObjectCircuitID(currentObject), craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed}));
-
-            content.push('</div>');
-            content.push('<div style="height: 37px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/outputBottom.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding-top: 18px;"><strong style="font-size: 12px;">OUTPUT</strong></div>');
             content.push('</div></div>');
             content.push('</div>');
+            content.push('<div style="position: absolute;margin-top: 286px;margin-left: 370px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>OUTPUT</strong></div>');
 
             // FOOTER
             content.push(this.getOverclockingPanel(currentObject));
             content.push(this.getStandByPanel(currentObject));
 
+        let footerBackground = this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG_Constructor.png';
+            switch(currentObject.className)
+            {
+                case '/Game/FactoryGame/Buildable/Factory/SmelterMk1/Build_SmelterMk1.Build_SmelterMk1_C':
+                    footerBackground = this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG_Smelter.png';
+                    break;
+                case '/Game/FactoryGame/Buildable/Factory/OilRefinery/Build_OilRefinery.Build_OilRefinery_C':
+                    footerBackground = this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG_Refinery.png';
+                    break;
+                case '/Game/FactoryGame/Buildable/Factory/Blender/Build_Blender.Build_Blender_C':
+                    footerBackground = this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG_Blender.png';
+                    break;
+            }
 
-        return '<div style="position: relative;width: 500px;height: 490px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/manufacturingBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">' + content.join('') + '</div>';
+        return '<div style="' + this.genericProductionBackgroundStyle + '"><div style="background: url(' + footerBackground + '?v=' + this.baseLayout.scriptVersion + ') bottom no-repeat;width: 100%; height: 510px;">' + content.join('') + '</div></div>';
     }
 
     setBuildingGeneratorTooltipContent(currentObject, buildingData)
@@ -1162,56 +1172,68 @@ export default class BaseLayout_Tooltip
                 </div>';
     }
 
-    getOverclockingPanel(currentObject, top = 370, left = 32)
+    getOverclockingPanel(currentObject, top = 312, left = 89)
     {
-        let content             = [];
-        let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
-        let potentialInventory  = this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential');
-
-            content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px; width: 325px;height: 80px;">');
-            content.push('<table class="w-100"><tr>');
-            content.push('<td><span class="text-small">Clockspeed:</span><br /><strong class="lead text-warning">' + +(Math.round(clockSpeed * 10000) / 100) + ' %</strong></td>');
-
-            if(potentialInventory !== null)
+        let content                         = [];
+        let unlockSubSystem                 = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
+            if(unlockSubSystem !== null)
             {
-                for(let i = 0; i < potentialInventory.length; i++)
-                {
-                    content.push('<td width="62">');
-                    content.push('<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + this.baseLayout.setInventoryTableSlot([potentialInventory[i]], null, 56, '', this.baseLayout.itemsData.Desc_CrystalShard_C.image) + '</td></tr></table></div>');
-                    content.push('</td>');
-                }
+                let mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0);
+                    if(mIsBuildingOverclockUnlocked === 1)
+                    {
+                        let clockSpeed                      = this.baseLayout.getClockSpeed(currentObject);
+                        let potentialInventory              = this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential');
+
+                            content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + (parseInt(left) + 2) + 'px; width: 318px;height: 97px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/ManufacutringMenu_OverclockBackground.png?v=' + this.baseLayout.scriptVersion + ')">');
+                            content.push('<table style="margin: 10px;width: 298px;"><tr>');
+                            content.push('<td><span class="text-small">Clockspeed:</span><br /><strong class="lead text-warning">' + +(Math.round(clockSpeed * 10000) / 100) + ' %</strong></td>');
+
+                            if(potentialInventory !== null)
+                            {
+                                for(let i = 0; i < potentialInventory.length; i++)
+                                {
+                                    content.push('<td width="62">');
+                                    content.push('<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + this.baseLayout.setInventoryTableSlot([potentialInventory[i]], null, 56, '', this.baseLayout.itemsData.Desc_CrystalShard_C.image) + '</td></tr></table></div>');
+                                    content.push('</td>');
+                                }
+                            }
+
+                            content.push('</tr><tr>');
+                            content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + Math.min(100, (clockSpeed * 10000) / 100) + '%"></div></div></td>');
+
+                            if(potentialInventory !== null)
+                            {
+                                for(let i = 0; i < potentialInventory.length; i++)
+                                {
+                                    let potentialProgress = Math.min(100, ((clockSpeed * 10000) / 100 - (100 + (i * 50))) * 2);
+                                        content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + potentialProgress + '%"></div></div></td>');
+                                }
+                            }
+
+                            content.push('</tr></table>');
+                            content.push('</div>');
+
+                        return content.join('');
+                    }
             }
 
-            content.push('</tr><tr>');
-            content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + Math.min(100, (clockSpeed * 10000) / 100) + '%"></div></div></td>');
-
-            if(potentialInventory !== null)
-            {
-                for(let i = 0; i < potentialInventory.length; i++)
-                {
-                    let potentialProgress = Math.min(100, ((clockSpeed * 10000) / 100 - (100 + (i * 50))) * 2);
-                        content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + potentialProgress + '%"></div></div></td>');
-                }
-            }
-
-            content.push('</tr></table>');
-            content.push('</div>');
-
-        return content.join('');
+        return '<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px; width: 322px;height: 105px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/OverclockPanelLocked.png?v=' + this.baseLayout.scriptVersion + ');"></div>';
     }
 
-    getStandByPanel(currentObject, top = 360, left = 415)
+    getStandByPanel(currentObject, top = 435, left = 420, topLabel = 460, leftLabel = 355)
     {
         let content             = [];
-        let imageFile           = 'standByOn.png';
+        let imageFile           = 'StandbyButtonPressed.png';
             if(this.baseLayout.getBuildingIsOn(currentObject) === false)
             {
-                imageFile = 'standByOff.png';
+                imageFile = 'StandbyButtonUnpressed.png';
             }
 
             content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px;">');
                 content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/' + imageFile + '?v=' + this.baseLayout.scriptVersion + '" />');
             content.push('</div>');
+
+            content.push('<div style="position: absolute;margin-top: ' + topLabel + 'px;margin-left: ' + leftLabel + 'px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>STANDBY</strong></div>');
 
         return content.join('');
     }
@@ -1262,7 +1284,7 @@ export default class BaseLayout_Tooltip
     setTooltipFooter(options)
     {
         let content = [];
-            content.push('<div class="mt-1"><table class="mr-auto ml-auto"><tr>');
+            content.push('<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>');
 
                 if(options.circuitId !== undefined && options.circuitId !== null)
                 {
@@ -1271,14 +1293,6 @@ export default class BaseLayout_Tooltip
                 if(options.powerUsed !== undefined || options.powerGenerated !== undefined)
                 {
                     content.push('<td class="text-center mb-1 px-1"><i class="fas fa-bolt"></td>');
-                }
-                if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
-                {
-                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
-                }
-                if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
-                {
-                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
                 }
 
             content.push('</tr><tr>');
@@ -1295,6 +1309,22 @@ export default class BaseLayout_Tooltip
                 {
                     content.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerGenerated * 100) / 100) + 'MW</td>');
                 }
+
+            content.push('</tr></table></div>');
+
+            content.push('<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>');
+
+                if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
+                {
+                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
+                }
+                if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
+                {
+                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
+                }
+
+            content.push('</tr><tr>');
+
                 if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
                 {
                     content.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.craftingTime * options.clockSpeed * 100) / 100) + 's</td>');
