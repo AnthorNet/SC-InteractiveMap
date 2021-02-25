@@ -9,11 +9,13 @@ export default class BaseLayout_Tooltip
         this.target                             = options.target;
 
         this.defaultTextStyle                   = 'color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;';
+        this.uiGradient                         = 'background: #0f0f0f;background: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 18%, rgba(15,15,15,1) 20%, rgba(15,15,15,1) 40%, rgba(0,0,0,1) 42%, rgba(0,0,0,1) 58%, rgba(15,15,15,1) 60%, rgba(15,15,15,1) 80%, rgba(0,0,0,1) 82%, rgba(0,0,0,1) 100%);';
+
         this.genericTooltipBackgroundStyle      = 'border: 25px solid #7f7f7f;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png?v=' + this.baseLayout.scriptVersion + ') 25 repeat;background: #7f7f7f;margin: -7px;' + this.defaultTextStyle;
         this.genericUIBackgroundStyle           = 'border: 19px solid #ffffff;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Screen.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #ffffff;background-clip: padding-box;';
         this.genericStorageBackgroundStyle      = 'border: 19px solid #373737;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Storage.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #373737;background-clip: padding-box;';
         this.genericProductionBackgroundStyle   = 'width: 500px;height: 510px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
-        this.genericExtractionBackgroundStyle   = 'width: 500px;height: 510px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Extractor_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
+        this.genericExtractionBackgroundStyle   = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Extractor_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
     }
 
     getTooltip(currentObject)
@@ -72,6 +74,9 @@ export default class BaseLayout_Tooltip
                         case '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C':
                         case '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C':
                             return this.setPipelineTooltipContent(currentObject);
+                        case '/Game/FactoryGame/Buildable/Factory/OilPump/Build_OilPump.Build_OilPump_C':
+                        case '/Game/FactoryGame/Buildable/Factory/WaterPump/Build_WaterPump.Build_WaterPump_C':
+                            return this.setBuildingPumpTooltipContent(currentObject, buildingData);
                         default:
                             let buildingData = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
                                 if(buildingData !== null)
@@ -308,11 +313,6 @@ export default class BaseLayout_Tooltip
 
     setBuildingExtractionTooltipContent(currentObject, buildingData)
     {
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/OilPump/Build_OilPump.Build_OilPump_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/WaterPump/Build_WaterPump.Build_WaterPump_C')
-        {
-            return this.setBuildingPumpTooltipContent(currentObject, buildingData);
-        }
-
         let itemType                = null;
         let purity                  = 'normal';
         let extractionRate          = 60;
@@ -360,54 +360,57 @@ export default class BaseLayout_Tooltip
 
         let content     = [];
 
-            // HEADER
-            content.push('<div style="position: absolute;margin-top: 5px;width: 100%;text-align: center;color: #FFFFFF;text-shadow: 2px 2px 2px #000000;">');
-            content.push('<strong>' + buildingData.name + '</strong>');
-            content.push('</div>');
-
-            // OUTPUT
-            content.push('<div style="position: absolute;margin-top: 52px;margin-left: 234px; width: 121px;height: 233px;">');
-
+            // TOP
+            content.push('<div style="position: absolute;margin-top: 10px;margin-left: 213px; width: 175px;height: 135px;border-radius: 10px;color: #FFFFFF;' + this.uiGradient + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
-
-                if(extractResourceNode !== null && itemType !== null)
-                {
-                    content.push('<div style="border-bottom: 1px solid #e7e7e7;line-height: 1;font-size: 13px;letter-spacing: -0.05em;" class="pb-2 mb-2">');
-                    content.push('<div><strong>' + this.baseLayout.itemsData[itemType].name + '</strong></div>');
-                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round(extractionRate * 100) / 100) + '</strong> per minute</span>');
-                    content.push('</div>');
-
-                    let inventoryOut    = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
-                        content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td>' + this.baseLayout.setInventoryTableSlot(inventoryOut, 1, 64, 'justify-content-center') + '</td></tr></table></div>');
-                }
+                content.push('<strong>' + buildingData.name + '</strong>');
 
                 let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
-                    content.push('<div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
-                    content.push('<span class="small">Producing - <span class="text-warning">' + currentProgress + '%</span></span>');
+                    content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
+                    content.push('<span style="font-size: 10px;" class="d-block mb-3">Mining - <span class="text-warning">' + currentProgress + '%</span></span>');
 
                 if(currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
                 {
-                    content.push(this.setTooltipFooter({circuitId: this.baseLayout.getObjectCircuitID(currentObject), craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed}));
+                    content.push(this.setTooltipFooter({circuitId: this.baseLayout.getObjectCircuitID(currentObject), craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed, singleLine: true}));
                 }
 
             content.push('</div></div>');
             content.push('</div>');
 
+            // BOTTOM
+            content.push('<div style="position: absolute;margin-top: 160px;margin-left: 213px; width: 175px;height: 125px;background: #FFFFFF;border: 2px solid #373737;border-radius: 10px;line-height: 1;">');
+            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
+
+                if(extractResourceNode !== null && itemType !== null)
+                {
+                    let inventoryOut    = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
+                        content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td>' + this.baseLayout.setInventoryTableSlot(inventoryOut, 1, 64, 'justify-content-center') + '</td></tr></table></div>');
+
+                    content.push('<div><strong>' + this.baseLayout.itemsData[itemType].name + '</strong></div>');
+                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round(extractionRate * 100) / 100) + '</strong> per minute</span>');
+                }
+
+            content.push('</div></div>');
+            content.push('</div>');
+            content.push('<div style="position: absolute;margin-top: 290px;margin-left: 270px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>OUTPUT</strong></div>');
+
+            content.push('<div style="position: absolute;margin-top: 136px;margin-left: 284px; width: 32px;height: 32px;color: #FFFFFF;background: #404040;border-radius: 50%;line-height: 32px;text-align: center;font-size: 18px;box-shadow: 0 0 2px 0px rgba(0,0,0,0.75);"><i class="fas fa-arrow-alt-down"></i></div>');
+
 
         if(currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
         {
             // HANDLE
-            content.push('<div style="position: absolute;margin-top: 25px;margin-left: 104px; width: 95px;height: 303px;overflow: hidden;">');
+            content.push('<div style="position: absolute;margin-top: 15px;margin-left: 102px; width: 96px;height: 310px;overflow: hidden;">');
             content.push('<img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/minerHandle.jpg" id="mapTooltipMinerHandle" style="transform: translate3d(0, 0, 0);animation: loop 1s linear infinite;" />');
             content.push('<style type="text/css">@keyframes loop {0% {transform: translateY(-303px);} 100% {transform: translateY(0);}}</style>');
             content.push('</div>');
 
             // FOOTER
-            content.push(this.getOverclockingPanel(currentObject));
-            content.push(this.getStandByPanel(currentObject));
+            content.push(this.getOverclockingPanel(currentObject, 356, 12));
+            content.push(this.getStandByPanel(currentObject, 365, 385, 434, 387));
         }
 
-        return '<div style="position: relative;width: 500px;height: 490px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/minerBackground.png) no-repeat #7b7b7b;margin: -7px;">' + content.join('') + '</div>';
+        return '<div style="' + this.genericExtractionBackgroundStyle + '">' + content.join('') + '</div>';
     }
 
     setBuildingPumpTooltipContent(currentObject, buildingData)
@@ -1283,65 +1286,65 @@ export default class BaseLayout_Tooltip
 
     setTooltipFooter(options)
     {
-        let content = [];
-            content.push('<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>');
+        let header1     = [];
+        let header2     = [];
+        let content1    = [];
+        let content2    = [];
 
-                if(options.circuitId !== undefined && options.circuitId !== null)
-                {
-                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-plug"></td>');
-                }
-                if(options.powerUsed !== undefined || options.powerGenerated !== undefined)
-                {
-                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-bolt"></td>');
-                }
+            // FIRST LINE
+            if(options.circuitId !== undefined && options.circuitId !== null)
+            {
+                header1.push('<td class="text-center mb-1 px-1"><i class="fas fa-plug"></td>');
+            }
+            if(options.powerUsed !== undefined || options.powerGenerated !== undefined)
+            {
+                header1.push('<td class="text-center mb-1 px-1"><i class="fas fa-bolt"></td>');
+            }
 
-            content.push('</tr><tr>');
+            if(options.circuitId !== undefined && options.circuitId !== null)
+            {
+                content1.push('<td class="text-center text-warning small px-1">#' + options.circuitId + '</td>');
+            }
+            if(options.powerUsed !== undefined)
+            {
+                content1.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerUsed * 100) / 100) + 'MW</td>');
+            }
+            if(options.powerGenerated !== undefined)
+            {
+                content1.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerGenerated * 100) / 100) + 'MW</td>');
+            }
 
-                if(options.circuitId !== undefined && options.circuitId !== null)
-                {
-                    content.push('<td class="text-center text-warning small px-1">#' + options.circuitId + '</td>');
-                }
-                if(options.powerUsed !== undefined)
-                {
-                    content.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerUsed * 100) / 100) + 'MW</td>');
-                }
-                if(options.powerGenerated !== undefined)
-                {
-                    content.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerGenerated * 100) / 100) + 'MW</td>');
-                }
+            // SECOND LINE
+            if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
+            {
+                header2.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
+            }
+            if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
+            {
+                header2.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
+            }
 
-            content.push('</tr></table></div>');
+            if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
+            {
+                content2.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.craftingTime * options.clockSpeed * 100) / 100) + 's</td>');
+            }
+            if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
+            {
+                let mPowerProductionExponent = 1.3;
+                    if(options.mPowerProductionExponent !== undefined)
+                    {
+                        mPowerProductionExponent = options.mPowerProductionExponent;
+                    }
 
-            content.push('<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>');
+                content2.push('<td class="text-center text-warning small px-1">' + +(Math.round((options.fuelEnergyValue / options.powerGenerated) * Math.pow(options.clockSpeed, -1/mPowerProductionExponent) * 100) / 100) + 's</td>');
+            }
 
-                if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
-                {
-                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
-                }
-                if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
-                {
-                    content.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
-                }
+        if(options.singleLine !== undefined && options.singleLine === true)
+        {
+            return '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header1.join('') + header2.join('') + '</tr><tr>' + content1.join('') + content2.join('') + '</tr></table></div>';
+        }
 
-            content.push('</tr><tr>');
-
-                if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
-                {
-                    content.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.craftingTime * options.clockSpeed * 100) / 100) + 's</td>');
-                }
-                if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
-                {
-                    let mPowerProductionExponent = 1.3;
-                        if(options.mPowerProductionExponent !== undefined)
-                        {
-                            mPowerProductionExponent = options.mPowerProductionExponent;
-                        }
-
-                    content.push('<td class="text-center text-warning small px-1">' + +(Math.round((options.fuelEnergyValue / options.powerGenerated) * Math.pow(options.clockSpeed, -1/mPowerProductionExponent) * 100) / 100) + 's</td>');
-                }
-
-            content.push('</tr></table></div>');
-
-        return content.join('');
+        return '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header1.join('') + '</tr><tr>' + content1.join('') + '</tr></table></div>'
+             + '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header2.join('') + '</tr><tr>' + content2.join('') + '</tr></table></div>';
     }
 }
