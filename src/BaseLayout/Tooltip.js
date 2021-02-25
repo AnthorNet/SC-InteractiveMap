@@ -16,6 +16,8 @@ export default class BaseLayout_Tooltip
         this.genericStorageBackgroundStyle      = 'border: 19px solid #373737;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Storage.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #373737;background-clip: padding-box;';
         this.genericProductionBackgroundStyle   = 'width: 500px;height: 510px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
         this.genericExtractionBackgroundStyle   = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Extractor_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
+        this.genericGeneratorBackgroundStyle    = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/generatorBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
+        this.fluidGeneratorBackgroundStyle      = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/generatorFluidBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
     }
 
     getTooltip(currentObject)
@@ -74,13 +76,16 @@ export default class BaseLayout_Tooltip
                         case '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C':
                         case '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C':
                             return this.setPipelineTooltipContent(currentObject);
-                        case '/Game/FactoryGame/Buildable/Factory/OilPump/Build_OilPump.Build_OilPump_C':
-                        case '/Game/FactoryGame/Buildable/Factory/WaterPump/Build_WaterPump.Build_WaterPump_C':
-                            return this.setBuildingPumpTooltipContent(currentObject, buildingData);
                         default:
                             let buildingData = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
                                 if(buildingData !== null)
                                 {
+                                    switch(currentObject.className)
+                                    {
+                                        case '/Game/FactoryGame/Buildable/Factory/OilPump/Build_OilPump.Build_OilPump_C':
+                                        case '/Game/FactoryGame/Buildable/Factory/WaterPump/Build_WaterPump.Build_WaterPump_C':
+                                            return this.setBuildingPumpTooltipContent(currentObject, buildingData);
+                                    }
                                     switch(buildingData.category)
                                     {
                                         case 'extraction':
@@ -925,7 +930,6 @@ export default class BaseLayout_Tooltip
         let craftingTime        = (recipeItem !== null) ? recipeItem.mManufactoringDuration : 4;
 
         let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
-        let fuelEnergyValue     = null;
         let powerGenerated      = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.3);
         let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.powerInfo');
 
@@ -971,50 +975,65 @@ export default class BaseLayout_Tooltip
                 maxFluid            = +(Math.round((maxFluid / 1000) * 100) / 100);
         }
 
-        let content     = [];
+        let content                 = [];
+        let tooltipFooterOptions    = {circuitId: this.baseLayout.getObjectCircuitID(currentObject), clockSpeed: clockSpeed, powerGenerated: powerGenerated, singleLine: true};
 
-            // HEADER
-            content.push('<div style="position: absolute;margin-top: 5px;width: 100%;text-align: center;color: #FFFFFF;text-shadow: 2px 2px 2px #000000;">');
-            content.push('<strong>' + buildingData.name + '</strong>');
-            content.push('</div>');
-
-            // INPUT
-            content.push('<div style="position: absolute;margin-top: 19px;margin-left: 324px; width: 154px;height: 305px;color: #5b5b5b;">');
+            // TOP
+            content.push('<div style="position: absolute;margin-top: 26px;margin-left: 315px; width: 165px;height: 135px;border-radius: 10px;color: #FFFFFF;' + this.uiGradient + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
-            content.push('<div style="height: 16px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/outputTop.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;"></div>');
-            content.push('<div style="padding: 0 16px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/outputMiddle.png?v=' + this.baseLayout.scriptVersion + ') repeat-y;">');
-
-                content.push('<div style="border-bottom: 1px solid #e7e7e7;line-height: 1;font-size: 13px;letter-spacing: -0.05em;" class="pb-2 mb-2">');
+                content.push('<strong>' + buildingData.name + '</strong>');
 
                 if(fuelClass !== null)
                 {
                     let fuelItem = this.baseLayout.getItemDataFromClassName(fuelClass.pathName);
-
                         if(fuelItem !== null && fuelItem.energy !== undefined)
                         {
-                            fuelEnergyValue = fuelItem.energy;
+                            tooltipFooterOptions.fuelEnergyValue = fuelItem.energy;
 
-                            content.push('<strong>' + fuelItem.name + '</strong><br />');
-                        }
-
-                        if(fuelEnergyValue !== null)
-                        {
-                            let consumptionRatio = (60 / (fuelEnergyValue / powerGenerated) * Math.pow(clockSpeed, -1/1.3));
-
-                                if(fuelItem.category === 'liquid' || fuelItem.category === 'gas')
-                                {
-                                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round((consumptionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span><br />');
-                                }
-                                else
-                                {
-                                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio * 100) / 100) + '</strong> Parts per minute</span><br />');
-                                }
+                            let currentProgress = Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelAmount', 0) / fuelItem.energy * 100);
+                                content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
+                                content.push('<span class="small">Producing - <span class="text-warning">' + currentProgress + '%</span></span>');
                         }
                 }
 
-                content.push('</div>');
 
-                content.push('<table class="w-100 mb-3"><tr>');
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
+                    {
+                        tooltipFooterOptions.mPowerProductionExponent = 1.321928;
+                    }
+                    content.push(this.setTooltipFooter(tooltipFooterOptions));
+
+            content.push('</div></div>');
+            content.push('</div>');
+
+            // BOTTOM
+            content.push('<div style="position: absolute;margin-top: 176px;margin-left: 315px; width: 165px;height: 125px;background: #FFFFFF;border: 2px solid #373737;border-radius: 10px;line-height: 1;">');
+            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
+
+                if(fuelClass !== null)
+                {
+                    let fuelItem = this.baseLayout.getItemDataFromClassName(fuelClass.pathName);
+                        if(fuelItem !== null && fuelItem.energy !== undefined)
+                        {
+                            content.push('<strong>' + fuelItem.name + '</strong><br />');
+
+                            if(fuelItem.energy !== null)
+                            {
+                                let consumptionRatio = (60 / (fuelItem.energy / powerGenerated) * Math.pow(clockSpeed, -1/1.3));
+
+                                    if(fuelItem.category === 'liquid' || fuelItem.category === 'gas')
+                                    {
+                                        content.push('<span class="small"><strong class="text-warning">' + +(Math.round((consumptionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span><br />');
+                                    }
+                                    else
+                                    {
+                                        content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio * 100) / 100) + '</strong> Parts per minute</span><br />');
+                                    }
+                            }
+                        }
+                }
+
+                content.push('<table class="w-100 mt-2"><tr>');
 
                 content.push('<td class="text-center"><div class="small">Fuel</div>');
                     content.push('<table class="mx-auto"><tr><td>' + this.baseLayout.getInventoryImage(inventoryIn[0], 48) + '</td></tr></table>');
@@ -1032,31 +1051,11 @@ export default class BaseLayout_Tooltip
 
                 content.push('</tr></table>');
 
-                if(fuelClass !== null)
-                {
-                    let fuelItem = this.baseLayout.getItemDataFromClassName(fuelClass.pathName);
-
-                    if(fuelItem !== null && fuelItem.energy !== undefined)
-                    {
-                        fuelEnergyValue = fuelItem.energy;
-
-                        let currentProgress = Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelAmount', 0) / fuelEnergyValue * 100);
-                            content.push('<div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
-                            content.push('<span class="small">Producing - <span class="text-warning">' + currentProgress + '%</span></span>');
-                    }
-                }
-
-                let tooltipFooterOptions = {circuitId: this.baseLayout.getObjectCircuitID(currentObject), clockSpeed: clockSpeed, powerGenerated: powerGenerated, fuelEnergyValue: fuelEnergyValue};
-                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
-                    {
-                        tooltipFooterOptions.mPowerProductionExponent = 1.321928;
-                    }
-                    content.push(this.setTooltipFooter(tooltipFooterOptions));
-
-            content.push('</div>');
-            content.push('<div style="height: 37px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/outputBottom.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding-top: 18px;"><strong style="font-size: 12px;">INPUT</strong></div>');
             content.push('</div></div>');
             content.push('</div>');
+            content.push('<div style="position: absolute;margin-top: 306px;margin-left: 367px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>INPUT</strong></div>');
+
+            content.push('<div style="position: absolute;margin-top: 152px;margin-left: 381px; width: 32px;height: 32px;color: #FFFFFF;background: #404040;border-radius: 50%;line-height: 32px;text-align: center;font-size: 18px;box-shadow: 0 0 2px 0px rgba(0,0,0,0.75);"><i class="fas fa-arrow-alt-down"></i></div>');
 
             // VOLUME
             if(buildingData.supplementalLoadType !== undefined && buildingData.supplementalLoadAmount !== undefined)
@@ -1094,15 +1093,15 @@ export default class BaseLayout_Tooltip
             }
 
             // FOOTER
-            content.push(this.getOverclockingPanel(currentObject));
-            content.push(this.getStandByPanel(currentObject));
+            content.push(this.getOverclockingPanel(currentObject, 356, 12));
+            content.push(this.getStandByPanel(currentObject, 365, 385, 434, 387));
 
         if(buildingData.supplementalLoadType !== undefined)
         {
-            return '<div style="position: relative;width: 500px;height: 490px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/generatorWaterBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">' + content.join('') + '</div>';
+            return '<div style="' + this.fluidGeneratorBackgroundStyle + '">' + content.join('') + '</div>';
         }
 
-        return '<div style="position: relative;width: 500px;height: 490px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/generatorBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">' + content.join('') + '</div>';
+        return '<div style="' + this.genericGeneratorBackgroundStyle + '">' + content.join('') + '</div>';
     }
 
     setBuildingTooltipContent(currentObject, buildingData)
