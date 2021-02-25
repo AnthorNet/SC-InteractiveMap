@@ -18,6 +18,7 @@ export default class BaseLayout_Tooltip
         this.genericExtractionBackgroundStyle   = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Extractor_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
         this.genericGeneratorBackgroundStyle    = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/generatorBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
         this.fluidGeneratorBackgroundStyle      = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/generatorFluidBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
+        this.genericPumpBackground              = 'width: 500px;height: 370px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/pumpBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
     }
 
     getTooltip(currentObject)
@@ -238,8 +239,8 @@ export default class BaseLayout_Tooltip
             }
 
             // Flow indicator
-            content.push('<div style="position: absolute;margin-top: 42px;margin-left: 32px;width: 118px;height: 118px;"><img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/flowIndicator.png?v=' + this.baseLayout.scriptVersion + '" style="width: 118px;height: 118px;transform: rotate(-135deg);" /></div>');
-            content.push('<div style="position: absolute;margin-top: 42px;margin-left: 32px;width: 118px;height: 118px;"><img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/flowGlass.png?v=' + this.baseLayout.scriptVersion + '" style="width: 118px;height: 118px;" /></div>');
+            content.push('<div style="position: absolute;margin-top: 42px;margin-left: 32px;width: 118px;height: 118px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/flowIndicator.png?v=' + this.baseLayout.scriptVersion + '" style="width: 118px;height: 118px;transform: rotate(-135deg);" /></div>');
+            content.push('<div style="position: absolute;margin-top: 42px;margin-left: 32px;width: 118px;height: 118px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/flowGlass.png?v=' + this.baseLayout.scriptVersion + '" style="width: 118px;height: 118px;" /></div>');
 
         }
 
@@ -406,7 +407,7 @@ export default class BaseLayout_Tooltip
         {
             // HANDLE
             content.push('<div style="position: absolute;margin-top: 15px;margin-left: 102px; width: 96px;height: 310px;overflow: hidden;">');
-            content.push('<img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/minerHandle.jpg" id="mapTooltipMinerHandle" style="transform: translate3d(0, 0, 0);animation: loop 1s linear infinite;" />');
+            content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/minerHandle.jpg" id="mapTooltipMinerHandle" style="transform: translate3d(0, 0, 0);animation: loop 1s linear infinite;" />');
             content.push('<style type="text/css">@keyframes loop {0% {transform: translateY(-303px);} 100% {transform: translateY(0);}}</style>');
             content.push('</div>');
 
@@ -469,34 +470,35 @@ export default class BaseLayout_Tooltip
 
         let content     = [];
 
-            // HEADER
-            content.push('<div style="position: absolute;margin-top: 3px;width: 150px;text-align: center;color: #FFFFFF;text-shadow: 2px 2px 2px #000000;">');
-            content.push('<strong>' + buildingData.name + '</strong>');
+            // TOP
+            content.push('<div style="position: absolute;margin-top: 6px;margin-left: 8px; width: 135px;height: 110px;border-radius: 10px;color: #FFFFFF;' + this.uiGradient + '">');
+            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
+                content.push('<strong>' + buildingData.name + '</strong>');
+
+                let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
+                    content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
+                    content.push('<span style="font-size: 10px;" class="d-block mb-3">Mining - <span class="text-warning">' + currentProgress + '%</span></span>');
+
+            content.push(this.setTooltipFooter({circuitId: this.baseLayout.getObjectCircuitID(currentObject), craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed, singleLine: true}));
+            content.push('</div></div>');
             content.push('</div>');
 
-            // OUTPUT
-            content.push('<div style="position: absolute;margin-top: 40px;margin-left: 30px; width: 90px;height: 186px;">');
-            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center" style="color: #5b5b5b;">');
+            // BOTTOM
+            content.push('<div style="position: absolute;margin-top: 130px;margin-left: 8px; width: 135px;height: 100px;background: #FFFFFF;border: 2px solid #373737;border-radius: 10px;line-height: 1;">');
+            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
 
                 if(extractResourceNode !== null && itemType !== null)
                 {
-                    content.push('<div style="border-bottom: 1px solid #e7e7e7;line-height: 1;font-size: 13px;letter-spacing: -0.05em;" class="pb-2 mb-2">');
+                    content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td><div class="d-flex flex-row" style="position:relative;margin: 1px;width: 48px;height: 48px;border: 1px solid #000000;border-radius:50%;padding: 5px;background-color: #FFFFFF;"><img src="' + this.baseLayout.itemsData[itemType].image + '" class="img-fluid" /></div></td></tr></table></div>');
                     content.push('<div><strong>' + this.baseLayout.itemsData[itemType].name + '</strong></div>');
                     content.push('<span class="small"><strong class="text-warning">' + +(Math.round((productionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span>');
-
-                    content.push('</div>');
-
-                    content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td><div class="d-flex flex-row" style="position:relative;margin: 1px;width: 64px;height: 64px;border: 1px solid #000000;border-radius:50%;padding: 5px;background-color: #FFFFFF;"><img src="' + this.baseLayout.itemsData[itemType].image + '" class="img-fluid" /></div></td></tr></table></div>');
                 }
-
-                let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
-                    content.push('<div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
-                    content.push('<span class="small">Producing - <span class="text-warning">' + currentProgress + '%</span></span>');
-
-                content.push(this.setTooltipFooter({circuitId: this.baseLayout.getObjectCircuitID(currentObject), craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed}));
 
             content.push('</div></div>');
             content.push('</div>');
+            content.push('<div style="position: absolute;margin-top: 232px;margin-left: 47px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>OUTPUT</strong></div>');
+
+            content.push('<div style="position: absolute;margin-top: 111px;margin-left: 65px; width: 24px;height: 24px;color: #FFFFFF;background: #404040;border-radius: 50%;line-height: 24px;text-align: center;font-size: 14px;box-shadow: 0 0 2px 0px rgba(0,0,0,0.75);"><i class="fas fa-arrow-alt-down"></i></div>');
 
         // DOME
         if(extractResourceNode !== null && itemType !== null && this.baseLayout.itemsData[itemType].color !== undefined && currentFluid > 0)
@@ -525,14 +527,14 @@ export default class BaseLayout_Tooltip
         }
 
         // Flow indicator
-        content.push('<div style="position: absolute;margin-top: 22px;margin-left: 211px;width: 102px;height: 102px;"><img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/flowIndicator.png?v=' + this.baseLayout.scriptVersion + '" style="width: 102px;height: 102px;transform: rotate(-135deg);" /></div>');
-        content.push('<div style="position: absolute;margin-top: 22px;margin-left: 211px;width: 102px;height: 102px;"><img src="' + this.baseLayout.staticUrl + '/img/mapTooltip/flowGlass.png?v=' + this.baseLayout.scriptVersion + '" style="width: 102px;height: 102px;" /></div>');
+        content.push('<div style="position: absolute;margin-top: 22px;margin-left: 211px;width: 102px;height: 102px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/flowIndicator.png?v=' + this.baseLayout.scriptVersion + '" style="width: 102px;height: 102px;transform: rotate(-135deg);" /></div>');
+        content.push('<div style="position: absolute;margin-top: 22px;margin-left: 211px;width: 102px;height: 102px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/flowGlass.png?v=' + this.baseLayout.scriptVersion + '" style="width: 102px;height: 102px;" /></div>');
 
         // FOOTER
-        content.push(this.getOverclockingPanel(currentObject, 270));
-        content.push(this.getStandByPanel(currentObject, 260));
+        content.push(this.getOverclockingPanel(currentObject, 256, 12));
+        content.push(this.getStandByPanel(currentObject, 265, 385, 334, 387));
 
-        return '<div style="position: relative;width: 500px;height: 390px;background: url(' + this.baseLayout.staticUrl + '/img/mapTooltip/pumpBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">' + content.join('') + '</div>';
+        return '<div style="' + this.genericPumpBackground + '">' + content.join('') + '</div>';
     }
 
     setBuildingStorageTooltipContent(currentObject, buildingData)
