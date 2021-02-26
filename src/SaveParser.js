@@ -24,6 +24,9 @@ export default class SaveParser
 
         // Holds some default values to reduce memory usage...
         this.defaultValues          = {
+            rotation                    : [0, 0, 0, 1],
+            translation                 : [0, 0, 0],
+
             mPrimaryColor               : {
                 name: "mPrimaryColor",
                 type: "StructProperty",

@@ -5586,9 +5586,9 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/Desc_Locomotive.Desc_Locomotive_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/Desc_FreightWagon.Desc_FreightWagon_C'; }
 
-        if(className === '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C' && this.buildingsData['Desc_GolfCart_C'] === undefined)
+        if(className === '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C' && this.buildingsData.Desc_GolfCart_C === undefined)
         {
-            this.buildingsData['Desc_GolfCart_C'] = {
+            this.buildingsData.Desc_GolfCart_C = {
                 className         : className,
                 name              : 'FICSIT Factory Cart™',
                 category          : 'vehicle',
@@ -5608,9 +5608,6 @@ export default class BaseLayout
                 mapIconImage      : this.toolsData.Desc_GolfCart_C.image
             };
         }
-
-        // Update 3 conversion
-        //if(className === '/Game/FactoryGame/Buildable/Factory/OilPump/Build_OilPump.Build_OilPump_C'){ className = '/Game/FactoryGame/Buildable/Factory/OilPump/Build_OilPump.Build_OilPump_C'; }
 
         // Mods
         if(className === '/Game/InfiniteLogistics/Buildable/InfinitePipeHyper/Build_InfinitePipeHyper.Build_InfinitePipeHyper_C'){ className = '/Game/FactoryGame/Buildable/Factory/PipeHyper/Build_PipeHyper.Build_PipeHyper_C'; }

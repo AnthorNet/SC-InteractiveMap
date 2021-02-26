@@ -259,10 +259,34 @@ export default class SaveParser_Read
         let translation         = [this.readFloat(), this.readFloat(), this.readFloat()];
         let scale3d             = [this.readFloat(), this.readFloat(), this.readFloat()];
 
-            actor.transform     = {
-                rotation            : rotation,
-                translation         : translation
-            };
+            actor.transform     = {};
+
+            if(
+                    rotation[0] === this.saveParser.defaultValues.rotation[0]
+                 && rotation[1] === this.saveParser.defaultValues.rotation[1]
+                 && rotation[2] === this.saveParser.defaultValues.rotation[2]
+                 && rotation[3] === this.saveParser.defaultValues.rotation[3]
+            )
+            {
+                actor.transform.rotation    = this.saveParser.defaultValues.rotation;
+            }
+            else
+            {
+                actor.transform.rotation    = rotation;
+            }
+
+            if(
+                    translation[0] === this.saveParser.defaultValues.translation[0]
+                 && translation[1] === this.saveParser.defaultValues.translation[1]
+                 && translation[2] === this.saveParser.defaultValues.translation[2]
+            )
+            {
+                actor.transform.translation = this.saveParser.defaultValues.translation;
+            }
+            else
+            {
+                actor.transform.translation = translation;
+            }
 
             if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[1] !== 1)
             {
