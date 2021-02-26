@@ -1244,7 +1244,6 @@ export default class BaseLayout
             properties          : [{name: 'mHealthComponent', type: 'ObjectProperty', value: {levelName: 'Persistent_Level', pathName: pathName + '.HealthComponent'}}],
             transform           : {
                 rotation            : [0, -0, currentObject.transform.rotation[2], currentObject.transform.rotation[3]],
-                scale3d             : [1, 1, 1],
                 translation         : [
                     currentObject.transform.translation[0] + (Math.floor(Math.random() * (800 + 1)) - 400),
                     currentObject.transform.translation[1] + (Math.floor(Math.random() * (800 + 1)) - 400),
@@ -1639,8 +1638,7 @@ export default class BaseLayout
                     playerPosition[0] + (Math.floor(Math.random() * (1600 + 1)) - 400),
                     playerPosition[1] + (Math.floor(Math.random() * (1600 + 1)) - 400),
                     playerPosition[2] + Math.floor(Math.random() * (800 + 1))
-                ],
-                scale3d             : [1, 1, 1]
+                ]
             },
             children                : [{levelName: "Persistent_Level", pathName: cratePathName + ".inventory"}],
             properties              : [{
@@ -2779,18 +2777,21 @@ export default class BaseLayout
             }
 
         // Check all known power connection in children and delete wires when needed!
-        for(let i = 0; i < currentObject.children.length; i++)
+        if(currentObject.children !== undefined)
         {
-            let childrenPathName    = currentObject.children[i].pathName;
-            let childrenType        = '.' + childrenPathName.split('.').pop();
-
-            if(this.availablePowerConnection.indexOf(childrenType) !== -1)
+            for(let i = 0; i < currentObject.children.length; i++)
             {
-                let currentObjectChildren = this.saveGameParser.getTargetObject(pathName + childrenType);
-                    if(currentObjectChildren !== null)
-                    {
-                        this.deletePlayerWiresFromPowerConnection(currentObjectChildren);
-                    }
+                let childrenPathName    = currentObject.children[i].pathName;
+                let childrenType        = '.' + childrenPathName.split('.').pop();
+
+                if(this.availablePowerConnection.indexOf(childrenType) !== -1)
+                {
+                    let currentObjectChildren = this.saveGameParser.getTargetObject(pathName + childrenType);
+                        if(currentObjectChildren !== null)
+                        {
+                            this.deletePlayerWiresFromPowerConnection(currentObjectChildren);
+                        }
+                }
             }
         }
 
@@ -3019,10 +3020,14 @@ export default class BaseLayout
 
         //html.push('<div class="alert alert-danger">Be aware that manually editing the save can lead to unexpected errors.</div>');
 
-        for(let i = 0; i < currentObject.children.length; i++)
+        if(currentObject.children !== undefined)
         {
-            childrenPathName.push(currentObject.children[i].pathName);
+            for(let i = 0; i < currentObject.children.length; i++)
+            {
+                childrenPathName.push(currentObject.children[i].pathName);
+            }
         }
+
         let mOwningSpawner = this.getObjectProperty(currentObject, 'mOwningSpawner');
             if(mOwningSpawner !== null)
             {
@@ -3036,43 +3041,47 @@ export default class BaseLayout
 
             html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
             html.push('<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#advancedDebugObject-MAIN" role="tab">Main object</a></li>');
-            for(let i = 0; i < currentObject.children.length; i++)
+
+            if(currentObject.children !== undefined)
             {
-                html.push('<li class="nav-item"><a class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '" role="tab">.' + currentObject.children[i].pathName.split('.').pop() + '</a></li>');
+                for(let i = 0; i < currentObject.children.length; i++)
+                {
+                    html.push('<li class="nav-item"><a class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '" role="tab">.' + currentObject.children[i].pathName.split('.').pop() + '</a></li>');
 
-                let currentChildren = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                    if(currentChildren !== null)
-                    {
-                        htmlChildren.push('<div class="tab-pane fade" id="advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">');
-                        htmlChildren.push('<textarea class="form-control updateObject" style="height: 75vh;" data-pathName="' + currentObject.children[i].pathName + '">' + JSON.stringify(currentChildren, null, 4) + '</textarea>');
-                        //htmlChildren.push('<button class="btn btn-warning w-100" data-pathName="' + currentObject.children[i].pathName + '" disabled>Update</button>');
-                        htmlChildren.push('</div>');
+                    let currentChildren = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                        if(currentChildren !== null)
+                        {
+                            htmlChildren.push('<div class="tab-pane fade" id="advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">');
+                            htmlChildren.push('<textarea class="form-control updateObject" style="height: 75vh;" data-pathName="' + currentObject.children[i].pathName + '">' + JSON.stringify(currentChildren, null, 4) + '</textarea>');
+                            //htmlChildren.push('<button class="btn btn-warning w-100" data-pathName="' + currentObject.children[i].pathName + '" disabled>Update</button>');
+                            htmlChildren.push('</div>');
 
-                        let mHiddenConnections = this.getObjectProperty(currentChildren, 'mHiddenConnections');
-                            if(mHiddenConnections !== null)
-                            {
-                                for(let j = 0; j < mHiddenConnections.values.length; j++)
+                            let mHiddenConnections = this.getObjectProperty(currentChildren, 'mHiddenConnections');
+                                if(mHiddenConnections !== null)
                                 {
-                                    if(childrenPathName.includes(mHiddenConnections.values[j].pathName) === false && extraPathName.includes(mHiddenConnections.values[j].pathName) === false)
+                                    for(let j = 0; j < mHiddenConnections.values.length; j++)
                                     {
-                                        extraPathName.push(mHiddenConnections.values[j].pathName);
+                                        if(childrenPathName.includes(mHiddenConnections.values[j].pathName) === false && extraPathName.includes(mHiddenConnections.values[j].pathName) === false)
+                                        {
+                                            extraPathName.push(mHiddenConnections.values[j].pathName);
+                                        }
                                     }
                                 }
-                            }
 
-                        let mPipeNetworkID = this.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                            if(mPipeNetworkID !== null && this.saveGamePipeNetworks[mPipeNetworkID] !== undefined)
-                            {
-                                if(childrenPathName.includes(this.saveGamePipeNetworks[mPipeNetworkID]) === false && extraPathName.includes(this.saveGamePipeNetworks[mPipeNetworkID]) === false)
+                            let mPipeNetworkID = this.getObjectProperty(currentChildren, 'mPipeNetworkID');
+                                if(mPipeNetworkID !== null && this.saveGamePipeNetworks[mPipeNetworkID] !== undefined)
                                 {
-                                    extraPathName.push(this.saveGamePipeNetworks[mPipeNetworkID]);
+                                    if(childrenPathName.includes(this.saveGamePipeNetworks[mPipeNetworkID]) === false && extraPathName.includes(this.saveGamePipeNetworks[mPipeNetworkID]) === false)
+                                    {
+                                        extraPathName.push(this.saveGamePipeNetworks[mPipeNetworkID]);
+                                    }
                                 }
-                            }
-                    }
-                    else
-                    {
-                        console.log('Missing children: ' + currentObject.children[i].pathName);
-                    }
+                        }
+                        else
+                        {
+                            console.log('Missing children: ' + currentObject.children[i].pathName);
+                        }
+                }
             }
 
             for(let j = 0; j < extraPathName.length; j++)
@@ -3226,103 +3235,106 @@ export default class BaseLayout
 
     unlinkObjectComponentConnection(currentObject)
     {
-        for(let i = 0; i < currentObject.children.length; i++)
+        if(currentObject.children !== undefined)
         {
-            let connectedComponent = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-
-            if(connectedComponent !== null)
+            for(let i = 0; i < currentObject.children.length; i++)
             {
-                // Belt/Pipe/Hyperpipe connection
-                if(
-                       connectedComponent.className === '/Script/FactoryGame.FGFactoryConnectionComponent' // Belt
-                    || connectedComponent.className === '/Script/FactoryGame.FGPipeConnectionFactory' // Pipe to factory
-                    || connectedComponent.className === '/Script/FactoryGame.FGPipeConnectionComponent' // Pipe to pipe
-                    || connectedComponent.className === '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C' // Hyper tubes
-                )
+                let connectedComponent = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+
+                if(connectedComponent !== null)
                 {
-                    let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedComponent');
-
-                    if(targetConnectedComponent !== null)
+                    // Belt/Pipe/Hyperpipe connection
+                    if(
+                           connectedComponent.className === '/Script/FactoryGame.FGFactoryConnectionComponent' // Belt
+                        || connectedComponent.className === '/Script/FactoryGame.FGPipeConnectionFactory' // Pipe to factory
+                        || connectedComponent.className === '/Script/FactoryGame.FGPipeConnectionComponent' // Pipe to pipe
+                        || connectedComponent.className === '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C' // Hyper tubes
+                    )
                     {
-                        let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
+                        let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedComponent');
 
-                        if(currentConnectedComponent !== null)
+                        if(targetConnectedComponent !== null)
                         {
+                            let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
+
+                            if(currentConnectedComponent !== null)
+                            {
+                                for(let j = 0; j < currentConnectedComponent.properties.length; j++)
+                                {
+                                    if(currentConnectedComponent.properties[j].name === 'mConnectedComponent' && currentConnectedComponent.properties[j].value.pathName === connectedComponent.pathName)
+                                    {
+                                        currentConnectedComponent.properties.splice(j, 1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Railway connection
+                    if(connectedComponent.className === '/Script/FactoryGame.FGRailroadTrackConnectionComponent')
+                    {
+                        let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedComponents');
+
+                        if(targetConnectedComponent !== null)
+                        {
+                            for(let j = 0; j < targetConnectedComponent.values.length; j++)
+                            {
+                                let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.values[j].pathName);
+
+                                for(let k = 0; k < currentConnectedComponent.properties.length; k++)
+                                {
+                                    if(currentConnectedComponent.properties[k].name === 'mConnectedComponents')
+                                    {
+                                        for(let m = 0; m < currentConnectedComponent.properties[k].value.values.length; m++)
+                                        {
+                                            if(currentConnectedComponent.properties[k].value.values[m].pathName === connectedComponent.pathName)
+                                            {
+                                                currentConnectedComponent.properties[k].value.values.splice(m, 1);
+                                            }
+                                        }
+
+                                        if(currentConnectedComponent.properties[k].value.values.length === 0)
+                                        {
+                                            currentConnectedComponent.properties = [];
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Remove rails connected switches!
+                        for(let switchPathName in this.saveGameRailSwitches)
+                        {
+                            let mControlledConnection = this.getObjectProperty(this.saveGameRailSwitches[switchPathName], 'mControlledConnection');
+
+                            if(mControlledConnection !== null)
+                            {
+                                if(mControlledConnection.pathName === connectedComponent.pathName)
+                                {
+                                    this.saveGameParser.deleteObject(switchPathName);
+                                    this.deleteMarkerFromElements('playerTracksLayer', this.getMarkerFromPathName(switchPathName, 'playerTracksLayer'));
+                                    delete this.saveGameRailSwitches[switchPathName];
+                                }
+                            }
+                        }
+                    }
+
+                    // Platform connection
+                    if(connectedComponent.className === '/Script/FactoryGame.FGTrainPlatformConnection')
+                    {
+                        let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedTo');
+
+                        if(targetConnectedComponent !== null)
+                        {
+                            let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
+
                             for(let j = 0; j < currentConnectedComponent.properties.length; j++)
                             {
-                                if(currentConnectedComponent.properties[j].name === 'mConnectedComponent' && currentConnectedComponent.properties[j].value.pathName === connectedComponent.pathName)
+                                if(currentConnectedComponent.properties[j].name === 'mConnectedTo' && currentConnectedComponent.properties[j].value.pathName === connectedComponent.pathName)
                                 {
                                     currentConnectedComponent.properties.splice(j, 1);
                                 }
-                            }
-                        }
-                    }
-                }
-
-                // Railway connection
-                if(connectedComponent.className === '/Script/FactoryGame.FGRailroadTrackConnectionComponent')
-                {
-                    let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedComponents');
-
-                    if(targetConnectedComponent !== null)
-                    {
-                        for(let j = 0; j < targetConnectedComponent.values.length; j++)
-                        {
-                            let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.values[j].pathName);
-
-                            for(let k = 0; k < currentConnectedComponent.properties.length; k++)
-                            {
-                                if(currentConnectedComponent.properties[k].name === 'mConnectedComponents')
-                                {
-                                    for(let m = 0; m < currentConnectedComponent.properties[k].value.values.length; m++)
-                                    {
-                                        if(currentConnectedComponent.properties[k].value.values[m].pathName === connectedComponent.pathName)
-                                        {
-                                            currentConnectedComponent.properties[k].value.values.splice(m, 1);
-                                        }
-                                    }
-
-                                    if(currentConnectedComponent.properties[k].value.values.length === 0)
-                                    {
-                                        currentConnectedComponent.properties = [];
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // Remove rails connected switches!
-                    for(let switchPathName in this.saveGameRailSwitches)
-                    {
-                        let mControlledConnection = this.getObjectProperty(this.saveGameRailSwitches[switchPathName], 'mControlledConnection');
-
-                        if(mControlledConnection !== null)
-                        {
-                            if(mControlledConnection.pathName === connectedComponent.pathName)
-                            {
-                                this.saveGameParser.deleteObject(switchPathName);
-                                this.deleteMarkerFromElements('playerTracksLayer', this.getMarkerFromPathName(switchPathName, 'playerTracksLayer'));
-                                delete this.saveGameRailSwitches[switchPathName];
-                            }
-                        }
-                    }
-                }
-
-                // Platform connection
-                if(connectedComponent.className === '/Script/FactoryGame.FGTrainPlatformConnection')
-                {
-                    let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedTo');
-
-                    if(targetConnectedComponent !== null)
-                    {
-                        let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
-
-                        for(let j = 0; j < currentConnectedComponent.properties.length; j++)
-                        {
-                            if(currentConnectedComponent.properties[j].name === 'mConnectedTo' && currentConnectedComponent.properties[j].value.pathName === connectedComponent.pathName)
-                            {
-                                currentConnectedComponent.properties.splice(j, 1);
                             }
                         }
                     }
@@ -5423,15 +5435,18 @@ export default class BaseLayout
                                             componentsArray.push(mComponents.values[j].pathName);
                                         }
 
-                                        for(let j = 0; j < currentObject.children.length; j++)
+                                        if(currentObject.children !== undefined)
                                         {
-                                            if(componentsArray.includes(currentObject.children[j].pathName))
+                                            for(let j = 0; j < currentObject.children.length; j++)
                                             {
-                                                if(returnPathName !== undefined && returnPathName === true)
+                                                if(componentsArray.includes(currentObject.children[j].pathName))
                                                 {
-                                                    return circuitSubSystem.extra.circuits[i].pathName;
+                                                    if(returnPathName !== undefined && returnPathName === true)
+                                                    {
+                                                        return circuitSubSystem.extra.circuits[i].pathName;
+                                                    }
+                                                    return circuitSubSystem.extra.circuits[i].circuitId;
                                                 }
-                                                return circuitSubSystem.extra.circuits[i].circuitId;
                                             }
                                         }
                                 }
@@ -5630,25 +5645,28 @@ export default class BaseLayout
 
     getBuildingIsPowered(currentObject)
     {
-        for(let i = 0; i < currentObject.children.length; i++)
+        if(currentObject.children !== undefined)
         {
-            let currentChildren = currentObject.children[i];
-                for(let k = 0; k < this.availablePowerConnection.length; k++)
-                {
-                    if(currentChildren.pathName.endsWith(this.availablePowerConnection[k]))
+            for(let i = 0; i < currentObject.children.length; i++)
+            {
+                let currentChildren = currentObject.children[i];
+                    for(let k = 0; k < this.availablePowerConnection.length; k++)
                     {
-                        currentChildren = this.saveGameParser.getTargetObject(currentChildren.pathName);
-
-                        if(currentChildren !== null)
+                        if(currentChildren.pathName.endsWith(this.availablePowerConnection[k]))
                         {
-                            let mWires = this.getObjectProperty(currentChildren, 'mWires');
-                                if(mWires !== null)
-                                {
-                                    return true;
-                                }
+                            currentChildren = this.saveGameParser.getTargetObject(currentChildren.pathName);
+
+                            if(currentChildren !== null)
+                            {
+                                let mWires = this.getObjectProperty(currentChildren, 'mWires');
+                                    if(mWires !== null)
+                                    {
+                                        return true;
+                                    }
+                            }
                         }
                     }
-                }
+            }
         }
 
         return false;
@@ -5765,7 +5783,7 @@ export default class BaseLayout
 
         let newPathName = pathName.join('_');
 
-            if(this.saveGameParser.objectsHashMap[newPathName] !== undefined)
+            if(this.saveGameParser.getTargetObject(newPathName) !== null)
             {
                 console.log('Collision detected', newPathName);
                 return this.generateFastPathName(currentObject);
@@ -6026,7 +6044,7 @@ export default class BaseLayout
     selectMultipleMarkers(markers)
     {
         let selectedMarkersLength   = markers.length;
-        let markersSelected         = [];
+            this.markersSelected    = [];
         let message                 = '';
         let buildings               = {};
 
@@ -6037,15 +6055,10 @@ export default class BaseLayout
             if(markers[i].options.pathName !== undefined)
             {
                 let currentObject       = this.saveGameParser.getTargetObject(markers[i].options.pathName);
-                let currentObjectKey    = this.saveGameParser.getTargetObjectKey(markers[i].options.pathName);
 
                 if(currentObject !== null)
                 {
-                    markersSelected.push({
-                        children: currentObject.children.length,
-                        key: currentObjectKey,
-                        marker: markers[i]
-                    }); // Used to sort selection in order...
+                    this.markersSelected.push(markers[i]);
 
                     if(buildings[currentObject.className] === undefined)
                     {
@@ -6078,22 +6091,14 @@ export default class BaseLayout
             }
         }
 
-        // Sort in reverse order, that way we can slice before remapping!
-        markersSelected.sort((a, b) => (a.children > b.children) ? 1 : (a.children === b.children) ? ((a.key > b.key) ? -1 : 1) : -1 );
-        this.markersSelected = [];
-        for(let i = 0; i < markersSelected.length; i++)
-        {
-            this.markersSelected.push(markersSelected[i].marker);
-        }
-
         message += '<ul style="flex-wrap: wrap;display: flex;">';
 
         let buildingsList   = [];
-        for(let className in buildings)
-        {
-            buildingsList.push(buildings[className]);
-        }
-        buildingsList.sort((a, b) => (a.total > b.total) ? -1 : 1);
+            for(let className in buildings)
+            {
+                buildingsList.push(buildings[className]);
+            }
+            buildingsList.sort((a, b) => (a.total > b.total) ? -1 : 1);
         for(let i = 0; i < buildingsList.length; i++)
         {
             message += '<li style="flex: 1 0 50%;">' + buildingsList[i].total + ' ' + buildingsList[i].name + '</li>';
@@ -6661,10 +6666,8 @@ export default class BaseLayout
                     pathName        : "Persistent_Level:PersistentLevel.Build_Foundation_8x2_01_C_XXX",
                     transform       : {
                         rotation        : [0, 0, 0, 1],
-                        translation     : [centerX, centerY, minZ + 100],
-                        scale3d         : [1, 1, 1]
+                        translation     : [centerX, centerY, minZ + 100]
                     },
-                    children        : [],
                     properties      : [
                         { name: "mPrimaryColor", type: "StructProperty", value: { type: "LinearColor", values: { r: 0.10946200042963028, g: 0.10946200042963028, b: 0.10946200042963028, a: 1 } } },
                         { name: "mSecondaryColor", type: "StructProperty", value: { type: "LinearColor", values: { r: 0.10946200042963028, g: 0.10946200042963028, b: 0.10946200042963028, a: 1 } } },

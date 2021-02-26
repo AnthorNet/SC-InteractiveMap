@@ -4,8 +4,8 @@ export default class SaveParser_Write
 {
     constructor(options)
     {
-        this.saveParser         = options.saveParser;
-        this.callback           = options.callback;
+        this.saveParser             = options.saveParser;
+        this.callback               = options.callback;
 
         this.currentBufferLength    = 0; // Used for writing...
     }
@@ -380,9 +380,18 @@ export default class SaveParser_Write
             actor += this.writeFloat(currentActor.transform.translation[1], false);
             actor += this.writeFloat(currentActor.transform.translation[2], false);
 
-            actor += this.writeFloat(currentActor.transform.scale3d[0], false);
-            actor += this.writeFloat(currentActor.transform.scale3d[1], false);
-            actor += this.writeFloat(currentActor.transform.scale3d[2], false);
+            if(currentActor.transform !== undefined && currentActor.transform.scale3d !== undefined)
+            {
+                actor += this.writeFloat(currentActor.transform.scale3d[0], false);
+                actor += this.writeFloat(currentActor.transform.scale3d[1], false);
+                actor += this.writeFloat(currentActor.transform.scale3d[2], false);
+            }
+            else
+            {
+                actor += this.writeFloat(1, false);
+                actor += this.writeFloat(1, false);
+                actor += this.writeFloat(1, false);
+            }
 
             if(currentActor.wasPlacedInLevel !== undefined)
             {

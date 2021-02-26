@@ -544,7 +544,7 @@ export default class Spawn_Blueprint
                         type                    : 1,
                         className               : '/Script/FactoryGame.FGPipeNetwork',
                         pathName                : this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.FGPipeNetwork_XXX'}),
-                        transform               : {rotation: [0, 0, 0, 1], translation: [0, 0, 0], scale3d: [1, 1, 1]},
+                        transform               : {rotation: [0, 0, 0, 1], translation: [0, 0, 0]},
                         children                : [],
                         properties              : [{name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}],
                         entityLevelName         : "",

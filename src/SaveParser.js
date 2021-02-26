@@ -187,60 +187,6 @@ export default class SaveParser
             this.objects.splice(this.objectsPurge[i], 1);
         }
 
-        // Delete from foundationSubSystem
-        let foundationSubSystem         = this.getTargetObject('Persistent_Level:PersistentLevel.FoundationSubsystem');
-
-        if(foundationSubSystem !== null)
-        {
-            for(let i = 0; i < foundationSubSystem.properties.length; i++)
-            {
-                if(foundationSubSystem.properties[i].name === 'mBuildings')
-                {
-                    let rebuildKeys = false;
-
-                    for(let j = foundationSubSystem.properties[i].value.values.length - 1; j >= 0 ; j--)
-                    {
-                        let currentValues = foundationSubSystem.properties[i].value.values[j];
-
-                        for(let k = currentValues.value[0].value.values.length - 1; k >= 0; k--)
-                        {
-                            if(currentValues.value[0].value.values[k].pathName === '')
-                            {
-                                currentValues.value[0].value.values.splice(k, 1);
-                            }
-                            else
-                            {
-                                for(let m = foundationSubSystemSanitize.length - 1; m >= 0; m--)
-                                {
-                                    if(currentValues.value[0].value.values[k] !== undefined && currentValues.value[0].value.values[k].pathName === foundationSubSystemSanitize[m])
-                                    {
-                                        foundationSubSystemSanitize.splice(m, 1);
-                                        currentValues.value[0].value.values.splice(k, 1);
-                                    }
-                                }
-                            }
-                        }
-
-                        if(currentValues.value[0].value.values.length === 0)
-                        {
-                            foundationSubSystem.properties[i].value.values.splice(j, 1);
-                            rebuildKeys = true;
-                        }
-                    }
-
-                    if(rebuildKeys === true)
-                    {
-                        for(let j = 0; j < foundationSubSystem.properties[i].value.values.length; j++)
-                        {
-                            foundationSubSystem.properties[i].value.values[j].key = j;
-                        }
-                    }
-
-                    break;
-                }
-            }
-        }
-
         // Delete from circuit/railroad subSystem
         if(foundationSubSystemSanitize.length > 0 || this.cleanCircuitSubSystems.length > 0)
         {

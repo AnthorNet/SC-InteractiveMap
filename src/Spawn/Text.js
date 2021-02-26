@@ -183,7 +183,7 @@ export default class Spawn_Text
                     type                                : 1,
                     className                           : '/Script/FactoryGame.FGPipeNetwork',
                     pathName                            : this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.FGPipeNetwork_XXX'}),
-                    transform                           : {rotation: [0, 0, 0, 1], translation: [0, 0, 0], scale3d: [1, 1, 1]},
+                    transform                           : {rotation: [0, 0, 0, 1], translation: [0, 0, 0]},
                     children                            : [],
                     properties                          : [{name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}, mFluidIntegrantScriptInterfaces],
                     entityLevelName                     : "",
@@ -210,7 +210,7 @@ export default class Spawn_Text
                                     type                : 1,
                                     className           : "/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C",
                                     pathName            : "Persistent_Level:PersistentLevel.Build_Pipeline_C_XXX",
-                                    transform           : {rotation: [0, 0, 0, 1], translation: [], scale3d: this.centerObject.transform.scale3d},
+                                    transform           : {rotation: [0, 0, 0, 1], translation: []},
                                     children            : [],
                                     properties          : [
                                         {name: "mSplineData", type: "ArrayProperty", value: {type: "StructProperty", values: []}, structureName: "mSplineData", structureType: "StructProperty", structureSubType: "SplinePointData"},

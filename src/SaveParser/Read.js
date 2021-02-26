@@ -10,9 +10,6 @@ export default class SaveParser_Read
         this.saveParser         = options.saveParser;
         this.callback           = options.callback;
 
-        this.alertString        = null; // False after first alert, true if still the case after a rewind... //TODO: Fix that...
-        this.currentErrorAlert  = [];
-
         this.arrayBuffer        = this.saveParser.arrayBuffer;
         this.bufferView         = new DataView(this.arrayBuffer); // Still used for header...
         this.currentByte        = 0;
@@ -81,8 +78,6 @@ export default class SaveParser_Read
         if(this.handledByte < this.maxByte)
         {
             return new Promise(function(resolve){
-                //console.log(this.arrayBuffer);
-
                 // Read chunk info size...
                 let chunkHeader         = new DataView(this.arrayBuffer.slice(0, 48));
                 this.currentByte        = 48;
@@ -163,29 +158,26 @@ export default class SaveParser_Read
     // V5 FUNCTIONS
     parseObjectsV5()
     {
-        this.saveParser.objects         = [];
-        this.saveParser.countObjects    = this.readInt();
-        console.log('Reading: ' + this.saveParser.countObjects + ' objects...');
+        let countObjects                = this.readInt();
+            this.saveParser.objects     = [];
+        console.log('Reading: ' + countObjects + ' objects...');
 
-        for(let i = 0; i < this.saveParser.countObjects; i++)
+        for(let i = 0; i < countObjects; i++)
         {
             let objectType = this.readInt();
-                if(objectType === 1)
+                switch(objectType)
                 {
-                    this.saveParser.objects[i] = this.readActorV5();
-                    this.saveParser.objectsHashMap[this.saveParser.objects[i].pathName] = i;
-                }
-                else
-                {
-                    if(objectType === 0)
-                    {
+                    case 0:
                         this.saveParser.objects[i] = this.readObjectV5();
                         this.saveParser.objectsHashMap[this.saveParser.objects[i].pathName] = i;
-                    }
-                    else
-                    {
+                        break;
+                    case 1:
+                        this.saveParser.objects[i] = this.readActorV5();
+                        this.saveParser.objectsHashMap[this.saveParser.objects[i].pathName] = i;
+                        break;
+                    default:
                         console.log('Unknown object type', objectType);
-                    }
+                        break;
                 }
         }
 
@@ -262,11 +254,25 @@ export default class SaveParser_Read
                 actor.needTransform = needTransform;
             }
 
+            // {rotation: [0, 0, 0, 1], translation: [0, 0, 0], scale3d: [1, 1, 1]}
+        let rotation            = [this.readFloat(), this.readFloat(), this.readFloat(), this.readFloat()];
+        let translation         = [this.readFloat(), this.readFloat(), this.readFloat()];
+        let scale3d             = [this.readFloat(), this.readFloat(), this.readFloat()];
+
             actor.transform     = {
-                rotation            : [this.readFloat(), this.readFloat(), this.readFloat(), this.readFloat()],
-                translation         : [this.readFloat(), this.readFloat(), this.readFloat()],
-                scale3d             : [this.readFloat(), this.readFloat(), this.readFloat()]
+                rotation            : rotation,
+                translation         : translation
             };
+
+            if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[1] !== 1)
+            {
+                if(actor.transform === undefined)
+                {
+                    actor.transform = {};
+                }
+
+                actor.transform.scale3d = scale3d
+            }
 
         let wasPlacedInLevel       = this.readInt();
             if(wasPlacedInLevel !== 0)
