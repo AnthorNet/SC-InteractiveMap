@@ -16,6 +16,7 @@ export default class BaseLayout_Tooltip
         this.genericStorageBackgroundStyle      = 'border: 19px solid #373737;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Storage.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #373737;background-clip: padding-box;';
         this.genericProductionBackgroundStyle   = 'width: 500px;height: 510px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
         this.genericExtractionBackgroundStyle   = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Extractor_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
+        this.genericSmasherBackgroundStyle      = 'width: 500px;height: 380px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Fracker_Smasher_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
         this.genericGeneratorBackgroundStyle    = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/generatorBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
         this.fluidGeneratorBackgroundStyle      = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/generatorFluidBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
         this.genericPumpBackground              = 'width: 500px;height: 370px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/pumpBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
@@ -86,6 +87,8 @@ export default class BaseLayout_Tooltip
                                         case '/Game/FactoryGame/Buildable/Factory/OilPump/Build_OilPump.Build_OilPump_C':
                                         case '/Game/FactoryGame/Buildable/Factory/WaterPump/Build_WaterPump.Build_WaterPump_C':
                                             return this.setBuildingPumpTooltipContent(currentObject, buildingData);
+                                        case '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C':
+                                            return this.setBuildingSmasherTooltipContent(currentObject, buildingData);
                                     }
                                     switch(buildingData.category)
                                     {
@@ -417,6 +420,46 @@ export default class BaseLayout_Tooltip
         }
 
         return '<div style="' + this.genericExtractionBackgroundStyle + '">' + content.join('') + '</div>';
+    }
+
+    setBuildingSmasherTooltipContent(currentObject, buildingData)
+    {
+        let clockSpeed  = this.baseLayout.getClockSpeed(currentObject);
+        let powerUsed   = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+        let content     = [];
+
+            // TOP
+            content.push('<div style="position: absolute;margin-top: 25px;margin-left: 90px; width: 195px;height: 110px;border-radius: 10px;color: #FFFFFF;' + this.uiGradient + '">');
+            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
+                content.push('<strong style="white-space: normal;">' + buildingData.name + '</strong>');
+                content.push(this.setTooltipFooter({circuitId: this.baseLayout.getObjectCircuitID(currentObject), powerUsed: powerUsed, singleLine: true}));
+
+                content.push('<ins class="small">Extractors connected:</ins>');
+                content.push('<div class="small text-warning">');
+
+                //TODO: LINK CORE TO SATELITES
+                content.push('<i class="fas fa-circle"></i><i class="fas fa-circle"></i><i class="fas fa-circle"></i><i class="far fa-circle"></i><i class="far fa-circle"></i><i class="far fa-circle"></i>');
+                content.push('</div>');
+
+            content.push('</div></div>');
+            content.push('</div>');
+
+            // BOTTOM
+            content.push('<div style="position: absolute;margin-top: 140px;margin-left: 90px; width: 195px;height: 50px;line-height: 1;">');
+            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
+
+                content.push('<ins class="small">Resource Well Potential</ins><br />');
+                //TODO: LINK CORE TO SATELITES
+                content.push('<strong class="small"><span class="text-info">XXX</span> m³ per minute</strong>');
+
+            content.push('</div></div>');
+            content.push('</div>');
+
+            // FOOTER
+            content.push(this.getOverclockingPanel(currentObject, 256, 12));
+            content.push(this.getStandByPanel(currentObject, 265, 385, 334, 387));
+
+        return '<div style="' + this.genericSmasherBackgroundStyle + '">' + content.join('') + '</div>';
     }
 
     setBuildingPumpTooltipContent(currentObject, buildingData)
