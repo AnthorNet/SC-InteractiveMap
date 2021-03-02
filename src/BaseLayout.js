@@ -22,6 +22,7 @@ import Modal                                    from './Modal.js';
 import Modal_Buildings                          from './Modal/Buildings.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
+import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
 
 import BaseLayout_Map_ColorSlots                from './BaseLayout/MapColorSlots.js';
@@ -4838,34 +4839,30 @@ export default class BaseLayout
     getClockSpeed(currentObject)
     {
         let currentPotential = this.getObjectProperty(currentObject, 'mCurrentPotential');
-
-        if(currentPotential !== null)
-        {
-            return currentPotential;
-        }
+            if(currentPotential !== null)
+            {
+                return currentPotential;
+            }
 
         let pendingPotential = this.getObjectProperty(currentObject, 'mPendingPotential');
-
-        if(pendingPotential !== null)
-        {
-            return pendingPotential;
-        }
+            if(pendingPotential !== null)
+            {
+                return pendingPotential;
+            }
 
        return 1;
     }
 
     setInventoryPotential(currentObject)
     {
-        let html = '';
-
-        let potentialInventory = this.getObjectInventory(currentObject, 'mInventoryPotential');
-
-        if(potentialInventory !== null)
-        {
-            html += '<div class="text-center"><table class="mr-auto ml-auto mt-3"><tr><td>';
-            html += this.setInventoryTableSlot(potentialInventory, null, 48, '', this.itemsData.Desc_CrystalShard_C.image);
-            html += '</td></tr></table></div>';
-        }
+        let html                = '';
+        let potentialInventory  = this.getObjectInventory(currentObject, 'mInventoryPotential');
+            if(potentialInventory !== null)
+            {
+                html += '<div class="text-center"><table class="mr-auto ml-auto mt-3"><tr><td>';
+                html += this.setInventoryTableSlot(potentialInventory, null, 48, '', this.itemsData.Desc_CrystalShard_C.image);
+                html += '</td></tr></table></div>';
+            }
 
         return html;
     }
@@ -4964,6 +4961,24 @@ export default class BaseLayout
 
                 this.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
                 this.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
+                {
+                    // Update all linked extractors
+                    let satellites  = Building_FrackingSmasher.getSatellites(this, currentObject);
+                        for(let i = 0; i < satellites.length; i++)
+                        {
+                            if(satellites[i].options.extractorPathName !== undefined)
+                            {
+                                let currentExtractor = this.saveGameParser.getTargetObject(satellites[i].options.extractorPathName);
+                                    if(currentExtractor !== null)
+                                    {
+                                        this.setObjectProperty(currentExtractor, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
+                                        this.setObjectProperty(currentExtractor, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+                                    }
+                            }
+                        }
+                }
 
                 this.unpauseMap();
             }.bind(this)
