@@ -77,28 +77,43 @@ export default class BaseLayout_Statistics_Power
                                     };
                                 }
 
-                            if(buildingData.powerUsed !== undefined && buildingData.powerUsed > 0)
-                            {
-                                if(buildingData.category === 'vehicle' && buildingData.mapLayer !== undefined && buildingData.mapLayer === 'playerVehiculesLayer')
+                            let powerUsed       = null;
+                            let maxPowerUser    = null;
+                                if(buildingData.powerUsed !== undefined && buildingData.powerUsed > 0)
                                 {
+                                    if(buildingData.category === 'vehicle' && buildingData.mapLayer !== undefined && buildingData.mapLayer === 'playerVehiculesLayer')
+                                    {
 
+                                    }
+                                    else
+                                    {
+                                        let clockSpeed      = this.baseLayout.getClockSpeed(currentObject);
+                                            maxPowerUser    = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+                                    }
                                 }
-                                else
+                                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/HadronCollider/Build_HadronCollider.Build_HadronCollider_C')
                                 {
+                                    let clockSpeed      = this.baseLayout.getClockSpeed(currentObject);
+                                        maxPowerUser    = 500 * Math.pow(clockSpeed, 1.6);
+                                }
 
-                                    let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.powerInfo');
-                                    let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
-                                    let maxPowerUser        = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
-
+                                let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.powerInfo');
                                     if(buildingPowerInfo !== null)
                                     {
-                                        let buildingConsumption     = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption', maxPowerUser);
-                                            circuits['0'].playerPowerUsed        += buildingConsumption;
-
-                                            if(objectCircuitID !== null)
+                                        let mTargetConsumption  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption');
+                                            if(mTargetConsumption !== null)
                                             {
-                                                circuits[objectCircuitID].playerPowerUsed += buildingConsumption;
+                                                powerUsed = Math.round(mTargetConsumption);
                                             }
+                                    }
+
+                                if(powerUsed !== null)
+                                {
+                                    circuits['0'].playerPowerUsed  += powerUsed;
+
+                                    if(objectCircuitID !== null)
+                                    {
+                                        circuits[objectCircuitID].playerPowerUsed += powerUsed;
                                     }
 
                                     circuits['0'].playerPowerUsedMax += maxPowerUser;
@@ -108,7 +123,6 @@ export default class BaseLayout_Statistics_Power
                                         circuits[objectCircuitID].playerPowerUsedMax += maxPowerUser;
                                     }
                                 }
-                            }
 
                             if(buildingData.category === 'generator')
                             {
@@ -143,35 +157,13 @@ export default class BaseLayout_Statistics_Power
                                     if(fuelClass !== null && this.baseLayout.getObjectProperty(currentObject, 'mIsProductionPaused') === null)
                                     {
                                         let fuelItem = this.baseLayout.getItemDataFromClassName(fuelClass.pathName);
-
-                                        if(fuelItem !== null && fuelItem.energy !== undefined)
-                                        {
-                                            fuelEnergyValue = fuelItem.energy;
-
-                                            if(circuits['0'].playerFuel[fuelItem.className] === undefined)
+                                            if(fuelItem !== null && fuelItem.energy !== undefined)
                                             {
-                                                circuits['0'].playerFuel[fuelItem.className] = {
-                                                    name            : fuelItem.name,
-                                                    buildingName    : buildingData.name,
-                                                    buildingCount   : 1,
-                                                    image           : fuelItem.image,
-                                                    category        : fuelItem.category,
-                                                    powerGenerated  : powerGenerated,
-                                                    consumed        : (60 / (fuelEnergyValue / powerGenerated))
-                                                };
-                                            }
-                                            else
-                                            {
-                                                circuits['0'].playerFuel[fuelItem.className].buildingCount++;
-                                                circuits['0'].playerFuel[fuelItem.className].consumed += (60 / (fuelEnergyValue / powerGenerated));
-                                                circuits['0'].playerFuel[fuelItem.className].powerGenerated += powerGenerated;
-                                            }
+                                                fuelEnergyValue = fuelItem.energy;
 
-                                            if(objectCircuitID !== null)
-                                            {
-                                                if(circuits[objectCircuitID].playerFuel[fuelItem.className] === undefined)
+                                                if(circuits['0'].playerFuel[fuelItem.className] === undefined)
                                                 {
-                                                    circuits[objectCircuitID].playerFuel[fuelItem.className] = {
+                                                    circuits['0'].playerFuel[fuelItem.className] = {
                                                         name            : fuelItem.name,
                                                         buildingName    : buildingData.name,
                                                         buildingCount   : 1,
@@ -183,19 +175,40 @@ export default class BaseLayout_Statistics_Power
                                                 }
                                                 else
                                                 {
-                                                    circuits[objectCircuitID].playerFuel[fuelItem.className].buildingCount++;
-                                                    circuits[objectCircuitID].playerFuel[fuelItem.className].consumed += (60 / (fuelEnergyValue / powerGenerated));
-                                                    circuits[objectCircuitID].playerFuel[fuelItem.className].powerGenerated += powerGenerated;
+                                                    circuits['0'].playerFuel[fuelItem.className].buildingCount++;
+                                                    circuits['0'].playerFuel[fuelItem.className].consumed += (60 / (fuelEnergyValue / powerGenerated));
+                                                    circuits['0'].playerFuel[fuelItem.className].powerGenerated += powerGenerated;
+                                                }
+
+                                                if(objectCircuitID !== null)
+                                                {
+                                                    if(circuits[objectCircuitID].playerFuel[fuelItem.className] === undefined)
+                                                    {
+                                                        circuits[objectCircuitID].playerFuel[fuelItem.className] = {
+                                                            name            : fuelItem.name,
+                                                            buildingName    : buildingData.name,
+                                                            buildingCount   : 1,
+                                                            image           : fuelItem.image,
+                                                            category        : fuelItem.category,
+                                                            powerGenerated  : powerGenerated,
+                                                            consumed        : (60 / (fuelEnergyValue / powerGenerated))
+                                                        };
+                                                    }
+                                                    else
+                                                    {
+                                                        circuits[objectCircuitID].playerFuel[fuelItem.className].buildingCount++;
+                                                        circuits[objectCircuitID].playerFuel[fuelItem.className].consumed += (60 / (fuelEnergyValue / powerGenerated));
+                                                        circuits[objectCircuitID].playerFuel[fuelItem.className].powerGenerated += powerGenerated;
+                                                    }
+                                                }
+
+                                                circuits['0'].playerPowerGenerated += powerGenerated;
+
+                                                if(objectCircuitID !== null)
+                                                {
+                                                    circuits[objectCircuitID].playerPowerGenerated += powerGenerated;
                                                 }
                                             }
-
-                                            circuits['0'].playerPowerGenerated += powerGenerated;
-
-                                            if(objectCircuitID !== null)
-                                            {
-                                                circuits[objectCircuitID].playerPowerGenerated += powerGenerated;
-                                            }
-                                        }
                                     }
 
                                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
@@ -286,9 +299,9 @@ export default class BaseLayout_Statistics_Power
 
             html.push('<table class="table table-borderless">');
 
-            html.push('<tr><td>Maximum available power</td><td class="text-right">' + new Intl.NumberFormat(this.baseLayout.language).format(circuits[circuitId].playerPowerGenerated) + 'MW</td></tr>');
-            html.push('<tr><td>Power currently generated</td><td class="text-right">' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuits[circuitId].playerPowerUsed)) + 'MW</td></tr>');
-            html.push('<tr><td>Power used at maximum production</td><td class="text-right">' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuits[circuitId].playerPowerUsedMax)) + 'MW</td></tr>');
+            html.push('<tr><td>Capacity</td><td class="text-right">' + new Intl.NumberFormat(this.baseLayout.language).format(circuits[circuitId].playerPowerGenerated) + 'MW</td></tr>');
+            html.push('<tr><td>Consumption</td><td class="text-right">' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuits[circuitId].playerPowerUsed)) + 'MW</td></tr>');
+            html.push('<tr><td>Max consumption</td><td class="text-right">' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuits[circuitId].playerPowerUsedMax)) + 'MW</td></tr>');
             html.push('<tr><td>Power shards used</td><td class="text-right">' + new Intl.NumberFormat(this.baseLayout.language).format(circuits[circuitId].playerPowerShards) + '</td></tr>');
 
             html.push('</table>');

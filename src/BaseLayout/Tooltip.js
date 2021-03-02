@@ -943,7 +943,23 @@ export default class BaseLayout_Tooltip
         let craftingTime        = (recipeItem !== null) ? recipeItem.mManufactoringDuration : 4;
 
         let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
-        let powerUsed           = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+        let powerUsed           = 0;
+            if(buildingData.powerUsed !== undefined)
+            {
+                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6)
+            }
+            else
+            {
+                let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.powerInfo');
+                    if(buildingPowerInfo !== null)
+                    {
+                        let mTargetConsumption  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption');
+                            if(mTargetConsumption !== null)
+                            {
+                                powerUsed = Math.round(mTargetConsumption);
+                            }
+                    }
+            }
 
             craftingTime       /= clockSpeed; // Overclocking...
 
