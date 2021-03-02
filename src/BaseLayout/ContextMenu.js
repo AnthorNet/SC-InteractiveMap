@@ -135,6 +135,7 @@ export default class BaseLayout_ContextMenu
                         && buildingData.category !== 'pad' && buildingData.category !== 'tower' && buildingData.category !== 'logistic' && buildingData.category !== 'dockstation' && buildingData.category !== 'vehicle'
                         && buildingData.category !== 'pipe'
                         && buildingData.category !== 'hyperTube'
+                        && buildingData.category !== 'light'
                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C'
                     )
                     {

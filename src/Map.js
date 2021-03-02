@@ -325,6 +325,7 @@ export default class Map
                                     else{ if(options.type !== undefined){ currentMarkerOptions.type = options.type; } }
 
                                     if(option.purity !== undefined){ currentMarkerOptions.purity = option.purity; }
+                                    if(marker.core !== undefined){ currentMarkerOptions.core = marker.core; }
 
                                     let currentMarker = L.marker(this.unproject([marker.x, marker.y]), currentMarkerOptions)
                                                          .bindTooltip(tooltip.join(''))

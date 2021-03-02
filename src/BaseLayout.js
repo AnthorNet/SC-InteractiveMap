@@ -192,6 +192,7 @@ export default class BaseLayout
         for(let pathName in this.satisfactoryMap.collectableMarkers)
         {
             this.satisfactoryMap.collectableMarkers[pathName].setOpacity(1);
+            delete satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
         }
 
         for(let layerId in this.playerLayers)
@@ -463,6 +464,7 @@ export default class BaseLayout
                     this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']                                                 = JSON.parse(JSON.stringify(this.detailedModels['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C']));
                     this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].scale                                           = 2.25;
 
+                    /* develblock:start */
                     /*
                     this.detailedModels['/Game/FactoryGame/Buildable/Factory/ResourceSink/Build_ResourceSink.Build_ResourceSink_C'] = {
                         "scale": 1,
@@ -477,6 +479,162 @@ export default class BaseLayout
                         ]
                     }
                     */
+                   this.detailedModels['/Game/FactoryGame/Buildable/Factory/CeilingLight/Build_CeilingLight.Build_CeilingLight_C'] = {
+                        "scale": 1,
+                        "forms": [
+                            {
+                                "points": [
+                                    [-500,500],[-500,370],[-485,365],[-485,-365],[-500,-370],[-500,-500],[-410,-500],[-405,-495],[-100,-495],[-90,-510],[-90,-545],[-60,-575],[60,-575],[90,-545],[90,-510],[100,-495],[405,-495],[410,-500],
+                                    [500,-500],[500,-370],[485,-365],[485,365],[500,370],[500,500],[410,500],[405,495],[-405,495],[-410,500],[-500,500]
+                                ],
+                                "holes":
+                                [
+                                    [[-400,-410],[-380,-430],[-290,-430],[-270,-410],[-270,410],[-290,430],[-380,430],[-400,410]],
+                                    [[400,-410],[380,-430],[290,-430],[270,-410],[270,410],[290,430],[380,430],[400,410]],
+
+                                    [[-180,-410],[-160,-430],[-50,-430],[-30,-410],[-30,410],[-50,430],[-160,430],[-180,410]],
+                                    [[180,-410],[160,-430],[50,-430],[30,-410],[30,410],[50,430],[160,430],[180,410]]
+                                ]
+                            }
+                        ]
+                    }
+                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C'] = {
+                        "scale": 1,
+                        "forms": [
+                            {
+                                "points": [
+                                    [-160,-540],[-160,-970],[-130,-1000],[130,-1000],[160,-970],[160,-540],[420,-360],[450,-300],[455,-240],[495,-170],[555,-115],[585,-55],[615,250],[1000,475],[1000,505],[870,740],[840,740],[455,530],[175,660],[105,660],[45,620],[-45,620],[-105,660],[-175,660],[-455,530],[-840,740],[-870,740],
+                                    [-1000,505],[-1000,475],[-615,250],[-585,-55],[-555,-115],[-495,-170],[-455,-240],[-450,-300],[-420,-360]
+                                ]
+                            }
+                        ]
+                    }
+                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/FrackingExtractor/Build_FrackingExtractor.Build_FrackingExtractor_C'] = {
+                        "scale": 1,
+                        "forms": [
+                            {
+                                "points": [
+                                    [200,-120],[280,-120],[280,120],[200,120],[160,170],[105,210],
+                                    [80,220],[80,260],[-80,260],[-80,220],
+                                    [-105,210],[-160,170],[-200,120],
+                                    [-220,80],[-260,80],[-260,-80],[-220,-80],
+                                    [-200,-120],[-160,-170],[-105,-210],
+                                    [-80,-220],[-80,-260],[80,-260],[80,-220],
+                                    [105,-210],[160,-170]
+                                ]
+                            }
+                        ]
+                    }
+                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C'] = {
+                        "scale": 1,
+                        "forms": [ /*x+250*/
+                            {
+                                "points": [
+                                    [-70,600],[70,600],[85,590],[95,570],[160,185],[170,185],[180,130],[160,125],[160,90],[220,90],[220,70],[250,60],[230,50],
+                                    [230,-50],[250,-60],[220,-65],[220,-90],[160,-90],[160,-125],[180,-130],[170,-185],[160,-185],[95,-570],[85,-590],[70,-600],[-70,-600],[-130,-330],[-90,-160],
+                                    [-125,-160],[-130,-115],[-125,-105],[-130,-85],[-145,-85],[-175,-80],[-250,-65],[-250,-15],[-200,-5],[-180,-5],[-180,5],[-200,5],[-250,15],[-250,65],[-175,80],[-145,85],
+                                    [-130,85],[-125,105],[-130,115],[-125,160],[-90,160],[-130,330],[-70,600]
+                                ],
+                                "holes":
+                                [
+                                    [[-35,90],[-70,90],[-80,100],[-80,135],[-70,135],[-50,115],[-35,115]],
+                                    [[35,90],[70,90],[80,100],[80,135],[70,135],[50,115],[35,115]],
+
+                                    [[-35,-90],[-70,-90],[-80,-100],[-80,-135],[-70,-135],[-50,-115],[-35,-115]],
+                                    [[35,-90],[70,-90],[80,-100],[80,-135],[70,-135],[50,-115],[35,-115]]
+                                ]
+                            }
+                        ]
+                    }
+                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C'] = {
+                        "scale": 1,
+                        "forms": [
+                            {
+                                "points": [[-600,-1200],[790,-1200],[920,-1200],[1050,-1040],[1050,-900],[1200,-900],[1200,-500],[1050,-430],[1050,230],[1200,300],[1200,1100],[1000,1100],[920,1200],[790,1200],[-600,1200],[-600,1120],[-830,980],[-1070,980],[-1200,870],[-1200,-870],[-1070,-980],[-830,-980],[-600,-1120]],
+                                "holes":
+                                [
+                                    [[-1040,570], [-1010,570], [-740,810], [-740,860], [-1000,860], [-1040,830]],
+                                    [[-1040,-570], [-1010,-570], [-740,-810], [-740,-860], [-1000,-860], [-1040,-830]],
+
+                                    [[-1100,-390], [-1100,390], [-600,860], [400,860], [400,-860], [-600,-860]]
+                                ]
+                            },
+                            {
+                                "points": [[-1040,570], [-1010,570], [-740,810], [-740,860], [-1000,860], [-1040,830]]
+                            },
+                            {
+                                "points": [[-1040,-570], [-1010,-570], [-740,-810], [-740,-860], [-1000,-860], [-1040,-830]]
+                            },
+                            {
+                                "points": [[-1100,-390], [-1100,390], [-600,860], [400,860], [400,-860], [-600,-860]]
+                            }
+                        ]
+                    };
+
+                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/Blender/Build_Blender.Build_Blender_C'] = {
+                        "scale": 0.98,
+                        "forms": [
+                            {
+                                "points": [
+                                    [-920,760],
+                                    [-750,760],[-750,800],[-450,800],[-450,760],[-350,760],[-350,800],[-50,800],[-50,760],
+                                    [920,760],[950,730],
+                                    [950,300],[920,270],[920,-270],[950,-300],
+                                    [950,-730],[920,-760],
+                                    [750,-760],[750,-800],[450,-800],[450,-760],[350,-760],[350,-800],[50,-800],[50,-760],[-50,-760],[-50,-800],[-350,-800],[-350,-760],[-450,-760],[-450,-800],[-750,-800],[-750,-760],
+                                    [-920,-760],[-950,-730],[-950,-300],[-920,-270],[-920,270],[-950,300],[-950,730]
+                                ]
+                            }
+                        ]
+                    };
+                   this.detailedModels['/Game/FactoryGame/Buildable/Factory/HadronCollider/Build_HadronCollider.Build_HadronCollider_C'] = {
+                        "scale": 0.98,
+                        "forms": [
+                            {
+                                "points": [
+                                    [-1210,1100], [-1870,1100],[-1900,1070],[-1900,360],[-1870,330],[260,330],[270,280],[-1330,-600],[-1330,-630],[-1110,-1000],[-1070,-1010],[520,-130],[580,-180],[580,-1170],[610,-1200],[1870,-1200],[1900,-1170],
+                                    [1900,1130],[1870,1160],
+                                    [1440,1160], [1440,1200], [1200,1200], [1200,1160],
+                                    [1050,1160], [640,920],[-1180,920],[-1180,1070]
+                                ]
+                            }
+                        ]
+                    };
+                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/StreetLight/Build_StreetLight.Build_StreetLight_C'] = {
+                        "scale": 1,
+                        "forms": [
+                            {
+                                "points": [
+                                    [25,25],[10,530],[15,530],[25,540],[25,640],[15,650],[-15,650],[-25,640],[-25,540],[-15,530],[-10,530],[-25,25],
+                                    [-20,-10],[-10,-20],[0,-25],[10,-20],[20,-10]
+                                ]
+                            }
+                        ]
+                    };
+
+                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C'] = {
+                        "scale": 1,
+                        "forms": [
+                            {
+                                "points": [
+                                    [100,-300], [200,-300], [300,-200], [300,-100], [260,-30], [260,30], [300,100], [300,200], [200,300], [100,300], [30,260], [-30,260],
+                                    [-100,300], [-200,300], [-300,200], [-300,100], [-260,30], [-260,-30], [-300,-100], [-300,-200], [-200,-300], [-100,-300], [-30,-260], [30,-260]
+                                ],
+                                "holes": [
+                                    [[-110,-190],[-150,-240],[-120,-240],[-60,-210]],
+                                    [[-110,190],[-150,240],[-120,240],[-60,210]],
+                                    [[110,-190],[150,-240],[120,-240],[60,-210]],
+                                    [[110,190],[150,240],[120,240],[60,210]],
+
+                                    [[-240,-160],[-240,-110],[-210,-50],[-190,-110]],
+                                    [[-240,160],[-240,110],[-210,50],[-190,110]],
+                                    [[240,-160],[240,-110],[210,-50],[190,-110]],
+                                    [[240,160],[240,110],[210,50],[190,110]]
+                                ]
+                            }
+                        ]
+                    }
+                    /* develblock:end */
 
                     this.renderObjects();
                 }.bind(this));
@@ -632,6 +790,29 @@ export default class BaseLayout
                     if(mPipeNetworkID !== null)
                     {
                         this.saveGamePipeNetworks[mPipeNetworkID] = currentObject.pathName;
+                    }
+                    else
+                    {
+                        // IF the mPipeNetworkID don't exists, try to find it from one of the children
+                        let mFluidIntegrantScriptInterfaces = this.getObjectProperty(currentObject, 'mFluidIntegrantScriptInterfaces');
+                            mFluidIntegrantScriptInterfacesLoop:
+                            for(let j = 0; j < mFluidIntegrantScriptInterfaces.values.length; j++)
+                            {
+                                let currentInterface = this.saveGameParser.getTargetObject(mFluidIntegrantScriptInterfaces.values[j].pathName);
+                                    if(currentInterface !== null && currentInterface.children !== undefined)
+                                    {
+                                        for(let k = 0; k < currentInterface.children.length; k++)
+                                        {
+                                            let currentInterfaceChildren    = this.saveGameParser.getTargetObject(currentInterface.children[k].pathName);
+                                                mPipeNetworkID              = this.getObjectProperty(currentInterfaceChildren, 'mPipeNetworkID');
+                                                if(mPipeNetworkID !== null)
+                                                {
+                                                    this.saveGamePipeNetworks[mPipeNetworkID] = currentObject.pathName;
+                                                    break mFluidIntegrantScriptInterfacesLoop;
+                                                }
+                                        }
+                                    }
+                            }
                     }
 
                 continue;
@@ -2348,6 +2529,7 @@ export default class BaseLayout
                     if(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
                     {
                         this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].setOpacity(window.SCIM.collectedOpacity);
+                        this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.extractorPathName = currentObject.pathName;
                     }
                 }
 
@@ -2829,6 +3011,7 @@ export default class BaseLayout
                     if(this.satisfactoryMap.collectableMarkers !== undefined && this.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
                     {
                         this.satisfactoryMap.collectableMarkers[resourceNode.pathName].setOpacity(1);
+                        delete satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
                     }
 
                     for(let i = 0; i < resourceNode.properties.length; i++)
