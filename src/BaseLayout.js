@@ -10,6 +10,8 @@ import BaseLayout_Tooltip                       from './BaseLayout/Tooltip.js';
 import BaseLayout_History                       from './BaseLayout/History.js';
 import BaseLayout_Math                          from './BaseLayout/Math.js';
 
+import BaseLayout_CircuitSubsystem              from './BaseLayout/CircuitSubsystem.js';
+
 import BaseLayout_Statistics_Player_Inventory   from './BaseLayout/StatisticsPlayerInventory.js';
 import BaseLayout_Statistics_Player_Hotbars     from './BaseLayout/StatisticsPlayerHotbars.js';
 import BaseLayout_Statistics_Production         from './BaseLayout/StatisticsProduction.js';
@@ -3217,10 +3219,12 @@ export default class BaseLayout
             {
                 extraPathName.push(mOwningSpawner.pathName);
             }
-        let objectCircuitID = this.getObjectCircuitID(currentObject, true);
-            if(objectCircuitID !== null)
+
+        let circuitSubsytem = new BaseLayout_CircuitSubsystem({baseLayout: this});
+        let objectCircuit   = circuitSubsytem.getObjectCircuit(currentObject);
+            if(objectCircuit !== null)
             {
-                extraPathName.push(objectCircuitID);
+                extraPathName.push(objectCircuit.pathName);
             }
 
             html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
@@ -5603,56 +5607,6 @@ export default class BaseLayout
         }
 
         return;
-    }
-
-    getObjectCircuitID(currentObject, returnPathName)
-    {
-        let circuitSubSystem = this.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.CircuitSubsystem');
-            if(circuitSubSystem !== null && circuitSubSystem.extra.circuits !== undefined)
-            {
-                for(let i = 0; i < circuitSubSystem.extra.circuits.length; i++)
-                {
-                    let currentSubCircuit = this.saveGameParser.getTargetObject(circuitSubSystem.extra.circuits[i].pathName);
-                        if(currentSubCircuit !== null)
-                        {
-                            let mComponents = this.getObjectProperty(currentSubCircuit, 'mComponents');
-                                if(mComponents !== null)
-                                {
-                                    let componentsArray = [];
-                                        for(let j = 0; j < mComponents.values.length; j++)
-                                        {
-                                            if(mComponents.values[j].pathName === currentObject.pathName)
-                                            {
-                                                if(returnPathName !== undefined && returnPathName === true)
-                                                {
-                                                    return circuitSubSystem.extra.circuits[i].pathName;
-                                                }
-                                                return circuitSubSystem.extra.circuits[i].circuitId;
-                                            }
-
-                                            componentsArray.push(mComponents.values[j].pathName);
-                                        }
-
-                                        if(currentObject.children !== undefined)
-                                        {
-                                            for(let j = 0; j < currentObject.children.length; j++)
-                                            {
-                                                if(componentsArray.includes(currentObject.children[j].pathName))
-                                                {
-                                                    if(returnPathName !== undefined && returnPathName === true)
-                                                    {
-                                                        return circuitSubSystem.extra.circuits[i].pathName;
-                                                    }
-                                                    return circuitSubSystem.extra.circuits[i].circuitId;
-                                                }
-                                            }
-                                        }
-                                }
-                        }
-                }
-            }
-
-        return null;
     }
 
     getItemDataFromRecipe(currentObject, propertyName = 'mCurrentRecipe')

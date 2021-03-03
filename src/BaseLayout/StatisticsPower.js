@@ -1,4 +1,6 @@
 /* global Intl, gtag */
+import BaseLayout_CircuitSubsystem              from '../BaseLayout/CircuitSubsystem.js';
+
 export default class BaseLayout_Statistics_Power
 {
     constructor(options)
@@ -63,10 +65,11 @@ export default class BaseLayout_Statistics_Power
                     let buildingData = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
                         if(buildingData !== null)
                         {
-                            let objectCircuitID     = this.baseLayout.getObjectCircuitID(currentObject);
-                                if(objectCircuitID !== null && circuits[objectCircuitID] === undefined)
+                            let circuitSubsytem = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+                            let objectCircuit   = circuitSubsytem.getObjectCircuit(currentObject);
+                                if(objectCircuit !== null && circuits[objectCircuit.circuitId] === undefined)
                                 {
-                                    circuits[objectCircuitID] = {
+                                    circuits[objectCircuit.circuitId] = {
                                         playerPowerUsed         : 0,
                                         playerPowerUsedMax      : 0,
                                         playerPowerGenerated    : 0,
@@ -111,16 +114,16 @@ export default class BaseLayout_Statistics_Power
                                 {
                                     circuits['0'].playerPowerUsed  += powerUsed;
 
-                                    if(objectCircuitID !== null)
+                                    if(objectCircuit !== null)
                                     {
-                                        circuits[objectCircuitID].playerPowerUsed += powerUsed;
+                                        circuits[objectCircuit.circuitId].playerPowerUsed += powerUsed;
                                     }
 
                                     circuits['0'].playerPowerUsedMax += maxPowerUser;
 
-                                    if(objectCircuitID !== null)
+                                    if(objectCircuit !== null)
                                     {
-                                        circuits[objectCircuitID].playerPowerUsedMax += maxPowerUser;
+                                        circuits[objectCircuit.circuitId].playerPowerUsedMax += maxPowerUser;
                                     }
                                 }
 
@@ -180,11 +183,11 @@ export default class BaseLayout_Statistics_Power
                                                     circuits['0'].playerFuel[fuelItem.className].powerGenerated += powerGenerated;
                                                 }
 
-                                                if(objectCircuitID !== null)
+                                                if(objectCircuit !== null)
                                                 {
-                                                    if(circuits[objectCircuitID].playerFuel[fuelItem.className] === undefined)
+                                                    if(circuits[objectCircuit.circuitId].playerFuel[fuelItem.className] === undefined)
                                                     {
-                                                        circuits[objectCircuitID].playerFuel[fuelItem.className] = {
+                                                        circuits[objectCircuit.circuitId].playerFuel[fuelItem.className] = {
                                                             name            : fuelItem.name,
                                                             buildingName    : buildingData.name,
                                                             buildingCount   : 1,
@@ -196,17 +199,17 @@ export default class BaseLayout_Statistics_Power
                                                     }
                                                     else
                                                     {
-                                                        circuits[objectCircuitID].playerFuel[fuelItem.className].buildingCount++;
-                                                        circuits[objectCircuitID].playerFuel[fuelItem.className].consumed += (60 / (fuelEnergyValue / powerGenerated));
-                                                        circuits[objectCircuitID].playerFuel[fuelItem.className].powerGenerated += powerGenerated;
+                                                        circuits[objectCircuit.circuitId].playerFuel[fuelItem.className].buildingCount++;
+                                                        circuits[objectCircuit.circuitId].playerFuel[fuelItem.className].consumed += (60 / (fuelEnergyValue / powerGenerated));
+                                                        circuits[objectCircuit.circuitId].playerFuel[fuelItem.className].powerGenerated += powerGenerated;
                                                     }
                                                 }
 
                                                 circuits['0'].playerPowerGenerated += powerGenerated;
 
-                                                if(objectCircuitID !== null)
+                                                if(objectCircuit !== null)
                                                 {
-                                                    circuits[objectCircuitID].playerPowerGenerated += powerGenerated;
+                                                    circuits[objectCircuit.circuitId].playerPowerGenerated += powerGenerated;
                                                 }
                                             }
                                     }
@@ -230,11 +233,11 @@ export default class BaseLayout_Statistics_Power
                                         circuits['0'].playerFuel[buildingData.className].powerGenerated += powerGenerated;
                                     }
 
-                                    if(objectCircuitID !== null)
+                                    if(objectCircuit !== null)
                                     {
-                                        if(circuits[objectCircuitID].playerFuel[buildingData.className] === undefined)
+                                        if(circuits[objectCircuit.circuitId].playerFuel[buildingData.className] === undefined)
                                         {
-                                            circuits[objectCircuitID].playerFuel[buildingData.className] = {
+                                            circuits[objectCircuit.circuitId].playerFuel[buildingData.className] = {
                                                 name            : buildingData.name,
                                                 buildingName    : null,
                                                 buildingCount   : 1,
@@ -245,16 +248,16 @@ export default class BaseLayout_Statistics_Power
                                         }
                                         else
                                         {
-                                            circuits[objectCircuitID].playerFuel[buildingData.className].buildingCount++;
-                                            circuits[objectCircuitID].playerFuel[buildingData.className].powerGenerated += powerGenerated;
+                                            circuits[objectCircuit.circuitId].playerFuel[buildingData.className].buildingCount++;
+                                            circuits[objectCircuit.circuitId].playerFuel[buildingData.className].powerGenerated += powerGenerated;
                                         }
                                     }
 
                                     circuits['0'].playerPowerGenerated += powerGenerated;
 
-                                    if(objectCircuitID !== null)
+                                    if(objectCircuit !== null)
                                     {
-                                        circuits[objectCircuitID].playerPowerGenerated += powerGenerated;
+                                        circuits[objectCircuit.circuitId].playerPowerGenerated += powerGenerated;
                                     }
                                 }
                             }
@@ -272,9 +275,9 @@ export default class BaseLayout_Statistics_Power
                                         {
                                             circuits['0'].playerPowerShards++;
 
-                                            if(objectCircuitID !== null)
+                                            if(objectCircuit !== null)
                                             {
-                                                circuits[objectCircuitID].playerPowerShards++;
+                                                circuits[objectCircuit.circuitId].playerPowerShards++;
                                             }
                                         }
                                     }
