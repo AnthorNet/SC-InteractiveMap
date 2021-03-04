@@ -65,9 +65,17 @@ export default class BaseLayout_CircuitSubsystem
         return null;
     }
 
-    getProduction(circuitID, includeFilter = null)
+    getStatistics(circuitID, includeFilter = null)
     {
-        let production      = 0;
+        let statistics      = {
+                capacity            : 0,
+                production          : 0,
+                consumption         : 0,
+                maxConsumption      : 0,
+
+                powerStored         : 0,
+                powerStoredCapacity : 0,
+        };
         let currentCircuit  = this.getCircuitByID(circuitID);
 
             if(currentCircuit !== null)
@@ -84,59 +92,60 @@ export default class BaseLayout_CircuitSubsystem
                                     let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentComponent.pathName + '.powerInfo');
                                         if(buildingPowerInfo !== null)
                                         {
+                                            // PRODUCTION
+                                            let mIsFullBlast                = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
                                             let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
                                                 if(mDynamicProductionCapacity !== null)
                                                 {
-                                                    production += mDynamicProductionCapacity;
+                                                    if(mIsFullBlast !== null && mIsFullBlast === 1)
+                                                    {
+                                                        statistics.production += mDynamicProductionCapacity;
+                                                    }
+
+                                                    statistics.capacity += mDynamicProductionCapacity;
                                                 }
                                                 else
                                                 {
                                                     let mBaseProduction             = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
                                                         if(mBaseProduction !== null)
                                                         {
-                                                            production += mBaseProduction;
+                                                            if(mIsFullBlast !== null && mIsFullBlast === 1)
+                                                            {
+                                                                statistics.production += mBaseProduction;
+                                                            }
+
+                                                            statistics.capacity += mBaseProduction;
                                                         }
                                                 }
-                                        }
-                                }
-                        }
-                    }
-            }
 
-            return production;
-    }
-
-    getConsumption(circuitID, includeFilter = null)
-    {
-        let consumption = 0;
-        let currentCircuit  = this.getCircuitByID(circuitID);
-
-            if(currentCircuit !== null)
-            {
-                let mComponents = this.baseLayout.getObjectProperty(currentCircuit, 'mComponents');
-                    if(mComponents !== null)
-                    {
-                        for(let j = 0; j < mComponents.values.length; j++)
-                        {
-                            let currentComponentPowerConnection = this.baseLayout.saveGameParser.getTargetObject(mComponents.values[j].pathName);
-                                if(currentComponentPowerConnection !== null && currentComponentPowerConnection.outerPathName !== undefined && (includeFilter === null || includeFilter.includes(currentComponentPowerConnection.outerPathName)))
-                                {
-                                    let currentComponent    = this.baseLayout.saveGameParser.getTargetObject(currentComponentPowerConnection.outerPathName);
-                                    let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentComponent.pathName + '.powerInfo');
-                                        if(buildingPowerInfo !== null)
-                                        {
+                                            // CONSUMPTION
                                             let mTargetConsumption  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption');
                                                 if(mTargetConsumption !== null)
                                                 {
-                                                    consumption += mTargetConsumption;
+                                                    statistics.consumption += mTargetConsumption;
                                                 }
+
+                                            // MAX CONSUMPTION
+                                            let buildingData        = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
+                                                if(buildingData !== null && buildingData.powerUsed !== undefined)
+                                                {
+                                                    statistics.maxConsumption += buildingData.powerUsed;
+                                                }
+
+                                            // POWER STORAGE
+                                            if(currentComponent.className === '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C')
+                                            {
+                                                statistics.powerStored         += Building_PowerStorage.storedCharge(this.baseLayout, currentComponent);
+                                                statistics.powerStoredCapacity += Building_PowerStorage.capacityCharge(this.baseLayout, currentComponent);
+                                            }
                                         }
                                 }
                         }
                     }
             }
 
-            return consumption;
+            console.log(statistics);
+            return statistics;
     }
 
     /*
@@ -199,12 +208,10 @@ export default class BaseLayout_CircuitSubsystem
 
                     if(availablePowerStorageForCharge > 0)
                     {
-                        let production  = this.getProduction(circuitID);
-                        let consumption = this.getConsumption(circuitID);
-
-                            if(production > consumption)
+                        let statistics  = this.getStatistics(circuitID);
+                            if(statistics.production > statistics.consumption)
                             {
-                                return Math.min(100, (production - consumption) / availablePowerStorageForCharge);
+                                return (statistics.production - statistics.consumption) / availablePowerStorageForCharge;
                             }
                     }
             }
@@ -217,12 +224,10 @@ export default class BaseLayout_CircuitSubsystem
         let nbPowerStorage  = this.getAvailablePowerStorage(circuitID);
             if(nbPowerStorage.length > 0)
             {
-                let production  = this.getProduction(circuitID);
-                let consumption = this.getConsumption(circuitID);
-
-                    if(production < consumption)
+                let statistics  = this.getStatistics(circuitID);
+                    if(statistics.production < statistics.consumption)
                     {
-                        return Math.min(100, (production - consumption) / nbPowerStorage.length);
+                        return Math.min(100, (statistics.production - statistics.consumption) / nbPowerStorage.length);
                     }
             }
 

@@ -958,13 +958,7 @@ export default class BaseLayout_Tooltip
         let storedCharge        = Building_PowerStorage.storedCharge(this.baseLayout, currentObject);
         let capacityCharge      = Building_PowerStorage.capacityCharge(this.baseLayout, currentObject);
         let percentageCharge    = storedCharge / capacityCharge * 100;
-        let chargeRate          = circuitSubsytem.getPowerStorageChargeRate(objectCircuit.circuitId);
-
-        let pad                 = function(num, size) { return ('000' + num).slice(size * -1); },
-            time                = parseFloat(Building_PowerStorage.timeUntilFull(this.baseLayout, currentObject)).toFixed(3),
-            hours               = Math.floor(time / 60 / 60),
-            minutes             = Math.floor(time / 60) % 60,
-            seconds             = Math.floor(time - minutes * 60);
+        let chargeRate          = Math.min(capacityCharge, circuitSubsytem.getPowerStorageChargeRate(objectCircuit.circuitId));
 
         // HEADER
         content.push('<div style="position: absolute;margin-top: 30px;width: 100%;text-align: center;font-size: 16px;" class="text-warning">');
@@ -984,9 +978,30 @@ export default class BaseLayout_Tooltip
         content.push('<div style="position: absolute;margin-top: 55px;margin-left: 90px; width: 100px;height: 175px;color: #FFFFFF;">');
         content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center small" style="line-height: 1;">');
 
-        content.push('<i class="fas fa-stopwatch"></i><br /><span class="small">Time until full</span><br />' + hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's<br /><br />');
+        if(percentageCharge < 100)
+        {
+            content.push('<i class="fas fa-stopwatch"></i><br /><span class="small">Time until full</span><br />');
+
+            if(chargeRate > 0)
+            {
+                let pad                 = function(num, size) { return ('000' + num).slice(size * -1); },
+                    time                = parseFloat(Building_PowerStorage.timeUntilFull(this.baseLayout, currentObject)).toFixed(3),
+                    hours               = Math.floor(time / 60 / 60),
+                    minutes             = Math.floor(time / 60) % 60,
+                    seconds             = Math.floor(time - minutes * 60);
+
+                    content.push(hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's');
+            }
+            else
+            {
+                content.push('-');
+            }
+
+            content.push('<br /><br />');
+        }
+
         content.push('<i class="fas fa-battery-full"></i><br /><span class="small">Stored Charge</span><br />' + (Math.floor(storedCharge * 10) / 10) + ' / ' + capacityCharge + ' MW<br /><br />');
-        content.push('<i class="fas fa-tachometer-alt-fast"></i><br /><span class="small">Charge Rate</span><br />' + chargeRate + ' MWh');
+        content.push('<i class="fas fa-tachometer-alt-fast"></i><br /><span class="small">Charge Rate</span><br />' + (Math.floor(chargeRate * 10) / 10) + ' MWh');
 
         content.push('</div></div>');
         content.push('</div>');
@@ -1209,7 +1224,8 @@ export default class BaseLayout_Tooltip
                 powerGenerated = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.321928);
             }
 
-        let mBaseProduction             = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
+        let mIsFullBlast        = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
+        let mBaseProduction     = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
             if(mBaseProduction !== null)
             {
                 powerGenerated = mBaseProduction;
@@ -1265,7 +1281,15 @@ export default class BaseLayout_Tooltip
 
                             let currentProgress = Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelAmount', 0) / fuelItem.energy * 100);
                                 content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
-                                content.push('<span class="small">Producing - <span class="text-warning">' + currentProgress + '%</span></span>');
+
+                                if(currentProgress === 0) // TODO: Check fuel + supplemental
+                                {
+                                    content.push('<span class="small">Idle - <span class="text-warning">' + currentProgress + '%</span></span>');
+                                }
+                                else
+                                {
+                                    content.push('<span class="small">Producing - <span class="text-warning">' + currentProgress + '%</span></span>');
+                                }
                         }
                 }
 
