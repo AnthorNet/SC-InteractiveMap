@@ -3253,8 +3253,8 @@ export default class BaseLayout
                 extraPathName.push(mOwningSpawner.pathName);
             }
 
-        let circuitSubsytem = new BaseLayout_CircuitSubsystem({baseLayout: this});
-        let objectCircuit   = circuitSubsytem.getObjectCircuit(currentObject);
+        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this});
+        let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
             if(objectCircuit !== null)
             {
                 extraPathName.push(objectCircuit.pathName);

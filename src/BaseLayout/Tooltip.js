@@ -20,6 +20,7 @@ export default class BaseLayout_Tooltip
         this.genericStorageBackgroundStyle          = 'border: 19px solid #373737;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Storage.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #373737;background-clip: padding-box;';
         this.genericFluidStorageBackgroundStyle     = 'width: 270px;height: 474px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/fluidStorageBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
         this.genericPowerStorageBackgroundStyle     = 'width: 212px;height: 450px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_PowerStorage_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
+        this.genericPowerSwicthBackgroundStyle      = 'width: 500px;height: 322px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_PowerSwitch_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
         this.genericProductionBackgroundStyle       = 'width: 500px;height: 510px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
         this.genericExtractionBackgroundStyle       = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Extractor_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
         this.genericFrackerSmasherBackgroundStyle   = 'width: 500px;height: 380px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Fracker_Smasher_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
@@ -99,6 +100,8 @@ export default class BaseLayout_Tooltip
                                             return this.setBuildingFluidStorageTooltipContent(currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C':
                                             return this.setBuildingPowerStorageTooltipContent(currentObject, buildingData);
+                                        case '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C':
+                                            return this.setBuildingPowerSwitchTooltipContent(currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C':
                                             return this.setBuildingFrackerSmasherTooltipContent(currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/FrackingExtractor/Build_FrackingExtractor.Build_FrackingExtractor_C':
@@ -397,8 +400,8 @@ export default class BaseLayout_Tooltip
 
                 if(currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
                 {
-                    let circuitSubsytem = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-                    let objectCircuit   = circuitSubsytem.getObjectCircuit(currentObject);
+                    let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+                    let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
                         content.push(this.setTooltipFooter({circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed, singleLine: true}));
                 }
 
@@ -456,8 +459,8 @@ export default class BaseLayout_Tooltip
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
                 content.push('<strong style="white-space: normal;">' + buildingData.name + '</strong>');
 
-                let circuitSubsytem = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-                let objectCircuit   = circuitSubsytem.getObjectCircuit(currentObject);
+                let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+                let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
                     content.push(this.setTooltipFooter({circuit: objectCircuit, powerUsed: powerUsed, singleLine: true}));
 
                 content.push('<ins class="small">Extractors connected:</ins>');
@@ -678,8 +681,8 @@ export default class BaseLayout_Tooltip
                     content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
                     content.push('<span style="font-size: 10px;" class="d-block mb-3">Extracting - <span class="text-warning">' + currentProgress + '%</span></span>');
 
-                let circuitSubsytem = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-                let objectCircuit   = circuitSubsytem.getObjectCircuit(currentObject);
+                let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+                let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
                     content.push(this.setTooltipFooter({circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed, singleLine: true}));
             content.push('</div></div>');
             content.push('</div>');
@@ -952,13 +955,14 @@ export default class BaseLayout_Tooltip
     {
         let content             = [];
 
-        let circuitSubsytem     = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-        let objectCircuit       = circuitSubsytem.getObjectCircuit(currentObject);
+        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+        let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
+        let circuitStatistics   = circuitSubsystem.getStatistics(objectCircuit.circuitId);
 
         let storedCharge        = Building_PowerStorage.storedCharge(this.baseLayout, currentObject);
         let capacityCharge      = Building_PowerStorage.capacityCharge(this.baseLayout, currentObject);
         let percentageCharge    = storedCharge / capacityCharge * 100;
-        let chargeRate          = Math.min(capacityCharge, circuitSubsytem.getPowerStorageChargeRate(objectCircuit.circuitId));
+        let chargeRate          = Math.min(capacityCharge, circuitStatistics.powerStorageChargeRate);
 
         // HEADER
         content.push('<div style="position: absolute;margin-top: 30px;width: 100%;text-align: center;font-size: 16px;" class="text-warning">');
@@ -966,13 +970,41 @@ export default class BaseLayout_Tooltip
         content.push('</div>');
 
         // PROGRESS
-        content.push('<div style="position: absolute;margin-top: 55px;margin-left: 22px; width: 60px;height: 175px;border:3px solid #FFFFFF;border-radius: 4px;"></div>');
-        content.push('<div style="position: absolute;margin-top: 60px;margin-left: 27px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 80) ? ((chargeRate > 0) ? '#00ff33' : '#666666') : '#313131') + ';"></div>');
-        content.push('<div style="position: absolute;margin-top: 89px;margin-left: 27px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 60) ? ((chargeRate > 0) ? '#00ff66' : '#666666') : '#313131') + ';"></div>');
-        content.push('<div style="position: absolute;margin-top: 118px;margin-left: 27px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 40) ? ((chargeRate > 0) ? '#00ff99' : '#666666') : '#313131') + ';"></div>');
-        content.push('<div style="position: absolute;margin-top: 147px;margin-left: 27px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 20) ? ((chargeRate > 0) ? '#00ffcc' : '#666666') : '#313131') + ';"></div>');
-        content.push('<div style="position: absolute;margin-top: 176px;margin-left: 27px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 0) ? ((chargeRate > 0) ? '#00ffff' : '#666666') : '#313131') + ';"></div>');
-        content.push('<div style="position: absolute;margin-top: 205px;margin-left: 24px; width: 56px;height: 24px;background: #FFFFFF;line-height: 24px;text-align: center;" class="small"><strong>' + Math.floor(percentageCharge) + '%</strong></div>');
+        content.push('<div style="position: absolute;margin-top: 55px;margin-left: 22px; width: 60px;height: 175px;border:3px solid #FFFFFF;border-radius: 4px;">');
+
+            content.push('<div style="position: absolute;margin-top: 2px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 80) ? '#666666' : '#313131') + ';"></div>');
+            if(chargeRate > 0 && percentageCharge > 80)
+            {
+                content.push('<div style="position: absolute;margin-top: 2px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: #00ff33;"' + ((percentageCharge > 80 && percentageCharge <= 100) ? ' class="blink"' : '') + '></div>');
+            }
+
+            content.push('<div style="position: absolute;margin-top: 32px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 60) ? '#666666' : '#313131') + ';"></div>');
+            if(chargeRate > 0 && percentageCharge > 60)
+            {
+                content.push('<div style="position: absolute;margin-top: 32px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: #00ff66;"' + ((percentageCharge > 60 && percentageCharge <= 80) ? ' class="blink"' : '') + '></div>');
+            }
+
+            content.push('<div style="position: absolute;margin-top: 60px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 40) ? '#666666' : '#313131') + ';"></div>');
+            if(chargeRate > 0 && percentageCharge > 40)
+            {
+                content.push('<div style="position: absolute;margin-top: 60px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: #00ff99;"' + ((percentageCharge > 40 && percentageCharge <= 60) ? ' class="blink"' : '') + '></div>');
+            }
+
+            content.push('<div style="position: absolute;margin-top: 89px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 20) ? '#666666' : '#313131') + ';"></div>');
+            if(chargeRate > 0 && percentageCharge > 20)
+            {
+                content.push('<div style="position: absolute;margin-top: 89px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: #00ffcc;"' + ((percentageCharge > 20 && percentageCharge <= 40) ? ' class="blink"' : '') + '></div>');
+            }
+
+            content.push('<div style="position: absolute;margin-top: 118px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 0) ? '#666666' : '#313131') + ';"></div>');
+            if(chargeRate > 0)
+            {
+                content.push('<div style="position: absolute;margin-top: 118px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: #00ffff;"' + ((percentageCharge > 0 && percentageCharge <= 20) ? ' class="blink"' : '') + '></div>');
+            }
+
+            content.push('<div style="position: absolute;margin-top: 147px;width: 56px;height: 24px;background: #FFFFFF;line-height: 24px;text-align: center;" class="small"><strong>' + Math.floor(percentageCharge) + '%</strong></div>');
+
+        content.push('</div>');
 
         // STATE
         content.push('<div style="position: absolute;margin-top: 55px;margin-left: 90px; width: 100px;height: 175px;color: #FFFFFF;">');
@@ -1008,6 +1040,96 @@ export default class BaseLayout_Tooltip
         content.push('<div style="position: absolute;margin-top: 240px;margin-left: 46px; width: 120px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>POWER STORAGE INFO</strong></div>');
 
         return '<div style="' + this.genericPowerStorageBackgroundStyle + '">' + content.join('') + '</div>';
+    }
+
+    setBuildingPowerSwitchTooltipContent(currentObject, buildingData)
+    {
+        let content             = [];
+        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+        let circuitA            = null;
+        let circuitB            = null;
+
+        let powerConnection1    = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection1');
+            if(powerConnection1 !== null)
+            {
+                circuitA            = circuitSubsystem.getObjectCircuit(powerConnection1);
+            }
+        let powerConnection2    = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection2');
+            if(powerConnection2 !== null)
+            {
+                circuitB            = circuitSubsystem.getObjectCircuit(powerConnection2);
+            }
+
+        // SIGN
+        let mBuildingTag        = this.baseLayout.getObjectProperty(currentObject, 'mBuildingTag');
+            if(mBuildingTag !== null && mBuildingTag !== '')
+            {
+                content.push('<div style="position: absolute;margin-top: 5px;margin-left: 15px;width: 390px;font-size: 10px;line-height: 16px;" class="text-warning">' + mBuildingTag + '</div>');
+                content.push('<div style="position: absolute;margin-top: 1px;margin-left: 450px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_OnOffSwitch_On.png?v=' + this.baseLayout.scriptVersion + '" /></div>');
+            }
+
+        // HANDLE
+        let mIsSwitchOn         = this.baseLayout.getObjectProperty(currentObject, 'mIsSwitchOn');
+            if(mIsSwitchOn !== null && mIsSwitchOn === 1)
+            {
+                content.push('<div style="position: absolute;margin-top: 220px;margin-left: 13px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_PowerSwitch_HandleOn.png?v=' + this.baseLayout.scriptVersion + '" /></div>');
+            }
+            else
+            {
+                content.push('<div style="position: absolute;margin-top: 130px;margin-left: 13px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_PowerSwitch_HandleOff.png?v=' + this.baseLayout.scriptVersion + '" /></div>');
+            }
+
+        // LIGHT / STATE
+        if(mIsSwitchOn !== null && mIsSwitchOn === 1)
+        {
+            content.push('<div style="position: absolute;margin-top: 46px;margin-left: 50px; width: 70px;height: 30px;color: #FFFFFF;">');
+            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center" style="line-height: 1;font-size: 9px;">');
+            content.push('<strong>OPERATIONAL</strong>');
+            content.push('</div></div>');
+            content.push('</div>');
+
+            content.push('<div style="position: absolute;margin-top: 35px;margin-left: 5px;" class="flash"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_IndicatorPanel_Light_Operational.png?v=' + this.baseLayout.scriptVersion + '" /></div>');
+        }
+        else
+        {
+            content.push('<div style="position: absolute;margin-top: 46px;margin-left: 50px; width: 70px;height: 30px;color: #FFFFFF;">');
+            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center" style="line-height: 1;font-size: 8px;">');
+            content.push('POWER SWITCH<br />IS OFF');
+            content.push('</div></div>');
+            content.push('</div>');
+
+            content.push('<div style="position: absolute;margin-top: 35px;margin-left: 5px;" class="flash"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_IndicatorPanel_Light_Caution.png?v=' + this.baseLayout.scriptVersion + '" /></div>');
+        }
+
+        // CIRCUIT A
+        content.push('<div style="position: absolute;margin-top: 65px;margin-left: 135px;color: #FFFFFF;transform: rotate(-90deg);-webkit-transform-origin: 50%  51%;"><strong>Circuit A</strong></div>');
+        content.push('<div style="position: absolute;margin-top: 35px;margin-left: 175px; width: 315px;height: 130px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
+        if(circuitA !== null)
+        {
+            let circuitStatisticsA = circuitSubsystem.getStatistics(circuitA.circuitId);
+                content.push(this.setCircuitStatisticsGraph(circuitStatisticsA));
+        }
+        else
+        {
+
+        }
+        content.push('</div>');
+
+        // CIRCUIT B
+        content.push('<div style="position: absolute;margin-top: 250px;margin-left: 135px;color: #FFFFFF;transform: rotate(-90deg);-webkit-transform-origin: 50%  51%;"><strong>Circuit B</strong></div>');
+        content.push('<div style="position: absolute;margin-top: 173px;margin-left: 175px; width: 315px;height: 130px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
+        if(circuitB !== null)
+        {
+            let circuitStatisticsB  = circuitSubsystem.getStatistics(circuitB.circuitId);
+                content.push(this.setCircuitStatisticsGraph(circuitStatisticsB));
+        }
+        else
+        {
+
+        }
+        content.push('</div>');
+
+        return '<div style="' + this.genericPowerSwicthBackgroundStyle + '">' + content.join('') + '</div>';
     }
 
     setBuildingProductionTooltipContent(currentObject, buildingData)
@@ -1135,8 +1257,8 @@ export default class BaseLayout_Tooltip
                         content.push('<span style="font-size: 8px;" class="d-block mb-3">Constructing - <span class="text-warning">' + currentProgress + '%</span></span>');
                     }
 
-                let circuitSubsytem = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-                let objectCircuit   = circuitSubsytem.getObjectCircuit(currentObject);
+                let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+                let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
                     content.push(this.setTooltipFooter({circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed}));
 
             content.push('</div></div>');
@@ -1263,8 +1385,8 @@ export default class BaseLayout_Tooltip
         }
 
         let content                 = [];
-        let circuitSubsytem         = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-        let objectCircuit           = circuitSubsytem.getObjectCircuit(currentObject);
+        let circuitSubsystem        = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+        let objectCircuit           = circuitSubsystem.getObjectCircuit(currentObject);
         let tooltipFooterOptions    = {circuit: objectCircuit, clockSpeed: clockSpeed, powerGenerated: powerGenerated, singleLine: true};
 
             // TOP
@@ -1284,11 +1406,11 @@ export default class BaseLayout_Tooltip
 
                                 if(currentProgress === 0) // TODO: Check fuel + supplemental
                                 {
-                                    content.push('<span class="small">Idle - <span class="text-warning">' + currentProgress + '%</span></span>');
+                                    content.push('<span class="small d-block mb-3">Idle - <span class="text-warning">' + currentProgress + '%</span></span>');
                                 }
                                 else
                                 {
-                                    content.push('<span class="small">Producing - <span class="text-warning">' + currentProgress + '%</span></span>');
+                                    content.push('<span class="small d-block mb-3">Burning Fuel - <span class="text-warning">' + currentProgress + '%</span></span>');
                                 }
                         }
                 }
@@ -1593,6 +1715,84 @@ export default class BaseLayout_Tooltip
                 content.push('<div style="position: absolute;margin-top: ' + 12 * imageRatio + 'px;margin-left: ' + 17 * imageRatio + 'px;">');
                     content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" width="' + domeImageSize + '" height="' + domeImageSize + '" />');
                 content.push('</div>');
+            content.push('</div>');
+
+        return content.join('');
+    }
+
+    setCircuitStatisticsGraph(circuitStatistics)
+    {
+        let content     = [];
+        let maxValue    = Math.max(circuitStatistics.consumption, circuitStatistics.production, circuitStatistics.capacity, circuitStatistics.maxConsumption);
+
+            content.push('<div class="d-flex" style="margin: -9px;margin-top: -11px;height: 113px;">');
+                content.push('<div class="justify-content-center align-self-center h-100 text-center" style="width: ' + ((circuitStatistics.powerStoredCapacity > 0) ? 226 : 296) + 'px;">');
+                    content.push('<div style="height: 75px;padding-top: 5px;position: relative;">');
+                        content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - (circuitStatistics.consumption / maxValue * 65)) + 'px;background-color: #e59344;" />')
+                        content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - (circuitStatistics.production / maxValue * 65)) + 'px;background-color: #717172;" />')
+                        content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - (circuitStatistics.capacity / maxValue * 65)) + 'px;background-color: #cccbcb;" />')
+                        content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - (circuitStatistics.maxConsumption / maxValue * 65)) + 'px;background-color: #62aac7;" />')
+                    content.push('</div>');
+
+                    content.push('<div style="border-top: 1px solid #666666;height: 30px;padding-top: 3px;">');
+                        content.push('<table style="line-height: 12px;font-size: 9px;" class="w-100">');
+                            content.push('<tr>');
+                                content.push('<td style="color: #e59344;">Consum. <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.consumption * 10) / 10) + 'MW</strong></td>');
+                                content.push('<td style="color: #717172;">Production <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.production * 10) / 10) + 'MW</strong></td>');
+                            content.push('</tr>');
+
+                            content.push('<tr>');
+                                content.push('<td style="color: #cccbcb;">Capacity <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.capacity * 10) / 10) + 'MW</strong></td>');
+                                content.push('<td style="color: #62aac7;">Max. Cons. <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.maxConsumption * 10) / 10) + 'MW</strong></td>');
+                            content.push('</tr>');
+                    content.push('</table>');
+                    content.push('</div>');
+                content.push('</div>');
+
+                if(circuitStatistics.powerStoredCapacity > 0)
+                {
+                    let percentageCharge = circuitStatistics.powerStored / circuitStatistics.powerStoredCapacity * 100;
+                        content.push('<div class="justify-content-center align-self-center h-100 text-center" style="width: 70px;background-color: #151515;margin-right: -1px;">');
+
+                            // PROGRESS
+                            content.push('<div style="position: absolute;margin-top: 3px;margin-left: 5px; width: 60px;height: 89px;border:2px solid #FFFFFF;border-radius: 4px;">');
+
+                                content.push('<div style="position: absolute;margin-top: 1px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 80) ? '#666666' : '#313131') + ';"></div>');
+                                if(circuitStatistics.powerStorageChargeRate > 0 && percentageCharge > 80)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 1px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ff33;"' + ((percentageCharge > 80 && percentageCharge <= 100) ? ' class="blink"' : '') + '></div>');
+                                }
+
+                                content.push('<div style="position: absolute;margin-top: 15px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 60) ? '#666666' : '#313131') + ';"></div>');
+                                if(circuitStatistics.powerStorageChargeRate > 0 && percentageCharge > 60)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 15px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ff66;"' + ((percentageCharge > 60 && percentageCharge <= 80) ? ' class="blink"' : '') + '></div>');
+                                }
+
+                                content.push('<div style="position: absolute;margin-top: 29px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 40) ? '#666666' : '#313131') + ';"></div>');
+                                if(circuitStatistics.powerStorageChargeRate > 0 && percentageCharge > 40)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 29px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ff99;"' + ((percentageCharge > 40 && percentageCharge <= 60) ? ' class="blink"' : '') + '></div>');
+                                }
+
+                                content.push('<div style="position: absolute;margin-top: 43px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 20) ? '#666666' : '#313131') + ';"></div>');
+                                if(circuitStatistics.powerStorageChargeRate > 0 && percentageCharge > 20)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 43px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ffcc;"' + ((percentageCharge > 20 && percentageCharge <= 40) ? ' class="blink"' : '') + '></div>');
+                                }
+
+                                content.push('<div style="position: absolute;margin-top: 57px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 0) ? '#666666' : '#313131') + ';"></div>');
+                                if(circuitStatistics.powerStorageChargeRate > 0)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 57px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ffff;"' + ((percentageCharge > 0 && percentageCharge <= 20) ? ' class="blink"' : '') + '></div>');
+                                }
+
+                                content.push('<div style="position: absolute;margin-top: 71px;width: 56px;height: 15px;background: #FFFFFF;line-height: 15px;text-align: center;" class="small"><strong>' + Math.floor(percentageCharge) + '%</strong></div>');
+
+                            content.push('</div>');
+
+                        content.push('</div>');
+                }
             content.push('</div>');
 
         return content.join('');

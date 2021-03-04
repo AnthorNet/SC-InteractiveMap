@@ -14,16 +14,16 @@ export default class Building_PowerStorage
 
     static timeUntilFull(baseLayout, currentObject)
     {
-        let circuitSubsytem     = new BaseLayout_CircuitSubsystem({baseLayout: baseLayout});
-        let objectCircuit       = circuitSubsytem.getObjectCircuit(currentObject);
+        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: baseLayout});
+        let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
+        let circuitStatistics   = circuitSubsystem.getStatistics(objectCircuit.circuitId);
 
-        let chargeRate          = circuitSubsytem.getPowerStorageChargeRate(objectCircuit.circuitId);
-            if(chargeRate > 0)
+            if(circuitStatistics.powerStorageChargeRate > 0)
             {
                 let storedCharge    = Building_PowerStorage.storedCharge(baseLayout, currentObject);
                 let capacityCharge  = Building_PowerStorage.capacityCharge(baseLayout, currentObject);
 
-                    return (3600 * (capacityCharge / chargeRate)) - (3600 * (capacityCharge / chargeRate) * (storedCharge / capacityCharge));
+                    return (3600 * (capacityCharge / circuitStatistics.powerStorageChargeRate)) - (3600 * (capacityCharge / circuitStatistics.powerStorageChargeRate) * (storedCharge / capacityCharge));
             }
 
         return null;

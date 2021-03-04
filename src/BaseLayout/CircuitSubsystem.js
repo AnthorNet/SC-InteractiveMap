@@ -68,15 +68,20 @@ export default class BaseLayout_CircuitSubsystem
     getStatistics(circuitID, includeFilter = null)
     {
         let statistics      = {
-                capacity            : 0,
-                production          : 0,
-                consumption         : 0,
-                maxConsumption      : 0,
+                capacity                    : 0,
+                production                  : 0,
+                consumption                 : 0,
+                maxConsumption              : 0,
 
-                powerStored         : 0,
-                powerStoredCapacity : 0,
-        };
-        let currentCircuit  = this.getCircuitByID(circuitID);
+                powerStored                 : 0,
+                powerStoredCapacity         : 0,
+                powerStoredTimeUntilFull    : 0,
+                powerStorageChargeRate      : 0,
+                powerStorageDrainRate       : 0
+            };
+
+        let currentCircuit                  = this.getCircuitByID(circuitID);
+        let availablePowerStorageForCharge  = 0;
 
             if(currentCircuit !== null)
             {
@@ -135,8 +140,16 @@ export default class BaseLayout_CircuitSubsystem
                                             // POWER STORAGE
                                             if(currentComponent.className === '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C')
                                             {
-                                                statistics.powerStored         += Building_PowerStorage.storedCharge(this.baseLayout, currentComponent);
-                                                statistics.powerStoredCapacity += Building_PowerStorage.capacityCharge(this.baseLayout, currentComponent);
+                                                let powerStored                         = Building_PowerStorage.storedCharge(this.baseLayout, currentComponent);
+                                                let powerStoredCapacity                 = Building_PowerStorage.capacityCharge(this.baseLayout, currentComponent);
+
+                                                    statistics.powerStored             += powerStored;
+                                                    statistics.powerStoredCapacity     += powerStoredCapacity;
+
+                                                if(powerStored < powerStoredCapacity)
+                                                {
+                                                    availablePowerStorageForCharge++;
+                                                }
                                             }
                                         }
                                 }
@@ -144,26 +157,23 @@ export default class BaseLayout_CircuitSubsystem
                     }
             }
 
-            console.log(statistics);
+            if(availablePowerStorageForCharge > 0)
+            {
+                if(statistics.production > statistics.consumption)
+                {
+                    statistics.powerStorageChargeRate = (statistics.production - statistics.consumption) / availablePowerStorageForCharge;
+                }
+            }
+
             return statistics;
     }
 
     /*
      * POWER SWITCH
      */
-    getLinkedCircuits(circuitID)
+    getLinkedCircuits(circuitID, includeFilter = null)
     {
-
-        return null;
-    }
-
-    /*
-     * POWER STORAGE
-     */
-    getAvailablePowerStorage(circuitID)
-    {
-        let availablePowerStorage   = [];
-        let currentCircuit          = this.getCircuitByID(circuitID);
+        let currentCircuit  = this.getCircuitByID(circuitID);
 
             if(currentCircuit !== null)
             {
@@ -172,65 +182,19 @@ export default class BaseLayout_CircuitSubsystem
                     {
                         for(let j = 0; j < mComponents.values.length; j++)
                         {
-                            if(mComponents.values[j].pathName.startsWith('Persistent_Level:PersistentLevel.Build_PowerStorageMk'))
+                            if(mComponents.values[j].pathName.startsWith('Persistent_Level:PersistentLevel.Build_PowerSwitch_C_'))
                             {
-                                let powerStoragePowerConnection = this.baseLayout.saveGameParser.getTargetObject(mComponents.values[j].pathName);
-                                    if(powerStoragePowerConnection !== null && powerStoragePowerConnection.outerPathName !== undefined)
+                                let currentComponentPowerConnection = this.baseLayout.saveGameParser.getTargetObject(mComponents.values[j].pathName);
+                                    if(currentComponentPowerConnection !== null && currentComponentPowerConnection.outerPathName !== undefined && (includeFilter === null || includeFilter.includes(currentComponentPowerConnection.outerPathName)))
                                     {
-                                        availablePowerStorage.push(powerStoragePowerConnection.outerPathName);
+                                        let currentComponent    = this.baseLayout.saveGameParser.getTargetObject(currentComponentPowerConnection.outerPathName);
+                                            console.log(currentComponent, currentComponentPowerConnection);
                                     }
                             }
                         }
                     }
-            }
+                }
 
-        return availablePowerStorage;
-    }
-
-    getPowerStorageChargeRate(circuitID)
-    {
-        let availablePowerStorage  = this.getAvailablePowerStorage(circuitID);
-            if(availablePowerStorage.length > 0)
-            {
-                let availablePowerStorageForCharge  = 0;
-                    for(let i = 0; i < availablePowerStorage.length; i++)
-                    {
-                        let powerStorage = this.baseLayout.saveGameParser.getTargetObject(availablePowerStorage[i]);
-                            if(powerStorage !== null)
-                            {
-                                let storedCharge = Building_PowerStorage.storedCharge(this.baseLayout, powerStorage);
-                                    if(storedCharge < Building_PowerStorage.capacityCharge(this.baseLayout, powerStorage));
-                                    {
-                                        availablePowerStorageForCharge++;
-                                    }
-                            }
-                    }
-
-                    if(availablePowerStorageForCharge > 0)
-                    {
-                        let statistics  = this.getStatistics(circuitID);
-                            if(statistics.production > statistics.consumption)
-                            {
-                                return (statistics.production - statistics.consumption) / availablePowerStorageForCharge;
-                            }
-                    }
-            }
-
-        return 0;
-    }
-
-    getPowerStorageDrainRate(circuitID)
-    {
-        let nbPowerStorage  = this.getAvailablePowerStorage(circuitID);
-            if(nbPowerStorage.length > 0)
-            {
-                let statistics  = this.getStatistics(circuitID);
-                    if(statistics.production < statistics.consumption)
-                    {
-                        return Math.min(100, (statistics.production - statistics.consumption) / nbPowerStorage.length);
-                    }
-            }
-
-        return 0;
+        return null;
     }
 }

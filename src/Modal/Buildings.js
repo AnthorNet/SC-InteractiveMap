@@ -217,8 +217,8 @@ export default class Modal_Buildings
                             let clockSpeed      = this.baseLayout.getClockSpeed(currentObject);
                                 htmlRow.push('<td class="text-center">' + Math.round(clockSpeed * 1000) / 10 + '%</td>');
 
-                            let circuitSubsytem = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-                            let objectCircuit   = circuitSubsytem.getObjectCircuit(currentObject);
+                            let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+                            let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
                                 if(objectCircuit !== null)
                                 {
                                     htmlRow.push('<td class="text-center">#' + objectCircuit.circuitId + '</td>');

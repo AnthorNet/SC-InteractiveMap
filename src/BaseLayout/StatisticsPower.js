@@ -65,8 +65,8 @@ export default class BaseLayout_Statistics_Power
                     let buildingData = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
                         if(buildingData !== null)
                         {
-                            let circuitSubsytem = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-                            let objectCircuit   = circuitSubsytem.getObjectCircuit(currentObject);
+                            let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+                            let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
                                 if(objectCircuit !== null && circuits[objectCircuit.circuitId] === undefined)
                                 {
                                     circuits[objectCircuit.circuitId] = {
