@@ -975,13 +975,13 @@ export default class BaseLayout_Tooltip
             content.push('<div style="position: absolute;margin-top: 2px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 80) ? '#666666' : '#313131') + ';"></div>');
             if(chargeRate > 0 && percentageCharge > 80)
             {
-                content.push('<div style="position: absolute;margin-top: 2px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: #00ff33;"' + ((percentageCharge > 80 && percentageCharge <= 100) ? ' class="blink"' : '') + '></div>');
+                content.push('<div style="position: absolute;margin-top: 2px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: #00ff33;"' + ((percentageCharge > 80 && percentageCharge < 100) ? ' class="blink"' : '') + '></div>');
             }
 
-            content.push('<div style="position: absolute;margin-top: 32px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 60) ? '#666666' : '#313131') + ';"></div>');
+            content.push('<div style="position: absolute;margin-top: 31px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 60) ? '#666666' : '#313131') + ';"></div>');
             if(chargeRate > 0 && percentageCharge > 60)
             {
-                content.push('<div style="position: absolute;margin-top: 32px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: #00ff66;"' + ((percentageCharge > 60 && percentageCharge <= 80) ? ' class="blink"' : '') + '></div>');
+                content.push('<div style="position: absolute;margin-top: 31px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: #00ff66;"' + ((percentageCharge > 60 && percentageCharge <= 80) ? ' class="blink"' : '') + '></div>');
             }
 
             content.push('<div style="position: absolute;margin-top: 60px;margin-left: 2px; width: 50px;height: 27px;border-radius: 4px;background: ' + ((percentageCharge > 40) ? '#666666' : '#313131') + ';"></div>');
@@ -1752,7 +1752,7 @@ export default class BaseLayout_Tooltip
                 if(circuitStatistics.powerStoredCapacity > 0)
                 {
                     let percentageCharge = circuitStatistics.powerStored / circuitStatistics.powerStoredCapacity * 100;
-                        content.push('<div class="justify-content-center align-self-center h-100 text-center" style="width: 70px;background-color: #151515;margin-right: -1px;">');
+                        content.push('<div class="h-100 text-center" style="width: 70px;background-color: #151515;margin-right: -1px;">');
 
                             // PROGRESS
                             content.push('<div style="position: absolute;margin-top: 3px;margin-left: 5px; width: 60px;height: 89px;border:2px solid #FFFFFF;border-radius: 4px;">');
@@ -1760,7 +1760,7 @@ export default class BaseLayout_Tooltip
                                 content.push('<div style="position: absolute;margin-top: 1px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 80) ? '#666666' : '#313131') + ';"></div>');
                                 if(circuitStatistics.powerStorageChargeRate > 0 && percentageCharge > 80)
                                 {
-                                    content.push('<div style="position: absolute;margin-top: 1px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ff33;"' + ((percentageCharge > 80 && percentageCharge <= 100) ? ' class="blink"' : '') + '></div>');
+                                    content.push('<div style="position: absolute;margin-top: 1px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ff33;"' + ((percentageCharge > 80 && percentageCharge < 100) ? ' class="blink"' : '') + '></div>');
                                 }
 
                                 content.push('<div style="position: absolute;margin-top: 15px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 60) ? '#666666' : '#313131') + ';"></div>');
@@ -1788,6 +1788,17 @@ export default class BaseLayout_Tooltip
                                 }
 
                                 content.push('<div style="position: absolute;margin-top: 71px;width: 56px;height: 15px;background: #FFFFFF;line-height: 15px;text-align: center;" class="small"><strong>' + Math.floor(percentageCharge) + '%</strong></div>');
+
+                                if(circuitStatistics.powerStoredTimeUntilFull !== null)
+                                {
+                                    let pad                 = function(num, size) { return ('000' + num).slice(size * -1); },
+                                        time                = parseFloat(circuitStatistics.powerStoredTimeUntilFull).toFixed(3),
+                                        hours               = Math.floor(time / 60 / 60),
+                                        minutes             = Math.floor(time / 60) % 60,
+                                        seconds             = Math.floor(time - minutes * 60);
+
+                                        content.push('<div style="position: absolute;margin-top: 90px;width: 56px;height: 15px;color: #FFFFFF;line-height: 15px;text-align: center;font-size: 9px;"><strong>' + hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's</strong></div>');
+                                }
 
                             content.push('</div>');
 

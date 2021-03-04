@@ -75,13 +75,16 @@ export default class BaseLayout_CircuitSubsystem
 
                 powerStored                 : 0,
                 powerStoredCapacity         : 0,
-                powerStoredTimeUntilFull    : 0,
+
                 powerStorageChargeRate      : 0,
-                powerStorageDrainRate       : 0
+                powerStoredTimeUntilFull    : null,
+
+                powerStorageDrainRate       : 0,
+                powerStoredTimeUntilEmpty   : null,
             };
 
         let currentCircuit                  = this.getCircuitByID(circuitID);
-        let availablePowerStorageForCharge  = 0;
+        let availablePowerStorageForCharge  = [];
 
             if(currentCircuit !== null)
             {
@@ -148,7 +151,7 @@ export default class BaseLayout_CircuitSubsystem
 
                                                 if(powerStored < powerStoredCapacity)
                                                 {
-                                                    availablePowerStorageForCharge++;
+                                                    availablePowerStorageForCharge.push({powerStored: powerStored, powerStoredCapacity, powerStoredCapacity});
                                                 }
                                             }
                                         }
@@ -157,13 +160,22 @@ export default class BaseLayout_CircuitSubsystem
                     }
             }
 
-            if(availablePowerStorageForCharge > 0)
+            if(availablePowerStorageForCharge.length > 0 && statistics.production > statistics.consumption)
             {
-                if(statistics.production > statistics.consumption)
+                statistics.powerStorageChargeRate   = (statistics.production - statistics.consumption) / availablePowerStorageForCharge.length;
+                statistics.powerStoredTimeUntilFull = 0;
+
+                for(let i = 0; i < availablePowerStorageForCharge.length; i++)
                 {
-                    statistics.powerStorageChargeRate = (statistics.production - statistics.consumption) / availablePowerStorageForCharge;
+                    statistics.powerStoredTimeUntilFull = Math.max(
+                        statistics.powerStoredTimeUntilFull,
+                        (3600 * (availablePowerStorageForCharge[i].powerStoredCapacity / statistics.powerStorageChargeRate)) - (3600 * (availablePowerStorageForCharge[i].powerStoredCapacity / statistics.powerStorageChargeRate) * (availablePowerStorageForCharge[i].powerStored / availablePowerStorageForCharge[i].powerStoredCapacity))
+                    );
                 }
             }
+
+            // Can't have more consumption!
+            statistics.consumption = Math.min(statistics.consumption, statistics.production);
 
             return statistics;
     }

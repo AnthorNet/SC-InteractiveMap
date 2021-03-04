@@ -2,6 +2,7 @@ import Building_SpaceElevator                   from '../Building/SpaceElevator.
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
+import Building_PowerStorage                    from '../Building/PowerStorage.js';
 
 import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
 
@@ -137,6 +138,7 @@ export default class BaseLayout_ContextMenu
                         && buildingData.category !== 'hyperTube'
                         && buildingData.category !== 'light'
                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C'
+                        && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C'
                     )
                     {
                         if(this.baseLayout.getBuildingIsOn(currentObject) === false)
@@ -160,6 +162,14 @@ export default class BaseLayout_ContextMenu
                         });
 
                         contextMenu.push({separator: true});
+                    }
+
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C')
+                    {
+                        contextMenu.push({
+                            text: 'Update "' + buildingData.name + '" stored power',
+                            callback: Building_PowerStorage.updatePowerStored
+                        });
                     }
 
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_8x4_01.Build_Wall_8x4_01_C')
