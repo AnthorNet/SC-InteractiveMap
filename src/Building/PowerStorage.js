@@ -14,7 +14,7 @@ export default class Building_PowerStorage
         return baseLayout.getObjectProperty(currentObject, 'mPowerStore', 0);
     }
 
-    static timeUntilFull(baseLayout, currentObject)
+    static timeUntilCharged(baseLayout, currentObject)
     {
         let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: baseLayout});
         let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
@@ -26,6 +26,23 @@ export default class Building_PowerStorage
                 let capacityCharge  = Building_PowerStorage.capacityCharge(baseLayout, currentObject);
 
                     return (3600 * (capacityCharge / circuitStatistics.powerStorageChargeRate)) - (3600 * (capacityCharge / circuitStatistics.powerStorageChargeRate) * (storedCharge / capacityCharge));
+            }
+
+        return null;
+    }
+
+    static timeUntilDrained(baseLayout, currentObject)
+    {
+        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: baseLayout});
+        let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
+        let circuitStatistics   = circuitSubsystem.getStatistics(objectCircuit.circuitId);
+
+            if(circuitStatistics.powerStorageDrainRate > 0)
+            {
+                let storedCharge    = Building_PowerStorage.storedCharge(baseLayout, currentObject);
+                let capacityCharge  = Building_PowerStorage.capacityCharge(baseLayout, currentObject);
+
+                    return (3600 * (capacityCharge / circuitStatistics.powerStorageDrainRate) * (storedCharge / capacityCharge));
             }
 
         return null;

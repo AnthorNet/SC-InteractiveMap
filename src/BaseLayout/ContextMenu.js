@@ -3,6 +3,7 @@ import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
+import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 
 import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
 
@@ -141,20 +142,10 @@ export default class BaseLayout_ContextMenu
                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C'
                     )
                     {
-                        if(this.baseLayout.getBuildingIsOn(currentObject) === false)
-                        {
-                            contextMenu.push({
-                                text: 'Turn "' + buildingData.name + '" <strong class="text-success">On</strong>',
-                                callback: this.baseLayout.updateObjectProductionPausedStatus.bind(this.baseLayout)
-                            });
-                        }
-                        else
-                        {
-                            contextMenu.push({
-                                text: 'Turn "' + buildingData.name + '" <strong class="text-danger">Off</strong>',
-                                callback: this.baseLayout.updateObjectProductionPausedStatus.bind(this.baseLayout)
-                            });
-                        }
+                        contextMenu.push({
+                            text: 'Turn "' + buildingData.name + '" ' + ((this.baseLayout.getBuildingIsOn(currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
+                            callback: this.baseLayout.updateObjectProductionPausedStatus.bind(this.baseLayout)
+                        });
 
                         contextMenu.push({
                             text: 'Update "' + buildingData.name + '" clock speed',
@@ -169,6 +160,19 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             text: 'Update "' + buildingData.name + '" stored power',
                             callback: Building_PowerStorage.updatePowerStored
+                        });
+                    }
+
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
+                    {
+                        contextMenu.push({
+                            text: 'Turn "' + buildingData.name + '" ' + ((Building_PowerSwitch.isOn(this.baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
+                            callback: Building_PowerSwitch.updateState
+                        });
+                        
+                        contextMenu.push({
+                            text: 'Update "' + buildingData.name + '" sign',
+                            callback: Building_PowerSwitch.updateSign
                         });
                     }
 

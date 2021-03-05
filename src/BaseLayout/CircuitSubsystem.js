@@ -1,4 +1,5 @@
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
+import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 
 export default class BaseLayout_CircuitSubsystem
 {
@@ -35,7 +36,7 @@ export default class BaseLayout_CircuitSubsystem
                                         componentsArray.push(mComponents.values[j].pathName);
                                     }
 
-                                    if(currentObject.children !== undefined)
+                                    if(currentObject.children !== undefined && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
                                     {
                                         for(let j = 0; j < currentObject.children.length; j++)
                                         {
@@ -93,8 +94,8 @@ export default class BaseLayout_CircuitSubsystem
                                             let currentSwitch    = this.baseLayout.saveGameParser.getTargetObject(currentComponentPowerConnection.outerPathName);
                                                 if(currentSwitch !== null)
                                                 {
-                                                    let mIsSwitchOn      = this.baseLayout.getObjectProperty(currentSwitch, 'mIsSwitchOn');
-                                                        if(mIsSwitchOn !== null && mIsSwitchOn === 1)
+                                                    let mIsSwitchOn      = Building_PowerSwitch.isOn(this.baseLayout, currentSwitch);
+                                                        if(mIsSwitchOn === true)
                                                         {
                                                             let usedPowerConnection         = currentComponentPowerConnection.pathName.split('.').pop();
                                                             let currentSwitchOtherCircuit   = this.getObjectCircuit(currentSwitch, ((usedPowerConnection === 'PowerConnection1') ? 'PowerConnection2' : 'PowerConnection1'));
@@ -133,10 +134,10 @@ export default class BaseLayout_CircuitSubsystem
                 powerStoredCapacity         : 0,
 
                 powerStorageChargeRate      : 0,
-                powerStoredTimeUntilFull    : null,
+                powerStoredTimeUntilCharged : null,
 
                 powerStorageDrainRate       : 0,
-                powerStoredTimeUntilEmpty   : null,
+                powerStoredTimeUntilDrained : null,
             };
 
         let components                      = this.getCircuitsComponents(circuitID);
@@ -145,90 +146,92 @@ export default class BaseLayout_CircuitSubsystem
 
             for(let i = 0; i < components.length; i++)
             {
-                let currentComponent    = this.baseLayout.saveGameParser.getTargetObject(components[i], false, true);
-                    if(currentComponent !== null)
+                let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(components[i] + '.powerInfo', false, true);
+                    if(buildingPowerInfo !== null)
                     {
-                        let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentComponent.pathName + '.powerInfo', false, true);
-                            if(buildingPowerInfo !== null)
+                        let currentComponent    = this.baseLayout.saveGameParser.getTargetObject(components[i], false, true);
+
+                        // PRODUCTION
+                        let mIsFullBlast                = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
+                        let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
+                            if(mDynamicProductionCapacity !== null)
                             {
-                                // PRODUCTION
-                                let mIsFullBlast                = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
-                                let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
-                                    if(mDynamicProductionCapacity !== null)
-                                    {
-                                        if(mIsFullBlast !== null && mIsFullBlast === 1)
-                                        {
-                                            statistics.production += mDynamicProductionCapacity;
-                                        }
-
-                                        statistics.capacity += mDynamicProductionCapacity;
-                                    }
-                                    else
-                                    {
-                                        let mBaseProduction             = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
-                                            if(mBaseProduction !== null)
-                                            {
-                                                if(mIsFullBlast !== null && mIsFullBlast === 1)
-                                                {
-                                                    statistics.production += mBaseProduction;
-                                                }
-
-                                                statistics.capacity += mBaseProduction;
-                                            }
-                                    }
-
-                                if(currentComponent.className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass.Build_GeneratorBiomass_C')
+                                if(mIsFullBlast !== null && mIsFullBlast === 1)
                                 {
-
+                                    statistics.production += mDynamicProductionCapacity;
                                 }
 
-                                // CONSUMPTION
-                                let mTargetConsumption  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption');
-                                    if(mTargetConsumption !== null)
-                                    {
-                                        statistics.consumption += mTargetConsumption;
-                                    }
-
-                                // MAX CONSUMPTION
-                                let buildingData        = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
-                                    if(buildingData !== null && buildingData.powerUsed !== undefined)
-                                    {
-                                        statistics.maxConsumption += buildingData.powerUsed;
-                                    }
-
-                                // POWER STORAGE
-                                if(currentComponent.className === '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C')
-                                {
-                                    let powerStored                         = Building_PowerStorage.storedCharge(this.baseLayout, currentComponent);
-                                    let powerStoredCapacity                 = Building_PowerStorage.capacityCharge(this.baseLayout, currentComponent);
-
-                                        statistics.powerStored             += powerStored;
-                                        statistics.powerStoredCapacity     += powerStoredCapacity;
-
-                                    if(powerStored < powerStoredCapacity)
-                                    {
-                                        availablePowerStorageForCharge.push({powerStored: powerStored, powerStoredCapacity, powerStoredCapacity});
-                                    }
-                                    if(powerStored > 0)
-                                    {
-                                        availablePowerStorageForDrain.push({powerStored: powerStored, powerStoredCapacity, powerStoredCapacity});
-                                    }
-                                }
+                                statistics.capacity += mDynamicProductionCapacity;
                             }
+
+                        if(currentComponent !== null && currentComponent.className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass.Build_GeneratorBiomass_C')
+                        {
+
+                        }
+
+                        // CONSUMPTION
+                        let mTargetConsumption  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption');
+                            if(mTargetConsumption !== null)
+                            {
+                                statistics.consumption += mTargetConsumption;
+                            }
+
+                        // MAX CONSUMPTION
+                        let buildingData        = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
+                            if(buildingData !== null && buildingData.powerUsed !== undefined)
+                            {
+                                statistics.maxConsumption += buildingData.powerUsed;
+                            }
+
+                        // POWER STORAGE
+                        if(currentComponent !== null && currentComponent.className === '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C')
+                        {
+                            let powerStored                         = Building_PowerStorage.storedCharge(this.baseLayout, currentComponent);
+                            let powerStoredCapacity                 = Building_PowerStorage.capacityCharge(this.baseLayout, currentComponent);
+
+                                statistics.powerStored             += powerStored;
+                                statistics.powerStoredCapacity     += powerStoredCapacity;
+
+                            if(powerStored < powerStoredCapacity)
+                            {
+                                availablePowerStorageForCharge.push({powerStored: powerStored, powerStoredCapacity, powerStoredCapacity});
+                            }
+                            if(powerStored > 0)
+                            {
+                                availablePowerStorageForDrain.push({powerStored: powerStored, powerStoredCapacity, powerStoredCapacity});
+                            }
+                        }
                     }
             }
 
-            if(availablePowerStorageForCharge.length > 0 && statistics.production > statistics.consumption)
+            if(availablePowerStorageForCharge.length > 0)
             {
-                statistics.powerStorageChargeRate   = (statistics.production - statistics.consumption) / availablePowerStorageForCharge.length;
-                statistics.powerStoredTimeUntilFull = 0;
-
-                for(let i = 0; i < availablePowerStorageForCharge.length; i++)
+                if(statistics.production > statistics.consumption)
                 {
-                    statistics.powerStoredTimeUntilFull = Math.max(
-                        statistics.powerStoredTimeUntilFull,
-                        (3600 * (availablePowerStorageForCharge[i].powerStoredCapacity / statistics.powerStorageChargeRate)) - (3600 * (availablePowerStorageForCharge[i].powerStoredCapacity / statistics.powerStorageChargeRate) * (availablePowerStorageForCharge[i].powerStored / availablePowerStorageForCharge[i].powerStoredCapacity))
-                    );
+                    statistics.powerStorageChargeRate       = (statistics.production - statistics.consumption) / availablePowerStorageForCharge.length;
+                    statistics.powerStoredTimeUntilCharged  = 0;
+
+                    for(let i = 0; i < availablePowerStorageForCharge.length; i++)
+                    {
+                        statistics.powerStoredTimeUntilCharged = Math.max(
+                            statistics.powerStoredTimeUntilCharged,
+                            (3600 * (availablePowerStorageForCharge[i].powerStoredCapacity / statistics.powerStorageChargeRate)) - (3600 * (availablePowerStorageForCharge[i].powerStoredCapacity / statistics.powerStorageChargeRate) * (availablePowerStorageForCharge[i].powerStored / availablePowerStorageForCharge[i].powerStoredCapacity))
+                        );
+                    }
+                }
+
+                if(statistics.production < statistics.consumption)
+                {
+                    statistics.powerStorageDrainRate        = (statistics.consumption - statistics.production) / availablePowerStorageForCharge.length;
+                    statistics.powerStoredTimeUntilDrained  = 0;
+
+                    for(let i = 0; i < availablePowerStorageForCharge.length; i++)
+                    {
+                        statistics.powerStoredTimeUntilDrained = Math.max(
+                            statistics.powerStoredTimeUntilDrained,
+                            (3600 * (availablePowerStorageForCharge[i].powerStoredCapacity / statistics.powerStorageDrainRate) * (availablePowerStorageForCharge[i].powerStored / availablePowerStorageForCharge[i].powerStoredCapacity))
+                        );
+                    }
                 }
             }
 

@@ -3241,10 +3241,26 @@ export default class BaseLayout
             }
 
         let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this});
-        let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
-            if(objectCircuit !== null)
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
             {
-                extraPathName.push(objectCircuit.pathName);
+                let objectCircuitA       = circuitSubsystem.getObjectCircuit(currentObject, 'PowerConnection1');
+                    if(objectCircuitA !== null)
+                    {
+                        extraPathName.push(objectCircuitA.pathName);
+                    }
+                let objectCircuitB       = circuitSubsystem.getObjectCircuit(currentObject, 'PowerConnection2');
+                    if(objectCircuitB !== null)
+                    {
+                        extraPathName.push(objectCircuitB.pathName);
+                    }
+            }
+            else
+            {
+                let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
+                    if(objectCircuit !== null)
+                    {
+                        extraPathName.push(objectCircuit.pathName);
+                    }
             }
 
             html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
