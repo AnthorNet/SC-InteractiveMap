@@ -219,17 +219,20 @@ export default class BaseLayout_CircuitSubsystem
                         );
                     }
                 }
+            }
 
+            if(availablePowerStorageForDrain.length > 0)
+            {
                 if(statistics.production < statistics.consumption)
                 {
-                    statistics.powerStorageDrainRate        = (statistics.consumption - statistics.production) / availablePowerStorageForCharge.length;
+                    statistics.powerStorageDrainRate        = (statistics.consumption - statistics.production) / availablePowerStorageForDrain.length;
                     statistics.powerStoredTimeUntilDrained  = 0;
 
-                    for(let i = 0; i < availablePowerStorageForCharge.length; i++)
+                    for(let i = 0; i < availablePowerStorageForDrain.length; i++)
                     {
                         statistics.powerStoredTimeUntilDrained = Math.max(
                             statistics.powerStoredTimeUntilDrained,
-                            (3600 * (availablePowerStorageForCharge[i].powerStoredCapacity / statistics.powerStorageDrainRate) * (availablePowerStorageForCharge[i].powerStored / availablePowerStorageForCharge[i].powerStoredCapacity))
+                            (3600 * (availablePowerStorageForDrain[i].powerStoredCapacity / statistics.powerStorageDrainRate) * (availablePowerStorageForDrain[i].powerStored / availablePowerStorageForDrain[i].powerStoredCapacity))
                         );
                     }
                 }

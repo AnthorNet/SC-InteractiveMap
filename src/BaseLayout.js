@@ -1271,7 +1271,6 @@ export default class BaseLayout
             }.bind(this));
 
             $('#buildingsButton').show();
-            $('#circuitsButton').show();
             $('#trainsButton').show();
             $('#statisticsButton').show();
             $('#researchButton').show();
@@ -4910,29 +4909,33 @@ export default class BaseLayout
     updateObjectProductionPausedStatus(marker)
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
+        let isProductionPaused  = this.getObjectProperty(currentObject, 'mIsProductionPaused');
 
-        for(let i = 0; i < currentObject.properties.length; i++)
-        {
-            if(currentObject.properties[i].name === 'mIsProductionPaused')
+            if(buildingData !== null && buildingData.category === 'generator' && buildingData.powerGenerated !== undefined)
             {
-                currentObject.properties.splice(i, 1);
-                return;
+                let currentObjectPowerInfo = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + '.powerInfo');
+                    if(currentObjectPowerInfo !== null)
+                    {
+                        if(isProductionPaused === null)
+                        {
+                            this.deleteObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity');
+                        }
+                        else
+                        {
+                            this.setObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity', buildingData.powerGenerated, 'FloatProperty');
+                        }
+                    }
             }
-        }
 
-        // Property didn't exists, so we're pushing it inside properties to turning the machine OFF.
-        currentObject.properties.push({
-            name: 'mIsProductionPaused',
-            type: 'BoolProperty',
-            value: 1
-        });
-        /*
-        currentObject.properties.push({
-            name: 'mTimeSinceStartStopProducing',
-            type: 'FloatProperty',
-            value: 0
-        });
-        */
+            if(isProductionPaused === null)
+            {
+                this.setObjectProperty(currentObject, 'mIsProductionPaused', 1, 'BoolProperty');
+            }
+            else
+            {
+                this.deleteObjectProperty(currentObject, 'mIsProductionPaused');
+            }
     }
 
     updateObjectClockSpeed(marker)
