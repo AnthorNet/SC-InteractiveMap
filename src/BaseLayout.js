@@ -16,7 +16,6 @@ import BaseLayout_Statistics_Player_Inventory   from './BaseLayout/StatisticsPla
 import BaseLayout_Statistics_Player_Hotbars     from './BaseLayout/StatisticsPlayerHotbars.js';
 import BaseLayout_Statistics_Production         from './BaseLayout/StatisticsProduction.js';
 import BaseLayout_Statistics_Storage            from './BaseLayout/StatisticsStorage.js';
-import BaseLayout_Statistics_Power              from './BaseLayout/StatisticsPower.js';
 import BaseLayout_Statistics_Collectables       from './BaseLayout/StatisticsCollectables.js';
 import BaseLayout_Statistics_Schematics         from './BaseLayout/StatisticsSchematics.js';
 
@@ -239,7 +238,6 @@ export default class BaseLayout
 
         $('#statisticsModalProduction').empty();
         $('#statisticsModalStorage').empty();
-        $('#statisticsModalPower').empty();
 
         $('#statisticsModalSchematics').empty();
         $('#statisticsModalAlternateRecipes').empty();
@@ -264,7 +262,6 @@ export default class BaseLayout
         $('#genericModal .modal-body').empty();
 
         $('#buildingsButton').hide();
-        $('#circuitsButton').hide();
         $('#trainsButton').hide();
         $('#statisticsButton').hide();
         $('#researchButton').hide();
@@ -1201,7 +1198,6 @@ export default class BaseLayout
             $('#statisticsModal').on('hide.bs.modal', function(){
                 $('#statisticsModalProduction').html('');
                 $('#statisticsModalStorage').html('');
-                $('#statisticsModalPower').html('');
             }.bind(this));
             $('#statisticsModal a[data-toggle="tab"]').on('shown.bs.tab', function(e){
                 let newTab = $(e.target).attr('href');
@@ -1224,15 +1220,6 @@ export default class BaseLayout
                                     baseLayout      : this
                                 });
                                 $('#statisticsModalStorage').html(statisticsStorage.parse());
-                            }
-                            break;
-                        case '#statisticsModalPower':
-                            if($('#statisticsModalPower').html() === '')
-                            {
-                                let statisticsPower = new BaseLayout_Statistics_Power({
-                                    baseLayout      : this
-                                });
-                                $('#statisticsModalPower').html(statisticsPower.parse());
                             }
                             break;
                     }
@@ -6313,7 +6300,6 @@ export default class BaseLayout
 
             inputOptions.push({group: 'Statistics', text: 'Show selected items production statistics', value: 'productionStatistics'});
             inputOptions.push({group: 'Statistics', text: 'Show selected items storage statistics', value: 'storageStatistics'});
-            inputOptions.push({group: 'Statistics', text: 'Show selected items power statistics', value: 'powerStatistics'});
 
         Modal.form({
             title       : 'You have selected ' + selectedMarkersLength + ' items',
@@ -6577,8 +6563,6 @@ export default class BaseLayout
                         return this.showSelectionProductionStatistics();
                     case 'storageStatistics':
                         return this.showSelectionStorageStatistics();
-                    case 'powerStatistics':
-                        return this.showSelectionPowerStatistics();
                 }
             }.bind(this)
         });
@@ -6718,26 +6702,6 @@ export default class BaseLayout
 
             $('#genericModal .modal-title').empty().html('Statistics - Storage');
             $('#genericModal .modal-body').empty().html(statisticsStorage.parse());
-            setTimeout(function(){
-                $('#genericModal').modal('show').modal('handleUpdate');
-            }, 250);
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    showSelectionPowerStatistics()
-    {
-        if(this.markersSelected)
-        {
-            let statisticsPower = new BaseLayout_Statistics_Power({
-                    baseLayout      : this,
-                    markersSelected : this.markersSelected
-                });
-
-            $('#genericModal .modal-title').empty().html('Statistics - Power');
-            $('#genericModal .modal-body').empty().html(statisticsPower.parse());
-
             setTimeout(function(){
                 $('#genericModal').modal('show').modal('handleUpdate');
             }, 250);

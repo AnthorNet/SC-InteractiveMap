@@ -327,8 +327,14 @@ export default class Map
                                     if(option.purity !== undefined){ currentMarkerOptions.purity = option.purity; }
                                     if(marker.core !== undefined){ currentMarkerOptions.core = marker.core; }
 
+                                    tooltip = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
+                                                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                                                        ' + tooltip.join('') + '\
+                                                    </div>\
+                                                </div>';
+
                                     let currentMarker = L.marker(this.unproject([marker.x, marker.y]), currentMarkerOptions)
-                                                         .bindTooltip(tooltip.join(''))
+                                                         .bindTooltip(tooltip)
                                                          .addTo(this.availableLayers[option.layerId]);
 
                                     if(marker.pathName !== undefined)

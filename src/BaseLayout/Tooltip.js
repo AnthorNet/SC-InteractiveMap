@@ -109,6 +109,8 @@ export default class BaseLayout_Tooltip
                                     }
                                     switch(buildingData.category)
                                     {
+                                        case 'powerPole':
+                                            return this.setPowerPoleTooltipContent(currentObject, buildingData);
                                         case 'extraction':
                                             return this.setBuildingExtractionTooltipContent(currentObject, buildingData);
                                         case 'production':
@@ -1042,22 +1044,68 @@ export default class BaseLayout_Tooltip
         return '<div style="' + this.genericPowerStorageBackgroundStyle + '">' + content.join('') + '</div>';
     }
 
+    setPowerPoleTooltipContent(currentObject, buildingData)
+    {
+        let content             = [];
+        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+        let objectCircuit       = null;
+        let powerConnection     = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection');
+            if(powerConnection !== null)
+            {
+                objectCircuit = circuitSubsystem.getObjectCircuit(powerConnection);
+            }
+
+            if(objectCircuit !== null)
+            {
+                content.push('<div style="position: absolute;width: 100%;text-align: center;">' + buildingData.name + ' (Circuit #' + objectCircuit.circuitId + ')</div>');
+            }
+            else
+            {
+                content.push('<div style="position: absolute;width: 100%;text-align: center;">' + buildingData.name + '</div>');
+            }
+
+        if(buildingData.image !== undefined)
+        {
+            content.push('<div style="position: absolute;margin-top: 25px;"><img src="' + buildingData.image + '" style="width: 128px;height: 128px;" /></div>');
+        }
+
+        content.push('<div style="position: absolute;margin-top: 25px;margin-left: 145px; width: 315px;height: 130px;color: #5b5b5b;text-shadow: none;' + this.genericUIBackgroundStyle + '">');
+        if(objectCircuit !== null)
+        {
+            let circuitStatistics = circuitSubsystem.getStatistics(objectCircuit.circuitId);
+                content.push(this.setCircuitStatisticsGraph(circuitStatistics));
+        }
+        else
+        {
+
+        }
+        content.push('</div>');
+
+        return '<div class="d-flex" style="' + this.genericTooltipBackgroundStyle + '">\
+                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                        <div style="color: #FFFFFF;line-height: 16px;font-size: 12px;width:450px;height: 155px;position: relative;" >\
+                            ' + content.join('') + '\
+                        </div>\
+                    </div>\
+                </div>';
+    }
+
     setBuildingPowerSwitchTooltipContent(currentObject, buildingData)
     {
         let content             = [];
         let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-        let circuitA            = null;
-        let circuitB            = null;
+        let objectCircuitA      = null;
+        let objectCircuitB      = null;
 
         let powerConnection1    = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection1');
             if(powerConnection1 !== null)
             {
-                circuitA            = circuitSubsystem.getObjectCircuit(powerConnection1);
+                objectCircuitA = circuitSubsystem.getObjectCircuit(powerConnection1);
             }
         let powerConnection2    = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection2');
             if(powerConnection2 !== null)
             {
-                circuitB            = circuitSubsystem.getObjectCircuit(powerConnection2);
+                objectCircuitB = circuitSubsystem.getObjectCircuit(powerConnection2);
             }
 
         // SIGN
@@ -1102,11 +1150,20 @@ export default class BaseLayout_Tooltip
         }
 
         // CIRCUIT A
-        content.push('<div style="position: absolute;margin-top: 65px;margin-left: 135px;color: #FFFFFF;transform: rotate(-90deg);-webkit-transform-origin: 50%  51%;"><strong>Circuit A</strong></div>');
+        content.push('<div style="position: absolute;margin-top: 81px;margin-left: 114px;color: #FFFFFF;transform: rotate(-90deg);-webkit-transform-origin: 50%  51%;width: 100px;line-height: 20px;text-align: right;font-size: 14px;">');
+            if(objectCircuitA !== null)
+            {
+                content.push('<strong>Circuit A (#' + objectCircuitA.circuitId + ')</strong>');
+            }
+            else
+            {
+                content.push('<strong>Circuit A</strong>');
+            }
+        content.push('</div>');
         content.push('<div style="position: absolute;margin-top: 35px;margin-left: 175px; width: 315px;height: 130px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
-        if(circuitA !== null)
+        if(objectCircuitA !== null)
         {
-            let circuitStatisticsA = circuitSubsystem.getStatistics(circuitA.circuitId);
+            let circuitStatisticsA = circuitSubsystem.getStatistics(objectCircuitA.circuitId);
                 content.push(this.setCircuitStatisticsGraph(circuitStatisticsA));
         }
         else
@@ -1116,11 +1173,20 @@ export default class BaseLayout_Tooltip
         content.push('</div>');
 
         // CIRCUIT B
-        content.push('<div style="position: absolute;margin-top: 250px;margin-left: 135px;color: #FFFFFF;transform: rotate(-90deg);-webkit-transform-origin: 50%  51%;"><strong>Circuit B</strong></div>');
+        content.push('<div style="position: absolute;margin-top: 234px;margin-left: 115px;color: #FFFFFF;transform: rotate(-90deg);-webkit-transform-origin: 50%  51%;width: 100px;line-height: 20px;font-size: 14px;">');
+            if(objectCircuitB !== null)
+            {
+                content.push('<strong>Circuit B (#' + objectCircuitB.circuitId + ')</strong>');
+            }
+            else
+            {
+                content.push('<strong>Circuit B</strong>');
+            }
+        content.push('</div>');
         content.push('<div style="position: absolute;margin-top: 173px;margin-left: 175px; width: 315px;height: 130px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
-        if(circuitB !== null)
+        if(objectCircuitB !== null)
         {
-            let circuitStatisticsB  = circuitSubsystem.getStatistics(circuitB.circuitId);
+            let circuitStatisticsB  = circuitSubsystem.getStatistics(objectCircuitB.circuitId);
                 content.push(this.setCircuitStatisticsGraph(circuitStatisticsB));
         }
         else
@@ -1496,9 +1562,9 @@ export default class BaseLayout_Tooltip
                 content.push('</div>');
 
                 // CONSUMPTION
-                let waterConsumed   = buildingData.supplementalLoadAmount * Math.pow(clockSpeed, -1/1.3);
+                let supplementalLoadConsumed   = buildingData.supplementalLoadAmount * Math.pow(clockSpeed, -1/1.3);
                     content.push('<div style="position: absolute;margin-top: 245px;margin-left: 107px;width: 96px;text-align: center;font-size: 13px;color: #5b5b5b;">');
-                    content.push('<span class="small">Consumption:</span><br /><i class="fas fa-industry-alt"></i><br /><strong>' + waterConsumed + 'm³</strong>');
+                    content.push('<span class="small">Consumption:</span><br /><i class="fas fa-industry-alt"></i><br /><strong>' + +(Math.round((supplementalLoadConsumed / 1000) * 100) / 100) + 'm³</strong>');
                     content.push('</div>');
             }
             else

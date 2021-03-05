@@ -8,7 +8,7 @@ export default class BaseLayout_CircuitSubsystem
         this.circuitSubSystem   = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.CircuitSubsystem');
     }
 
-    getObjectCircuit(currentObject)
+    getObjectCircuit(currentObject, powerConnection = 'PowerConnection')
     {
         if(this.circuitSubSystem !== null && this.circuitSubSystem.extra.circuits !== undefined)
         {
@@ -24,6 +24,10 @@ export default class BaseLayout_CircuitSubsystem
                                     for(let j = 0; j < mComponents.values.length; j++)
                                     {
                                         if(mComponents.values[j].pathName === currentObject.pathName)
+                                        {
+                                            return this.circuitSubSystem.extra.circuits[i];
+                                        }
+                                        if(mComponents.values[j].pathName === currentObject.pathName + '.' + powerConnection)
                                         {
                                             return this.circuitSubSystem.extra.circuits[i];
                                         }
@@ -65,7 +69,59 @@ export default class BaseLayout_CircuitSubsystem
         return null;
     }
 
-    getStatistics(circuitID, includeFilter = null)
+    getCircuitsComponents(circuitID, excludeCircuits = [])
+    {
+        let currentCircuit  = this.getCircuitByID(circuitID);
+        let components      = [];
+            excludeCircuits.push(circuitID);
+
+            if(currentCircuit !== null)
+            {
+                let mComponents = this.baseLayout.getObjectProperty(currentCircuit, 'mComponents');
+                    if(mComponents !== null)
+                    {
+                        for(let i = 0; i < mComponents.values.length; i++)
+                        {
+                                let currentComponentPowerConnection = this.baseLayout.saveGameParser.getTargetObject(mComponents.values[i].pathName);
+                                    if(currentComponentPowerConnection !== null && currentComponentPowerConnection.outerPathName !== undefined)
+                                    {
+                                        components.push(currentComponentPowerConnection.outerPathName);
+
+                                        // Do we need to link another circuit?
+                                        if(mComponents.values[i].pathName.startsWith('Persistent_Level:PersistentLevel.Build_PowerSwitch_C_'))
+                                        {
+                                            let currentSwitch    = this.baseLayout.saveGameParser.getTargetObject(currentComponentPowerConnection.outerPathName);
+                                                if(currentSwitch !== null)
+                                                {
+                                                    let mIsSwitchOn      = this.baseLayout.getObjectProperty(currentSwitch, 'mIsSwitchOn');
+                                                        if(mIsSwitchOn !== null && mIsSwitchOn === 1)
+                                                        {
+                                                            let usedPowerConnection         = currentComponentPowerConnection.pathName.split('.').pop();
+                                                            let currentSwitchOtherCircuit   = this.getObjectCircuit(currentSwitch, ((usedPowerConnection === 'PowerConnection1') ? 'PowerConnection2' : 'PowerConnection1'));
+
+                                                                if(currentSwitchOtherCircuit !== null)
+                                                                {
+                                                                    if(excludeCircuits.includes(currentSwitchOtherCircuit.circuitId) === false)
+                                                                    {
+                                                                        let mergeComponents = this.getCircuitsComponents(currentSwitchOtherCircuit.circuitId, excludeCircuits);
+                                                                            for(let j = 0; j < mergeComponents.length; j++)
+                                                                            {
+                                                                                components.push(mergeComponents[j]);
+                                                                            }
+                                                                    }
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                    }
+                        }
+                    }
+                }
+
+        return components;
+    }
+
+    getStatistics(circuitID)
     {
         let statistics      = {
                 capacity                    : 0,
@@ -83,80 +139,82 @@ export default class BaseLayout_CircuitSubsystem
                 powerStoredTimeUntilEmpty   : null,
             };
 
-        let currentCircuit                  = this.getCircuitByID(circuitID);
+        let components                      = this.getCircuitsComponents(circuitID);
         let availablePowerStorageForCharge  = [];
+        let availablePowerStorageForDrain   = [];
 
-            if(currentCircuit !== null)
+            for(let i = 0; i < components.length; i++)
             {
-                let mComponents = this.baseLayout.getObjectProperty(currentCircuit, 'mComponents');
-                    if(mComponents !== null)
+                let currentComponent    = this.baseLayout.saveGameParser.getTargetObject(components[i], false, true);
+                    if(currentComponent !== null)
                     {
-                        for(let j = 0; j < mComponents.values.length; j++)
-                        {
-                            let currentComponentPowerConnection = this.baseLayout.saveGameParser.getTargetObject(mComponents.values[j].pathName);
-                                if(currentComponentPowerConnection !== null && currentComponentPowerConnection.outerPathName !== undefined && (includeFilter === null || includeFilter.includes(currentComponentPowerConnection.outerPathName)))
-                                {
-                                    let currentComponent    = this.baseLayout.saveGameParser.getTargetObject(currentComponentPowerConnection.outerPathName);
-                                    let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentComponent.pathName + '.powerInfo');
-                                        if(buildingPowerInfo !== null)
+                        let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentComponent.pathName + '.powerInfo', false, true);
+                            if(buildingPowerInfo !== null)
+                            {
+                                // PRODUCTION
+                                let mIsFullBlast                = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
+                                let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
+                                    if(mDynamicProductionCapacity !== null)
+                                    {
+                                        if(mIsFullBlast !== null && mIsFullBlast === 1)
                                         {
-                                            // PRODUCTION
-                                            let mIsFullBlast                = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
-                                            let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
-                                                if(mDynamicProductionCapacity !== null)
-                                                {
-                                                    if(mIsFullBlast !== null && mIsFullBlast === 1)
-                                                    {
-                                                        statistics.production += mDynamicProductionCapacity;
-                                                    }
-
-                                                    statistics.capacity += mDynamicProductionCapacity;
-                                                }
-                                                else
-                                                {
-                                                    let mBaseProduction             = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
-                                                        if(mBaseProduction !== null)
-                                                        {
-                                                            if(mIsFullBlast !== null && mIsFullBlast === 1)
-                                                            {
-                                                                statistics.production += mBaseProduction;
-                                                            }
-
-                                                            statistics.capacity += mBaseProduction;
-                                                        }
-                                                }
-
-                                            // CONSUMPTION
-                                            let mTargetConsumption  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption');
-                                                if(mTargetConsumption !== null)
-                                                {
-                                                    statistics.consumption += mTargetConsumption;
-                                                }
-
-                                            // MAX CONSUMPTION
-                                            let buildingData        = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
-                                                if(buildingData !== null && buildingData.powerUsed !== undefined)
-                                                {
-                                                    statistics.maxConsumption += buildingData.powerUsed;
-                                                }
-
-                                            // POWER STORAGE
-                                            if(currentComponent.className === '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C')
-                                            {
-                                                let powerStored                         = Building_PowerStorage.storedCharge(this.baseLayout, currentComponent);
-                                                let powerStoredCapacity                 = Building_PowerStorage.capacityCharge(this.baseLayout, currentComponent);
-
-                                                    statistics.powerStored             += powerStored;
-                                                    statistics.powerStoredCapacity     += powerStoredCapacity;
-
-                                                if(powerStored < powerStoredCapacity)
-                                                {
-                                                    availablePowerStorageForCharge.push({powerStored: powerStored, powerStoredCapacity, powerStoredCapacity});
-                                                }
-                                            }
+                                            statistics.production += mDynamicProductionCapacity;
                                         }
+
+                                        statistics.capacity += mDynamicProductionCapacity;
+                                    }
+                                    else
+                                    {
+                                        let mBaseProduction             = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
+                                            if(mBaseProduction !== null)
+                                            {
+                                                if(mIsFullBlast !== null && mIsFullBlast === 1)
+                                                {
+                                                    statistics.production += mBaseProduction;
+                                                }
+
+                                                statistics.capacity += mBaseProduction;
+                                            }
+                                    }
+
+                                if(currentComponent.className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass.Build_GeneratorBiomass_C')
+                                {
+
                                 }
-                        }
+
+                                // CONSUMPTION
+                                let mTargetConsumption  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption');
+                                    if(mTargetConsumption !== null)
+                                    {
+                                        statistics.consumption += mTargetConsumption;
+                                    }
+
+                                // MAX CONSUMPTION
+                                let buildingData        = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
+                                    if(buildingData !== null && buildingData.powerUsed !== undefined)
+                                    {
+                                        statistics.maxConsumption += buildingData.powerUsed;
+                                    }
+
+                                // POWER STORAGE
+                                if(currentComponent.className === '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C')
+                                {
+                                    let powerStored                         = Building_PowerStorage.storedCharge(this.baseLayout, currentComponent);
+                                    let powerStoredCapacity                 = Building_PowerStorage.capacityCharge(this.baseLayout, currentComponent);
+
+                                        statistics.powerStored             += powerStored;
+                                        statistics.powerStoredCapacity     += powerStoredCapacity;
+
+                                    if(powerStored < powerStoredCapacity)
+                                    {
+                                        availablePowerStorageForCharge.push({powerStored: powerStored, powerStoredCapacity, powerStoredCapacity});
+                                    }
+                                    if(powerStored > 0)
+                                    {
+                                        availablePowerStorageForDrain.push({powerStored: powerStored, powerStoredCapacity, powerStoredCapacity});
+                                    }
+                                }
+                            }
                     }
             }
 
@@ -174,39 +232,12 @@ export default class BaseLayout_CircuitSubsystem
                 }
             }
 
-            // Can't have more consumption!
-            statistics.consumption = Math.min(statistics.consumption, statistics.production);
+            // Can't have more consumption if we don't have stored power!
+            if(statistics.powerStored === 0)
+            {
+                statistics.consumption = Math.min(statistics.consumption, statistics.production);
+            }
 
             return statistics;
-    }
-
-    /*
-     * POWER SWITCH
-     */
-    getLinkedCircuits(circuitID, includeFilter = null)
-    {
-        let currentCircuit  = this.getCircuitByID(circuitID);
-
-            if(currentCircuit !== null)
-            {
-                let mComponents = this.baseLayout.getObjectProperty(currentCircuit, 'mComponents');
-                    if(mComponents !== null)
-                    {
-                        for(let j = 0; j < mComponents.values.length; j++)
-                        {
-                            if(mComponents.values[j].pathName.startsWith('Persistent_Level:PersistentLevel.Build_PowerSwitch_C_'))
-                            {
-                                let currentComponentPowerConnection = this.baseLayout.saveGameParser.getTargetObject(mComponents.values[j].pathName);
-                                    if(currentComponentPowerConnection !== null && currentComponentPowerConnection.outerPathName !== undefined && (includeFilter === null || includeFilter.includes(currentComponentPowerConnection.outerPathName)))
-                                    {
-                                        let currentComponent    = this.baseLayout.saveGameParser.getTargetObject(currentComponentPowerConnection.outerPathName);
-                                            console.log(currentComponent, currentComponentPowerConnection);
-                                    }
-                            }
-                        }
-                    }
-                }
-
-        return null;
     }
 }
