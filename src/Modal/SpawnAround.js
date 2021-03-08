@@ -1,6 +1,6 @@
 import Modal                                    from '../Modal.js';
 
-import BaseLayout_Map_ColorSlots                from '../BaseLayout/MapColorSlots.js';
+import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
 
 import Spawn_Circle                             from '../Spawn/Circle.js';
 import Spawn_Polygon                            from '../Spawn/Polygon.js';
@@ -88,7 +88,7 @@ export default class Modal_SpawnAround
                         case 'paste':
                             let colorSlotOptions = [];
                                 colorSlotOptions.push({text: 'No foundation helper', value: 'NONE'});
-                                for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.totalColorSlots; slotIndex++)
+                                for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
                                 {
                                     colorSlotOptions.push({text: 'Slot #' + (slotIndex + 1), value: slotIndex});
                                 }

@@ -1,7 +1,7 @@
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 
-export default class BaseLayout_CircuitSubsystem
+export default class SubSystem_Circuit
 {
     constructor(options)
     {

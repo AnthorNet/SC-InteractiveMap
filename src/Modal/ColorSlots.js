@@ -1,13 +1,14 @@
 /* global iro */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
-export default class BaseLayout_Map_ColorSlots
-{
-    static get totalColorSlots(){ return 16; }
+import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
 
+export default class Modal_ColorSlots
+{
     constructor(options)
     {
         this.baseLayout         = options.baseLayout;
+        this.buildableSubSystem = new SubSystem_Buildable({baseLayout: this.baseLayout});
     }
 
     parse()
@@ -16,32 +17,31 @@ export default class BaseLayout_Map_ColorSlots
 
         let html            = [];
         let playerColors    = this.baseLayout.getColorSlots(true);
-
-        for(let slotIndex = 0; slotIndex < BaseLayout_Map_ColorSlots.totalColorSlots; slotIndex++)
-        {
-            if(slotIndex % 4 === 0)
+            for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
             {
-                if(slotIndex > 0)
+                if(slotIndex % 4 === 0)
                 {
-                    html.push('</div>');
+                    if(slotIndex > 0)
+                    {
+                        html.push('</div>');
+                    }
+                    html.push('<div class="d-flex flex-row">');
                 }
-                html.push('<div class="d-flex flex-row">');
-            }
 
-            let style = 'background: linear-gradient(135deg, rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ') 0%,'
-                      + 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ') 50%,'
-                      + 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ') 51%,'
-                      + 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ') 100%);';
+                let style = 'background: linear-gradient(135deg, rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ') 0%,'
+                          + 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ') 50%,'
+                          + 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ') 51%,'
+                          + 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ') 100%);';
 
-            if(slotIndex === 0)
-            {
-                html.push('<div class="d-flex flex-row selectColorSlot active align-items-center" style="' + style + 'position: relative;width: 96px;height: 96px;border: 3px solid #FFFFFF;border-radius: 5px;margin: 2px;" data-slot="' + slotIndex + '"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">#' + (slotIndex + 1) + '</strong></div></div>');
+                if(slotIndex === 0)
+                {
+                    html.push('<div class="d-flex flex-row selectColorSlot active align-items-center" style="' + style + 'position: relative;width: 96px;height: 96px;border: 3px solid #FFFFFF;border-radius: 5px;margin: 2px;" data-slot="' + slotIndex + '"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">#' + (slotIndex + 1) + '</strong></div></div>');
+                }
+                else
+                {
+                    html.push('<div class="d-flex flex-row selectColorSlot align-items-center" style="' + style + 'position: relative;width: 96px;height: 96px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="' + slotIndex + '"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">#' + (slotIndex + 1) + '</strong></div></div>');
+                }
             }
-            else
-            {
-                html.push('<div class="d-flex flex-row selectColorSlot align-items-center" style="' + style + 'position: relative;width: 96px;height: 96px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="' + slotIndex + '"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">#' + (slotIndex + 1) + '</strong></div></div>');
-            }
-        }
 
         html.push('</div>');
 
@@ -87,18 +87,18 @@ export default class BaseLayout_Map_ColorSlots
                                            + '</div>');
 
         let primaryColorPicker      = new iro.ColorPicker('#primaryColorPicker', {
-            width: 294,
-            display: 'inline-block',
-            color: 'rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ')',
-            borderWidth: 1,
-            borderColor: "#000000"
+            width                       : 294,
+            display                     : 'inline-block',
+            color                       : 'rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ')',
+            borderWidth                 : 1,
+            borderColor                 : "#000000"
         });
         let secondaryColorPicker    = new iro.ColorPicker('#secondaryColorPicker', {
-            width: 294,
-            display: 'inline-block',
-            color: 'rgb(' + playerColors[0].secondaryColor.r + ', ' + playerColors[0].secondaryColor.g + ', ' + playerColors[0].secondaryColor.b + ')',
-            borderWidth: 1,
-            borderColor: "#000000"
+            width                       : 294,
+            display                     : 'inline-block',
+            color                       : 'rgb(' + playerColors[0].secondaryColor.r + ', ' + playerColors[0].secondaryColor.g + ', ' + playerColors[0].secondaryColor.b + ')',
+            borderWidth                 : 1,
+            borderColor                 : "#000000"
         });
 
         primaryColorPicker.on('input:change', function(color){
@@ -127,25 +127,21 @@ export default class BaseLayout_Map_ColorSlots
             let style                       = 'linear-gradient(135deg, rgb(' + primaryColorR + ', ' + primaryColorG + ', ' + primaryColorB + ') 0%, rgb(' + primaryColorR + ', ' + primaryColorG + ', ' + primaryColorB + ') 50%, rgb(' + secondaryColorR + ', ' + secondaryColorG + ', ' + secondaryColorB + ') 51%, rgb(' + secondaryColorR + ', ' + secondaryColorG + ', ' + secondaryColorB + ') 100%)';
                 $('#statisticsModalColorSlots .selectColorSlot.active').css('background', style);
 
-            let buildableSubsystem = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.BuildableSubsystem');
-                if(buildableSubsystem !== null)
-                {
-                    let slotIndex                   = parseInt($('#statisticsModalColorSlots .selectColorSlot.active').attr('data-slot'));
+            let slotIndex                   = parseInt($('#statisticsModalColorSlots .selectColorSlot.active').attr('data-slot'));
 
-                    let mColorSlotsPrimary_Linear   = this.baseLayout.getObjectProperty(buildableSubsystem, 'mColorSlotsPrimary_Linear');
-                        if(mColorSlotsPrimary_Linear !== null)
-                        {
-                            mColorSlotsPrimary_Linear.values[slotIndex].r   = BaseLayout_Math.RGBToLinearColor(primaryColorR);
-                            mColorSlotsPrimary_Linear.values[slotIndex].g   = BaseLayout_Math.RGBToLinearColor(primaryColorG);
-                            mColorSlotsPrimary_Linear.values[slotIndex].b   = BaseLayout_Math.RGBToLinearColor(primaryColorB);
-                        }
-                    let mColorSlotsSecondary_Linear = this.baseLayout.getObjectProperty(buildableSubsystem, 'mColorSlotsSecondary_Linear');
-                        if(mColorSlotsSecondary_Linear !== null)
-                        {
-                            mColorSlotsSecondary_Linear.values[slotIndex].r = BaseLayout_Math.RGBToLinearColor(secondaryColorR);
-                            mColorSlotsSecondary_Linear.values[slotIndex].g = BaseLayout_Math.RGBToLinearColor(secondaryColorG);
-                            mColorSlotsSecondary_Linear.values[slotIndex].b = BaseLayout_Math.RGBToLinearColor(secondaryColorB);
-                        }
+            let mColorSlotsPrimary_Linear   = this.buildableSubSystem.getPrimaryColorSlots();
+                if(mColorSlotsPrimary_Linear !== null)
+                {
+                    mColorSlotsPrimary_Linear.values[slotIndex].r   = BaseLayout_Math.RGBToLinearColor(primaryColorR);
+                    mColorSlotsPrimary_Linear.values[slotIndex].g   = BaseLayout_Math.RGBToLinearColor(primaryColorG);
+                    mColorSlotsPrimary_Linear.values[slotIndex].b   = BaseLayout_Math.RGBToLinearColor(primaryColorB);
+                }
+            let mColorSlotsSecondary_Linear = this.buildableSubSystem.getSecondaryColorSlots();
+                if(mColorSlotsSecondary_Linear !== null)
+                {
+                    mColorSlotsSecondary_Linear.values[slotIndex].r = BaseLayout_Math.RGBToLinearColor(secondaryColorR);
+                    mColorSlotsSecondary_Linear.values[slotIndex].g = BaseLayout_Math.RGBToLinearColor(secondaryColorG);
+                    mColorSlotsSecondary_Linear.values[slotIndex].b = BaseLayout_Math.RGBToLinearColor(secondaryColorB);
                 }
 
             playerColors = this.baseLayout.getColorSlots(true);
@@ -180,8 +176,8 @@ export default class BaseLayout_Map_ColorSlots
         });
         $('#resetColorSlot').on('click', function(){
             let slotIndex                   = parseInt($('#statisticsModalColorSlots .selectColorSlot.active').attr('data-slot'));
-            let primaryColor                = this.baseLayout.getDefaultPrimaryColorSlot(slotIndex);
-            let secondaryColor              = this.baseLayout.getDefaultSecondaryColorSlot(slotIndex);
+            let primaryColor                = this.buildableSubSystem.getDefaultPrimaryColorSlot(slotIndex);
+            let secondaryColor              = this.buildableSubSystem.getDefaultSecondaryColorSlot(slotIndex);
 
             primaryColorPicker.color.rgb    = {r: primaryColor.r, g: primaryColor.g, b: primaryColor.b};
             secondaryColorPicker.color.rgb  = {r: secondaryColor.r, g: secondaryColor.g, b: secondaryColor.b};

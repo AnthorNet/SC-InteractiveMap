@@ -94,7 +94,7 @@ export default class BaseLayout_ContextMenu
                 case '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C':
                 case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
                     contextMenu.push({
-                        text: 'Teleport player (Debug only)',
+                        text: 'Teleport player',
                         callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
                     });
                     break;
@@ -169,7 +169,7 @@ export default class BaseLayout_ContextMenu
                             text: 'Turn "' + buildingData.name + '" ' + ((Building_PowerSwitch.isOn(this.baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
                             callback: Building_PowerSwitch.updateState
                         });
-                        
+
                         contextMenu.push({
                             text: 'Update "' + buildingData.name + '" sign',
                             callback: Building_PowerSwitch.updateSign
@@ -204,6 +204,7 @@ export default class BaseLayout_ContextMenu
                          && currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'
                          && buildingData.category !== 'vehicle'
                          && currentObject.className.search('_Steel') === -1
+                         && (buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false)
                     )
                     {
                         contextMenu.push({

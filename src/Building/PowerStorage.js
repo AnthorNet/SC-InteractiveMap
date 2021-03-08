@@ -1,6 +1,6 @@
 import Modal                                    from '../Modal.js';
 
-import BaseLayout_CircuitSubsystem              from '../BaseLayout/CircuitSubsystem.js';
+import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 
 export default class Building_PowerStorage
 {
@@ -16,9 +16,9 @@ export default class Building_PowerStorage
 
     static timeUntilCharged(baseLayout, currentObject)
     {
-        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: baseLayout});
-        let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
-        let circuitStatistics   = circuitSubsystem.getStatistics(objectCircuit.circuitId);
+        let circuitSubSystem    = new SubSystem_Circuit({baseLayout: baseLayout});
+        let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
+        let circuitStatistics   = circuitSubSystem.getStatistics(objectCircuit.circuitId);
 
             if(circuitStatistics.powerStorageChargeRate > 0)
             {
@@ -33,9 +33,9 @@ export default class Building_PowerStorage
 
     static timeUntilDrained(baseLayout, currentObject)
     {
-        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: baseLayout});
-        let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
-        let circuitStatistics   = circuitSubsystem.getStatistics(objectCircuit.circuitId);
+        let circuitSubSystem    = new SubSystem_Circuit({baseLayout: baseLayout});
+        let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
+        let circuitStatistics   = circuitSubSystem.getStatistics(objectCircuit.circuitId);
 
             if(circuitStatistics.powerStorageDrainRate > 0)
             {

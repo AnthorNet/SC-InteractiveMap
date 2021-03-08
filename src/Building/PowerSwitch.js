@@ -1,7 +1,5 @@
 import Modal                                    from '../Modal.js';
 
-import BaseLayout_CircuitSubsystem              from '../BaseLayout/CircuitSubsystem.js';
-
 export default class Building_PowerSwitch
 {
     static isOn(baseLayout, currentObject)
@@ -66,7 +64,6 @@ export default class Building_PowerSwitch
     {
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let isOn            = Building_PowerSwitch.isOn(baseLayout, currentObject);
 
             if(isOn === true)

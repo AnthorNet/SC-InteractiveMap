@@ -1,6 +1,7 @@
 /* global Intl, Sentry */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
-import BaseLayout_CircuitSubsystem              from '../BaseLayout/CircuitSubsystem.js';
+
+import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 
 import Building_FrackingSmasher                 from '../Building/FrackingSmasher.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
@@ -403,8 +404,8 @@ export default class BaseLayout_Tooltip
 
                 if(currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
                 {
-                    let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-                    let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
+                    let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
+                    let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
                         content.push(this.setTooltipFooter({circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed, singleLine: true}));
                 }
 
@@ -462,8 +463,8 @@ export default class BaseLayout_Tooltip
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
                 content.push('<strong style="white-space: normal;">' + buildingData.name + '</strong>');
 
-                let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-                let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
+                let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
+                let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
                     content.push(this.setTooltipFooter({circuit: objectCircuit, powerUsed: powerUsed, singleLine: true}));
 
                 content.push('<ins class="small">Extractors connected:</ins>');
@@ -684,8 +685,8 @@ export default class BaseLayout_Tooltip
                     content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
                     content.push('<span style="font-size: 10px;" class="d-block mb-3">Extracting - <span class="text-warning">' + currentProgress + '%</span></span>');
 
-                let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-                let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
+                let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
+                let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
                     content.push(this.setTooltipFooter({circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed, singleLine: true}));
             content.push('</div></div>');
             content.push('</div>');
@@ -958,9 +959,9 @@ export default class BaseLayout_Tooltip
     {
         let content             = [];
 
-        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-        let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
-        let circuitStatistics   = circuitSubsystem.getStatistics(objectCircuit.circuitId);
+        let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
+        let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
+        let circuitStatistics   = circuitSubSystem.getStatistics(objectCircuit.circuitId);
 
         let storedCharge        = Building_PowerStorage.storedCharge(this.baseLayout, currentObject);
         let capacityCharge      = Building_PowerStorage.capacityCharge(this.baseLayout, currentObject);
@@ -1039,7 +1040,7 @@ export default class BaseLayout_Tooltip
             {
                 content.push('<i class="fas fa-stopwatch"></i><br /><span class="small">Time until full</span><br />');
 
-                if(chargeRate >= 0 && percentageCharge < 100)
+                if(chargeRate > 0)
                 {
                     let pad                 = function(num, size) { return ('000' + num).slice(size * -1); },
                         time                = parseFloat(Building_PowerStorage.timeUntilCharged(this.baseLayout, currentObject)).toFixed(3),
@@ -1093,12 +1094,12 @@ export default class BaseLayout_Tooltip
     setPowerPoleTooltipContent(currentObject, buildingData)
     {
         let content             = [];
-        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+        let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
         let objectCircuit       = null;
         let powerConnection     = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection');
             if(powerConnection !== null)
             {
-                objectCircuit = circuitSubsystem.getObjectCircuit(powerConnection);
+                objectCircuit = circuitSubSystem.getObjectCircuit(powerConnection);
             }
 
             if(objectCircuit !== null)
@@ -1118,7 +1119,7 @@ export default class BaseLayout_Tooltip
         content.push('<div style="position: absolute;margin-top: 25px;margin-left: 145px; width: 315px;height: 130px;color: #5b5b5b;text-shadow: none;' + this.genericUIBackgroundStyle + '">');
         if(objectCircuit !== null)
         {
-            let circuitStatistics = circuitSubsystem.getStatistics(objectCircuit.circuitId);
+            let circuitStatistics = circuitSubSystem.getStatistics(objectCircuit.circuitId);
                 content.push(this.setCircuitStatisticsGraph(circuitStatistics));
         }
         else
@@ -1139,19 +1140,19 @@ export default class BaseLayout_Tooltip
     setBuildingPowerSwitchTooltipContent(currentObject)
     {
         let content             = [];
-        let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
+        let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
         let objectCircuitA      = null;
         let objectCircuitB      = null;
 
         let powerConnection1    = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection1');
             if(powerConnection1 !== null)
             {
-                objectCircuitA = circuitSubsystem.getObjectCircuit(powerConnection1);
+                objectCircuitA = circuitSubSystem.getObjectCircuit(powerConnection1);
             }
         let powerConnection2    = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection2');
             if(powerConnection2 !== null)
             {
-                objectCircuitB = circuitSubsystem.getObjectCircuit(powerConnection2);
+                objectCircuitB = circuitSubSystem.getObjectCircuit(powerConnection2);
             }
 
         // SIGN
@@ -1209,7 +1210,7 @@ export default class BaseLayout_Tooltip
         content.push('<div style="position: absolute;margin-top: 35px;margin-left: 175px; width: 315px;height: 130px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
         if(objectCircuitA !== null)
         {
-            let circuitStatisticsA = circuitSubsystem.getStatistics(objectCircuitA.circuitId);
+            let circuitStatisticsA = circuitSubSystem.getStatistics(objectCircuitA.circuitId);
                 content.push(this.setCircuitStatisticsGraph(circuitStatisticsA));
         }
         else
@@ -1232,7 +1233,7 @@ export default class BaseLayout_Tooltip
         content.push('<div style="position: absolute;margin-top: 173px;margin-left: 175px; width: 315px;height: 130px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
         if(objectCircuitB !== null)
         {
-            let circuitStatisticsB  = circuitSubsystem.getStatistics(objectCircuitB.circuitId);
+            let circuitStatisticsB  = circuitSubSystem.getStatistics(objectCircuitB.circuitId);
                 content.push(this.setCircuitStatisticsGraph(circuitStatisticsB));
         }
         else
@@ -1369,8 +1370,8 @@ export default class BaseLayout_Tooltip
                         content.push('<span style="font-size: 8px;" class="d-block mb-3">Constructing - <span class="text-warning">' + currentProgress + '%</span></span>');
                     }
 
-                let circuitSubsystem    = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-                let objectCircuit       = circuitSubsystem.getObjectCircuit(currentObject);
+                let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
+                let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
                     content.push(this.setTooltipFooter({circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed}));
 
             content.push('</div></div>');
@@ -1491,8 +1492,8 @@ export default class BaseLayout_Tooltip
         }
 
         let content                 = [];
-        let circuitSubsystem        = new BaseLayout_CircuitSubsystem({baseLayout: this.baseLayout});
-        let objectCircuit           = circuitSubsystem.getObjectCircuit(currentObject);
+        let circuitSubSystem        = new SubSystem_Circuit({baseLayout: this.baseLayout});
+        let objectCircuit           = circuitSubSystem.getObjectCircuit(currentObject);
         let tooltipFooterOptions    = {circuit: objectCircuit, clockSpeed: clockSpeed, powerGenerated: powerGenerated, singleLine: true};
 
             // TOP

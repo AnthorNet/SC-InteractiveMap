@@ -299,7 +299,7 @@ export default class SaveParser_Read
             }
 
         let wasPlacedInLevel       = this.readInt();
-            if(wasPlacedInLevel !== 0)
+            if(wasPlacedInLevel !== 0) //TODO: Switch to 1?
             {
                 actor.wasPlacedInLevel = wasPlacedInLevel;
             }
@@ -725,6 +725,7 @@ export default class SaveParser_Read
                                 case 'MessageData':
                                 case 'SplitterSortRule':
                                 case 'FeetOffset':
+                                case 'RecipeAmountStruct':
                                 case 'DroneTripInformation':
                                     let subStructProperties = [];
                                         while(true)
@@ -996,6 +997,7 @@ export default class SaveParser_Read
                     case 'DroneTripInformation':
                     case 'ResearchData':
                     case 'Hotbar':
+                    case 'LightSourceControlData':
                     case 'EnabledCheats': // MOD: Satisfactory Helper
                     case 'FICFloatAttribute': // MOD: ???
                     case 'FFCompostingTask': // MOD: ???
@@ -1130,7 +1132,6 @@ export default class SaveParser_Read
                 }
                 break;
             case 255:
-                // Broke during engine upgrade?
                 // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
                 if(this.saveParser.header.buildVersion >= 140822)
                 {
