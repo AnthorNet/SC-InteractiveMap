@@ -137,7 +137,7 @@ export default class BaseLayout_ContextMenu
                         && buildingData.category !== 'pad' && buildingData.category !== 'tower' && buildingData.category !== 'logistic' && buildingData.category !== 'dockstation' && buildingData.category !== 'vehicle'
                         && buildingData.category !== 'pipe'
                         && buildingData.category !== 'hyperTube'
-                        && buildingData.category !== 'light'
+                        && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/CeilingLight/Build_CeilingLight.Build_CeilingLight_C'
                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C'
                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C'
                     )

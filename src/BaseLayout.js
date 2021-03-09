@@ -102,7 +102,7 @@ export default class BaseLayout
 
         this.playerLayers                       = {
             playerRadioactivityLayer                : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: {}},
-            playerLightsHaloLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true},
+            playerLightsHaloLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: []},
 
             playerFoundationsLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerLightsLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
@@ -1999,6 +1999,10 @@ export default class BaseLayout
             {
                 this.playerLayers[result.layer].subLayer.removeLayer(properties.marker.options.extraMarker);
             }
+            if(properties.marker.options.haloMarker !== undefined)
+            {
+                this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(properties.marker.options.haloMarker);
+            }
             this.deleteMarkerFromElements(result.layer, properties.marker);
             this.addElementToLayer(result.layer, result.marker, refreshSliderBoundaries);
 
@@ -2625,7 +2629,7 @@ export default class BaseLayout
         let markerOptions   = {weight: weight};
 
         // Add lights halo
-        if(buildingData.category === 'light')
+        if(buildingData.category === 'light' && Building_Light.hasHalo(this, currentObject) === true)
         {
             let coordinates = this.satisfactoryMap.unproject([currentObject.transform.translation[0], currentObject.transform.translation[1]]);
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/StreetLight/Build_StreetLight.Build_StreetLight_C')
@@ -2640,8 +2644,17 @@ export default class BaseLayout
                     ));
                 }
 
+            markerOptions.haloMarker = L.haloCircle(
+                coordinates,
+                {
+                    originPathName  : currentObject.pathName,
+                    radius          : Building_Light.getHaloRadius(currentObject),
+                    gradient        : Building_Light.getHaloGradient(this, currentObject)
+                }
+            );
+
             this.setupSubLayer('playerLightsHaloLayer');
-            this.playerLayers.playerLightsHaloLayer.elements.push(L.haloCircle(coordinates, {radius: 0.1}));
+            this.playerLayers.playerLightsHaloLayer.elements.push(markerOptions.haloMarker);
         }
 
         // Add vehicle tracks
@@ -3203,6 +3216,10 @@ export default class BaseLayout
         if(marker.relatedTarget.options.extraMarker !== undefined)
         {
             this.playerLayers[layerId].subLayer.removeLayer(marker.relatedTarget.options.extraMarker);
+        }
+        if(marker.relatedTarget.options.haloMarker !== undefined)
+        {
+            this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(marker.relatedTarget.options.haloMarker);
         }
 
         // Delete current object
@@ -4176,11 +4193,27 @@ export default class BaseLayout
                     {
                         this.playerLayers[layerId].layerGroup.removeLayer(this.playerLayers[layerId].subLayer);
                         $this.removeClass(window.SCIM.outlineClass);
+
+                        if(layerId === 'playerLightsLayer')
+                        {
+                            if(this.playerLayers.playerLightsHaloLayer.layerGroup.hasLayer(this.playerLayers.playerLightsHaloLayer.subLayer))
+                            {
+                                this.playerLayers.playerLightsHaloLayer.layerGroup.removeLayer(this.playerLayers.playerLightsHaloLayer.subLayer);
+                            }
+                        }
                     }
                     else
                     {
                         this.playerLayers[layerId].layerGroup.addLayer(this.playerLayers[layerId].subLayer);
                         $this.addClass(window.SCIM.outlineClass);
+
+                        if(layerId === 'playerLightsLayer')
+                        {
+                            if($('.updatePlayerLayerState[data-id="playerLightsHaloLayer"]').hasClass(window.SCIM.outlineClass))
+                            {
+                                this.playerLayers.playerLightsHaloLayer.layerGroup.addLayer(this.playerLayers.playerLightsHaloLayer.subLayer);
+                            }
+                        }
                     }
                 }
                 else
@@ -4269,6 +4302,10 @@ export default class BaseLayout
                                                             currentSubLayer.removeLayer(vehicleTrackData);
                                                         }
                                                 }
+                                                if(currentMarker.options.haloMarker !== undefined)
+                                                {
+                                                    this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(currentMarker.options.haloMarker);
+                                                }
                                             }
                                             else
                                             {
@@ -4294,6 +4331,10 @@ export default class BaseLayout
                                                                             }
                                                                     }
                                                             }
+                                                            if(currentMarker.options.haloMarker !== undefined)
+                                                            {
+                                                                this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(currentMarker.options.haloMarker);
+                                                            }
                                                         }
                                                     }
                                                     else
@@ -4313,6 +4354,10 @@ export default class BaseLayout
                                                                             currentSubLayer.addLayer(vehicleTrackData);
                                                                         }
                                                                 }
+                                                        }
+                                                        if(currentMarker.options.haloMarker !== undefined)
+                                                        {
+                                                            this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(currentMarker.options.haloMarker);
                                                         }
                                                     }
                                                 }
@@ -4359,6 +4404,10 @@ export default class BaseLayout
                             {
                                 currentSubLayer.removeLayer(currentMarker.options.extraMarker);
                             }
+                            if(currentMarker.options.haloMarker !== undefined)
+                            {
+                                this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(currentMarker.options.haloMarker);
+                            }
                         }
                         else
                         {
@@ -4388,6 +4437,10 @@ export default class BaseLayout
                                                                     }
                                                             }
                                                     }
+                                                    if(currentMarker.options.haloMarker !== undefined)
+                                                    {
+                                                        this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(currentMarker.options.haloMarker);
+                                                    }
                                                 }
                                         }
                                 }
@@ -4408,6 +4461,10 @@ export default class BaseLayout
                                                         currentSubLayer.addLayer(vehicleTrackData);
                                                     }
                                             }
+                                    }
+                                    if(currentMarker.options.haloMarker !== undefined)
+                                    {
+                                        this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(currentMarker.options.haloMarker);
                                     }
                                 }
                             }
