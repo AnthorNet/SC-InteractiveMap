@@ -15,7 +15,7 @@ export default class Building_PowerSwitch
 
     static getSign(baseLayout, currentObject)
     {
-        let mBuildingTag        = baseLayout.getObjectProperty(currentObject, 'mBuildingTag');
+        let mBuildingTag = baseLayout.getObjectProperty(currentObject, 'mBuildingTag');
             if(mBuildingTag !== null && mBuildingTag !== '')
             {
                 return mBuildingTag;

@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C": {
-        "scale": 1,
-        "forms": [
+        "scale"     : 1,
+        "xOffset"   : 250,
+        "forms"     : [
             {
                 "points": [
                     [-70,600],[70,600],[85,590],[95,570],[160,185],[170,185],[180,130],[160,125],[160,90],[220,90],[220,70],[250,60],[230,50],

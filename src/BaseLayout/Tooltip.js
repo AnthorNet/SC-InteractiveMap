@@ -3,12 +3,15 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 
+import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_FrackingSmasher                 from '../Building/FrackingSmasher.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 
 export default class BaseLayout_Tooltip
 {
+    static get styleLabels(){ return 'height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;'; }
+
     constructor(options)
     {
         this.baseLayout                             = options.baseLayout;
@@ -108,6 +111,8 @@ export default class BaseLayout_Tooltip
                                             return this.setBuildingFrackerSmasherTooltipContent(currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/FrackingExtractor/Build_FrackingExtractor.Build_FrackingExtractor_C':
                                             return this.setBuildingFrackerExtractorTooltipContent(currentObject, buildingData);
+                                        case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
+                                            return Building_DroneStation.getTooltip(this.baseLayout, currentObject, buildingData);
                                     }
                                     switch(buildingData.category)
                                     {
@@ -427,7 +432,7 @@ export default class BaseLayout_Tooltip
 
             content.push('</div></div>');
             content.push('</div>');
-            content.push('<div style="position: absolute;margin-top: 290px;margin-left: 270px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>OUTPUT</strong></div>');
+            content.push('<div style="position: absolute;margin-top: 290px;margin-left: 270px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>OUTPUT</strong></div>');
 
             content.push('<div style="position: absolute;margin-top: 136px;margin-left: 284px; width: 32px;height: 32px;color: #FFFFFF;background: #404040;border-radius: 50%;line-height: 32px;text-align: center;font-size: 18px;box-shadow: 0 0 2px 0px rgba(0,0,0,0.75);"><i class="fas fa-arrow-alt-down"></i></div>');
 
@@ -442,7 +447,7 @@ export default class BaseLayout_Tooltip
 
             // FOOTER
             content.push(this.getOverclockingPanel(currentObject, 356, 12));
-            content.push(this.getStandByPanel(currentObject, 365, 385, 434, 387));
+            content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 365, 385, 434, 387));
         }
 
         return '<div style="' + this.genericExtractionBackgroundStyle + '">' + content.join('') + '</div>';
@@ -513,7 +518,7 @@ export default class BaseLayout_Tooltip
 
             // FOOTER
             content.push(this.getOverclockingPanel(currentObject, 256, 12));
-            content.push(this.getStandByPanel(currentObject, 265, 385, 334, 387));
+            content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 265, 385, 334, 387));
 
         return '<div style="' + this.genericFrackerSmasherBackgroundStyle + '">' + content.join('') + '</div>';
     }
@@ -704,7 +709,7 @@ export default class BaseLayout_Tooltip
 
             content.push('</div></div>');
             content.push('</div>');
-            content.push('<div style="position: absolute;margin-top: 232px;margin-left: 47px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>OUTPUT</strong></div>');
+            content.push('<div style="position: absolute;margin-top: 232px;margin-left: 47px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>OUTPUT</strong></div>');
 
             content.push('<div style="position: absolute;margin-top: 111px;margin-left: 65px; width: 24px;height: 24px;color: #FFFFFF;background: #404040;border-radius: 50%;line-height: 24px;text-align: center;font-size: 14px;box-shadow: 0 0 2px 0px rgba(0,0,0,0.75);"><i class="fas fa-arrow-alt-down"></i></div>');
 
@@ -740,7 +745,7 @@ export default class BaseLayout_Tooltip
 
         // FOOTER
         content.push(this.getOverclockingPanel(currentObject, 256, 12));
-        content.push(this.getStandByPanel(currentObject, 265, 385, 334, 387));
+        content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 265, 385, 334, 387));
 
         return '<div style="' + this.genericPumpBackground + '">' + content.join('') + '</div>';
     }
@@ -1086,7 +1091,7 @@ export default class BaseLayout_Tooltip
 
         content.push('</div></div>');
         content.push('</div>');
-        content.push('<div style="position: absolute;margin-top: 240px;margin-left: 46px; width: 120px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>POWER STORAGE INFO</strong></div>');
+        content.push('<div style="position: absolute;margin-top: 240px;margin-left: 46px; width: 120px;' + BaseLayout_Tooltip.styleLabels + '"><strong>POWER STORAGE INFO</strong></div>');
 
         return '<div style="' + this.genericPowerStorageBackgroundStyle + '">' + content.join('') + '</div>';
     }
@@ -1329,7 +1334,7 @@ export default class BaseLayout_Tooltip
 
             content.push('</div></div>');
             content.push('</div>');
-            content.push('<div style="position: absolute;margin-top: 286px;margin-left: 71px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>INPUT</strong></div>');
+            content.push('<div style="position: absolute;margin-top: 286px;margin-left: 71px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>INPUT</strong></div>');
 
             // MIDDLE
             content.push('<div style="position: absolute;margin-top: 75px;margin-left: 215px; width: 75px;height: 170px;color: #FFFFFF;">');
@@ -1422,11 +1427,11 @@ export default class BaseLayout_Tooltip
 
             content.push('</div></div>');
             content.push('</div>');
-            content.push('<div style="position: absolute;margin-top: 286px;margin-left: 370px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>OUTPUT</strong></div>');
+            content.push('<div style="position: absolute;margin-top: 286px;margin-left: 370px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>OUTPUT</strong></div>');
 
             // FOOTER
             content.push(this.getOverclockingPanel(currentObject));
-            content.push(this.getStandByPanel(currentObject));
+            content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject));
 
         let footerBackground = this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG_Constructor.png';
             switch(currentObject.className)
@@ -1579,7 +1584,7 @@ export default class BaseLayout_Tooltip
 
             content.push('</div></div>');
             content.push('</div>');
-            content.push('<div style="position: absolute;margin-top: 306px;margin-left: 367px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>INPUT</strong></div>');
+            content.push('<div style="position: absolute;margin-top: 306px;margin-left: 367px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>INPUT</strong></div>');
 
             content.push('<div style="position: absolute;margin-top: 152px;margin-left: 381px; width: 32px;height: 32px;color: #FFFFFF;background: #404040;border-radius: 50%;line-height: 32px;text-align: center;font-size: 18px;box-shadow: 0 0 2px 0px rgba(0,0,0,0.75);"><i class="fas fa-arrow-alt-down"></i></div>');
 
@@ -1620,7 +1625,7 @@ export default class BaseLayout_Tooltip
 
             // FOOTER
             content.push(this.getOverclockingPanel(currentObject, 356, 12));
-            content.push(this.getStandByPanel(currentObject, 365, 385, 434, 387));
+            content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 365, 385, 434, 387));
 
         if(buildingData.supplementalLoadType !== undefined)
         {
@@ -1746,24 +1751,6 @@ export default class BaseLayout_Tooltip
             }
 
         return '<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px; width: 322px;height: 105px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/OverclockPanelLocked.png?v=' + this.baseLayout.scriptVersion + ');"></div>';
-    }
-
-    getStandByPanel(currentObject, top = 435, left = 420, topLabel = 460, leftLabel = 355)
-    {
-        let content             = [];
-        let imageFile           = 'StandbyButtonPressed.png';
-            if(this.baseLayout.getBuildingIsOn(currentObject) === false)
-            {
-                imageFile = 'StandbyButtonUnpressed.png';
-            }
-
-            content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px;">');
-                content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/' + imageFile + '?v=' + this.baseLayout.scriptVersion + '" />');
-            content.push('</div>');
-
-            content.push('<div style="position: absolute;margin-top: ' + topLabel + 'px;margin-left: ' + leftLabel + 'px; width: 60px;height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;"><strong>STANDBY</strong></div>');
-
-        return content.join('');
     }
 
     setInventoryFuel(currentObject)
@@ -2008,5 +1995,26 @@ export default class BaseLayout_Tooltip
 
         return '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header1.join('') + '</tr><tr>' + content1.join('') + '</tr></table></div>'
              + '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header2.join('') + '</tr><tr>' + content2.join('') + '</tr></table></div>';
+    }
+
+    /*
+     * SHARED PARTS
+     */
+    static getStandByPanel(baseLayout, currentObject, top = 435, left = 420, topLabel = 460, leftLabel = 355)
+    {
+        let content             = [];
+        let imageFile           = 'StandbyButtonPressed.png';
+            if(baseLayout.getBuildingIsOn(currentObject) === false)
+            {
+                imageFile = 'StandbyButtonUnpressed.png';
+            }
+
+            content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px;">');
+                content.push('<img src="' + baseLayout.staticUrl + '/js/InteractiveMap/img/' + imageFile + '?v=' + baseLayout.scriptVersion + '" />');
+            content.push('</div>');
+
+            content.push('<div style="position: absolute;margin-top: ' + topLabel + 'px;margin-left: ' + leftLabel + 'px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>STANDBY</strong></div>');
+
+        return content.join('');
     }
 }

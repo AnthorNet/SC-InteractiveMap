@@ -105,4 +105,31 @@ export default class SubSystem_Buildable
                 b: BaseLayout_Math.linearColorToRGB(returnColor.b)
             };
     }
+
+    // mBuildableLightColorSlots
+    getDefaultLightColorSlot(index, raw = false)
+    {
+        let defaultColors    = [
+            {r: 1, g: 1, b: 1, a: 1},
+            {r: 1, g: 0, b: 0, a: 1},
+            {r: 1, g: 1, b: 0, a: 1},
+            {r: 0, g: 1, b: 0, a: 1},
+            {r: 0, g: 1, b: 1, a: 1},
+            {r: 0, g: 0, b: 1, a: 1},
+            {r: 1, g: 0, b: 1, a: 1}
+        ];
+
+        let returnColor = (defaultColors[index] !== undefined) ? defaultColors[index] : defaultColors[0];
+
+            if(raw === true)
+            {
+                return returnColor;
+            }
+
+            return {
+                r: BaseLayout_Math.linearColorToRGB(returnColor.r),
+                g: BaseLayout_Math.linearColorToRGB(returnColor.g),
+                b: BaseLayout_Math.linearColorToRGB(returnColor.b)
+            };
+    }
 }

@@ -6,6 +6,12 @@ export default class Building_PowerStorage
 {
     static capacityCharge(baseLayout, currentObject)
     {
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+            if(buildingData !== null && buildingData.powerStored !== undefined)
+            {
+                return buildingData.powerStored;
+            }
+
         return 100;
     }
 

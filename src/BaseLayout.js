@@ -27,6 +27,7 @@ import Modal_Trains                             from './Modal/Trains.js';
 
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
+import Building_Light                           from './Building/Light.js';
 
 import BaseLayout_Map_Options                   from './BaseLayout/MapOptions.js';
 
@@ -101,6 +102,7 @@ export default class BaseLayout
 
         this.playerLayers                       = {
             playerRadioactivityLayer                : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: {}},
+            playerLightsHaloLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true},
 
             playerFoundationsLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerLightsLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
@@ -559,8 +561,9 @@ export default class BaseLayout
                         ]
                     }
                     this.detailedModels['/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C'] = {
-                        "scale": 1,
-                        "forms": [ /*x+250*/
+                        "scale"     : 1,
+                        "xOffset"   : 250,
+                        "forms"     : [
                             {
                                 "points": [
                                     [-70,600],[70,600],[85,590],[95,570],[160,185],[170,185],[180,130],[160,125],[160,90],[220,90],[220,70],[250,60],[230,50],
@@ -732,11 +735,6 @@ export default class BaseLayout
                 continue;
             }
 
-            if(currentObject.className === '/Script/FactoryGame.FGWorldSettings')
-            {
-                console.log(currentObject);
-            }
-
             // Skip
             if([
                 '/Game/FactoryGame/-Shared/Blueprint/BP_BuildableSubsystem.BP_BuildableSubsystem_C',
@@ -848,6 +846,7 @@ export default class BaseLayout
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
             {
                 this.gameState.push(currentObject);
+                console.log(currentObject);
 
                 if(currentObject.extra.game.length > 0) // In case the player isn't correctly registered
                 {
@@ -857,6 +856,7 @@ export default class BaseLayout
             }
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C')
             {
+                this.gameState.push(currentObject);
                 this.gameMode.push(currentObject);
                 continue;
             }
@@ -2624,6 +2624,26 @@ export default class BaseLayout
         // Create building instance
         let markerOptions   = {weight: weight};
 
+        // Add lights halo
+        if(buildingData.category === 'light')
+        {
+            let coordinates = this.satisfactoryMap.unproject([currentObject.transform.translation[0], currentObject.transform.translation[1]]);
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/StreetLight/Build_StreetLight.Build_StreetLight_C')
+                {
+                    coordinates = this.satisfactoryMap.unproject(BaseLayout_Math.getPointRotation(
+                        [
+                            currentObject.transform.translation[0],
+                            currentObject.transform.translation[1] + 600
+                        ],
+                        currentObject.transform.translation,
+                        currentObject.transform.rotation
+                    ));
+                }
+
+            this.setupSubLayer('playerLightsHaloLayer');
+            this.playerLayers.playerLightsHaloLayer.elements.push(L.haloCircle(coordinates, {radius: 0.1}));
+        }
+
         // Add vehicle tracks
         if(buildingData.category === 'vehicle')
         {
@@ -3145,16 +3165,15 @@ export default class BaseLayout
             for(let n = this.saveGameRailVehicles.length - 1; n >= 0; n--)
             {
                 let mTrackPosition = this.getObjectProperty(this.saveGameRailVehicles[n], 'mTrackPosition');
-
-                if(mTrackPosition !== null)
-                {
-                    if(mTrackPosition.pathName === currentObject.pathName)
+                    if(mTrackPosition !== null)
                     {
-                        this.saveGameParser.deleteObject(this.saveGameRailVehicles[n].pathName);
-                        this.deleteMarkerFromElements('playerTrainsLayer', this.getMarkerFromPathName(this.saveGameRailVehicles[n].pathName, 'playerTrainsLayer'), fast);
-                        this.saveGameRailVehicles.splice(n, 1);
+                        if(mTrackPosition.pathName === currentObject.pathName)
+                        {
+                            this.saveGameParser.deleteObject(this.saveGameRailVehicles[n].pathName);
+                            this.deleteMarkerFromElements('playerTrainsLayer', this.getMarkerFromPathName(this.saveGameRailVehicles[n].pathName, 'playerTrainsLayer'), fast);
+                            this.saveGameRailVehicles.splice(n, 1);
+                        }
                     }
-                }
             }
         }
 
@@ -3960,6 +3979,8 @@ export default class BaseLayout
                 options.smoothFactor    = this.useSmoothFactor;
             let currentModel            = this.detailedModels[currentObject.className];
             let currentModelScale       = currentModel.scale;
+            let currentModelXOffset     = (currentModel.xOffset !== undefined) ? currentModel.xOffset : 0;
+            let currentModelYOffset     = (currentModel.yOffset !== undefined) ? currentModel.yOffset : 0;
 
             if(currentModel.formsLength === undefined)
             {
@@ -3981,8 +4002,8 @@ export default class BaseLayout
                     currentPoints.push(this.satisfactoryMap.unproject(
                         BaseLayout_Math.getPointRotation(
                             [
-                                center[0] + (currentModel.forms[i].points[j][0] * currentModelScale),
-                                center[1] + (currentModel.forms[i].points[j][1] * currentModelScale)
+                                center[0] + ((currentModel.forms[i].points[j][0] + currentModelXOffset) * currentModelScale),
+                                center[1] + ((currentModel.forms[i].points[j][1] + currentModelYOffset) * currentModelScale)
                             ],
                             center,
                             currentObject.transform.rotation
@@ -4013,8 +4034,8 @@ export default class BaseLayout
                             currentHole.push(this.satisfactoryMap.unproject(
                                 BaseLayout_Math.getPointRotation(
                                     [
-                                        center[0] + (currentModel.forms[i].holes[j][k][0] * currentModelScale),
-                                        center[1] + (currentModel.forms[i].holes[j][k][1] * currentModelScale)
+                                        center[0] + ((currentModel.forms[i].holes[j][k][0] + currentModelXOffset) * currentModelScale),
+                                        center[1] + ((currentModel.forms[i].holes[j][k][1] + currentModelYOffset) * currentModelScale)
                                     ],
                                     center,
                                     currentObject.transform.rotation
@@ -4095,21 +4116,20 @@ export default class BaseLayout
 
         if(this.playerLayers[layerId].subLayer === null)
         {
-            if(layerId === 'playerRadioactivityLayer')
+            switch(layerId)
             {
-                this.playerLayers[layerId].subLayer = new HeatmapOverlay({
-                    maxOpacity: .8,
-                    scaleRadius: true,
-                    useLocalExtrema: false,
-                    //gradient: { 0.33: "rgb(0,255,0)", 0.90: "yellow", 1.0: "rgb(255,0,0)"}
-                    gradient: { 0.40: "rgb(0,0,255)", 0.80: "rgb(0,255,0)", 0.90: "yellow", 1.0: "rgb(255,0,0)"}
-                });
+                case 'playerRadioactivityLayer':
+                    this.playerLayers[layerId].subLayer = new HeatmapOverlay({
+                        maxOpacity: .8,
+                        scaleRadius: true,
+                        useLocalExtrema: false,
+                        //gradient: { 0.33: "rgb(0,255,0)", 0.90: "yellow", 1.0: "rgb(255,0,0)"}
+                        gradient: { 0.40: "rgb(0,0,255)", 0.80: "rgb(0,255,0)", 0.90: "yellow", 1.0: "rgb(255,0,0)"}
+                    });
+                    break;
+                default:
+                    this.playerLayers[layerId].subLayer = L.layerGroup();
             }
-            else
-            {
-                this.playerLayers[layerId].subLayer = L.layerGroup();
-            }
-
 
             if(show === true)
             {
@@ -4406,25 +4426,25 @@ export default class BaseLayout
                     for(let pathName in allElements)
                     {
                         let currentElement = allElements[pathName];
-                        if(currentElement.altitude >= (minAltitude - (currentElement.maxDistance * 100)) && currentElement.altitude <= (maxAltitude + (currentElement.maxDistance * 100)))
-                        {
-                            //TODO: Update intensity based on altitude...
-                            /*
-                            if(currentElement.altitude < minAltitude)
+                            if(currentElement.altitude >= (minAltitude - (currentElement.maxDistance * 100)) && currentElement.altitude <= (maxAltitude + (currentElement.maxDistance * 100)))
                             {
-                                let ratio = Math.abs(currentElement.altitude - minAltitude) / (Math.abs(currentElement.altitude) + (currentElement.maxDistance * 100));
-                                console.log(ratio);
+                                //TODO: Update intensity based on altitude...
+                                /*
+                                if(currentElement.altitude < minAltitude)
+                                {
+                                    let ratio = Math.abs(currentElement.altitude - minAltitude) / (Math.abs(currentElement.altitude) + (currentElement.maxDistance * 100));
+                                    console.log(ratio);
 
-                                //currentElement.radius *= ratio;
-                            }
-                            if(currentElement.altitude > maxAltitude)
-                            {
-                                console.log('MAX', minAltitude, currentElement);
-                            }
-                            */
+                                    //currentElement.radius *= ratio;
+                                }
+                                if(currentElement.altitude > maxAltitude)
+                                {
+                                    console.log('MAX', minAltitude, currentElement);
+                                }
+                                */
 
-                            radioActiveElements[pathName] = currentElement;
-                        }
+                                radioActiveElements[pathName] = currentElement;
+                            }
                     }
 
                     this.playerLayers.playerRadioactivityLayer.subLayer.setData({data: radioActiveElements});
