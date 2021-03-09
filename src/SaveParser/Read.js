@@ -168,12 +168,18 @@ export default class SaveParser_Read
                 switch(objectType)
                 {
                     case 0:
-                        this.saveParser.objects[i] = this.readObjectV5();
+                        this.saveParser.objects[i]                                          = this.readObjectV5();
                         this.saveParser.objectsHashMap[this.saveParser.objects[i].pathName] = i;
                         break;
                     case 1:
-                        this.saveParser.objects[i] = this.readActorV5();
+                        this.saveParser.objects[i]                                          = this.readActorV5();
                         this.saveParser.objectsHashMap[this.saveParser.objects[i].pathName] = i;
+
+                        if(this.saveParser.objects[i].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                        {
+                            this.saveParser.gameStatePathName = this.saveParser.objects[i].pathName;
+                        }
+
                         break;
                     default:
                         console.log('Unknown object type', objectType);

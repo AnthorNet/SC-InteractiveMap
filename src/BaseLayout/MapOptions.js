@@ -106,6 +106,7 @@ export default class BaseLayout_Map_Options
 
         let html                            = [];
         let header                          = this.baseLayout.saveGameParser.getHeader();
+        let gameState                       = this.baseLayout.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
 
         let unlockSubSystem                 = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
         let timeSubSystem                   = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.TimeSubsystem");
@@ -117,8 +118,8 @@ export default class BaseLayout_Map_Options
         let mDaySeconds                     = 43200;
         let mNumberOfPassedDays             = 0;
 
-        let mCheatNoCost                    = this.baseLayout.getObjectProperty(this.baseLayout.gameState[0], 'mCheatNoCost', 0);
-        let mCheatNoPower                   = this.baseLayout.getObjectProperty(this.baseLayout.gameState[0], 'mCheatNoPower', 0);
+        let mCheatNoCost                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoCost', 0);
+        let mCheatNoPower                   = this.baseLayout.getObjectProperty(gameState, 'mCheatNoPower', 0);
 
         if(unlockSubSystem !== null)
         {
@@ -284,31 +285,27 @@ export default class BaseLayout_Map_Options
                 }
             }
 
-            for(let i = 0; i < this.baseLayout.gameState.length; i++)
+            if(isValidNewSessionName === true)
             {
-                if(isValidNewSessionName === true)
-                {
-                    this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mReplicatedSessionName', newSessionName, 'StrProperty');
-                }
+                this.baseLayout.setObjectProperty(gameState, 'mReplicatedSessionName', newSessionName, 'StrProperty');
+            }
 
-                if($('#inputCheatNoCost').is(':checked') === true)
-                {
-                    this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mCheatNoCost', 1, 'BoolProperty');
-                }
-                else
-                {
-                    this.baseLayout.deleteObjectProperty(this.baseLayout.gameState[i], 'mCheatNoCost');
-                }
+            if($('#inputCheatNoCost').is(':checked') === true)
+            {
+                this.baseLayout.setObjectProperty(gameState, 'mCheatNoCost', 1, 'BoolProperty');
+            }
+            else
+            {
+                this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoCost');
+            }
 
-                if($('#inputCheatNoPower').is(':checked') === true)
-                {
-                    this.baseLayout.setObjectProperty(this.baseLayout.gameState[i], 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
-                }
-                else
-                {
-                    this.baseLayout.deleteObjectProperty(this.baseLayout.gameState[i], 'mCheatNoPower');
-                }
-
+            if($('#inputCheatNoPower').is(':checked') === true)
+            {
+                this.baseLayout.setObjectProperty(gameState, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+            }
+            else
+            {
+                this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoPower');
             }
 
             this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');

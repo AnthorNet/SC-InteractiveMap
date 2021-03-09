@@ -36,7 +36,7 @@ export default class SubSystem_Circuit
                                         componentsArray.push(mComponents.values[j].pathName);
                                     }
 
-                                    if(currentObject.children !== undefined && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
+                                    if(currentObject.children !== undefined && powerConnection === 'PowerConnection')
                                     {
                                         for(let j = 0; j < currentObject.children.length; j++)
                                         {

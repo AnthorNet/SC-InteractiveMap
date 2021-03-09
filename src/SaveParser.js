@@ -22,6 +22,8 @@ export default class SaveParser
         this.cleanPipesNetworks     = {};
         this.autoPurgeDeleteObjects = true;
 
+        this.gameStatePathName      = null;
+
         // Holds some default values to reduce memory usage...
         this.defaultValues          = {
             rotation                    : [0, 0, 0, 1],
@@ -100,12 +102,17 @@ export default class SaveParser
         this.objectsHashMap[currentObject.pathName] = this.countObjects - 1;
     }
 
-
     getTargetObject(pathName, forceRefreshMap = false, skipRefreshMap = false)
     {
         if(forceRefreshMap === true)
         {
             this.refreshHashmap();
+        }
+
+        // Bypass game state for easy retrievale
+        if(pathName === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C' && this.gameStatePathName !== null)
+        {
+            pathName = this.gameStatePathName;
         }
 
         if(this.objectsHashMap[pathName] !== undefined && this.objects[this.objectsHashMap[pathName]] !== undefined)

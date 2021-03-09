@@ -1,8 +1,11 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import Building_Light                           from '../Building/Light.js';
+
 export default class SubSystem_Buildable
 {
     static get totalColorSlots(){ return 16; }
+    static get totalLightColorSlots(){ return 7; }
 
     constructor(options)
     {
@@ -10,17 +13,132 @@ export default class SubSystem_Buildable
         this.buildableSubSystem     = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.BuildableSubsystem');
     }
 
+    getObjectPrimaryColorSlot(currentObject, raw = false)
+    {
+        let colorSlot = null;
+
+            if(currentObject !== null)
+            {
+                colorSlot = this.baseLayout.getObjectProperty(currentObject, 'mColorSlot');
+            }
+
+            if(raw === true)
+            {
+                return colorSlot;
+            }
+
+            if(colorSlot !== null)
+            {
+                return parseInt(colorSlot.value);
+            }
+
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C')
+        {
+            return 17;
+        }
+
+        return 0;
+    }
+
+    getObjectPrimaryColor(currentObject)
+    {
+        let colorSlot                   = this.getObjectPrimaryColorSlot(currentObject);
+        let mColorSlotsPrimary_Linear   = this.getPrimaryColorSlots();
+            if(mColorSlotsPrimary_Linear !== null && mColorSlotsPrimary_Linear.values[colorSlot] !== undefined)
+            {
+                return {
+                    r: BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[colorSlot].r),
+                    g: BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[colorSlot].g),
+                    b: BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[colorSlot].b)
+                };
+            }
+
+        return this.getDefaultPrimaryColorSlot(colorSlot);
+    }
+
+    getPlayerColorSlots()
+    {
+        let totalColorSlot                  = SubSystem_Buildable.totalColorSlots;
+        let playerColors                    = [];
+        let mColorSlotsPrimary_Linear       = this.getPrimaryColorSlots();
+        let mColorSlotsSecondary_Linear     = this.getSecondaryColorSlots();
+
+            if(mColorSlotsPrimary_Linear === null)
+            {
+                mColorSlotsPrimary_Linear = {
+                    name                    : "mColorSlotsPrimary_Linear",
+                    structureName           : "mColorSlotsPrimary_Linear",
+                    structureSubType        : "LinearColor",
+                    structureType           : "StructProperty",
+                    type                    : "ArrayProperty",
+                    value                   : {type: "StructProperty", values: []}
+                };
+
+                for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
+                {
+                    mColorSlotsPrimary_Linear.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
+                }
+
+                this.buildableSubSystem.properties.push(mColorSlotsPrimary_Linear);
+                mColorSlotsPrimary_Linear = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsPrimary_Linear');
+            }
+
+            if(mColorSlotsSecondary_Linear === null)
+            {
+                mColorSlotsSecondary_Linear = {
+                    name                    : "mColorSlotsSecondary_Linear",
+                    structureName           : "mColorSlotsSecondary_Linear",
+                    structureSubType        : "LinearColor",
+                    structureType           : "StructProperty",
+                    type                    : "ArrayProperty",
+                    value                   : {type: "StructProperty", values: []}
+                };
+
+                for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
+                {
+                    mColorSlotsSecondary_Linear.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
+                }
+
+                this.buildableSubSystem.properties.push(mColorSlotsSecondary_Linear);
+                mColorSlotsSecondary_Linear = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsSecondary_Linear');
+            }
+
+        for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
+        {
+            playerColors.push({
+                primaryColor    : this.getDefaultPrimaryColorSlot(slotIndex),
+                secondaryColor  : this.getDefaultSecondaryColorSlot(slotIndex)
+            });
+            playerColors[slotIndex].primaryColor.a      = 1;
+            playerColors[slotIndex].secondaryColor.a    = 1;
+
+            if(mColorSlotsPrimary_Linear !== null)
+            {
+                playerColors[slotIndex].primaryColor    = {
+                    r : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].r),
+                    g : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].g),
+                    b : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].b),
+                    a : BaseLayout_Math.linearColorToRGB(mColorSlotsPrimary_Linear.values[slotIndex].a)
+                };
+            }
+            if(mColorSlotsSecondary_Linear !== null)
+            {
+                playerColors[slotIndex].secondaryColor  = {
+                    r: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].r),
+                    g: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].g),
+                    b: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].b),
+                    a: BaseLayout_Math.linearColorToRGB(mColorSlotsSecondary_Linear.values[slotIndex].a)
+                };
+            }
+        }
+
+        return playerColors;
+    }
+
     getPrimaryColorSlots()
     {
         return this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsPrimary_Linear');
     }
-
-    getSecondaryColorSlots()
-    {
-        return this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsSecondary_Linear');
-    }
-
-
 
     getDefaultPrimaryColorSlot(index, raw = false)
     {
@@ -62,6 +180,11 @@ export default class SubSystem_Buildable
                 g: BaseLayout_Math.linearColorToRGB(returnColor.g),
                 b: BaseLayout_Math.linearColorToRGB(returnColor.b)
             };
+    }
+
+    getSecondaryColorSlots()
+    {
+        return this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsSecondary_Linear');
     }
 
     getDefaultSecondaryColorSlot(index, raw = false)
@@ -106,7 +229,37 @@ export default class SubSystem_Buildable
             };
     }
 
-    // mBuildableLightColorSlots
+    /**
+     * LIGHTS COLOR
+     */
+    getObjectLightColor(currentObject)
+    {
+        let colorSlot                   = Building_Light.getColorSlotIndex(this.baseLayout, currentObject);
+        let mBuildableLightColorSlots   = this.getLightColorSlots();
+            if(mBuildableLightColorSlots !== null && mBuildableLightColorSlots.values[colorSlot] !== undefined)
+            {
+                return {
+                    r: BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[colorSlot].r),
+                    g: BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[colorSlot].g),
+                    b: BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[colorSlot].b)
+                };
+            }
+
+        return this.getDefaultLightColorSlot(colorSlot);
+    }
+
+    getLightColorSlots()
+    {
+        // CSS has used the gameState mananger instead of the buidable subsystem but it's cleaner to keep all color in the same place...
+        let gameState = this.baseLayout.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
+            if(gameState !== null)
+            {
+                return this.baseLayout.getObjectProperty(gameState, 'mBuildableLightColorSlots');
+            }
+
+        return null;
+    }
+
     getDefaultLightColorSlot(index, raw = false)
     {
         let defaultColors    = [

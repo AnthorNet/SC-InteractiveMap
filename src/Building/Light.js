@@ -18,7 +18,7 @@ export default class Building_Light
                     value   : { type: "LightSourceControlData", values: [] }
                 });
 
-                mLightControlData = baseLayout.getObjectProperty(currentObject, 'mLightControlData')
+                mLightControlData = baseLayout.getObjectProperty(currentObject, 'mLightControlData');
             }
 
             return mLightControlData;
@@ -27,11 +27,14 @@ export default class Building_Light
     static getColorSlotIndex(baseLayout, currentObject)
     {
         let mLightControlData = Building_Light.getControlData(baseLayout, currentObject);
-            for(let i = 0; i < mLightControlData.values.length; i++)
+            if(mLightControlData !== null)
             {
-                if(mLightControlData.values[i].name === 'ColorSlotIndex')
+                for(let i = 0; i < mLightControlData.values.length; i++)
                 {
-                    return mLightControlData.values[i].value;
+                    if(mLightControlData.values[i].name === 'ColorSlotIndex')
+                    {
+                        return mLightControlData.values[i].value;
+                    }
                 }
             }
 
@@ -42,11 +45,14 @@ export default class Building_Light
     static getIntensity(baseLayout, currentObject)
     {
         let mLightControlData = Building_Light.getControlData(baseLayout, currentObject);
-            for(let i = 0; i < mLightControlData.values.length; i++)
+            if(mLightControlData !== null)
             {
-                if(mLightControlData.values[i].name === 'Intensity')
+                for(let i = 0; i < mLightControlData.values.length; i++)
                 {
-                    return Math.round(mLightControlData.values[i].value * 5);
+                    if(mLightControlData.values[i].name === 'Intensity')
+                    {
+                        return Math.round(mLightControlData.values[i].value * 5);
+                    }
                 }
             }
 
@@ -56,11 +62,14 @@ export default class Building_Light
     static getIsTimeOfDayAware(baseLayout, currentObject)
     {
         let mLightControlData = Building_Light.getControlData(baseLayout, currentObject);
-            for(let i = 0; i < mLightControlData.values.length; i++)
+            if(mLightControlData !== null)
             {
-                if(mLightControlData.values[i].name === 'IsTimeOfDayAware' && mLightControlData.values[i].value === 1)
+                for(let i = 0; i < mLightControlData.values.length; i++)
                 {
-                    return true;
+                    if(mLightControlData.values[i].name === 'IsTimeOfDayAware' && mLightControlData.values[i].value === 1)
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -72,7 +81,7 @@ export default class Building_Light
      */
     static hasHalo(currentObject)
     {
-        
+
 
         return true;
     }
@@ -90,11 +99,10 @@ export default class Building_Light
     static getHaloGradient(baseLayout, currentObject)
     {
         let gradientStops                   = {};
-        let slotIndex                       = Building_Light.getColorSlotIndex(baseLayout, currentObject);
         let intensity                       = Building_Light.getIntensity(baseLayout, currentObject);
 
         let buildableSubSystem              = new SubSystem_Buildable({baseLayout: baseLayout});
-        let color                           = buildableSubSystem.getDefaultLightColorSlot(slotIndex);
+        let color                           = buildableSubSystem.getObjectLightColor(currentObject);
 
             gradientStops[0]              = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 1)';
 
@@ -104,8 +112,6 @@ export default class Building_Light
             }
 
             gradientStops[1]            = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 0)';
-
-            console.log(gradientStops);
 
         return gradientStops;
     }

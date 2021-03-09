@@ -16,7 +16,7 @@ export default class Modal_ColorSlots
         $('#statisticsModalColorSlots').empty();
 
         let html            = [];
-        let playerColors    = this.baseLayout.getColorSlots(true);
+        let playerColors    = this.buildableSubSystem.getPlayerColorSlots();
             for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
             {
                 if(slotIndex % 4 === 0)
@@ -143,8 +143,6 @@ export default class Modal_ColorSlots
                     mColorSlotsSecondary_Linear.values[slotIndex].g = BaseLayout_Math.RGBToLinearColor(secondaryColorG);
                     mColorSlotsSecondary_Linear.values[slotIndex].b = BaseLayout_Math.RGBToLinearColor(secondaryColorB);
                 }
-
-            playerColors = this.baseLayout.getColorSlots(true);
         }.bind(this));
 
         $('#statisticsModalColorSlots .selectColorSlot').hover(

@@ -1039,42 +1039,40 @@ export default class BaseLayout_Tooltip
         content.push('<div style="position: absolute;margin-top: 55px;margin-left: 90px; width: 100px;height: 175px;color: #FFFFFF;">');
         content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center small" style="line-height: 1;">');
 
-        if(percentageCharge < 100)
+        if(chargeRate >= 0 && circuitStatistics.powerStorageDrainRate === 0 && percentageCharge < 100)
         {
-            if(chargeRate >= 0 && circuitStatistics.powerStorageDrainRate === 0)
+            content.push('<i class="fas fa-stopwatch"></i><br /><span class="small">Time until full</span><br />');
+
+            if(chargeRate > 0)
             {
-                content.push('<i class="fas fa-stopwatch"></i><br /><span class="small">Time until full</span><br />');
+                let pad                 = function(num, size) { return ('000' + num).slice(size * -1); },
+                    time                = parseFloat(Building_PowerStorage.timeUntilCharged(this.baseLayout, currentObject)).toFixed(3),
+                    hours               = Math.floor(time / 60 / 60),
+                    minutes             = Math.floor(time / 60) % 60,
+                    seconds             = Math.floor(time - minutes * 60);
 
-                if(chargeRate > 0)
-                {
-                    let pad                 = function(num, size) { return ('000' + num).slice(size * -1); },
-                        time                = parseFloat(Building_PowerStorage.timeUntilCharged(this.baseLayout, currentObject)).toFixed(3),
-                        hours               = Math.floor(time / 60 / 60),
-                        minutes             = Math.floor(time / 60) % 60,
-                        seconds             = Math.floor(time - minutes * 60);
-
-                        content.push(hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's');
-                }
-                else
-                {
-                    content.push('-');
-                }
+                    content.push(hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's');
             }
             else
             {
-                if(circuitStatistics.powerStorageDrainRate > 0)
-                {
-                    let pad                 = function(num, size) { return ('000' + num).slice(size * -1); },
-                        time                = parseFloat(Building_PowerStorage.timeUntilDrained(this.baseLayout, currentObject)).toFixed(3),
-                        hours               = Math.floor(time / 60 / 60),
-                        minutes             = Math.floor(time / 60) % 60,
-                        seconds             = Math.floor(time - minutes * 60);
-
-                        content.push(hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's');
-                }
+                content.push('-');
             }
-
             content.push('<br /><br />');
+        }
+        else
+        {
+            if(circuitStatistics.powerStorageDrainRate > 0)
+            {
+                let pad                 = function(num, size) { return ('000' + num).slice(size * -1); },
+                    time                = parseFloat(Building_PowerStorage.timeUntilDrained(this.baseLayout, currentObject)).toFixed(3),
+                    hours               = Math.floor(time / 60 / 60),
+                    minutes             = Math.floor(time / 60) % 60,
+                    seconds             = Math.floor(time - minutes * 60);
+
+                    content.push('<i class="fas fa-stopwatch"></i><br /><span class="small">Time until drained</span><br />');
+                    content.push(hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's');
+                    content.push('<br /><br />');
+            }
         }
 
         content.push('<i class="fas fa-battery-full"></i><br /><span class="small">Stored Charge</span><br />' + (Math.floor(storedCharge * 10) / 10) + ' / ' + capacityCharge + ' MW<br /><br />');
