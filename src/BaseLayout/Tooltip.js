@@ -1102,6 +1102,10 @@ export default class BaseLayout_Tooltip
         let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
         let objectCircuit       = null;
         let powerConnection     = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection');
+            if(powerConnection === null)
+            {
+                powerConnection = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection1');
+            }
             if(powerConnection !== null)
             {
                 objectCircuit = circuitSubSystem.getObjectCircuit(powerConnection);
