@@ -424,7 +424,12 @@ export default class Modal
                     html.push('<div class="d-flex flex-row justify-content-center">');
                 }
 
-                let backgroundStyle = 'background: linear-gradient(135deg, ' + options.inputOptions[slotIndex].primaryColor + ' 0%, ' + options.inputOptions[slotIndex].primaryColor + ' 50%, ' + options.inputOptions[slotIndex].secondaryColor + ' 51%, ' + options.inputOptions[slotIndex].secondaryColor + ' 100%);';
+                let backgroundStyle = 'background: ' + options.inputOptions[slotIndex].primaryColor + ';';
+                    if(options.inputOptions[slotIndex].secondaryColor !== undefined)
+                    {
+                        backgroundStyle = 'background: linear-gradient(135deg, ' + options.inputOptions[slotIndex].primaryColor + ' 0%, ' + options.inputOptions[slotIndex].primaryColor + ' 50%, ' + options.inputOptions[slotIndex].secondaryColor + ' 51%, ' + options.inputOptions[slotIndex].secondaryColor + ' 100%);';
+                    }
+
                 let borderStyle     = 'border: 1px solid #000000;';
                 let sizeStyle       = 'width: 96px;height: 96px;';
 

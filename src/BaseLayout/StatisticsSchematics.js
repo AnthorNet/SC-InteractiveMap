@@ -53,7 +53,7 @@ export default class BaseLayout_Statistics_Schematics
         {
             html.push('<div class="tab-pane fade ' + ( (selectedTier === i) ? 'show active' : '' ) + '" id="playerUnlockedSchematics-' + i + '" role="tabpanel">');
             html.push('<table class="table mb-0">');
-            html.push('<tr><td></td><td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + i + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
+            html.push('<tr><td class="text-right" colspan="2"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + i + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
 
             let currentTierData   = {};
                 for(let schematicId in this.baseLayout.schematicsData)
@@ -136,7 +136,7 @@ export default class BaseLayout_Statistics_Schematics
             html.push('<div class="card-body text-center">You can click on the status of the recipe to update its current state.</div>');
 
             html.push('<table class="table mb-0">');
-            html.push('<tr><td></td><td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
+            html.push('<tr><td class="text-right" colspan="2"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
 
         let schematicsDataKey = Object.keys(this.baseLayout.schematicsData).sort(function(a,b){
                 return this.baseLayout.schematicsData[a].name.localeCompare(this.baseLayout.schematicsData[b].name);
@@ -288,7 +288,7 @@ export default class BaseLayout_Statistics_Schematics
         {
             html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedMAM-' + i + '" role="tabpanel">');
             html.push('<table class="table mb-0">');
-            html.push('<tr><td></td><td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
+            html.push('<tr><td class="text-right" colspan="2"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
 
             let currentTierData   = {};
                 for(let schematicId in this.baseLayout.schematicsData)
@@ -395,7 +395,7 @@ export default class BaseLayout_Statistics_Schematics
         {
             html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedAwesomeSink-' + i + '" role="tabpanel">');
             html.push('<table class="table mb-0">');
-            html.push('<tr><td></td><td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
+            html.push('<tr><td class="text-right" colspan="2"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
 
             let currentTierData   = {};
                 for(let schematicId in this.baseLayout.schematicsData)

@@ -24,9 +24,34 @@ export default class Building_PowerSwitch
         return null;
     }
 
+    /**
+     * CONTEXT MENU
+     */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+        contextMenu.push({
+            text: 'Turn "' + buildingData.name + '" ' + ((Building_PowerSwitch.isOn(baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
+            callback: Building_PowerSwitch.updateState
+        });
+
+        contextMenu.push({
+            text: 'Update "' + buildingData.name + '" sign',
+            callback: Building_PowerSwitch.updateSign
+        });
+        contextMenu.push({separator: true});
+
+        return contextMenu;
+    }
+
+    /**
+     * MODALS
+     */
     static updateSign(marker)
     {
         let baseLayout      = marker.baseLayout;
+            baseLayout.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let currentSign     = Building_PowerSwitch.getSign(baseLayout, currentObject);
@@ -41,6 +66,8 @@ export default class Building_PowerSwitch
                 }],
                 callback    : function(values)
                 {
+                    this.unpauseMap();
+
                     if(values === null)
                     {
                         return;
@@ -48,13 +75,13 @@ export default class Building_PowerSwitch
 
                     if(values.mBuildingTag !== '')
                     {
-                        baseLayout.setObjectProperty(currentObject, 'mHasBuildingTag', 1, 'BoolProperty');
-                        baseLayout.setObjectProperty(currentObject, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
+                        this.setObjectProperty(currentObject, 'mHasBuildingTag', 1, 'BoolProperty');
+                        this.setObjectProperty(currentObject, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
                     }
                     else
                     {
-                        baseLayout.deleteObjectProperty(currentObject, 'mHasBuildingTag');
-                        baseLayout.deleteObjectProperty(currentObject, 'mBuildingTag');
+                        this.deleteObjectProperty(currentObject, 'mHasBuildingTag');
+                        this.deleteObjectProperty(currentObject, 'mBuildingTag');
                     }
                 }.bind(baseLayout)
             });

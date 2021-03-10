@@ -54,9 +54,29 @@ export default class Building_PowerStorage
         return null;
     }
 
+    /**
+     * CONTEXT MENU
+     */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+        contextMenu.push({
+            text: 'Update "' + buildingData.name + '" stored power',
+            callback: Building_PowerStorage.updatePowerStored
+        });
+        contextMenu.push({separator: true});
+
+        return contextMenu;
+    }
+
+    /**
+     * MODALS
+     */
     static updatePowerStored(marker)
     {
         let baseLayout      = marker.baseLayout;
+            baseLayout.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let storedCharge    = Building_PowerStorage.storedCharge(baseLayout, currentObject);
@@ -73,12 +93,14 @@ export default class Building_PowerStorage
                 }],
                 callback    : function(values)
                 {
+                    this.unpauseMap();
+
                     if(values === null)
                     {
                         return;
                     }
 
-                    baseLayout.setObjectProperty(currentObject, 'mPowerStore', parseFloat(values.mPowerStore), 'FloatProperty');
+                    this.setObjectProperty(currentObject, 'mPowerStore', parseFloat(values.mPowerStore), 'FloatProperty');
                 }.bind(baseLayout)
             });
     }

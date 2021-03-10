@@ -23,6 +23,7 @@ import BaseLayout_Statistics_Schematics         from './BaseLayout/StatisticsSch
 import Modal                                    from './Modal.js';
 import Modal_Buildings                          from './Modal/Buildings.js';
 import Modal_ColorSlots                         from './Modal/ColorSlots.js';
+import Modal_LightColorSlots                    from './Modal/LightColorSlots.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
@@ -1236,30 +1237,53 @@ export default class BaseLayout
                     statisticsSchematics.parseMAM();
                     statisticsSchematics.parseAwesomeSink();
             }.bind(this));
+
+            $('#optionsModal a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+                let target = $(e.target).attr('href');
+                    switch(target)
+                    {
+                        case '#statisticsPlayerInventory':
+                            let statisticsInventory = new BaseLayout_Statistics_Player_Inventory({
+                                    baseLayout      : this
+                                });
+                                statisticsInventory.parse();
+                            break;
+                        case '#statisticsPlayerHotBars':
+                            let statisticsHotbars = new BaseLayout_Statistics_Player_Hotbars({
+                                    baseLayout      : this
+                                });
+                                statisticsHotbars.parse();
+                            break;
+                        case '#statisticsModalColorSlots':
+                            let mapColorSlots = new Modal_ColorSlots({
+                                    baseLayout      : this
+                                });
+                                mapColorSlots.parse();
+                            break;
+                        case '#statisticsModalLightColorSlots':
+                            let mapLightColorSlots = new Modal_LightColorSlots({
+                                    baseLayout      : this
+                                });
+                                mapLightColorSlots.parse();
+                            break;
+                        case '#statisticsModalCollectables':
+                            let statisticsCollectables = new BaseLayout_Statistics_Collectables({
+                                    baseLayout      : this
+                                });
+                                statisticsCollectables.parse();
+                            break;
+                        case '#statisticsModalOptions':
+                            let mapOptions = new BaseLayout_Map_Options({
+                                    baseLayout      : this
+                                });
+                                mapOptions.parse();
+                            break;
+                    }
+            }.bind(this))
             $('#optionsModal').on('show.bs.modal', function(){
-                let statisticsInventory = new BaseLayout_Statistics_Player_Inventory({
-                        baseLayout      : this
-                    });
-                    statisticsInventory.parse();
-                let statisticsHotbars = new BaseLayout_Statistics_Player_Hotbars({
-                        baseLayout      : this
-                    });
-                    statisticsHotbars.parse();
-                let statisticsCollectables = new BaseLayout_Statistics_Collectables({
-                        baseLayout      : this
-                    });
-                    statisticsCollectables.parse();
-
-                let mapColorSlots = new Modal_ColorSlots({
-                        baseLayout      : this
-                    });
-                    mapColorSlots.parse();
-
-                let mapOptions = new BaseLayout_Map_Options({
-                        baseLayout      : this
-                    });
-                    mapOptions.parse();
+                $('#optionsModal a.active[data-toggle="tab"]').trigger('shown.bs.tab');
             }.bind(this));
+
             $('#buildingsModal').on('show.bs.modal', function(){
                 let modalBuildings = new Modal_Buildings({
                         baseLayout      : this
@@ -1937,9 +1961,10 @@ export default class BaseLayout
             ],
             callback: function(form)
             {
+                this.unpauseMap();
+
                 if(form === null || form.angle === null)
                 {
-                    this.unpauseMap();
                     return;
                 }
 
@@ -1976,9 +2001,6 @@ export default class BaseLayout
                 currentObject.transform.translation[1] = newCenter[1];
 
                 this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
-
-                this.unpauseMap();
-                return;
             }.bind(this)
         });
     }
@@ -1988,8 +2010,6 @@ export default class BaseLayout
         let refreshSliderBoundaries     = (properties.transform.translation[2] !== properties.object.transform.translation[2]);
             properties.object.transform = properties.transform;
 
-        // Delete and add again!
-        let result                      = this.parseObject(properties.object);
             if(properties.marker.options.extraMarker !== undefined)
             {
                 this.playerLayers[result.layer].subLayer.removeLayer(properties.marker.options.extraMarker);
@@ -1998,7 +2018,16 @@ export default class BaseLayout
             {
                 this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(properties.marker.options.haloMarker);
             }
+
+        // Delete and add again!
+        let result                      = this.parseObject(properties.object);
             this.deleteMarkerFromElements(result.layer, properties.marker);
+
+            if(result.marker.options.haloMarker !== undefined)
+            {
+                this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(result.marker.options.haloMarker);
+            }
+
             this.addElementToLayer(result.layer, result.marker, refreshSliderBoundaries);
 
             if(properties.object.children !== undefined)
@@ -2101,9 +2130,10 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
+                this.unpauseMap();
+
                 if(form === null || form.x === null || form.y === null || form.z === null || form.pitch === null || form.roll === null || form.yaw === null)
                 {
-                    this.unpauseMap();
                     return;
                 }
 
@@ -2151,10 +2181,7 @@ export default class BaseLayout
                         }
 
                 this.refreshMarkerPosition({marker: marker.relatedTarget, transform: JSON.parse(JSON.stringify(newTransform)), object: currentObject});
-                this.unpauseMap();
                 this.updateRadioactivityLayer();
-
-                return;
             }.bind(this)
         });
     }
@@ -2190,9 +2217,10 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
+                this.unpauseMap();
+
                 if(form === null || form.playerPathName === null)
                 {
-                    this.unpauseMap();
                     return;
                 }
 
@@ -2210,9 +2238,6 @@ export default class BaseLayout
                     {
                         Modal.alert('Cannot teleport that player!');
                     }
-
-                this.unpauseMap();
-                return;
             }.bind(this)
         });
     }
@@ -2943,9 +2968,10 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
+                this.unpauseMap();
+
                 if(form === null || form.recipe === null)
                 {
-                    this.unpauseMap();
                     return;
                 }
 
@@ -2966,9 +2992,6 @@ export default class BaseLayout
                 }
 
                 //TODO: Clean output inventories...
-
-                this.unpauseMap();
-                return;
             }.bind(this)
         });
     }
@@ -5023,6 +5046,11 @@ export default class BaseLayout
             {
                 this.deleteObjectProperty(currentObject, 'mIsProductionPaused');
             }
+
+            if(buildingData !== null && buildingData.category === 'light')
+            {
+                this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
+            }
     }
 
     updateObjectClockSpeed(marker)
@@ -5051,9 +5079,10 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
+                this.unpauseMap();
+
                 if(form === null || form.clockSpeed === null || form.useOwnPowershards === null)
                 {
-                    this.unpauseMap();
                     return;
                 }
 
@@ -5109,8 +5138,6 @@ export default class BaseLayout
                             }
                         }
                 }
-
-                this.unpauseMap();
             }.bind(this)
         });
     }

@@ -1,5 +1,7 @@
 /* global L */
 
+import Modal                                    from '../Modal.js';
+
 import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
 
 export default class Building_Light
@@ -79,9 +81,12 @@ export default class Building_Light
     /**
      * HALO MARKER
      */
-    static hasHalo(currentObject)
+    static hasHalo(baseLayout, currentObject)
     {
-
+        if(baseLayout.getBuildingIsOn(currentObject) === false)
+        {
+            return false;
+        }
 
         return true;
     }
@@ -119,10 +124,202 @@ export default class Building_Light
     /**
      * CONTEXT MENU
      */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+        contextMenu.push({
+            text: 'Update "' + buildingData.name + '" light color slot',
+            callback: Building_Light.updateLightColorSlot
+        });
+        contextMenu.push({
+            text: 'Update "' + buildingData.name + '" intensity',
+            callback: Building_Light.updateIntensity
+        });
+        contextMenu.push({
+            text: 'Turn "' + buildingData.name + '" night mode ' + ((Building_Light.getIsTimeOfDayAware(baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
+            callback: Building_Light.updateState
+        });
+        contextMenu.push({separator: true});
+
+        return contextMenu;
+    }
 
     /**
      * TOOLTIP
      */
+
+    /**
+     * MODALS
+     */
+    static updateLightColorSlot(marker)
+    {
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+        let buildableSubSystem  = new SubSystem_Buildable({baseLayout: baseLayout});
+        let slotIndex           = Building_Light.getColorSlotIndex(baseLayout, currentObject);
+        let playerColors        = buildableSubSystem.getPlayerLightColorSlots();
+        let selectOptions       = [];
+
+        for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalLightColorSlots; slotIndex++)
+        {
+            selectOptions.push({
+                primaryColor    : 'rgb(' + playerColors[slotIndex].r + ', ' + playerColors[slotIndex].g + ', ' + playerColors[slotIndex].b + ')',
+                value           : slotIndex,
+                text            : '#' + (slotIndex + 1)
+            });
+        }
+
+        Modal.form({
+            title       : 'Update "<strong>' + buildingData.name + '</strong>" light color slot',
+            container   : '#leafletMap',
+            inputs      : [{
+                name            : 'slotIndex',
+                inputType       : 'colorSlots',
+                inputOptions    : selectOptions,
+                value           : slotIndex
+            }],
+            callback    : function(values)
+            {
+                if(values === null)
+                {
+                    return;
+                }
+
+                let mLightControlData   = Building_Light.getControlData(this, currentObject);
+                    if(mLightControlData !== null)
+                    {
+                        let newSlotIndex = parseInt(values.slotIndex);
+
+                        if(slotIndex === 0)
+                        {
+                            mLightControlData.values.push({name: "ColorSlotIndex", type: "IntProperty", value: newSlotIndex});
+                        }
+                        else
+                        {
+                            for(let i = 0; i < mLightControlData.values.length; i++)
+                            {
+                                if(mLightControlData.values[i].name === 'ColorSlotIndex')
+                                {
+                                    if(newSlotIndex === 0)
+                                    {
+                                        mLightControlData.values.splice(i, 1);
+                                    }
+                                    else
+                                    {
+                                        mLightControlData.values[i].value = newSlotIndex;
+                                    }
+                                }
+                            }
+                        }
+
+                        if(marker.relatedTarget.options.haloMarker !== undefined)
+                        {
+                            this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(marker.relatedTarget.options.haloMarker);
+                        }
+                        this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
+                    }
+            }.bind(baseLayout)
+        });
+    }
+
+    static updateIntensity(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+            baseLayout.pauseMap();
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let intensity       = Building_Light.getIntensity(baseLayout, currentObject);
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" intensity',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'intensity',
+                    inputType   : 'number',
+                    min         : 0,
+                    max         : 100,
+                    value       : Math.round(intensity)
+                }],
+                callback    : function(values)
+                {
+                    this.unpauseMap();
+
+                    if(values === null)
+                    {
+                        return;
+                    }
+
+                    let mLightControlData = Building_Light.getControlData(this, currentObject);
+                        if(mLightControlData !== null)
+                        {
+                            let newIntensity = parseFloat(values.intensity);
+
+                            if(intensity === 50)
+                            {
+                                mLightControlData.values.push({name: "Intensity", type: "FloatProperty", value: (newIntensity / 5)});
+                            }
+                            else
+                            {
+                                for(let i = 0; i < mLightControlData.values.length; i++)
+                                {
+                                    if(mLightControlData.values[i].name === 'Intensity')
+                                    {
+                                        if(newIntensity === 50)
+                                        {
+                                            mLightControlData.values.splice(i, 1);
+                                        }
+                                        else
+                                        {
+                                            mLightControlData.values[i].value = (newIntensity / 5);
+                                        }
+                                    }
+                                }
+                            }
+
+                            if(marker.relatedTarget.options.haloMarker !== undefined)
+                            {
+                                this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(marker.relatedTarget.options.haloMarker);
+                            }
+                            this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
+                        }
+                }.bind(baseLayout)
+            });
+    }
+
+    static updateState(marker)
+    {
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let isTimeOfDayAware    = Building_Light.getIsTimeOfDayAware(baseLayout, currentObject);
+
+            let mLightControlData = Building_Light.getControlData(baseLayout, currentObject);
+                if(mLightControlData !== null)
+                {
+                    if(isTimeOfDayAware === false)
+                    {
+                        mLightControlData.values.push({name: "IsTimeOfDayAware", type: "BoolProperty", value: 1});
+                    }
+                    else
+                    {
+                        for(let i = 0; i < mLightControlData.values.length; i++)
+                        {
+                            if(mLightControlData.values[i].name === 'IsTimeOfDayAware')
+                            {
+                                mLightControlData.values.splice(i, 1);
+                            }
+                        }
+                    }
+
+                    if(marker.relatedTarget.options.haloMarker !== undefined)
+                    {
+                        baseLayout.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(marker.relatedTarget.options.haloMarker);
+                    }
+                    baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
+                }
+    }
 }
 
 L.Canvas.include({
