@@ -1,5 +1,6 @@
 /* global L */
 
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import Modal                                    from '../Modal.js';
 
 import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
@@ -93,12 +94,48 @@ export default class Building_Light
 
     static getHaloRadius(currentObject)
     {
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/CeilingLight/Build_CeilingLight.Build_CeilingLight_C')
+        switch(currentObject.className)
         {
-            return 0.25;
+            case '/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightPole.Build_FloodlightPole_C':
+                return 0.4;
+            case '/Game/FactoryGame/Buildable/Factory/CeilingLight/Build_CeilingLight.Build_CeilingLight_C':
+            case '/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightWall.Build_FloodlightWall_C':
+                return 0.25;
         }
 
         return 0.12;
+    }
+
+    static getHaloCoordinates(baseLayout, currentObject)
+    {
+        let xOffset     = 0;
+        let yOffset     = 0;
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/StreetLight/Build_StreetLight.Build_StreetLight_C')
+            {
+                yOffset = 600;
+            }
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightWall.Build_FloodlightWall_C')
+            {
+                xOffset = 600;
+            }
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightPole.Build_FloodlightPole_C')
+            {
+                xOffset = 1600;
+            }
+
+            if(xOffset !== 0 || yOffset !== 0)
+            {
+                return baseLayout.satisfactoryMap.unproject(BaseLayout_Math.getPointRotation(
+                        [
+                            currentObject.transform.translation[0] + xOffset,
+                            currentObject.transform.translation[1] + yOffset
+                        ],
+                        currentObject.transform.translation,
+                        currentObject.transform.rotation
+                    ));
+            }
+
+        return baseLayout.satisfactoryMap.unproject([currentObject.transform.translation[0], currentObject.transform.translation[1]]);
     }
 
     static getHaloGradient(baseLayout, currentObject)

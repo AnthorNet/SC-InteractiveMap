@@ -502,6 +502,37 @@ export default class BaseLayout
                             }
                         ]
                     }
+                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightWall.Build_FloodlightWall_C'] = {
+                        "scale": 1,
+                        "xOffset": 300,
+                        "forms": [
+                            {
+                                "points": [
+                                    [-300,-280],[-230,-280],[-230,-240],[-145,-175],[-145,-70],[-160,-70],[-160,-50],[-100,-50],[-75,-75],[-75,-400],[285,-400],[300,-385],[300,385],[285,400],[-75,400],[-75,75],[-100,50],[-160,50],[-160,70],[-145,70],[-145,170],[-230,240],[-230,280],[-300,280]
+                                ]
+                            }
+                        ]
+                    }
+                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightPole.Build_FloodlightPole_C'] = {
+                        "scale": 1,
+                        "forms": [
+                            {
+                                "points": [
+                                    [130,-400],[485,-400],[500,-385],[500,385],[485,400],[130,400],[130,370],[100,360],[30,360],[-20,390],[-20,400],[-70,400],[-70,390],[-140,390],[-140,400],[-190,400],[-190,390],[-240,360],[-310,360],[-410,400],[-470,400],[-500,370],[-500,305],[-450,305],[-450,-305],[-500,-305],[-500,-370],[-470,-400],[-410,-400],[-310,-360],[-240,-360],[-190,-390],[-190,-400],[-140,-400],[-140,-390],[-70,-390],[-70,-400],[-20,-400],[-20,-390],[30,-360],[100,-360],[130,-370]
+                                ],
+                                "holes": [
+                                    [[-130,-315],[-65,-315],[-65,-180],[-130,-220]],
+                                    [[-130,315],[-65,315],[-65,180],[-130,220]],
+
+                                    [[-15,-315],[-5,-315],[15,-290],[105,-290],[125,-315],[135,-315],[135,-80],[120,-65],[120,-75],[55,-110],[55,-125],[30,-135],[10,-135],[-15,-150]],
+                                    [[-15,315],[-5,315],[15,290],[105,290],[125,315],[135,315],[135,80],[120,65],[120,75],[55,110],[55,125],[30,135],[10,135],[-15,150]],
+
+                                    [[-390,-315],[-340,-315],[-315,-305],[-305,-290],[-215,-290],[-190,-315],[-180,-315],[-180,-225],[-300,-160],[-300,-25],[-390,-25]],
+                                    [[-390,315],[-340,315],[-315,305],[-305,290],[-215,290],[-190,315],[-180,315],[-180,225],[-300,160],[-300,25],[-390,25]]
+                                ]
+                            }
+                        ]
+                    }
                     this.detailedModels['/Game/FactoryGame/Buildable/Factory/Packager/Build_Packager.Build_Packager_C'] = {
                         "scale": 0.98,
                         "forms": [
@@ -2651,27 +2682,15 @@ export default class BaseLayout
         // Add lights halo
         if(buildingData.category === 'light' && Building_Light.hasHalo(this, currentObject) === true)
         {
-            let coordinates = this.satisfactoryMap.unproject([currentObject.transform.translation[0], currentObject.transform.translation[1]]);
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/StreetLight/Build_StreetLight.Build_StreetLight_C')
-                {
-                    coordinates = this.satisfactoryMap.unproject(BaseLayout_Math.getPointRotation(
-                        [
-                            currentObject.transform.translation[0],
-                            currentObject.transform.translation[1] + 600
-                        ],
-                        currentObject.transform.translation,
-                        currentObject.transform.rotation
-                    ));
-                }
-
-            markerOptions.haloMarker = L.haloCircle(
-                coordinates,
-                {
-                    originPathName  : currentObject.pathName,
-                    radius          : Building_Light.getHaloRadius(currentObject),
-                    gradient        : Building_Light.getHaloGradient(this, currentObject)
-                }
-            );
+            let coordinates = Building_Light.getHaloCoordinates(this, currentObject);
+                markerOptions.haloMarker = L.haloCircle(
+                    coordinates,
+                    {
+                        originPathName  : currentObject.pathName,
+                        radius          : Building_Light.getHaloRadius(currentObject),
+                        gradient        : Building_Light.getHaloGradient(this, currentObject)
+                    }
+                );
 
             this.setupSubLayer('playerLightsHaloLayer');
             this.playerLayers.playerLightsHaloLayer.elements.push(markerOptions.haloMarker);
