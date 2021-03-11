@@ -82,7 +82,7 @@ export default class BaseLayout
         this.useDetailedModels                  = (this.localStorage !== null && this.localStorage.getItem('mapUseDetailedModels') !== null) ? (this.localStorage.getItem('mapUseDetailedModels') === 'true') : true;
         this.useSmoothFactor                    = (this.localStorage !== null && this.localStorage.getItem('mapUseSmoothFactor') !== null) ? parseInt(this.localStorage.getItem('mapUseSmoothFactor')) : 1;
 
-        this.availablePowerConnection           = ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.SlidingShoe'];
+        this.availablePowerConnection           = ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection'];
         this.availableBeltConnection            = ['.ConveyorAny0', '.ConveyorAny1', '.Input0', '.Input1', '.Input2', '.Input3', '.InPut3', '.Input4', '.Input5', '.Input6', '.Output0', '.Output1', '.Output2', '.Output3'];
         this.availableRailwayConnection         = ['.TrackConnection0', '.TrackConnection1'];
         this.availablePlatformConnection        = ['.PlatformConnection0', '.PlatformConnection1'];
@@ -667,6 +667,80 @@ export default class BaseLayout
                             }
                         ]
                     };
+
+                   this.detailedModels['/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C'] = {
+                        "scale": 1,
+                        "forms": [
+                            {
+                                "points": [
+                                    [200,-480],[200,-540],[230,-570],[230,-640],[340,-790],[340,-980],[360,-1000],[880,-1000],[900,-980],[900,-540],[790,-470],
+                                    [790,-280],[930,-280],[950,-260],[950,260],[930,280],[790,280],[790,470],[900,540],[900,980],[880,1000],[360,1000],[340,980],
+                                    [340,790],[230,640],[230,570],[200,540],[200,480],[-910,480],[-950,420],[-950,-420],[-910,-480]
+                                ],
+                                "holes": [
+                                    [[-860,-390],[-500,-390],[-750,-260],[-750,-180],[-820,-180],[-820,-150],[-800,-150],[-800,150],[-820,150],[-820,180],[-750,180],[-750,260],[-500,390],[-860,390],[-860,50],[-840,50],[-840,-50],[-860,-50]],
+                                    [[840,-970],[870,-940],[870,-800],[370,-800],[370,-860],[400,-970]],
+                                    [[840,970],[870,940],[870,800],[370,800],[370,860],[400,970]]
+                                ]
+                            },
+                            {
+                                "points": [
+                                    [840,-970],[870,-940],[870,-800],[370,-800],[370,-860],[400,-970]
+                                ]
+                            },
+                            {
+                                "points": [
+                                    [840,970],[870,940],[870,800],[370,800],[370,860],[400,970]
+                                ]
+                            }
+                        ]
+                    };
+
+                   this.detailedModels['/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'] = {
+                        "scale": 1.1,
+                        "forms": [
+                            {
+                                "points": [
+                                    [-170,-320],
+                                    [-140,-320],[-140,-350],[140,-350],[140,-320],
+                                    [170,-320],[210,-340],[270,-350],[570,-350],[650,-330],[680,-310],[700,-280],[700,-260],[685,-200],[695,-200],
+                                    [695,-120],[670,-115],[670,-100],[680,-100],
+
+                                    [680,-40],[715,-40],[750,-30],[750,30],[715,40],[680,40],
+
+                                    [680,100],[670,100],[670,115],[695,120],[695,200],[685,200],[700,260],[700,280],[680,310],[650,330],[570,350],[270,350],[210,340],[170,320],
+
+                                    [140,320],[140,350],[-140,350],[-140,320],
+
+                                    [-170,320],[-210,340],[-270,350],[-570,350],[-650,330],[-680,310],[-700,280],[-700,260],[-685,200],[-695,200],[-695,120],[-670,115],[-670,100],[-680,100],
+
+                                    [-680,40],[-715,40],[-750,30],[-750,-30],[-715,-40],[-680,-40],
+
+                                    [-680,-100],[-670,-100],[-670,-115],[-695,-120],[-695,-200],[-685,-200],[-700,-260],[-700,-280],[-680,-310],[-650,-330],[-570,-350],[-270,-350],[-210,-340]
+                                ]
+                            }
+                        ]
+                    };
+                    this.detailedModels['/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'] = {
+                        "scale": 1.1,
+                        "forms": [
+                            {
+                                "points": [
+                                    [-170,-320],
+                                    [-170,-290],[170,-290],
+                                    [170,-320],[210,-340],[270,-350],[570,-350],[650,-330],[680,-310],[700,-280],[700,-260],[685,-200],[695,-200],
+                                    [695,-120],[670,-115],[670,-100],[680,-100],
+                                    [680,-40],[715,-40],[750,-30],[750,30],[715,40],[680,40],
+                                    [680,100],[670,100],[670,115],[695,120],[695,200],[685,200],[700,260],[700,280],[680,310],[650,330],[570,350],[270,350],[210,340],[170,320],
+                                    [170,290],[-170,290],
+                                    [-170,320],[-210,340],[-270,350],[-570,350],[-650,330],[-680,310],[-700,280],[-700,260],[-685,200],[-695,200],[-695,120],[-670,115],[-670,100],[-680,100],
+                                    [-680,40],[-715,40],[-750,30],[-750,-30],[-715,-40],[-680,-40],
+                                    [-680,-100],[-670,-100],[-670,-115],[-695,-120],[-695,-200],[-685,-200],[-700,-260],[-700,-280],[-680,-310],[-650,-330],[-570,-350],[-270,-350],[-210,-340]
+                                ]
+                            }
+                        ]
+                    };
+
                     this.detailedModels['/Game/FactoryGame/Buildable/Factory/StreetLight/Build_StreetLight.Build_StreetLight_C'] = {
                         "scale": 1,
                         "forms": [
@@ -2680,7 +2754,7 @@ export default class BaseLayout
         let markerOptions   = {weight: weight};
 
         // Add lights halo
-        if(buildingData.category === 'light' && Building_Light.hasHalo(this, currentObject) === true)
+        if(buildingData.category === 'light' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/LightsControlPanel/Build_LightsControlPanel.Build_LightsControlPanel_C' && Building_Light.hasHalo(this, currentObject) === true)
         {
             let coordinates = Building_Light.getHaloCoordinates(this, currentObject);
                 markerOptions.haloMarker = L.haloCircle(
@@ -2688,7 +2762,8 @@ export default class BaseLayout
                     {
                         originPathName  : currentObject.pathName,
                         radius          : Building_Light.getHaloRadius(currentObject),
-                        gradient        : Building_Light.getHaloGradient(this, currentObject)
+                        gradient        : Building_Light.getHaloGradient(this, currentObject),
+                        interactive     : false
                     }
                 );
 
@@ -3106,29 +3181,28 @@ export default class BaseLayout
         if((buildingData !== null && buildingData.category === 'extraction') || currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
         {
             let resourceNode     = this.getObjectProperty(currentObject, 'mExtractableResource');
-
-            if(resourceNode !== null)
-            {
-                resourceNode    = this.saveGameParser.getTargetObject(resourceNode.pathName);
-
-                if(resourceNode !== null) // Prevent water volumes ^^
+                if(resourceNode !== null)
                 {
-                    if(this.satisfactoryMap.collectableMarkers !== undefined && this.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
-                    {
-                        this.satisfactoryMap.collectableMarkers[resourceNode.pathName].setOpacity(1);
-                        delete satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
-                    }
+                    resourceNode    = this.saveGameParser.getTargetObject(resourceNode.pathName);
 
-                    for(let i = 0; i < resourceNode.properties.length; i++)
+                    if(resourceNode !== null) // Prevent water volumes ^^
                     {
-                        if(resourceNode.properties[i].name === 'mIsOccupied')
+                        if(this.satisfactoryMap.collectableMarkers !== undefined && this.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
                         {
-                            resourceNode.properties[i].value = 0;
-                            break;
+                            this.satisfactoryMap.collectableMarkers[resourceNode.pathName].setOpacity(1);
+                            delete satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
+                        }
+
+                        for(let i = 0; i < resourceNode.properties.length; i++)
+                        {
+                            if(resourceNode.properties[i].name === 'mIsOccupied')
+                            {
+                                resourceNode.properties[i].value = 0;
+                                break;
+                            }
                         }
                     }
                 }
-            }
         }
 
         // Delete vehicles waypoints
@@ -5041,22 +5115,75 @@ export default class BaseLayout
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
         let isProductionPaused  = this.getObjectProperty(currentObject, 'mIsProductionPaused');
 
+            // GENERATOR
             if(buildingData !== null && buildingData.category === 'generator' && buildingData.powerGenerated !== undefined)
             {
                 let currentObjectPowerInfo = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + '.powerInfo');
                     if(currentObjectPowerInfo !== null)
                     {
-                        if(isProductionPaused === null)
+                        switch(currentObject.className)
                         {
-                            this.deleteObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity');
-                        }
-                        else
-                        {
-                            this.setObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity', buildingData.powerGenerated, 'FloatProperty');
+                            case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
+                                if(isProductionPaused === null)
+                                {
+                                    this.setObjectProperty(currentObjectPowerInfo, 'mBaseProduction', 0, 'FloatProperty');
+                                }
+                                else
+                                {
+                                    this.setObjectProperty(currentObjectPowerInfo, 'mBaseProduction', buildingData.powerGenerated.normal[1], 'FloatProperty');
+
+                                    let resourceNode     = this.getObjectProperty(currentObject, 'mExtractableResource');
+                                        if(resourceNode !== null)
+                                        {
+                                            if(this.satisfactoryMap.collectableMarkers !== undefined && this.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
+                                            {
+                                                if(this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity !== undefined)
+                                                {
+                                                    if(buildingData !== null && buildingData.powerGenerated[this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity] !== undefined)
+                                                    {
+                                                        this.setObjectProperty(
+                                                            currentObjectPowerInfo,
+                                                            'mBaseProduction',
+                                                            (buildingData.powerGenerated[this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][1] + buildingData.powerGenerated[this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][0]) / 2,
+                                                            'FloatProperty'
+                                                        );
+                                                    }
+                                                }
+                                            }
+                                        }
+                                }
+                                break;
+                            default:
+                                if(isProductionPaused === null)
+                                {
+                                    this.deleteObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity');
+                                }
+                                else
+                                {
+                                    this.setObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity', buildingData.powerGenerated, 'FloatProperty');
+                                }
                         }
                     }
             }
 
+            // PRODUCTION
+            if(buildingData !== null && buildingData.powerUsed !== undefined)
+            {
+                let currentObjectPowerInfo  = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + '.powerInfo');
+                    if(currentObjectPowerInfo !== null)
+                    {
+                        if(isProductionPaused === null)
+                        {
+                            this.setObjectProperty(currentObjectPowerInfo, 'mTargetConsumption', 0, 'FloatProperty');
+                        }
+                        else
+                        {
+                            this.setObjectProperty(currentObjectPowerInfo, 'mTargetConsumption', buildingData.powerUsed, 'FloatProperty');
+                        }
+                    }
+            }
+
+            // STATE
             if(isProductionPaused === null)
             {
                 this.setObjectProperty(currentObject, 'mIsProductionPaused', 1, 'BoolProperty');
@@ -5066,6 +5193,7 @@ export default class BaseLayout
                 this.deleteObjectProperty(currentObject, 'mIsProductionPaused');
             }
 
+            // LIGHT
             if(buildingData !== null && buildingData.category === 'light')
             {
                 this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});

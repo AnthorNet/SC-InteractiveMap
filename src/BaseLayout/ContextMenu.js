@@ -139,6 +139,7 @@ export default class BaseLayout_ContextMenu
                         && buildingData.category !== 'pipe'
                         && buildingData.category !== 'hyperTube'
                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/CeilingLight/Build_CeilingLight.Build_CeilingLight_C'
+                        && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightWall.Build_FloodlightWall_C'
                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C'
                     )
                     {
@@ -147,7 +148,7 @@ export default class BaseLayout_ContextMenu
                             callback: this.baseLayout.updateObjectProductionPausedStatus.bind(this.baseLayout)
                         });
 
-                        if(buildingData.category !== 'light')
+                        if(buildingData.category !== 'light'&& currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
                         {
                             contextMenu.push({
                                 text: 'Update "' + buildingData.name + '" clock speed',

@@ -5,23 +5,22 @@ import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_FrackingSmasher                 from '../Building/FrackingSmasher.js';
+import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoThermal.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 
 export default class BaseLayout_Tooltip
 {
     static get styleLabels(){ return 'height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;'; }
+    static get defaultTextStyle(){ return 'color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;'; }
+    static get uiGradient(){ return 'background: #0f0f0f;background: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 18%, rgba(15,15,15,1) 20%, rgba(15,15,15,1) 40%, rgba(0,0,0,1) 42%, rgba(0,0,0,1) 58%, rgba(15,15,15,1) 60%, rgba(15,15,15,1) 80%, rgba(0,0,0,1) 82%, rgba(0,0,0,1) 100%);'; }
 
     constructor(options)
     {
         this.baseLayout                             = options.baseLayout;
         this.target                                 = options.target;
 
-        this.defaultTextStyle                       = 'color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;';
-        this.uiGradient                             = 'background: #0f0f0f;background: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 18%, rgba(15,15,15,1) 20%, rgba(15,15,15,1) 40%, rgba(0,0,0,1) 42%, rgba(0,0,0,1) 58%, rgba(15,15,15,1) 60%, rgba(15,15,15,1) 80%, rgba(0,0,0,1) 82%, rgba(0,0,0,1) 100%);';
-
-        this.genericTooltipBackgroundStyle          = 'border: 25px solid #7f7f7f;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png?v=' + this.baseLayout.scriptVersion + ') 25 repeat;background: #7f7f7f;margin: -7px;' + this.defaultTextStyle;
-        this.genericUIBackgroundStyle               = 'border: 19px solid #ffffff;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Screen.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #ffffff;background-clip: padding-box;';
+        this.genericTooltipBackgroundStyle          = 'border: 25px solid #7f7f7f;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png?v=' + this.baseLayout.scriptVersion + ') 25 repeat;background: #7f7f7f;margin: -7px;' + BaseLayout_Tooltip.defaultTextStyle;
         this.genericStorageBackgroundStyle          = 'border: 19px solid #373737;border-image: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Storage.png?v=' + this.baseLayout.scriptVersion + ') 20 repeat;background: #373737;background-clip: padding-box;';
         this.genericFluidStorageBackgroundStyle     = 'width: 270px;height: 474px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/fluidStorageBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
         this.genericPowerStorageBackgroundStyle     = 'width: 212px;height: 450px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_PowerStorage_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
@@ -113,6 +112,8 @@ export default class BaseLayout_Tooltip
                                             return this.setBuildingFrackerExtractorTooltipContent(currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
                                             return Building_DroneStation.getTooltip(this.baseLayout, currentObject, buildingData);
+                                        case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
+                                            return Building_GeneratorGeoThermal.getTooltip(this.baseLayout, currentObject, buildingData);
                                     }
                                     switch(buildingData.category)
                                     {
@@ -160,9 +161,7 @@ export default class BaseLayout_Tooltip
 
         return '<div class="d-flex" style="' + this.genericTooltipBackgroundStyle + '">\
                     <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
-                        <div style="color: #FFFFFF;text-shadow: 2px 2px 2px #000000;line-height: 16px;font-size: 12px;" >\
-                            ' + content.join('') + '\
-                        </div>\
+                        ' + content.join('') + '\
                     </div>\
                 </div>';
     }
@@ -182,7 +181,7 @@ export default class BaseLayout_Tooltip
                 }
 
             // HEADER
-            content.push('<div style="position: absolute;margin-top: 5px;width: 350px;text-align: center;color: #FFFFFF;text-shadow: 2px 2px 2px #000000;">');
+            content.push('<div style="position: absolute;margin-top: 5px;width: 350px;' + BaseLayout_Tooltip.defaultTextStyle + '">');
             content.push('<strong class="small">' + pipelineData.name + distance + '</strong>');
             content.push('</div>');
 
@@ -399,7 +398,7 @@ export default class BaseLayout_Tooltip
         let content     = [];
 
             // TOP
-            content.push('<div style="position: absolute;margin-top: 10px;margin-left: 213px; width: 175px;height: 135px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + this.uiGradient + '">');
+            content.push('<div style="position: absolute;margin-top: 10px;margin-left: 213px; width: 175px;height: 135px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + BaseLayout_Tooltip.uiGradient + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
                 content.push('<strong>' + buildingData.name + '</strong>');
 
@@ -464,7 +463,7 @@ export default class BaseLayout_Tooltip
         let content     = [];
 
             // TOP
-            content.push('<div style="position: absolute;margin-top: 25px;margin-left: 90px; width: 195px;height: 110px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + this.uiGradient + '">');
+            content.push('<div style="position: absolute;margin-top: 25px;margin-left: 90px; width: 195px;height: 110px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + BaseLayout_Tooltip.uiGradient + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
                 content.push('<strong style="white-space: normal;">' + buildingData.name + '</strong>');
 
@@ -567,7 +566,7 @@ export default class BaseLayout_Tooltip
         let content     = [];
 
             // TOP
-            content.push('<div style="position: absolute;margin-top: 6px;margin-left: 8px; width: 155px;height: 110px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + this.uiGradient + '">');
+            content.push('<div style="position: absolute;margin-top: 6px;margin-left: 8px; width: 155px;height: 110px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + BaseLayout_Tooltip.uiGradient + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
                 content.push('<strong class="small">' + buildingData.name + '</strong>');
 
@@ -682,7 +681,7 @@ export default class BaseLayout_Tooltip
         let content     = [];
 
             // TOP
-            content.push('<div style="position: absolute;margin-top: 6px;margin-left: 8px; width: 135px;height: 110px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + this.uiGradient + '">');
+            content.push('<div style="position: absolute;margin-top: 6px;margin-left: 8px; width: 135px;height: 110px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + BaseLayout_Tooltip.uiGradient + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
                 content.push('<strong>' + buildingData.name + '</strong>');
 
@@ -1123,11 +1122,11 @@ export default class BaseLayout_Tooltip
             content.push('<div style="position: absolute;margin-top: 25px;"><img src="' + buildingData.image + '" style="width: 128px;height: 128px;" /></div>');
         }
 
-        content.push('<div style="position: absolute;margin-top: 25px;margin-left: 145px; width: 315px;height: 130px;color: #5b5b5b;text-shadow: none;' + this.genericUIBackgroundStyle + '">');
+        content.push('<div style="position: absolute;margin-top: 25px;margin-left: 145px; width: 315px;height: 130px;color: #5b5b5b;text-shadow: none;' + BaseLayout_Tooltip.genericUIBackgroundStyle(this.baseLayout) + '">');
         if(objectCircuit !== null)
         {
             let circuitStatistics = circuitSubSystem.getStatistics(objectCircuit.circuitId);
-                content.push(this.setCircuitStatisticsGraph(circuitStatistics));
+                content.push(BaseLayout_Tooltip.setCircuitStatisticsGraph(this.baseLayout, circuitStatistics));
         }
         else
         {
@@ -1214,11 +1213,11 @@ export default class BaseLayout_Tooltip
                 content.push('<strong>Circuit A</strong>');
             }
         content.push('</div>');
-        content.push('<div style="position: absolute;margin-top: 35px;margin-left: 175px; width: 315px;height: 130px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
+        content.push('<div style="position: absolute;margin-top: 35px;margin-left: 175px; width: 315px;height: 130px;color: #5b5b5b;' + BaseLayout_Tooltip.genericUIBackgroundStyle(this.baseLayout) + '">');
         if(objectCircuitA !== null)
         {
             let circuitStatisticsA = circuitSubSystem.getStatistics(objectCircuitA.circuitId);
-                content.push(this.setCircuitStatisticsGraph(circuitStatisticsA));
+                content.push(BaseLayout_Tooltip.setCircuitStatisticsGraph(this.baseLayout, circuitStatisticsA));
         }
         else
         {
@@ -1237,11 +1236,11 @@ export default class BaseLayout_Tooltip
                 content.push('<strong>Circuit B</strong>');
             }
         content.push('</div>');
-        content.push('<div style="position: absolute;margin-top: 173px;margin-left: 175px; width: 315px;height: 130px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
+        content.push('<div style="position: absolute;margin-top: 173px;margin-left: 175px; width: 315px;height: 130px;color: #5b5b5b;' + BaseLayout_Tooltip.genericUIBackgroundStyle(this.baseLayout) + '">');
         if(objectCircuitB !== null)
         {
             let circuitStatisticsB  = circuitSubSystem.getStatistics(objectCircuitB.circuitId);
-                content.push(this.setCircuitStatisticsGraph(circuitStatisticsB));
+                content.push(BaseLayout_Tooltip.setCircuitStatisticsGraph(this.baseLayout, circuitStatisticsB));
         }
         else
         {
@@ -1292,7 +1291,7 @@ export default class BaseLayout_Tooltip
 
 
             // INPUT
-            content.push('<div style="position: absolute;margin-top: 45px;margin-left: 3px; width: 196px;height: 240px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
+            content.push('<div style="position: absolute;margin-top: 45px;margin-left: 3px; width: 196px;height: 240px;color: #5b5b5b;' + BaseLayout_Tooltip.genericUIBackgroundStyle(this.baseLayout) + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
 
                 if(recipeItem !== null && recipeItem.ingredients !== undefined)
@@ -1385,7 +1384,7 @@ export default class BaseLayout_Tooltip
             content.push('</div>');
 
             // OUTPUT
-            content.push('<div style="position: absolute;margin-top: 45px;margin-left: 302px; width: 196px;height: 240px;color: #5b5b5b;' + this.genericUIBackgroundStyle + '">');
+            content.push('<div style="position: absolute;margin-top: 45px;margin-left: 302px; width: 196px;height: 240px;color: #5b5b5b;' + BaseLayout_Tooltip.genericUIBackgroundStyle(this.baseLayout) + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
 
                 if(recipeItem !== null && recipeItem.produce !== undefined)
@@ -1504,7 +1503,7 @@ export default class BaseLayout_Tooltip
         let tooltipFooterOptions    = {circuit: objectCircuit, clockSpeed: clockSpeed, powerGenerated: powerGenerated, singleLine: true};
 
             // TOP
-            content.push('<div style="position: absolute;margin-top: 26px;margin-left: 315px; width: 165px;height: 135px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + this.uiGradient + '">');
+            content.push('<div style="position: absolute;margin-top: 26px;margin-left: 315px; width: 165px;height: 135px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + BaseLayout_Tooltip.uiGradient + '">');
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
                 content.push('<strong>' + buildingData.name + '</strong>');
 
@@ -1816,7 +1815,97 @@ export default class BaseLayout_Tooltip
         return content.join('');
     }
 
-    setCircuitStatisticsGraph(circuitStatistics)
+    setTooltipFooter(options)
+    {
+        let header1     = [];
+        let header2     = [];
+        let content1    = [];
+        let content2    = [];
+
+            // FIRST LINE
+            if(options.circuit !== undefined && options.circuit !== null)
+            {
+                header1.push('<td class="text-center mb-1 px-1"><i class="fas fa-plug"></td>');
+            }
+            if(options.powerUsed !== undefined || options.powerGenerated !== undefined)
+            {
+                header1.push('<td class="text-center mb-1 px-1"><i class="fas fa-bolt"></td>');
+            }
+
+            if(options.circuit !== undefined && options.circuit !== null)
+            {
+                content1.push('<td class="text-center text-warning small px-1">#' + options.circuit.circuitId + '</td>');
+            }
+            if(options.powerUsed !== undefined)
+            {
+                content1.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerUsed * 100) / 100) + 'MW</td>');
+            }
+            if(options.powerGenerated !== undefined)
+            {
+                content1.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerGenerated * 100) / 100) + 'MW</td>');
+            }
+
+            // SECOND LINE
+            if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
+            {
+                header2.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
+            }
+            if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
+            {
+                header2.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
+            }
+
+            if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
+            {
+                content2.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.craftingTime * options.clockSpeed * 100) / 100) + 's</td>');
+            }
+            if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
+            {
+                let mPowerProductionExponent = 1.3;
+                    if(options.mPowerProductionExponent !== undefined)
+                    {
+                        mPowerProductionExponent = options.mPowerProductionExponent;
+                    }
+
+                content2.push('<td class="text-center text-warning small px-1">' + +(Math.round((options.fuelEnergyValue / options.powerGenerated) * Math.pow(options.clockSpeed, -1/mPowerProductionExponent) * 100) / 100) + 's</td>');
+            }
+
+        if(options.singleLine !== undefined && options.singleLine === true)
+        {
+            return '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header1.join('') + header2.join('') + '</tr><tr>' + content1.join('') + content2.join('') + '</tr></table></div>';
+        }
+
+        return '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header1.join('') + '</tr><tr>' + content1.join('') + '</tr></table></div>'
+             + '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header2.join('') + '</tr><tr>' + content2.join('') + '</tr></table></div>';
+    }
+
+    /*
+     * SHARED PARTS
+     */
+    static genericUIBackgroundStyle(baseLayout)
+    {
+        return 'border: 19px solid #ffffff;border-image: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Screen.png?v=' + baseLayout.scriptVersion + ') 20 repeat;background: #ffffff;background-clip: padding-box;';
+    }
+
+    static getStandByPanel(baseLayout, currentObject, top = 435, left = 420, topLabel = 460, leftLabel = 355)
+    {
+        let content             = [];
+        let imageFile           = 'StandbyButtonPressed.png';
+            if(baseLayout.getBuildingIsOn(currentObject) === false)
+            {
+                imageFile = 'StandbyButtonUnpressed.png';
+            }
+
+            content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px;">');
+                content.push('<img src="' + baseLayout.staticUrl + '/js/InteractiveMap/img/' + imageFile + '?v=' + baseLayout.scriptVersion + '" />');
+            content.push('</div>');
+
+            content.push('<div style="position: absolute;margin-top: ' + topLabel + 'px;margin-left: ' + leftLabel + 'px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>STANDBY</strong></div>');
+
+        return content.join('');
+    }
+
+    static setCircuitStatisticsGraph(baseLayout, circuitStatistics)
     {
         let content     = [];
         let maxValue    = Math.max(circuitStatistics.consumption, circuitStatistics.production, circuitStatistics.capacity, circuitStatistics.maxConsumption);
@@ -1833,13 +1922,13 @@ export default class BaseLayout_Tooltip
                     content.push('<div style="border-top: 1px solid #666666;height: 30px;padding-top: 3px;">');
                         content.push('<table style="line-height: 12px;font-size: 9px;" class="w-100">');
                             content.push('<tr>');
-                                content.push('<td style="color: #e59344;">Consum. <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.consumption * 10) / 10) + 'MW</strong></td>');
-                                content.push('<td style="color: #717172;">Production <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.production * 10) / 10) + 'MW</strong></td>');
+                                content.push('<td style="color: #e59344;">Consum. <strong>' + new Intl.NumberFormat(baseLayout.language).format(Math.round(circuitStatistics.consumption * 10) / 10) + 'MW</strong></td>');
+                                content.push('<td style="color: #717172;">Production <strong>' + new Intl.NumberFormat(baseLayout.language).format(Math.round(circuitStatistics.production * 10) / 10) + 'MW</strong></td>');
                             content.push('</tr>');
 
                             content.push('<tr>');
-                                content.push('<td style="color: #cccbcb;">Capacity <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.capacity * 10) / 10) + 'MW</strong></td>');
-                                content.push('<td style="color: #62aac7;">Max. Cons. <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.maxConsumption * 10) / 10) + 'MW</strong></td>');
+                                content.push('<td style="color: #cccbcb;">Capacity <strong>' + new Intl.NumberFormat(baseLayout.language).format(Math.round(circuitStatistics.capacity * 10) / 10) + 'MW</strong></td>');
+                                content.push('<td style="color: #62aac7;">Max. Cons. <strong>' + new Intl.NumberFormat(baseLayout.language).format(Math.round(circuitStatistics.maxConsumption * 10) / 10) + 'MW</strong></td>');
                             content.push('</tr>');
                     content.push('</table>');
                     content.push('</div>');
@@ -1931,91 +2020,6 @@ export default class BaseLayout_Tooltip
                         content.push('</div>');
                 }
             content.push('</div>');
-
-        return content.join('');
-    }
-
-    setTooltipFooter(options)
-    {
-        let header1     = [];
-        let header2     = [];
-        let content1    = [];
-        let content2    = [];
-
-            // FIRST LINE
-            if(options.circuit !== undefined && options.circuit !== null)
-            {
-                header1.push('<td class="text-center mb-1 px-1"><i class="fas fa-plug"></td>');
-            }
-            if(options.powerUsed !== undefined || options.powerGenerated !== undefined)
-            {
-                header1.push('<td class="text-center mb-1 px-1"><i class="fas fa-bolt"></td>');
-            }
-
-            if(options.circuit !== undefined && options.circuit !== null)
-            {
-                content1.push('<td class="text-center text-warning small px-1">#' + options.circuit.circuitId + '</td>');
-            }
-            if(options.powerUsed !== undefined)
-            {
-                content1.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerUsed * 100) / 100) + 'MW</td>');
-            }
-            if(options.powerGenerated !== undefined)
-            {
-                content1.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerGenerated * 100) / 100) + 'MW</td>');
-            }
-
-            // SECOND LINE
-            if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
-            {
-                header2.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
-            }
-            if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
-            {
-                header2.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
-            }
-
-            if(options.craftingTime !== undefined && options.clockSpeed !== undefined)
-            {
-                content2.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.craftingTime * options.clockSpeed * 100) / 100) + 's</td>');
-            }
-            if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
-            {
-                let mPowerProductionExponent = 1.3;
-                    if(options.mPowerProductionExponent !== undefined)
-                    {
-                        mPowerProductionExponent = options.mPowerProductionExponent;
-                    }
-
-                content2.push('<td class="text-center text-warning small px-1">' + +(Math.round((options.fuelEnergyValue / options.powerGenerated) * Math.pow(options.clockSpeed, -1/mPowerProductionExponent) * 100) / 100) + 's</td>');
-            }
-
-        if(options.singleLine !== undefined && options.singleLine === true)
-        {
-            return '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header1.join('') + header2.join('') + '</tr><tr>' + content1.join('') + content2.join('') + '</tr></table></div>';
-        }
-
-        return '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header1.join('') + '</tr><tr>' + content1.join('') + '</tr></table></div>'
-             + '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header2.join('') + '</tr><tr>' + content2.join('') + '</tr></table></div>';
-    }
-
-    /*
-     * SHARED PARTS
-     */
-    static getStandByPanel(baseLayout, currentObject, top = 435, left = 420, topLabel = 460, leftLabel = 355)
-    {
-        let content             = [];
-        let imageFile           = 'StandbyButtonPressed.png';
-            if(baseLayout.getBuildingIsOn(currentObject) === false)
-            {
-                imageFile = 'StandbyButtonUnpressed.png';
-            }
-
-            content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px;">');
-                content.push('<img src="' + baseLayout.staticUrl + '/js/InteractiveMap/img/' + imageFile + '?v=' + baseLayout.scriptVersion + '" />');
-            content.push('</div>');
-
-            content.push('<div style="position: absolute;margin-top: ' + topLabel + 'px;margin-left: ' + leftLabel + 'px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>STANDBY</strong></div>');
 
         return content.join('');
     }

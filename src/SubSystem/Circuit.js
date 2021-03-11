@@ -149,7 +149,8 @@ export default class SubSystem_Circuit
                 let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(components[i] + '.powerInfo', false, true);
                     if(buildingPowerInfo !== null)
                     {
-                        let currentComponent    = this.baseLayout.saveGameParser.getTargetObject(components[i], false, true);
+                        let currentComponent            = this.baseLayout.saveGameParser.getTargetObject(components[i], false, true);
+                        let buildingData                = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
 
                         // PRODUCTION
                         let mIsFullBlast                = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
@@ -166,7 +167,32 @@ export default class SubSystem_Circuit
 
                         if(currentComponent !== null && currentComponent.className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass.Build_GeneratorBiomass_C')
                         {
+                            //TODO:
+                        }
 
+                        if(currentComponent !== null && currentComponent.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
+                        {
+                            let mBaseProduction  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
+                                if(mBaseProduction !== null)
+                                {
+                                    statistics.production += mBaseProduction;
+
+                                    // Check max production based on purity
+                                    let resourceNode     = this.baseLayout.getObjectProperty(currentComponent, 'mExtractableResource');
+                                        if(resourceNode !== null)
+                                        {
+                                            if(this.baseLayout.satisfactoryMap.collectableMarkers !== undefined && this.baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
+                                            {
+                                                if(this.baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity !== undefined)
+                                                {
+                                                    if(buildingData !== null && buildingData.powerGenerated[this.baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity] !== undefined)
+                                                    {
+                                                        statistics.capacity += buildingData.powerGenerated[this.baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][1];
+                                                    }
+                                                }
+                                            }
+                                        }
+                                }
                         }
 
                         // CONSUMPTION
@@ -177,11 +203,10 @@ export default class SubSystem_Circuit
                             }
 
                         // MAX CONSUMPTION
-                        let buildingData        = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
-                            if(buildingData !== null && buildingData.powerUsed !== undefined)
-                            {
-                                statistics.maxConsumption += buildingData.powerUsed;
-                            }
+                        if(buildingData !== null && buildingData.powerUsed !== undefined)
+                        {
+                            statistics.maxConsumption += buildingData.powerUsed;
+                        }
 
                         // POWER STORAGE
                         if(currentComponent !== null && currentComponent.className === '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C')
