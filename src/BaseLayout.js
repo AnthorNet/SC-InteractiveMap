@@ -197,7 +197,7 @@ export default class BaseLayout
         for(let pathName in this.satisfactoryMap.collectableMarkers)
         {
             this.satisfactoryMap.collectableMarkers[pathName].setOpacity(1);
-            delete this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
+            delete this.satisfactoryMap.collectableMarkers[pathName].options.extractorPathName;
         }
 
         for(let layerId in this.playerLayers)
@@ -860,10 +860,15 @@ export default class BaseLayout
         }.bind(this));
     }
 
-    parseObjects(i = 0)
+    parseObjects(i = 0, objectsKeys = null)
     {
         let objects                 = this.saveGameParser.getObjects();
-        let countObjects            = objects.length;
+            if(objectsKeys === null)
+            {
+                objectsKeys             = Object.keys(objects);
+            }
+
+        let countObjects            = objectsKeys.length;
         let parseObjectsProgress    = Math.round(i / countObjects * 100);
         let promises                = [];
 
@@ -874,7 +879,7 @@ export default class BaseLayout
 
         for(i; i < countObjects; i++)
         {
-            let currentObject = objects[i];
+            let currentObject = objects[objectsKeys[i]];
 
             // Add menu to nodes...
             if([
@@ -1087,7 +1092,7 @@ export default class BaseLayout
                     return Promise.all(promises).then(function(){
                         $('#loaderProgressBar .progress-bar').css('width', (50 + progress * 0.4) + '%');
                         $('.loader h6').html('Rendering objects (' + progress + '%)...');
-                        setTimeout(function(){ this.parseObjects((i + 1)); }.bind(this), 5);
+                        setTimeout(function(){ this.parseObjects((i + 1), objectsKeys); }.bind(this), 5);
                     }.bind(this));
                 }
         }
@@ -1484,6 +1489,12 @@ export default class BaseLayout
             $('#downloadSaveGame').on('click', function(){
                 window.SCIM.showLoader();
                 $('.loader h6').html('Saving...');
+
+                // Clean subsystems...
+                let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this});
+                    circuitSubSystem.cleanCircuits();
+
+                // Save...
                 this.saveGameParser.save();
             }.bind(this));
 
@@ -4059,7 +4070,6 @@ export default class BaseLayout
             if(keepCircuitId === false) // Train station have "mHiddenConnections" property so we need to keep "mCircuitID"
             {
                 currentObjectPowerConnection.properties = [];
-                this.saveGameParser.cleanCircuitSubSystems.push(currentObjectPowerConnection.pathName);
             }
         }
     }

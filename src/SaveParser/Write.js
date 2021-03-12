@@ -61,80 +61,83 @@ export default class SaveParser_Write
     {
         this.generatedChunks = new Array();
 
-        let countObjects     = this.saveParser.objects.length;
+        let objectsKeys      = Object.keys(this.saveParser.objects);
+        let countObjects     = objectsKeys.length;
             this.saveBinary += this.writeInt(countObjects, false); // This is a reservation for the inflated length ;)
             this.saveBinary += this.writeInt(countObjects, false);
 
         if(this.isCancelled === false)
         {
-            return this.generateObjectsChunks(0, countObjects);
+            return this.generateObjectsChunks(0, objectsKeys);
         }
     }
 
-    generateObjectsChunks(i = 0, countObjects = null)
+    generateObjectsChunks(i = 0, objectsKeys)
     {
-        for(i; i < countObjects; i++)
-        {
-            if(this.saveParser.objects[i] !== undefined)
+        let countObjects = objectsKeys.length;
+            for(i; i < countObjects; i++)
             {
-                if(this.saveParser.objects[i].type === 0)
+                if(this.saveParser.objects[objectsKeys[i]] !== undefined)
                 {
-                    this.saveBinary += this.writeObject(this.saveParser.objects[i]);
-                }
-                if(this.saveParser.objects[i].type === 1)
-                {
-                    this.saveBinary += this.writeActor(this.saveParser.objects[i]);
-                }
-            }
-
-            if(this.saveBinary.length >= this.saveParser.maxChunkSize)
-            {
-                return new Promise(function(resolve){
-                    this.pushSaveToChunk();
-
-                    $('#loaderProgressBar .progress-bar').css('width', ((i / countObjects * 100) * 0.48) + '%');
-                    $('.loader h6').html('Compiling ' + i + '/' + countObjects + ' objects...');
-                    setTimeout(resolve, 5);
-                }.bind(this)).then(function(){
-                    if(this.isCancelled === false)
+                    if(this.saveParser.objects[objectsKeys[i]].type === 0)
                     {
-                        this.generateObjectsChunks((i + 1), countObjects);
+                        this.saveBinary += this.writeObject(this.saveParser.objects[objectsKeys[i]]);
                     }
-                }.bind(this));
+                    if(this.saveParser.objects[objectsKeys[i]].type === 1)
+                    {
+                        this.saveBinary += this.writeActor(this.saveParser.objects[objectsKeys[i]]);
+                    }
+                }
+
+                if(this.saveBinary.length >= this.saveParser.maxChunkSize)
+                {
+                    return new Promise(function(resolve){
+                        this.pushSaveToChunk();
+
+                        $('#loaderProgressBar .progress-bar').css('width', ((i / countObjects * 100) * 0.48) + '%');
+                        $('.loader h6').html('Compiling ' + i + '/' + countObjects + ' objects...');
+                        setTimeout(resolve, 5);
+                    }.bind(this)).then(function(){
+                        if(this.isCancelled === false)
+                        {
+                            this.generateObjectsChunks((i + 1), objectsKeys);
+                        }
+                    }.bind(this));
+                }
             }
-        }
 
         console.log('Saved ' + countObjects + ' objects...');
 
         this.saveBinary += this.writeInt(countObjects, false);
-        return this.generateEntitiesChunks(0, countObjects);
+        return this.generateEntitiesChunks(0, objectsKeys);
     }
 
-    generateEntitiesChunks(i = 0, countObjects)
+    generateEntitiesChunks(i = 0, objectsKeys)
     {
-        for(i; i < countObjects; i++)
-        {
-            if(this.saveParser.objects[i] !== undefined)
+        let countObjects = objectsKeys.length;
+            for(i; i < countObjects; i++)
             {
-                this.saveBinary += this.writeEntity(this.saveParser.objects[i]);
-            }
+                if(this.saveParser.objects[objectsKeys[i]] !== undefined)
+                {
+                    this.saveBinary += this.writeEntity(this.saveParser.objects[objectsKeys[i]]);
+                }
 
-            if(this.saveBinary.length >= this.saveParser.maxChunkSize)
-            {
-                return new Promise(function(resolve){
-                    this.pushSaveToChunk();
+                if(this.saveBinary.length >= this.saveParser.maxChunkSize)
+                {
+                    return new Promise(function(resolve){
+                        this.pushSaveToChunk();
 
-                    $('#loaderProgressBar .progress-bar').css('width', (48 + (i / countObjects * 100) * 0.48) + '%');
-                    $('.loader h6').html('Compiling ' + i + '/' + countObjects + ' entities...');
-                    setTimeout(resolve, 5);
-                }.bind(this)).then(function(){
-                    if(this.isCancelled === false)
-                    {
-                        this.generateEntitiesChunks((i + 1), countObjects);
-                    }
-                }.bind(this));
+                        $('#loaderProgressBar .progress-bar').css('width', (48 + (i / countObjects * 100) * 0.48) + '%');
+                        $('.loader h6').html('Compiling ' + i + '/' + countObjects + ' entities...');
+                        setTimeout(resolve, 5);
+                    }.bind(this)).then(function(){
+                        if(this.isCancelled === false)
+                        {
+                            this.generateEntitiesChunks((i + 1), objectsKeys);
+                        }
+                    }.bind(this));
+                }
             }
-        }
 
         console.log('Saved ' + countObjects + ' entities...');
 

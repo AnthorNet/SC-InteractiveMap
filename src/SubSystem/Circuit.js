@@ -150,10 +150,10 @@ export default class SubSystem_Circuit
 
             for(let i = 0; i < components.length; i++)
             {
-                let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(components[i] + '.powerInfo', false, true);
+                let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(components[i] + '.powerInfo');
                     if(buildingPowerInfo !== null)
                     {
-                        let currentComponent            = this.baseLayout.saveGameParser.getTargetObject(components[i], false, true);
+                        let currentComponent            = this.baseLayout.saveGameParser.getTargetObject(components[i]);
                         let buildingData                = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
 
                         // PRODUCTION
@@ -274,5 +274,31 @@ export default class SubSystem_Circuit
             }
 
             return statistics;
+    }
+
+    /*
+     * DELETE NULLED OBJECTS
+     */
+    cleanCircuits()
+    {
+        for(let i = 0; i < this.circuitSubSystem.extra.circuits.length; i++)
+        {
+            let currentCiruitSubSystem = this.baseLayout.saveGameParser.getTargetObject(this.circuitSubSystem.extra.circuits[i].pathName);
+
+            for(let j = 0; j < currentCiruitSubSystem.properties.length; j++)
+            {
+                if(currentCiruitSubSystem.properties[j].name === 'mComponents')
+                {
+                    for(let k = currentCiruitSubSystem.properties[j].value.values.length - 1; k >= 0; k--)
+                    {
+                        let currentObject = this.baseLayout.saveGameParser.getTargetObject(currentCiruitSubSystem.properties[j].value.values[k].pathName);
+                            if(currentObject === null)
+                            {
+                                currentCiruitSubSystem.properties[j].value.values.splice(k, 1);
+                            }
+                    }
+                }
+            }
+        }
     }
 }

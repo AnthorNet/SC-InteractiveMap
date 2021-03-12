@@ -22,7 +22,6 @@ export default class BaseLayout_Selection_Delete
 
     delete()
     {
-        this.baseLayout.saveGameParser.autoPurgeDeleteObjects   = false;
         let putInCrate                                          = {};
 
         if(this.markersSelected)
@@ -188,11 +187,8 @@ export default class BaseLayout_Selection_Delete
                     currentLootCrateInventory.properties[1].value.values.push(0);
                 }
 
-                this.baseLayout.saveGameParser.refreshHashmap();
                 this.baseLayout.setBadgeLayerCount('playerCratesLayer');
             }
-
-            this.baseLayout.saveGameParser.purgeDeleteObjects();
 
             console.timeEnd('deleteMultipleMarkers');
             this.baseLayout.updateRadioactivityLayer();

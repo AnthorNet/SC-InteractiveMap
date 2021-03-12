@@ -159,53 +159,53 @@ export default class SaveParser_Read
     parseObjectsV5()
     {
         let countObjects                = this.readInt();
-            this.saveParser.objects     = [];
-        console.log('Reading: ' + countObjects + ' objects...');
+        let entitiesToObjects           = [];
+            this.saveParser.objects     = {};
+            console.log('Reading: ' + countObjects + ' objects...');
+            for(let i = 0; i < countObjects; i++)
+            {
+                let objectType = this.readInt();
+                    switch(objectType)
+                    {
+                        case 0:
+                            let object                                      = this.readObjectV5();
+                                this.saveParser.objects[object.pathName]    = object;
+                                entitiesToObjects[i]                        = object.pathName;
+                            break;
+                        case 1:
+                            let actor                                       = this.readActorV5();
+                                this.saveParser.objects[actor.pathName]     = actor;
+                                entitiesToObjects[i]                        = actor.pathName;
 
-        for(let i = 0; i < countObjects; i++)
-        {
-            let objectType = this.readInt();
-                switch(objectType)
-                {
-                    case 0:
-                        this.saveParser.objects[i]                                          = this.readObjectV5();
-                        this.saveParser.objectsHashMap[this.saveParser.objects[i].pathName] = i;
-                        break;
-                    case 1:
-                        this.saveParser.objects[i]                                          = this.readActorV5();
-                        this.saveParser.objectsHashMap[this.saveParser.objects[i].pathName] = i;
-
-                        if(this.saveParser.objects[i].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
-                        {
-                            this.saveParser.gameStatePathName = this.saveParser.objects[i].pathName;
-                        }
-
-                        break;
-                    default:
-                        console.log('Unknown object type', objectType);
-                        break;
-                }
-        }
+                                if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                                {
+                                    this.saveParser.gameStatePathName = actor.pathName;
+                                }
+                            break;
+                        default:
+                            console.log('Unknown object type', objectType);
+                            break;
+                    }
+            }
 
         let countEntities   = this.readInt();
-        console.log('Reading: ' + countEntities + ' entities...');
-        for(let i = 0; i < countEntities; i++)
-        {
-            this.readEntityV5(i);
-        }
+            console.log('Reading: ' + countEntities + ' entities...');
+            for(let i = 0; i < countEntities; i++)
+            {
+                this.readEntityV5(entitiesToObjects[i]);
+            }
 
         this.saveParser.collectables   = [];
         let countCollected  = this.readInt();
-        console.log('Reading: ' + countCollected + ' collectables...');
-
-        for(let i = 0; i < countCollected; i++)
-        {
-            let currentCollectable = {
-                levelName: this.readString(),
-                pathName: this.readString()
-            };
-            this.saveParser.collectables.push(currentCollectable);
-        }
+            console.log('Reading: ' + countCollected + ' collectables...');
+            for(let i = 0; i < countCollected; i++)
+            {
+                let currentCollectable = {
+                    levelName: this.readString(),
+                    pathName: this.readString()
+                };
+                this.saveParser.collectables.push(currentCollectable);
+            }
 
         this.arrayBuffer        = undefined;
         this.bufferView         = undefined;

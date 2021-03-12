@@ -12,15 +12,8 @@ export default class SaveParser
         this.PACKAGE_FILE_TAG       = null;
         this.maxChunkSize           = null;
 
-        this.countObjects           = 0;
         this.objects                = null;
-        this.objectsHashMap         = {};
         this.collectables           = null;
-
-        this.objectsPurge           = [];
-        this.cleanCircuitSubSystems = [];
-        this.cleanPipesNetworks     = {};
-        this.autoPurgeDeleteObjects = true;
 
         this.gameStatePathName      = null;
 
@@ -62,7 +55,6 @@ export default class SaveParser
     {
         this.header             = null;
         this.objects            = null;
-        this.objectsHashMap     = {};
 
         new SaveParser_Read({
             saveParser  : this,
@@ -98,61 +90,20 @@ export default class SaveParser
     /* SAVE MANIPULATION */
     addObject(currentObject)
     {
-        this.countObjects                           = this.objects.push(currentObject);
-        this.objectsHashMap[currentObject.pathName] = this.countObjects - 1;
+        this.objects[currentObject.pathName] = currentObject;
     }
 
-    getTargetObject(pathName, forceRefreshMap = false, skipRefreshMap = false)
+    getTargetObject(pathName)
     {
-        if(forceRefreshMap === true)
-        {
-            this.refreshHashmap();
-        }
-
         // Bypass game state for easy retrievale
         if(pathName === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C' && this.gameStatePathName !== null)
         {
             pathName = this.gameStatePathName;
         }
 
-        if(this.objectsHashMap[pathName] !== undefined && this.objects[this.objectsHashMap[pathName]] !== undefined)
+        if(this.objects[pathName] !== undefined)
         {
-            if(this.objects[this.objectsHashMap[pathName]].pathName !== pathName && forceRefreshMap === false)
-            {
-                return this.getTargetObject(pathName, true);
-            }
-
-            return this.objects[this.objectsHashMap[pathName]];
-        }
-
-        if(forceRefreshMap === false && skipRefreshMap === false)
-        {
-            return this.getTargetObject(pathName, true);
-        }
-
-        return null;
-    }
-
-    getTargetObjectKey(pathName, forceRefreshMap = false)
-    {
-        if(forceRefreshMap === true)
-        {
-            this.refreshHashmap();
-        }
-
-        if(this.objectsHashMap[pathName] !== undefined && this.objects[this.objectsHashMap[pathName]] !== undefined)
-        {
-            if(this.objects[this.objectsHashMap[pathName]].pathName !== pathName && forceRefreshMap === false)
-            {
-                return this.getTargetObjectKey(pathName, true);
-            }
-
-            return this.objectsHashMap[pathName];
-        }
-
-        if(forceRefreshMap === false)
-        {
-            return this.getTargetObjectKey(pathName, true);
+            return this.objects[pathName];
         }
 
         return null;
@@ -161,95 +112,23 @@ export default class SaveParser
     deleteObject(pathName)
     {
         let currentObject = this.getTargetObject(pathName);
-        if(currentObject !== null)
-        {
-            this.objectsPurge.push(this.getTargetObjectKey(pathName));
-
-            if(currentObject.children !== undefined && currentObject.children.length > 0)
+            if(currentObject !== null)
             {
-                for(let i = 0; i < currentObject.children.length; i++)
+                if(currentObject.children !== undefined && currentObject.children.length > 0)
                 {
-                    let selectedObject = this.getTargetObjectKey(currentObject.children[i].pathName);
-                        this.objectsPurge.push(selectedObject);
-                }
-            }
-
-            if(this.autoPurgeDeleteObjects === true)
-            {
-                this.purgeDeleteObjects();
-            }
-        }
-    }
-
-    purgeDeleteObjects()
-    {
-        let foundationSubSystemSanitize = new Array();
-
-        // Delete in reverse to avoid refreshing hash table
-        this.objectsPurge.sort((a, b) => (a > b) ? -1 : 1);
-        for(let i = 0; i < this.objectsPurge.length; i++)
-        {
-            if(this.objects[this.objectsPurge[i]] !== undefined)
-            {
-                foundationSubSystemSanitize.push(this.objects[this.objectsPurge[i]].pathName);
-            }
-
-            this.objects.splice(this.objectsPurge[i], 1);
-        }
-
-        // Delete from circuit/railroad subSystem
-        if(foundationSubSystemSanitize.length > 0 || this.cleanCircuitSubSystems.length > 0)
-        {
-            foundationSubSystemSanitize = foundationSubSystemSanitize.concat(this.cleanCircuitSubSystems);
-
-            let circuitSubSystem = this.getTargetObject('Persistent_Level:PersistentLevel.CircuitSubsystem');
-
-            for(let i = 0; i < circuitSubSystem.extra.circuits.length; i++)
-            {
-                let currentCiruitSubSystem = this.getTargetObject(circuitSubSystem.extra.circuits[i].pathName);
-
-                for(let j = 0; j < currentCiruitSubSystem.properties.length; j++)
-                {
-                    if(currentCiruitSubSystem.properties[j].name === 'mComponents')
+                    for(let i = 0; i < currentObject.children.length; i++)
                     {
-                        for(let k = currentCiruitSubSystem.properties[j].value.values.length - 1; k >= 0; k--)
+                        if(this.objects[currentObject.children[i].pathName] !== undefined)
                         {
-                            let currentValues = currentCiruitSubSystem.properties[j].value.values[k];
-
-                            for(let m = foundationSubSystemSanitize.length - 1; m >= 0; m--)
-                            {
-                                if(currentValues.pathName === foundationSubSystemSanitize[m])
-                                {
-                                    foundationSubSystemSanitize.splice(m, 1);
-                                    currentCiruitSubSystem.properties[j].value.values.splice(k, 1);
-                                }
-                            }
+                            delete this.objects[currentObject.children[i].pathName];
                         }
                     }
                 }
+
+                if(this.objects[pathName] !== undefined)
+                {
+                    delete this.objects[pathName];
+                }
             }
-
-            if(foundationSubSystemSanitize.length > 0)
-            {
-                //let railroadSubsystem       = this.getTargetObject('Persistent_Level:PersistentLevel.RailroadSubsystem');
-                    //console.log(railroadSubsystem, foundationSubSystemSanitize);
-            }
-        }
-
-        this.refreshHashmap();
-        this.autoPurgeDeleteObjects = true;
-        this.objectsPurge           = [];
-        this.cleanCircuitSubSystems = [];
-    }
-
-    refreshHashmap()
-    {
-        this.objectsHashMap = {};
-        this.countObjects   = this.objects.length;
-
-        for(let i = 0; i < this.countObjects; i++)
-        {
-            this.objectsHashMap[this.objects[i].pathName] = i;
-        }
     }
 }

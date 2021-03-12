@@ -37,11 +37,6 @@ export default class BaseLayout_History
                     }
                 }
 
-                if(currentOperations.autoPurgeDeleteObjects !== undefined && currentOperations.autoPurgeDeleteObjects === false)
-                {
-                    this.baseLayout.saveGameParser.autoPurgeDeleteObjects  = false;
-                }
-
             return new Promise(function(resolve){
                     $('#liveLoader').show()
                                     .find('.progress-bar').css('width', '0%');
@@ -71,11 +66,6 @@ export default class BaseLayout_History
                     if(currentOperation.properties.marker !== null)
                     {
                         currentOperation.properties.object  = this.baseLayout.saveGameParser.getTargetObject(currentOperation.pathName);
-
-                        if(currentOperations.autoPurgeDeleteObjects !== undefined && currentOperations.autoPurgeDeleteObjects === false)
-                        {
-                            currentOperation.properties.fast = true;
-                        }
 
                         if(currentOperation.properties.object !== null)
                         {
@@ -155,19 +145,15 @@ export default class BaseLayout_History
             }
         }
 
-        if(currentOperations.autoPurgeDeleteObjects !== undefined && currentOperations.autoPurgeDeleteObjects === false)
-        {
-            this.baseLayout.saveGameParser.purgeDeleteObjects();
-            this.baseLayout.updateRadioactivityLayer();
-            this.baseLayout.updateDelayedBadgeCount();
-        }
-
         return this.doneUndo();
     }
 
     doneUndo()
     {
         console.timeEnd('undoHistory');
+
+        this.baseLayout.updateRadioactivityLayer();
+        this.baseLayout.updateDelayedBadgeCount();
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
         $('.leaflet-control-history').attr('data-original-title', 'Undo').tooltip('hide');

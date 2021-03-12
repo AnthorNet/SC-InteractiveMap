@@ -246,7 +246,7 @@ export default class BaseLayout_Statistics_Collectables
 
     getStatusFromPathName(pathName, className = null)
     {
-        let currentObject       = this.baseLayout.saveGameParser.getTargetObject(pathName, false, true); // Skip resfresh as we don't need it and old collectable are missing from the save...
+        let currentObject       = this.baseLayout.saveGameParser.getTargetObject(pathName);
 
         if(currentObject !== null)
         {
