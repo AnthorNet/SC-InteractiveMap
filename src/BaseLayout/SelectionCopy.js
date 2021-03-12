@@ -98,11 +98,15 @@ export default class BaseLayout_Selection_Copy
                         newDataObject.children  = [];
 
                     // Get object children
-                    for(let j = 0; j < currentObject.children.length; j++)
+                    if(currentObject.children !== undefined)
                     {
-                        let newObjectChildren = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName)));
-                            newDataObject.children.push(newObjectChildren);
+                        for(let j = 0; j < currentObject.children.length; j++)
+                        {
+                            let newObjectChildren = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName)));
+                                newDataObject.children.push(newObjectChildren);
+                        }
                     }
+
 
                     // Integrated railroad?
                     let mRailroadTrack   = this.baseLayout.getObjectProperty(currentObject, 'mRailroadTrack');

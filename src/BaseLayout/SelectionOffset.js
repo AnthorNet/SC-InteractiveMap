@@ -97,28 +97,31 @@ export default class BaseLayout_Selection_Offset
                             }
                         }
 
-                        for(let j = 0; j < currentObject.children.length; j++)
+                        if(currentObject.children !== undefined)
                         {
-                            let currentObjectChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName);
-
-                            // Grab wires for redraw...
-                            for(let k = 0; k < this.baseLayout.availablePowerConnection.length; k++)
+                            for(let j = 0; j < currentObject.children.length; j++)
                             {
-                                if(currentObjectChildren.pathName.endsWith(this.baseLayout.availablePowerConnection[k]))
-                                {
-                                    for(let m = 0; m < currentObjectChildren.properties.length; m++)
-                                    {
-                                        if(currentObjectChildren.properties[m].name === 'mWires')
-                                        {
-                                            for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
-                                            {
-                                                if(wires.includes(currentObjectChildren.properties[m].value.values[n].pathName) === false)
-                                                {
-                                                    wires.push(currentObjectChildren.properties[m].value.values[n].pathName);
-                                                }
-                                            }
+                                let currentObjectChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName);
 
-                                            break;
+                                // Grab wires for redraw...
+                                for(let k = 0; k < this.baseLayout.availablePowerConnection.length; k++)
+                                {
+                                    if(currentObjectChildren.pathName.endsWith(this.baseLayout.availablePowerConnection[k]))
+                                    {
+                                        for(let m = 0; m < currentObjectChildren.properties.length; m++)
+                                        {
+                                            if(currentObjectChildren.properties[m].name === 'mWires')
+                                            {
+                                                for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
+                                                {
+                                                    if(wires.includes(currentObjectChildren.properties[m].value.values[n].pathName) === false)
+                                                    {
+                                                        wires.push(currentObjectChildren.properties[m].value.values[n].pathName);
+                                                    }
+                                                }
+
+                                                break;
+                                            }
                                         }
                                     }
                                 }

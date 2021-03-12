@@ -199,18 +199,21 @@ export default class BaseLayout_Tooltip
             // Get fluid type
             let pipeNetworkId   = null;
 
-                for(let i = 0; i < currentObject.children.length; i++)
+                if(currentObject.children !== undefined)
                 {
-                    let currentChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                        if(currentChildren !== null)
-                        {
-                            let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                                if(mPipeNetworkID !== null)
-                                {
-                                    pipeNetworkId = mPipeNetworkID;
-                                    break;
-                                }
-                        }
+                    for(let i = 0; i < currentObject.children.length; i++)
+                    {
+                        let currentChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                            if(currentChildren !== null)
+                            {
+                                let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
+                                    if(mPipeNetworkID !== null)
+                                    {
+                                        pipeNetworkId = mPipeNetworkID;
+                                        break;
+                                    }
+                            }
+                    }
                 }
 
                 if(pipeNetworkId !== null && this.baseLayout.saveGamePipeNetworks[pipeNetworkId] !== undefined)
@@ -886,18 +889,21 @@ export default class BaseLayout_Tooltip
         // Get fluid type
         let pipeNetworkId   = null;
 
-            for(let i = 0; i < currentObject.children.length; i++)
+            if(currentObject.children !== undefined)
             {
-                let currentChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                    if(currentChildren !== null)
-                    {
-                        let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                            if(mPipeNetworkID !== null)
-                            {
-                                pipeNetworkId = mPipeNetworkID;
-                                break;
-                            }
-                    }
+                for(let i = 0; i < currentObject.children.length; i++)
+                {
+                    let currentChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                        if(currentChildren !== null)
+                        {
+                            let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
+                                if(mPipeNetworkID !== null)
+                                {
+                                    pipeNetworkId = mPipeNetworkID;
+                                    break;
+                                }
+                        }
+                }
             }
 
             if(pipeNetworkId !== null && this.baseLayout.saveGamePipeNetworks[pipeNetworkId] !== undefined)
@@ -965,7 +971,7 @@ export default class BaseLayout_Tooltip
 
         let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
         let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
-        let circuitStatistics   = circuitSubSystem.getStatistics(objectCircuit.circuitId);
+        let circuitStatistics   = circuitSubSystem.getStatistics(((objectCircuit !== null) ? objectCircuit.circuitId : null));
 
         let storedCharge        = Building_PowerStorage.storedCharge(this.baseLayout, currentObject);
         let capacityCharge      = Building_PowerStorage.capacityCharge(this.baseLayout, currentObject);
@@ -1756,9 +1762,15 @@ export default class BaseLayout_Tooltip
 
     setInventoryFuel(currentObject)
     {
-        let content = [];
+        let content         = [];
+        let inventoryKey    = 'mFuelInventory';
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
+            {
+                inventoryKey = 'mBatteryInventory';
+            }
+
             content.push('<div style="margin: 0 auto;width: 115px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/vehicleFuelBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat;padding: 38px;">');
-                content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'), 1, 40));
+                content.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectInventory(currentObject, inventoryKey), 1, 40));
             content.push('</div>');
 
         return content.join('');

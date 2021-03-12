@@ -139,6 +139,10 @@ export default class SubSystem_Circuit
                 powerStorageDrainRate       : 0,
                 powerStoredTimeUntilDrained : null,
             };
+            if(circuitID === null)
+            {
+                return statistics;
+            }
 
         let components                      = this.getCircuitsComponents(circuitID);
         let availablePowerStorageForCharge  = [];
