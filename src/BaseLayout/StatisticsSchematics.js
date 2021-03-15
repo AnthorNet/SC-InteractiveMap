@@ -198,7 +198,7 @@ export default class BaseLayout_Statistics_Schematics
                         html.push('<td>');
                         html.push('<div class="d-flex flex-row justify-content-center">');
                         html.push('<div class="d-flex flex-row" style="position:relative;margin: 1px;width: 48px;height: 48px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background-color: #FFFFFF;" data-hover="tooltip" title="Inventory Slots">');
-                        html.push('<img src="' + this.baseLayout.staticUrl + '/img/gameUI/ThumbsUp_256.png?v=' + this.baseLayout.scriptVersion + '" class="img-fluid" />');
+                        html.push('<img src="' + this.baseLayout.staticUrl + '/img/gameUpdate4/ThumbsUp_256.png?v=' + this.baseLayout.scriptVersion + '" class="img-fluid" />');
                         html.push('<span class="badge badge-warning align-middle" style="position: absolute;bottom: -1px; right: -1px;">' + new Intl.NumberFormat(this.language).format(currentSchematic.slots) + '</span>');
                         html.push('</div>');
                         html.push('</div>');
