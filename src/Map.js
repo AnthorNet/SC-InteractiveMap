@@ -136,6 +136,19 @@ export default class Map
                                     });
                                 }
 
+                                if(option.layerId === 'worldBorder')
+                                {
+                                    let borderPosition = [];
+                                        for(let m = 0; m < option.polygon.length; m++)
+                                        {
+                                            borderPosition.push(this.unproject(option.polygon[m]));
+                                        }
+                                        L.polyline(borderPosition, {color: 'red', weight: 3, interactive: false})
+                                                 .addTo(this.availableLayers[option.layerId]);
+
+                                    continue;
+                                }
+
                                 if(option.layerId === 'caves')
                                 {
                                     for(let caveId in option.markers)
@@ -168,7 +181,11 @@ export default class Map
                                                 if(haveEntranceHeight !== false)
                                                 {
                                                     entranceHeight = entranceHeight / option.markers[caveId].entrances[l].length;
-                                                    currentEntrance.bindTooltip('Entrance height: ' + new Intl.NumberFormat(this.language).format(Math.round(entranceHeight / 100)) + 'm')
+                                                    currentEntrance.bindTooltip('<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
+                                                        <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                                                            Entrance height: ' + new Intl.NumberFormat(this.language).format(Math.round(entranceHeight / 100)) + 'm\
+                                                        </div>\
+                                                    </div>');
                                                 }
 
                                                 currentEntrance.addTo(this.availableLayers[option.layerId]);
