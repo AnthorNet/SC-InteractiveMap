@@ -733,6 +733,8 @@ export default class SaveParser_Read
                                 case 'FeetOffset':
                                 case 'RecipeAmountStruct':
                                 case 'DroneTripInformation':
+                                // MODS
+                                case 'LampGroup':
                                     let subStructProperties = [];
                                         while(true)
                                         {

@@ -2883,7 +2883,7 @@ export default class BaseLayout
                         if(this.satisfactoryMap.collectableMarkers !== undefined && this.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
                         {
                             this.satisfactoryMap.collectableMarkers[resourceNode.pathName].setOpacity(1);
-                            delete satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
+                            delete this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
                         }
 
                         for(let i = 0; i < resourceNode.properties.length; i++)
@@ -5798,7 +5798,7 @@ export default class BaseLayout
 
                         if(marker.options.extraMarker !== undefined)
                         {
-                            this.playerLayers[result.layer].subLayer.removeLayer(marker.options.extraMarker);
+                            this.playerLayers[layerId].subLayer.removeLayer(marker.options.extraMarker);
                         }
                         if(marker.options.haloMarker !== undefined)
                         {
