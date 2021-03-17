@@ -715,7 +715,7 @@ export default class BaseLayout
 
             '/Script/FactoryGame.FGFoliageRemoval',
              */
-            if(currentObject.className.startsWith('/Script/FactoryGame.') === true)
+            if(currentObject.className.startsWith('/Script/FactoryGame.') === true && currentObject.className !== '/Script/FactoryGame.FGItemPickup_Spawnable')
             {
                 continue;
             }
