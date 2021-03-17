@@ -716,6 +716,7 @@ export default class SaveParser_Read
                                     break;
 
                                 case 'SpawnData':
+                                case 'Transform':
                                 case 'PhaseCost':
                                 case 'ItemAmount':
                                 case 'TimeTableStop':
@@ -733,6 +734,7 @@ export default class SaveParser_Read
                                 case 'FeetOffset':
                                 case 'RecipeAmountStruct':
                                 case 'DroneTripInformation':
+                                case 'ResearchTime':
                                 // MODS
                                 case 'LampGroup':
                                     let subStructProperties = [];

@@ -153,19 +153,22 @@ export default class Building_DroneStation
                 let batteryPerMinute        = 0;
                 let tripDuration            = 0;
 
-                let mCurrentTripInformationNumbers = {};
-                    for(let i = 0; i < mCurrentTripInformation.values.length; i++)
+                    if(mCurrentTripInformation !== null)
                     {
-                        mCurrentTripInformationNumbers[mCurrentTripInformation.values[i].name] = mCurrentTripInformation.values[i].value;
-                    }
-                    if(mCurrentTripInformationNumbers.TripDuration !== undefined)
-                    {
-                        tripDuration = mCurrentTripInformationNumbers.TripDuration;
-                    }
-                    if(tripDuration > 0) //TODO: Correct calculation?!
-                    {
-                        batteryPerTrip      = tripDuration / 30;
-                        batteryPerMinute    = tripDuration / 60;
+                        let mCurrentTripInformationNumbers = {};
+                            for(let i = 0; i < mCurrentTripInformation.values.length; i++)
+                            {
+                                mCurrentTripInformationNumbers[mCurrentTripInformation.values[i].name] = mCurrentTripInformation.values[i].value;
+                            }
+                            if(mCurrentTripInformationNumbers.TripDuration !== undefined)
+                            {
+                                tripDuration = mCurrentTripInformationNumbers.TripDuration;
+                            }
+                            if(tripDuration > 0) //TODO: Correct calculation?!
+                            {
+                                batteryPerTrip      = tripDuration / 30;
+                                batteryPerMinute    = tripDuration / 60;
+                            }
                     }
 
                 content.push('<table class="mb-1 w-100"><tr>');
