@@ -117,10 +117,9 @@ export default class SCIM
             options.version         = this.scriptsVERSION;
 
             options.satisfactoryMap = this.map;
-            options.saveGameParser  = new SaveParser(options.droppedFileResult, options.droppedFileName),
+            options.saveGameParser  = new SaveParser(options.droppedFileResult, options.droppedFileName);
 
             this.baseLayout         = new BaseLayout(options);
-
             this.baseLayout.draw();
         }.bind(this), 250);
     }

@@ -756,11 +756,15 @@ export default class Spawn_Blueprint
             // Update save/map
                 this.baseLayout.saveGameParser.addObject(newObject);
             let result = this.baseLayout.parseObject(newObject);
-                results.push(result);
-
-                if(this.useHistory === true && this.baseLayout.history !== null)
+                //TODO: Use promises when we have to laod a mod not yet loaded, silently pass for now...
+                if(result !== undefined) // Prevent unknown mod object from throwing error
                 {
-                    this.historyPathName.push([newObject.pathName, result.layerId]);
+                    results.push(result);
+
+                    if(this.useHistory === true && this.baseLayout.history !== null)
+                    {
+                        this.historyPathName.push([newObject.pathName, result.layerId]);
+                    }
                 }
 
             // ???
