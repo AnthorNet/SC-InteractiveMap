@@ -24,6 +24,7 @@ import Modal                                    from './Modal.js';
 import Modal_Buildings                          from './Modal/Buildings.js';
 import Modal_ColorSlots                         from './Modal/ColorSlots.js';
 import Modal_LightColorSlots                    from './Modal/LightColorSlots.js';
+import Modal_PowerCircuits                      from './Modal/PowerCircuits.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
@@ -1037,6 +1038,12 @@ export default class BaseLayout
                     statisticsSchematics.parseAlternateRecipes();
                     statisticsSchematics.parseMAM();
                     statisticsSchematics.parseAwesomeSink();
+            }.bind(this));
+            $('#modalPowerCircuits').on('click', function(){
+                let modalPowerCircuits = new Modal_PowerCircuits({
+                        baseLayout      : this
+                    });
+                    modalPowerCircuits.parse();
             }.bind(this));
 
             $('#optionsModal a[data-toggle="tab"]').on('shown.bs.tab', function(e){
@@ -3964,6 +3971,11 @@ export default class BaseLayout
             $(this.playerLayers[layerId].mainDivId).show()
                                                    .parent().show();
 
+            if(this.playerLayers[layerId].mainDivId === '#playerGeneratorsLayer')
+            {
+                $('#modalPowerCircuits').show();
+            }
+
             if(this.playerLayers[layerId].filters !== undefined)
             {
                 this.playerLayers[layerId].filtersCount = {};
@@ -6045,6 +6057,7 @@ export default class BaseLayout
 
             inputOptions.push({group: 'Statistics', text: 'Show selected items production statistics', value: 'productionStatistics'});
             inputOptions.push({group: 'Statistics', text: 'Show selected items storage statistics', value: 'storageStatistics'});
+            inputOptions.push({group: 'Statistics', text: 'Show selected power circuits statistics', value: 'powerCircuitsStatistics'});
 
         Modal.form({
             title       : 'You have selected ' + selectedMarkersLength + ' items',
@@ -6310,6 +6323,8 @@ export default class BaseLayout
                         return this.showSelectionProductionStatistics();
                     case 'storageStatistics':
                         return this.showSelectionStorageStatistics();
+                    case 'powerCircuitsStatistics':
+                        return this.showModalPowerCircuitsStatistics();
                 }
             }.bind(this)
         });
@@ -6452,6 +6467,20 @@ export default class BaseLayout
             setTimeout(function(){
                 $('#genericModal').modal('show').modal('handleUpdate');
             }, 250);
+        }
+
+        this.cancelSelectMultipleMarkers();
+    }
+
+    showModalPowerCircuitsStatistics()
+    {
+        if(this.markersSelected)
+        {
+            let modalPowerCircuits = new Modal_PowerCircuits({
+                    baseLayout      : this,
+                    markersSelected : this.markersSelected
+                });
+                modalPowerCircuits.parse();
         }
 
         this.cancelSelectMultipleMarkers();

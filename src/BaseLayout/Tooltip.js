@@ -1921,13 +1921,13 @@ export default class BaseLayout_Tooltip
         return content.join('');
     }
 
-    static setCircuitStatisticsGraph(baseLayout, circuitStatistics)
+    static setCircuitStatisticsGraph(baseLayout, circuitStatistics, width = 315)
     {
         let content     = [];
         let maxValue    = Math.max(circuitStatistics.consumption, circuitStatistics.production, circuitStatistics.capacity, circuitStatistics.maxConsumption);
 
             content.push('<div class="d-flex" style="margin: -9px;margin-top: -11px;height: 113px;">');
-                content.push('<div class="justify-content-center align-self-center h-100 text-center" style="width: ' + ((circuitStatistics.powerStoredCapacity > 0) ? 226 : 296) + 'px;">');
+                content.push('<div class="justify-content-center align-self-center h-100 text-center" style="width: ' + ((circuitStatistics.powerStoredCapacity > 0) ? (width - 89) : (width - 19)) + 'px;">');
                     content.push('<div style="height: 75px;padding-top: 5px;position: relative;">');
                         content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - (circuitStatistics.consumption / maxValue * 65)) + 'px;background-color: #e59344;" />')
                         content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - (circuitStatistics.production / maxValue * 65)) + 'px;background-color: #717172;" />')
