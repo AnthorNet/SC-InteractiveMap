@@ -537,6 +537,18 @@ export default class BaseLayout_Statistics_Schematics
                 if(schematicManager !== null)
                 {
                     let mPurchasedSchematics    = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
+                        if(mPurchasedSchematics === null)
+                        {
+                            schematicManager.properties.push({
+                                name    : "mPurchasedSchematics",
+                                type    : "ArrayProperty",
+                                value   : {
+                                    type    : "ObjectProperty",
+                                    values  : [],
+                                }
+                            });
+                            mPurchasedSchematics    = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
+                        }
                         if(mPurchasedSchematics !== null)
                         {
                             for(let i = 0; i < mPurchasedSchematics.values.length; i++)
@@ -550,6 +562,7 @@ export default class BaseLayout_Statistics_Schematics
                                                this.baseLayout.schematicsData[schematicId] === undefined
                                             && schematicId !== 'Research_HardDrive_0_C'
                                             && schematicId !== 'ResourceSink_CyberWagon_Unlock_C'
+                                            && schematicId !== 'ResourceSink_GoldenCup_C'
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
                                         )
