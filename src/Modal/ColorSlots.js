@@ -64,6 +64,14 @@ export default class Modal_ColorSlots
                                            + '          <div class="col-6">'
                                            + '              <div id="primaryColorPicker" class="text-center"></div>'
                                            + '              <div class="row mt-3 no-gutters">'
+                                           + '                  <div class="input-group col-12">'
+                                           + '                      <div class="input-group-prepend">'
+                                           + '                          <span class="input-group-text" style="width: 70px">HEX</span>'
+                                           + '                      </div>'
+                                           + '                      <input type="text" class="form-control text-center" value="" id="primaryColorInputHex" />'
+                                           + '                  </div>'
+                                           + '              </div>'
+                                           + '              <div class="row mt-1 no-gutters">'
                                            + '                  <div class="input-group col-4"><div class="input-group-prepend"><span class="input-group-text">R</span></div><input type="number" class="form-control pl-2" value="' + playerColors[0].primaryColor.r + '" min="0" max="255" id="primaryColorInputR" /></div>'
                                            + '                  <div class="col-4 px-1"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">G</span></div><input type="number" class="form-control px-2" value="' + playerColors[0].primaryColor.g + '" min="0" max="255" id="primaryColorInputG" /></div></div>'
                                            + '                  <div class="input-group col-4"><div class="input-group-prepend"><span class="input-group-text">B</span></div><input type="number" class="form-control pl-2" value="' + playerColors[0].primaryColor.b + '" min="0" max="255" id="primaryColorInputB" /></div>'
@@ -72,6 +80,14 @@ export default class Modal_ColorSlots
                                            + '          <div class="col-6">'
                                            + '              <div id="secondaryColorPicker" class="text-center"></div>'
                                            + '              <div class="row mt-3 no-gutters">'
+                                           + '                  <div class="input-group col-12">'
+                                           + '                      <div class="input-group-prepend">'
+                                           + '                          <span class="input-group-text" style="width: 70px">HEX</span>'
+                                           + '                      </div>'
+                                           + '                      <input type="text" class="form-control text-center" value="" id="secondaryColorInputHex" />'
+                                           + '                  </div>'
+                                           + '              </div>'
+                                           + '              <div class="row mt-1 no-gutters">'
                                            + '                  <div class="input-group col-4"><div class="input-group-prepend"><span class="input-group-text">R</span></div><input type="number" class="form-control pl-2" value="' + playerColors[0].secondaryColor.r + '" min="0" max="255" id="secondaryColorInputR" /></div>'
                                            + '                  <div class="col-4 px-1"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">G</span></div><input type="number" class="form-control px-2" value="' + playerColors[0].secondaryColor.g + '" min="0" max="255" id="secondaryColorInputG" /></div></div>'
                                            + '                  <div class="input-group col-4"><div class="input-group-prepend"><span class="input-group-text">B</span></div><input type="number" class="form-control pl-2" value="' + playerColors[0].secondaryColor.b + '" min="0" max="255" id="secondaryColorInputB" /></div>'
@@ -87,32 +103,38 @@ export default class Modal_ColorSlots
                                            + '</div>');
 
         let primaryColorPicker      = new iro.ColorPicker('#primaryColorPicker', {
-            width                       : 294,
-            display                     : 'inline-block',
-            color                       : 'rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ')',
-            borderWidth                 : 1,
-            borderColor                 : "#000000"
-        });
+                width                       : 294,
+                display                     : 'inline-block',
+                color                       : 'rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ')',
+                borderWidth                 : 1,
+                borderColor                 : "#000000"
+            });
+            $('#primaryColorInputHex').val(primaryColorPicker.color.hexString);
         let secondaryColorPicker    = new iro.ColorPicker('#secondaryColorPicker', {
-            width                       : 294,
-            display                     : 'inline-block',
-            color                       : 'rgb(' + playerColors[0].secondaryColor.r + ', ' + playerColors[0].secondaryColor.g + ', ' + playerColors[0].secondaryColor.b + ')',
-            borderWidth                 : 1,
-            borderColor                 : "#000000"
-        });
+                width                       : 294,
+                display                     : 'inline-block',
+                color                       : 'rgb(' + playerColors[0].secondaryColor.r + ', ' + playerColors[0].secondaryColor.g + ', ' + playerColors[0].secondaryColor.b + ')',
+                borderWidth                 : 1,
+                borderColor                 : "#000000"
+            });
+            $('#secondaryColorInputHex').val(secondaryColorPicker.color.hexString);
 
         primaryColorPicker.on('input:change', function(color){
             $('#primaryColorInputR').val(color.rgb.r);
             $('#primaryColorInputG').val(color.rgb.g);
             $('#primaryColorInputB').val(color.rgb.b).trigger('change');
+
+            $('#primaryColorInputHex').val(color.hexString);
         });
         secondaryColorPicker.on('input:change', function(color){
             $('#secondaryColorInputR').val(color.rgb.r);
             $('#secondaryColorInputG').val(color.rgb.g);
             $('#secondaryColorInputB').val(color.rgb.b).trigger('change');
+
+            $('#secondaryColorInputHex').val(color.hexString);
         });
 
-        $('#statisticsModalColorSlots input').on('change keyup input', function(){
+        $('#primaryColorInputR, #primaryColorInputG, #primaryColorInputB, #secondaryColorInputR, #secondaryColorInputG, #secondaryColorInputB').on('change keyup input', function(){
             let primaryColorR               = parseInt($('#primaryColorInputR').val());
             let primaryColorG               = parseInt($('#primaryColorInputG').val());
             let primaryColorB               = parseInt($('#primaryColorInputB').val());
@@ -121,8 +143,10 @@ export default class Modal_ColorSlots
             let secondaryColorG             = parseInt($('#secondaryColorInputG').val());
             let secondaryColorB             = parseInt($('#secondaryColorInputB').val());
 
-            primaryColorPicker.color.rgb    = {r: primaryColorR, g: primaryColorG, b: primaryColorB};
-            secondaryColorPicker.color.rgb  = {r: secondaryColorR, g: secondaryColorG, b: secondaryColorB};
+                primaryColorPicker.color.rgb    = {r: primaryColorR, g: primaryColorG, b: primaryColorB};
+                secondaryColorPicker.color.rgb  = {r: secondaryColorR, g: secondaryColorG, b: secondaryColorB};
+                $('#primaryColorInputHex').val(primaryColorPicker.color.hexString);
+                $('#secondaryColorInputHex').val(secondaryColorPicker.color.hexString);
 
             let style                       = 'linear-gradient(135deg, rgb(' + primaryColorR + ', ' + primaryColorG + ', ' + primaryColorB + ') 0%, rgb(' + primaryColorR + ', ' + primaryColorG + ', ' + primaryColorB + ') 50%, rgb(' + secondaryColorR + ', ' + secondaryColorG + ', ' + secondaryColorB + ') 51%, rgb(' + secondaryColorR + ', ' + secondaryColorG + ', ' + secondaryColorB + ') 100%)';
                 $('#statisticsModalColorSlots .selectColorSlot.active').css('background', style);
@@ -143,7 +167,39 @@ export default class Modal_ColorSlots
                     mColorSlotsSecondary_Linear.values[slotIndex].g = BaseLayout_Math.RGBToLinearColor(secondaryColorG);
                     mColorSlotsSecondary_Linear.values[slotIndex].b = BaseLayout_Math.RGBToLinearColor(secondaryColorB);
                 }
+
+                playerColors    = this.buildableSubSystem.getPlayerColorSlots(); // Refresh
         }.bind(this));
+        $('#primaryColorInputHex').on('change keyup input', function(){
+            let hexColor                        = $(this).val();
+                if([...hexColor].length === 7)
+                {
+                    try
+                    {
+                        primaryColorPicker.color.hexString = hexColor;
+
+                        $('#primaryColorInputR').val(primaryColorPicker.color.rgb.r);
+                        $('#primaryColorInputG').val(primaryColorPicker.color.rgb.g);
+                        $('#primaryColorInputB').val(primaryColorPicker.color.rgb.b).trigger('change');
+                    }
+                    catch(e){}; // Silently fail until a correct value is entered...
+                }
+        });
+        $('#secondaryColorInputHex').on('change keyup input', function(){
+            let hexColor                        = $(this).val();
+                if([...hexColor].length === 7)
+                {
+                    try
+                    {
+                        secondaryColorPicker.color.hexString = hexColor;
+
+                        $('#secondaryColorInputR').val(secondaryColorPicker.color.rgb.r);
+                        $('#secondaryColorInputG').val(secondaryColorPicker.color.rgb.g);
+                        $('#secondaryColorInputB').val(secondaryColorPicker.color.rgb.b).trigger('change');
+                    }
+                    catch(e){}; // Silently fail until a correct value is entered...
+                }
+        });
 
         $('#statisticsModalColorSlots .selectColorSlot').hover(
             function(){
@@ -168,9 +224,13 @@ export default class Modal_ColorSlots
             $('#primaryColorInputG').val(playerColors[slotIndex].primaryColor.g);
             $('#primaryColorInputB').val(playerColors[slotIndex].primaryColor.b);
 
+            $('#primaryColorInputHex').val(primaryColorPicker.color.hexString);
+
             $('#secondaryColorInputR').val(playerColors[slotIndex].secondaryColor.r);
             $('#secondaryColorInputG').val(playerColors[slotIndex].secondaryColor.g);
             $('#secondaryColorInputB').val(playerColors[slotIndex].secondaryColor.b);
+
+            $('#secondaryColorInputHex').val(secondaryColorPicker.color.hexString);
         });
         $('#resetColorSlot').on('click', function(){
             let slotIndex                   = parseInt($('#statisticsModalColorSlots .selectColorSlot.active').attr('data-slot'));

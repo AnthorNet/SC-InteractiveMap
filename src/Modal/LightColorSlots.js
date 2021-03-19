@@ -49,6 +49,14 @@ export default class Modal_LightColorSlots
                                            + '          <div class="col-12">'
                                            + '              <div id="lightColorPicker" class="text-center"></div>'
                                            + '              <div class="row mt-3 no-gutters">'
+                                           + '                  <div class="input-group col-12">'
+                                           + '                      <div class="input-group-prepend">'
+                                           + '                          <span class="input-group-text" style="width: 70px">HEX</span>'
+                                           + '                      </div>'
+                                           + '                      <input type="text" class="form-control text-center" value="" id="lightColorInputHex" />'
+                                           + '                  </div>'
+                                           + '              </div>'
+                                           + '              <div class="row mt-1 no-gutters">'
                                            + '                  <div class="input-group col-4"><div class="input-group-prepend"><span class="input-group-text">R</span></div><input type="number" class="form-control pl-2" value="' + playerColors[0].r + '" min="0" max="255" id="lightColorInputR" /></div>'
                                            + '                  <div class="col-4 px-1"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">G</span></div><input type="number" class="form-control px-2" value="' + playerColors[0].g + '" min="0" max="255" id="lightColorInputG" /></div></div>'
                                            + '                  <div class="input-group col-4"><div class="input-group-prepend"><span class="input-group-text">B</span></div><input type="number" class="form-control pl-2" value="' + playerColors[0].b + '" min="0" max="255" id="lightColorInputB" /></div>'
@@ -64,25 +72,29 @@ export default class Modal_LightColorSlots
                                            + '</div>');
 
         let lightColorPicker      = new iro.ColorPicker('#lightColorPicker', {
-            width                       : 294,
-            display                     : 'inline-block',
-            color                       : 'rgb(' + playerColors[0].r + ', ' + playerColors[0].g + ', ' + playerColors[0].b + ')',
-            borderWidth                 : 1,
-            borderColor                 : "#000000"
-        });
+                width                       : 294,
+                display                     : 'inline-block',
+                color                       : 'rgb(' + playerColors[0].r + ', ' + playerColors[0].g + ', ' + playerColors[0].b + ')',
+                borderWidth                 : 1,
+                borderColor                 : "#000000"
+            });
+            $('#lightColorInputHex').val(lightColorPicker.color.hexString);
 
         lightColorPicker.on('input:change', function(color){
             $('#lightColorInputR').val(color.rgb.r);
             $('#lightColorInputG').val(color.rgb.g);
             $('#lightColorInputB').val(color.rgb.b).trigger('change');
+
+            $('#lightColorInputHex').val(color.hexString);
         });
 
-        $('#statisticsModalLightColorSlots input').on('change keyup input', function(){
+        $('#lightColorInputR, #lightColorInputG, #lightColorInputB').on('change keyup input', function(){
             let lightColorR               = parseInt($('#lightColorInputR').val());
             let lightColorG               = parseInt($('#lightColorInputG').val());
             let lightColorB               = parseInt($('#lightColorInputB').val());
 
-            lightColorPicker.color.rgb    = {r: lightColorR, g: lightColorG, b: lightColorB};
+                lightColorPicker.color.rgb = {r: lightColorR, g: lightColorG, b: lightColorB};
+                $('#lightColorInputHex').val(lightColorPicker.color.hexString);
 
             let style                       = 'rgb(' + lightColorR + ', ' + lightColorG + ', ' + lightColorB + ')';
                 $('#statisticsModalLightColorSlots .selectColorSlot.active').css('background', style);
@@ -95,8 +107,25 @@ export default class Modal_LightColorSlots
                     mBuildableLightColorSlots.values[slotIndex].r   = BaseLayout_Math.RGBToLinearColor(lightColorR);
                     mBuildableLightColorSlots.values[slotIndex].g   = BaseLayout_Math.RGBToLinearColor(lightColorG);
                     mBuildableLightColorSlots.values[slotIndex].b   = BaseLayout_Math.RGBToLinearColor(lightColorB);
+
+                    playerColors    = this.buildableSubSystem.getPlayerLightColorSlots(); // Refresh!
                 }
         }.bind(this));
+        $('#lightColorInputHex').on('change keyup input', function(){
+            let hexColor                        = $(this).val();
+                if([...hexColor].length === 7)
+                {
+                    try
+                    {
+                        lightColorPicker.color.hexString = hexColor;
+
+                        $('#lightColorInputR').val(lightColorPicker.color.rgb.r);
+                        $('#lightColorInputG').val(lightColorPicker.color.rgb.g);
+                        $('#lightColorInputB').val(lightColorPicker.color.rgb.b).trigger('change');
+                    }
+                    catch(e){}; // Silently fail until a correct value is entered...
+                }
+        });
 
         $('#statisticsModalLightColorSlots .selectColorSlot').hover(
             function(){
@@ -118,7 +147,9 @@ export default class Modal_LightColorSlots
 
             $('#lightColorInputR').val(playerColors[slotIndex].r);
             $('#lightColorInputG').val(playerColors[slotIndex].g);
-            $('#lightColorInputB').val(playerColors[slotIndex].b);
+            $('#lightColorInputB').val(playerColors[slotIndex].b).trigger('change');
+
+            $('#lightColorInputHex').val(lightColorPicker.color.hexString);
         });
         $('#resetLightColorSlot').on('click', function(){
             let slotIndex                 = parseInt($('#statisticsModalLightColorSlots .selectColorSlot.active').attr('data-slot'));
@@ -129,6 +160,8 @@ export default class Modal_LightColorSlots
             $('#lightColorInputR').val(lightColor.r);
             $('#lightColorInputG').val(lightColor.g);
             $('#lightColorInputB').val(lightColor.b).trigger('change');
+
+            $('#lightColorInputHex').val(lightColorPicker.color.hexString);
         }.bind(this));
     }
 }
