@@ -24,14 +24,13 @@ import Modal                                    from './Modal.js';
 import Modal_Buildings                          from './Modal/Buildings.js';
 import Modal_ColorSlots                         from './Modal/ColorSlots.js';
 import Modal_LightColorSlots                    from './Modal/LightColorSlots.js';
+import Modal_MapOptions                         from './Modal/MapOptions.js';
 import Modal_PowerCircuits                      from './Modal/PowerCircuits.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_Light                           from './Building/Light.js';
-
-import BaseLayout_Map_Options                   from './BaseLayout/MapOptions.js';
 
 export default class BaseLayout
 {
@@ -77,6 +76,11 @@ export default class BaseLayout
         this.collectedHardDrives                = new HardDrives({language: options.language});
         this.collectedSchematics                = new Schematics({language: options.language});
         this.localStorage                       = this.collectedHardDrives.getLocaleStorage();
+
+        this.showStructuresOnLoad               = (this.localStorage !== null && this.localStorage.getItem('mapShowStructuresOnLoad') !== null) ? (this.localStorage.getItem('mapShowStructuresOnLoad') === 'true') : true;
+        this.showBuildingsOnLoad                = (this.localStorage !== null && this.localStorage.getItem('mapShowBuildingsOnLoad') !== null) ? (this.localStorage.getItem('mapShowBuildingsOnLoad') === 'true') : true;
+        this.showGeneratorsOnLoad               = (this.localStorage !== null && this.localStorage.getItem('mapShowGeneratorsOnLoad') !== null) ? (this.localStorage.getItem('mapShowGeneratorsOnLoad') === 'true') : true;
+        this.showTransportationOnLoad           = (this.localStorage !== null && this.localStorage.getItem('mapShowTransportationOnLoad') !== null) ? (this.localStorage.getItem('mapShowTransportationOnLoad') === 'true') : true;
 
         this.useRadioactivity                   = (this.localStorage !== null && this.localStorage.getItem('mapUseRadioactivity') !== null) ? (this.localStorage.getItem('mapUseRadioactivity') === 'true') : true;
         this.useFogOfWar                        = (this.localStorage !== null && this.localStorage.getItem('mapUseFogOfWar') !== null) ? (this.localStorage.getItem('mapUseFogOfWar') === 'true') : true;
@@ -1081,7 +1085,7 @@ export default class BaseLayout
                                 statisticsCollectables.parse();
                             break;
                         case '#statisticsModalOptions':
-                            let mapOptions = new BaseLayout_Map_Options({
+                            let mapOptions = new Modal_MapOptions({
                                     baseLayout      : this
                                 });
                                 mapOptions.parse();
@@ -3959,6 +3963,26 @@ export default class BaseLayout
                     break;
                 default:
                     this.playerLayers[layerId].subLayer = L.layerGroup();
+            }
+
+            // Do we need to show it by default?
+            if(show === true)
+            {
+                switch(this.playerLayers[layerId].mainDivId)
+                {
+                    case '#playerStructuresLayer':
+                        show = this.showStructuresOnLoad;
+                        break;
+                    case '#playerBuildingLayer':
+                        show = this.showBuildingsOnLoad;
+                        break;
+                    case '#playerGeneratorsLayer':
+                        show = this.showGeneratorsOnLoad;
+                        break;
+                    case '#playerBuildingLayer':
+                        show = this.showTransportationOnLoad;
+                        break;
+                }
             }
 
             if(show === true)

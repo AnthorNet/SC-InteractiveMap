@@ -3,7 +3,7 @@ import BaseLayout_Statistics_Player_Inventory   from '../BaseLayout/StatisticsPl
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_MAM                             from '../Building/MAM.js';
 
-export default class BaseLayout_Map_Options
+export default class Modal_MapOptions
 {
     constructor(options)
     {
@@ -186,6 +186,27 @@ export default class BaseLayout_Map_Options
 
         html.push('<hr />');
         html.push('<h4>Interactive map (Need a full refresh):</h4>');
+
+        html.push('<div class="row"><div class="col-6">');
+        html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowStructuresOnLoad" id="inputShowStructuresOnLoad" ' + ((this.baseLayout.showStructuresOnLoad === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowStructuresOnLoad">Show structures by default?</label></div>');
+        html.push('</div>');
+        html.push('</div><div class="col-6">');
+        html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowBuildingsOnLoad" id="inputShowBuildingsOnLoad" ' + ((this.baseLayout.showBuildingsOnLoad === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowBuildingsOnLoad">Show buildings by default?</label></div>');
+        html.push('</div>');
+        html.push('</div></div>');
+
+        html.push('<div class="row"><div class="col-6">');
+        html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowGeneratorsOnLoad" id="inputShowGeneratorsOnLoad" ' + ((this.baseLayout.showGeneratorsOnLoad === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowGeneratorsOnLoad">Show power grid by default?</label></div>');
+        html.push('</div>');
+        html.push('</div><div class="col-6">');
+        html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowTransportationOnLoad" id="inputShowTransportationOnLoad" ' + ((this.baseLayout.showTransportationOnLoad === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowTransportationOnLoad">Show transportation by default?</label></div>');
+        html.push('</div>');
+        html.push('</div></div>');
+
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputUseRadioactivity" id="inputUseRadioactivity" ' + ((this.baseLayout.useRadioactivity === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputUseRadioactivity">Generate radioactivity?</label></div>');
@@ -235,16 +256,28 @@ export default class BaseLayout_Map_Options
         $('#statisticsModalOptions input').on('keyup click', function(){
             if(this.baseLayout.localStorage !== null)
             {
-                this.baseLayout.useRadioactivity   = (($('#inputUseRadioactivity').is(':checked') === true) ? true : false);
+                this.baseLayout.showStructuresOnLoad        = (($('#inputShowStructuresOnLoad').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapShowStructuresOnLoad', this.baseLayout.showStructuresOnLoad);
+
+                this.baseLayout.showBuildingsOnLoad         = (($('#inputShowBuildingsOnLoad').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapShowBuildingsOnLoad', this.baseLayout.showBuildingsOnLoad);
+
+                this.baseLayout.showGeneratorsOnLoad        = (($('#inputShowGeneratorsOnLoad').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapShowGeneratorsOnLoad', this.baseLayout.showGeneratorsOnLoad);
+
+                this.baseLayout.showTransportationOnLoad    = (($('#inputShowTransportationOnLoad').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapShowTransportationOnLoad', this.baseLayout.showTransportationOnLoad);
+
+                this.baseLayout.useRadioactivity            = (($('#inputUseRadioactivity').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapUseRadioactivity', this.baseLayout.useRadioactivity);
 
-                this.baseLayout.useFogOfWar        = (($('#inputUseFogOfWar').is(':checked') === true) ? true : false);
+                this.baseLayout.useFogOfWar                 = (($('#inputUseFogOfWar').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapUseFogOfWar', this.baseLayout.useFogOfWar);
 
-                this.baseLayout.useDetailedModels  = (($('#inputUseDetailedModels').is(':checked') === true) ? true : false);
+                this.baseLayout.useDetailedModels           = (($('#inputUseDetailedModels').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapUseDetailedModels', this.baseLayout.useDetailedModels);
 
-                this.baseLayout.useSmoothFactor    = parseInt($('#inputUseSmoothFactor').val());
+                this.baseLayout.useSmoothFactor             = parseInt($('#inputUseSmoothFactor').val());
                 this.baseLayout.localStorage.setItem('mapUseSmoothFactor', this.baseLayout.useSmoothFactor);
             }
 
