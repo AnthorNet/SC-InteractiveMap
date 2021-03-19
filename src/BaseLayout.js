@@ -6146,6 +6146,7 @@ export default class BaseLayout
             inputOptions.push({group: 'Foundations', text: 'Convert "Glass Foundation 8m x 1m" to "Foundation 8m x 1m"', value: 'upgradeGlass8x1ToFoundation8x1'});
 
             inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorageInventories'});
+            inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorageInventories'});
 
             inputOptions.push({group: 'Statistics', text: 'Show selected items production statistics', value: 'productionStatistics'});
             inputOptions.push({group: 'Statistics', text: 'Show selected items storage statistics', value: 'storageStatistics'});
@@ -6410,6 +6411,8 @@ export default class BaseLayout
                             }.bind(this)
                         });
                         return;
+                    case 'clearStorageInventories':
+                        return this.clearStorageInventoriesSelection();
 
                     case 'productionStatistics':
                         return this.showSelectionProductionStatistics();
@@ -6444,6 +6447,21 @@ export default class BaseLayout
 
                         this.fillPlayerStorageBuildingInventory(currentObject, fillWith, inventoryProperty);
                     }
+            }
+        }
+
+        this.updateRadioactivityLayer();
+        this.ficsitRadioactiveAlert = undefined;
+        this.cancelSelectMultipleMarkers();
+    }
+
+    clearStorageInventoriesSelection(inventoryProperty = 'mStorageInventory')
+    {
+        if(this.markersSelected)
+        {
+            for(let i = 0; i < this.markersSelected.length; i++)
+            {
+                this.clearPlayerStorageBuildingInventory({relatedTarget: this.markersSelected[i]}, inventoryProperty);
             }
         }
 
