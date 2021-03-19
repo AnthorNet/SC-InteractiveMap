@@ -1078,7 +1078,7 @@ L.Control.ClipboardControl = L.Control.extend({
                                 this.options.baseLayout.clipboard = restored;
 
                                 $(this.options.pasteInPlaceButton).show();
-                                Modal.alert('Imported ' + restored.data.length + ' items from the blueprint!');
+                                Modal.alert('Imported ' + restored.data.length + ' items from the blueprint!<br />Don\'t forget to paste it on original location or by right clicking any foundation!');
                             }
 
                             $('#clipboardControlModal').modal('hide');
