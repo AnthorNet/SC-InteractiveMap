@@ -2253,6 +2253,74 @@ export default class BaseLayout
         }
     }
 
+    clearPlayerStorageBuildingInventory(marker, inventoryProperty = 'mStorageInventory')
+    {
+        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let storageObjects  = [currentObject];
+            // Switch to freight wagons when locomotive was selected
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+            {
+                storageObjects      = Building_Locomotive.getFreightWagons(this, currentObject);
+            }
+
+        for(let i = 0; i < storageObjects.length; i++)
+        {
+            // Skip fluid Freight Wagon
+            if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+            {
+                let storage           = this.getObjectProperty(storageObjects[i], inventoryProperty);
+                    if(storage !== null)
+                    {
+                        let storageObject = this.saveGameParser.getTargetObject(storage.pathName);
+                            if(storageObject !== null)
+                            {
+                                let mAdjustedSizeDiff = this.getObjectProperty(storageObject, 'mAdjustedSizeDiff');
+                                    if(mAdjustedSizeDiff !== null && mAdjustedSizeDiff === -31)
+                                    {
+                                        continue;
+                                    }
+                            }
+
+                    }
+            }
+
+            if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
+            {
+                inventoryProperty   = 'mInventory';
+            }
+
+            let buildingData    = this.getBuildingDataFromClassName(storageObjects[i].className);
+                if(buildingData === null || buildingData.maxSlot === undefined)
+                {
+                    continue;
+                }
+
+            let oldInventory    = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
+                for(let j = 0; j < oldInventory.properties.length; j++)
+                {
+                    if(oldInventory.properties[j].name === 'mInventoryStacks')
+                    {
+                        oldInventory = oldInventory.properties[j].value.values;
+
+                        for(let k = 0; k < buildingData.maxSlot; k++)
+                        {
+                            if(oldInventory[k] !== undefined)
+                            {
+                                oldInventory[k][0].value.itemName = "";
+                                this.setObjectProperty(oldInventory[k][0].value, 'NumItems', 0, 'IntProperty');
+                            }
+
+                        }
+                        break;
+                    }
+                }
+
+                delete this.playerLayers.playerRadioactivityLayer.elements[storageObjects[i].pathName];
+                this.radioactivityLayerNeedsUpdate = true;
+                this.getObjectRadioactivity(storageObjects[i], inventoryProperty);
+        }
+    }
+
 
     generateInventoryOptions(addNULL = true)
     {

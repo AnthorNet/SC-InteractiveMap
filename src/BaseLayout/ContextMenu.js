@@ -258,6 +258,10 @@ export default class BaseLayout_ContextMenu
                                     text: 'Fill "' + buildingData.name + '" inventory',
                                     callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal.bind(this.baseLayout)
                                 });
+                                contextMenu.push({
+                                    text: 'Clear "' + buildingData.name + '" inventory',
+                                    callback: this.baseLayout.clearPlayerStorageBuildingInventory.bind(this.baseLayout)
+                                });
                             }
                     }
 
