@@ -11,7 +11,9 @@ export default class Building_SpaceElevator
      * EGP_EarlyGame        = 0 UMETA( DisplayName = "Establishing Phase" ) Up to tier 2
      * EGP_MidGame          = 1 UMETA( DisplayName = "Development Phase" ), Up to tier 4
      * EGP_LateGame         = 2 UMETA( DisplayName = "Expansion Phase" ), Up to tier 6
-     * EGP_EndGame          = 3 UMETA( DisplayName = "Retention Phase" ), Up to tier 7
+     * EGP_EndGame          = 3 UMETA( DisplayName = "Retention Phase" ), Up to tier 8
+     * EGP_FoodCourt	    = 4 UMETA( DisplayName = "Food Court" ),
+     * EGP_Victory	    = 5 UMETA( DisplayName = "Victory!" )
      */
     static updatePhase(marker)
     {
@@ -19,6 +21,7 @@ export default class Building_SpaceElevator
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let phaseManager        = Building_SpaceElevator.getManager(baseLayout);
+            console.log(phaseManager);
 
             Building_SpaceElevator.initiate(baseLayout);
 
@@ -47,6 +50,10 @@ export default class Building_SpaceElevator
                     {
                         value           : 'EGP_EndGame',
                         text            : 'Retention Phase (Tier 7 & 8)'
+                    },
+                    {
+                        value           : 'EGP_FoodCourt',
+                        text            : 'Employee of the planet'
                     }]
                 }],
                 callback    : function(values)
