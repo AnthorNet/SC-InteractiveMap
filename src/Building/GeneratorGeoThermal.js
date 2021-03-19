@@ -25,7 +25,7 @@ export default class Building_GeneratorGeoThermal
         }
         else
         {
-            content.push('<div style="position: absolute;width: 100%;text-align: center;">' + buildingData.name + '</div>');
+            content.push('<div style="position: absolute;width: 315px;text-align: center;margin-left: 166px;margin-top: 15px;' + BaseLayout_Tooltip.defaultTextStyle + '">' + buildingData.name + '</div>');
         }
 
         // STATE
