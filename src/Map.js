@@ -283,10 +283,12 @@ export default class Map
 
                                     let currentMarkerOptions    = { icon: this.availableIcons[option.layerId], riseOnHover: true };
                                     let tooltip                 = new Array();
-                                        tooltip.push('<strong>' + option.name + '</strong><br />');
 
                                     if(option.layerId === 'hardDrives')
                                     {
+                                        let explodedPathName = marker.pathName.split('.');
+                                            tooltip.push('<strong>' + option.name + ' (' + explodedPathName.pop() + ')</strong><br />');
+
                                         let isCollected = this.collectedHardDrives.isCollected(marker.pathName);
                                             if(isCollected === true)
                                             {
@@ -324,8 +326,13 @@ export default class Map
                                             }
                                         }
                                     }
+                                    else
+                                    {
+                                        tooltip.push('<strong>' + option.name + '</strong><br />');
+                                    }
 
-
+                                    tooltip.push('<br />');
+                                    tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.x)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(marker.y)));
                                     tooltip.push('<br />');
                                     tooltip.push('Altitude: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.z / 100)) + 'm');
 
