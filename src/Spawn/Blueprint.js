@@ -168,14 +168,17 @@ export default class Spawn_Blueprint
 
             for(let i = 0; i < this.clipboard.data.length; i++)
             {
-                let newPathName         = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
+                if(this.baseLayout.saveGameParser.getTargetObject(this.clipboard.data[i].parent) !== null) // Don't need to convert if doesn't exists!
+                {
+                    let newPathName         = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
 
-                    while(pathNameToConvert.includes(newPathName))
-                    {
-                        newPathName = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
-                    }
+                        while(pathNameToConvert.includes(newPathName))
+                        {
+                            newPathName = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
+                        }
 
-                    pathNameConversion[this.clipboard.data[i].parent.pathName] = newPathName;
+                        pathNameConversion[this.clipboard.data[i].parent.pathName] = newPathName;
+                }
             }
 
             if(this.clipboard.hiddenConnections !== undefined)
@@ -192,7 +195,7 @@ export default class Spawn_Blueprint
 
                         oldPathName         = oldPathName.join('.');
 
-                    if(pathNameConversion[oldPathName] === undefined)
+                    if(pathNameConversion[oldPathName] === undefined && this.baseLayout.saveGameParser.getTargetObject(oldPathName) !== null)
                     {
                         let newPathName         = this.baseLayout.generateFastPathName({
                             className: this.clipboard.hiddenConnections[pathName].className,
