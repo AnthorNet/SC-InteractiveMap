@@ -14,7 +14,7 @@ export default class SaveParser_Write
     {
         console.time('writeStreamSave');
                               streamSaver.mitm = '/mitmStreamSaver.html';
-        this.fileStream     = streamSaver.createWriteStream(this.saveParser.fileName.replace('.sav', '') + ' - CALCULATOR.sav');
+        this.fileStream     = streamSaver.createWriteStream(this.saveParser.fileName.replace('.sav', '') + '_CALCULATOR.sav');
         this.writer         = this.fileStream.getWriter();
 
         this.isCancelled    = false;

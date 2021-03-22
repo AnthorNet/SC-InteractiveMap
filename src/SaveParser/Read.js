@@ -735,6 +735,7 @@ export default class SaveParser_Read
                                 case 'RecipeAmountStruct':
                                 case 'DroneTripInformation':
                                 case 'ResearchTime':
+                                case 'ResearchCost':
                                 // MODS
                                 case 'LampGroup':
                                     let subStructProperties = [];
