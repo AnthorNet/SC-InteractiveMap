@@ -9,6 +9,7 @@ import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoTh
 import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
+import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
 
 export default class BaseLayout_Tooltip
 {
@@ -1713,6 +1714,51 @@ export default class BaseLayout_Tooltip
         if(buildingData.category === 'foundation' || buildingData.category === 'wall' || buildingData.category === 'walkway')
         {
             content.push('Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm');
+        }
+
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/CA_SplitterSmart/Build_ConveyorAttachmentSplitterSmart.Build_ConveyorAttachmentSplitterSmart_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/CA_SplitterProgrammable/Build_ConveyorAttachmentSplitterProgrammable.Build_ConveyorAttachmentSplitterProgrammable_C')
+        {
+            let leftOutput      = Building_SmartSplitter.getSortRule(this.baseLayout, currentObject, 2);
+            let rightOutput     = Building_SmartSplitter.getSortRule(this.baseLayout, currentObject, 1);
+            let centerOutput    = Building_SmartSplitter.getSortRule(this.baseLayout, currentObject, 0);
+
+                content.push('<table class="table table-sm mt-3">');
+
+                    if(leftOutput !== null)
+                    {
+                        content.push('<tr><td class="text-left pr-3"><i class="fas fa-arrow-alt-left mr-1"></i>Left output:</td><td class="text-right">');
+                        let outputContent = [];
+                            for(let j = 0; j < leftOutput.length; j++)
+                            {
+                                outputContent.push(Building_SmartSplitter.getSortRuleLabel(this.baseLayout, leftOutput[j]));
+                            }
+                        content.push(outputContent.join('<br />'));
+                        content.push('</td></tr>');
+                    }
+                    if(centerOutput !== null)
+                    {
+                        content.push('<tr><td class="text-left pr-3"><i class="fas fa-arrow-alt-up mr-1"></i>Center output:</td><td class="text-right">');
+                        let outputContent = [];
+                            for(let j = 0; j < centerOutput.length; j++)
+                            {
+                                outputContent.push(Building_SmartSplitter.getSortRuleLabel(this.baseLayout, centerOutput[j]));
+                            }
+                        content.push(outputContent.join('<br />'));
+                        content.push('</td></tr>');
+                    }
+                    if(rightOutput !== null)
+                    {
+                        content.push('<tr><td class="text-left pr-3"><i class="fas fa-arrow-alt-right mr-1"></i>Right output:</td><td class="text-right">');
+                        let outputContent = [];
+                            for(let j = 0; j < rightOutput.length; j++)
+                            {
+                                outputContent.push(Building_SmartSplitter.getSortRuleLabel(this.baseLayout, rightOutput[j]));
+                            }
+                        content.push(outputContent.join('<br />'));
+                        content.push('</td></tr>');
+                    }
+
+                content.push('</table>');
         }
 
         if(buildingData.image !== undefined)
