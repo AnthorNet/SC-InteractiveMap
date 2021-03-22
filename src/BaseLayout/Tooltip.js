@@ -1,4 +1,4 @@
-/* global Intl, Sentry */
+/* global Intl, Sentry, parseFloat */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
@@ -6,6 +6,7 @@ import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_FrackingSmasher                 from '../Building/FrackingSmasher.js';
 import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoThermal.js';
+import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 
@@ -1664,7 +1665,35 @@ export default class BaseLayout_Tooltip
                 direction = '<i class="fas fa-location-arrow" style="transform: rotate(' + angle + 'deg)"></i>&nbsp;&nbsp;&nbsp;';
         }
 
-        content.push('<div><strong>' + direction + inverted +  buildingData.name + '</strong></div>');
+        switch(currentObject.className)
+        {
+            case '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C':
+                let buildingName = this.baseLayout.getSaveGameSign(currentObject, 'mStationName');
+                    if(buildingName !== null)
+                    {
+                        content.push('<div><strong>' + direction + inverted + buildingName + ' <em class="small">(' + buildingData.name + ')</em></strong></div>');
+                        break;
+                    }
+            case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
+                let locomotiveName  = this.baseLayout.getSaveGameSign(currentObject, 'mTrainName');
+                let freightWagons   = Building_Locomotive.getFreightWagons(this.baseLayout, currentObject);
+
+                    if(locomotiveName !== null)
+                    {
+                        content.push('<div><strong>' + direction + inverted + locomotiveName + ' <em class="small">(' + buildingData.name + ')</em></strong></div>');
+                    }
+                    else
+                    {
+                        content.push('<div><strong>' + direction + inverted +  buildingData.name + '</strong></div>');
+                    }
+                    if(freightWagons.length > 0)
+                    {
+                        content.push('<div>' + new Intl.NumberFormat(this.baseLayout.language).format(freightWagons.length) + ' freight wagons</div>');
+                    }
+                    break;
+            default:
+                content.push('<div><strong>' + direction + inverted +  buildingData.name + '</strong></div>');
+        }
 
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
         {
@@ -1684,24 +1713,6 @@ export default class BaseLayout_Tooltip
         if(buildingData.category === 'foundation' || buildingData.category === 'wall' || buildingData.category === 'walkway')
         {
             content.push('Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm');
-        }
-
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C')
-        {
-            let buildingName = this.baseLayout.getSaveGameSign(currentObject, 'mStationName');
-                if(buildingName !== null)
-                {
-                    content.push('<div><em>' + buildingName + '</em></div>');
-                }
-        }
-
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
-        {
-            let locomotiveName  = this.baseLayout.getSaveGameSign(currentObject, 'mTrainName');
-                if(locomotiveName !== null)
-                {
-                    content.push('<div><em>' + locomotiveName + '</em></div>');
-                }
         }
 
         if(buildingData.image !== undefined)
