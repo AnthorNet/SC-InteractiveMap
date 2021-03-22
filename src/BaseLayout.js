@@ -529,7 +529,8 @@ export default class BaseLayout
             if([
                 '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C',
                 '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C',
-                '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C'
+                '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C',
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C'
             ].includes(currentObject.className))
             {
                 if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
@@ -538,7 +539,10 @@ export default class BaseLayout
                     this.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(this);
                 }
 
-                continue;
+                if(currentObject.className !== '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
+                {
+                    continue;
+                }
             }
 
             // Skip
@@ -5723,6 +5727,7 @@ export default class BaseLayout
                 pathName    : 'Persistent_Level:PersistentLevel.Char_Spitter_Alternative_C_'
             },
 
+            //TODO: Find proper name and missing class
             '/Game/FactoryGame/Character/Creature/Enemy/Stinger/Char_CaveStinger.Char_CaveStinger_C': {
                 name        : 'Stinger (Size?)',
                 iconColor   : defaultIconColor,

@@ -94,6 +94,7 @@ export default class BaseLayout_ContextMenu
                 case '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C':
                 case '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C':
                 case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
+                case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
                     contextMenu.push({
                         text: 'Teleport player',
                         callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
