@@ -41,13 +41,11 @@ export default class BaseLayout_Selection_Delete
                         {
                             if(this.keepDeleted === true)
                             {
-                                let currentObject = this.baseLayout.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
-
-                                for(let k = 0; k < currentObject.properties.length; k++)
-                                {
-                                    if(currentObject.properties[k].name === 'mBuiltWithRecipe')
+                                let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
+                                let mBuiltWithRecipe    = this.baseLayout.getObjectProperty(currentObject, 'mBuiltWithRecipe');
+                                    if(mBuiltWithRecipe !== null)
                                     {
-                                        let recipeName = currentObject.properties[k].value.pathName.split('.')[1];
+                                        let recipeName = mBuiltWithRecipe.pathName.split('.')[1];
                                             if(this.baseLayout.recipesData[recipeName] !== undefined)
                                             {
                                                 for(let ingredient in this.baseLayout.recipesData[recipeName].ingredients)
@@ -59,52 +57,17 @@ export default class BaseLayout_Selection_Delete
 
                                                     putInCrate[ingredient] += this.baseLayout.recipesData[recipeName].ingredients[ingredient];
                                                 }
-
-                                                break;
                                             }
                                     }
 
-                                    // Before update 3
-                                    if(currentObject.properties[k].name === 'mDismantleRefund')
-                                    {
-                                        let dismantleRefund = currentObject.properties[k].value.values;
-
-                                            for(let m = 0; m < dismantleRefund.length; m++)
-                                            {
-                                                let currentClass    = null;
-                                                let currentAmount   = null;
-
-                                                for(let n = 0; n < dismantleRefund[m].length; n++)
-                                                {
-                                                    if(dismantleRefund[m][n].name === 'ItemClass')
-                                                    {
-                                                        currentClass    = dismantleRefund[m][n].value.pathName;
-                                                    }
-                                                    if(dismantleRefund[m][n].name === 'amount')
-                                                    {
-                                                        currentAmount   = dismantleRefund[m][n].value;
-                                                    }
-                                                }
-
-                                                if(currentClass !== null && currentAmount !== null)
-                                                {
-                                                    if(putInCrate[currentClass] === undefined)
-                                                    {
-                                                        putInCrate[currentClass] = 0;
-                                                    }
-
-                                                    putInCrate[currentClass] += currentAmount;
-                                                }
-                                            }
-                                        break;
-                                    }
-                                }
-
-                                let inventory   = this.baseLayout.getObjectInventory(currentObject, 'mStorageInventory');
+                                let inventory   = [];
+                                    inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mStorageInventory'));
                                     inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mInputInventory'));
                                     inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory'));
                                     inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mInventory'));
                                     inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'));
+                                    inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mBatteryInventory'));
+                                    inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential'));
 
                                     if(inventory.length > 0)
                                     {
