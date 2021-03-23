@@ -483,14 +483,21 @@ export default class Spawn_Blueprint
                         currentHiddenConnections.pathName   = currentHiddenConnections.pathName.split('.');
                     let extension                           = currentHiddenConnections.pathName[currentHiddenConnections.pathName.length -1];
 
-                        if(extension.search('_') !== -1)
+                        if(pathNameConversion[currentHiddenConnections.pathName.join('.')] !== undefined)
                         {
-                            currentHiddenConnections.pathName   = pathNameConversion[currentHiddenConnections.pathName.join('.')];
+                            if(extension.search('_') !== -1)
+                            {
+                                currentHiddenConnections.pathName   = pathNameConversion[currentHiddenConnections.pathName.join('.')];
+                            }
+                            else
+                            {
+                                currentHiddenConnections.pathName.pop();
+                                currentHiddenConnections.pathName   = pathNameConversion[currentHiddenConnections.pathName.join('.')] + '.' + extension;
+                            }
                         }
                         else
                         {
-                            currentHiddenConnections.pathName.pop();
-                            currentHiddenConnections.pathName   = pathNameConversion[currentHiddenConnections.pathName.join('.')] + '.' + extension;
+                            currentHiddenConnections.pathName = currentHiddenConnections.pathName.join('.');
                         }
 
                     if(currentHiddenConnections.outerPathName !== undefined && pathNameConversion[currentHiddenConnections.outerPathName] !== undefined)
@@ -520,7 +527,7 @@ export default class Spawn_Blueprint
                         }
                     }
 
-                    //console.log(currentHiddenConnections);
+                    console.log(currentHiddenConnections);
                     this.baseLayout.saveGameParser.addObject(currentHiddenConnections);
                 }
             }
