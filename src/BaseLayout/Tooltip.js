@@ -1527,6 +1527,11 @@ export default class BaseLayout_Tooltip
                             tooltipFooterOptions.fuelEnergyValue = fuelItem.energy;
 
                             let currentProgress = Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelAmount', 0) / fuelItem.energy * 100);
+                                if(fuelItem.category === 'liquid' || fuelItem.category === 'gas')
+                                {
+                                    currentProgress = Math.round(currentProgress / 100) / 10;
+                                }
+
                                 content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
 
                                 if(currentProgress === 0) // TODO: Check fuel + supplemental
