@@ -135,7 +135,7 @@ export default class BaseLayout_ContextMenu
                     }
 
                     if(
-                           (buildingData.category === 'generator' || (buildingData.powerUsed !== undefined && buildingData.powerUsed > 0))
+                           (buildingData.category === 'generator' || (buildingData.powerUsed !== undefined && buildingData.powerUsed > 0) || currentObject.className === '/Game/FactoryGame/Buildable/Factory/HadronCollider/Build_HadronCollider.Build_HadronCollider_C')
                         && buildingData.category !== 'pad' && buildingData.category !== 'tower' && buildingData.category !== 'logistic' && buildingData.category !== 'dockstation' && buildingData.category !== 'vehicle'
                         && buildingData.category !== 'pipe'
                         && buildingData.category !== 'hyperTube'
