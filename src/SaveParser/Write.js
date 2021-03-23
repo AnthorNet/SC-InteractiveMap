@@ -12,16 +12,7 @@ export default class SaveParser_Write
 
     streamSave()
     {
-        console.time('writeStreamSave');
-                              streamSaver.mitm = '/mitmStreamSaver.html';
-        this.fileStream     = streamSaver.createWriteStream(this.saveParser.fileName.replace('.sav', '') + '_CALCULATOR.sav');
-        this.writer         = this.fileStream.getWriter();
-
-        this.isCancelled    = false;
-
-        window.isSecureContext && window.addEventListener('beforeunload', function(){
-            this.cancelStreamSave();
-        }.bind(this));
+        console.time('writeFileSaveAs');
 
         if(this.saveParser.header.saveVersion >= 21)
         {
@@ -33,43 +24,31 @@ export default class SaveParser_Write
         }
     }
 
-    cancelStreamSave()
-    {
-        $('#loaderProgressBar').hide();
-        this.isCancelled = true;
-        this.writer.abort();
-    }
-
     streamCompressedSave()
     {
-        this.saveBinary = '';
-        this.writeHeader();
-        this.writer.write(this.flushToUint8Array()).then(function(){
-            setTimeout(function(){
-                $('#loaderProgressBar').css('display', 'flex');
-                $('#loaderProgressBar .progress-bar').css('width', '0px');
+        this.saveBlobArray  = [];
+        this.saveBinary     = '';
 
-                if(this.isCancelled === false)
-                {
-                    this.generateChunks();
-                }
-            }.bind(this), 5);
-        }.bind(this));
+        this.writeHeader();
+        this.saveBlobArray.push(this.flushToUint8Array());
+
+        setTimeout(function(){
+            $('#loaderProgressBar').css('display', 'flex');
+            $('#loaderProgressBar .progress-bar').css('width', '0px');
+            this.generateChunks();
+        }.bind(this), 5);
     }
 
     generateChunks()
     {
-        this.generatedChunks = new Array();
+        this.generatedChunks = [];
 
         let objectsKeys      = Object.keys(this.saveParser.objects);
         let countObjects     = objectsKeys.length;
             this.saveBinary += this.writeInt(countObjects, false); // This is a reservation for the inflated length ;)
             this.saveBinary += this.writeInt(countObjects, false);
 
-        if(this.isCancelled === false)
-        {
-            return this.generateObjectsChunks(0, objectsKeys);
-        }
+        return this.generateObjectsChunks(0, objectsKeys);
     }
 
     generateObjectsChunks(i = 0, objectsKeys)
@@ -98,10 +77,7 @@ export default class SaveParser_Write
                         $('.loader h6').html('Compiling ' + i + '/' + countObjects + ' objects...');
                         setTimeout(resolve, 5);
                     }.bind(this)).then(function(){
-                        if(this.isCancelled === false)
-                        {
-                            this.generateObjectsChunks((i + 1), objectsKeys);
-                        }
+                        this.generateObjectsChunks((i + 1), objectsKeys);
                     }.bind(this));
                 }
             }
@@ -131,10 +107,7 @@ export default class SaveParser_Write
                         $('.loader h6').html('Compiling ' + i + '/' + countObjects + ' entities...');
                         setTimeout(resolve, 5);
                     }.bind(this)).then(function(){
-                        if(this.isCancelled === false)
-                        {
-                            this.generateEntitiesChunks((i + 1), objectsKeys);
-                        }
+                        this.generateEntitiesChunks((i + 1), objectsKeys);
                     }.bind(this));
                 }
             }
@@ -223,23 +196,23 @@ export default class SaveParser_Write
     {
         let currentChunk = chunks.shift();
 
-        if(currentChunk.compressedLength === undefined)
-        {
-            // Update first chunk inflated size
-            let totalInflated = currentChunk.uncompressedLength - 4;
-            for(let i = 0; i < chunks.length; i++)
+            if(currentChunk.compressedLength === undefined)
             {
-                totalInflated += chunks[i].uncompressedLength;
+                // Update first chunk inflated size
+                let totalInflated = currentChunk.uncompressedLength - 4;
+                for(let i = 0; i < chunks.length; i++)
+                {
+                    totalInflated += chunks[i].uncompressedLength;
+                }
+
+                currentChunk.output[3] = (totalInflated >>> 24);
+                currentChunk.output[2] = (totalInflated >>> 16);
+                currentChunk.output[1] = (totalInflated >>> 8);
+                currentChunk.output[0] = (totalInflated & 0xff);
+
+                currentChunk.output             = pako.deflate(currentChunk.output);
+                currentChunk.compressedLength   = currentChunk.output.byteLength;
             }
-
-            currentChunk.output[3] = (totalInflated >>> 24);
-            currentChunk.output[2] = (totalInflated >>> 16);
-            currentChunk.output[1] = (totalInflated >>> 8);
-            currentChunk.output[0] = (totalInflated & 0xff);
-
-            currentChunk.output             = pako.deflate(currentChunk.output);
-            currentChunk.compressedLength   = currentChunk.output.byteLength;
-        }
 
         // Write chunk header
         this.saveBinary = '';
@@ -256,27 +229,34 @@ export default class SaveParser_Write
         this.saveBinary += this.writeInt(currentChunk.uncompressedLength);
         this.saveBinary += this.writeInt(0);
 
-        let header = this.flushToUint8Array();
+        this.saveBlobArray.push(this.flushToUint8Array());
+        this.saveBlobArray.push(currentChunk.output);
 
-        this.writer.write(header).then(function(){
-            this.writer.write(currentChunk.output).then(function(){
-                setTimeout(function(){
-                    if(chunks.length > 0)
-                    {
-                        this.streamChunks(chunks);
-                    }
-                    else
-                    {
-                        this.writer.close();
-                        window.SCIM.hideLoader();
-                        console.timeEnd('writeStreamSave');
+        setTimeout(function(){
+            $('.loader h6').html('Generating save file...');
 
-                        this.currentByte = 0;
-                        return;
-                    }
-                }.bind(this));
-            }.bind(this));
-        }.bind(this));
+            if(chunks.length > 0)
+            {
+                this.streamChunks(chunks);
+            }
+            else
+            {
+                saveAs(
+                    new Blob(
+                        this.saveBlobArray,
+                        {type: "application/octet-stream; charset=utf-8"}
+                    ), this.saveParser.fileName.replace('.sav', '') + '_CALCULATOR.sav'
+                );
+
+
+                window.SCIM.hideLoader();
+                console.timeEnd('writeFileSaveAs');
+
+                this.saveBlobArray  = [];
+                this.currentByte    = 0;
+                return;
+            }
+        }.bind(this), 5);
     }
 
     deflateChunk()

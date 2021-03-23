@@ -1032,30 +1032,13 @@ L.Control.ClipboardControl = L.Control.extend({
         $('body').append(modal.join(''));
 
         $('#clipboardControlModal .downloadButton').on('click', function(e){
-            if($(e.currentTarget).hasClass('disabled') === false)
-            {
-                $(e.currentTarget).addClass('disabled').prop('disabled', true);
-
-                console.time('writeStreamSaveBlueprint');
-                                  streamSaver.mitm = '/mitmStreamSaver.html';
-                let fileStream  = streamSaver.createWriteStream('blueprint-calculator.cbp');
-                let writer      = fileStream.getWriter();
-
-                window.isSecureContext && window.addEventListener('beforeunload', function(){
-                    writer.abort();
-                }.bind(this));
-
-                writer.write(pako.deflate(JSON.stringify(baseLayout.clipboard))).then(function(){
-                    writer.close();
-                    $('#clipboardControlModal .downloadButton').removeClass('disabled').prop('disabled', false);
-                    console.timeEnd('writeStreamSaveBlueprint');
-
-                    $('#clipboardControlModal').modal('hide');
-
-                    return;
-                }.bind(this));
-            }
-
+            saveAs(
+                new Blob(
+                    [pako.deflate(JSON.stringify(baseLayout.clipboard))],
+                    {type: "application/octet-stream; charset=utf-8"}
+                ), "blueprint-calculator.cbp"
+            );
+            $('#clipboardControlModal').modal('hide');
             return;
         });
 

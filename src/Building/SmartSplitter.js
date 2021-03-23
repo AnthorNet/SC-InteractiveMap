@@ -75,4 +75,62 @@ export default class Building_SmartSplitter
 
         return '?';
     }
+
+    /**
+     * CONTEXT MENU
+     */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+            contextMenu.push({
+                text: 'Update "' + buildingData.name + '" rules',
+                callback: Building_SmartSplitter.updateRules
+            });
+            contextMenu.push({separator: true});
+
+        return contextMenu;
+    }
+
+    /**
+     * MODALS
+     */
+    static updateRules(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+            baseLayout.pauseMap();
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" rules',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'leftOutput',
+                    label       : 'Left output',
+                    inputType   : 'text',
+                    value       : Building_SmartSplitter.getSortRule(baseLayout, currentObject, 2)
+                },{
+                    name        : 'centerOutput',
+                    label       : 'Center output',
+                    inputType   : 'text',
+                    value       : Building_SmartSplitter.getSortRule(baseLayout, currentObject, 0)
+                },{
+                    name        : 'rightOutput',
+                    label       : 'Right output',
+                    inputType   : 'text',
+                    value       : Building_SmartSplitter.getSortRule(baseLayout, currentObject, 1)
+                }],
+                callback    : function(values)
+                {
+                    this.unpauseMap();
+
+                    if(values === null)
+                    {
+                        return;
+                    }
+
+                    console.log(values);
+                }.bind(baseLayout)
+            });
+    }
 }
