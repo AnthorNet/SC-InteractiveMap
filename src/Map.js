@@ -28,6 +28,157 @@ export default class Map
         this.mappingBoundNorth          = -375000;
         this.mappingBoundSouth          = 375000;
 
+        this.biomes                     = {
+            1: {
+                1: 'No Man\'s Land',
+                2: 'No Man\'s Land',
+                2: 'No Man\'s Land',
+                4: 'Grass Fields',
+                5: 'Grass Fields',
+                6: 'Grass Fields',
+                8: 'Blue Crater',
+                9: 'Blue Crater'
+            },
+            2: {
+                3: 'Grass Fields',
+                4: 'Grass Fields',
+                5: 'Grass Fields',
+                6: 'Southern Forest',
+                7: 'Southern Forest',
+                8: 'Blue Crater',
+                9: 'Blue Crater',
+                10: 'Abyss Cliffs'
+            },
+            3: {
+                2: 'Dangle Spires',
+                3: 'Dangle Spires',
+                4: 'Snaketree Forest',
+                5: 'Snaketree Forest',
+                6: 'Grass Fields',
+                7: 'Southern Forest',
+                8: 'Blue Crater',
+                9: 'Blue Crater',
+                10: 'Abyss Cliffs'
+            },
+            4: {
+                1: 'Islands',
+                2: 'Dangle Spires',
+                3: 'Dangle Spires',
+                4: 'Western Dune Forest',
+                5: 'Western Dune Forest',
+                6: 'Western Dune Forest',
+                7: 'Western Dune Forest',
+                8: 'Western Dune Forest',
+                9: 'Western Dune Forest',
+                10: 'Abyss Cliffs'
+            },
+            5: {
+                1: 'Islands',
+                2: 'Dangle Spires',
+                3: 'Western Dune Forest',
+                4: 'Red Jungle',
+                5: 'Red Bamboo Fields',
+                6: 'Red Bamboo Fields',
+                7: 'Eastern Dune Forest',
+                8: 'Titan Forest',
+                9: 'Eastern Dune Forest',
+                10: 'Swamp',
+                11: 'Swamp'
+            },
+            6: {
+                1: 'Red Jungle',
+                2: 'Red Jungle',
+                3: 'Red Jungle',
+                4: 'Red Jungle',
+                5: 'Red Bamboo Fields',
+                6: 'Red Bamboo Fields',
+                7: 'Titan Forest',
+                8: 'Titan Forest',
+                9: 'Titan Forest',
+                10: 'Swamp',
+                11: 'Swamp'
+            },
+            7: {
+                0: 'Rocky Desert',
+                1: 'Rocky Desert',
+                2: 'Rocky Desert',
+                3: 'Rocky Desert',
+                4: 'Crater Lake',
+                5: 'Crater Lake',
+                6: 'Lake Forest',
+                7: 'Lake Forest',
+                8: 'Maze Canyon',
+                9: 'Titan Forest',
+                10: 'Titan Forest',
+                11: 'Titan Forest',
+                12: 'Swamp',
+                13: 'Dune Desert'
+            },
+            8: {
+                0: 'Rocky Desert',
+                1: 'Rocky Desert',
+                2: 'Rocky Desert',
+                3: 'Rocky Desert',
+                4: 'Crater Lake',
+                5: 'Crater Lake',
+                6: 'Northern Forest',
+                7: 'Northern Forest',
+                8: 'Maze Canyon',
+                9: 'Desert Canyons',
+                10: 'Dune Desert',
+                11: 'Dune Desert',
+                12: 'Dune Desert',
+                13: 'Dune Desert'
+            },
+            9: {
+                0: 'Rocky Desert',
+                1: 'Rocky Desert',
+                2: 'Rocky Desert',
+                3: 'Rocky Desert',
+                4: 'Rocky Desert',
+                5: 'Northern Forest',
+                6: 'Northern Forest',
+                7: 'Northern Forest',
+                8: 'Desert Canyons',
+                9: 'Desert Canyons',
+                10: 'Dune Desert',
+                11: 'Dune Desert',
+                12: 'Dune Desert',
+                13: 'Dune Desert'
+            },
+            10: {
+                0: 'Rocky Desert',
+                1: 'Rocky Desert',
+                2: 'Rocky Desert',
+                3: 'Rocky Desert',
+                4: 'Rocky Desert',
+                5: 'Desert Canyons',
+                6: 'Spire Coast',
+                7: 'Spire Coast',
+                8: 'Spire Coast',
+                9: 'Spire Coast',
+                10: 'Spire Coast',
+                11: 'Dune Desert',
+                12: 'Dune Desert',
+                13: 'Dune Desert'
+            },
+            11: {
+                8: 'Spire Coast',
+                9: 'Spire Coast',
+                10: 'Spire Coast',
+                11: 'Dune Desert',
+                12: 'Dune Desert',
+                13: 'Dune Desert'
+            },
+            12: {
+                9: 'Spire Coast',
+                10: 'Spire Coast',
+                11: 'Dune Desert',
+                12: 'Dune Desert',
+                13: 'Dune Desert'
+            }
+        };
+
         this.leafletMap                 = L.map('leafletMap', {
             crs                             : L.CRS.Simple,
             minZoom                         : 2,
@@ -96,6 +247,16 @@ export default class Map
                 coordinates = this.convertToGameCoordinates([coordinates.x, coordinates.y]);
 
             $('.mouseMoveCoordinates').html(Math.round(coordinates[0]) + ' / ' + Math.round(coordinates[1]));
+
+            let biomeX      = Math.round(((coordinates[0] - this.mappingBoundWest - (67800 * 2)) / 100) / 512);
+            let biomeY      = Math.round(((-coordinates[1] - this.mappingBoundNorth - (67800 * 2)) / 100) / 512);
+            let biome       = '-';
+                if(this.biomes[biomeY] !== undefined && this.biomes[biomeY][biomeX] !== undefined)
+                {
+                    biome = this.biomes[biomeY][biomeX];
+                }
+
+            $('.mouseMoveBiome').html(biome);
         }, 50, {leading: true, trailing: true}), this);
 
         this.loadInitialData();
