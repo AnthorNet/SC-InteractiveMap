@@ -82,6 +82,8 @@ export default class BaseLayout
         this.showGeneratorsOnLoad               = (this.localStorage !== null && this.localStorage.getItem('mapShowGeneratorsOnLoad') !== null) ? (this.localStorage.getItem('mapShowGeneratorsOnLoad') === 'true') : true;
         this.showTransportationOnLoad           = (this.localStorage !== null && this.localStorage.getItem('mapShowTransportationOnLoad') !== null) ? (this.localStorage.getItem('mapShowTransportationOnLoad') === 'true') : true;
 
+        this.showVehicleExtraMarker             = (this.localStorage !== null && this.localStorage.getItem('mapShowVehicleExtraMarker') !== null) ? (this.localStorage.getItem('mapShowVehicleExtraMarker') === 'true') : false;
+
         this.useRadioactivity                   = (this.localStorage !== null && this.localStorage.getItem('mapUseRadioactivity') !== null) ? (this.localStorage.getItem('mapUseRadioactivity') === 'true') : true;
         this.useFogOfWar                        = (this.localStorage !== null && this.localStorage.getItem('mapUseFogOfWar') !== null) ? (this.localStorage.getItem('mapUseFogOfWar') === 'true') : true;
         this.useDetailedModels                  = (this.localStorage !== null && this.localStorage.getItem('mapUseDetailedModels') !== null) ? (this.localStorage.getItem('mapUseDetailedModels') === 'true') : true;
@@ -2603,24 +2605,27 @@ export default class BaseLayout
         // Extra marker?
         if(buildingData.mapIconImage !== undefined)
         {
-            let position = this.satisfactoryMap.unproject(currentObject.transform.translation);
-                markerOptions.extraMarker = L.marker(
-                    position,
-                    {originPathName: currentObject.pathName}
-                ).addTo(this.playerLayers[layerId].subLayer);
+            if(buildingData.category !== 'vehicle' || (buildingData.category === 'vehicle' && this.showVehicleExtraMarker === true))
+            {
+                let position = this.satisfactoryMap.unproject(currentObject.transform.translation);
+                    markerOptions.extraMarker = L.marker(
+                        position,
+                        {originPathName: currentObject.pathName}
+                    ).addTo(this.playerLayers[layerId].subLayer);
 
-                //TODO: Mouseout not working?
-                /*
-                markerOptions.extraMarker.on('mouseover', function(marker){
-                    let markerSource = this.getMarkerFromPathName(marker.sourceTarget.options.originPathName);
-                        this.setBuildingMouseOverStyle(markerSource, buildingData);
-                }.bind(this));
-                markerOptions.extraMarker.on('mouseout', function(marker){
-                    console.log('out?');
-                    let markerSource = this.getMarkerFromPathName(marker.sourceTarget.options.originPathName);
-                        this.setBuildingMouseOutStyle(markerSource, buildingData);
-                }.bind(this));
-                */
+                    //TODO: Mouseout not working?
+                    /*
+                    markerOptions.extraMarker.on('mouseover', function(marker){
+                        let markerSource = this.getMarkerFromPathName(marker.sourceTarget.options.originPathName);
+                            this.setBuildingMouseOverStyle(markerSource, buildingData);
+                    }.bind(this));
+                    markerOptions.extraMarker.on('mouseout', function(marker){
+                        console.log('out?');
+                        let markerSource = this.getMarkerFromPathName(marker.sourceTarget.options.originPathName);
+                            this.setBuildingMouseOutStyle(markerSource, buildingData);
+                    }.bind(this));
+                    */
+            }
         }
 
         let building = this.createBuildingPolygon(currentObject, markerOptions, [widthSize, lenghtSize], offset);

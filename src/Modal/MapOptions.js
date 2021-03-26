@@ -209,6 +209,14 @@ export default class Modal_MapOptions
 
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowVehicleExtraMarker" id="inputShowVehicleExtraMarker" ' + ((this.baseLayout.showVehicleExtraMarker === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowVehicleExtraMarker">Show vehicles map icons?</label></div>');
+        html.push('</div>');
+        html.push('</div><div class="col-6">');
+
+        html.push('</div></div>');
+
+        html.push('<div class="row"><div class="col-6">');
+        html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputUseRadioactivity" id="inputUseRadioactivity" ' + ((this.baseLayout.useRadioactivity === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputUseRadioactivity">Generate radioactivity?</label></div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
@@ -267,6 +275,9 @@ export default class Modal_MapOptions
 
                 this.baseLayout.showTransportationOnLoad    = (($('#inputShowTransportationOnLoad').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowTransportationOnLoad', this.baseLayout.showTransportationOnLoad);
+
+                this.baseLayout.showVehicleExtraMarker    = (($('#inputShowVehicleExtraMarker').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapShowVehicleExtraMarker', this.baseLayout.showVehicleExtraMarker);
 
                 this.baseLayout.useRadioactivity            = (($('#inputUseRadioactivity').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapUseRadioactivity', this.baseLayout.useRadioactivity);
