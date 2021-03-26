@@ -246,7 +246,7 @@ export default class Map
             let coordinates = this.project([e.latlng.lat, e.latlng.lng], this.zoom);
                 coordinates = this.convertToGameCoordinates([coordinates.x, coordinates.y]);
 
-            $('.mouseMoveCoordinates').html(Math.round(coordinates[0]) + ' / ' + Math.round(coordinates[1]));
+            $('.mouseMoveCoordinates').html(new Intl.NumberFormat(this.language).format(Math.round(coordinates[0])) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(coordinates[1])));
 
             let biomeX      = Math.round(((coordinates[0] - this.mappingBoundWest - (67800 * 2)) / 100) / 512);
             let biomeY      = Math.round(((-coordinates[1] - this.mappingBoundNorth - (67800 * 2)) / 100) / 512);
