@@ -292,18 +292,15 @@ export default class BaseLayout_Tooltip
             for(let i = 0; i < currentObject.extra.items.length; i++)
             {
                 let currentItemData = this.baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name);
-
-                if(currentItemData !== null)
-                {
-                    currentObject.extra.items[i].currentItemData = currentItemData;
-
-                    beltInventory.push({
-                        className   : currentItemData.className,
-                        name        : currentItemData.name,
-                        image       : currentItemData.image,
-                        qty         : 1
-                    });
-                }
+                    if(currentItemData !== null)
+                    {
+                        beltInventory.push({
+                            className   : currentItemData.className,
+                            name        : currentItemData.name,
+                            image       : currentItemData.image,
+                            qty         : 1
+                        });
+                    }
             }
         }
 

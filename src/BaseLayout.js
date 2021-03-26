@@ -3285,35 +3285,31 @@ export default class BaseLayout
 
     addPlayerBelt(currentObject)
     {
-        let buildingData            = this.getBuildingDataFromClassName(currentObject.className);
-
+        let buildingData = this.getBuildingDataFromClassName(currentObject.className);
             if(buildingData !== null)
             {
                 this.setupSubLayer(buildingData.mapLayer);
-                let splineData              = this.extractSplineData(currentObject);
+                let splineData = this.extractSplineData(currentObject);
 
                 if(this.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
                 {
-                    let radioactiveInventory    = [];
-
-                    for(let i = 0; i < currentObject.extra.items.length; i++)
-                    {
-                        let currentItemData = this.getItemDataFromClassName(currentObject.extra.items[i].name, false);
-                            if(currentItemData !== null)
-                            {
-                                if(currentItemData.radioactiveDecay !== undefined)
+                    let radioactiveInventory = [];
+                        for(let i = 0; i < currentObject.extra.items.length; i++)
+                        {
+                            let currentItemData = this.getItemDataFromClassName(currentObject.extra.items[i].name, false);
+                                if(currentItemData !== null)
                                 {
-                                    currentObject.extra.items[i].currentItemData = currentItemData;
-                                    radioactiveInventory.push(currentObject.extra.items[i]);
+                                    if(currentItemData.radioactiveDecay !== undefined)
+                                    {
+                                        radioactiveInventory.push({position: currentObject.extra.items[i].position, radioactiveDecay: currentItemData.radioactiveDecay});
+                                    }
                                 }
-                            }
-                    }
+                        }
 
                     if(radioactiveInventory.length > 0)
                     {
                         for(let i = 0; i < radioactiveInventory.length; i++)
                         {
-                            let currentItemData         = radioactiveInventory[i].currentItemData;
                             let currentObjectPosition   = radioactiveInventory[i].position;
                             let currentBeltDistance     = 0;
 
@@ -3335,7 +3331,7 @@ export default class BaseLayout
                                     this.addRadioactivityDot({
                                         pathName: currentObject.pathName + '_' + i,
                                         transform:{translation: radioactivePointData}
-                                    }, [{qty: 1, radioactiveDecay: currentItemData.radioactiveDecay}]);
+                                    }, [{qty: 1, radioactiveDecay: radioactiveInventory[i].radioactiveDecay}]);
 
                                     break;
                                 }
@@ -4614,55 +4610,44 @@ export default class BaseLayout
     {
         if(this.useRadioactivity === true)
         {
-            for(let i = 0; i < currentObject.properties.length; i++)
-            {
-                if(currentObject.properties[i].name === inventoryPropertyName)
+            let inventoryPathName = this.getObjectProperty(currentObject, inventoryPropertyName);
+                if(inventoryPathName !== null)
                 {
-                    let inventoryObject = this.saveGameParser.getTargetObject(currentObject.properties[i].value.pathName);
-
-                    if(inventoryObject !== null)
-                    {
-                        let radioactivityItems  = [];
-
-                        if(inventoryObject.properties !== undefined)
+                    let inventoryObject = this.saveGameParser.getTargetObject(inventoryPathName.pathName);
+                        if(inventoryObject !== null)
                         {
-                            for(let j = 0; j < inventoryObject.properties.length; j++)
-                            {
-                                if(inventoryObject.properties[j].name === 'mInventoryStacks')
+                            let currentInventory = this.getObjectProperty(inventoryObject, 'mInventoryStacks');
+                                if(currentInventory !== null)
                                 {
-                                    let currentInventory = inventoryObject.properties[j].value.values;
-
-                                    for(let k = 0; k < currentInventory.length; k++)
-                                    {
-                                        if(currentInventory[k][0].value.itemName !== '')
+                                    let radioactivityItems  = [];
+                                        for(let k = 0; k < currentInventory.values.length; k++)
                                         {
-                                            // Rename item
-                                            let currentItemData = this.getItemDataFromClassName(currentInventory[k][0].value.itemName, false);
-                                                if(currentItemData !== null)
-                                                {
-                                                    if(currentItemData.radioactiveDecay !== undefined)
+                                            if(currentInventory.values[k][0].value.itemName !== '')
+                                            {
+                                                // Rename item
+                                                let currentItemData = this.getItemDataFromClassName(currentInventory.values[k][0].value.itemName, false);
+                                                    if(currentItemData !== null)
                                                     {
-                                                        radioactivityItems.push({
-                                                            qty                 : currentInventory[k][0].value.properties[0].value,
-                                                            radioactiveDecay    : currentItemData.radioactiveDecay
-                                                        });
+                                                        if(currentItemData.radioactiveDecay !== undefined)
+                                                        {
+                                                            radioactivityItems.push({
+                                                                qty                 : currentInventory.values[k][0].value.properties[0].value,
+                                                                radioactiveDecay    : currentItemData.radioactiveDecay
+                                                            });
+                                                        }
                                                     }
-                                                }
+                                            }
                                         }
-                                    }
 
-                                    if(radioactivityItems.length > 0)
-                                    {
-                                        this.addRadioactivityDot(currentObject, radioactivityItems);
-                                    }
+                                        if(radioactivityItems.length > 0)
+                                        {
+                                            this.addRadioactivityDot(currentObject, radioactivityItems);
+                                        }
 
-                                    return;
+                                        return;
                                 }
-                            }
                         }
-                    }
                 }
-            }
         }
 
         return;
