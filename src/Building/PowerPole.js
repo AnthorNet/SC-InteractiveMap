@@ -46,6 +46,7 @@ export default class Building_PowerPole
             if(poolIndex !== -1 && poolIndex > 0)
             {
                 currentObject.className = usePool[poolIndex - 1];
+                baseLayout.updateBuiltWithRecipe(currentObject);
             }
     }
 
@@ -68,6 +69,7 @@ export default class Building_PowerPole
             if(poolIndex !== -1 && poolIndex < (usePool.length - 1))
             {
                 currentObject.className = usePool[poolIndex + 1];
+                baseLayout.updateBuiltWithRecipe(currentObject);
             }
     }
 }

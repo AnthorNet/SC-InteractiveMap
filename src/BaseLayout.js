@@ -5796,6 +5796,27 @@ export default class BaseLayout
         return newPathName;
     }
 
+    updateBuiltWithRecipe(currentObject)
+    {
+        let mBuiltWithRecipe    = this.getObjectProperty(currentObject, 'mBuiltWithRecipe');
+        let className           = currentObject.className.replace('Build_', 'Desc_').replace('Build_', 'Desc_');
+
+            for(let recipeId in this.recipesData)
+            {
+               if(this.recipesData[recipeId].produce !== undefined && this.recipesData[recipeId].produce[className] !== undefined)
+               {
+                   if(mBuiltWithRecipe.pathName !== this.recipesData[recipeId].className)
+                   {
+                       mBuiltWithRecipe.pathName = this.recipesData[recipeId].className;
+                   }
+
+                   return;
+               }
+            }
+
+        return;
+    }
+
     // CONTEXT MENU
     getContextMenu(marker)
     {
