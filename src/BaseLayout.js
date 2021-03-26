@@ -2468,6 +2468,17 @@ export default class BaseLayout
                 {
                     if(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
                     {
+                        // Two nodes...
+                        //TODO: Check coordinates...
+                        if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625')
+                        {
+                            this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614'].setOpacity(0);
+                        }
+                        if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614')
+                        {
+                            this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625'].setOpacity(0);
+                        }
+
                         this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].setOpacity(window.SCIM.collectedOpacity);
                         this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.extractorPathName = currentObject.pathName;
                     }
@@ -2490,14 +2501,13 @@ export default class BaseLayout
             {
                 // Update geothermal status
                 let extractResourceNode = this.getObjectProperty(currentObject, 'mExtractableResource');
-
-                if(extractResourceNode !== null)
-                {
-                    if(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
+                    if(extractResourceNode !== null)
                     {
-                        this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].setOpacity(window.SCIM.collectedOpacity);
+                        if(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
+                        {
+                            this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].setOpacity(window.SCIM.collectedOpacity);
+                        }
                     }
-                }
             }
         }
 
