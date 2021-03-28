@@ -99,6 +99,10 @@ export default class BaseLayout_ContextMenu
                         text: 'Teleport player',
                         callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
                     });
+                    contextMenu.push({
+                        text: 'Toggle explored',
+                        callback: this.baseLayout.toggleHardDriveHasBeenOpened.bind(this.baseLayout)
+                    });
                     break;
             }
 
