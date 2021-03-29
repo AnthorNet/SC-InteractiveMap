@@ -168,17 +168,14 @@ export default class Spawn_Blueprint
 
             for(let i = 0; i < this.clipboard.data.length; i++)
             {
-                if(this.baseLayout.saveGameParser.getTargetObject(this.clipboard.data[i].parent) !== null) // Don't need to convert if doesn't exists!
-                {
-                    let newPathName         = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
+                let newPathName         = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
 
-                        while(pathNameToConvert.includes(newPathName))
-                        {
-                            newPathName = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
-                        }
+                    while(pathNameToConvert.includes(newPathName))
+                    {
+                        newPathName = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
+                    }
 
-                        pathNameConversion[this.clipboard.data[i].parent.pathName] = newPathName;
-                }
+                    pathNameConversion[this.clipboard.data[i].parent.pathName] = newPathName;
             }
 
             if(this.clipboard.hiddenConnections !== undefined)
@@ -195,7 +192,7 @@ export default class Spawn_Blueprint
 
                         oldPathName         = oldPathName.join('.');
 
-                    if(pathNameConversion[oldPathName] === undefined && this.baseLayout.saveGameParser.getTargetObject(oldPathName) !== null)
+                    if(pathNameConversion[oldPathName] === undefined)
                     {
                         let newPathName         = this.baseLayout.generateFastPathName({
                             className: this.clipboard.hiddenConnections[pathName].className,
@@ -242,7 +239,7 @@ export default class Spawn_Blueprint
 
                     // Power lines connections
                     if(
-                            (this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' || this.clipboard.data[i].parent.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
+                            ['/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C', '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'].includes(this.clipboard.data[i].parent.className)
                          && this.clipboard.data[i].parent.extra !== undefined
                     )
                     {
@@ -527,7 +524,6 @@ export default class Spawn_Blueprint
                         }
                     }
 
-                    console.log(currentHiddenConnections);
                     this.baseLayout.saveGameParser.addObject(currentHiddenConnections);
                 }
             }
