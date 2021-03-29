@@ -99,10 +99,15 @@ export default class BaseLayout_ContextMenu
                         text: 'Teleport player',
                         callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
                     });
-                    contextMenu.push({
-                        text: 'Toggle explored',
-                        callback: this.baseLayout.toggleHardDriveHasBeenOpened.bind(this.baseLayout)
-                    });
+
+                    if(currentObject.className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
+                    {
+                        let hasBeenOpened = this.baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
+                            contextMenu.push({
+                                text: ((hasBeenOpened === 1) ? '<strong class="text-danger">Close</strong>' : '<strong class="text-success">Open</strong>') + ' drop-pod',
+                                callback: this.baseLayout.toggleDropPodHasBeenOpened.bind(this.baseLayout)
+                            });
+                    }
                     break;
             }
 

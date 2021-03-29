@@ -4909,26 +4909,20 @@ export default class BaseLayout
         return html;
     }
 
-    toggleHardDriveHasBeenOpened(collectible)
+    toggleDropPodHasBeenOpened(marker)
     {
-        let marker = collectible.relatedTarget
-        let currentObject = this.saveGameParser.getTargetObject(marker.options.pathName);
-        let hasBeenOpened = this.getObjectProperty(currentObject, 'mHasBeenOpened', 0)
-        if(hasBeenOpened == 0)
-        {
-            this.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'BoolProperty')
-        }
-        else
-        {
-            this.deleteObjectProperty(currentObject, 'mHasBeenOpened')
-        }
-        
-        let updatedOpacity = 1;
-        if(hasBeenOpened === 0)
-        {
-            updatedOpacity = window.SCIM.collectedOpacity;
-        }
-        marker.setOpacity(updatedOpacity);
+        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let hasBeenOpened   = this.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
+            if(hasBeenOpened == 0)
+            {
+                this.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'BoolProperty');
+                marker.relatedTarget.setOpacity(window.SCIM.collectedOpacity);
+            }
+            else
+            {
+                this.deleteObjectProperty(currentObject, 'mHasBeenOpened');
+                marker.relatedTarget.setOpacity(1);
+            }
     }
 
     updateObjectProductionPausedStatus(marker)
