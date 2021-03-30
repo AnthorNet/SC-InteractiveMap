@@ -229,4 +229,109 @@ export default class BaseLayout_Math
 
         return y + 1;
     }
+
+    static extractSplineData(baseLayout, currentObject)
+    {
+        let nbPoints        = 5;
+        let splineDistance  = 0;
+        let points          = [];
+        let center          = [currentObject.transform.translation[0], currentObject.transform.translation[1], currentObject.transform.translation[2]];
+        let mSplineData     = baseLayout.getObjectProperty(currentObject, 'mSplineData');
+            if(mSplineData !== null)
+            {
+                if(currentObject.className.search('Train/Track/Build_RailroadTrack') !== -1)
+                {
+                    nbPoints = 25;
+                }
+
+                let splineDataLength            = mSplineData.values.length;
+                let previousSplineLocation      = null;
+                let previousSplineLeaveTangent  = null;
+                let oldPoint                    = null;
+                let originalSplineData          = [];
+
+                for(let i = 0; i < mSplineData.values.length; i++)
+                {
+                    let currentSpline               = mSplineData.values[i];
+                    let currentSplineLocation       = null;
+                    let currentSplineArriveTangent  = null;
+                    let currentSplineLeaveTangent   = null;
+
+                        for(let j = 0; j < currentSpline.length; j++)
+                        {
+                            if(currentSpline[j].name === 'Location')
+                            {
+                                currentSplineLocation = currentSpline[j].value.values;
+                                originalSplineData.push(currentSplineLocation);
+                            }
+                            if(currentSpline[j].name === 'ArriveTangent')
+                            {
+                                currentSplineArriveTangent = currentSpline[j].value.values;
+                            }
+                            if(currentSpline[j].name === 'LeaveTangent')
+                            {
+                                currentSplineLeaveTangent = currentSpline[j].value.values;
+                            }
+                        }
+
+                        if(previousSplineLocation !== null && previousSplineLeaveTangent !== null && currentSplineLocation !== null && currentSplineArriveTangent !== null)
+                        {
+                            for(let k = 0; k < nbPoints; k++)
+                            {
+                                let t           = k / (nbPoints - 1),
+                                    mt          = 1 - t,
+                                    mt2         = mt * mt,
+                                    t2          = t * t,
+                                    a           = mt2 * mt,
+                                    b           = mt2 * t * 3,
+                                    c           = mt * t2 * 3,
+                                    d           = t * t2,
+                                    newPoint    = {
+                                        x: a * previousSplineLocation.x + b * (previousSplineLocation.x + previousSplineLeaveTangent.x / 3) + c * (currentSplineLocation.x - currentSplineArriveTangent.x / 3) + d * currentSplineLocation.x,
+                                        y: a * previousSplineLocation.y + b * (previousSplineLocation.y + previousSplineLeaveTangent.y / 3) + c * (currentSplineLocation.y - currentSplineArriveTangent.y / 3) + d * currentSplineLocation.y,
+                                        z: a * previousSplineLocation.z + b * (previousSplineLocation.z + previousSplineLeaveTangent.z / 3) + c * (currentSplineLocation.z - currentSplineArriveTangent.z / 3) + d * currentSplineLocation.z
+                                    };
+
+                                    points.push(baseLayout.satisfactoryMap.unproject([
+                                        center[0] + newPoint.x,
+                                        center[1] + newPoint.y
+                                    ]));
+
+                                    if(oldPoint !== null)
+                                    {
+                                        splineDistance += Math.sqrt(
+                                            ((newPoint.x - oldPoint.x) * (newPoint.x - oldPoint.x))
+                                          + ((newPoint.y - oldPoint.y) * (newPoint.y - oldPoint.y))
+                                          + ((newPoint.z - oldPoint.z) * (newPoint.z - oldPoint.z))
+                                        ) / 100;
+                                    }
+
+                                    oldPoint = newPoint
+                            }
+                        }
+
+                        if(currentSplineLocation !== null && currentSplineLeaveTangent !== null)
+                        {
+                            previousSplineLocation      = currentSplineLocation;
+                            previousSplineLeaveTangent  = currentSplineLeaveTangent;
+                        }
+                }
+
+                // Straight distance is used on pipe volume calculation
+                let distanceStraight    = Math.sqrt(
+                        ((originalSplineData[splineDataLength - 1][0] - originalSplineData[0][0]) * (originalSplineData[splineDataLength - 1][0] - originalSplineData[0][0])) // X
+                        + ((originalSplineData[splineDataLength - 1][1] - originalSplineData[0][1]) * (originalSplineData[splineDataLength - 1][1] - originalSplineData[0][1])) // Y
+                        + ((originalSplineData[splineDataLength - 1][2] - originalSplineData[0][2]) * (originalSplineData[splineDataLength - 1][2] - originalSplineData[0][2])) // Z
+                      ) / 100;
+
+                return {
+                    distance            : splineDistance,
+                    distanceStraight    : distanceStraight,
+                    points              : points,
+                    originalData        : originalSplineData
+                };
+            }
+
+        return null;
+    }
 }

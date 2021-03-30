@@ -176,19 +176,19 @@ export default class BaseLayout_Tooltip
 
         if(pipelineData !== null)
         {
-            let splineData      = this.baseLayout.extractSplineData(currentObject);
+            let splineData      = BaseLayout_Math.extractSplineData(this.baseLayout, currentObject);
                 if(splineData !== null)
                 {
                     distance = ' (' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(splineData.distance * 10) / 10) + 'm)';
                 }
 
             // HEADER
-            content.push('<div style="position: absolute;margin-top: 5px;width: 350px;' + BaseLayout_Tooltip.defaultTextStyle + '">');
+            content.push('<div style="position: absolute;margin-top: 5px;width: 350px;' + BaseLayout_Tooltip.defaultTextStyle + 'text-align: center;">');
             content.push('<strong class="small">' + pipelineData.name + distance + '</strong>');
             content.push('</div>');
 
             // VOLUME
-            let maxFluid        = Math.PI * Math.pow((1.3 / 2), 2) * splineData.distanceAlt * 1000; // Use straigth calculation
+            let maxFluid        = Math.PI * Math.pow((1.3 / 2), 2) * splineData.distanceStraight * 1000; // Use straigth calculation
             let itemType        = null;
 
             let fluidBox        = this.baseLayout.getObjectProperty(currentObject, 'mFluidBox');
@@ -308,7 +308,7 @@ export default class BaseLayout_Tooltip
         let distance        = '';
 
         // Belt
-        let splineData      = this.baseLayout.extractSplineData(currentObject);
+        let splineData      = BaseLayout_Math.extractSplineData(currentObject);
             if(splineData !== null)
             {
                 distance = ' (' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(splineData.distance * 10) / 10) + 'm)';

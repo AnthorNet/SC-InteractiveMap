@@ -2904,17 +2904,17 @@ export default class BaseLayout
                     {
                         if(this.playerLayers[layerId].distance !== undefined)
                         {
-                            let splineData = this.extractSplineData(currentObject);
-                            if(splineData !== null)
-                            {
-                                this.playerLayers[layerId].filtersCount[currentObject.className].distance -= splineData.distance;
-
-                                if(this.playerLayers[layerId].filtersCount[currentObject.className].distance <= 0)
+                            let splineData = BaseLayout_Math.extractSplineData(this, currentObject);
+                                if(splineData !== null)
                                 {
-                                    this.playerLayers[layerId].filtersCount[currentObject.className].distance = 0;
-                                    $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((currentObject.className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : currentObject.className) + '"]').hide();
+                                    this.playerLayers[layerId].filtersCount[currentObject.className].distance -= splineData.distance;
+
+                                    if(this.playerLayers[layerId].filtersCount[currentObject.className].distance <= 0)
+                                    {
+                                        this.playerLayers[layerId].filtersCount[currentObject.className].distance = 0;
+                                        $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((currentObject.className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : currentObject.className) + '"]').hide();
+                                    }
                                 }
-                            }
                         }
                     }
                     else
@@ -2954,11 +2954,11 @@ export default class BaseLayout
         // Does the layer have a distance field to update?
         if(this.playerLayers[layerId].distance !== undefined)
         {
-            let splineData = this.extractSplineData(currentObject);
-            if(splineData !== null)
-            {
-                this.playerLayers[layerId].distance -= splineData.distance;
-            }
+            let splineData = BaseLayout_Math.extractSplineData(this, currentObject);
+                if(splineData !== null)
+                {
+                    this.playerLayers[layerId].distance -= splineData.distance;
+                }
         }
 
         //MOD: Efficiency Checker
@@ -3299,7 +3299,7 @@ export default class BaseLayout
             if(buildingData !== null)
             {
                 this.setupSubLayer(buildingData.mapLayer);
-                let splineData = this.extractSplineData(currentObject);
+                let splineData = BaseLayout_Math.extractSplineData(this, currentObject);
 
                 if(this.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
                 {
@@ -3353,7 +3353,7 @@ export default class BaseLayout
                 }
 
                 let beltCorridor    = L.corridor(
-                        splineData.data,
+                        splineData.points,
                         {
                             pathName: currentObject.pathName,
                             corridor: 135,
@@ -3580,10 +3580,10 @@ export default class BaseLayout
     addPlayerTrack(currentObject)
     {
         this.setupSubLayer('playerTracksLayer');
-        let splineData  = this.extractSplineData(currentObject);
+        let splineData  = BaseLayout_Math.extractSplineData(this, currentObject);
 
         let trackCorridor = L.corridor(
-                splineData.data,
+                splineData.points,
                 {
                     pathName: currentObject.pathName,
                     corridor: 600,
@@ -3604,60 +3604,6 @@ export default class BaseLayout
         this.playerLayers.playerTracksLayer.elements.push(trackCorridor);
 
         return trackCorridor;
-    }
-
-    extractSplineData(currentObject)
-    {
-        for(let j = 0; j < currentObject.properties.length; j++)
-        {
-            if(currentObject.properties[j].name === 'mSplineData')
-            {
-                let center              = [currentObject.transform.translation[0], currentObject.transform.translation[1], currentObject.transform.translation[2]];
-                let splineData          = currentObject.properties[j].value.values;
-                let splineDataLength    = splineData.length;
-                let splineDistance      = 0;
-                let currentSplineData   = [];
-                let originalSplineData  = [];
-
-                for(let k = 0; k < splineDataLength; k++)
-                {
-                    let currentSpline = splineData[k];
-
-                    let currentLocation = [
-                        center[0] + currentSpline[0].value.values.x,
-                        center[1] + currentSpline[0].value.values.y,
-                        center[2] + currentSpline[0].value.values.z
-                    ];
-                    currentSplineData.push(this.satisfactoryMap.unproject(currentLocation));
-                    originalSplineData.push(currentLocation);
-
-                    if(k > 0)
-                    {
-                        splineDistance += Math.sqrt(
-                            ((originalSplineData[k][0] - originalSplineData[k-1][0]) * (originalSplineData[k][0] - originalSplineData[k-1][0])) // X
-                          + ((originalSplineData[k][1] - originalSplineData[k-1][1]) * (originalSplineData[k][1] - originalSplineData[k-1][1])) // Y
-                          + ((originalSplineData[k][2] - originalSplineData[k-1][2]) * (originalSplineData[k][2] - originalSplineData[k-1][2])) // Z
-                        ) / 100;
-                    }
-                }
-
-                // Distance only using start/end as used by pipes in game... :D
-                let altDistance = Math.sqrt(
-                    ((originalSplineData[splineDataLength - 1][0] - originalSplineData[0][0]) * (originalSplineData[splineDataLength - 1][0] - originalSplineData[0][0])) // X
-                    + ((originalSplineData[splineDataLength - 1][1] - originalSplineData[0][1]) * (originalSplineData[splineDataLength - 1][1] - originalSplineData[0][1])) // Y
-                    + ((originalSplineData[splineDataLength - 1][2] - originalSplineData[0][2]) * (originalSplineData[splineDataLength - 1][2] - originalSplineData[0][2])) // Z
-                  ) / 100;
-
-                return {
-                    distance        : splineDistance,
-                    distanceAlt     : altDistance,
-                    data            : currentSplineData,
-                    originalData    : originalSplineData
-                };
-            }
-        }
-
-        return null;
     }
 
     addPlayerPowerLine(currentObject)
