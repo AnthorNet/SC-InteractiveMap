@@ -30,9 +30,14 @@ export default class SaveParser_Read
         this.saveParser.header.saveDateTime         = this.readLong();
         this.saveParser.header.sessionVisibility    = this.readByte();
 
-        if(this.saveParser.header.saveHeaderType > 6)
+        if(this.saveParser.header.saveHeaderType >= 7)
         {
             this.saveParser.header.fEditorObjectVersion = this.readInt();
+        }
+        if(this.saveParser.header.saveHeaderType >= 8)
+        {
+            this.saveParser.header.modMetadata      = this.readString();
+            this.saveParser.header.isModdedSave     = this.readInt();
         }
 
         console.log(this.saveParser.header);

@@ -301,9 +301,14 @@ export default class SaveParser_Write
             header += this.writeLong(this.saveParser.header.saveDateTime, false);
             header += this.writeByte(this.saveParser.header.sessionVisibility, false);
 
-            if(this.saveParser.header.saveHeaderType > 6)
+            if(this.saveParser.header.saveHeaderType >= 7)
             {
                 header += this.writeInt(this.saveParser.header.fEditorObjectVersion, false);
+            }
+            if(this.saveParser.header.saveHeaderType >= 8)
+            {
+                header += this.writeString(this.saveParser.header.modMetadata, false);
+                header += this.writeInt(this.saveParser.header.isModdedSave, false);
             }
 
         this.saveBinary += header;
