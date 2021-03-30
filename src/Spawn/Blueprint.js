@@ -502,27 +502,24 @@ export default class Spawn_Blueprint
                         currentHiddenConnections.outerPathName = pathNameConversion[currentHiddenConnections.outerPathName];
                     }
 
-                    for(let i = 0; i < currentHiddenConnections.properties.length; i++)
-                    {
-                        if(currentHiddenConnections.properties[i].name === 'mHiddenConnections')
+                    let mHiddenConnections = this.baseLayout.getObjectProperty(currentHiddenConnections, 'mHiddenConnections');
+                        if(mHiddenConnections !== null)
                         {
-                            let mHiddenConnections = currentHiddenConnections.properties[i].value.values;
-                                for(let j = 0; j < mHiddenConnections.length; j++)
+                            for(let j = 0; j < mHiddenConnections.values.length; j++)
+                            {
+                                if(pathNameConversion[mHiddenConnections.values[j].pathName] !== undefined)
                                 {
-                                    if(pathNameConversion[mHiddenConnections[j].pathName] !== undefined)
+                                    mHiddenConnections.values[j].pathName = pathNameConversion[mHiddenConnections.values[j].pathName];
+                                }
+                                else
+                                {
+                                    for(let oldPathName in pathNameConversion)
                                     {
-                                        mHiddenConnections[j].pathName = pathNameConversion[mHiddenConnections[j].pathName];
-                                    }
-                                    else
-                                    {
-                                        for(let oldPathName in pathNameConversion)
-                                        {
-                                            mHiddenConnections[j].pathName = mHiddenConnections[j].pathName.split(oldPathName + '.').join(pathNameConversion[oldPathName] + '.');
-                                        }
+                                        mHiddenConnections.values[j].pathName = mHiddenConnections.values[j].pathName.split(oldPathName + '.').join(pathNameConversion[oldPathName] + '.');
                                     }
                                 }
+                            }
                         }
-                    }
 
                     this.baseLayout.saveGameParser.addObject(currentHiddenConnections);
                 }

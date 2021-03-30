@@ -3680,6 +3680,11 @@ export default class BaseLayout
 
                     if(currentObjectSourceOuterPath !== null && currentObjectSourceOuterPath.transform !== undefined && currentObjectTargetOuterPath !== null && currentObjectTargetOuterPath.transform !== undefined)
                     {
+                        // Check if source and target have the proper wire connection?
+                        this.checkPlayerWirePowerConnection(currentObjectSource, currentObject);
+                        this.checkPlayerWirePowerConnection(currentObjectTarget, currentObject);
+
+                        // Add the power line!
                         let powerline = L.polyline([
                             this.satisfactoryMap.unproject(currentObjectSourceOuterPath.transform.translation),
                             this.satisfactoryMap.unproject(currentObjectTargetOuterPath.transform.translation)
@@ -3694,13 +3699,47 @@ export default class BaseLayout
 
                         return powerline;
                     }
-                    else
-                    {
-                        console.log('addPlayerPowerLine', currentObjectSource, currentObjectSourceOuterPath, currentObjectTarget, currentObjectTargetOuterPath);
-                    }
 
                     return false;
             }
+    }
+
+    checkPlayerWirePowerConnection(currentObject, currentWireObject)
+    {
+        let mWires = this.getObjectProperty(currentObject, 'mWires');
+
+            // Create the missing property...
+            if(mWires === null)
+            {
+                currentObject.properties.push({
+                    name    : "mWires",
+                    type    : "ArrayProperty",
+                    value   : {
+                        type    : "ObjectProperty",
+                        values  : [{
+                            levelName   : ((currentWireObject.levelName !== undefined) ? currentWireObject.levelName : 'Persistent_Level'),
+                            pathName    : currentWireObject.pathName
+                        }]
+                    }
+                });
+
+                return;
+            }
+
+            // Check if wire is properly connected...
+            for(let i = 0; i < mWires.values.length; i++)
+            {
+                if(mWires.values[i].pathName === currentWireObject.pathName)
+                {
+                    return;
+                }
+            }
+
+            // Wasn't found, add it!
+            mWires.values.push({
+                levelName   : ((currentWireObject.levelName !== undefined) ? currentWireObject.levelName : 'Persistent_Level'),
+                pathName    : currentWireObject.pathName
+            });
     }
 
     deletePlayerWiresFromPowerConnection(currentObjectPowerConnection)
