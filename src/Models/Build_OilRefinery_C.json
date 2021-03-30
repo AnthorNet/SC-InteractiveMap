@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/OilRefinery/Build_OilRefinery.Build_OilRefinery_C": {
-        "scale": 0.9,
-        "forms": [
+        "scale"             : 0.9,
+        "powerConnection"   : [0, -1000],
+        "forms"             : [
             {
                 "points": [
                     [-360, -1040], [-300, -1040], [-300, -1100], [-60, -1100], [-60, -1040], [60, -1040], [60, -1100], [300, -1100], [300, -1040], [360, -1040],

@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/GeneratorFuel/Build_GeneratorFuel.Build_GeneratorFuel_C": {
-        "scale": 0.95,
-        "forms": [
+        "scale"             : 0.95,
+        "powerConnection"   : [0, 540],
+        "forms"             : [
             {
                 "points": [
                     [-170, -530], [-170, -990], [-120, -990], [-120, -1050], [120, -1050], [120, -990], [170, -990], [170, -530],

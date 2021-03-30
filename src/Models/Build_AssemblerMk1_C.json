@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/AssemblerMk1/Build_AssemblerMk1.Build_AssemblerMk1_C": {
-        "scale": 0.98,
-        "forms": [
+        "scale"             : 0.98,
+        "powerConnection"   : [450, 50],
+        "forms"             : [
             {
                 "points": [
                     [-400, -665], [-375, -690], [-300, -690], [-300, -750], [-60, -750], [-60, -690], [60, -690], [60, -750], [300, -750], [300, -690], [375, -690], [400, -665],

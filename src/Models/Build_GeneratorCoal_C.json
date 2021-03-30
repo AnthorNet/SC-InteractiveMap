@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/GeneratorCoal/Build_GeneratorCoal.Build_GeneratorCoal_C": {
-        "scale": 0.95,
-        "forms": [
+        "scale"             : 0.98,
+        "powerConnection"   : [0, -1250],
+        "forms"             : [
             {
                 "points": [
                     [80, -1280], [110, -1210], [170, -1210], [180, -1200], [290, -1200], [290, -1210], [370, -1210], [370, 170],

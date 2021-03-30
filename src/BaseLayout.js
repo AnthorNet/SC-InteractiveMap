@@ -3684,17 +3684,52 @@ export default class BaseLayout
                         this.checkPlayerWirePowerConnection(currentObjectSource, currentObject);
                         this.checkPlayerWirePowerConnection(currentObjectTarget, currentObject);
 
+                        // Does source or target have a connection anchor?
+                        let sourceTranslation = currentObjectSourceOuterPath.transform.translation;
+                            if(this.detailedModels !== null && this.detailedModels[currentObjectSourceOuterPath.className] !== undefined && this.detailedModels[currentObjectSourceOuterPath.className].powerConnection !== undefined)
+                            {
+                                let currentModel = this.detailedModels[currentObjectSourceOuterPath.className];
+                                    sourceTranslation= BaseLayout_Math.getPointRotation(
+                                        [
+                                            sourceTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
+                                            sourceTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
+                                        ],
+                                        sourceTranslation,
+                                        currentObjectSourceOuterPath.transform.rotation
+                                    );
+                            }
+                        let targetTranslation = currentObjectTargetOuterPath.transform.translation;
+                            if(this.detailedModels !== null && this.detailedModels[currentObjectTargetOuterPath.className] !== undefined && this.detailedModels[currentObjectTargetOuterPath.className].powerConnection !== undefined)
+                            {
+                                let currentModel = this.detailedModels[currentObjectTargetOuterPath.className];
+                                    targetTranslation= BaseLayout_Math.getPointRotation(
+                                        [
+                                            targetTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
+                                            targetTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
+                                        ],
+                                        targetTranslation,
+                                        currentObjectTargetOuterPath.transform.rotation
+                                    );
+                            }
+
+
                         // Add the power line!
                         let powerline = L.polyline([
-                            this.satisfactoryMap.unproject(currentObjectSourceOuterPath.transform.translation),
-                            this.satisfactoryMap.unproject(currentObjectTargetOuterPath.transform.translation)
-                        ], {pathName: currentObject.pathName, color: ((currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff'), weight: 1, interactive: false, altitude: ((currentObjectSourceOuterPath.transform.translation[2] + currentObjectTargetOuterPath.transform.translation[2]) / 2)});
+                                this.satisfactoryMap.unproject(sourceTranslation),
+                                this.satisfactoryMap.unproject(targetTranslation)
+                            ], {
+                                pathName    : currentObject.pathName,
+                                color       : ((currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff'),
+                                weight      : 1,
+                                interactive : false,
+                                altitude    : ((currentObjectSourceOuterPath.transform.translation[2] + currentObjectTargetOuterPath.transform.translation[2]) / 2)
+                            });
 
                         this.playerLayers.playerPowerGridLayer.elements.push(powerline);
 
                         this.playerLayers.playerPowerGridLayer.distance += Math.sqrt(
-                            ((currentObjectSourceOuterPath.transform.translation[0] - currentObjectTargetOuterPath.transform.translation[0]) * (currentObjectSourceOuterPath.transform.translation[0] - currentObjectTargetOuterPath.transform.translation[0]))
-                          + ((currentObjectSourceOuterPath.transform.translation[1] - currentObjectTargetOuterPath.transform.translation[1]) * (currentObjectSourceOuterPath.transform.translation[1] - currentObjectTargetOuterPath.transform.translation[1]))
+                            ((sourceTranslation[0] - targetTranslation[0]) * (sourceTranslation[0] - targetTranslation[0]))
+                          + ((sourceTranslation[1] - targetTranslation[1]) * (sourceTranslation[1] - targetTranslation[1]))
                         ) / 100;
 
                         return powerline;

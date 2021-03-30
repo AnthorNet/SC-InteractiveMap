@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/ManufacturerMk1/Build_ManufacturerMk1.Build_ManufacturerMk1_C": {
-        "scale": 0.88,
-        "forms": [
+        "scale"             : 0.88,
+        "powerConnection"   : [950, 500],
+        "forms"             : [
             {
                 "points": [
                     [-1000, -990], [-970, -1020], [-800, -1020], [-800, -1070], [-550, -1070], [-550, -1020],[-360, -1020], [-360, -1070],

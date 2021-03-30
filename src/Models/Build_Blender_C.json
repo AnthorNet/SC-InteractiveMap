@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/Blender/Build_Blender.Build_Blender_C": {
-        "scale": 0.98,
-        "forms": [
+        "scale"             : 0.98,
+        "powerConnection"   : [-850, -700],
+        "forms"             : [
             {
                 "points": [
                     [-750,760],[-750,800],[-450,800],[-450,760],[-350,760],[-350,800],[-50,800],[-50,760],

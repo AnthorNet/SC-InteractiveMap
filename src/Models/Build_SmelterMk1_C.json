@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/SmelterMk1/Build_SmelterMk1.Build_SmelterMk1_C": {
-        "scale": 0.9,
-        "forms": [
+        "scale"             : 0.9,
+        "powerConnection"   : [250, -350],
+        "forms"             : [
             {
                 "points": [
                     [-270, -405], [-160, -405], [-160, -450], [160, -450], [160, -405], [270, -405],

@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C": {
-        "scale": 0.98,
-        "forms": [
+        "scale"             : 0.98,
+        "powerConnection"   : [1100, -900],
+        "forms"             : [
             {
                 "points": [
                     [-600,-1200],[790,-1200],

@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C": {
-        "scale": 1,
-        "forms": [
+        "scale"             : 1,
+        "powerConnection"   : [0, -230],
+        "forms"             : [
             {
                 "points": [
                     [100,-300], [200,-300], [300,-200], [300,-100], [260,-30], [260,30], [300,100], [300,200], [200,300], [100,300], [30,260], [-30,260],

@@ -1,7 +1,8 @@
 {
     "/Game/FactoryGame/Buildable/Factory/ConstructorMk1/Build_ConstructorMk1.Build_ConstructorMk1_C": {
-        "scale": 0.8,
-        "forms": [
+        "scale"             : 0.8,
+        "powerConnection"   : [250, -350],
+        "forms"             : [
             {
                 "points": [
                     [-180, -500], [180, -500], [180, -380], [260, -380], [330, -310], [330, -100], [500, -100],
