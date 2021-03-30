@@ -308,7 +308,7 @@ export default class BaseLayout_Tooltip
         let distance        = '';
 
         // Belt
-        let splineData      = BaseLayout_Math.extractSplineData(currentObject);
+        let splineData      = BaseLayout_Math.extractSplineData(this.baseLayout, currentObject);
             if(splineData !== null)
             {
                 distance = ' (' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(splineData.distance * 10) / 10) + 'm)';
