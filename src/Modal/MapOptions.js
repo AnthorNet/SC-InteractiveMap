@@ -1,4 +1,4 @@
-import BaseLayout_Statistics_Player_Inventory   from '../BaseLayout/StatisticsPlayerInventory.js';
+import Modal_MapPlayers                         from '../Modal/MapPlayers.js';
 
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_MAM                             from '../Building/MAM.js';
@@ -473,55 +473,54 @@ export default class Modal_MapOptions
                     this.baseLayout.deleteObjectProperty(this.baseLayout.playersState[i], 'mLastSchematicTierInUI');
                     this.baseLayout.deleteObjectProperty(this.baseLayout.playersState[i], 'mShoppingList');
                     this.baseLayout.deleteObjectProperty(this.baseLayout.playersState[i], 'mMessageData');
-                }
 
-                // Update player inventories
-                for(let i = 0; i < this.baseLayout.playersInventory.length; i++)
-                {
-                    let inventory       = this.baseLayout.getObjectInventory(this.baseLayout.playersInventory[i], 'mInventory', true);
-
-                    for(let j = 0; j < inventory.properties.length; j++)
-                    {
-                        if(inventory.properties[j].name === 'mAdjustedSizeDiff')
+                    // Update player inventories
+                    let mOwnedPawn = this.baseLayout.getObjectProperty(this.baseLayout.playersState[i], 'mOwnedPawn');
+                        if(mOwnedPawn !== null)
                         {
-                            inventory.properties[j].value = 0;
-                        }
-                        if(inventory.properties[j].name === 'mInventoryStacks' || inventory.properties[j].name === 'mArbitrarySlotSizes' || inventory.properties[j].name === 'mAllowedItemDescriptors')
-                        {
-                            inventory.properties[j].value.values.splice(this.defaultInventorySize);
+                            let currentPlayer   = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                            
+                            let inventory       = this.baseLayout.getObjectInventory(currentPlayer, 'mInventory', true);
+                                for(let j = 0; j < inventory.properties.length; j++)
+                                {
+                                    if(inventory.properties[j].name === 'mAdjustedSizeDiff')
+                                    {
+                                        inventory.properties[j].value = 0;
+                                    }
+                                    if(inventory.properties[j].name === 'mInventoryStacks' || inventory.properties[j].name === 'mArbitrarySlotSizes' || inventory.properties[j].name === 'mAllowedItemDescriptors')
+                                    {
+                                        inventory.properties[j].value.values.splice(this.defaultInventorySize);
 
-                            // Give Xeno Zapper, Always get prepared ^^
-                            if(inventory.properties[j].name === 'mInventoryStacks')
-                            {
-                                inventory.properties[j].value.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
-                                inventory.properties[j].value.values[0][0].value.properties[0].value    = 1;
-                            }
-                        }
-                    }
+                                        // Give Xeno Zapper, Always get prepared ^^
+                                        if(inventory.properties[j].name === 'mInventoryStacks')
+                                        {
+                                            inventory.properties[j].value.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
+                                            inventory.properties[j].value.values[0][0].value.properties[0].value    = 1;
+                                        }
+                                    }
+                                }
 
-                    let armSlot         = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.playersInventory[i].pathName + '.ArmSlot');
-                                          this.baseLayout.deleteObjectProperty(armSlot, 'mEquipmentInSlot');
-
-                    for(let j = 0; j < armSlot.properties.length; j++)
-                    {
-                        if(armSlot.properties[j].name === 'mAdjustedSizeDiff' || armSlot.properties[j].name === 'mActiveEquipmentIndex')
-                        {
-                            armSlot.properties[j].value = 0;
+                            let armSlot         = this.baseLayout.saveGameParser.getTargetObject(currentPlayer.pathName + '.ArmSlot');
+                                                  this.baseLayout.deleteObjectProperty(armSlot, 'mEquipmentInSlot');
+                                for(let j = 0; j < armSlot.properties.length; j++)
+                                {
+                                    if(armSlot.properties[j].name === 'mAdjustedSizeDiff' || armSlot.properties[j].name === 'mActiveEquipmentIndex')
+                                    {
+                                        armSlot.properties[j].value = 0;
+                                    }
+                                    if(armSlot.properties[j].name === 'mInventoryStacks' || armSlot.properties[j].name === 'mArbitrarySlotSizes' || armSlot.properties[j].name === 'mAllowedItemDescriptors')
+                                    {
+                                        armSlot.properties[j].value.values.splice(this.defaultArmSlots);
+                                    }
+                                }
                         }
-                        if(armSlot.properties[j].name === 'mInventoryStacks' || armSlot.properties[j].name === 'mArbitrarySlotSizes' || armSlot.properties[j].name === 'mAllowedItemDescriptors')
-                        {
-                            armSlot.properties[j].value.values.splice(this.defaultArmSlots);
-                        }
-                    }
                 }
 
                 // Refresh tabs...
                 this.parse();
 
-                let statisticsInventory = new BaseLayout_Statistics_Player_Inventory({
-                        baseLayout      : this
-                    });
-                    statisticsInventory.parse();
+                let mapPlayers = new Modal_MapPlayers({baseLayout: this});
+                    mapPlayers.parse();
             }.bind(this), 250);
         }.bind(this));
     }

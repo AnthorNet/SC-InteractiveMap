@@ -13,7 +13,6 @@ import BaseLayout_Math                          from './BaseLayout/Math.js';
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 
-import BaseLayout_Statistics_Player_Inventory   from './BaseLayout/StatisticsPlayerInventory.js';
 import BaseLayout_Statistics_Player_Hotbars     from './BaseLayout/StatisticsPlayerHotbars.js';
 import BaseLayout_Statistics_Production         from './BaseLayout/StatisticsProduction.js';
 import BaseLayout_Statistics_Storage            from './BaseLayout/StatisticsStorage.js';
@@ -24,6 +23,7 @@ import Modal                                    from './Modal.js';
 import Modal_Buildings                          from './Modal/Buildings.js';
 import Modal_ColorSlots                         from './Modal/ColorSlots.js';
 import Modal_LightColorSlots                    from './Modal/LightColorSlots.js';
+import Modal_MapPlayers                         from './Modal/MapPlayers.js';
 import Modal_MapOptions                         from './Modal/MapOptions.js';
 import Modal_PowerCircuits                      from './Modal/PowerCircuits.js';
 import Modal_Trains                             from './Modal/Trains.js';
@@ -50,7 +50,6 @@ export default class BaseLayout
         this.saveGameRailVehicles               = [];
         this.gameMode                           = [];
         this.playersState                       = [];
-        this.playersInventory                   = [];
         this.buildingDataClassNameHashTable     = {};
         this.radioactivityLayerNeedsUpdate      = false;
 
@@ -104,7 +103,6 @@ export default class BaseLayout
 
     setDefaultLayers()
     {
-        this.ownPlayerPath                      = null;
         this.delayedBadgeCount                  = null;
 
         this.playerLayers                       = {
@@ -549,11 +547,8 @@ export default class BaseLayout
 
             // Skip
             if([
-                '/Game/FactoryGame/-Shared/Blueprint/BP_BuildableSubsystem.BP_BuildableSubsystem_C',
-                '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C',
-                '/Game/FactoryGame/-Shared/Blueprint/BP_RailroadSubsystem.BP_RailroadSubsystem_C',
-
                 '/Game/FactoryGame/Buildable/Factory/TradingPost/BP_StartingPod.BP_StartingPod_C',
+                '/Game/FactoryGame/Character/Player/Char_Player.Char_Player_C',
 
                 '/Game/FactoryGame/Schematics/Progression/BP_SchematicManager.BP_SchematicManager_C',
                 '/Game/FactoryGame/Recipes/Research/BP_ResearchManager.BP_ResearchManager_C',
@@ -561,10 +556,6 @@ export default class BaseLayout
                 '/Game/FactoryGame/Events/BP_EventSubsystem.BP_EventSubsystem_C',
 
                 '/Game/FactoryGame/Schematics/Progression/BP_GamePhaseManager.BP_GamePhaseManager_C',
-                '/Game/FactoryGame/-Shared/Blueprint/BP_StorySubsystem.BP_StorySubsystem_C',
-                '/Game/FactoryGame/-Shared/Blueprint/BP_TimeOfDaySubsystem.BP_TimeOfDaySubsystem_C',
-                '/Game/FactoryGame/-Shared/Blueprint/BP_TutorialIntroManager.BP_TutorialIntroManager_C',
-                '/Game/FactoryGame/-Shared/Blueprint/BP_TutorialSubsystem.BP_TutorialSubsystem_C',
 
                 '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C',
 
@@ -653,16 +644,6 @@ export default class BaseLayout
                 this.addResourceDeposit(currentObject);
                 continue;
             }
-
-            // Extract player own path and use it to grab player position...
-            if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
-            {
-                if(currentObject.extra.game.length > 0) // In case the player isn't correctly registered
-                {
-                    this.ownPlayerPath = currentObject.extra.game[0].pathName;
-                }
-                continue;
-            }
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C')
             {
                 this.gameMode.push(currentObject);
@@ -671,11 +652,6 @@ export default class BaseLayout
             if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
             {
                 this.playersState.push(currentObject);
-                continue;
-            }
-            if(currentObject.className === '/Game/FactoryGame/Character/Player/Char_Player.Char_Player_C')
-            {
-                this.playersInventory.push(currentObject);
                 continue;
             }
             if(currentObject.className === '/Script/FactoryGame.FGTrainStationIdentifier' || currentObject.className === '/Script/FactoryGame.FGTrain')
@@ -695,24 +671,14 @@ export default class BaseLayout
             }
 
             /*
-            '/Script/FactoryGame.FGWorldSettings',
-            '/Script/FactoryGame.FGFoundationSubsystem',
-            '/Script/FactoryGame.FGPipeSubsystem',
             '/Script/FactoryGame.FGResourceSinkSubsystem', //TODO: Handle...
-            '/Script/FactoryGame.FGRecipeManager',
 
-            '/Script/FactoryGame.FGFactoryConnectionComponent',
-            '/Script/FactoryGame.FGFactoryLegsComponent',
-            '/Script/FactoryGame.FGPipeConnectionFactory',
-            '/Script/FactoryGame.FGPipeConnectionComponent',
-            '/Script/FactoryGame.FGPowerCircuit',
-            '/Script/FactoryGame.FGPowerConnectionComponent',
-            '/Script/FactoryGame.FGTargetPointLinkedList',
             '/Script/FactoryGame.FGDroneStationInfo',
             '/Script/FactoryGame.FGDroneAction_TakeoffSequence',
             '/Script/FactoryGame.FGDroneAction_DockingSequence',
             '/Script/FactoryGame.FGDroneAction_RequestDocking',
             '/Script/FactoryGame.FGDroneAction_TraversePath',
+
             '/Script/FactoryGame.FGInventoryComponent',
             '/Script/FactoryGame.FGInventoryComponentEquipment',
             '/Script/FactoryGame.FGInventoryComponentTrash',
@@ -727,6 +693,10 @@ export default class BaseLayout
             '/Script/FactoryGame.FGFoliageRemoval',
              */
             if(currentObject.className.startsWith('/Script/FactoryGame.') === true && currentObject.className !== '/Script/FactoryGame.FGItemPickup_Spawnable')
+            {
+                continue;
+            }
+            if(currentObject.className.startsWith('/Game/FactoryGame/-Shared/Blueprint/BP_') === true)
             {
                 continue;
             }
@@ -875,17 +845,6 @@ export default class BaseLayout
             return resolve();
         }
 
-        if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
-        {
-            let playerState = this.addPlayerPosition(currentObject, ((this.ownPlayerPath === currentObject.pathName) ? true : false));
-                if(resolve === false)
-                {
-                    return {layer: 'playerPositionLayer', marker: playerState};
-                }
-
-            return resolve();
-        }
-
         // Add fauna
         if(currentObject.className.search('/Game/FactoryGame/Character/Creature/Wildlife/') !== -1 || currentObject.className.search('/Game/FactoryGame/Character/Creature/Enemy/') !== -1)
         {
@@ -999,12 +958,9 @@ export default class BaseLayout
                 statisticsCollectables.get();
 
             // Player position
-            if(this.ownPlayerPath !== null)
+            for(let i = 0; i < this.playersState.length; i++)
             {
-                for(let i = 0; i < this.playersState.length; i++)
-                {
-                    this.addPlayerPosition(this.playersState[i], ((this.ownPlayerPath === this.playersState[i].pathName) ? true : false));
-                }
+                this.addPlayerPosition(this.playersState[i], ((this.saveGameParser.playerHostPathName === this.playersState[i].pathName) ? true : false));
             }
 
             // Global modals
@@ -1061,39 +1017,27 @@ export default class BaseLayout
                     switch(target)
                     {
                         case '#statisticsPlayerInventory':
-                            let statisticsInventory = new BaseLayout_Statistics_Player_Inventory({
-                                    baseLayout      : this
-                                });
-                                statisticsInventory.parse();
+                            let mapPlayers = new Modal_MapPlayers({baseLayout: this});
+                                mapPlayers.parse();
                             break;
                         case '#statisticsPlayerHotBars':
-                            let statisticsHotbars = new BaseLayout_Statistics_Player_Hotbars({
-                                    baseLayout      : this
-                                });
+                            let statisticsHotbars = new BaseLayout_Statistics_Player_Hotbars({baseLayout: this});
                                 statisticsHotbars.parse();
                             break;
                         case '#statisticsModalColorSlots':
-                            let mapColorSlots = new Modal_ColorSlots({
-                                    baseLayout      : this
-                                });
+                            let mapColorSlots = new Modal_ColorSlots({baseLayout: this});
                                 mapColorSlots.parse();
                             break;
                         case '#statisticsModalLightColorSlots':
-                            let mapLightColorSlots = new Modal_LightColorSlots({
-                                    baseLayout      : this
-                                });
+                            let mapLightColorSlots = new Modal_LightColorSlots({baseLayout: this});
                                 mapLightColorSlots.parse();
                             break;
                         case '#statisticsModalCollectables':
-                            let statisticsCollectables = new BaseLayout_Statistics_Collectables({
-                                    baseLayout      : this
-                                });
+                            let statisticsCollectables = new BaseLayout_Statistics_Collectables({baseLayout: this});
                                 statisticsCollectables.parse();
                             break;
                         case '#statisticsModalOptions':
-                            let mapOptions = new Modal_MapOptions({
-                                    baseLayout      : this
-                                });
+                            let mapOptions = new Modal_MapOptions({baseLayout: this});
                                 mapOptions.parse();
                             break;
                     }
@@ -1312,7 +1256,10 @@ export default class BaseLayout
 
             newFauna.children.unshift({levelName: 'Persistent_Level', pathName: pathName + '.mInventory'});
 
-            newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {levelName: 'Persistent_Level', pathName: this.ownPlayerPath.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', 'Persistent_Level:PersistentLevel.Char_Player_C_')}});
+            let currentPlayerObject = this.saveGameParser.getTargetObject(this.saveGameParser.playerHostPathName);
+            let mOwnedPawn          = this.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
+
+            newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {levelName: 'Persistent_Level', pathName: mOwnedPawn.pathName}});
             newFauna.properties.push({name: 'mLootTableIndex', type: 'IntProperty', value: 0});
             newFauna.properties.push({name: 'mLootTimerHandle', type: 'StructProperty', value: {handle: 'None', type: 'TimerHandle'}});
             newFauna.properties.push({name: 'mIsPersistent', type: 'BoolProperty', value: 1});
@@ -1674,7 +1621,7 @@ export default class BaseLayout
                 playerPosition = currentObjectTarget.transform.translation;
                 playerRotation = currentObjectTarget.transform.rotation;
 
-                if(this.ownPlayerPath !== null && this.ownPlayerPath === this.playersState[i].pathName)
+                if(this.saveGameParser.playerHostPathName === this.playersState[i].pathName)
                 {
                     break;
                 }
@@ -2008,7 +1955,7 @@ export default class BaseLayout
 
         for(let i = 0; i < this.playersState.length; i++)
         {
-            if(this.ownPlayerPath === this.playersState[i].pathName)
+            if(this.saveGameParser.playerHostPathName === this.playersState[i].pathName)
             {
                 selectOptions.push({text: 'Host', value: this.playersState[i].pathName});
             }

@@ -184,7 +184,7 @@ export default class SaveParser_Read
 
                                 if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
                                 {
-                                    this.saveParser.gameStatePathName = actor.pathName;
+                                    this.saveParser.gameStatePathName   = actor.pathName;
                                 }
                             break;
                         default:
@@ -402,6 +402,11 @@ export default class SaveParser_Read
                             levelName   : this.readString(),
                             pathName    : this.readString()
                         });
+
+                        if(i === 0 && this.saveParser.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                        {
+                            this.saveParser.playerHostPathName  = this.saveParser.objects[objectKey].extra.game[0].pathName;
+                        }
                     }
 
                     break;

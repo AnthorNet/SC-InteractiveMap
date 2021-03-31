@@ -1,5 +1,5 @@
 /* global Intl, Sentry */
-import BaseLayout_Statistics_Player_Inventory   from '../BaseLayout/StatisticsPlayerInventory.js';
+import Modal_MapPlayers                         from '../Modal/MapPlayers.js';
 
 import Building_MAM                             from '../Building/MAM.js';
 
@@ -743,33 +743,25 @@ export default class BaseLayout_Statistics_Schematics
                                 case 'purchased': // Go to none state
                                     if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
                                     {
-                                        let statisticsInventory = new BaseLayout_Statistics_Player_Inventory({
-                                                baseLayout      : this.baseLayout
-                                            });
-                                            statisticsInventory.removeEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
+                                        let mapPlayers = new Modal_MapPlayers({baseLayout: this.baseLayout});
+                                            mapPlayers.removeEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
                                     }
                                     if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].slots !== undefined)
                                     {
-                                        let statisticsInventory = new BaseLayout_Statistics_Player_Inventory({
-                                                baseLayout      : this.baseLayout
-                                            });
-                                            statisticsInventory.removeInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
+                                        let mapPlayers = new Modal_MapPlayers({baseLayout: this.baseLayout});
+                                            mapPlayers.removeInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
                                     }
                                     break;
                                 case 'available': // Go to purchased state
                                     if(this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
                                     {
-                                        let statisticsInventory = new BaseLayout_Statistics_Player_Inventory({
-                                                baseLayout      : this.baseLayout
-                                            });
-                                            statisticsInventory.addEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
+                                        let mapPlayers = new Modal_MapPlayers({baseLayout: this.baseLayout});
+                                            mapPlayers.addEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
                                     }
                                     if(this.baseLayout.schematicsData[schematicId].slots !== undefined)
                                     {
-                                        let statisticsInventory = new BaseLayout_Statistics_Player_Inventory({
-                                                baseLayout      : this.baseLayout
-                                            });
-                                            statisticsInventory.addInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
+                                        let mapPlayers = new Modal_MapPlayers({baseLayout: this.baseLayout});
+                                            mapPlayers.addInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
                                     }
                                     break;
                             }

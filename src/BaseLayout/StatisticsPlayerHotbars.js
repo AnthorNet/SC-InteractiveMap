@@ -22,7 +22,7 @@ export default class BaseLayout_Statistics_Player_Hotbars
 
                 for(let i = 0; i < this.baseLayout.playersState.length; i++)
                 {
-                    if(this.baseLayout.ownPlayerPath === this.baseLayout.playersState[i].pathName)
+                    if(this.baseLayout.saveGameParser.playerHostPathName === this.baseLayout.playersState[i].pathName)
                     {
                         hotbarHeaderHtml.push('<li class="nav-item"><a class="nav-link ' + ((options.playerState === undefined || options.playerState === this.baseLayout.playersState[i].pathName) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab">Host</a></li>');
                         hotbarHtml.push('<div class="tab-pane fade ' + ((options.playerState === undefined || options.playerState === this.baseLayout.playersState[i].pathName) ? 'show active' : '') + '" id="playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + this.parseHotbarsPlayer(this.baseLayout.playersState[i], options) + '</div>');

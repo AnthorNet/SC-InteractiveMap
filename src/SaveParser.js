@@ -16,6 +16,7 @@ export default class SaveParser
         this.collectables           = null;
 
         this.gameStatePathName      = null;
+        this.playerHostPathName     = null;
 
         // Holds some default values to reduce memory usage...
         this.defaultValues          = {
