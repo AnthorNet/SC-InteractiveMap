@@ -13,7 +13,6 @@ import BaseLayout_Math                          from './BaseLayout/Math.js';
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 
-import BaseLayout_Statistics_Player_Hotbars     from './BaseLayout/StatisticsPlayerHotbars.js';
 import BaseLayout_Statistics_Production         from './BaseLayout/StatisticsProduction.js';
 import BaseLayout_Statistics_Storage            from './BaseLayout/StatisticsStorage.js';
 import BaseLayout_Statistics_Collectables       from './BaseLayout/StatisticsCollectables.js';
@@ -23,6 +22,7 @@ import Modal                                    from './Modal.js';
 import Modal_Buildings                          from './Modal/Buildings.js';
 import Modal_ColorSlots                         from './Modal/ColorSlots.js';
 import Modal_LightColorSlots                    from './Modal/LightColorSlots.js';
+import Modal_MapHotbars                         from './Modal/MapHotbars.js';
 import Modal_MapPlayers                         from './Modal/MapPlayers.js';
 import Modal_MapOptions                         from './Modal/MapOptions.js';
 import Modal_PowerCircuits                      from './Modal/PowerCircuits.js';
@@ -1021,8 +1021,8 @@ export default class BaseLayout
                                 mapPlayers.parse();
                             break;
                         case '#statisticsPlayerHotBars':
-                            let statisticsHotbars = new BaseLayout_Statistics_Player_Hotbars({baseLayout: this});
-                                statisticsHotbars.parse();
+                            let mapHotbars = new Modal_MapHotbars({baseLayout: this});
+                                mapHotbars.parse();
                             break;
                         case '#statisticsModalColorSlots':
                             let mapColorSlots = new Modal_ColorSlots({baseLayout: this});

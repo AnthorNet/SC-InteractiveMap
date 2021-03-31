@@ -1,4 +1,4 @@
-export default class BaseLayout_Statistics_Player_Hotbars
+export default class Modal_MapHotbars
 {
     constructor(options)
     {
@@ -11,31 +11,29 @@ export default class BaseLayout_Statistics_Player_Hotbars
 
         if(this.baseLayout.playersState.length > 0)
         {
-            if(this.baseLayout.playersState.length === 1) // Assume the only player is the current one...
-            {
-                $('#statisticsPlayerHotBars').html(this.parseHotbarsPlayer(this.baseLayout.playersState[0], options));
-            }
-            else
-            {
-                let hotbarHeaderHtml    = [];
-                let hotbarHtml          = [];
+            let hotbarHeaderHtml    = [];
+            let hotbarHtml          = [];
 
-                for(let i = 0; i < this.baseLayout.playersState.length; i++)
+            for(let i = 0; i < this.baseLayout.playersState.length; i++)
+            {
+                let isHost      = (this.baseLayout.playersState[i].pathName === this.baseLayout.saveGameParser.playerHostPathName);
+
+                hotbarHeaderHtml.push('<li class="nav-item"><a class="nav-link ' + ((isHost === true) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab">');
+
+                if(isHost === true)
                 {
-                    if(this.baseLayout.saveGameParser.playerHostPathName === this.baseLayout.playersState[i].pathName)
-                    {
-                        hotbarHeaderHtml.push('<li class="nav-item"><a class="nav-link ' + ((options.playerState === undefined || options.playerState === this.baseLayout.playersState[i].pathName) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab">Host</a></li>');
-                        hotbarHtml.push('<div class="tab-pane fade ' + ((options.playerState === undefined || options.playerState === this.baseLayout.playersState[i].pathName) ? 'show active' : '') + '" id="playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + this.parseHotbarsPlayer(this.baseLayout.playersState[i], options) + '</div>');
-                    }
-                    else
-                    {
-                        hotbarHeaderHtml.push('<li class="nav-item"><a class="nav-link ' + ((options.playerState !== undefined && options.playerState === this.baseLayout.playersState[i].pathName) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab">Guest #' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', '') + '</a></li>');
-                        hotbarHtml.push('<div class="tab-pane fade ' + ((options.playerState !== undefined && options.playerState === this.baseLayout.playersState[i].pathName) ? 'show active' : '') + '" id="playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + this.parseHotbarsPlayer(this.baseLayout.playersState[i], options) + '</div>');
-                    }
+                    hotbarHeaderHtml.push('Host');
+                }
+                else
+                {
+                    hotbarHeaderHtml.push('Guest #' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', ''));
                 }
 
-                $('#statisticsPlayerHotBars').html('<ul class="nav nav-tabs nav-fill" role="tablist">' + hotbarHeaderHtml.join('') + '</ul><div class="tab-content p-3 border border-top-0">' + hotbarHtml.join('') + '</div>');
+                hotbarHeaderHtml.push('</a></li>');
+                hotbarHtml.push('<div class="tab-pane fade ' + ((isHost === true) ? 'show active' : '') + '" id="playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + this.parseHotbarsPlayer(this.baseLayout.playersState[i], options) + '</div>');
             }
+
+            $('#statisticsPlayerHotBars').html('<ul class="nav nav-tabs nav-fill" role="tablist">' + hotbarHeaderHtml.join('') + '</ul><div class="tab-content p-3 border border-top-0">' + hotbarHtml.join('') + '</div>');
 
             $('#statisticsPlayerHotBars input[name="presetName"]').on('keyup click', function(e){
                 let playerStatePathName = $(e.currentTarget).parent().attr('data-pathName');
