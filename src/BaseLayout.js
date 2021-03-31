@@ -2039,12 +2039,15 @@ export default class BaseLayout
                     return;
                 }
 
-                let mOwnedPawn = this.getObjectProperty(this.saveGameParser.getTargetObject(form.playerPathName), 'mOwnedPawn');
+                let playerStateObject   = this.saveGameParser.getTargetObject(form.playerPathName);
+                let mOwnedPawn          = this.getObjectProperty(playerStateObject, 'mOwnedPawn');
                     if(mOwnedPawn !== null)
                     {
-                        let currentPlayerPosition                           = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-                            currentPlayerPosition.transform.translation     = JSON.parse(JSON.stringify(currentObject.transform.translation));
-                            currentPlayerPosition.transform.translation[2]  += 400;
+                        let currentPlayerObject                             = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                            currentPlayerObject.transform.translation       = JSON.parse(JSON.stringify(currentObject.transform.translation));
+                            currentPlayerObject.transform.translation[2]   += 400;
+
+                            this.deleteObjectProperty(currentPlayerObject, 'mSavedDrivenVehicle');
 
                         let currentPlayerMarker                             = this.getMarkerFromPathName(form.playerPathName, 'playerPositionLayer');
                             currentPlayerMarker.setLatLng(this.satisfactoryMap.unproject(currentPlayerPosition.transform.translation));
