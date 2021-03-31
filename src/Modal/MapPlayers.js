@@ -52,7 +52,35 @@ export default class Modal_MapPlayers
 
                                     inventoryHeaderHtml.push('</a></li>');
 
-                                    inventoryHtml.push('<div class="tab-pane fade ' + ((isHost === true) ? 'show active' : '') + '" id="playerInventory-' + currentPlayer.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + this.parseInventoryPlayer(currentPlayer) + '</div>');
+                                    inventoryHtml.push('<div class="tab-pane fade ' + ((isHost === true) ? 'show active' : '') + '" id="playerInventory-' + currentPlayer.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">');
+
+                                    let inventory           = this.baseLayout.getObjectInventory(currentPlayer, 'mInventory');
+
+                                        inventoryHtml.push('<div class="row">');
+
+                                            inventoryHtml.push('<div class="col-6" style="padding-left: 10px;padding-right: 10px;">');
+                                            inventoryHtml.push(this.baseLayout.setInventoryTableSlot(inventory, null, 64));
+                                            inventoryHtml.push('</div>');
+
+                                            inventoryHtml.push('<div class="col-6">');
+                                                inventoryHtml.push('<div style="position: relative;padding-top: 100%;background: url(' + this.baseLayout.staticUrl + '/img/charSilhouette.png) center no-repeat #666;background-size: contain;border: 1px solid #000; border-radius: 5px;">');
+
+                                                let backSlot    = this.baseLayout.saveGameParser.getTargetObject(currentPlayer.pathName + '.BackSlot');
+                                                let armSlot     = this.baseLayout.saveGameParser.getTargetObject(currentPlayer.pathName + '.ArmSlot');
+
+                                                inventoryHtml.push('<div style="position: absolute;margin-top: -100%;padding-top: 25%;padding-left: 5%;">' + this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(backSlot), null, 64) + '</div>');
+                                                inventoryHtml.push('<div style="position: absolute;margin-top: -100%;padding-top: 50%;padding-left: 5%;">' + this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(armSlot), null, 64, '', null, 4) + '</div>');
+
+                                                inventoryHtml.push('</div>');
+
+                                                if(isHost === false)
+                                                {
+                                                    inventoryHtml.push('<button class="btn btn-danger w-100 parseStatisticsPlayerInventoryDeleteGuest" data-pathName="' + this.baseLayout.playersState[i].pathName +'">Delete player</button>')
+                                                }
+                                            inventoryHtml.push('</div>');
+
+                                        inventoryHtml.push('</div>');
+                                    inventoryHtml.push('</div>');
                             }
                     }
                 $('#statisticsPlayerInventory').html('<ul class="nav nav-tabs nav-fill" role="tablist">' + inventoryHeaderHtml.join('') + '</ul><div class="tab-content p-3 border border-top-0">' + inventoryHtml.join('') + '</div>' + updateSizeHtml.join(''));
@@ -76,39 +104,16 @@ export default class Modal_MapPlayers
                     this.addEquipmentSlot(1);
                     this.parse();
                 }.bind(this));
+                $('.parseStatisticsPlayerInventoryDeleteGuest').on('click', function(e){
+                    this.deletePlayer($(e.target).attr('data-pathName'));
+                    this.parse();
+                }.bind(this));
             }
         }
         else
         {
             $('#statisticsPlayerInventory').html('<div class="alert alert-danger" role="alert">We could not find the player inventory!</div>');
         }
-    }
-
-    parseInventoryPlayer(player)
-    {
-        let html                = [];
-        let inventory           = this.baseLayout.getObjectInventory(player, 'mInventory');
-
-            html.push('<div class="row">');
-
-                html.push('<div class="col-6" style="padding-left: 10px;padding-right: 10px;">');
-                html.push(this.baseLayout.setInventoryTableSlot(inventory, null, 64));
-                html.push('</div>');
-
-                html.push('<div class="col-6">');
-                    html.push('<div style="position: relative;padding-top: 100%;background: url(' + this.baseLayout.staticUrl + '/img/charSilhouette.png) center no-repeat #666;background-size: contain;border: 1px solid #000; border-radius: 5px;">');
-
-                    let backSlot    = this.baseLayout.saveGameParser.getTargetObject(player.pathName + '.BackSlot');
-                    let armSlot     = this.baseLayout.saveGameParser.getTargetObject(player.pathName + '.ArmSlot');
-
-                    html.push('<div style="position: absolute;margin-top: -100%;padding-top: 25%;padding-left: 5%;">' + this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(backSlot), null, 64) + '</div>');
-                    html.push('<div style="position: absolute;margin-top: -100%;padding-top: 50%;padding-left: 5%;">' + this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(armSlot), null, 64, '', null, 4) + '</div>');
-
-                    html.push('</div>');
-                html.push('</div>');
-
-            html.push('</div>');
-        return html.join('');
     }
 
     addEquipmentSlot(count)
@@ -302,6 +307,29 @@ export default class Modal_MapPlayers
 
     deletePlayer(pathName)
     {
+        if(pathName !== this.baseLayout.saveGameParser.playerHostPathName)
+        {
+            if(this.baseLayout.playersState.length > 0)
+            {
+                for(let i = 0; i < this.baseLayout.playersState.length; i++)
+                {
+                    if(this.baseLayout.playersState[i].pathName === pathName)
+                    {
+                        let mOwnedPawn  = this.baseLayout.getObjectProperty(this.baseLayout.playersState[i], 'mOwnedPawn');
+                            if(mOwnedPawn !== null)
+                            {
+                                this.baseLayout.saveGameParser.deleteObject(mOwnedPawn.pathName);
+                            }
 
+                        this.baseLayout.saveGameParser.deleteObject(pathName);
+                        this.baseLayout.playersState.splice(i, 1);
+
+                        let oldMarker = this.baseLayout.getMarkerFromPathName(pathName, 'playerPositionLayer');
+                            this.baseLayout.deleteMarkerFromElements('playerPositionLayer', oldMarker);
+                        return;
+                    }
+                }
+            }
+        }
     }
 }
