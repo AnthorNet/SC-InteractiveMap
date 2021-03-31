@@ -107,26 +107,33 @@ export default class BaseLayout_Selection_Copy
                         }
                     }
 
-
-                    // Integrated railroad?
-                    let mRailroadTrack   = this.baseLayout.getObjectProperty(currentObject, 'mRailroadTrack');
-                        if(mRailroadTrack !== null)
+                    // Need some extra linked properties?
+                    //TODO: Check mPairedStation?
+                    let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone'];
+                        for(let j = 0; j < extraProperties.length; j++)
                         {
-                            let integratedRailRoad          = this.baseLayout.saveGameParser.getTargetObject(mRailroadTrack.pathName);
-                            let newRailRoadObject           = {};
-                                newRailRoadObject.parent    = JSON.parse(JSON.stringify(integratedRailRoad));
-                                newRailRoadObject.children  = [];
-
-                                for(let j = 0; j < integratedRailRoad.children.length; j++)
+                            let extraProperty   = this.baseLayout.getObjectProperty(currentObject, extraProperties[j]);
+                                if(extraProperty !== null)
                                 {
-                                    let newRailRoadChildren = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(integratedRailRoad.children[j].pathName)));
-                                        newRailRoadObject.children.push(newRailRoadChildren);
+                                    let extraPropertyObject             = this.baseLayout.saveGameParser.getTargetObject(extraProperty.pathName);
+                                    let extraPropertyNewObject          = {};
+                                        extraPropertyNewObject.parent   = JSON.parse(JSON.stringify(extraPropertyObject));
+                                        extraPropertyNewObject.children = [];
+
+                                        if(extraPropertyObject.children !== undefined)
+                                        {
+                                            for(let k = 0; k < extraPropertyObject.children.length; k++)
+                                            {
+                                                extraPropertyNewObject.children.push(
+                                                    JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(extraPropertyObject.children[j].pathName)))
+                                                );
+                                            }
+                                        }
+
+                                    clipboard.data.push(extraPropertyNewObject);
+                                    availablePathName.push(extraPropertyNewObject.parent.pathName);
                                 }
-
-                            clipboard.data.push(newRailRoadObject);
-                            availablePathName.push(newRailRoadObject.parent.pathName);
                         }
-
 
                     // Does vehicle have a list of waypoints?
                     let mTargetNodeLinkedList   = this.baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');

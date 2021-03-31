@@ -3134,10 +3134,14 @@ export default class BaseLayout
             }
         }
 
-        let mOwningSpawner = this.getObjectProperty(currentObject, 'mOwningSpawner');
-            if(mOwningSpawner !== null)
+        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone'];
+            for(let i = 0; i < extraProperties.length; i++)
             {
-                extraPathName.push(mOwningSpawner.pathName);
+                let extraProperty = this.getObjectProperty(currentObject, extraProperties[i]);
+                    if(extraProperty !== null)
+                    {
+                        extraPathName.push(extraProperty.pathName);
+                    }
             }
 
         let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this});
