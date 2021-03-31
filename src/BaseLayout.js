@@ -2050,7 +2050,7 @@ export default class BaseLayout
                             this.deleteObjectProperty(currentPlayerObject, 'mSavedDrivenVehicle');
 
                         let currentPlayerMarker                             = this.getMarkerFromPathName(form.playerPathName, 'playerPositionLayer');
-                            currentPlayerMarker.setLatLng(this.satisfactoryMap.unproject(currentPlayerPosition.transform.translation));
+                            currentPlayerMarker.setLatLng(this.satisfactoryMap.unproject(currentPlayerObject.transform.translation));
                     }
                     else
                     {
