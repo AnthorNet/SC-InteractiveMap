@@ -17,6 +17,8 @@ export default class Map
         this.dataUrl                    = options.dataUrl;
 
         this.language                   = options.language;
+        this.lastHash                   = null;
+        this.movingMap                  = false;
 
         this.backgroundSize             = 16384;
         this.extraBackgroundSize        = 2048; //20480 (#dddddd)
@@ -238,26 +240,8 @@ export default class Map
         this.leafletMap.setMaxBounds(this.getBounds());
         this.leafletMap.fitBounds(this.getBounds());
 
-        // Dynamic hash
-        this.hash                       = new L.Hash(this);
-
-        // Dynamic coordinates
-        this.leafletMap.on('mousemove', this._throttle(function(e){
-            let coordinates = this.project([e.latlng.lat, e.latlng.lng], this.zoom);
-                coordinates = this.convertToGameCoordinates([coordinates.x, coordinates.y]);
-
-            $('.mouseMoveCoordinates').html(new Intl.NumberFormat(this.language).format(Math.round(coordinates[0])) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(coordinates[1])));
-
-            let biomeX      = Math.round(((coordinates[0] - this.mappingBoundWest - (67800 * 2)) / 100) / 512);
-            let biomeY      = Math.round(((-coordinates[1] - this.mappingBoundNorth - (67800 * 2)) / 100) / 512);
-            let biome       = '-';
-                if(this.biomes[biomeY] !== undefined && this.biomes[biomeY][biomeX] !== undefined)
-                {
-                    biome = this.biomes[biomeY][biomeX];
-                }
-
-            $('.mouseMoveBiome').html(biome);
-        }, 50, {leading: true, trailing: true}), this);
+        // Trigger initial hash to load previous layers...
+        this.formatHash();
 
         this.loadInitialData();
     }
@@ -562,6 +546,31 @@ export default class Map
 
     setupEvents()
     {
+        // Hash
+        this.leafletMap.on("moveend", this.updateHash, this);
+        this.leafletMap.on('layeradd', this.updateHash, this);
+        this.leafletMap.on('layerremove', this.updateHash, this);
+
+        L.DomEvent.addListener(window, "hashchange", this._throttle(function(e){this.onHashChange}, 100, {leading: true, trailing: true}));
+
+        // Dynamic coordinates
+        this.leafletMap.on('mousemove', this._throttle(function(e){
+            let coordinates = this.project([e.latlng.lat, e.latlng.lng], this.zoom);
+                coordinates = this.convertToGameCoordinates([coordinates.x, coordinates.y]);
+
+            $('.mouseMoveCoordinates').html(new Intl.NumberFormat(this.language).format(Math.round(coordinates[0])) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(coordinates[1])));
+
+            let biomeX      = Math.round(((coordinates[0] - this.mappingBoundWest - (67800 * 2)) / 100) / 512);
+            let biomeY      = Math.round(((-coordinates[1] - this.mappingBoundNorth - (67800 * 2)) / 100) / 512);
+            let biome       = '-';
+                if(this.biomes[biomeY] !== undefined && this.biomes[biomeY][biomeX] !== undefined)
+                {
+                    biome = this.biomes[biomeY][biomeX];
+                }
+
+            $('.mouseMoveBiome').html(biome);
+        }, 100, {leading: true, trailing: true}), this);
+
         $('.setBaseLayer').click(function(e){
             let layerId     = $(e.currentTarget).attr('data-id');
                 if(this.baseLayer !== 'greyLayer')
@@ -581,7 +590,7 @@ export default class Map
 
             if(layerId === 'greyLayer')
             {
-                this.hash.updateHash();
+                this.updateHash();
             }
         }.bind(this));
 
@@ -718,6 +727,175 @@ export default class Map
                this.activeLayers.splice(index, 1);
             }
         }
+    }
+
+    /*
+     * HASH
+     */
+    onHashChange()
+    {
+        let hash = location.hash;
+            if(hash === this.lastHash)
+            {
+                return;
+            }
+
+        let parsed = this.parseHash(hash);
+            if(parsed)
+            {
+                this.movingMap = true;
+                this.leafletMap.setView(parsed.center, parsed.zoom);
+                this.movingMap = false;
+            }
+            else
+            {
+                if(this.movingMap || !this.leafletMap._loaded){ return false; }
+                this.updateHash();
+            }
+    }
+
+    updateHash()
+    {
+        let hash = this.formatHash(this.SatisfactoryMap);
+            if (this.lastHash !== hash)
+            {
+                location.replace(hash);
+                this.lastHash = hash;
+            }
+    }
+
+    parseHash(hash)
+    {
+        if(hash.indexOf('#') === 0)
+        {
+            hash = hash.substr(1);
+        }
+
+            hash            = decodeURI(hash);
+        let args            = hash.split("|");
+        let coordinates     = args[0].split(";");
+
+        // Handle activelayers...
+        let activeLayers    = null;
+        let baseLayer       = 'gameLayer';
+            if(args[1] !== undefined)
+            {
+                if(args[2] !== undefined)
+                {
+                    baseLayer       = args[1];
+                    activeLayers    = args[2].split(";");
+                }
+                else
+                {
+                    activeLayers    = args[1].split(";");
+                }
+            }
+
+        if(coordinates.length === 3)
+        {
+            let zoom    = parseFloat(coordinates[0]) || 3,
+                x       = parseFloat(coordinates[1]) || 0,
+                y       = parseFloat(coordinates[2]) || 0;
+
+            if(isNaN(zoom) || isNaN(x) || isNaN(y))
+            {
+                return false;
+            }
+            else
+            {
+                let currentHash = {
+                        center          : this.unproject([x, y]),
+                        zoom            : zoom,
+                        baseLayer       : baseLayer,
+                        activeLayers    : activeLayers
+                    };
+
+                return currentHash;
+            }
+        }
+        else
+        {
+            // Grab locale hash if needed?
+            if(this.collectedHardDrives === null)
+            {
+                this.collectedHardDrives = new HardDrives({});
+            }
+
+            let localeStorage = this.collectedHardDrives.getLocaleStorage();
+                if(localeStorage !== null)
+                {
+                    let localHash = localeStorage.getItem('mapHashUrl');
+                        if(localHash !== null)
+                        {
+                            return this.parseHash(localHash);
+                        }
+                }
+
+            return false;
+        }
+    }
+
+    formatHash()
+    {
+        let center          = this.leafletMap.getCenter(),
+            zoom            = this.leafletMap.getZoom(),
+            baseLayer       = this.baseLayer,
+            activeLayers    = this.activeLayers;
+
+        if(activeLayers === null)
+        {
+            let initialHash         = this.parseHash(location.hash);
+            let defaultLayers       = ['limestonePure', 'ironPure', 'copperPure', 'cateriumPure', 'coalPure', 'oilPure', 'hardDrives'];
+
+                if(initialHash)
+                {
+                    center          = initialHash.center;
+                    zoom            = initialHash.zoom;
+
+                    if(initialHash.baseLayer === null)
+                    {
+                        //$('.setBaseLayer[data-id=' + baseLayer + ']').trigger('click');
+                    }
+                    else
+                    {
+                        baseLayer    = initialHash.baseLayer;
+                        setTimeout(function(){$('.setBaseLayer[data-id=' + baseLayer + ']').trigger('click');}, 150);
+                    }
+
+                    if(initialHash.activeLayers === null)
+                    {
+                        activeLayers    = this.activeLayers   = defaultLayers;
+                    }
+                    else
+                    {
+                        activeLayers    = this.activeLayers   = initialHash.activeLayers;
+                    }
+
+                    this.leafletMap.setView(center, zoom);
+                }
+                else
+                {
+                    activeLayers = this.activeLayers = defaultLayers;
+                }
+        }
+
+        let coordinates     = this.project([center.lat, center.lng], zoom);
+            coordinates     = this.convertToGameCoordinates([coordinates.x, coordinates.y]);
+
+        let currentHash     = "#" + [zoom, Math.round(coordinates[0]), Math.round(coordinates[1])].join(";") + '|' + baseLayer + '|' + activeLayers.join(';');
+
+            if(this.collectedHardDrives === null)
+            {
+                this.collectedHardDrives = new HardDrives({});
+            }
+
+        let localeStorage = this.collectedHardDrives.getLocaleStorage()
+            if(localeStorage !== null)
+            {
+                localeStorage.setItem('mapHashUrl', currentHash);
+            }
+
+        return currentHash;
     }
 
     /*
