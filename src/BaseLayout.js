@@ -898,7 +898,7 @@ export default class BaseLayout
                 }
                 else
                 {
-                    if(this.useDebug === true && currentObject.className.startsWith('/Game/FactoryGame/Equipment/') === false)
+                    if(this.useDebug === true && currentObject.className.startsWith('/Game/FactoryGame/Equipment/') === false && currentObject.className.startsWith('/Script/FactoryGame.') === false)
                     {
                         console.log('Unknown?', currentObject);
                     }
@@ -6880,6 +6880,7 @@ export default class BaseLayout
         this.satisfactoryMap.leafletMap.dragging.disable();
         this.satisfactoryMap.leafletMap.keyboard.disable();
         this.satisfactoryMap.leafletMap.doubleClickZoom.disable();
+        this.satisfactoryMap.leafletMap.scrollWheelZoom.disable();
     }
 
     unpauseMap()
@@ -6887,5 +6888,6 @@ export default class BaseLayout
         this.satisfactoryMap.leafletMap.dragging.enable();
         this.satisfactoryMap.leafletMap.keyboard.enable();
         this.satisfactoryMap.leafletMap.doubleClickZoom.enable();
+        this.satisfactoryMap.leafletMap.scrollWheelZoom.enable();
     }
 }
