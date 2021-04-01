@@ -169,9 +169,8 @@ export default class Spawn_Polygon
         if(this.baseLayout.history !== null)
         {
             this.baseLayout.history.add({
-                name: 'Undo: Spawn around (Polygon)',
-                autoPurgeDeleteObjects: false,
-                values: this.history
+                name    : 'Undo: Spawn around (Polygon)',
+                values  : this.history
             });
         }
 

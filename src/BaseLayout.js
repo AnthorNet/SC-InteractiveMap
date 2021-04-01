@@ -32,6 +32,8 @@ import Building_FrackingSmasher                 from './Building/FrackingSmasher
 import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_Light                           from './Building/Light.js';
 
+import Spawn_Fill                               from './Spawn/Fill.js';
+
 export default class BaseLayout
 {
     constructor(options)
@@ -756,7 +758,7 @@ export default class BaseLayout
 
             //TODO: Sentry new mod?
         }
-        
+
         // Needed when moving players
         if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
         {
@@ -6173,6 +6175,7 @@ export default class BaseLayout
             inputOptions.push({group: 'Upgrade', text: 'Upgrade selected power poles', value: 'upgradePowerPoles'});
             inputOptions.push({group: 'Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'upgradePipes'});
 
+            inputOptions.push({group: 'Foundations', text: 'Fill selection with...', value: 'fillSelection'});
             inputOptions.push({group: 'Foundations', text: 'Convert "Glass Foundation 8m x 1m" to "Foundation 8m x 1m"', value: 'upgradeGlass8x1ToFoundation8x1'});
 
             inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorageInventories'});
@@ -6416,6 +6419,8 @@ export default class BaseLayout
                         });
                         return;
 
+                    case 'fillSelection':
+                        return this.fillSelection();
                     case 'upgradeGlass8x1ToFoundation8x1':
                         return this.selectionGlass8x1ToFoundation8x1();
 
@@ -6453,6 +6458,61 @@ export default class BaseLayout
                 }
             }.bind(this)
         });
+    }
+
+    fillSelection()
+    {
+        let inputOptions = [];
+            for(let i in this.buildingsData)
+            {
+                if(this.buildingsData[i].category === 'foundation')
+                {
+                    inputOptions.push({
+                        dataContent: '<img src="' + this.buildingsData[i].image + '" style="width: 24px;" /> ' + this.buildingsData[i].name,
+                        value: this.buildingsData[i].className,
+                        text: this.buildingsData[i].name
+                    });
+                }
+            }
+
+        Modal.form({
+            title       : 'Fill selection with...',
+            onEscape    : this.cancelSelectMultipleMarkers.bind(this),
+            container   : '#leafletMap',
+            inputs      : [{
+                name            : 'fillWith',
+                inputType       : 'selectPicker',
+                inputOptions    : inputOptions
+            },{
+                name            : 'z',
+                label           : 'Altitude (In centimeters)',
+                inputType       : 'coordinate',
+                value           : 0,
+            },
+            {
+                label           : 'Use materials from your containers?',
+                name            : 'useOwnMaterials',
+                inputType       : 'toggle'
+            }],
+            callback: function(form)
+            {
+                if(form === null || form.fillWith === null || form.z === null || form.useOwnMaterials === null)
+                {
+                    this.cancelSelectMultipleMarkers();
+                    return;
+                }
+
+                return new Spawn_Fill({
+                    selection       : this.satisfactoryMap.leafletMap.selectAreaFeature._areaSelected,
+                    z               : form.z,
+                    fillWith        : form.fillWith,
+                    useOwnMaterials : parseInt(form.useOwnMaterials),
+
+                    baseLayout      : this
+                });
+            }.bind(this)
+        });
+        return;
     }
 
     fillStorageInventoriesSelection(fillWith, inventoryProperty = 'mStorageInventory')

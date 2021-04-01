@@ -302,9 +302,8 @@ export default class Spawn_Text
         if(this.baseLayout.history !== null)
         {
             this.baseLayout.history.add({
-                name: 'Undo: Spawn around (Text)',
-                autoPurgeDeleteObjects: false,
-                values: this.history
+                name    : 'Undo: Spawn around (Text)',
+                values  : this.history
             });
         }
         */
