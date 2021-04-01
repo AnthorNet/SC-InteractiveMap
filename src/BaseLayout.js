@@ -756,6 +756,18 @@ export default class BaseLayout
 
             //TODO: Sentry new mod?
         }
+        
+        // Needed when moving players
+        if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
+        {
+            let playerState = this.addPlayerPosition(currentObject, ((this.ownPlayerPath === currentObject.pathName) ? true : false));
+                if(resolve === false)
+                {
+                    return {layer: 'playerPositionLayer', marker: playerState};
+                }
+
+            return resolve();
+        }
 
         if(currentObject.className === '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C')
         {
