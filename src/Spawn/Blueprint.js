@@ -73,28 +73,14 @@ export default class Spawn_Blueprint
 
                         if(currentObjectData !== null && this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
                         {
-                            if(
-                                    this.clipboard.data[i].parent.className.search('/Game/FactoryGame/Buildable/Building/Ramp/Build_') !== - 1
-                                 || this.clipboard.data[i].parent.className.search('/Game/FactoryGame/Buildable/Building/Foundation/Build_') !== -1
-                            )
+                            if(this.clipboard.data[i].parent.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_') || this.clipboard.data[i].parent.className.startsWith('/Game/FactoryGame/Buildable/Building/Foundation/Build_'))
                             {
-                                if(currentObjectData.copyHeight !== undefined)
-                                {
-                                    minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (currentObjectData.copyHeight * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
-                                }
-                                else
-                                {
-                                    minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (currentObjectData.height * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
-                                }
+                                minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (currentObjectData.height * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
                             }
                             else
                             {
                                 minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
                             }
-                        }
-                        else
-                        {
-                            minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2]);
                         }
                 }
 
