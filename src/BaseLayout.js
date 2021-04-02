@@ -46,10 +46,11 @@ export default class BaseLayout
         this.satisfactoryMap                    = options.satisfactoryMap;
         this.saveGameParser                     = options.saveGameParser;
 
-        this.saveGameSigns                      = [];
         this.saveGamePipeNetworks               = {};
+
         this.saveGameRailSwitches               = {};
         this.saveGameRailVehicles               = [];
+
         this.gameMode                           = [];
         this.playersState                       = [];
         this.buildingDataClassNameHashTable     = {};
@@ -654,11 +655,6 @@ export default class BaseLayout
             if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
             {
                 this.playersState.push(currentObject);
-                continue;
-            }
-            if(currentObject.className === '/Script/FactoryGame.FGTrainStationIdentifier' || currentObject.className === '/Script/FactoryGame.FGTrain')
-            {
-                this.saveGameSigns.push(currentObject);
                 continue;
             }
 
@@ -3077,7 +3073,17 @@ export default class BaseLayout
                         }
                 }
 
-            this.deleteSaveGameSign(currentObject);
+            let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
+                if(information !== null)
+                {
+                    let timeTable = this.getObjectProperty(information, 'TimeTable');
+                        if(timeTable !== null)
+                        {
+                            this.saveGameParser.deleteObject(timeTable.pathName);
+                        }
+
+                    this.saveGameParser.deleteObject(information.pathName);
+                }
         }
 
         // Delete extra marker!
@@ -5213,83 +5219,6 @@ export default class BaseLayout
         return currentTrack;
     }
 
-    getSaveGameSign(currentObject, propertyName)
-    {
-        let saveGameSignsLength = this.saveGameSigns.length;
-
-        for(let iSign = 0; iSign < saveGameSignsLength; iSign++)
-        {
-            let currentSign                 = this.saveGameSigns[iSign];
-            let isCurrentObject             = false;
-            let currentName                 = null;
-            let currentSignPropertyLength   = currentSign.properties.length;
-
-            for(let iSignProperties = 0; iSignProperties < currentSignPropertyLength; iSignProperties++)
-            {
-                if(currentSign.properties[iSignProperties].type === 'ObjectProperty')
-                {
-                    if(currentSign.properties[iSignProperties].value.pathName === currentObject.pathName)
-                    {
-                        isCurrentObject = true;
-                    }
-                }
-                if(currentSign.properties[iSignProperties].name === propertyName)
-                {
-                    currentName = currentSign.properties[iSignProperties].value;
-                }
-            }
-
-            if(currentName !== null && isCurrentObject === true)
-            {
-                return currentName;
-            }
-        }
-
-        return null;
-    }
-    deleteSaveGameSign(currentObject)
-    {
-        let saveGameSignsLength = this.saveGameSigns.length;
-        let deleteSaveGameSigns = [];
-
-        for(let i = 0; i < saveGameSignsLength; i++)
-        {
-            let currentSign                 = this.saveGameSigns[i];
-            let isCurrentObject             = false;
-            let currentTimetable            = null;
-            let currentSignPropertyLength   = currentSign.properties.length;
-
-            for(let iSignProperties = 0; iSignProperties < currentSignPropertyLength; iSignProperties++)
-            {
-                if(currentSign.properties[iSignProperties].type === 'ObjectProperty')
-                {
-                    if(currentSign.properties[iSignProperties].value.pathName === currentObject.pathName)
-                    {
-                        isCurrentObject = true;
-                        deleteSaveGameSigns.push(currentSign.pathName);
-                    }
-                }
-
-                // Timetable?
-                if(currentSign.properties[iSignProperties].name === 'TimeTable')
-                {
-                    currentTimetable = currentSign.properties[iSignProperties];
-                }
-            }
-
-            // Timetable?
-            if(currentTimetable !== null && isCurrentObject === true)
-            {
-                this.saveGameParser.deleteObject(currentTimetable.value.pathName);
-            }
-        }
-
-        for(let i = 0; i < deleteSaveGameSigns; i++)
-        {
-            this.saveGameParser.deleteObject(deleteSaveGameSigns[i]);
-        }
-    }
-
     updateObjectColorSlot(marker)
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
@@ -5419,7 +5348,7 @@ export default class BaseLayout
 
     getObjectProperty(currentObject, propertyName, defaultPropertyValue = null)
     {
-        if(currentObject.properties !== undefined)
+        if(currentObject!== null && currentObject.properties !== undefined)
         {
             let currentObjectPropertiesLength   = currentObject.properties.length;
             for(let j = 0; j < currentObjectPropertiesLength; j++)

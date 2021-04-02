@@ -186,6 +186,10 @@ export default class SaveParser_Read
                                 {
                                     this.saveParser.gameStatePathName   = actor.pathName;
                                 }
+                                if(actor.className === '/Script/FactoryGame.FGTrainStationIdentifier' || actor.className === '/Script/FactoryGame.FGTrain')
+                                {
+                                    this.saveParser.trainIdentifiers.push(actor.pathName);
+                                }
                             break;
                         default:
                             console.log('Unknown object type', objectType);

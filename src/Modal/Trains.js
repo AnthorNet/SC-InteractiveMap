@@ -37,57 +37,61 @@ export default class Modal_Trains
         $('#statisticsModalTrains').empty();
         let html = [];
 
-        for(let i = 0; i < this.baseLayout.saveGameSigns.length; i++)
+        for(let i = 0; i < this.baseLayout.saveGameParser.trainIdentifiers.length; i++)
         {
-            if(this.baseLayout.saveGameSigns[i].className === '/Script/FactoryGame.FGTrain')
-            {
-                let haveTimetable   = this.baseLayout.getObjectProperty(this.baseLayout.saveGameSigns[i], 'TimeTable');
-                    if(haveTimetable !== null && haveTimetable.pathName !== undefined)
+            let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGameParser.trainIdentifiers[i]);
+                if(currentIdentifier !== null)
+                {
+                    if(currentIdentifier.className === '/Script/FactoryGame.FGTrain')
                     {
-                        let currentTimetable = this.baseLayout.saveGameParser.getTargetObject(haveTimetable.pathName);
-                            if(currentTimetable !== null)
+                        let haveTimetable   = this.baseLayout.getObjectProperty(currentIdentifier, 'TimeTable');
+                            if(haveTimetable !== null && haveTimetable.pathName !== undefined)
                             {
-                                let mStops = this.baseLayout.getObjectProperty(currentTimetable, 'mStops');
-                                    if(mStops !== null)
+                                let currentTimetable = this.baseLayout.saveGameParser.getTargetObject(haveTimetable.pathName);
+                                    if(currentTimetable !== null)
                                     {
-                                        let haveName        = this.baseLayout.getObjectProperty(this.baseLayout.saveGameSigns[i], 'mTrainName');
-                                            if(haveName === null)
+                                        let mStops = this.baseLayout.getObjectProperty(currentTimetable, 'mStops');
+                                            if(mStops !== null)
                                             {
-                                                haveName = this.baseLayout.saveGameSigns[i].pathName.split('.');
-                                                haveName = haveName.pop();
-                                            }
-
-                                        html.push('<div class="card">');
-                                        html.push('<div class="card-header"><strong>' + haveName + '</strong></div>');
-                                        html.push('<ul class="list-group list-group-flush">');
-                                            for(let j = 0; j < mStops.values.length; j++)
-                                            {
-                                                for(let k = 0; k < mStops.values[j].length; k++)
-                                                {
-                                                    if(mStops.values[j][k].name === 'Station' && mStops.values[j][k].value.pathName !== undefined)
+                                                let haveName        = this.baseLayout.getObjectProperty(currentIdentifier, 'mTrainName');
+                                                    if(haveName === null)
                                                     {
-                                                        let trainStationIdentifier = this.baseLayout.saveGameParser.getTargetObject(mStops.values[j][k].value.pathName);
-                                                            if(trainStationIdentifier !== null)
+                                                        haveName = currentIdentifier.pathName.split('.');
+                                                        haveName = haveName.pop();
+                                                    }
+
+                                                html.push('<div class="card">');
+                                                html.push('<div class="card-header"><strong>' + haveName + '</strong></div>');
+                                                html.push('<ul class="list-group list-group-flush">');
+                                                    for(let j = 0; j < mStops.values.length; j++)
+                                                    {
+                                                        for(let k = 0; k < mStops.values[j].length; k++)
+                                                        {
+                                                            if(mStops.values[j][k].name === 'Station' && mStops.values[j][k].value.pathName !== undefined)
                                                             {
-                                                                let mStationName = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
-                                                                    if(mStationName !== null)
+                                                                let trainStationIdentifier = this.baseLayout.saveGameParser.getTargetObject(mStops.values[j][k].value.pathName);
+                                                                    if(trainStationIdentifier !== null)
                                                                     {
-                                                                        html.push('<li class="list-group-item">' + mStationName + '</li>');
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        html.push('<li class="list-group-item">' + mStops.values[j][k].value.pathName + '</li>');
+                                                                        let mStationName = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
+                                                                            if(mStationName !== null)
+                                                                            {
+                                                                                html.push('<li class="list-group-item">' + mStationName + '</li>');
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                html.push('<li class="list-group-item">' + mStops.values[j][k].value.pathName + '</li>');
+                                                                            }
                                                                     }
                                                             }
+                                                        }
                                                     }
-                                                }
+                                                html.push('</ul>');
+                                                html.push('</div>');
                                             }
-                                        html.push('</ul>');
-                                        html.push('</div>');
                                     }
                             }
                     }
-            }
+                }
         }
 
         $('#statisticsModalTrains').html(html.join(''));

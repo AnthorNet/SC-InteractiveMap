@@ -2,11 +2,13 @@
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_Light                           from '../Building/Light.js';
+import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
+import Building_TrainStation                    from '../Building/TrainStation.js';
 
 import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
 
@@ -178,6 +180,14 @@ export default class BaseLayout_ContextMenu
                     if(buildingData.category === 'light')
                     {
                         contextMenu = Building_Light.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                    }
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                    {
+                        contextMenu = Building_Locomotive.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                    }
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C')
+                    {
+                        contextMenu = Building_TrainStation.addContextMenu(this.baseLayout, currentObject, contextMenu);
                     }
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C')
                     {

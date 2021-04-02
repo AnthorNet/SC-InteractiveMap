@@ -18,6 +18,8 @@ export default class SaveParser
         this.gameStatePathName      = null;
         this.playerHostPathName     = null;
 
+        this.trainIdentifiers       = [];
+
         // Holds some default values to reduce memory usage...
         this.defaultValues          = {
             rotation                    : [0, 0, 0, 1],

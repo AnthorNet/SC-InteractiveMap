@@ -10,6 +10,7 @@ import Building_Locomotive                      from '../Building/Locomotive.js'
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
+import Building_TrainStation                    from '../Building/TrainStation.js';
 
 export default class BaseLayout_Tooltip
 {
@@ -114,6 +115,8 @@ export default class BaseLayout_Tooltip
                                             return this.setBuildingFrackerExtractorTooltipContent(currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
                                             return Building_DroneStation.getTooltip(this.baseLayout, currentObject, buildingData);
+                                        case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
+                                            return Building_Locomotive.getTooltip(this.baseLayout, currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
                                             return Building_GeneratorGeoThermal.getTooltip(this.baseLayout, currentObject, buildingData);
                                     }
@@ -130,10 +133,7 @@ export default class BaseLayout_Tooltip
                                         case 'storage':
                                         case 'dockstation':
                                         case 'vehicle':
-                                            if(currentObject.className !== '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
-                                            {
-                                                return this.setBuildingStorageTooltipContent(currentObject, buildingData);
-                                            }
+                                            return this.setBuildingStorageTooltipContent(currentObject, buildingData);
                                         default:
                                             return this.setBuildingTooltipContent(currentObject, buildingData);
                                     }
@@ -1671,29 +1671,13 @@ export default class BaseLayout_Tooltip
         switch(currentObject.className)
         {
             case '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C':
-                let buildingName = this.baseLayout.getSaveGameSign(currentObject, 'mStationName');
-                    if(buildingName !== null)
+                let information     = Building_TrainStation.getInformation(this.baseLayout, currentObject);
+                let mStationName    = this.baseLayout.getObjectProperty(information, 'mStationName');
+                    if(mStationName !== null)
                     {
-                        content.push('<div><strong>' + direction + inverted + buildingName + ' <em class="small">(' + buildingData.name + ')</em></strong></div>');
+                        content.push('<div><strong>' + direction + inverted + mStationName + ' <em class="small">(' + buildingData.name + ')</em></strong></div>');
                         break;
                     }
-            case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
-                let locomotiveName  = this.baseLayout.getSaveGameSign(currentObject, 'mTrainName');
-                let freightWagons   = Building_Locomotive.getFreightWagons(this.baseLayout, currentObject);
-
-                    if(locomotiveName !== null)
-                    {
-                        content.push('<div><strong>' + direction + inverted + locomotiveName + ' <em class="small">(' + buildingData.name + ')</em></strong></div>');
-                    }
-                    else
-                    {
-                        content.push('<div><strong>' + direction + inverted +  buildingData.name + '</strong></div>');
-                    }
-                    if(freightWagons.length > 0)
-                    {
-                        content.push('<div>' + new Intl.NumberFormat(this.baseLayout.language).format(freightWagons.length) + ' freight wagons</div>');
-                    }
-                    break;
             default:
                 content.push('<div><strong>' + direction + inverted +  buildingData.name + '</strong></div>');
         }
