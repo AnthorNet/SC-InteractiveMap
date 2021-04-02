@@ -53,6 +53,7 @@ export default class Modal_Trains
                                         let mStops = this.baseLayout.getObjectProperty(currentTimetable, 'mStops');
                                             if(mStops !== null)
                                             {
+                                                let mCurrentStop    = this.baseLayout.getObjectProperty(currentTimetable, 'mCurrentStop');
                                                 let haveName        = this.baseLayout.getObjectProperty(currentIdentifier, 'mTrainName');
                                                     if(haveName === null)
                                                     {
@@ -75,11 +76,14 @@ export default class Modal_Trains
                                                                         let mStationName = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
                                                                             if(mStationName !== null)
                                                                             {
-                                                                                html.push('<li class="list-group-item">' + mStationName + '</li>');
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                html.push('<li class="list-group-item">' + mStops.values[j][k].value.pathName + '</li>');
+                                                                                if(j === mCurrentStop)
+                                                                                {
+                                                                                    html.push('<li class="list-group-item">' + mStationName + ' <span class="badge badge-warning">Next stop</span></li>');
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    html.push('<li class="list-group-item">' + mStationName + '</li>');
+                                                                                }
                                                                             }
                                                                     }
                                                             }

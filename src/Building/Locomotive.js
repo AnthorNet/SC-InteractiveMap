@@ -82,13 +82,59 @@ export default class Building_Locomotive
         return false;
     }
 
+    static getVelocity(baseLayout, currentObject)
+    {
+        let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
+        let mSimulationData = baseLayout.getObjectProperty(information, 'mSimulationData');
+            if(mSimulationData !== null)
+            {
+                for(let i = 0; i < mSimulationData.values.length; i++)
+                {
+                    if(mSimulationData.values[i].name === 'Velocity')
+                    {
+                        return mSimulationData.values[i].value / 27.778;
+                    }
+                }
+            }
+
+        return null;
+    }
+
     static getTimeTable(baseLayout, currentObject)
     {
         let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
         let TimeTable       = baseLayout.getObjectProperty(information, 'TimeTable');
             if(TimeTable !== null)
             {
-                return baseLayout.saveGameParser.getTargetObject(TimeTable.pahtName);
+                return baseLayout.saveGameParser.getTargetObject(TimeTable.pathName);
+            }
+
+        return null;
+    }
+
+    static getNextStop(baseLayout, currentObject)
+    {
+        let timeTable       = Building_Locomotive.getTimeTable(baseLayout, currentObject);
+            if(timeTable !== null)
+            {
+                let mStops          = baseLayout.getObjectProperty(timeTable, 'mStops');
+                let mCurrentStop    = baseLayout.getObjectProperty(timeTable, 'mCurrentStop');
+
+                    if(mStops.values[mCurrentStop] !== undefined)
+                    {
+                        let nextStop = mStops.values[mCurrentStop];
+                            for(let i = 0; i < nextStop.length; i++)
+                            {
+                                if(nextStop[i].name === 'Station')
+                                {
+                                    let nextStation = baseLayout.saveGameParser.getTargetObject(nextStop[i].value.pathName);
+                                        if(nextStation !== null)
+                                        {
+                                            return nextStation;
+                                        }
+                                }
+                            }
+                    }
             }
 
         return null;
@@ -219,13 +265,32 @@ export default class Building_Locomotive
                         content.push('<tr><td>Freight wagons:</td><td class="pl-3 text-right">' + new Intl.NumberFormat(baseLayout.language).format(freightWagons.length) + ' </td></tr>');
                     }
 
-                let mSimulationData = baseLayout.getObjectProperty(information, 'mSimulationData');
-                    if(mSimulationData !== null && mSimulationData.values[0].name === 'Velocity')
+                let velocity = Building_Locomotive.getVelocity(baseLayout, currentObject);
+                    if(velocity !== null)
                     {
-                        content.push('<tr><td>Speed:</td><td class="pl-3 text-right">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(mSimulationData.values[0].value / 27.778)) + ' km/h</td></tr>');
+                        content.push('<tr><td>Speed:</td><td class="pl-3 text-right">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(velocity)) + ' km/h</td></tr>');
                     }
 
-                content.push('<tr><td>Auto-pilot:</td>' + ((Building_Locomotive.isAutoPilotOn(baseLayout, currentObject)) ? '<td class="pl-3 text-right text-success">On</td>' : '<td class="pl-3 text-right text-danger">Off</td>') + '</tr>');
+                let isAutoPilotOn   = Building_Locomotive.isAutoPilotOn(baseLayout, currentObject);
+                    if(isAutoPilotOn === true)
+                    {
+                        content.push('<tr><td>Auto-pilot:</td><td class="pl-3 text-right text-success">On</td></tr>');
+
+                        let nextStop = Building_Locomotive.getNextStop(baseLayout, currentObject);
+                            if(nextStop !== null)
+                            {
+                                let mStationName = baseLayout.getObjectProperty(nextStop, 'mStationName');
+                                    if(mStationName !== null)
+                                    {
+                                        content.push('<tr><td>Next stop:</td><td class="pl-3 text-right">' + mStationName + '</td></tr>');
+                                    }
+                            }
+                    }
+                    else
+                    {
+                        content.push('<tr><td>Auto-pilot:</td><td class="pl-3 text-right text-danger">Off</td></tr>');
+                    }
+
 
                 content.push('</table></td>');
 
