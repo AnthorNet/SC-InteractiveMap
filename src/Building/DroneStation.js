@@ -1,4 +1,5 @@
-/* global Intl */
+/* global Intl, parseFloat */
+import Modal                                    from '../Modal.js';
 
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
@@ -74,6 +75,58 @@ export default class Building_DroneStation
     /**
      * CONTEXT MENU
      */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+            contextMenu.push({
+                text: 'Update "' + buildingData.name + '" sign',
+                callback: Building_DroneStation.updateSign
+            });
+            contextMenu.push({separator: true});
+
+        return contextMenu;
+    }
+
+    /**
+     * MODALS
+     */
+    static updateSign(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+            baseLayout.pauseMap();
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let currentSign     = Building_DroneStation.getSign(baseLayout, currentObject);
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" sign',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mBuildingTag',
+                    inputType   : 'text',
+                    value       : currentSign
+                }],
+                callback    : function(values)
+                {
+                    this.unpauseMap();
+
+                    if(values === null)
+                    {
+                        return;
+                    }
+
+                    if(values.mBuildingTag !== '')
+                    {
+                        let mInfo = Building_DroneStation.getInformation(this, currentObject);
+                            if(mInfo !== null)
+                            {
+                                this.setObjectProperty(mInfo, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
+                            }
+                    }
+                }.bind(baseLayout)
+            });
+    }
 
     /**
      * TOOLTIP

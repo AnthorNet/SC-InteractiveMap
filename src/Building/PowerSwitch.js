@@ -31,16 +31,16 @@ export default class Building_PowerSwitch
     {
         let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-        contextMenu.push({
-            text: 'Turn "' + buildingData.name + '" ' + ((Building_PowerSwitch.isOn(baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
-            callback: Building_PowerSwitch.updateState
-        });
+            contextMenu.push({
+                text: 'Turn "' + buildingData.name + '" ' + ((Building_PowerSwitch.isOn(baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
+                callback: Building_PowerSwitch.updateState
+            });
 
-        contextMenu.push({
-            text: 'Update "' + buildingData.name + '" sign',
-            callback: Building_PowerSwitch.updateSign
-        });
-        contextMenu.push({separator: true});
+            contextMenu.push({
+                text: 'Update "' + buildingData.name + '" sign',
+                callback: Building_PowerSwitch.updateSign
+            });
+            contextMenu.push({separator: true});
 
         return contextMenu;
     }

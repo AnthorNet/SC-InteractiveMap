@@ -1,10 +1,12 @@
-import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
+
 import Building_Conveyor                        from '../Building/Conveyor.js';
+import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_Light                           from '../Building/Light.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
+import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 
 import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
 
@@ -169,6 +171,14 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({separator: true});
                     }
 
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C')
+                    {
+                        contextMenu = Building_DroneStation.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                    }
+                    if(buildingData.category === 'light')
+                    {
+                        contextMenu = Building_Light.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                    }
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C')
                     {
                         contextMenu = Building_PowerStorage.addContextMenu(this.baseLayout, currentObject, contextMenu);
@@ -176,10 +186,6 @@ export default class BaseLayout_ContextMenu
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
                     {
                         contextMenu = Building_PowerSwitch.addContextMenu(this.baseLayout, currentObject, contextMenu);
-                    }
-                    if(buildingData.category === 'light')
-                    {
-                        contextMenu = Building_Light.addContextMenu(this.baseLayout, currentObject, contextMenu);
                     }
 
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_8x4_01.Build_Wall_8x4_01_C')
