@@ -3379,104 +3379,102 @@ export default class BaseLayout
             for(let i = 0; i < currentObject.children.length; i++)
             {
                 let connectedComponent = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-
-                if(connectedComponent !== null)
-                {
-                    // Belt/Pipe/Hyperpipe connection
-                    if(
-                           connectedComponent.className === '/Script/FactoryGame.FGFactoryConnectionComponent' // Belt
-                        || connectedComponent.className === '/Script/FactoryGame.FGPipeConnectionFactory' // Pipe to factory
-                        || connectedComponent.className === '/Script/FactoryGame.FGPipeConnectionComponent' // Pipe to pipe
-                        || connectedComponent.className === '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C' // Hyper tubes
-                    )
+                    if(connectedComponent !== null)
                     {
-                        let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedComponent');
-
-                        if(targetConnectedComponent !== null)
+                        // Belt/Pipe/Hyperpipe connection
+                        if(
+                               connectedComponent.className === '/Script/FactoryGame.FGFactoryConnectionComponent' // Belt
+                            || connectedComponent.className === '/Script/FactoryGame.FGPipeConnectionFactory' // Pipe to factory
+                            || connectedComponent.className === '/Script/FactoryGame.FGPipeConnectionComponent' // Pipe to pipe
+                            || connectedComponent.className === '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C' // Hyper tubes
+                        )
                         {
-                            let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
-
-                            if(currentConnectedComponent !== null)
-                            {
-                                for(let j = 0; j < currentConnectedComponent.properties.length; j++)
+                            let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedComponent');
+                                if(targetConnectedComponent !== null)
                                 {
-                                    if(currentConnectedComponent.properties[j].name === 'mConnectedComponent' && currentConnectedComponent.properties[j].value.pathName === connectedComponent.pathName)
-                                    {
-                                        currentConnectedComponent.properties.splice(j, 1);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // Railway connection
-                    if(connectedComponent.className === '/Script/FactoryGame.FGRailroadTrackConnectionComponent')
-                    {
-                        let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedComponents');
-
-                        if(targetConnectedComponent !== null)
-                        {
-                            for(let j = 0; j < targetConnectedComponent.values.length; j++)
-                            {
-                                let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.values[j].pathName);
-
-                                for(let k = 0; k < currentConnectedComponent.properties.length; k++)
-                                {
-                                    if(currentConnectedComponent.properties[k].name === 'mConnectedComponents')
-                                    {
-                                        for(let m = 0; m < currentConnectedComponent.properties[k].value.values.length; m++)
+                                    let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
+                                        if(currentConnectedComponent !== null)
                                         {
-                                            if(currentConnectedComponent.properties[k].value.values[m].pathName === connectedComponent.pathName)
+                                            for(let j = 0; j < currentConnectedComponent.properties.length; j++)
                                             {
-                                                currentConnectedComponent.properties[k].value.values.splice(m, 1);
+                                                if(currentConnectedComponent.properties[j].name === 'mConnectedComponent' && currentConnectedComponent.properties[j].value.pathName === connectedComponent.pathName)
+                                                {
+                                                    currentConnectedComponent.properties.splice(j, 1);
+                                                }
                                             }
                                         }
+                                }
+                        }
 
-                                        if(currentConnectedComponent.properties[k].value.values.length === 0)
-                                        {
-                                            currentConnectedComponent.properties = [];
-                                            break;
-                                        }
+                        // Railway connection
+                        if(connectedComponent.className === '/Script/FactoryGame.FGRailroadTrackConnectionComponent')
+                        {
+                            let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedComponents');
+                                if(targetConnectedComponent !== null)
+                                {
+                                    for(let j = 0; j < targetConnectedComponent.values.length; j++)
+                                    {
+                                        let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.values[j].pathName);
+                                            if(currentConnectedComponent !== null)
+                                            {
+                                                for(let k = 0; k < currentConnectedComponent.properties.length; k++)
+                                                {
+                                                    if(currentConnectedComponent.properties[k].name === 'mConnectedComponents')
+                                                    {
+                                                        for(let m = 0; m < currentConnectedComponent.properties[k].value.values.length; m++)
+                                                        {
+                                                            if(currentConnectedComponent.properties[k].value.values[m].pathName === connectedComponent.pathName)
+                                                            {
+                                                                currentConnectedComponent.properties[k].value.values.splice(m, 1);
+                                                            }
+                                                        }
+
+                                                        if(currentConnectedComponent.properties[k].value.values.length === 0)
+                                                        {
+                                                            currentConnectedComponent.properties = [];
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
                                     }
                                 }
-                            }
-                        }
 
-                        // Remove rails connected switches!
-                        for(let switchPathName in this.saveGameRailSwitches)
-                        {
-                            let mControlledConnection = this.getObjectProperty(this.saveGameRailSwitches[switchPathName], 'mControlledConnection');
-
-                            if(mControlledConnection !== null)
+                            // Remove rails connected switches!
+                            for(let switchPathName in this.saveGameRailSwitches)
                             {
-                                if(mControlledConnection.pathName === connectedComponent.pathName)
-                                {
-                                    this.saveGameParser.deleteObject(switchPathName);
-                                    this.deleteMarkerFromElements('playerTracksLayer', this.getMarkerFromPathName(switchPathName, 'playerTracksLayer'));
-                                    delete this.saveGameRailSwitches[switchPathName];
-                                }
+                                let mControlledConnection = this.getObjectProperty(this.saveGameRailSwitches[switchPathName], 'mControlledConnection');
+                                    if(mControlledConnection !== null)
+                                    {
+                                        if(mControlledConnection.pathName === connectedComponent.pathName)
+                                        {
+                                            this.saveGameParser.deleteObject(switchPathName);
+                                            this.deleteMarkerFromElements('playerTracksLayer', this.getMarkerFromPathName(switchPathName, 'playerTracksLayer'));
+                                            delete this.saveGameRailSwitches[switchPathName];
+                                        }
+                                    }
                             }
                         }
-                    }
 
-                    // Platform connection
-                    if(connectedComponent.className === '/Script/FactoryGame.FGTrainPlatformConnection')
-                    {
-                        let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedTo');
-
-                        if(targetConnectedComponent !== null)
+                        // Platform connection
+                        if(connectedComponent.className === '/Script/FactoryGame.FGTrainPlatformConnection')
                         {
-                            let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
-
-                            for(let j = 0; j < currentConnectedComponent.properties.length; j++)
-                            {
-                                if(currentConnectedComponent.properties[j].name === 'mConnectedTo' && currentConnectedComponent.properties[j].value.pathName === connectedComponent.pathName)
+                            let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedTo');
+                                if(targetConnectedComponent !== null)
                                 {
-                                    currentConnectedComponent.properties.splice(j, 1);
+                                    let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
+                                        if(currentConnectedComponent !== null)
+                                        {
+                                            for(let j = 0; j < currentConnectedComponent.properties.length; j++)
+                                            {
+                                                if(currentConnectedComponent.properties[j].name === 'mConnectedTo' && currentConnectedComponent.properties[j].value.pathName === connectedComponent.pathName)
+                                                {
+                                                    currentConnectedComponent.properties.splice(j, 1);
+                                                }
+                                            }
+                                        }
                                 }
-                            }
                         }
-                    }
                 }
             }
         }
@@ -6462,56 +6460,60 @@ export default class BaseLayout
 
     fillSelection()
     {
-        let inputOptions = [];
-            for(let i in this.buildingsData)
-            {
-                if(this.buildingsData[i].category === 'foundation')
+        if(this.satisfactoryMap.leafletMap.selectAreaFeature._areaSelected !== null)
+        {
+            let inputOptions = [];
+                for(let i in this.buildingsData)
                 {
-                    inputOptions.push({
-                        dataContent: '<img src="' + this.buildingsData[i].image + '" style="width: 24px;" /> ' + this.buildingsData[i].name,
-                        value: this.buildingsData[i].className,
-                        text: this.buildingsData[i].name
+                    if(this.buildingsData[i].category === 'foundation')
+                    {
+                        inputOptions.push({
+                            dataContent: '<img src="' + this.buildingsData[i].image + '" style="width: 24px;" /> ' + this.buildingsData[i].name,
+                            value: this.buildingsData[i].className,
+                            text: this.buildingsData[i].name
+                        });
+                    }
+                }
+
+            Modal.form({
+                title       : 'Fill selection with...',
+                onEscape    : this.cancelSelectMultipleMarkers.bind(this),
+                container   : '#leafletMap',
+                inputs      : [{
+                    name            : 'fillWith',
+                    inputType       : 'selectPicker',
+                    inputOptions    : inputOptions
+                },{
+                    name            : 'z',
+                    label           : 'Altitude (In centimeters)',
+                    inputType       : 'coordinate',
+                    value           : 0,
+                },
+                {
+                    label           : 'Use materials from your containers?',
+                    name            : 'useOwnMaterials',
+                    inputType       : 'toggle'
+                }],
+                callback: function(form)
+                {
+                    if(form === null || form.fillWith === null || form.z === null || form.useOwnMaterials === null)
+                    {
+                        this.cancelSelectMultipleMarkers();
+                        return;
+                    }
+
+                    return new Spawn_Fill({
+                        selection       : this.satisfactoryMap.leafletMap.selectAreaFeature._areaSelected,
+                        z               : form.z,
+                        fillWith        : form.fillWith,
+                        useOwnMaterials : parseInt(form.useOwnMaterials),
+
+                        baseLayout      : this
                     });
-                }
-            }
+                }.bind(this)
+            });
+        }
 
-        Modal.form({
-            title       : 'Fill selection with...',
-            onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-            container   : '#leafletMap',
-            inputs      : [{
-                name            : 'fillWith',
-                inputType       : 'selectPicker',
-                inputOptions    : inputOptions
-            },{
-                name            : 'z',
-                label           : 'Altitude (In centimeters)',
-                inputType       : 'coordinate',
-                value           : 0,
-            },
-            {
-                label           : 'Use materials from your containers?',
-                name            : 'useOwnMaterials',
-                inputType       : 'toggle'
-            }],
-            callback: function(form)
-            {
-                if(form === null || form.fillWith === null || form.z === null || form.useOwnMaterials === null)
-                {
-                    this.cancelSelectMultipleMarkers();
-                    return;
-                }
-
-                return new Spawn_Fill({
-                    selection       : this.satisfactoryMap.leafletMap.selectAreaFeature._areaSelected,
-                    z               : form.z,
-                    fillWith        : form.fillWith,
-                    useOwnMaterials : parseInt(form.useOwnMaterials),
-
-                    baseLayout      : this
-                });
-            }.bind(this)
-        });
         return;
     }
 
