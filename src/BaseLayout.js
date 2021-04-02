@@ -31,6 +31,7 @@ import Modal_Trains                             from './Modal/Trains.js';
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_Light                           from './Building/Light.js';
+import Building_TrainStation                    from './Building/TrainStation.js';
 
 import Spawn_Fill                               from './Spawn/Fill.js';
 

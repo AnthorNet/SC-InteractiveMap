@@ -70,6 +70,30 @@ export default class Building_Locomotive
         return null;
     }
 
+    static isAutoPilotOn(baseLayout, currentObject)
+    {
+        let information             = Building_TrainStation.getInformation(baseLayout, currentObject);
+        let mIsSelfDrivingEnabled   = baseLayout.getObjectProperty(information, 'mIsSelfDrivingEnabled');
+            if(mIsSelfDrivingEnabled !== null && mIsSelfDrivingEnabled === 1)
+            {
+                return true;
+            }
+
+        return false;
+    }
+
+    static getTimeTable(baseLayout, currentObject)
+    {
+        let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
+        let TimeTable       = baseLayout.getObjectProperty(information, 'TimeTable');
+            if(TimeTable !== null)
+            {
+                return baseLayout.saveGameParser.getTargetObject(TimeTable.pahtName);
+            }
+
+        return null;
+    }
+
     /**
      * CONTEXT MENU
      */
@@ -80,6 +104,10 @@ export default class Building_Locomotive
             contextMenu.push({
                 text: 'Update "' + buildingData.name + '" sign',
                 callback: Building_Locomotive.updateSign
+            });
+            contextMenu.push({
+                text: 'Turn "' + buildingData.name + '" auto-pilot ' + ((Building_Locomotive.isAutoPilotOn(baseLayout, currentObject)) ? '<strong class="text-danger">Off</strong>' : '<strong class="text-success">On</strong>'),
+                callback: Building_Locomotive.updateAutoPilot
             });
             contextMenu.push({separator: true});
 
@@ -142,14 +170,31 @@ export default class Building_Locomotive
             });
     }
 
+    static updateAutoPilot(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
+        let isAutoPilotOn   = Building_Locomotive.isAutoPilotOn(baseLayout, currentObject);
+
+            if(isAutoPilotOn === true)
+            {
+                baseLayout.deleteObjectProperty(information, 'mIsSelfDrivingEnabled');
+            }
+            else
+            {
+                baseLayout.setObjectProperty(information, 'mIsSelfDrivingEnabled', 1, 'BoolProperty');
+            }
+    }
+
     /**
      * TOOLTIP
      */
     static getTooltip(baseLayout, currentObject, buildingData)
     {
         let content         = [];
-
         let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
+
         let mTrainName      = baseLayout.getObjectProperty(information, 'mTrainName');
             if(mTrainName !== null)
             {
@@ -160,16 +205,31 @@ export default class Building_Locomotive
                 content.push('<div><strong>' + buildingData.name + '</strong></div>');
             }
 
-        let freightWagons   = Building_Locomotive.getFreightWagons(baseLayout, currentObject);
-            if(freightWagons.length > 0)
-            {
-                content.push('<div>' + new Intl.NumberFormat(baseLayout.language).format(freightWagons.length) + ' freight wagons</div>');
-            }
+            content.push('<table class="pt-3"><tr>');
+                if(buildingData.image !== undefined)
+                {
+                    content.push('<td class="pr-3"><img src="' + buildingData.image + '" style="width: 128px;height: 128px;" /></td>');
+                }
 
-        if(buildingData.image !== undefined)
-        {
-            content.push('<div class="pt-3"><img src="' + buildingData.image + '" style="width: 128px;height: 128px;" /></div>');
-        }
+                content.push('<td><table class="text-left">');
+
+                let freightWagons   = Building_Locomotive.getFreightWagons(baseLayout, currentObject);
+                    if(freightWagons.length > 0)
+                    {
+                        content.push('<tr><td>Freight wagons:</td><td class="pl-3 text-right">' + new Intl.NumberFormat(baseLayout.language).format(freightWagons.length) + ' </td></tr>');
+                    }
+
+                let mSimulationData = baseLayout.getObjectProperty(information, 'mSimulationData');
+                    if(mSimulationData !== null && mSimulationData.values[0].name === 'Velocity')
+                    {
+                        content.push('<tr><td>Speed:</td><td class="pl-3 text-right">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(mSimulationData.values[0].value / 27.778)) + ' km/h</td></tr>');
+                    }
+
+                content.push('<tr><td>Auto-pilot:</td>' + ((Building_Locomotive.isAutoPilotOn(baseLayout, currentObject)) ? '<td class="pl-3 text-right text-success">On</td>' : '<td class="pl-3 text-right text-danger">Off</td>') + '</tr>');
+
+                content.push('</table></td>');
+
+            content.push('</tr></table>');
 
         return '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png?v=' + baseLayout.scriptVersion + ') 25 repeat;background: #7f7f7f;margin: -7px;' + BaseLayout_Tooltip.defaultTextStyle + '">\
                     <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
