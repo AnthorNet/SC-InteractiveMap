@@ -152,7 +152,7 @@ export default class Spawn_Fill
             }
 
             return new Promise(function(resolve){
-                $('#liveLoader .progress-bar').css('width', Math.round((height + this.maxHeight) / (this.maxHeight * 2) * 100) + '%');
+                $('#liveLoader .progress-bar').css('width', Math.round((height - this.minHeight) / (this.maxHeight - this.minHeight) * 100) + '%');
                 setTimeout(resolve, 5);
             }.bind(this)).then(function(){
                 for(let i = 0; i < results.length; i++)
