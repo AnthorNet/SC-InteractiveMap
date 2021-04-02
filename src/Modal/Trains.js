@@ -41,47 +41,52 @@ export default class Modal_Trains
         {
             if(this.baseLayout.saveGameSigns[i].className === '/Script/FactoryGame.FGTrain')
             {
-                let haveName        = this.baseLayout.getObjectProperty(this.baseLayout.saveGameSigns[i], 'mTrainName');
                 let haveTimetable   = this.baseLayout.getObjectProperty(this.baseLayout.saveGameSigns[i], 'TimeTable');
-
-                if(haveName !== null && haveTimetable !== null && haveTimetable.pathName !== undefined)
-                {
-                    let currentTimetable = this.baseLayout.saveGameParser.getTargetObject(haveTimetable.pathName);
-                        if(currentTimetable !== null)
-                        {
-                            let mStops = this.baseLayout.getObjectProperty(currentTimetable, 'mStops');
-                                if(mStops !== null)
-                                {
-                                    html.push('<div class="card">');
-                                    html.push('<div class="card-header"><strong>' + haveName + '</strong></div>');
-                                    html.push('<ul class="list-group list-group-flush">');
-                                        for(let j = 0; j < mStops.values.length; j++)
-                                        {
-                                            for(let k = 0; k < mStops.values[j].length; k++)
+                    if(haveTimetable !== null && haveTimetable.pathName !== undefined)
+                    {
+                        let currentTimetable = this.baseLayout.saveGameParser.getTargetObject(haveTimetable.pathName);
+                            if(currentTimetable !== null)
+                            {
+                                let mStops = this.baseLayout.getObjectProperty(currentTimetable, 'mStops');
+                                    if(mStops !== null)
+                                    {
+                                        let haveName        = this.baseLayout.getObjectProperty(this.baseLayout.saveGameSigns[i], 'mTrainName');
+                                            if(haveName === null)
                                             {
-                                                if(mStops.values[j][k].name === 'Station' && mStops.values[j][k].value.pathName !== undefined)
+                                                haveName = this.baseLayout.saveGameSigns[i].pathName.split('.');
+                                                haveName = haveName.pop();
+                                            }
+
+                                        html.push('<div class="card">');
+                                        html.push('<div class="card-header"><strong>' + haveName + '</strong></div>');
+                                        html.push('<ul class="list-group list-group-flush">');
+                                            for(let j = 0; j < mStops.values.length; j++)
+                                            {
+                                                for(let k = 0; k < mStops.values[j].length; k++)
                                                 {
-                                                    let trainStationIdentifier = this.baseLayout.saveGameParser.getTargetObject(mStops.values[j][k].value.pathName);
-                                                        if(trainStationIdentifier !== null)
-                                                        {
-                                                            let mStationName = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
-                                                                if(mStationName !== null)
-                                                                {
-                                                                    html.push('<li class="list-group-item">' + mStationName + '</li>');
-                                                                }
-                                                                else
-                                                                {
-                                                                    html.push('<li class="list-group-item">' + mStops.values[j][k].value.pathName + '</li>');
-                                                                }
-                                                        }
+                                                    if(mStops.values[j][k].name === 'Station' && mStops.values[j][k].value.pathName !== undefined)
+                                                    {
+                                                        let trainStationIdentifier = this.baseLayout.saveGameParser.getTargetObject(mStops.values[j][k].value.pathName);
+                                                            if(trainStationIdentifier !== null)
+                                                            {
+                                                                let mStationName = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
+                                                                    if(mStationName !== null)
+                                                                    {
+                                                                        html.push('<li class="list-group-item">' + mStationName + '</li>');
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        html.push('<li class="list-group-item">' + mStops.values[j][k].value.pathName + '</li>');
+                                                                    }
+                                                            }
+                                                    }
                                                 }
                                             }
-                                        }
-                                    html.push('</ul>');
-                                    html.push('</div>');
-                                }
-                        }
-                }
+                                        html.push('</ul>');
+                                        html.push('</div>');
+                                    }
+                            }
+                    }
             }
         }
 
