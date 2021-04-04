@@ -303,7 +303,7 @@ export default class SaveParser_Read
                 actor.transform.translation = translation;
             }
 
-            if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[1] !== 1)
+            if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[2] !== 1)
             {
                 if(actor.transform === undefined)
                 {
