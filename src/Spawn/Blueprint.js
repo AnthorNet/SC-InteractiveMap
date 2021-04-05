@@ -13,8 +13,9 @@ export default class Spawn_Blueprint
 
         this.xOffset            = (options.xOffset !== undefined) ? parseFloat(options.xOffset) : 0;
         this.yOffset            = (options.yOffset !== undefined) ? parseFloat(options.yOffset) : 0;
-        this.zOffset            = (this.clipboard.zOffset !== undefined) ? parseFloat(this.clipboard.zOffset) : 0;
+        this.zOffset            = (this.clipboard.zOffset !== undefined) ? parseFloat(this.clipboard.zOffset) : ((options.zOffset !== undefined) ? parseFloat(options.zOffset) : 0);
         this.colorSlotHelper    = (options.colorSlotHelper !== undefined) ? options.colorSlotHelper : 'NONE';
+        this.powerLineClassName = ['/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C', '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'];
 
         this.useHistory         = (options.history !== undefined) ? options.history : true;
 
@@ -69,19 +70,21 @@ export default class Spawn_Blueprint
                 // Try to find the minZ
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.clipboard.data[i].parent.className);
-
-                        if(currentObjectData !== null && this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
-                        {
-                            if(this.clipboard.data[i].parent.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_') || this.clipboard.data[i].parent.className.startsWith('/Game/FactoryGame/Buildable/Building/Foundation/Build_'))
+                    if(this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
+                    {
+                        let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.clipboard.data[i].parent.className);
+                            if(currentObjectData !== null)
                             {
-                                minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (currentObjectData.height * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
+                                if(this.clipboard.data[i].parent.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_') || this.clipboard.data[i].parent.className.startsWith('/Game/FactoryGame/Buildable/Building/Foundation/Build_'))
+                                {
+                                    minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (currentObjectData.height * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
+                                }
+                                else
+                                {
+                                    minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
+                                }
                             }
-                            else
-                            {
-                                minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
-                            }
-                        }
+                    }
                 }
 
                 if(this.zOffset !== 0)
@@ -91,7 +94,7 @@ export default class Spawn_Blueprint
 
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    if(this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && this.clipboard.data[i].parent.className !== '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
+                    if(this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
                     {
                         this.clipboard.data[i].parent.transform.translation[0] -= centerX;
                         this.clipboard.data[i].parent.transform.translation[1] -= centerY;
@@ -224,10 +227,7 @@ export default class Spawn_Blueprint
                     }
 
                     // Power lines connections
-                    if(
-                            ['/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C', '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'].includes(this.clipboard.data[i].parent.className)
-                         && this.clipboard.data[i].parent.extra !== undefined
-                    )
+                    if(this.powerLineClassName.includes(this.clipboard.data[i].parent.className) && this.clipboard.data[i].parent.extra !== undefined)
                     {
                         if(this.clipboard.data[i].parent.extra.sourcePathName !== undefined)
                         {

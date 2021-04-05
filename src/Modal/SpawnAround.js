@@ -111,6 +111,12 @@ export default class Modal_SpawnAround
                                         value           : 0
                                     },
                                     {
+                                        label           : 'Z offset',
+                                        name            : 'zOffset',
+                                        inputType       : 'coordinate',
+                                        value           : 0
+                                    },
+                                    {
                                         label           : 'Colored foundation helper',
                                         name            : 'colorSlotHelper',
                                         inputType       : 'select',
@@ -130,6 +136,7 @@ export default class Modal_SpawnAround
                                         clipboard           : baseLayout.clipboard,
                                         xOffset             : parseFloat(values.xOffset),
                                         yOffset             : parseFloat(values.yOffset),
+                                        zOffset             : parseFloat(values.zOffset),
                                         colorSlotHelper     : values.colorSlotHelper
                                     });
                                 }.bind(baseLayout)
