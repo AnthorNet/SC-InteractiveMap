@@ -5799,29 +5799,27 @@ export default class BaseLayout
     {
         let content         = null;
         let currentObject   = this.saveGameParser.getTargetObject(e.target.options.pathName);
-
-        if(currentObject !== null)
-        {
-            let tooltip = new BaseLayout_Tooltip({
-                baseLayout      : this,
-                target          : e.target
-            });
-                content = tooltip.getTooltip(currentObject);
-        }
+            if(currentObject !== null)
+            {
+                let tooltip = new BaseLayout_Tooltip({
+                    baseLayout      : this,
+                    target          : e.target
+                });
+                    content = tooltip.getTooltip(currentObject);
+            }
 
         if(content !== null)
         {
-            e.target.closeTooltip(); // Prevent double tooltip...
-            e.target._tooltip = new L.tooltip({}, e.target);
-            e.target._tooltip.setContent(content);
+            let tooltipOptions = {sticky: true};
+                
+            e.target.closeTooltip();
+            e.target.bindTooltip(content, tooltipOptions);
             e.target.openTooltip();
         }
     }
     closeTooltip(e)
     {
         e.target.unbindTooltip();
-        //e.target.closeTooltip();
-	//e.target._tooltip = null;
     }
 
 
