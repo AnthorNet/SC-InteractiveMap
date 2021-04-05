@@ -119,21 +119,23 @@ export default class Building_Locomotive
             {
                 let mStops          = baseLayout.getObjectProperty(timeTable, 'mStops');
                 let mCurrentStop    = baseLayout.getObjectProperty(timeTable, 'mCurrentStop');
-
-                    if(mStops.values[mCurrentStop] !== undefined)
+                    if(mStops !== null && mCurrentStop !== null)
                     {
-                        let nextStop = mStops.values[mCurrentStop];
-                            for(let i = 0; i < nextStop.length; i++)
-                            {
-                                if(nextStop[i].name === 'Station')
+                        if(mStops.values[mCurrentStop] !== undefined)
+                        {
+                            let nextStop = mStops.values[mCurrentStop];
+                                for(let i = 0; i < nextStop.length; i++)
                                 {
-                                    let nextStation = baseLayout.saveGameParser.getTargetObject(nextStop[i].value.pathName);
-                                        if(nextStation !== null)
-                                        {
-                                            return nextStation;
-                                        }
+                                    if(nextStop[i].name === 'Station')
+                                    {
+                                        let nextStation = baseLayout.saveGameParser.getTargetObject(nextStop[i].value.pathName);
+                                            if(nextStation !== null)
+                                            {
+                                                return nextStation;
+                                            }
+                                    }
                                 }
-                            }
+                        }
                     }
             }
 
