@@ -31,6 +31,7 @@ import Modal_Trains                             from './Modal/Trains.js';
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_Light                           from './Building/Light.js';
+import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
 import Building_TrainStation                    from './Building/TrainStation.js';
 
 import Spawn_Fill                               from './Spawn/Fill.js';
@@ -5787,7 +5788,7 @@ export default class BaseLayout
         if(marker.options.pathName !== undefined)
         {
             marker.on('mouseover', this.showTooltip.bind(this));
-            marker.on('mouseout', this.closeTooltip);
+            marker.on('mouseout', this.closeTooltip.bind(this));
 
             if(L.Browser.touch)
             {
@@ -5811,14 +5812,24 @@ export default class BaseLayout
         if(content !== null)
         {
             let tooltipOptions = {sticky: true};
-                
-            e.target.closeTooltip();
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
+                {
+                    Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
+                }
+
+            e.target.closeTooltip.bind(this);
             e.target.bindTooltip(content, tooltipOptions);
             e.target.openTooltip();
         }
     }
     closeTooltip(e)
     {
+        let currentObject   = this.saveGameParser.getTargetObject(e.target.options.pathName);
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
+            {
+                Building_RailroadSwitchControl.unbindTooltip(this, currentObject);
+            }
+
         e.target.unbindTooltip();
     }
 
