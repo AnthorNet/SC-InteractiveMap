@@ -254,7 +254,7 @@ export default class Building_DroneStation
                         if(mTargetConsumption !== null)
                         {
                             content.push('<i style="font-size: 22px;line-height: 24px;" class="fas fa-bolt"></i><br />');
-                            content.push('<span class="small text-warning">' + mTargetConsumption + ' MW</span>');
+                            content.push('<span class="small text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(mTargetConsumption * 10) / 10) + ' MW</span>');
                         }
                 }
         content.push('</div>');
