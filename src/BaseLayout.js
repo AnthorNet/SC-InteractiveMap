@@ -3074,7 +3074,7 @@ export default class BaseLayout
                         }
                 }
 
-            let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
+            let information     = Building_TrainStation.getInformation(this, currentObject);
                 if(information !== null)
                 {
                     let timeTable = this.getObjectProperty(information, 'TimeTable');
@@ -6818,62 +6818,70 @@ export default class BaseLayout
 
     getSelectionBoundaries(markersSelected)
     {
-        let minX        = Infinity;
-        let maxX        = -Infinity;
-        let minY        = Infinity;
-        let maxY        = -Infinity;
+        let maxObjectOffset = 0;
+        let minX            = Infinity;
+        let maxX            = -Infinity;
+        let minY            = Infinity;
+        let maxY            = -Infinity;
             for(let i = 0; i < markersSelected.length; i++)
             {
                 let currentObject   = this.saveGameParser.getTargetObject(markersSelected[i].options.pathName);
-                let mSplineData     = this.getObjectProperty(currentObject, 'mSplineData');
-
-                if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' || currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
-                {
-                    continue;
-                }
-
-                if(mSplineData !== null)
-                {
-                    let splineMinX = Infinity;
-                    let splineMaxX = -Infinity;
-                    let splineMinY = Infinity;
-                    let splineMaxY = -Infinity;
-
-                    for(let j = 0; j < mSplineData.values.length; j++)
+                    if(['/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C', '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C', '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'].includes(currentObject.className))
                     {
-                        for(let k = 0; k < mSplineData.values[j].length; k++)
-                        {
-                            let currentValue    = mSplineData.values[j][k];
-
-                                if(currentValue.name === 'Location')
-                                {
-                                    splineMinX            = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                    splineMaxX            = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                    splineMinY            = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                    splineMaxY            = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                }
-                        }
+                        continue;
                     }
 
-                    minX    = Math.min(minX, ((splineMinX + splineMaxX) / 2));
-                    maxX    = Math.max(maxX, ((splineMinX + splineMaxX) / 2));
-                    minY    = Math.min(minY, ((splineMinY + splineMaxY) / 2));
-                    maxY    = Math.max(maxY, ((splineMinY + splineMaxY) / 2));
-                }
-                else
-                {
-                    minX            = Math.min(minX, currentObject.transform.translation[0]);
-                    maxX            = Math.max(maxX, currentObject.transform.translation[0]);
-                    minY            = Math.min(minY, currentObject.transform.translation[1]);
-                    maxY            = Math.max(maxY, currentObject.transform.translation[1]);
-                }
+                let mSplineData     = this.getObjectProperty(currentObject, 'mSplineData');
+                    if(mSplineData !== null)
+                    {
+                        let splineMinX = Infinity;
+                        let splineMaxX = -Infinity;
+                        let splineMinY = Infinity;
+                        let splineMaxY = -Infinity;
+
+                        for(let j = 0; j < mSplineData.values.length; j++)
+                        {
+                            for(let k = 0; k < mSplineData.values[j].length; k++)
+                            {
+                                let currentValue    = mSplineData.values[j][k];
+
+                                    if(currentValue.name === 'Location')
+                                    {
+                                        splineMinX            = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
+                                        splineMaxX            = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
+                                        splineMinY            = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
+                                        splineMaxY            = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
+                                    }
+                            }
+                        }
+
+                        minX    = Math.min(minX, ((splineMinX + splineMaxX) / 2));
+                        maxX    = Math.max(maxX, ((splineMinX + splineMaxX) / 2));
+                        minY    = Math.min(minY, ((splineMinY + splineMaxY) / 2));
+                        maxY    = Math.max(maxY, ((splineMinY + splineMaxY) / 2));
+
+                        continue;
+                    }
+
+                let objectOffset    = 0;
+                let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
+                    if(buildingData !== null && buildingData.category === 'foundation')
+                    {
+                        objectOffset = 400;
+                    }
+
+                    minX            = Math.min(minX, currentObject.transform.translation[0] - objectOffset);
+                    maxX            = Math.max(maxX, currentObject.transform.translation[0] + objectOffset);
+                    minY            = Math.min(minY, currentObject.transform.translation[1] - objectOffset);
+                    maxY            = Math.max(maxY, currentObject.transform.translation[1] + objectOffset);
+                    maxObjectOffset = Math.max(objectOffset, maxObjectOffset);
             }
 
         return {
-            minX    : minX,
-            maxX    : maxX,
-            minY    : minY,
-            maxY    : maxY,
+            minX    : minX + maxObjectOffset,
+            maxX    : maxX - maxObjectOffset,
+            minY    : minY + maxObjectOffset,
+            maxY    : maxY - maxObjectOffset,
             centerX : (minX + maxX) / 2,
             centerY : (minY + maxY) / 2
         };
