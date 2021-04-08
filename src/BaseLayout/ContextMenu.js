@@ -7,6 +7,7 @@ import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
+import Building_RailroadSwitchControl           from '../Building/RailroadSwitchControl.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
 
@@ -196,6 +197,10 @@ export default class BaseLayout_ContextMenu
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
                     {
                         contextMenu = Building_PowerSwitch.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                    }
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
+                    {
+                        contextMenu = Building_RailroadSwitchControl.addContextMenu(this.baseLayout, currentObject, contextMenu);
                     }
 
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_8x4_01.Build_Wall_8x4_01_C')

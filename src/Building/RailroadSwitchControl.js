@@ -31,11 +31,26 @@ export default class Building_RailroadSwitchControl
     }
 
     /**
+     * CONTEXT MENU
+     */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+            contextMenu.push({
+                text: 'Update "' + buildingData.name + '" connected railway',
+                callback: Building_RailroadSwitchControl.updateConnectedComponent
+            });
+            contextMenu.push({separator: true});
+
+        return contextMenu;
+    }
+
+    /**
      * TOOLTIP
      */
     static bindTooltip(baseLayout, currentObject, tooltipOptions)
     {
-        tooltipOptions.opacity      = 0.7;
         tooltipOptions.direction    = 'bottom';
 
         let connectedComponents = Building_RailroadSwitchControl.getConnectedComponents(baseLayout, currentObject);
@@ -97,6 +112,41 @@ export default class Building_RailroadSwitchControl
                             }
                     }
                 }
+            }
+    }
+
+    /**
+     * MODALS
+     */
+    static updateConnectedComponent(marker)
+    {
+        let baseLayout              = marker.baseLayout;
+        let currentObject           = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+
+        let mControlledConnection   = baseLayout.getObjectProperty(currentObject, 'mControlledConnection');
+            if(mControlledConnection !== null)
+            {
+                let trackConnection1 = baseLayout.saveGameParser.getTargetObject(mControlledConnection.pathName);
+                    if(trackConnection1 !== null)
+                    {
+                        let mConnectedComponents    = baseLayout.getObjectProperty(trackConnection1, 'mConnectedComponents');
+                        let mSwitchPosition         = baseLayout.getObjectProperty(trackConnection1, 'mSwitchPosition');
+                        let connectedComponents     = [trackConnection1];
+
+                            if(mConnectedComponents !== null && mSwitchPosition !== null && mConnectedComponents.values[mSwitchPosition] !== undefined)
+                            {
+                                let trackConnection2 = baseLayout.saveGameParser.getTargetObject(mConnectedComponents.values[mSwitchPosition].pathName);
+                                    if(trackConnection2 !== null)
+                                    {
+                                        connectedComponents.push(trackConnection2);
+                                    }
+                            }
+
+                            if(connectedComponents.length > 1)
+                            {
+                                baseLayout.setObjectProperty(trackConnection1, 'mSwitchPosition', ((mSwitchPosition === 0) ? 1 : 0), 'IntProperty');
+                            }
+                    }
             }
     }
 }
