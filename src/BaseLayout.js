@@ -57,6 +57,7 @@ export default class BaseLayout
         this.playersState                       = [];
         this.buildingDataClassNameHashTable     = {};
         this.radioactivityLayerNeedsUpdate      = false;
+        this.tooltipsEnabled                    = true;
 
         this.updateAltitudeLayersIsRunning      = false;
         this.altitudeSliderControl              = null;
@@ -511,11 +512,11 @@ export default class BaseLayout
 
     parseObjects(i = 0, objectsKeys = null)
     {
-        let objects                 = this.saveGameParser.getObjects();
-            if(objectsKeys === null)
-            {
-                objectsKeys             = Object.keys(objects);
-            }
+        if(objectsKeys === null)
+        {
+            let objects             = this.saveGameParser.getObjects();
+                objectsKeys         = Object.keys(objects);
+        }
 
         let countObjects            = objectsKeys.length;
         let parseObjectsProgress    = Math.round(i / countObjects * 100);
@@ -528,7 +529,7 @@ export default class BaseLayout
 
         for(i; i < countObjects; i++)
         {
-            let currentObject = objects[objectsKeys[i]];
+            let currentObject = this.saveGameParser.getTargetObject(objectsKeys[i]);
 
             // Add menu to nodes...
             if([
@@ -1152,46 +1153,39 @@ export default class BaseLayout
     addPlayerPosition(currentObject, isOwnPlayer = false)
     {
         // Find target
-        let currentObjectTarget = null;
-        for(let j = 0; j < currentObject.properties.length; j++)
-        {
-            if(currentObject.properties[j].name === 'mOwnedPawn')
+        let mOwnedPawn = this.getObjectProperty(currentObject, 'mOwnedPawn');
+            if(mOwnedPawn !== null)
             {
-                currentObjectTarget = this.saveGameParser.getTargetObject(currentObject.properties[j].value.pathName);
-                break;
-            }
-        }
-
-        if(currentObjectTarget !== null)
-        {
-            this.setupSubLayer('playerPositionLayer');
-
-            let position        = this.satisfactoryMap.unproject(currentObjectTarget.transform.translation);
-            let playerMarker    = L.marker(
-                    position,
+                let currentObjectTarget = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                    if(currentObjectTarget !== null)
                     {
-                        pathName: currentObject.pathName,
-                        icon: this.getMarkerIcon('#FFFFFF', ((isOwnPlayer === true) ? '#b3b3b3' : '#666666'), this.staticUrl + '/img/mapPlayerIcon.png'),
-                        riseOnHover: true,
-                        zIndexOffset: 1000
+                        this.setupSubLayer('playerPositionLayer');
+
+                        let position        = this.satisfactoryMap.unproject(currentObjectTarget.transform.translation);
+                        let playerMarker    = L.marker(
+                                position,
+                                {
+                                    pathName: currentObject.pathName,
+                                    icon: this.getMarkerIcon('#FFFFFF', ((isOwnPlayer === true) ? '#b3b3b3' : '#666666'), this.staticUrl + '/img/mapPlayerIcon.png'),
+                                    riseOnHover: true,
+                                    zIndexOffset: 1000
+                                }
+                            );
+
+                        this.playerLayers.playerPositionLayer.elements.push(playerMarker);
+                        playerMarker.addTo(this.playerLayers.playerPositionLayer.subLayer);
+
+                        if(isOwnPlayer === true)
+                        {
+                            this.satisfactoryMap.leafletMap.setView(position, 7);
+                        }
+
+                        return playerMarker;
                     }
-                );
-
-            this.playerLayers.playerPositionLayer.elements.push(playerMarker);
-            playerMarker.addTo(this.playerLayers.playerPositionLayer.subLayer);
-
-            if(isOwnPlayer === true)
-            {
-                this.satisfactoryMap.leafletMap.setView(position, 7);
             }
 
-            return playerMarker;
-        }
-        else
-        {
-            console.log('mOwnedPawn not found...', currentObject);
-            return null;
-        }
+        console.log('mOwnedPawn not found...', currentObject);
+        return null;
     }
 
     addPlayerFauna(currentObject)
@@ -5798,6 +5792,11 @@ export default class BaseLayout
     }
     showTooltip(e)
     {
+        if(this.tooltipsEnabled === false)
+        {
+            return;
+        }
+
         let content         = null;
         let currentObject   = this.saveGameParser.getTargetObject(e.target.options.pathName);
             if(currentObject !== null)
@@ -5811,7 +5810,7 @@ export default class BaseLayout
 
         if(content !== null)
         {
-            let tooltipOptions = {sticky: true};
+            let tooltipOptions = {sticky: true, opacity: 1};
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {
                     Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
