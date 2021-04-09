@@ -2044,7 +2044,7 @@ export default class BaseLayout
 
         let inventory           = this.getObjectInventory(currentObject, inventoryProperty);
         let inventoryOptions    = [];
-        let selectOptions       = this.generateInventoryOptions();
+        let selectOptions       = this.generateInventoryOptions(currentObject);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
 
         for(let i = 0; i < buildingData.maxSlot; i++)
@@ -2121,12 +2121,17 @@ export default class BaseLayout
     fillPlayerStorageBuildingInventoryModal(marker, inventoryProperty = 'mStorageInventory')
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
+            {
+                // Buffer only have the dfluidBox, the fluid is handled with the pipe network ;)
+                return this.fillPlayerStorageBuildingInventory(currentObject, null);
+            }
             if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
             {
                 inventoryProperty   = 'mInventory';
             }
 
-        let selectOptions       = this.generateInventoryOptions(false);
+        let selectOptions       = this.generateInventoryOptions(currentObject, false);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
 
         Modal.form({
@@ -2153,8 +2158,7 @@ export default class BaseLayout
 
     fillPlayerStorageBuildingInventory(currentObject, fillWith, inventoryProperty = 'mStorageInventory')
     {
-        let currentItem     = this.getItemDataFromClassName(fillWith);
-        let stack           = (currentItem !== null && currentItem.stack !== undefined) ? currentItem.stack : 100;
+        let stack           =  100;
         let storageObjects  = [currentObject];
             // Switch to freight wagons when locomotive was selected
             if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
@@ -2162,8 +2166,29 @@ export default class BaseLayout
                 storageObjects      = Building_Locomotive.getFreightWagons(this, currentObject);
             }
 
+        if(fillWith !== null)
+        {
+            let currentItem     = this.getItemDataFromClassName(fillWith);
+                if(currentItem !== null && currentItem.stack !== undefined)
+                {
+                    stack = currentItem.stack;
+                }
+        }
+
         for(let i = 0; i < storageObjects.length; i++)
         {
+            let buildingData    = this.getBuildingDataFromClassName(storageObjects[i].className);
+
+            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
+            {
+                if(buildingData !== null && buildingData.maxFluid !== undefined)
+                {
+                    this.setObjectProperty(storageObjects[i], 'mFluidBox', {type: "FluidBox", value: buildingData.maxFluid / 1000}, 'StructProperty');
+                }
+
+                continue;
+            }
+
             // Skip fluid Freight Wagon
             if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
             {
@@ -2183,11 +2208,10 @@ export default class BaseLayout
                     }
             }
 
-            let buildingData    = this.getBuildingDataFromClassName(storageObjects[i].className);
-                if(buildingData === null || buildingData.maxSlot === undefined)
-                {
-                    continue;
-                }
+            if(buildingData === null || buildingData.maxSlot === undefined)
+            {
+                continue;
+            }
 
             let oldInventory    = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
                 for(let j = 0; j < oldInventory.properties.length; j++)
@@ -2227,23 +2251,10 @@ export default class BaseLayout
 
         for(let i = 0; i < storageObjects.length; i++)
         {
-            // Skip fluid Freight Wagon
-            if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
             {
-                let storage           = this.getObjectProperty(storageObjects[i], inventoryProperty);
-                    if(storage !== null)
-                    {
-                        let storageObject = this.saveGameParser.getTargetObject(storage.pathName);
-                            if(storageObject !== null)
-                            {
-                                let mAdjustedSizeDiff = this.getObjectProperty(storageObject, 'mAdjustedSizeDiff');
-                                    if(mAdjustedSizeDiff !== null && mAdjustedSizeDiff === -31)
-                                    {
-                                        continue;
-                                    }
-                            }
-
-                    }
+                this.setObjectProperty(storageObjects[i], 'mFluidBox', {type: "FluidBox", value: 0}, 'StructProperty');
+                continue;
             }
 
             if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
@@ -2251,28 +2262,17 @@ export default class BaseLayout
                 inventoryProperty   = 'mInventory';
             }
 
-            let buildingData    = this.getBuildingDataFromClassName(storageObjects[i].className);
-                if(buildingData === null || buildingData.maxSlot === undefined)
-                {
-                    continue;
-                }
-
             let oldInventory    = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
                 for(let j = 0; j < oldInventory.properties.length; j++)
                 {
                     if(oldInventory.properties[j].name === 'mInventoryStacks')
                     {
-                        oldInventory = oldInventory.properties[j].value.values;
-
-                        for(let k = 0; k < buildingData.maxSlot; k++)
-                        {
-                            if(oldInventory[k] !== undefined)
+                        let mInventoryStacks = oldInventory.properties[j].value.values;
+                            for(let k = 0; k < mInventoryStacks.length; k++)
                             {
-                                oldInventory[k][0].value.itemName = "";
-                                this.setObjectProperty(oldInventory[k][0].value, 'NumItems', 0, 'IntProperty');
+                                mInventoryStacks[k][0].value.itemName = "";
+                                this.setObjectProperty(mInventoryStacks[k][0].value, 'NumItems', 0, 'IntProperty');
                             }
-
-                        }
                         break;
                     }
                 }
@@ -2283,10 +2283,70 @@ export default class BaseLayout
         }
     }
 
-
-    generateInventoryOptions(addNULL = true)
+    updatePipeNetworkFluid(marker)
     {
-        let selectOptions   = [];
+        let currentObject               = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let currentObjectPipeNetwork    = this.getObjectPipeNetwork(currentObject);
+
+            if(currentObjectPipeNetwork !== null)
+            {
+                let currentFluidDescriptor = this.getObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
+
+                Modal.form({
+                    title       : 'Update pipe network fluid',
+                    container   : '#leafletMap',
+                    inputs      : [{
+                        name            : 'mFluidDescriptor',
+                        inputType       : 'selectPicker',
+                        inputOptions    : this.generateInventoryOptions(currentObject),
+                        value           : ((currentFluidDescriptor !== null) ? currentFluidDescriptor.pathName : 'NULL')
+                    }],
+                    callback    : function(values)
+                    {
+                        if(values === null)
+                        {
+                            return;
+                        }
+
+                        if(values.mFluidDescriptor === 'NULL')
+                        {
+                            this.deleteObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
+                        }
+                        else
+                        {
+                            this.setObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor', {levelName: "", pathName: values.mFluidDescriptor}, 'ObjectProperty');
+                        }
+                    }.bind(this)
+                });
+            }
+    }
+
+    getObjectPipeNetwork(currentObject)
+    {
+        if(currentObject.children !== undefined)
+        {
+            for(let i = 0; i < currentObject.children.length; i++)
+            {
+                let currentChildren = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                    if(currentChildren !== null)
+                    {
+                        let mPipeNetworkID = this.getObjectProperty(currentChildren, 'mPipeNetworkID');
+                            if(mPipeNetworkID !== null && this.saveGamePipeNetworks[mPipeNetworkID] !== undefined)
+                            {
+                                return this.saveGameParser.getTargetObject(this.saveGamePipeNetworks[mPipeNetworkID]);
+                            }
+                    }
+            }
+        }
+
+        return null;
+    }
+
+
+    generateInventoryOptions(currentObject, addNULL = true)
+    {
+        let selectOptions       = [];
+        let isFluidInventory    = false;
         let itemsCategories = {
             ore                 : 'Ores',
             material            : 'Materials',
@@ -2299,12 +2359,28 @@ export default class BaseLayout
             mods                : 'Modded items'
         };
 
+        if(currentObject !== null)
+        {
+            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
+            {
+                isFluidInventory = true;
+            }
+        }
+
+        if(isFluidInventory === true)
+        {
+            itemsCategories = {
+                liquid          : 'Liquids',
+                gas             : 'Gas'
+            };
+        }
+
         for(let category in itemsCategories)
         {
             let categoryOptions = [];
                 for(let i in this.itemsData)
                 {
-                    if(this.itemsData[i].className !== undefined && this.itemsData[i].className !== null && this.itemsData[i].category !== 'liquid' && this.itemsData[i].category !== 'gas' && this.itemsData[i].category === category)
+                    if(this.itemsData[i].className !== undefined && this.itemsData[i].className !== null && this.itemsData[i].category === category)
                     {
                         categoryOptions.push({
                             group: itemsCategories[category],
@@ -2318,21 +2394,24 @@ export default class BaseLayout
                 selectOptions = selectOptions.concat(categoryOptions);
         }
 
-        let toolsOptions = [];
-            for(let i in this.toolsData)
-            {
-                if(this.toolsData[i].className !== undefined && this.toolsData[i].className !== null)
+        if(isFluidInventory === false)
+        {
+            let toolsOptions = [];
+                for(let i in this.toolsData)
                 {
-                    toolsOptions.push({
-                        group: 'Tools',
-                        dataContent: '<img src="' + this.toolsData[i].image + '" style="width: 24px;" /> ' + this.toolsData[i].name,
-                        value: this.toolsData[i].className,
-                        text: this.toolsData[i].name
-                    });
+                    if(this.toolsData[i].className !== undefined && this.toolsData[i].className !== null)
+                    {
+                        toolsOptions.push({
+                            group: 'Tools',
+                            dataContent: '<img src="' + this.toolsData[i].image + '" style="width: 24px;" /> ' + this.toolsData[i].name,
+                            value: this.toolsData[i].className,
+                            text: this.toolsData[i].name
+                        });
+                    }
                 }
-            }
-            toolsOptions.sort((a, b) => a.text.localeCompare(b.text));
-            selectOptions = selectOptions.concat(toolsOptions);
+                toolsOptions.sort((a, b) => a.text.localeCompare(b.text));
+                selectOptions = selectOptions.concat(toolsOptions);
+        }
 
         if(addNULL === true)
         {
@@ -3129,138 +3208,6 @@ export default class BaseLayout
         {
             this.updateRadioactivityLayer();
         }
-    }
-
-    //TODO: Advanced debug edition...
-    advancedDebugObject(marker)
-    {
-        let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let html                = [];
-        let htmlChildren        = [];
-        let childrenPathName    = [];
-        let extraPathName       = [];
-
-        //html.push('<div class="alert alert-danger">Be aware that manually editing the save can lead to unexpected errors.</div>');
-
-        if(currentObject.children !== undefined)
-        {
-            for(let i = 0; i < currentObject.children.length; i++)
-            {
-                childrenPathName.push(currentObject.children[i].pathName);
-            }
-        }
-
-        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone'];
-            for(let i = 0; i < extraProperties.length; i++)
-            {
-                let extraProperty = this.getObjectProperty(currentObject, extraProperties[i]);
-                    if(extraProperty !== null)
-                    {
-                        extraPathName.push(extraProperty.pathName);
-                    }
-            }
-
-        let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this});
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
-            {
-                let objectCircuitA       = circuitSubSystem.getObjectCircuit(currentObject, 'PowerConnection1');
-                    if(objectCircuitA !== null)
-                    {
-                        extraPathName.push(objectCircuitA.pathName);
-                    }
-                let objectCircuitB       = circuitSubSystem.getObjectCircuit(currentObject, 'PowerConnection2');
-                    if(objectCircuitB !== null)
-                    {
-                        extraPathName.push(objectCircuitB.pathName);
-                    }
-            }
-            else
-            {
-                let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
-                    if(objectCircuit !== null)
-                    {
-                        extraPathName.push(objectCircuit.pathName);
-                    }
-            }
-
-            html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
-            html.push('<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#advancedDebugObject-MAIN" role="tab">Main object</a></li>');
-
-            if(currentObject.children !== undefined)
-            {
-                for(let i = 0; i < currentObject.children.length; i++)
-                {
-                    html.push('<li class="nav-item"><a class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '" role="tab">.' + currentObject.children[i].pathName.split('.').pop() + '</a></li>');
-
-                    let currentChildren = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                        if(currentChildren !== null)
-                        {
-                            htmlChildren.push('<div class="tab-pane fade" id="advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">');
-                            htmlChildren.push('<textarea class="form-control updateObject" style="height: 75vh;" data-pathName="' + currentObject.children[i].pathName + '">' + JSON.stringify(currentChildren, null, 4) + '</textarea>');
-                            //htmlChildren.push('<button class="btn btn-warning w-100" data-pathName="' + currentObject.children[i].pathName + '" disabled>Update</button>');
-                            htmlChildren.push('</div>');
-
-                            let mHiddenConnections = this.getObjectProperty(currentChildren, 'mHiddenConnections');
-                                if(mHiddenConnections !== null)
-                                {
-                                    for(let j = 0; j < mHiddenConnections.values.length; j++)
-                                    {
-                                        if(childrenPathName.includes(mHiddenConnections.values[j].pathName) === false && extraPathName.includes(mHiddenConnections.values[j].pathName) === false)
-                                        {
-                                            extraPathName.push(mHiddenConnections.values[j].pathName);
-                                        }
-                                    }
-                                }
-
-                            let mPipeNetworkID = this.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                                if(mPipeNetworkID !== null && this.saveGamePipeNetworks[mPipeNetworkID] !== undefined)
-                                {
-                                    if(childrenPathName.includes(this.saveGamePipeNetworks[mPipeNetworkID]) === false && extraPathName.includes(this.saveGamePipeNetworks[mPipeNetworkID]) === false)
-                                    {
-                                        extraPathName.push(this.saveGamePipeNetworks[mPipeNetworkID]);
-                                    }
-                                }
-                        }
-                        else
-                        {
-                            console.log('Missing children: ' + currentObject.children[i].pathName);
-                        }
-                }
-            }
-
-            for(let j = 0; j < extraPathName.length; j++)
-            {
-                html.push('<li class="nav-item"><a class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '" role="tab">' + extraPathName[j].replace('Persistent_Level:', '') + '</a></li>');
-            }
-
-            html.push('</ul>');
-
-            html.push('<div class="tab-content">');
-            html.push('<div class="tab-pane fade show active" id="advancedDebugObject-MAIN">');
-            html.push('<textarea class="form-control updateObject" style="height: 75vh;" data-pathName="' + currentObject.pathName + '">' + JSON.stringify(currentObject, null, 4) + '</textarea>');
-            //html.push('<button class="btn btn-warning w-100" data-pathName="' + currentObject.pathName + '" disabled>Update</button>');
-            html.push('</div>');
-            html.push(htmlChildren.join(''));
-
-            for(let j = 0; j < extraPathName.length; j++)
-            {
-                let currentExtraObject = this.saveGameParser.getTargetObject(extraPathName[j]);
-                    html.push('<div class="tab-pane fade" id="advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '">');
-                    html.push('<textarea class="form-control updateObject" style="height: 75vh;" data-pathName="' + extraPathName[j] + '">' + JSON.stringify(currentExtraObject, null, 4) + '</textarea>');
-                    //html.push('<button class="btn btn-warning w-100" data-pathName="' + extraPathName[j] + '" disabled>Update</button>');
-                    html.push('</div>');
-            }
-
-            html.push('</div>');
-
-        $('#genericModal .modal-title').empty().html('Advanced Debug - ' + marker.relatedTarget.options.pathName);
-        $('#genericModal .modal-body').empty().html(html.join(''));
-        setTimeout(function(){
-            $('#genericModal').modal('show').modal('handleUpdate');
-            $('textarea.updateObject').on('keyup', function(){
-                $(this).next('button').attr('disabled', false);
-            });
-        }, 250);
     }
 
     addPlayerBelt(currentObject)
@@ -5824,9 +5771,12 @@ export default class BaseLayout
     closeTooltip(e)
     {
         let currentObject   = this.saveGameParser.getTargetObject(e.target.options.pathName);
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
+            if(currentObject !== null)
             {
-                Building_RailroadSwitchControl.unbindTooltip(this, currentObject);
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
+                {
+                    Building_RailroadSwitchControl.unbindTooltip(this, currentObject);
+                }
             }
 
         e.target.unbindTooltip();
@@ -6368,7 +6318,7 @@ export default class BaseLayout
                             inputs      : [{
                                 name            : 'fillWith',
                                 inputType       : 'selectPicker',
-                                inputOptions    : this.generateInventoryOptions(false)
+                                inputOptions    : this.generateInventoryOptions(null, false)
                             }],
                             callback: function(form)
                             {
