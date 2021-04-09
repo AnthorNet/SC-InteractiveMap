@@ -319,9 +319,9 @@ export default class BaseLayout_Math
 
                 // Straight distance is used on pipe volume calculation
                 let distanceStraight    = Math.sqrt(
-                        ((originalSplineData[splineDataLength - 1][0] - originalSplineData[0][0]) * (originalSplineData[splineDataLength - 1][0] - originalSplineData[0][0])) // X
-                        + ((originalSplineData[splineDataLength - 1][1] - originalSplineData[0][1]) * (originalSplineData[splineDataLength - 1][1] - originalSplineData[0][1])) // Y
-                        + ((originalSplineData[splineDataLength - 1][2] - originalSplineData[0][2]) * (originalSplineData[splineDataLength - 1][2] - originalSplineData[0][2])) // Z
+                        ((originalSplineData[splineDataLength - 1].x - originalSplineData[0].x) * (originalSplineData[splineDataLength - 1].x - originalSplineData[0].x)) // X
+                        + ((originalSplineData[splineDataLength - 1].y - originalSplineData[0].y) * (originalSplineData[splineDataLength - 1].y - originalSplineData[0].y)) // Y
+                        + ((originalSplineData[splineDataLength - 1].z - originalSplineData[0].z) * (originalSplineData[splineDataLength - 1].z - originalSplineData[0].z)) // Z
                       ) / 100;
 
                 return {
