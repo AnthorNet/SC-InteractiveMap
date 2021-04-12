@@ -277,7 +277,7 @@ export default class Building_DroneStation
             }
             else
             {
-                content.push('<span class="small text-warning">No Destination Set</span>');
+                content.push('<div><span class="small text-warning">No Destination Set</span></div>');
             }
 
             content.push('</div>');

@@ -428,12 +428,7 @@ export default class BaseLayout_ContextMenu
                             }
                     }
 
-                    if(
-                            (this.marker.options.haveWaste === undefined || this.baseLayout.useDebug === true)
-                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C'
-                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'
-                         && buildingData.className !== '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C'
-                    )
+                    if(['/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C', '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'].includes(currentObject.className) === false)
                     {
                         contextMenu.push({separator: true});
                         contextMenu.push({

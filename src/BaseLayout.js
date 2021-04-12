@@ -2263,17 +2263,20 @@ export default class BaseLayout
             }
 
             let oldInventory    = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
-                for(let j = 0; j < oldInventory.properties.length; j++)
+                if(oldInventory !== null)
                 {
-                    if(oldInventory.properties[j].name === 'mInventoryStacks')
+                    for(let j = 0; j < oldInventory.properties.length; j++)
                     {
-                        let mInventoryStacks = oldInventory.properties[j].value.values;
-                            for(let k = 0; k < mInventoryStacks.length; k++)
-                            {
-                                mInventoryStacks[k][0].value.itemName = "";
-                                this.setObjectProperty(mInventoryStacks[k][0].value, 'NumItems', 0, 'IntProperty');
-                            }
-                        break;
+                        if(oldInventory.properties[j].name === 'mInventoryStacks')
+                        {
+                            let mInventoryStacks = oldInventory.properties[j].value.values;
+                                for(let k = 0; k < mInventoryStacks.length; k++)
+                                {
+                                    mInventoryStacks[k][0].value.itemName = "";
+                                    this.setObjectProperty(mInventoryStacks[k][0].value, 'NumItems', 0, 'IntProperty');
+                                }
+                            break;
+                        }
                     }
                 }
 
