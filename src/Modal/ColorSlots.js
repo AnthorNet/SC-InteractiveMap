@@ -134,7 +134,7 @@ export default class Modal_ColorSlots
             $('#secondaryColorInputHex').val(color.hexString);
         });
 
-        $('#primaryColorInputR, #primaryColorInputG, #primaryColorInputB, #secondaryColorInputR, #secondaryColorInputG, #secondaryColorInputB').on('change keyup input', function(){
+        $('#primaryColorInputR, #primaryColorInputG, #primaryColorInputB, #secondaryColorInputR, #secondaryColorInputG, #secondaryColorInputB').on('change keyup input', () => {
             let primaryColorR               = parseInt($('#primaryColorInputR').val());
             let primaryColorG               = parseInt($('#primaryColorInputG').val());
             let primaryColorB               = parseInt($('#primaryColorInputB').val());
@@ -169,7 +169,7 @@ export default class Modal_ColorSlots
                 }
 
                 playerColors    = this.buildableSubSystem.getPlayerColorSlots(); // Refresh
-        }.bind(this));
+        });
         $('#primaryColorInputHex').on('change keyup input', function(){
             let hexColor                        = $(this).val();
                 if([...hexColor].length === 7)
@@ -232,7 +232,7 @@ export default class Modal_ColorSlots
 
             $('#secondaryColorInputHex').val(secondaryColorPicker.color.hexString);
         });
-        $('#resetColorSlot').on('click', function(){
+        $('#resetColorSlot').on('click', () => {
             let slotIndex                   = parseInt($('#statisticsModalColorSlots .selectColorSlot.active').attr('data-slot'));
             let primaryColor                = this.buildableSubSystem.getDefaultPrimaryColorSlot(slotIndex);
             let secondaryColor              = this.buildableSubSystem.getDefaultSecondaryColorSlot(slotIndex);
@@ -247,6 +247,6 @@ export default class Modal_ColorSlots
             $('#secondaryColorInputR').val(secondaryColor.r);
             $('#secondaryColorInputG').val(secondaryColor.g);
             $('#secondaryColorInputB').val(secondaryColor.b).trigger('change');
-        }.bind(this));
+        });
     }
 }

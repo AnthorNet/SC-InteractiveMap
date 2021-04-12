@@ -88,7 +88,7 @@ export default class Modal_LightColorSlots
             $('#lightColorInputHex').val(color.hexString);
         });
 
-        $('#lightColorInputR, #lightColorInputG, #lightColorInputB').on('change keyup input', function(){
+        $('#lightColorInputR, #lightColorInputG, #lightColorInputB').on('change keyup input', () => {
             let lightColorR               = parseInt($('#lightColorInputR').val());
             let lightColorG               = parseInt($('#lightColorInputG').val());
             let lightColorB               = parseInt($('#lightColorInputB').val());
@@ -110,7 +110,7 @@ export default class Modal_LightColorSlots
 
                     playerColors    = this.buildableSubSystem.getPlayerLightColorSlots(); // Refresh!
                 }
-        }.bind(this));
+        });
         $('#lightColorInputHex').on('change keyup input', function(){
             let hexColor                        = $(this).val();
                 if([...hexColor].length === 7)
@@ -151,7 +151,7 @@ export default class Modal_LightColorSlots
 
             $('#lightColorInputHex').val(lightColorPicker.color.hexString);
         });
-        $('#resetLightColorSlot').on('click', function(){
+        $('#resetLightColorSlot').on('click', () => {
             let slotIndex                 = parseInt($('#statisticsModalLightColorSlots .selectColorSlot.active').attr('data-slot'));
             let lightColor                = this.buildableSubSystem.getDefaultLightColorSlot(slotIndex);
 
@@ -162,6 +162,6 @@ export default class Modal_LightColorSlots
             $('#lightColorInputB').val(lightColor.b).trigger('change');
 
             $('#lightColorInputHex').val(lightColorPicker.color.hexString);
-        }.bind(this));
+        });
     }
 }

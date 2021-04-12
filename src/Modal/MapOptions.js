@@ -261,7 +261,7 @@ export default class Modal_MapOptions
 
         $('#statisticsModalOptions').html(html.join(''));
 
-        $('#statisticsModalOptions input').on('keyup click', function(){
+        $('#statisticsModalOptions input').on('keyup click', () => {
             if(this.baseLayout.localStorage !== null)
             {
                 this.baseLayout.showStructuresOnLoad        = (($('#inputShowStructuresOnLoad').is(':checked') === true) ? true : false);
@@ -373,21 +373,21 @@ export default class Modal_MapOptions
             {
                 this.baseLayout.deleteObjectProperty(unlockSubSystem, 'mCheatNoPower');
             }
-        }.bind(this));
+        });
 
-        $('#resetFogOfWar').on('click', function(){
+        $('#resetFogOfWar').on('click', () => {
             this.baseLayout.resetFogOfWar();
-        }.bind(this));
+        });
 
-        $('#clearFogOfWar').on('click', function(){
+        $('#clearFogOfWar').on('click', () => {
             this.baseLayout.clearFogOfWar();
-        }.bind(this));
+        });
 
-        $('#resetAllGameProgression').on('click', function(){
+        $('#resetAllGameProgression').on('click', () => {
             $('#resetAllGameProgression strong').hide();
             $('#resetAllGameProgression i').show();
 
-            setTimeout(function(){
+            setTimeout(() => {
                 if(unlockSubSystem !== null)
                 {
                     this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', 0, 'BoolProperty');
@@ -479,7 +479,7 @@ export default class Modal_MapOptions
                         if(mOwnedPawn !== null)
                         {
                             let currentPlayer   = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-                            
+
                             let inventory       = this.baseLayout.getObjectInventory(currentPlayer, 'mInventory', true);
                                 for(let j = 0; j < inventory.properties.length; j++)
                                 {
@@ -521,7 +521,7 @@ export default class Modal_MapOptions
 
                 let mapPlayers = new Modal_MapPlayers({baseLayout: this});
                     mapPlayers.parse();
-            }.bind(this), 250);
-        }.bind(this));
+            }, 250);
+        });
     }
 }

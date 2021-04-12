@@ -516,7 +516,7 @@ export default class Map
                     }
                 }
             }
-        }.bind(this)).done(function(){
+        }.bind(this)).done(() => {
             // Hash Default
             this.leafletMap.addLayer(this.baseLayers[this.baseLayer]);
             $('.setBaseLayer[data-id=' + this.baseLayer + ']').addClass(window.SCIM.outlineClass);
@@ -541,7 +541,7 @@ export default class Map
             }
 
            this.setupEvents();
-        }.bind(this));
+        });
     }
 
     setupEvents()
@@ -611,7 +611,7 @@ export default class Map
             }
         }.bind(this));
 
-        $('#unselectAll').click(function(){
+        $('#unselectAll').click(() => {
             for(let layerId in this.availableLayers)
             {
                 if(this.availableLayers.hasOwnProperty(layerId))
@@ -624,7 +624,7 @@ export default class Map
                     }
                 }
             }
-        }.bind(this));
+        });
 
         $('.selectPurity').click(function(e){
             let neededPurity    = $(e.currentTarget).attr('data-purity');
@@ -859,7 +859,9 @@ export default class Map
                     else
                     {
                         baseLayer    = initialHash.baseLayer;
-                        setTimeout(function(){$('.setBaseLayer[data-id=' + baseLayer + ']').trigger('click');}, 150);
+                        setTimeout(function(){
+                            $('.setBaseLayer[data-id=' + baseLayer + ']').trigger('click');
+                        }, 150);
                     }
 
                     if(initialHash.activeLayers === null)

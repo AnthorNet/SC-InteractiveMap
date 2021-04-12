@@ -87,23 +87,23 @@ export default class Modal_MapPlayers
 
             if(unlockSubSystem !== null)
             {
-                $('#parseStatisticsPlayerInventoryRemoveInventory').on('click', function(){
+                $('#parseStatisticsPlayerInventoryRemoveInventory').on('click', () => {
                     this.removeInventorySlot(1);
                     this.parse();
-                }.bind(this));
-                $('#parseStatisticsPlayerInventoryAddInventory').on('click', function(){
+                });
+                $('#parseStatisticsPlayerInventoryAddInventory').on('click', () => {
                     this.addInventorySlot(1);
                     this.parse();
-                }.bind(this));
+                });
 
-                $('#parseStatisticsPlayerInventoryRemoveBelt').on('click', function(){
+                $('#parseStatisticsPlayerInventoryRemoveBelt').on('click', () => {
                     this.removeEquipmentSlot(1);
                     this.parse();
-                }.bind(this));
-                $('#parseStatisticsPlayerInventoryAddBelt').on('click', function(){
+                });
+                $('#parseStatisticsPlayerInventoryAddBelt').on('click', () => {
                     this.addEquipmentSlot(1);
                     this.parse();
-                }.bind(this));
+                });
                 $('.parseStatisticsPlayerInventoryDeleteGuest').on('click', function(e){
                     this.deletePlayer($(e.target).attr('data-pathName'));
                     this.parse();

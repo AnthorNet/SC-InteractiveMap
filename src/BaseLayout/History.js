@@ -41,9 +41,9 @@ export default class BaseLayout_History
                     $('#liveLoader').show()
                                     .find('.progress-bar').css('width', '0%');
                     setTimeout(resolve, 5);
-                }.bind(this)).then(function(){
+                }.bind(this)).then(() => {
                     this.undoLoop(currentOperations);
-                }.bind(this));
+                });
         }
 
         return this.doneUndo();
@@ -139,9 +139,9 @@ export default class BaseLayout_History
                 return new Promise(function(resolve){
                     $('#liveLoader .progress-bar').css('width', Math.round(i / currentOperations.values.length * 100) + '%');
                     setTimeout(resolve, 5);
-                }.bind(this)).then(function(){
+                }.bind(this)).then(() => {
                     this.undoLoop(currentOperations, (i + 1));
-                }.bind(this));
+                });
             }
         }
 

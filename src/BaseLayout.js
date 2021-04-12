@@ -292,14 +292,14 @@ export default class BaseLayout
         this.collectedHardDrives.resetCollected();
         this.collectedSchematics.resetCollected();
 
-        this.saveGameParser.load(function(){
+        this.saveGameParser.load(() => {
             if(this.buildingsData === null)
             {
                 return new Promise(function(resolve){
                     $('#loaderProgressBar .progress-bar').css('width', '47.5%');
                     $('.loader h6').html('Loading game data...');
                     setTimeout(resolve, 50);
-                }.bind(this)).then(function(){
+                }.bind(this)).then(() => {
                     $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, function(data)
                     {
                         this.modsData       = data.modsData;
@@ -311,13 +311,13 @@ export default class BaseLayout
 
                         this.loadDetailedModels();
                     }.bind(this));
-                }.bind(this));
+                });
             }
             else
             {
                 this.loadDetailedModels();
             }
-        }.bind(this));
+        });
     }
 
     loadMod(modId, resolve)
@@ -430,7 +430,7 @@ export default class BaseLayout
                 $('#loaderProgressBar .progress-bar').css('width', '50%');
                 $('.loader h6').html('Loading detailed models...');
                 setTimeout(resolve, 50);
-            }.bind(this)).then(function(){
+            }.bind(this)).then(() => {
                 $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, function(data)
                 {
                     for(let className in data)
@@ -481,7 +481,7 @@ export default class BaseLayout
 
                     this.renderObjects();
                 }.bind(this));
-            }.bind(this));
+            });
         }
         else
         {
@@ -505,9 +505,9 @@ export default class BaseLayout
             $('.loader h6').html('Rendering objects...');
             console.time('renderObjects');
             setTimeout(resolve, 50);
-        }.bind(this)).then(function(){
+        }.bind(this)).then(() => {
             this.parsingObjects = this.parseObjects();
-        }.bind(this));
+        });
     }
 
     parseObjects(i = 0, objectsKeys = null)
@@ -710,11 +710,14 @@ export default class BaseLayout
             let progress    = Math.round(i / countObjects * 100);
                 if(progress > parseObjectsProgress)
                 {
-                    return Promise.all(promises).then(function(){
+                    return Promise.all(promises).then(() => {
                         $('#loaderProgressBar .progress-bar').css('width', (50 + progress * 0.4) + '%');
                         $('.loader h6').html('Rendering objects (' + progress + '%)...');
-                        setTimeout(function(){ this.parseObjects((i + 1), objectsKeys); }.bind(this), 5);
-                    }.bind(this));
+
+                        setTimeout(() => {
+                            this.parseObjects((i + 1), objectsKeys);
+                        }, 5);
+                    });
                 }
         }
 
@@ -747,9 +750,9 @@ export default class BaseLayout
                         {
                             this.modsData[modId].queuedPathName.push(currentObject.pathName);
 
-                            return this.loadMod(modId, function(){
+                            return this.loadMod(modId, () => {
                                 return this.parseObject(currentObject, resolve, skipMod);
-                            }.bind(this));
+                            });
                         }
                     }
                 }
@@ -946,7 +949,9 @@ export default class BaseLayout
                             $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
                             $('.loader h6').html('Adding map layers (' + $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title') + ')...');
                             setTimeout(resolve, 5);
-                        }.bind(this)).then(function(){ this.addLayers((i + 1)); }.bind(this));
+                        }.bind(this)).then(() => {
+                            this.addLayers((i + 1));
+                        });
                 }
             }
 
@@ -956,7 +961,7 @@ export default class BaseLayout
             $('#loaderProgressBar .progress-bar').css('width', '100%');
             $('.loader h6').html('Finalize statistics and controls...');
             setTimeout(resolve, 25);
-        }.bind(this)).then(function(){
+        }.bind(this)).then(() => {
             // Altitude slider
             this.altitudeSliderControl = L.control.sliderControl({
                 baseLayout  : this,
@@ -977,13 +982,13 @@ export default class BaseLayout
             }
 
             // Global modals
-            $('#statisticsModal').on('show.bs.modal', function(){
+            $('#statisticsModal').on('show.bs.modal', () => {
                 $('#statisticsModal a.nav-link[href="#statisticsModalProduction"]').removeClass('active').click();
-            }.bind(this));
-            $('#statisticsModal').on('hide.bs.modal', function(){
+            });
+            $('#statisticsModal').on('hide.bs.modal', () => {
                 $('#statisticsModalProduction').html('');
                 $('#statisticsModalStorage').html('');
-            }.bind(this));
+            });
             $('#statisticsModal a[data-toggle="tab"]').on('shown.bs.tab', function(e){
                 let newTab = $(e.target).attr('href');
 
@@ -1009,7 +1014,7 @@ export default class BaseLayout
                             break;
                     }
             }.bind(this));
-            $('#researchModal').on('show.bs.modal', function(){
+            $('#researchModal').on('show.bs.modal', () => {
                 let statisticsSchematics = new BaseLayout_Statistics_Schematics({
                         baseLayout      : this
                     });
@@ -1017,13 +1022,13 @@ export default class BaseLayout
                     statisticsSchematics.parseAlternateRecipes();
                     statisticsSchematics.parseMAM();
                     statisticsSchematics.parseAwesomeSink();
-            }.bind(this));
-            $('#modalPowerCircuits').on('click', function(){
+            });
+            $('#modalPowerCircuits').on('click', () => {
                 let modalPowerCircuits = new Modal_PowerCircuits({
                         baseLayout      : this
                     });
                     modalPowerCircuits.parse();
-            }.bind(this));
+            });
 
             $('#optionsModal a[data-toggle="tab"]').on('shown.bs.tab', function(e){
                 let target = $(e.target).attr('href');
@@ -1055,22 +1060,22 @@ export default class BaseLayout
                             break;
                     }
             }.bind(this))
-            $('#optionsModal').on('show.bs.modal', function(){
+            $('#optionsModal').on('show.bs.modal', () => {
                 $('#optionsModal a.active[data-toggle="tab"]').trigger('shown.bs.tab');
-            }.bind(this));
+            });
 
-            $('#buildingsModal').on('show.bs.modal', function(){
+            $('#buildingsModal').on('show.bs.modal', () => {
                 let modalBuildings = new Modal_Buildings({
                         baseLayout      : this
                     });
                     modalBuildings.parse();
-            }.bind(this));
-            $('#trainsModal').on('show.bs.modal', function(){
+            });
+            $('#trainsModal').on('show.bs.modal', () => {
                 let modalTrains = new Modal_Trains({
                         baseLayout      : this
                     });
                     modalTrains.parse();
-            }.bind(this));
+            });
 
             $('#buildingsButton').show();
             $('#trainsButton').show();
@@ -1079,9 +1084,9 @@ export default class BaseLayout
             $('#optionsButton').show();
 
             // Delay radioactivity to avoid canvas error when map isn't fully loaded...
-            setTimeout(function(){
+            setTimeout(() => {
                 this.updateRadioactivityLayer();
-            }.bind(this), 1000);
+            }, 1000);
 
             this.history = new BaseLayout_History({
                 baseLayout      : this
@@ -1099,7 +1104,7 @@ export default class BaseLayout
             }.bind(this));
 
             // Add download event
-            $('#downloadSaveGame').on('click', function(){
+            $('#downloadSaveGame').on('click', () => {
                 window.SCIM.showLoader();
                 $('.loader h6').html('Saving...');
 
@@ -1109,7 +1114,7 @@ export default class BaseLayout
 
                 // Save...
                 this.saveGameParser.save();
-            }.bind(this));
+            });
 
             // Clipboard control
             this.clipboardControl = new L.Control.ClipboardControl({baseLayout: this});
@@ -1118,7 +1123,7 @@ export default class BaseLayout
             // Lasso control
             this.lassoControl = new L.Control.SelectAreaFeature({baseLayout: this});
             this.satisfactoryMap.leafletMap.addControl(this.lassoControl);
-        }.bind(this));
+        });
     }
 
     updateRadioactivityLayer()
@@ -3512,8 +3517,12 @@ export default class BaseLayout
         );
 
         trackCorridor.bindContextMenu(this);
-        trackCorridor.on('mouseover', function(){ this.setStyle({color: '#bf4e87', opacity: 0.7}); });
-        trackCorridor.on('mouseout', function(){ this.setStyle({color: '#ff69b4', opacity: 0.9}); });
+        trackCorridor.on('mouseover', function(){
+            this.setStyle({color: '#bf4e87', opacity: 0.7});
+        });
+        trackCorridor.on('mouseout', function(){
+            this.setStyle({color: '#ff69b4', opacity: 0.9});
+        });
         trackCorridor.fire('mouseout');
 
         this.autoBindTooltip(trackCorridor);

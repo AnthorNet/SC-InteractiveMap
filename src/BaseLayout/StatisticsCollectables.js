@@ -143,7 +143,9 @@ export default class BaseLayout_Statistics_Collectables
         $('.resetCollectables').on('click', function(e){
             let currentId = $(e.currentTarget).attr('data-id');
                 $(e.currentTarget).parent().html('<i class="fas fa-cog fa-spin"></i>');
-                setTimeout(function(){this.reset(currentId);}.bind(this), 100);
+                setTimeout(() => {
+                    this.reset(currentId);
+                }, 50);
         }.bind(this));
     }
 
