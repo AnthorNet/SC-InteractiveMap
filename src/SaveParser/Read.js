@@ -82,82 +82,80 @@ export default class SaveParser_Read
     {
         if(this.handledByte < this.maxByte)
         {
-            return new Promise(function(resolve){
-                // Read chunk info size...
-                let chunkHeader         = new DataView(this.arrayBuffer.slice(0, 48));
-                this.currentByte        = 48;
-                this.handledByte       += 48;
+            // Read chunk info size...
+            let chunkHeader         = new DataView(this.arrayBuffer.slice(0, 48));
+                this.currentByte    = 48;
+                this.handledByte   += 48;
 
-                if(this.saveParser.PACKAGE_FILE_TAG === null)
-                {
-                    //this.saveParser.PACKAGE_FILE_TAG = chunkHeader.getBigInt64(0, true);
-                    this.saveParser.PACKAGE_FILE_TAG = chunkHeader.getUint32(0, true);
-                    //console.log(chunkHeader.getBigInt64(0, true), chunkHeader.getUint32(0, true));
-                }
-                if(this.saveParser.maxChunkSize === null)
-                {
-                    this.saveParser.maxChunkSize = chunkHeader.getUint32(8, true);
-                }
-
-                let currentChunkSize    = chunkHeader.getUint32(16, true);
-                let currentChunk        = this.arrayBuffer.slice(this.currentByte, this.currentByte + currentChunkSize);
-                this.handledByte       += currentChunkSize;
-                this.currentByte       += currentChunkSize;
-
-                // Free memory from previous chunk...
-                this.arrayBuffer            = this.arrayBuffer.slice(this.currentByte);
-                this.currentByte            = 0;
-
-                // Unzip!
-                try {
-                    // Inflate current chunk
-                    let currentInflatedChunk    = null;
-                        currentInflatedChunk    = pako.inflate(currentChunk);
-                        this.currentChunks.push(currentInflatedChunk);
-                }
-                catch(err)
-                {
-                    console.log('INFLATE ERROR', err);
-                    return;
-                }
-
-                let currentPercentage = Math.round(this.handledByte / this.maxByte * 100);
-                    $('.loader h6').html('Inflating save game (' + currentPercentage + '%)...');
-                    $('#loaderProgressBar .progress-bar').css('width', currentPercentage * 0.4 + '%');
-                setTimeout(resolve, 5);
-            }.bind(this)).then(function(){
-                return this.inflateChunks();
-            }.bind(this));
-        }
-
-        console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
-
-        return new Promise(function(resolve){
-            $('.loader h6').html('Merging inflated chunks...');
-            setTimeout(resolve, 50);
-        }.bind(this)).then(function(){
-            // Create the complete Uint8Array
-            let newChunkLength = 0;
-                for(let i = 0; i < this.currentChunks.length; i++)
-                {
-                    newChunkLength += this.currentChunks[i].length;
-                }
-
-            let tempChunk       = new Uint8Array(newChunkLength);
-
-            let currentLength   = 0;
-            for(let i = 0; i < this.currentChunks.length; i++)
+            if(this.saveParser.PACKAGE_FILE_TAG === null)
             {
-                tempChunk.set(this.currentChunks[i], currentLength);
-                currentLength += this.currentChunks[i].length;
+                //this.saveParser.PACKAGE_FILE_TAG = chunkHeader.getBigInt64(0, true);
+                this.saveParser.PACKAGE_FILE_TAG = chunkHeader.getUint32(0, true);
+                //console.log(chunkHeader.getBigInt64(0, true), chunkHeader.getUint32(0, true));
+            }
+            if(this.saveParser.maxChunkSize === null)
+            {
+                this.saveParser.maxChunkSize = chunkHeader.getUint32(8, true);
             }
 
-            // Parse them as usual while skipping the firt 4 bytes!
-            this.currentByte        = 4;
-            this.bufferView         = new DataView(tempChunk.buffer);
+            let currentChunkSize    = chunkHeader.getUint32(16, true);
+            let currentChunk        = this.arrayBuffer.slice(this.currentByte, this.currentByte + currentChunkSize);
+                this.handledByte   += currentChunkSize;
+                this.currentByte   += currentChunkSize;
 
-            return this.parseObjectsV5();
-        }.bind(this));
+            // Free memory from previous chunk...
+            this.arrayBuffer            = this.arrayBuffer.slice(this.currentByte);
+            this.currentByte            = 0;
+
+            // Unzip!
+            try {
+                // Inflate current chunk
+                let currentInflatedChunk    = null;
+                    currentInflatedChunk    = pako.inflate(currentChunk);
+                    this.currentChunks.push(currentInflatedChunk);
+            }
+            catch(err)
+            {
+                console.log('INFLATE ERROR', err);
+                return;
+            }
+
+            let currentPercentage = Math.round(this.handledByte / this.maxByte * 100);
+                $('.loader h6').html('Inflating save game (' + currentPercentage + '%)...');
+                $('#loaderProgressBar .progress-bar').css('width', currentPercentage * 0.4 + '%');
+
+            setTimeout(() => {
+                return this.inflateChunks();
+            }, 5);
+        }
+        else
+        {
+            console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
+            $('.loader h6').html('Merging inflated chunks...');
+
+            setTimeout(() => {
+                // Create the complete Uint8Array
+                let newChunkLength = 0;
+                    for(let i = 0; i < this.currentChunks.length; i++)
+                    {
+                        newChunkLength += this.currentChunks[i].length;
+                    }
+
+                let tempChunk       = new Uint8Array(newChunkLength);
+                let currentLength   = 0;
+                    for(let i = 0; i < this.currentChunks.length; i++)
+                    {
+                        tempChunk.set(this.currentChunks[i], currentLength);
+                        currentLength += this.currentChunks[i].length;
+                    }
+
+                // Parse them as usual while skipping the firt 4 bytes!
+                this.currentByte        = 4;
+                this.bufferView         = new DataView(tempChunk.buffer);
+
+                return this.parseObjectsV5();
+            }, 50);
+        }
     }
 
     // V5 FUNCTIONS
@@ -223,12 +221,11 @@ export default class SaveParser_Read
 
         if(this.callback !== null)
         {
-            return new Promise(function(resolve){
-                $('#loaderProgressBar .progress-bar').css('width', '45%');
-                setTimeout(resolve, 50);
-            }.bind(this)).then(function(){
+            $('#loaderProgressBar .progress-bar').css('width', '45%');
+
+            setTimeout(() => {
                 return this.callback();
-            }.bind(this));
+            }, 50);
         }
     }
 
