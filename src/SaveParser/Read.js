@@ -300,6 +300,12 @@ export default class SaveParser_Read
                 actor.transform.translation = translation;
             }
 
+            if(isNaN(actor.transform.translation[0]) || isNaN(actor.transform.translation[1]) || isNaN(actor.transform.translation[2]))
+            {
+                actor.transform.translation = [0, 0, 2000];
+                console.log('NaN translation', actor.pathName);
+            }
+
             if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[2] !== 1)
             {
                 if(actor.transform === undefined)
@@ -747,6 +753,7 @@ export default class SaveParser_Read
                                 case 'DroneTripInformation':
                                 case 'ResearchTime':
                                 case 'ResearchCost':
+                                case 'CompletedResearch':
                                 // MODS
                                 case 'LampGroup':
                                     let subStructProperties = [];
