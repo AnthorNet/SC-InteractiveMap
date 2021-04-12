@@ -269,7 +269,6 @@ export default class Building_DroneStation
                             }
                             else
                             {
-                                content.push('<span class="small text-warning">(' + new Intl.NumberFormat(baseLayout.language).format(Math.round(mPairedStationDistance / 10) / 100) + ' km)</span>');
                                 content.push('<span class="small text-warning">(' + new Intl.NumberFormat(baseLayout.language).format(Math.round(mPairedStationDistance)) + ' m)</span>');
                             }
                         }
