@@ -57,7 +57,7 @@ export default class BaseLayout_Selection_Copy
                         this.markersSelected.splice(i, 1);
                         continue;
                     }
-                    if(currentObject.className.search('Integrated') !== -1)
+                    if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C' && currentObject.className.search('Integrated') !== -1)
                     {
                         this.markersSelected.splice(i, 1);
                         continue;
@@ -124,7 +124,7 @@ export default class BaseLayout_Selection_Copy
                                             for(let k = 0; k < extraPropertyObject.children.length; k++)
                                             {
                                                 extraPropertyNewObject.children.push(
-                                                    JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(extraPropertyObject.children[j].pathName)))
+                                                    JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(extraPropertyObject.children[k].pathName)))
                                                 );
                                             }
                                         }
