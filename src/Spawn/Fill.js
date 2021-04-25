@@ -117,7 +117,7 @@ export default class Spawn_Fill
             for(let width = this.minWidth; width <= this.maxWidth; width += 800)
             {
                 // Check if in selection?
-                if(this.isPointInsideSelection(width, height) === false)
+                if(BaseLayout_Math.isPointInsideSelection(this.baseLayout, this.selection, width, height) === false)
                 {
                     continue;
                 }
@@ -182,38 +182,5 @@ export default class Spawn_Fill
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
         this.baseLayout.setBadgeLayerCount('playerFoundationsLayer');
         this.baseLayout.unpauseMap();
-    }
-
-    isPointInsideSelection(x, y)
-    {
-        let point = this.baseLayout.satisfactoryMap.unproject([x, y]);
-
-            if(this.selection instanceof L.Circle)
-            {
-                let pointDistance   = this.baseLayout.satisfactoryMap.leafletMap.distance([point.lat, point.lng], this.selection.getLatLng());
-                    if(pointDistance <= this.selection.getRadius())
-                    {
-                        return true;
-                    }
-
-                return false;
-            }
-            else
-            {
-                let polyPoints  = this.selection.getLatLngs()[0];
-                let x           = point.lat, y = point.lng;
-
-                let inside = false;
-                for(let i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++)
-                {
-                    let xi = polyPoints[i].lat, yi = polyPoints[i].lng;
-                    let xj = polyPoints[j].lat, yj = polyPoints[j].lng;
-
-                    let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-                        if(intersect) inside = !inside;
-                }
-
-                return inside;
-            }
     }
 }

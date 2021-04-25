@@ -4,7 +4,7 @@ const webpack                       = require('webpack');
 const path                          = require('path');
 
 const SentryWebpackPlugin           = require('@sentry/webpack-plugin');
-const TerserPlugin                  = require("terser-webpack-plugin");
+//const TerserPlugin                  = require("terser-webpack-plugin");
 const JsonMinimizerPlugin           = require("json-minimizer-webpack-plugin");
 const MergeJsonPlugin               = require("merge-json-webpack-plugin");
 const CopyPlugin                    = require("copy-webpack-plugin");

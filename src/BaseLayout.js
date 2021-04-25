@@ -12,6 +12,7 @@ import BaseLayout_Math                          from './BaseLayout/Math.js';
 
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
+import SubSystem_Foliage                        from './SubSystem/Foliage.js';
 
 import BaseLayout_Statistics_Production         from './BaseLayout/StatisticsProduction.js';
 import BaseLayout_Statistics_Storage            from './BaseLayout/StatisticsStorage.js';
@@ -690,8 +691,6 @@ export default class BaseLayout
             '/Script/FactoryGame.FGRailroadTimeTable',
             '/Script/FactoryGame.FGRailroadTrackConnectionComponent',
             '/Script/FactoryGame.FGTrainPlatformConnection',
-
-            '/Script/FactoryGame.FGFoliageRemoval',
              */
             if(currentObject.className.startsWith('/Script/FactoryGame.') === true && currentObject.className !== '/Script/FactoryGame.FGItemPickup_Spawnable')
             {
@@ -5991,97 +5990,112 @@ export default class BaseLayout
 
     selectMultipleMarkers(markers)
     {
-        let selectedMarkersLength   = markers.length;
-            this.markersSelected    = [];
         let message                 = '';
-        let buildings               = {};
+        let selectedMarkersLength   = 0;
+            this.pauseMap();
 
-        this.pauseMap();
-
-        for(let i = 0; i < selectedMarkersLength; i++)
+        if(markers !== null)
         {
-            if(markers[i].options.pathName !== undefined)
+            let buildings               = {};
+                selectedMarkersLength   = markers.length;
+                this.markersSelected    = [];
+
+            for(let i = 0; i < selectedMarkersLength; i++)
             {
-                let currentObject       = this.saveGameParser.getTargetObject(markers[i].options.pathName);
-
-                if(currentObject !== null)
+                if(markers[i].options.pathName !== undefined)
                 {
-                    this.markersSelected.push(markers[i]);
+                    let currentObject       = this.saveGameParser.getTargetObject(markers[i].options.pathName);
 
-                    if(buildings[currentObject.className] === undefined)
+                    if(currentObject !== null)
                     {
-                        if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
+                        this.markersSelected.push(markers[i]);
+
+                        if(buildings[currentObject.className] === undefined)
                         {
-                            buildings[currentObject.className] = {name: 'Loot Crate', total: 1};
+                            if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
+                            {
+                                buildings[currentObject.className] = {name: 'Loot Crate', total: 1};
+                            }
+                            else
+                            {
+                                let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
+
+                                if(buildingData !== null)
+                                {
+                                    buildings[currentObject.className] = {name: buildingData.name, total: 1};
+                                }
+                            }
                         }
                         else
                         {
-                            let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
-
-                            if(buildingData !== null)
-                            {
-                                buildings[currentObject.className] = {name: buildingData.name, total: 1};
-                            }
+                            buildings[currentObject.className].total++;
                         }
                     }
                     else
                     {
-                        buildings[currentObject.className].total++;
+                        if(markers[i].options.pathName.search('_vehicleTrackData') === -1)
+                        {
+                            console.log('MARKER FOR DELETE DO NOT EXISTS', markers[i]);
+                        }
                     }
                 }
-                else
+            }
+
+            message += '<ul style="flex-wrap: wrap;display: flex;">';
+
+            let buildingsList   = [];
+                for(let className in buildings)
                 {
-                    if(markers[i].options.pathName.search('_vehicleTrackData') === -1)
-                    {
-                        console.log('MARKER FOR DELETE DO NOT EXISTS', markers[i]);
-                    }
+                    buildingsList.push(buildings[className]);
                 }
-            }
-        }
-
-        message += '<ul style="flex-wrap: wrap;display: flex;">';
-
-        let buildingsList   = [];
-            for(let className in buildings)
+                buildingsList.sort((a, b) => (a.total > b.total) ? -1 : 1);
+            for(let i = 0; i < buildingsList.length; i++)
             {
-                buildingsList.push(buildings[className]);
+                message += '<li style="flex: 1 0 50%;">' + buildingsList[i].total + ' ' + buildingsList[i].name + '</li>';
             }
-            buildingsList.sort((a, b) => (a.total > b.total) ? -1 : 1);
-        for(let i = 0; i < buildingsList.length; i++)
-        {
-            message += '<li style="flex: 1 0 50%;">' + buildingsList[i].total + ' ' + buildingsList[i].name + '</li>';
+            message += '</ul>';
         }
-        message += '</ul>';
 
         let inputOptions = [];
-            inputOptions.push({text: 'Delete selected items', value: 'delete'});
-            inputOptions.push({text: 'Update selected items color', value: 'color'});
+            if(markers !== null)
+            {
+                inputOptions.push({text: 'Delete selected items', value: 'delete'});
+                inputOptions.push({text: 'Update selected items color', value: 'color'});
 
-            inputOptions.push({group: 'Positioning', text: 'Offset selected items position', value: 'offset'});
-            inputOptions.push({group: 'Positioning', text: 'Rotate selected items position', value: 'rotate'});
+                inputOptions.push({group: 'Positioning', text: 'Offset selected items position', value: 'offset'});
+                inputOptions.push({group: 'Positioning', text: 'Rotate selected items position', value: 'rotate'});
 
-            inputOptions.push({group: 'Blueprints', text: 'Add "Foundation 8m x 2m" helpers on selection boundaries', value: 'helpers'});
-            inputOptions.push({group: 'Blueprints', text: 'Copy selected items', value: 'copy'});
+                inputOptions.push({group: 'Blueprints', text: 'Add "Foundation 8m x 2m" helpers on selection boundaries', value: 'helpers'});
+                inputOptions.push({group: 'Blueprints', text: 'Copy selected items', value: 'copy'});
 
-            inputOptions.push({group: 'Overclocking', text: 'Offset selected items clock speed', value: 'updateClockSpeed'});
+                inputOptions.push({group: 'Overclocking', text: 'Offset selected items clock speed', value: 'updateClockSpeed'});
 
-            inputOptions.push({group: 'Downgrade', text: 'Downgrade selected belts/lifts', value: 'downgradeBelts'});
-            inputOptions.push({group: 'Downgrade', text: 'Downgrade selected power poles', value: 'downgradePowerPoles'});
-            inputOptions.push({group: 'Downgrade', text: 'Downgrade selected pipelines/pumps', value: 'downgradePipes'});
+                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected belts/lifts', value: 'downgradeBelts'});
+                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected power poles', value: 'downgradePowerPoles'});
+                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected pipelines/pumps', value: 'downgradePipes'});
 
-            inputOptions.push({group: 'Upgrade', text: 'Upgrade selected belts/lifts', value: 'upgradeBelts'});
-            inputOptions.push({group: 'Upgrade', text: 'Upgrade selected power poles', value: 'upgradePowerPoles'});
-            inputOptions.push({group: 'Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'upgradePipes'});
+                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected belts/lifts', value: 'upgradeBelts'});
+                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected power poles', value: 'upgradePowerPoles'});
+                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'upgradePipes'});
+            }
 
             inputOptions.push({group: 'Foundations', text: 'Fill selection with...', value: 'fillSelection'});
-            inputOptions.push({group: 'Foundations', text: 'Convert "Glass Foundation 8m x 1m" to "Foundation 8m x 1m"', value: 'upgradeGlass8x1ToFoundation8x1'});
 
-            inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorageInventories'});
-            inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorageInventories'});
+            if(markers !== null)
+            {
+                inputOptions.push({group: 'Foundations', text: 'Convert "Glass Foundation 8m x 1m" to "Foundation 8m x 1m"', value: 'upgradeGlass8x1ToFoundation8x1'});
 
-            inputOptions.push({group: 'Statistics', text: 'Show selected items production statistics', value: 'productionStatistics'});
-            inputOptions.push({group: 'Statistics', text: 'Show selected items storage statistics', value: 'storageStatistics'});
-            inputOptions.push({group: 'Statistics', text: 'Show selected power circuits statistics', value: 'powerCircuitsStatistics'});
+                inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorageInventories'});
+                inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorageInventories'});
+
+                inputOptions.push({group: 'Statistics', text: 'Show selected items production statistics', value: 'productionStatistics'});
+                inputOptions.push({group: 'Statistics', text: 'Show selected items storage statistics', value: 'storageStatistics'});
+                inputOptions.push({group: 'Statistics', text: 'Show selected power circuits statistics', value: 'powerCircuitsStatistics'});
+            }
+
+            // Not working?
+            //inputOptions.push({group: 'Flora', text: 'Respawn selection flora', value: 'respawnFlora'});
+            //inputOptions.push({group: 'Flora', text: 'Clear selection flora', value: 'clearFlora'});
 
         Modal.form({
             title       : 'You have selected ' + selectedMarkersLength + ' items',
@@ -6346,6 +6360,11 @@ export default class BaseLayout
                         return;
                     case 'clearStorageInventories':
                         return this.clearStorageInventoriesSelection();
+
+                    case 'respawnFlora':
+                        return SubSystem_Foliage.respawn(this);
+                    case 'clearFlora':
+                        return SubSystem_Foliage.clear(this);
 
                     case 'productionStatistics':
                         return this.showSelectionProductionStatistics();

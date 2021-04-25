@@ -334,4 +334,37 @@ export default class BaseLayout_Math
 
         return null;
     }
+
+    static isPointInsideSelection(baseLayout, selection, x, y)
+    {
+        let point = baseLayout.satisfactoryMap.unproject([x, y]);
+
+            if(selection instanceof L.Circle)
+            {
+                let pointDistance   = baseLayout.satisfactoryMap.leafletMap.distance([point.lat, point.lng], selection.getLatLng());
+                    if(pointDistance <= selection.getRadius())
+                    {
+                        return true;
+                    }
+
+                return false;
+            }
+            else
+            {
+                let polyPoints  = selection.getLatLngs()[0];
+                let x           = point.lat, y = point.lng;
+
+                let inside = false;
+                    for(let i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++)
+                    {
+                        let xi = polyPoints[i].lat, yi = polyPoints[i].lng;
+                        let xj = polyPoints[j].lat, yj = polyPoints[j].lng;
+
+                        let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                            if(intersect) inside = !inside;
+                    }
+
+                return inside;
+            }
+    }
 }
