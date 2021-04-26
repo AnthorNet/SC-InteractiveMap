@@ -3,7 +3,7 @@
         "scale"             : 0.85,
         "xOffset"           : 250,
         "yOffset"           : -800,
-        "powerConnection"   : [-220, -540],
+        "powerConnection"   : [-250, -540],
         "forms"             : [
             {
                 "points": [

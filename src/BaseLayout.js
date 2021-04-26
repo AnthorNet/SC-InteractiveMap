@@ -147,7 +147,7 @@ export default class BaseLayout
             playerPipesLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], distance: 0, useAltitude: true, filters: []},
             playerPipesHyperLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], distance: 0, useAltitude: true, filters: []},
 
-            playerTracksLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], distance: 0, useAltitude: true},
+            playerTracksLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], distance: 0, useAltitude: true, filters: []},
             playerTrainsLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], useAltitude: true},
 
             playerPowerGridLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], count: 0, distance: 0, useAltitude: true},
@@ -2491,7 +2491,7 @@ export default class BaseLayout
         let layerId         = (buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerUnknownLayer';
             this.setupSubLayer(layerId);
 
-            if(this.playerLayers[layerId].filtersCount !== undefined)
+            if(this.playerLayers[layerId].filtersCount !== undefined && currentObject.className.search('/Build_ConveyorLiftMk') === -1)
             {
                 if(this.playerLayers[layerId].filtersCount[currentObject.className] === undefined)
                 {
@@ -2585,6 +2585,15 @@ export default class BaseLayout
                         {
                             let height      = Math.abs(mTopTransform.values[i].value.values.z) / 100;
                                 this.playerLayers[layerId].distance += height;
+
+                                if(this.playerLayers[layerId].filtersCount !== undefined)
+                                {
+                                    if(this.playerLayers[layerId].filtersCount[currentObject.className] === undefined)
+                                    {
+                                        this.playerLayers[layerId].filtersCount[currentObject.className] = {distance: 0};
+                                    }
+                                    this.playerLayers[layerId].filtersCount[currentObject.className].distance += height;
+                                }
                         }
                     }
                 }
@@ -3522,9 +3531,9 @@ export default class BaseLayout
     addPlayerTrack(currentObject)
     {
         this.setupSubLayer('playerTracksLayer');
-        let splineData  = BaseLayout_Math.extractSplineData(this, currentObject);
 
-        let trackCorridor = L.corridor(
+        let splineData      = BaseLayout_Math.extractSplineData(this, currentObject);
+        let trackCorridor   = L.corridor(
                 splineData.points,
                 {
                     pathName: currentObject.pathName,
@@ -3533,7 +3542,7 @@ export default class BaseLayout
                     weight: 1,
                     altitude: currentObject.transform.translation[2]
                 }
-        );
+            );
 
         trackCorridor.bindContextMenu(this);
         trackCorridor.on('mouseover', function(){
@@ -3548,6 +3557,21 @@ export default class BaseLayout
 
         this.playerLayers.playerTracksLayer.distance += splineData.distance;
         this.playerLayers.playerTracksLayer.elements.push(trackCorridor);
+
+        if(this.playerLayers.playerTracksLayer.filtersCount !== undefined)
+        {
+            let trackClassName = currentObject.className;
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C')
+                {
+                    trackClassName = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'
+                }
+
+            if(this.playerLayers.playerTracksLayer.filtersCount[trackClassName] === undefined)
+            {
+                this.playerLayers.playerTracksLayer.filtersCount[trackClassName] = {distance: 0};
+            }
+            this.playerLayers.playerTracksLayer.filtersCount[trackClassName].distance += splineData.distance;
+        }
 
         return trackCorridor;
     }

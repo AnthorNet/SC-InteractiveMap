@@ -115,22 +115,25 @@ export default class BaseLayout_Selection_Copy
                                 if(extraProperty !== null)
                                 {
                                     let extraPropertyObject             = this.baseLayout.saveGameParser.getTargetObject(extraProperty.pathName);
-                                    let extraPropertyNewObject          = {};
-                                        extraPropertyNewObject.parent   = JSON.parse(JSON.stringify(extraPropertyObject));
-                                        extraPropertyNewObject.children = [];
-
-                                        if(extraPropertyObject.children !== undefined)
+                                        if(extraPropertyObject !== null)
                                         {
-                                            for(let k = 0; k < extraPropertyObject.children.length; k++)
-                                            {
-                                                extraPropertyNewObject.children.push(
-                                                    JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(extraPropertyObject.children[k].pathName)))
-                                                );
-                                            }
-                                        }
+                                            let extraPropertyNewObject          = {};
+                                                extraPropertyNewObject.parent   = JSON.parse(JSON.stringify(extraPropertyObject));
+                                                extraPropertyNewObject.children = [];
 
-                                    clipboard.data.push(extraPropertyNewObject);
-                                    availablePathName.push(extraPropertyNewObject.parent.pathName);
+                                                if(extraPropertyObject.children !== undefined)
+                                                {
+                                                    for(let k = 0; k < extraPropertyObject.children.length; k++)
+                                                    {
+                                                        extraPropertyNewObject.children.push(
+                                                            JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(extraPropertyObject.children[k].pathName)))
+                                                        );
+                                                    }
+                                                }
+
+                                            clipboard.data.push(extraPropertyNewObject);
+                                            availablePathName.push(extraPropertyNewObject.parent.pathName);
+                                        }
                                 }
                         }
 
