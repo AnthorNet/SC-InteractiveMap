@@ -439,7 +439,10 @@ export default class BaseLayout_ContextMenu
             }
         }
 
-        contextMenu.push({separator: true});
+        if(contextMenu.length > 0)
+        {
+            contextMenu.push({separator: true});
+        }
         contextMenu.push({
             text: 'Advanced Debug',
             callback: Modal_Debug.getHTML

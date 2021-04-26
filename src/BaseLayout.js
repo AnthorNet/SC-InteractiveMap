@@ -1177,6 +1177,7 @@ export default class BaseLayout
                             );
 
                         this.playerLayers.playerPositionLayer.elements.push(playerMarker);
+                        playerMarker.bindContextMenu(this);
                         playerMarker.addTo(this.playerLayers.playerPositionLayer.subLayer);
 
                         if(isOwnPlayer === true)
