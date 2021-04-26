@@ -1188,8 +1188,27 @@ export default class BaseLayout
                         return playerMarker;
                     }
             }
+            else
+            {
+                console.log('mOwnedPawn not found... Deleting wonky player state', currentObject);
 
-        console.log('mOwnedPawn not found...', currentObject);
+                // Delete wonky player state...
+                if(this.playersState.length > 0)
+                {
+                    for(let i = 0; i < this.playersState.length; i++)
+                    {
+                        if(this.playersState[i].pathName === currentObject.pathName)
+                        {
+                            this.playersState.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+
+                this.saveGameParser.deleteObject(currentObject.pathName);
+            }
+
+
         return null;
     }
 

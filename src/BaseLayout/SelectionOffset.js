@@ -55,31 +55,28 @@ export default class BaseLayout_Selection_Offset
                         if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
                         {
                             // Find target
+                            let mOwnedPawn          = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
                             let currentObjectTarget = null;
-                            for(let j = 0; j < currentObject.properties.length; j++)
-                            {
-                                if(currentObject.properties[j].name === 'mOwnedPawn')
+                                if(mOwnedPawn !== null)
                                 {
-                                    currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(currentObject.properties[j].value.pathName);
-                                    break;
+                                    currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
                                 }
-                            }
 
-                            if(currentObjectTarget !== null)
-                            {
-                                if(isNaN(this.offsetX) === false)
+                                if(currentObjectTarget !== null)
                                 {
-                                    currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
+                                    if(isNaN(this.offsetX) === false)
+                                    {
+                                        currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
+                                    }
+                                    if(isNaN(this.offsetY) === false)
+                                    {
+                                        currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
+                                    }
+                                    if(isNaN(this.offsetZ) === false)
+                                    {
+                                        currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
+                                    }
                                 }
-                                if(isNaN(this.offsetY) === false)
-                                {
-                                    currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
-                                }
-                                if(isNaN(this.offsetZ) === false)
-                                {
-                                    currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
-                                }
-                            }
                         }
                         else
                         {
