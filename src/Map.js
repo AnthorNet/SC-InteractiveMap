@@ -481,15 +481,6 @@ export default class Map
                                     tooltip.push('<br />');
                                     tooltip.push('Altitude: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.z / 100)) + 'm');
 
-                                    if(marker.obstructed !== undefined && marker.obstructed === true)
-                                    {
-                                        tooltip.push('<br /><br /><strong>Obstructed in the last checked build</strong>');
-                                    }
-                                    if(marker.lastCheck !== undefined)
-                                    {
-                                        tooltip.push('<br /><br /><em><small>Verified in Build #' + marker.lastCheck + '</small></em>');
-                                    }
-
                                     if(option.type !== undefined){ currentMarkerOptions.type = option.type; }
                                     else{ if(options.type !== undefined){ currentMarkerOptions.type = options.type; } }
 
