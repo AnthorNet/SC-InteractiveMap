@@ -364,6 +364,12 @@ export default class SaveParser_Write
             actor += this.writeFloat(currentActor.transform.rotation[2], false);
             actor += this.writeFloat(currentActor.transform.rotation[3], false);
 
+            // Enforce bounding on the map to avoid the game from skipping physics!
+            if(currentActor.transform.translation[0] < -500000 || currentActor.transform.translation[0] > 500000 || currentActor.transform.translation[1] < -500000 || currentActor.transform.translation[1] > 500000 || currentActor.transform.translation[1] < -500000 || currentActor.transform.translation[1] > 500000)
+            {
+                currentActor.transform.translation = [0, 0, 2000];
+            }
+
             actor += this.writeFloat(currentActor.transform.translation[0], false);
             actor += this.writeFloat(currentActor.transform.translation[1], false);
             actor += this.writeFloat(currentActor.transform.translation[2], false);

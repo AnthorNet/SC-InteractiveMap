@@ -21,7 +21,7 @@ export default class Modal_Debug
             }
         }
 
-        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute'];
+        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn'];
             for(let i = 0; i < extraProperties.length; i++)
             {
                 let extraProperty = baseLayout.getObjectProperty(currentObject, extraProperties[i]);

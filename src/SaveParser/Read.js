@@ -297,9 +297,17 @@ export default class SaveParser_Read
             }
             else
             {
+
                 actor.transform.translation = translation;
             }
 
+            // Enforce bounding on the map to avoid the game from skipping physics!
+            if(actor.transform.translation[0] < -500000 || actor.transform.translation[0] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000)
+            {
+                actor.transform.translation = [0, 0, 2000];
+                console.log('Out of bounds translation', actor.pathName);
+            }
+            // Avoid lost vehicles in the game!
             if(isNaN(actor.transform.translation[0]) || isNaN(actor.transform.translation[1]) || isNaN(actor.transform.translation[2]))
             {
                 actor.transform.translation = [0, 0, 2000];
