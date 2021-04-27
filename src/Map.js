@@ -493,7 +493,68 @@ export default class Map
                                     if(option.type !== undefined){ currentMarkerOptions.type = option.type; }
                                     else{ if(options.type !== undefined){ currentMarkerOptions.type = options.type; } }
 
-                                    if(option.purity !== undefined){ currentMarkerOptions.purity = option.purity; }
+                                    if(option.purity !== undefined)
+                                    {
+                                        currentMarkerOptions.purity = option.purity;
+
+                                        if(currentMarkerOptions.type !== undefined) // Avoid geysers
+                                        {
+                                            let purityModifier = 1;
+                                                if(option.purity === 'impure')
+                                                {
+                                                    purityModifier = 0.5;
+                                                }
+                                                if(option.purity === 'pure')
+                                                {
+                                                    purityModifier = 2;
+                                                }
+
+                                            tooltip.push('<table class="table table-bordered table-sm mt-3 mb-0 border-0"><thead><tr><th class="border-top-0 border-left-0"></th><th>50%</th><th>100%</th><th>150%</th><th>200%</th><th>250%</th></tr></thead><tbody>');
+                                            if(['Desc_LiquidOil_C', 'Desc_Water_C', 'Desc_NitrogenGas_C'].includes(currentMarkerOptions.type))
+                                            {
+                                                let defaultSpeed    = 60;
+                                                let buildingName    = 'Oil Extractor';
+
+                                                    if(['Desc_Water_C', 'Desc_NitrogenGas_C'].includes(currentMarkerOptions.type) || ['oilWellImpure', 'oilWellNormal', 'oilWellPure'].includes(option.layerId))
+                                                    {
+                                                        defaultSpeed    = 30;
+                                                        buildingName    = 'Resource Well Extractor';
+                                                    }
+
+                                                tooltip.push('<tr>');
+                                                tooltip.push('<td>' + buildingName + '</td>');
+
+                                                for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
+                                                {
+                                                    tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + 'm³ / min</td>');
+                                                }
+
+                                                tooltip.push('</tr>');
+                                            }
+                                            else
+                                            {
+                                                for(let mk = 1; mk <= 3; mk++)
+                                                {
+                                                    let defaultSpeed = mk * 60;
+                                                        if(mk === 3)
+                                                        {
+                                                            defaultSpeed = 240;
+                                                        }
+
+                                                    tooltip.push('<tr>');
+                                                    tooltip.push('<td>Miner Mk' + mk + '</td>');
+
+                                                    for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
+                                                    {
+                                                        tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + ' / min</td>');
+                                                    }
+
+                                                    tooltip.push('</tr>');
+                                                }
+                                            }
+                                            tooltip.push('</tbody></table>');
+                                        }
+                                    }
                                     if(marker.core !== undefined){ currentMarkerOptions.core = marker.core; }
 
                                     tooltip = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
