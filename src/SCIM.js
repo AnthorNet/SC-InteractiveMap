@@ -59,7 +59,7 @@ export default class SCIM
                               .on('drop', function(e){ this.processSaveGameFile(e.originalEvent.dataTransfer.files[0]); }.bind(this));
             $('#saveGameFileInput').on('change', function(e){
                 let currentFile = $(e.currentTarget).prop('files')[0];
-                $(this).val('');
+                    $(e.currentTarget).val('');
 
                 this.processSaveGameFile(currentFile);
             }.bind(this));
