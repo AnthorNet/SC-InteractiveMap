@@ -230,17 +230,14 @@ export default class Modal_MapOptions
             html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputUseDetailedModels" id="inputUseDetailedModels" ' + ((this.baseLayout.useDetailedModels === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputUseDetailedModels">Use detailed models?</label></div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
-        html.push('<div class="form-group"><div class="input-group input-group-sm"><div class="input-group-prepend"><label class="input-group-text" for="inputUseSmoothFactor">Detailed models quality</label></div><select class="custom-select" id="inputUseSmoothFactor" style="background: none;">');
-        html.push('<option value="0" ' + ((this.baseLayout.useSmoothFactor === 0) ? 'selected' : '') + '>0 (Best quality)</option>');
-        html.push('<option value="1" ' + ((this.baseLayout.useSmoothFactor === 1) ? 'selected' : '') + '>1 (Default)</option>');
-        html.push('<option value="2" ' + ((this.baseLayout.useSmoothFactor === 2) ? 'selected' : '') + '>2</option>');
-        html.push('<option value="3" ' + ((this.baseLayout.useSmoothFactor === 3) ? 'selected' : '') + '>3</option>');
-        html.push('<option value="4" ' + ((this.baseLayout.useSmoothFactor === 4) ? 'selected' : '') + '>4</option>');
-        html.push('<option value="5" ' + ((this.baseLayout.useSmoothFactor === 5) ? 'selected' : '') + '>5</option>');
-        html.push('<option value="6" ' + ((this.baseLayout.useSmoothFactor === 6) ? 'selected' : '') + '>6</option>');
-        html.push('<option value="7" ' + ((this.baseLayout.useSmoothFactor === 7) ? 'selected' : '') + '>7</option>');
-        html.push('<option value="8" ' + ((this.baseLayout.useSmoothFactor === 8) ? 'selected' : '') + '>8</option>');
-        html.push('<option value="9" ' + ((this.baseLayout.useSmoothFactor === 9) ? 'selected' : '') + '>9 (Worst quality)</option>');
+        html.push('<div class="form-group"><div class="input-group input-group-sm"><div class="input-group-prepend"><label class="input-group-text" for="inputUseSmoothFactor">Detailed models quality</label></div><select class="custom-select text-white" id="inputUseSmoothFactor" style="background: none;">');
+        html.push('<option value="0" class="text-secondary" ' + ((this.baseLayout.useSmoothFactor === 0) ? 'selected' : '') + '>0 (Best quality)</option>');
+        html.push('<option value="1" class="text-secondary" ' + ((this.baseLayout.useSmoothFactor === 1) ? 'selected' : '') + '>1 (Default)</option>');
+        for(let i = 2; i <= 8; i++)
+        {
+            html.push('<option value="' + i + '" class="text-secondary" ' + ((this.baseLayout.useSmoothFactor === i) ? 'selected' : '') + '>' + i + '</option>');
+        }
+        html.push('<option value="9" class="text-secondary" ' + ((this.baseLayout.useSmoothFactor === 9) ? 'selected' : '') + '>9 (Worst quality)</option>');
         html.push('</select></div></div>');
         html.push('</div></div>');
 
@@ -261,7 +258,7 @@ export default class Modal_MapOptions
 
         $('#statisticsModalOptions').html(html.join(''));
 
-        $('#statisticsModalOptions input').on('keyup click', () => {
+        $('#statisticsModalOptions input, #statisticsModalOptions select').on('keyup click', () => {
             if(this.baseLayout.localStorage !== null)
             {
                 this.baseLayout.showStructuresOnLoad        = (($('#inputShowStructuresOnLoad').is(':checked') === true) ? true : false);
@@ -291,8 +288,6 @@ export default class Modal_MapOptions
                 this.baseLayout.useSmoothFactor             = parseInt($('#inputUseSmoothFactor').val());
                 this.baseLayout.localStorage.setItem('mapUseSmoothFactor', this.baseLayout.useSmoothFactor);
             }
-
-
 
             let header                  = this.baseLayout.saveGameParser.getHeader();
 
