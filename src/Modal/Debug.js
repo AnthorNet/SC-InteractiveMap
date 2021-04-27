@@ -21,13 +21,23 @@ export default class Modal_Debug
             }
         }
 
-        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone'];
+        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute'];
             for(let i = 0; i < extraProperties.length; i++)
             {
                 let extraProperty = baseLayout.getObjectProperty(currentObject, extraProperties[i]);
                     if(extraProperty !== null)
                     {
-                        extraPathName.push(extraProperty.pathName);
+                        if(extraProperties[i] === 'mActionsToExecute')
+                        {
+                            for(let j = 0; j < extraProperty.values.length; j++)
+                            {
+                                extraPathName.push(extraProperty.values[j].pathName);
+                            }
+                        }
+                        else
+                        {
+                            extraPathName.push(extraProperty.pathName);
+                        }
                     }
             }
 

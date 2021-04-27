@@ -70,7 +70,7 @@ export default class Spawn_Blueprint
                 // Try to find the minZ
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    if(this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
+                    if(this.clipboard.data[i].parent.transform !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
                     {
                         let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.clipboard.data[i].parent.className);
                             if(currentObjectData !== null)
@@ -94,7 +94,7 @@ export default class Spawn_Blueprint
 
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    if(this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
+                    if(this.clipboard.data[i].parent.transform !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
                     {
                         this.clipboard.data[i].parent.transform.translation[0] -= centerX;
                         this.clipboard.data[i].parent.transform.translation[1] -= centerY;
@@ -277,6 +277,18 @@ export default class Spawn_Blueprint
                         for(let j = 0; j < this.clipboard.data[i].parent.properties.length; j++)
                         {
                             let currentProperty = this.clipboard.data[i].parent.properties[j];
+                                /*
+                                if(currentProperty.type === 'ArrayProperty' && currentProperty.value.values !== undefined)
+                                {
+                                    for(let k = 0; k < currentProperty.value.values.length; k++)
+                                    {
+                                        if(pathNameConversion[currentProperty.value.values[k].pathName] !== undefined)
+                                        {
+                                            currentProperty.value.values[k].pathName = pathNameConversion[currentProperty.value.values[k].pathName];
+                                        }
+                                    }
+                                }
+                                */
                                 if(currentProperty.value !== undefined && currentProperty.value.pathName !== undefined)
                                 {
                                     if(pathNameConversion[currentProperty.value.pathName] !== undefined)
@@ -687,42 +699,45 @@ export default class Spawn_Blueprint
                 if(this.marker !== null)
                 {
                     // Calculate new position
-                    let translationRotation = BaseLayout_Math.getPointRotation(
-                            [
-                                (newObject.transform.translation[0] + this.centerObject.transform.translation[0]),
-                                (newObject.transform.translation[1] + this.centerObject.transform.translation[1])
-                            ],
-                            this.centerObject.transform.translation,
-                            this.centerObject.transform.rotation
-                        );
-                        newObject.transform.translation[0]  = translationRotation[0];
-                        newObject.transform.translation[1]  = translationRotation[1];
-                        newObject.transform.translation[2]  = newObject.transform.translation[2] + this.centerObject.transform.translation[2] + (this.centerObjectData.height * 100 / 2);
+                    if(newObject.transform !== undefined)
+                    {
+                        let translationRotation = BaseLayout_Math.getPointRotation(
+                                [
+                                    (newObject.transform.translation[0] + this.centerObject.transform.translation[0]),
+                                    (newObject.transform.translation[1] + this.centerObject.transform.translation[1])
+                                ],
+                                this.centerObject.transform.translation,
+                                this.centerObject.transform.rotation
+                            );
+                            newObject.transform.translation[0]  = translationRotation[0];
+                            newObject.transform.translation[1]  = translationRotation[1];
+                            newObject.transform.translation[2]  = newObject.transform.translation[2] + this.centerObject.transform.translation[2] + (this.centerObjectData.height * 100 / 2);
 
-                    // Rotate all spline data and tangeant!
-                    let mSplineData                      = this.baseLayout.getObjectProperty(newObject, 'mSplineData');
-                        if(mSplineData !== null)
-                        {
-                            for(let j = 0; j < mSplineData.values.length; j++)
+                        // Rotate all spline data and tangeant!
+                        let mSplineData                      = this.baseLayout.getObjectProperty(newObject, 'mSplineData');
+                            if(mSplineData !== null)
                             {
-                                for(let k = 0; k < mSplineData.values[j].length; k++)
+                                for(let j = 0; j < mSplineData.values.length; j++)
                                 {
-                                    let currentValue    = mSplineData.values[j][k];
-                                    let splineRotation  = BaseLayout_Math.getPointRotation(
-                                        [currentValue.value.values.x, currentValue.value.values.y],
-                                        [0, 0],
-                                        this.centerObject.transform.rotation
-                                    );
+                                    for(let k = 0; k < mSplineData.values[j].length; k++)
+                                    {
+                                        let currentValue    = mSplineData.values[j][k];
+                                        let splineRotation  = BaseLayout_Math.getPointRotation(
+                                            [currentValue.value.values.x, currentValue.value.values.y],
+                                            [0, 0],
+                                            this.centerObject.transform.rotation
+                                        );
 
-                                    currentValue.value.values.x = splineRotation[0];
-                                    currentValue.value.values.y = splineRotation[1];
+                                        currentValue.value.values.x = splineRotation[0];
+                                        currentValue.value.values.y = splineRotation[1];
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            newObject.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(newObject.transform.rotation, this.centerYaw);
-                        }
+                            else
+                            {
+                                newObject.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(newObject.transform.rotation, this.centerYaw);
+                            }
+                    }
 
                     // Update vehicle current destination
                     let mCurrentDestination = this.baseLayout.getObjectProperty(newObject, 'mCurrentDestination');

@@ -106,6 +106,27 @@ export default class BaseLayout_Selection_Copy
                         }
                     }
 
+                    // Removes drone action to reset it
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
+                    {
+                        this.baseLayout.setObjectProperty(newDataObject.parent, 'mCurrentDockingState', {
+                            type    : "DroneDockingStateInfo",
+                            values  : [
+                                {
+                                    name    : "State",
+                                    type    : "EnumProperty",
+                                    value   : {
+                                        name    : "EDroneDockingState",
+                                        value   : "EDroneDockingState::DS_DOCKED"
+                                    }
+                                }
+                            ]
+                        }, 'StructProperty');
+                        this.baseLayout.deleteObjectProperty(newDataObject.parent, 'mCurrentAction');
+                        this.baseLayout.deleteObjectProperty(newDataObject.parent, 'mActionsToExecute');
+                    }
+
+
                     // Need some extra linked properties?
                     //TODO: Check mPairedStation?
                     let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone'];
@@ -114,7 +135,7 @@ export default class BaseLayout_Selection_Copy
                             let extraProperty   = this.baseLayout.getObjectProperty(currentObject, extraProperties[j]);
                                 if(extraProperty !== null)
                                 {
-                                    let extraPropertyObject             = this.baseLayout.saveGameParser.getTargetObject(extraProperty.pathName);
+                                    let extraPropertyObject = this.baseLayout.saveGameParser.getTargetObject(extraProperty.pathName);
                                         if(extraPropertyObject !== null)
                                         {
                                             let extraPropertyNewObject          = {};
