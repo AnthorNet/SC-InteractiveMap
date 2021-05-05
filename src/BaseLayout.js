@@ -3197,6 +3197,16 @@ export default class BaseLayout
                 }
         }
 
+        // Release space elevator!
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C')
+        {
+            let gameState = this.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
+                if(gameState !== null)
+                {
+                    this.setObjectProperty(currentObject, 'mIsSpaceElevatorBuilt', 0, 'BoolProperty');
+                }
+        }
+
         // Delete extra marker!
         if(marker.relatedTarget.options.extraMarker !== undefined)
         {
