@@ -52,46 +52,87 @@ export default class BaseLayout_Selection_Offset
                                 }
                         }
 
-                        if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
+                        switch(currentObject.className)
                         {
-                            // Find target
-                            let mOwnedPawn          = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
-                            let currentObjectTarget = null;
-                                if(mOwnedPawn !== null)
+                            case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
+                                // Find target
+                                let mOwnedPawn          = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
+                                    if(mOwnedPawn !== null)
+                                    {
+                                        let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                                            if(currentObjectTarget !== null)
+                                            {
+                                                if(isNaN(this.offsetX) === false)
+                                                {
+                                                    currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
+                                                }
+                                                if(isNaN(this.offsetY) === false)
+                                                {
+                                                    currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
+                                                }
+                                                if(isNaN(this.offsetZ) === false)
+                                                {
+                                                    currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
+                                                }
+                                            }
+                                    }
+                                break;
+                            case '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C':
+                                // HUB should also move hidden objects
+                                let mHubTerminal    = this.baseLayout.getObjectProperty(currentObject, 'mHubTerminal');
+                                    if(mHubTerminal !== null)
+                                    {
+                                        let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mHubTerminal.pathName);
+                                            if(currentObjectTarget !== null)
+                                            {
+                                                if(isNaN(this.offsetX) === false)
+                                                {
+                                                    currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
+                                                }
+                                                if(isNaN(this.offsetY) === false)
+                                                {
+                                                    currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
+                                                }
+                                                if(isNaN(this.offsetZ) === false)
+                                                {
+                                                    currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
+                                                }
+                                            }
+                                    }
+                                let mWorkBench      = this.baseLayout.getObjectProperty(currentObject, 'mWorkBench');
+                                    if(mWorkBench !== null)
+                                    {
+                                        let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mWorkBench.pathName);
+                                            if(currentObjectTarget !== null)
+                                            {
+                                                if(isNaN(this.offsetX) === false)
+                                                {
+                                                    currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
+                                                }
+                                                if(isNaN(this.offsetY) === false)
+                                                {
+                                                    currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
+                                                }
+                                                if(isNaN(this.offsetZ) === false)
+                                                {
+                                                    currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
+                                                }
+                                            }
+                                    }
+                            default:
+                                if(isNaN(this.offsetX) === false)
                                 {
-                                    currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                                    currentObject.transform.translation[0] = currentObject.transform.translation[0] + this.offsetX;
                                 }
-
-                                if(currentObjectTarget !== null)
+                                if(isNaN(this.offsetY) === false)
                                 {
-                                    if(isNaN(this.offsetX) === false)
-                                    {
-                                        currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
-                                    }
-                                    if(isNaN(this.offsetY) === false)
-                                    {
-                                        currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
-                                    }
-                                    if(isNaN(this.offsetZ) === false)
-                                    {
-                                        currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
-                                    }
+                                    currentObject.transform.translation[1] = currentObject.transform.translation[1] + this.offsetY;
                                 }
-                        }
-                        else
-                        {
-                            if(isNaN(this.offsetX) === false)
-                            {
-                                currentObject.transform.translation[0] = currentObject.transform.translation[0] + this.offsetX;
-                            }
-                            if(isNaN(this.offsetY) === false)
-                            {
-                                currentObject.transform.translation[1] = currentObject.transform.translation[1] + this.offsetY;
-                            }
-                            if(isNaN(this.offsetZ) === false)
-                            {
-                                currentObject.transform.translation[2] = currentObject.transform.translation[2] + this.offsetZ;
-                            }
+                                if(isNaN(this.offsetZ) === false)
+                                {
+                                    currentObject.transform.translation[2] = currentObject.transform.translation[2] + this.offsetZ;
+                                }
+                                break;
                         }
 
                         if(currentObject.children !== undefined)
