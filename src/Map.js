@@ -508,7 +508,7 @@ export default class Map
 
                                                     if(['Desc_Water_C', 'Desc_NitrogenGas_C'].includes(currentMarkerOptions.type) || ['oilWellImpure', 'oilWellNormal', 'oilWellPure'].includes(option.layerId))
                                                     {
-                                                        defaultSpeed    = 30;
+                                                        defaultSpeed    = 60;
                                                         buildingName    = 'Resource Well Extractor';
                                                     }
 
