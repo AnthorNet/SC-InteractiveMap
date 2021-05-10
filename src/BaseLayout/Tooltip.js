@@ -47,7 +47,14 @@ export default class BaseLayout_Tooltip
             }
             else
             {
-                if(currentObject.className.search('/Build_ConveyorBeltMk') !== -1 || currentObject.className.search('/Build_ConveyorLiftMk') !== -1)
+                if(
+                        currentObject.className.search('/Build_ConveyorBeltMk') !== -1
+                     || currentObject.className.search('/Build_ConveyorLiftMk') !== -1
+                     // Belts Mod
+                     || currentObject.className.startsWith('/Game/CoveredConveyor')
+                     || currentObject.className.startsWith('/CoveredConveyor')
+                     || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
+                )
                 {
                     return this.setBeltTooltipContent(currentObject);
                 }
@@ -286,23 +293,22 @@ export default class BaseLayout_Tooltip
     setBeltTooltipContent(currentObject)
     {
         let beltInventory = [];
-
-        if(currentObject.extra !== undefined && currentObject.extra.items.length > 0)
-        {
-            for(let i = 0; i < currentObject.extra.items.length; i++)
+            if(currentObject.extra !== undefined && currentObject.extra.items.length > 0)
             {
-                let currentItemData = this.baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name);
-                    if(currentItemData !== null)
-                    {
-                        beltInventory.push({
-                            className   : currentItemData.className,
-                            name        : currentItemData.name,
-                            image       : currentItemData.image,
-                            qty         : 1
-                        });
-                    }
+                for(let i = 0; i < currentObject.extra.items.length; i++)
+                {
+                    let currentItemData = this.baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name);
+                        if(currentItemData !== null)
+                        {
+                            beltInventory.push({
+                                className   : currentItemData.className,
+                                name        : currentItemData.name,
+                                image       : currentItemData.image,
+                                qty         : 1
+                            });
+                        }
+                }
             }
-        }
 
         let beltData        = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
         let distance        = '';
@@ -331,7 +337,14 @@ export default class BaseLayout_Tooltip
         let content         = [];
 
             // HEADER
-            content.push('<div><strong>' + beltData.name + distance + '</strong></div>');
+            if(beltData !== null)
+            {
+                content.push('<div><strong>' + beltData.name + distance + '</strong></div>');
+            }
+            else
+            {
+                content.push('<div><strong>' + currentObject.className + distance + '</strong></div>');
+            }
 
             // INVENTORY
             content.push('<div style="' + this.genericStorageBackgroundStyle + '" class="mt-3">');
