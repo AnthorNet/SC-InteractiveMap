@@ -892,7 +892,7 @@ export default class BaseLayout
             }
             else
             {
-                if(currentObject.className.indexOf('Build_') !== -1)
+                if(currentObject.className.indexOf('Build_') !== -1 || currentObject.className.startsWith('/CoveredConveyor'))
                 {
                     if(typeof Sentry !== 'undefined' && this.useDebug === true)
                     {
