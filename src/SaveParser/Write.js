@@ -438,24 +438,25 @@ export default class SaveParser_Write
         if(
                 currentObject.className.search('/Build_ConveyorBeltMk') !== -1
              || currentObject.className.search('/Build_ConveyorLiftMk') !== -1
-             || currentObject.className.search('/Game/CoveredConveyor/LiftPaintable/lift') !== -1
-             || currentObject.className.search('/Game/CoveredConveyor/CoveredMK') !== -1
-             || currentObject.className.search('/Game/Conveyors_Mod/Build_BeltMk') !== -1
-             || currentObject.className.search('/Game/Conveyors_Mod/Build_LiftMk') !== -1
+             // MODS
+             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
+             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
+             || currentObject.className.startsWith('/Game/CoveredConveyor')
+             || currentObject.className.startsWith('/CoveredConveyor')
         )
         {
             let itemsLength  = currentObject.extra.items.length;
                      entity += this.writeInt(currentObject.extra.count);
                      entity += this.writeInt(itemsLength);
 
-            for(let i = 0; i < itemsLength; i++)
-            {
-                entity += this.writeInt(currentObject.extra.items[i].length);
-                entity += this.writeString(currentObject.extra.items[i].name);
-                entity += this.writeString(currentObject.extra.items[i].levelName);
-                entity += this.writeString(currentObject.extra.items[i].pathName);
-                entity += this.writeFloat(currentObject.extra.items[i].position);
-            }
+                for(let i = 0; i < itemsLength; i++)
+                {
+                    entity += this.writeInt(currentObject.extra.items[i].length);
+                    entity += this.writeString(currentObject.extra.items[i].name);
+                    entity += this.writeString(currentObject.extra.items[i].levelName);
+                    entity += this.writeString(currentObject.extra.items[i].pathName);
+                    entity += this.writeFloat(currentObject.extra.items[i].position);
+                }
         }
         else
         {

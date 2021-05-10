@@ -381,25 +381,25 @@ export default class SaveParser_Read
         if(
                 this.saveParser.objects[objectKey].className.search('/Build_ConveyorBeltMk') !== -1
              || this.saveParser.objects[objectKey].className.search('/Build_ConveyorLiftMk') !== -1
-             || this.saveParser.objects[objectKey].className.search('/Game/CoveredConveyor/LiftPaintable/lift') !== -1
-             || this.saveParser.objects[objectKey].className.search('/Game/CoveredConveyor/CoveredMK') !== -1
-             || this.saveParser.objects[objectKey].className.search('/Game/Conveyors_Mod/Build_BeltMk') !== -1
-             || this.saveParser.objects[objectKey].className.search('/Game/Conveyors_Mod/Build_LiftMk') !== -1
+             // MODS
+             || this.saveParser.objects[objectKey].className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
+             || this.saveParser.objects[objectKey].className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
+             || this.saveParser.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
+             || this.saveParser.objects[objectKey].className.startsWith('/CoveredConveyor/')
         )
         {
-            this.saveParser.objects[objectKey].extra       = {count: this.readInt(), items: []};
-            let itemsLength                     = this.readInt();
-
-            for(let i = 0; i < itemsLength; i++)
-            {
-                this.saveParser.objects[objectKey].extra.items.push({
-                    length      : this.readInt(),
-                    name        : this.readString(),
-                    levelName   : this.readString(),
-                    pathName    : this.readString(),
-                    position    : this.readFloat()
-                });
-            }
+            this.saveParser.objects[objectKey].extra    = {count: this.readInt(), items: []};
+            let itemsLength                             = this.readInt();
+                for(let i = 0; i < itemsLength; i++)
+                {
+                    this.saveParser.objects[objectKey].extra.items.push({
+                        length      : this.readInt(),
+                        name        : this.readString(),
+                        levelName   : this.readString(),
+                        pathName    : this.readString(),
+                        position    : this.readFloat()
+                    });
+                }
         }
         else
         {
