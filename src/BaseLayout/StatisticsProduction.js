@@ -58,7 +58,7 @@ export default class BaseLayout_Statistics_Production
                         if(buildingData !== null)
                         {
                             let buildingIsOn = this.baseLayout.getBuildingIsPowered(currentObject);
-                                if(buildingIsOn === true)
+                                if(buildingIsOn === true || currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingExtractor/Build_FrackingExtractor.Build_FrackingExtractor_C')
                                 {
                                     buildingIsOn = this.baseLayout.getBuildingIsOn(currentObject);
                                 }
