@@ -501,12 +501,12 @@ export default class Map
                                                 }
 
                                             tooltip.push('<table class="table table-bordered table-sm mt-3 mb-0 border-0"><thead><tr><th class="border-top-0 border-left-0"></th><th>50%</th><th>100%</th><th>150%</th><th>200%</th><th>250%</th></tr></thead><tbody>');
-                                            if(['Desc_LiquidOil_C', 'Desc_Water_C', 'Desc_NitrogenGas_C'].includes(currentMarkerOptions.type))
+                                            if(['Desc_LiquidOil_C', 'Desc_LiquidOilWell_C', 'Desc_Water_C', 'Desc_NitrogenGas_C'].includes(currentMarkerOptions.type))
                                             {
                                                 let defaultSpeed    = 120;
                                                 let buildingName    = 'Oil Extractor';
 
-                                                    if(['Desc_Water_C', 'Desc_NitrogenGas_C'].includes(currentMarkerOptions.type) || ['oilWellImpure', 'oilWellNormal', 'oilWellPure'].includes(option.layerId))
+                                                    if(['Desc_Water_C', 'Desc_NitrogenGas_C', 'Desc_LiquidOilWell_C'].includes(currentMarkerOptions.type))
                                                     {
                                                         defaultSpeed    = 60;
                                                         buildingName    = 'Resource Well Extractor';
