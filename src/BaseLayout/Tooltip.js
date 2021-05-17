@@ -69,27 +69,24 @@ export default class BaseLayout_Tooltip
                                     let currentItemData = this.baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
                                         if(currentItemData !== null)
                                         {
-                                            let currentContent  = '';
-                                                currentContent += currentItemData.name + '<br />';
-                                                currentContent += 'Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm';
-
-                                            return this.setBuildingTooltipContent(currentObject, {name: currentContent});
+                                            return this.setBuildingTooltipContent(currentObject, currentItemData);
                                         }
                                 }
                             break;
                         case '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C':
                         case '/Script/FactoryGame.FGItemPickup_Spawnable':
                         case '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C':
-                            let currentContent  = '';
-
-                                if(this.baseLayout.itemsData[this.target.options.itemId] !== undefined)
+                            let currentItemData = JSON.parse(JSON.stringify(this.baseLayout.itemsData[this.target.options.itemId]));
+                                if(currentItemData !== undefined)
                                 {
-                                    currentContent += new Intl.NumberFormat(this.baseLayout.language).format(this.target.options.itemQty) + 'x ' + this.baseLayout.itemsData[this.target.options.itemId].name + '<br />';
+                                    let currentContent  = '';
+                                        currentContent += new Intl.NumberFormat(this.baseLayout.language).format(this.target.options.itemQty) + 'x ' + currentItemData.name + '<br />';
+                                        currentContent += 'Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm';
+                                        currentItemData.name = currentContent;
+
+                                        return this.setBuildingTooltipContent(currentObject, currentItemData);
                                 }
-
-                                currentContent += 'Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm';
-
-                            return this.setBuildingTooltipContent(currentObject, {name: currentContent});
+                            break;
                         case '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C':
                             return this.setBuildingStorageTooltipContent(currentObject, {name: 'Loot Crate', category: 'storage'});
                         case '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C':

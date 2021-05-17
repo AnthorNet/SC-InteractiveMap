@@ -2395,6 +2395,7 @@ export default class BaseLayout
             fuel                : 'Fuels',
             ammo                : 'Ammos',
             special             : 'Special',
+            statue              : 'Statues',
             ficsmas             : 'FICSMAS Holiday Event',
             waste               : 'Waste',
             mods                : 'Modded items'
