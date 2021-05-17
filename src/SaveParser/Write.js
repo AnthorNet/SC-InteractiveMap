@@ -587,6 +587,7 @@ export default class SaveParser_Write
                 break;
 
             case 'Int64Property': //TODO: Use 64bit integer
+            case 'UInt64Property':
                 property += this.writeByte(0, false);
                 property += this.writeLong(currentProperty.value);
                 break;
@@ -594,6 +595,11 @@ export default class SaveParser_Write
             case 'FloatProperty':
                 property += this.writeByte(0, false);
                 property += this.writeFloat(currentProperty.value);
+                break;
+
+            case 'DoubleProperty':
+                property += this.writeByte(0, false);
+                property += this.writeDouble(currentProperty.value);
                 break;
 
             case 'StrProperty':
@@ -736,6 +742,9 @@ export default class SaveParser_Write
 
                     case 'FINNetworkTrace': // MOD: FicsIt-Networks
                         property += this.writeFINNetworkTrace(currentProperty.value.values);
+                        break;
+                    case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
+                        property += this.writeFINLuaProcessorStateStorage(currentProperty.value.values);
                         break;
 
                     default:
@@ -1105,6 +1114,7 @@ export default class SaveParser_Write
 
         return value;
     }
+
     writeInt8(value, count = true)
     {
         let arrayBuffer = new Uint8Array(1);
@@ -1152,6 +1162,7 @@ export default class SaveParser_Write
                 return property;
         }
     }
+
     writeFloat(value, count = true)
     {
         let arrayBuffer     = new ArrayBuffer(4);
@@ -1166,6 +1177,21 @@ export default class SaveParser_Write
 
         return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
     }
+    writeDouble(value, count = true)
+    {
+        let arrayBuffer     = new ArrayBuffer(8);
+        let dataView        = new DataView(arrayBuffer);
+            dataView.setFloat64(0, value, true);
+
+        if(count === true)
+        {
+            this.currentBufferLength += 8;
+        }
+        this.currentEntityLength += 8;
+
+        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+    }
+
     writeString(value, count = true)
     {
         let stringLength = value.length;
@@ -1213,11 +1239,17 @@ export default class SaveParser_Write
             return saveBinary;
         }
     }
+
     writeFINNetworkTrace(value)
     {
-        let saveBinary  = this.writeInt(value.isValid);
+        let saveBinary  = '';
 
-            if(value.isValid === 1)
+            if(value.isValid <= 1)
+            {
+                saveBinary += this.writeInt(value.isValid);
+            }
+
+            if(value.isValid >= 1)
             {
                 saveBinary += this.writeString(value.levelName);
                 saveBinary += this.writeString(value.pathName);
@@ -1238,4 +1270,27 @@ export default class SaveParser_Write
 
         return saveBinary;
     };
+
+    writeFINLuaProcessorStateStorage(value)
+    {
+        let saveBinary  = '';
+            saveBinary += this.writeInt(value.trace.length);
+
+            for(let i = 0; i < value.trace.length; i++)
+            {
+                saveBinary += this.writeFINNetworkTrace(value.trace[i]);
+            }
+
+            saveBinary += this.writeInt(value.reference.length);
+            for(let i = 0; i < value.reference.length; i++)
+            {
+                //TODO: ???
+            }
+
+        saveBinary += this.writeString(value.unk1);
+        saveBinary += this.writeString(value.unk2);
+        saveBinary += this.writeString(value.unk3);
+
+        return saveBinary;
+    }
 }

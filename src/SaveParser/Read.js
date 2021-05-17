@@ -550,6 +550,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Int64Property':
+            case 'UInt64Property':
                 this.skipBytes();
                 currentProperty.value = this.readLong();
 
@@ -558,6 +559,12 @@ export default class SaveParser_Read
             case 'FloatProperty':
                 this.skipBytes();
                 currentProperty.value = this.readFloat();
+
+                break;
+
+            case 'DoubleProperty':
+                this.skipBytes();
+                currentProperty.value = this.readDouble();
 
                 break;
 
@@ -1024,6 +1031,9 @@ export default class SaveParser_Read
                     case 'FINNetworkTrace': // MOD: FicsIt-Networks
                         currentProperty.value.values        = this.readFINNetworkTrace();
                         break;
+                    case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
+                        currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
+                        break;
 
                     case 'Transform':
                     case 'RemovedInstanceArray':
@@ -1222,6 +1232,7 @@ export default class SaveParser_Read
 
         return hexPart.join('');
     }
+
     readInt8()
     {
         let data = this.bufferView.getInt8(this.currentByte++, true);
@@ -1247,12 +1258,20 @@ export default class SaveParser_Read
             return [data1, data2];
         }
     }
+
     readFloat()
     {
         let data = this.bufferView.getFloat32(this.currentByte, true);
         this.currentByte += 4;
         return data;
     }
+    readDouble()
+    {
+        let data = this.bufferView.getFloat64(this.currentByte, true);
+        this.currentByte += 8;
+        return data;
+    }
+
     readString()
     {
         let strLength       = this.readInt();
@@ -1308,13 +1327,20 @@ export default class SaveParser_Read
 
         return;
     }
+
+    // https://github.com/CoderDE/FicsIt-Networks/blob/ab918a81a8a7527aec0cf6cd35270edfc5a1ddfe/Source/FicsItNetworks/Network/FINNetworkTrace.cpp#L154
     readFINNetworkTrace()
     {
-        let data           = {};
-            data.isValid   = this.readInt();
+        let data            = {};
+            data.isValid    = this.readInt();
 
-            if(data.isValid === 1)
+            if(data.isValid >= 1)
             {
+                if(data.isValid > 1) // Need to assume that isValid don't exists and skip if not BOOL
+                {
+                    this.currentByte -= 4;
+                }
+
                 data.levelName = this.readString();
                 data.pathName  = this.readString();
                 data.hasPrev   = this.readInt();
@@ -1331,6 +1357,28 @@ export default class SaveParser_Read
                     data.step  = this.readString();
                 }
             }
+
+        return data;
+    }
+
+    readFINLuaProcessorStateStorage()
+    {
+        let data            = {trace: [], reference: []};
+        let countTrace      = this.readInt();
+            for(let i = 0; i < countTrace; i++)
+            {
+                data.trace.push(this.readFINNetworkTrace());
+            }
+
+        let countReference  = this.readInt();
+            for(let i = 0; i < countReference; i++)
+            {
+                //TODO: ???
+            }
+
+        data.unk1 = this.readString();
+        data.unk2 = this.readString();
+        data.unk3 = this.readString();
 
         return data;
     }
