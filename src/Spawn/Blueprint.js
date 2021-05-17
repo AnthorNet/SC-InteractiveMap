@@ -310,7 +310,7 @@ export default class Spawn_Blueprint
                         }
                     }
 
-                    if(this.clipboard.data[i].children.length > 0)
+                    if(this.clipboard.data[i].children !== undefined && this.clipboard.data[i].children.length > 0)
                     {
                         for(let j = 0; j < this.clipboard.data[i].children.length; j++)
                         {
@@ -771,7 +771,7 @@ export default class Spawn_Blueprint
                     }
                 }
 
-            // ???
+            //TODO: ???
             if(currentClipboard.linkedList !== undefined)
             {
                 /*
@@ -783,38 +783,47 @@ export default class Spawn_Blueprint
                 */
             }
 
-            for(let j = 0; j < currentClipboard.children.length; j++)
+            if(currentClipboard.children !== undefined)
             {
-                let newChildren     = currentClipboard.children[j];
-                let testPathName    = newChildren.pathName.split('.');
-                        testPathName.pop();
-                        testPathName    = testPathName.join('.');
+                for(let j = 0; j < currentClipboard.children.length; j++)
+                {
+                    let newChildren     = currentClipboard.children[j];
+                    let testPathName    = newChildren.pathName.split('.');
+                            testPathName.pop();
+                            testPathName    = testPathName.join('.');
 
-                    // Do we need to update mPipeNetworkID?
-                    if(pipesConversion[newChildren.pathName] !== undefined)
-                    {
-                        for(let m = 0; m < newChildren.properties.length; m++)
+                        // Do we need to update mPipeNetworkID?
+                        if(pipesConversion[newChildren.pathName] !== undefined)
                         {
-                            if(newChildren.properties[m].name === 'mPipeNetworkID')
+                            for(let m = 0; m < newChildren.properties.length; m++)
                             {
-                                newChildren.properties[m].value = pipesConversion[newChildren.pathName];
-                                break;
+                                if(newChildren.properties[m].name === 'mPipeNetworkID')
+                                {
+                                    newChildren.properties[m].value = pipesConversion[newChildren.pathName];
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if(pipesConversion[testPathName] !== undefined)
-                    {
-                        for(let m = 0; m < newChildren.properties.length; m++)
+                        if(pipesConversion[testPathName] !== undefined)
                         {
-                            if(newChildren.properties[m].name === 'mPipeNetworkID')
+                            for(let m = 0; m < newChildren.properties.length; m++)
                             {
-                                newChildren.properties[m].value = pipesConversion[testPathName];
-                                break;
+                                if(newChildren.properties[m].name === 'mPipeNetworkID')
+                                {
+                                    newChildren.properties[m].value = pipesConversion[testPathName];
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                this.baseLayout.saveGameParser.addObject(newChildren);
+                    this.baseLayout.saveGameParser.addObject(newChildren);
+                }
+            }
+
+            // Push identifier for train station or trains
+            if(currentClipboard.parent.className === '/Script/FactoryGame.FGTrainStationIdentifier' || currentClipboard.parent.className === '/Script/FactoryGame.FGTrain')
+            {
+                this.baseLayout.saveGameParser.trainIdentifiers.push(currentClipboard.parent.pathName);
             }
 
             if(i % 250 === 0 || (i + 1) === clipboardLength)
