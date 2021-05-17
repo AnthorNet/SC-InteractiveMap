@@ -736,23 +736,20 @@ export default class BaseLayout
         {
             for(let modId in this.modsData)
             {
-                if(currentObject.className.startsWith('/Game/' + modId) === true)
+                if(currentObject.className.startsWith('/' + modId + '/') === true || currentObject.className.startsWith('/Game/' + modId + '/') === true)
                 {
-                    if(this.modsData[modId] !== undefined)
+                    if(this.modsData[modId].queuedPathName === undefined)
                     {
-                        if(this.modsData[modId].queuedPathName === undefined)
-                        {
-                            this.modsData[modId].queuedPathName = [];
-                        }
+                        this.modsData[modId].queuedPathName = [];
+                    }
 
-                        if(this.modsData[modId].queuedPathName.includes(currentObject.pathName) === false)
-                        {
-                            this.modsData[modId].queuedPathName.push(currentObject.pathName);
+                    if(this.modsData[modId].queuedPathName.includes(currentObject.pathName) === false)
+                    {
+                        this.modsData[modId].queuedPathName.push(currentObject.pathName);
 
-                            return this.loadMod(modId, () => {
-                                return this.parseObject(currentObject, resolve, skipMod);
-                            });
-                        }
+                        return this.loadMod(modId, () => {
+                            return this.parseObject(currentObject, resolve, skipMod);
+                        });
                     }
                 }
             }
