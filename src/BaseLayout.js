@@ -29,6 +29,7 @@ import Modal_MapOptions                         from './Modal/MapOptions.js';
 import Modal_PowerCircuits                      from './Modal/PowerCircuits.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
+import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_Light                           from './Building/Light.js';
@@ -53,6 +54,7 @@ export default class BaseLayout
 
         this.saveGameRailSwitches               = {};
         this.saveGameRailVehicles               = [];
+        this.frackingSmasherCores               = {};
 
         this.gameMode                           = [];
         this.playersState                       = [];
@@ -95,7 +97,7 @@ export default class BaseLayout
         this.useDetailedModels                  = (this.localStorage !== null && this.localStorage.getItem('mapUseDetailedModels') !== null) ? (this.localStorage.getItem('mapUseDetailedModels') === 'true') : true;
         this.useSmoothFactor                    = (this.localStorage !== null && this.localStorage.getItem('mapUseSmoothFactor') !== null) ? parseInt(this.localStorage.getItem('mapUseSmoothFactor')) : 1;
 
-        this.availablePowerConnection           = ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection'];
+        this.availablePowerConnection           = ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.FGPowerConnection1', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection'];
         this.availableBeltConnection            = ['.ConveyorAny0', '.ConveyorAny1', '.Input0', '.Input1', '.Input2', '.Input3', '.InPut3', '.Input4', '.Input5', '.Input6', '.Output0', '.Output1', '.Output2', '.Output3'];
         this.availableRailwayConnection         = ['.TrackConnection0', '.TrackConnection1'];
         this.availablePlatformConnection        = ['.PlatformConnection0', '.PlatformConnection1'];
@@ -699,6 +701,16 @@ export default class BaseLayout
             if(currentObject.className.startsWith('/Game/FactoryGame/-Shared/Blueprint/BP_') === true)
             {
                 continue;
+            }
+
+            // Update extracted core availability to get satellite status
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
+            {
+                let mExtractableResource = this.getObjectProperty(currentObject, 'mExtractableResource');
+                    if(mExtractableResource !== null)
+                    {
+                        this.frackingSmasherCores[mExtractableResource.pathName] = currentObject.pathName;
+                    }
             }
 
             promises.push(new Promise(function(resolve){
@@ -5595,9 +5607,17 @@ export default class BaseLayout
 
     getBuildingIsOn(currentObject)
     {
-        if(this.getObjectProperty(currentObject, 'mIsProductionPaused') !== null)
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingExtractor/Build_FrackingExtractor.Build_FrackingExtractor_C')
         {
-            return false;
+            currentObject = Building_FrackingExtractor.getSmasher(this, currentObject);
+        }
+
+        if(currentObject !== null)
+        {
+            if(this.getObjectProperty(currentObject, 'mIsProductionPaused') !== null)
+            {
+                return false;
+            }
         }
 
         return true;
@@ -5605,7 +5625,12 @@ export default class BaseLayout
 
     getBuildingIsPowered(currentObject)
     {
-        if(currentObject.children !== undefined)
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingExtractor/Build_FrackingExtractor.Build_FrackingExtractor_C')
+        {
+            currentObject = Building_FrackingExtractor.getSmasher(this, currentObject);
+        }
+
+        if(currentObject !== null && currentObject.children !== undefined)
         {
             for(let i = 0; i < currentObject.children.length; i++)
             {
