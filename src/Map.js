@@ -488,7 +488,7 @@ export default class Map
                                     {
                                         currentMarkerOptions.purity = option.purity;
 
-                                        if(currentMarkerOptions.type !== undefined) // Avoid geysers
+                                        if(currentMarkerOptions.type !== 'Desc_Geyser_C') // Avoid geysers
                                         {
                                             let purityModifier = 1;
                                                 if(option.purity === 'impure')
