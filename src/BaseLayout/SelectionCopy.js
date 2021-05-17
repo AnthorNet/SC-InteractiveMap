@@ -1,4 +1,6 @@
 /* global gtag */
+import Building_TrainStation                    from '../Building/TrainStation.js';
+
 export default class BaseLayout_Selection_Copy
 {
     constructor(options)
@@ -126,6 +128,19 @@ export default class BaseLayout_Selection_Copy
                         this.baseLayout.deleteObjectProperty(newDataObject.parent, 'mActionsToExecute');
                     }
 
+                    // Grab train station name?
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C')
+                    {
+                        let trainIdentifier = Building_TrainStation.getInformation(this.baseLayout, currentObject);
+                            if(trainIdentifier !== null)
+                            {
+                                let trainIdentifierNewObject          = {};
+                                    trainIdentifierNewObject.parent   = JSON.parse(JSON.stringify(trainIdentifier));
+
+                                    clipboard.data.push(trainIdentifierNewObject);
+                                    availablePathName.push(trainIdentifierNewObject.parent.pathName);
+                            }
+                    }
 
                     // Need some extra linked properties?
                     //TODO: Check mPairedStation?
