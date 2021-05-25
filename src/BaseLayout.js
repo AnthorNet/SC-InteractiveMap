@@ -3218,7 +3218,7 @@ export default class BaseLayout
             let gameState = this.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
                 if(gameState !== null)
                 {
-                    this.setObjectProperty(currentObject, 'mIsSpaceElevatorBuilt', 0, 'BoolProperty');
+                    this.setObjectProperty(gameState, 'mIsSpaceElevatorBuilt', 0, 'BoolProperty');
                 }
         }
 
