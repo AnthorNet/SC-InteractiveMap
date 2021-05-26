@@ -74,7 +74,7 @@ export default class SCIM
     {
         if(droppedFile !== undefined)
         {
-            if(droppedFile.name.endsWith('.sav'))
+            if(droppedFile.name.toLowerCase().endsWith('.sav'))
             {
                 this.showLoader();
 
