@@ -144,7 +144,7 @@ export default class BaseLayout
             playerStoragesLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], useAltitude: true, filters: []},
 
             playerVehiculesLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0, useAltitude: true, filters: []},
-            playerDronesLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0, useAltitude: true, filters: []},
+            playerDronesLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0, useAltitude: true/*, filters: []*/},
             playerBeltsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], distance: 0, useAltitude: true, filters: []},
             playerPipesLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], distance: 0, useAltitude: true, filters: []},
             playerPipesHyperLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], distance: 0, useAltitude: true, filters: []},
@@ -2560,15 +2560,6 @@ export default class BaseLayout
                         this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.extractorPathName = currentObject.pathName;
                     }
                 }
-
-            this.getObjectRadioactivity(currentObject, 'mOutputInventory');
-        }
-
-        // Calculate production statistics
-        if(buildingData.category === 'production' && skipMod === false)
-        {
-            this.getObjectRadioactivity(currentObject, 'mInputInventory');
-            this.getObjectRadioactivity(currentObject, 'mOutputInventory');
         }
 
         // Calculate generator statistics
@@ -2614,15 +2605,12 @@ export default class BaseLayout
                 }
         }
 
-        // Do we have radioactivity that should prevent a deletion!? ;)
-        if((buildingData.maxSlot !== undefined && buildingData.maxSlot > 0) || buildingData.category === 'generator')
-        {
-            let buildingInventoryProperty = 'mStorageInventory';
-                if(buildingData.category === 'dockstation'){ buildingInventoryProperty = 'mInventory'; }
-                if(buildingData.category === 'generator'){ buildingInventoryProperty = 'mFuelInventory'; }
-
-            this.getObjectRadioactivity(currentObject, buildingInventoryProperty);
-        }
+        // Get building radioactivity?
+        let inventoriesProperties = ['mInputInventory', 'mOutputInventory', 'mInventory', 'mStorageInventory', 'mFuelInventory'];
+            for(let i = 0; i < inventoriesProperties.length; i++)
+            {
+                this.getObjectRadioactivity(currentObject, inventoriesProperties[i]);
+            }
 
         // Create building instance
         let markerOptions   = {weight: weight};
