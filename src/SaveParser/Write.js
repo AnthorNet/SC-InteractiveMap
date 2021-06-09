@@ -740,6 +740,10 @@ export default class SaveParser_Write
                         property += this.writeString(currentProperty.value.unk1);
                         break;
 
+                    case 'DateTime': // MOD: Power Suit
+                        property += this.writeLong(currentProperty.value.dateTime);
+                        break;
+
                     case 'FINNetworkTrace': // MOD: FicsIt-Networks
                         property += this.writeFINNetworkTrace(currentProperty.value.values);
                         break;

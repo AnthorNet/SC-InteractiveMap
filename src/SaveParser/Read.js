@@ -1028,6 +1028,10 @@ export default class SaveParser_Read
                         currentProperty.value.unk1          = this.readString();
                         break;
 
+                    case 'DateTime': // MOD: Power Suit
+                        currentProperty.value.dateTime      = this.readLong();
+                        break;
+
                     case 'FINNetworkTrace': // MOD: FicsIt-Networks
                         currentProperty.value.values        = this.readFINNetworkTrace();
                         break;
