@@ -382,10 +382,12 @@ export default class SaveParser_Read
                 this.saveParser.objects[objectKey].className.search('/Build_ConveyorBeltMk') !== -1
              || this.saveParser.objects[objectKey].className.search('/Build_ConveyorLiftMk') !== -1
              // MODS
-             || this.saveParser.objects[objectKey].className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
-             || this.saveParser.objects[objectKey].className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
+             || this.saveParser.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_BeltMk')
+             || this.saveParser.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')
              || this.saveParser.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
              || this.saveParser.objects[objectKey].className.startsWith('/CoveredConveyor/')
+             || this.saveParser.objects[objectKey].className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
+             || this.saveParser.objects[objectKey].className.startsWith('/FlexSplines/Conveyor/Build_Belt')
         )
         {
             this.saveParser.objects[objectKey].extra    = {count: this.readInt(), items: []};
@@ -448,6 +450,7 @@ export default class SaveParser_Read
                     break;
                 case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
                 case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
+                case '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C':
                     this.saveParser.objects[objectKey].extra        = {
                         count               : this.readInt(),
                         sourceLevelName     : this.readString(),
@@ -1057,6 +1060,7 @@ export default class SaveParser_Read
                     case 'FFSlimeProcessingTask': // MOD: ???
                     case 'FFPlotTask': // MOD: ???
                     case 'SInventory': // MOD: ???
+                    case 'MFGBuildableAutoSplitterReplicatedProperties': // MOD: AutoSplitters
                         currentProperty.value.values = [];
                         while(true)
                         {

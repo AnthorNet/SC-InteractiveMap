@@ -17,7 +17,6 @@ import SubSystem_Foliage                        from './SubSystem/Foliage.js';
 import BaseLayout_Statistics_Production         from './BaseLayout/StatisticsProduction.js';
 import BaseLayout_Statistics_Storage            from './BaseLayout/StatisticsStorage.js';
 import BaseLayout_Statistics_Collectables       from './BaseLayout/StatisticsCollectables.js';
-import BaseLayout_Statistics_Schematics         from './BaseLayout/StatisticsSchematics.js';
 
 import Modal                                    from './Modal.js';
 import Modal_Buildings                          from './Modal/Buildings.js';
@@ -27,6 +26,7 @@ import Modal_MapHotbars                         from './Modal/MapHotbars.js';
 import Modal_MapPlayers                         from './Modal/MapPlayers.js';
 import Modal_MapOptions                         from './Modal/MapOptions.js';
 import Modal_PowerCircuits                      from './Modal/PowerCircuits.js';
+import Modal_Schematics                         from './Modal/Schematics.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
 import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
@@ -850,9 +850,10 @@ export default class BaseLayout
              // Belts
              || currentObject.className.search('/Build_ConveyorBeltMk') !== -1
              // Belts Mod
-             || (currentObject.className.startsWith('/Game/CoveredConveyor') && currentObject.className.search('lift') === -1)
              || (currentObject.className.startsWith('/CoveredConveyor') && currentObject.className.search('lift') === -1)
              || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
+             || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
+             || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
         )
         {
             let building = this.addPlayerBelt(currentObject);
@@ -1028,7 +1029,7 @@ export default class BaseLayout
                     }
             }.bind(this));
             $('#researchModal').on('show.bs.modal', () => {
-                let statisticsSchematics = new BaseLayout_Statistics_Schematics({
+                let statisticsSchematics = new Modal_Schematics({
                         baseLayout      : this
                     });
                     statisticsSchematics.parseSchematics();
@@ -2869,7 +2870,7 @@ export default class BaseLayout
         let selectedRecipes     = [];
         let selectOptions       = [];
 
-        let statisticsSchematics = new BaseLayout_Statistics_Schematics({
+        let statisticsSchematics = new Modal_Schematics({
                 baseLayout      : this
             });
         let purchasedSchematics = statisticsSchematics.getPurchasedSchematics();

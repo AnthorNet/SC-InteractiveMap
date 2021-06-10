@@ -439,10 +439,12 @@ export default class SaveParser_Write
                 currentObject.className.search('/Build_ConveyorBeltMk') !== -1
              || currentObject.className.search('/Build_ConveyorLiftMk') !== -1
              // MODS
-             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
-             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
+             || currentObject.className.startsWith('/Conveyors_Mod/Build_BeltMk')
+             || currentObject.className.startsWith('/Conveyors_Mod/Build_LiftMk')
              || currentObject.className.startsWith('/Game/CoveredConveyor')
              || currentObject.className.startsWith('/CoveredConveyor')
+             || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
+             || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
         )
         {
             let itemsLength  = currentObject.extra.items.length;
@@ -476,6 +478,7 @@ export default class SaveParser_Write
                     break;
                 case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
                 case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
+                case '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C':
                     entity += this.writeInt(currentObject.extra.count);
                     entity += this.writeString(currentObject.extra.sourceLevelName);
                     entity += this.writeString(currentObject.extra.sourcePathName);
@@ -1119,6 +1122,7 @@ export default class SaveParser_Write
         return value;
     }
 
+    // https://github.com/feross/buffer/blob/v6.0.3/index.js#L1440
     writeInt8(value, count = true)
     {
         let arrayBuffer = new Uint8Array(1);
@@ -1132,7 +1136,7 @@ export default class SaveParser_Write
 
         return String.fromCharCode.apply(null, arrayBuffer);
     }
-    // https://github.com/feross/buffer/blob/master/index.js#L1356
+    // https://github.com/feross/buffer/blob/v6.0.3/index.js#L1469
     writeInt(value, count = true)
     {
         let arrayBuffer = new Uint8Array(4);
