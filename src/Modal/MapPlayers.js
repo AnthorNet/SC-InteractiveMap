@@ -39,7 +39,7 @@ export default class Modal_MapPlayers
                             {
                                 let currentPlayer   = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
 
-                                    inventoryHeaderHtml.push('<li class="nav-item"><a class="nav-link ' + ((isHost === true) ? 'active' : '') + '" data-toggle="tab" href="#playerInventory-' + currentPlayer.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab">');
+                                    inventoryHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((isHost === true) ? 'active' : '') + '" data-toggle="tab" href="#playerInventory-' + currentPlayer.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab" style="cursor:pointer;">');
 
                                     if(isHost === true)
                                     {
@@ -50,7 +50,7 @@ export default class Modal_MapPlayers
                                         inventoryHeaderHtml.push('Guest #' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', ''));
                                     }
 
-                                    inventoryHeaderHtml.push('</a></li>');
+                                    inventoryHeaderHtml.push('</span></li>');
 
                                     inventoryHtml.push('<div class="tab-pane fade ' + ((isHost === true) ? 'show active' : '') + '" id="playerInventory-' + currentPlayer.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">');
 

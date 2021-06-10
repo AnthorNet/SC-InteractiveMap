@@ -3,7 +3,7 @@ import Modal_MapPlayers                         from '../Modal/MapPlayers.js';
 
 import Building_MAM                             from '../Building/MAM.js';
 
-export default class BaseLayout_Statistics_Schematics
+export default class Modal_Schematics
 {
     constructor(options)
     {
@@ -35,7 +35,7 @@ export default class BaseLayout_Statistics_Schematics
         let maxTier = 0;
             for(let schematicId in this.baseLayout.schematicsData)
             {
-                if(this.baseLayout.schematicsData[schematicId].tier !== undefined && (schematicId.startsWith('Schematic_') || schematicId.startsWith('Schem_')))
+                if(this.baseLayout.schematicsData[schematicId].tier !== undefined && (schematicId.startsWith('Schematic_') || schematicId.startsWith('Schem_') || schematicId.startsWith('/SS_Mod/Schematics/')))
                 {
                     maxTier = Math.max(maxTier, this.baseLayout.schematicsData[schematicId].tier);
                 }
@@ -44,7 +44,7 @@ export default class BaseLayout_Statistics_Schematics
         html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
         for(let i = 0; i <= maxTier; i++)
         {
-            html.push('<li class="nav-item"><a class="nav-link ' + ( (selectedTier === i) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedSchematics-' + i + '" role="tab">Tier ' + i + '</a></li>');
+            html.push('<li class="nav-item"><span class="nav-link ' + ( (selectedTier === i) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedSchematics-' + i + '" role="tab" style="cursor:pointer;">Tier ' + i + '</span></li>');
         }
         html.push('</ul>');
 
@@ -58,7 +58,7 @@ export default class BaseLayout_Statistics_Schematics
             let currentTierData   = {};
                 for(let schematicId in this.baseLayout.schematicsData)
                 {
-                    if(this.baseLayout.schematicsData[schematicId].tier !== undefined && this.baseLayout.schematicsData[schematicId].tier === i && (schematicId.startsWith('Schematic_') || schematicId.startsWith('Schem_')))
+                    if(this.baseLayout.schematicsData[schematicId].tier !== undefined && this.baseLayout.schematicsData[schematicId].tier === i && (schematicId.startsWith('Schematic_') || schematicId.startsWith('Schem_') || schematicId.startsWith('/SS_Mod/Schematics/')))
                     {
                         currentTierData[schematicId] = this.baseLayout.schematicsData[schematicId];
                     }
@@ -279,7 +279,7 @@ export default class BaseLayout_Statistics_Schematics
         html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
         for(let i = 0; i < categories.length; i++)
         {
-            html.push('<li class="nav-item"><a class="nav-link px-3 ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedMAM-' + i + '" role="tab">' + categories[i] + '</a></li>');
+            html.push('<li class="nav-item"><span class="nav-link px-3 ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedMAM-' + i + '" role="tab" style="cursor:pointer;">' + categories[i] + '</span></li>');
         }
         html.push('</ul>');
 
@@ -386,7 +386,7 @@ export default class BaseLayout_Statistics_Schematics
         html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
         for(let i = 0; i < categories.length; i++)
         {
-            html.push('<li class="nav-item"><a class="nav-link ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedAwesomeSink-' + i + '" role="tab">' + categories[i] + '</a></li>');
+            html.push('<li class="nav-item"><span class="nav-link ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedAwesomeSink-' + i + '" role="tab" style="cursor:pointer;">' + categories[i] + '</span></li>');
         }
         html.push('</ul>');
 

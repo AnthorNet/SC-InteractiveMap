@@ -18,7 +18,7 @@ export default class Modal_MapHotbars
             {
                 let isHost      = (this.baseLayout.playersState[i].pathName === this.baseLayout.saveGameParser.playerHostPathName);
 
-                hotbarHeaderHtml.push('<li class="nav-item"><a class="nav-link ' + ((isHost === true) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab">');
+                hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((isHost === true) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab" style="cursor:pointer;">');
 
                 if(isHost === true)
                 {
@@ -29,7 +29,7 @@ export default class Modal_MapHotbars
                     hotbarHeaderHtml.push('Guest #' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', ''));
                 }
 
-                hotbarHeaderHtml.push('</a></li>');
+                hotbarHeaderHtml.push('</span></li>');
                 hotbarHtml.push('<div class="tab-pane fade ' + ((isHost === true) ? 'show active' : '') + '" id="playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + this.parseHotbarsPlayer(this.baseLayout.playersState[i], options) + '</div>');
             }
 
@@ -235,10 +235,10 @@ export default class Modal_MapHotbars
             let hotbarHtml          = [];
             let showPresets         = (options.showPresets !== undefined) ? options.showPresets : false;
 
-            hotbarHeaderHtml.push('<li class="nav-item"><a class="nav-link ' + ( (showPresets === true) ? '' : 'active' ) + '" data-toggle="tab" href="#playerHotBarsPresets-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab">HotBars</a></li>');
+            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ( (showPresets === true) ? '' : 'active' ) + '" data-toggle="tab" href="#playerHotBarsPresets-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab" style="cursor:pointer;">HotBars</span></li>');
             hotbarHtml.push('<div class="tab-pane fade ' + ( (showPresets === true) ? '' : 'show active' ) + '" id="playerHotBarsPresets-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + mHotbarsHtml.join('') + '</div>');
 
-            hotbarHeaderHtml.push('<li class="nav-item"><a class="nav-link ' + ( (showPresets === true) ? 'active' : '' ) + '" data-toggle="tab" href="#playerHotBarsPresetsShow-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab">HotBar Presets</a></li>');
+            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ( (showPresets === true) ? 'active' : '' ) + '" data-toggle="tab" href="#playerHotBarsPresetsShow-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab" style="cursor:pointer;">HotBar Presets</span></li>');
             hotbarHtml.push('<div class="tab-pane fade ' + ( (showPresets === true) ? 'show active' : '' ) + '" id="playerHotBarsPresetsShow-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + mPresetHotbarsHtml.join('') + '</div>');
 
             html.push('<ul class="nav nav-tabs nav-fill" role="tablist">' + hotbarHeaderHtml.join('') + '</ul><div class="tab-content p-3 border border-top-0">' + hotbarHtml.join('') + '</div>');
