@@ -1365,10 +1365,18 @@ export default class SaveParser_Read
                     data.step  = this.readString();
                 }
             }
+            else
+            {
+                if(data.isValid  === 0)
+                {
+                    data.pathName  = this.readString();
+                }
+            }
 
         return data;
     }
 
+    // https://github.com/CoderDE/FicsIt-Networks/blob/master/Source/FicsItNetworks/FicsItKernel/Processor/Lua/LuaProcessorStateStorage.cpp#L6
     readFINLuaProcessorStateStorage()
     {
         let data            = {trace: [], reference: []};
@@ -1381,7 +1389,7 @@ export default class SaveParser_Read
         let countReference  = this.readInt();
             for(let i = 0; i < countReference; i++)
             {
-                //TODO: ???
+                data.reference.push(this.readFINNetworkTrace());
             }
 
         data.unk1 = this.readString();

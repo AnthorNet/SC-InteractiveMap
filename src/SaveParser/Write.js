@@ -1257,6 +1257,11 @@ export default class SaveParser_Write
                 saveBinary += this.writeInt(value.isValid);
             }
 
+            if(value.isValid  === 0)
+            {
+                saveBinary += this.writeString(value.pathName);
+            }
+
             if(value.isValid >= 1)
             {
                 saveBinary += this.writeString(value.levelName);
@@ -1292,7 +1297,7 @@ export default class SaveParser_Write
             saveBinary += this.writeInt(value.reference.length);
             for(let i = 0; i < value.reference.length; i++)
             {
-                //TODO: ???
+                saveBinary += this.writeFINNetworkTrace(value.reference[i]);
             }
 
         saveBinary += this.writeString(value.unk1);
