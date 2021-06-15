@@ -3,6 +3,7 @@ import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_Light                           from '../Building/Light.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
+import Building_Miner                           from '../Building/Miner.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
@@ -426,6 +427,39 @@ export default class BaseLayout_ContextMenu
                                         }
                                 }
                             }
+                    }
+
+                    if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/MinerM') === true) // No k, because minermk1 has an uppercase one :D
+                    {
+                        let usePool     = Building_Miner.availableMiners;
+                        let poolIndex   = usePool.indexOf(currentObject.className);
+                            if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
+                            {
+                                contextMenu.push({separator: true});
+
+                                if(poolIndex > 0)
+                                {
+                                    let downgradeData = this.baseLayout.getBuildingDataFromClassName(usePool[poolIndex - 1]);
+                                        if(downgradeData !== null)
+                                        {
+                                            contextMenu.push({
+                                                text: 'Downgrade to "' + downgradeData.name + '"',
+                                                callback: Building_Miner.downgradeMiner
+                                            });
+                                        }
+                                }
+                                if(poolIndex < (usePool.length - 1))
+                                {
+                                    let upgradeData = this.baseLayout.getBuildingDataFromClassName(usePool[poolIndex + 1]);
+                                        if(upgradeData !== null)
+                                        {
+                                            contextMenu.push({
+                                                text: 'Upgrade to "' + upgradeData.name + '"',
+                                                callback: Building_Miner.upgradeMiner
+                                            });
+                                        }
+                                }
+                        }
                     }
 
                     if(['/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C', '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'].includes(currentObject.className) === false)

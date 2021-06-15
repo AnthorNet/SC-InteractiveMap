@@ -8,6 +8,16 @@ export default class BaseLayout_Selection_Copy
         this.baseLayout         = options.baseLayout;
         this.markersSelected    = options.markersSelected;
 
+        let header              = this.baseLayout.saveGameParser.getHeader();
+            this.clipboard      = {
+                saveVersion             : header.saveVersion,
+                buildVersion            : header.buildVersion,
+                data                    : [],
+                pipes                   : {},
+                hiddenConnections       : {}
+            };
+            this.baseLayout.clipboard = null;
+
         if(typeof gtag === 'function')
         {
             gtag('event', 'Copy', {event_category: 'Selection'});
@@ -18,19 +28,8 @@ export default class BaseLayout_Selection_Copy
 
     copy()
     {
-        this.baseLayout.clipboard = null;
-
         if(this.markersSelected)
         {
-            let header              = this.baseLayout.saveGameParser.getHeader();
-            let clipboard           = {
-                saveVersion             : header.saveVersion,
-                buildVersion            : header.buildVersion,
-                data                    : [],
-                pipes                   : {},
-                hiddenConnections       : {}
-            };
-
             let availablePathName   = [];
 
             // Filter not wanted
@@ -137,7 +136,7 @@ export default class BaseLayout_Selection_Copy
                                 let trainIdentifierNewObject          = {};
                                     trainIdentifierNewObject.parent   = JSON.parse(JSON.stringify(trainIdentifier));
 
-                                    clipboard.data.push(trainIdentifierNewObject);
+                                    this.clipboard.data.push(trainIdentifierNewObject);
                                     availablePathName.push(trainIdentifierNewObject.parent.pathName);
                             }
                     }
@@ -167,7 +166,7 @@ export default class BaseLayout_Selection_Copy
                                                     }
                                                 }
 
-                                            clipboard.data.push(extraPropertyNewObject);
+                                            this.clipboard.data.push(extraPropertyNewObject);
                                             availablePathName.push(extraPropertyNewObject.parent.pathName);
                                         }
                                 }
@@ -224,16 +223,16 @@ export default class BaseLayout_Selection_Copy
                                 }
                         }
 
-                    clipboard.data.push(newDataObject);
+                    this.clipboard.data.push(newDataObject);
                     availablePathName.push(newDataObject.parent.pathName);
                 }
             }
 
-            for(let i = clipboard.data.length - 1; i >= 0; i--)
+            for(let i = this.clipboard.data.length - 1; i >= 0; i--)
             {
-                if(clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
+                if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {
-                    let mControlledConnection = this.baseLayout.getObjectProperty(clipboard.data[i].parent, 'mControlledConnection');
+                    let mControlledConnection = this.baseLayout.getObjectProperty(this.clipboard.data[i].parent, 'mControlledConnection');
                         if(mControlledConnection !== null)
                         {
                             let testPathName    = mControlledConnection.pathName.split('.');
@@ -242,16 +241,16 @@ export default class BaseLayout_Selection_Copy
 
                             if(availablePathName.includes(testPathName) === false)
                             {
-                                clipboard.data.splice(i, 1);
+                                this.clipboard.data.splice(i, 1);
                             }
                         }
                 }
 
-                if(clipboard.data[i].children !== undefined)
+                if(this.clipboard.data[i].children !== undefined)
                 {
-                    for(let j = 0; j < clipboard.data[i].children.length; j++)
+                    for(let j = 0; j < this.clipboard.data[i].children.length; j++)
                     {
-                        let currentChildren = clipboard.data[i].children[j];
+                        let currentChildren = this.clipboard.data[i].children[j];
 
                         // Remove belt connection for objects that aren't in the loop...
                         for(let k = 0; k < this.baseLayout.availableBeltConnection.length; k++)
@@ -351,13 +350,13 @@ export default class BaseLayout_Selection_Copy
             }
 
             // Handle pipes circuits
-            for(let i = 0; i < clipboard.data.length; i++)
+            for(let i = 0; i < this.clipboard.data.length; i++)
             {
-                if(clipboard.data[i].children !== undefined)
+                if(this.clipboard.data[i].children !== undefined)
                 {
-                    for(let j = 0; j < clipboard.data[i].children.length; j++)
+                    for(let j = 0; j < this.clipboard.data[i].children.length; j++)
                     {
-                        let currentChildren = clipboard.data[i].children[j];
+                        let currentChildren = this.clipboard.data[i].children[j];
 
                         for(let k = 0; k < this.baseLayout.availablePipeConnection.length; k++)
                         {
@@ -398,9 +397,9 @@ export default class BaseLayout_Selection_Copy
 
                                     if(pipeNetworkId !== null && this.baseLayout.saveGamePipeNetworks[pipeNetworkId] !== undefined)
                                     {
-                                        if(clipboard.pipes[pipeNetworkId] === undefined)
+                                        if(this.clipboard.pipes[pipeNetworkId] === undefined)
                                         {
-                                            clipboard.pipes[pipeNetworkId] = {fluid: null, interface: []};
+                                             this.clipboard.pipes[pipeNetworkId] = {fluid: null, interface: []};
                                         }
 
                                         // Check if that pathName is in the current pipe network
@@ -412,7 +411,7 @@ export default class BaseLayout_Selection_Copy
                                                 {
                                                     if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
                                                     {
-                                                        clipboard.pipes[pipeNetworkId].fluid = currentPipeNetwork.properties[n].value.pathName;
+                                                         this.clipboard.pipes[pipeNetworkId].fluid = currentPipeNetwork.properties[n].value.pathName;
                                                     }
                                                     if(currentPipeNetwork.properties[n].name === 'mFluidIntegrantScriptInterfaces')
                                                     {
@@ -420,16 +419,16 @@ export default class BaseLayout_Selection_Copy
                                                         {
                                                             if(currentPipeNetwork.properties[n].value.values[o].pathName === currentChildren.pathName)
                                                             {
-                                                                if(clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.pathName) === false)
+                                                                if(this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.pathName) === false)
                                                                 {
-                                                                    clipboard.pipes[pipeNetworkId].interface.push(currentChildren.pathName);
+                                                                    this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.pathName);
                                                                 }
                                                             }
                                                             if(currentPipeNetwork.properties[n].value.values[o].pathName === currentChildren.outerPathName)
                                                             {
-                                                                if(clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.outerPathName) === false)
+                                                                if(this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.outerPathName) === false)
                                                                 {
-                                                                    clipboard.pipes[pipeNetworkId].interface.push(currentChildren.outerPathName);
+                                                                    this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.outerPathName);
                                                                 }
                                                             }
 
@@ -439,9 +438,9 @@ export default class BaseLayout_Selection_Copy
                                                                 {
                                                                     if(currentPipeNetwork.properties[n].value.values[o].pathName === currentChildren.properties[m].value.pathName)
                                                                     {
-                                                                        if(clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.properties[m].value.pathName) === false)
+                                                                        if(this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.properties[m].value.pathName) === false)
                                                                         {
-                                                                            clipboard.pipes[pipeNetworkId].interface.push(currentChildren.properties[m].value.pathName);
+                                                                            this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.properties[m].value.pathName);
                                                                         }
                                                                     }
                                                                 }
@@ -459,13 +458,13 @@ export default class BaseLayout_Selection_Copy
             }
 
             // Grab wires when needed, or delete power connection...
-            for(let i = 0; i < clipboard.data.length; i++)
+            for(let i = 0; i < this.clipboard.data.length; i++)
             {
-                if(clipboard.data[i].children !== undefined)
+                if(this.clipboard.data[i].children !== undefined)
                 {
-                    for(let j = 0; j < clipboard.data[i].children.length; j++)
+                    for(let j = 0; j < this.clipboard.data[i].children.length; j++)
                     {
-                        let currentChildren = clipboard.data[i].children[j];
+                        let currentChildren = this.clipboard.data[i].children[j];
 
                         for(let k = 0; k < this.baseLayout.availablePowerConnection.length; k++)
                         {
@@ -512,7 +511,7 @@ export default class BaseLayout_Selection_Copy
                                                 {
                                                     if(availablePathName.includes(currentPowerline.pathName) === false)
                                                     {
-                                                        clipboard.data.push({parent: currentPowerline, children: []});
+                                                        this.clipboard.data.push({parent: currentPowerline, children: []});
                                                         availablePathName.push(currentPowerline.pathName);
                                                     }
                                                 }
@@ -546,9 +545,9 @@ export default class BaseLayout_Selection_Copy
                                                             }
                                                         }
 
-                                                    if(clipboard.hiddenConnections[currentHiddenConnection.pathName] === undefined)
+                                                    if(this.clipboard.hiddenConnections[currentHiddenConnection.pathName] === undefined)
                                                     {
-                                                        clipboard.hiddenConnections[currentHiddenConnection.pathName] = currentHiddenConnection;
+                                                        this.clipboard.hiddenConnections[currentHiddenConnection.pathName] = currentHiddenConnection;
                                                     }
                                                 }
                                         }
@@ -565,18 +564,18 @@ export default class BaseLayout_Selection_Copy
             {
                 let xOffset = -150.09375;
                 let data    = {pipes: []};
-                for(let i = 0; i < clipboard.data.length; i++)
+                for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    if(clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C')
+                    if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C')
                     {
-                        let mSplineData = this.baseLayout.getObjectProperty(clipboard.data[i].parent, 'mSplineData');
+                        let mSplineData = this.baseLayout.getObjectProperty(this.clipboard.data[i].parent, 'mSplineData');
 
                             if(mSplineData !== null)
                             {
                                 let currentPipe         = {
-                                    x: clipboard.data[i].parent.transform.translation[0] + xOffset - (Math.round((clipboard.data[i].parent.transform.translation[0] + xOffset) / 800) * 800),
-                                    y: clipboard.data[i].parent.transform.translation[1] + 57400,
-                                    z: clipboard.data[i].parent.transform.translation[2] - 1975,
+                                    x: this.clipboard.data[i].parent.transform.translation[0] + xOffset - (Math.round((this.clipboard.data[i].parent.transform.translation[0] + xOffset) / 800) * 800),
+                                    y: this.clipboard.data[i].parent.transform.translation[1] + 57400,
+                                    z: this.clipboard.data[i].parent.transform.translation[2] - 1975,
                                     spline: []
                                 };
 
@@ -607,17 +606,17 @@ export default class BaseLayout_Selection_Copy
 
             if(this.baseLayout.useDebug === true)
             {
-                console.log('COPY', clipboard);
+                console.log('COPY', this.clipboard);
             }
 
             // Store boundaries
             let selectionBoundaries = this.baseLayout.getSelectionBoundaries(this.markersSelected);
-                clipboard.minX      = selectionBoundaries.minX;
-                clipboard.maxX      = selectionBoundaries.maxX;
-                clipboard.minY      = selectionBoundaries.minY;
-                clipboard.maxY      = selectionBoundaries.maxY;
+                this.clipboard.minX      = selectionBoundaries.minX;
+                this.clipboard.maxX      = selectionBoundaries.maxX;
+                this.clipboard.minY      = selectionBoundaries.minY;
+                this.clipboard.maxY      = selectionBoundaries.maxY;
 
-            this.baseLayout.clipboard  = JSON.parse(JSON.stringify(clipboard));
+            this.baseLayout.clipboard  = JSON.parse(JSON.stringify(this.clipboard));
         }
 
         this.baseLayout.cancelSelectMultipleMarkers();

@@ -801,7 +801,7 @@ export default class BaseLayout
             return resolve();
         }
 
-        if(currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C')
+        if(currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C' || currentObject.className === '/CrashSiteBeacons/BP_Beacon_Child.BP_Beacon_Child_C')
         {
             let building = this.addPlayerBeacon(currentObject);
                 if(resolve === false)
@@ -6147,13 +6147,15 @@ export default class BaseLayout
 
                 inputOptions.push({group: 'Overclocking', text: 'Offset selected items clock speed', value: 'updateClockSpeed'});
 
-                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected belts/lifts', value: 'downgradeBelts'});
-                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected power poles', value: 'downgradePowerPoles'});
-                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected pipelines/pumps', value: 'downgradePipes'});
+                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected belts/lifts', value: 'downgradeConveyor'});
+                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected power poles', value: 'downgradePowerPole'});
+                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected pipelines/pumps', value: 'downgradePipeline'});
+                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected miners', value: 'downgradeMiners'});
 
-                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected belts/lifts', value: 'upgradeBelts'});
-                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected power poles', value: 'upgradePowerPoles'});
-                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'upgradePipes'});
+                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected belts/lifts', value: 'upgradeConveyor'});
+                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected power poles', value: 'upgradePowerPole'});
+                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'upgradePipeline'});
+                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected miners', value: 'upgradeMiners'});
             }
 
             inputOptions.push({group: 'Foundations', text: 'Fill selection with...', value: 'fillSelection'});
@@ -6360,20 +6362,17 @@ export default class BaseLayout
                                 markersSelected : this.markersSelected
                             });
 
-                    case 'downgradeBelts':
-                        return this.downgradeSelection('downgradeConveyor');
-                    case 'upgradeBelts':
-                        return this.upgradeSelection('upgradeConveyor');
+                    case 'downgradeConveyor':
+                    case 'downgradePowerPole':
+                    case 'downgradePipeline':
+                    case 'downgradeMiners':
+                        return this.downgradeSelection(form.form);
 
-                    case 'downgradePowerPoles':
-                        return this.downgradeSelection('downgradePowerPole');
-                    case 'upgradePowerPoles':
-                        return this.upgradeSelection('upgradePowerPole');
-
-                    case 'downgradePipes':
-                        return this.downgradeSelection('downgradePipeline');
-                    case 'upgradePipes':
-                        return this.upgradeSelection('upgradePipeline');
+                    case 'upgradeConveyor':
+                    case 'upgradePowerPole':
+                    case 'upgradePipeline':
+                    case 'upgradeMiners':
+                        return this.upgradeSelection(form.form);
 
                     case 'updateClockSpeed':
                         Modal.form({
