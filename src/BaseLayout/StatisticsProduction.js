@@ -102,8 +102,13 @@ export default class BaseLayout_Statistics_Production
 
                                         if(this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type !== undefined)
                                         {
-                                            itemClassName   = this.baseLayout.itemsData[this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type].className;
-                                            itemType        = this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type;
+                                            itemType = this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type;
+                                            if(itemType === 'Desc_LiquidOilWell_C')
+                                            {
+                                                itemType = 'Desc_LiquidOil_C';
+                                            }
+
+                                            itemClassName   = this.baseLayout.itemsData[itemType].className;
                                         }
                                     }
 
