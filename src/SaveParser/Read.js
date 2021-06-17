@@ -774,6 +774,7 @@ export default class SaveParser_Read
                                 case 'CompletedResearch':
                                 // MODS
                                 case 'LampGroup':
+                                case 'STRUCT_ProgElevator_Floor':
                                     let subStructProperties = [];
                                         while(true)
                                         {
@@ -800,6 +801,7 @@ export default class SaveParser_Read
                         }
 
                         break;
+
                     default:
                         Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                         if(typeof Sentry !== 'undefined')
