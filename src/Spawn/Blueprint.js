@@ -1,6 +1,7 @@
-/* global Infinity, gtag, L, streamSaver, pako */
+/* global Infinity, gtag, L */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import Modal                                    from '../Modal.js';
+import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class Spawn_Blueprint
 {

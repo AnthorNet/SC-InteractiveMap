@@ -1,5 +1,6 @@
-/* global pako, Sentry */
+/* global Sentry */
 import Modal                                    from '../Modal.js';
+import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class SaveParser_Read
 {
@@ -117,6 +118,14 @@ export default class SaveParser_Read
             catch(err)
             {
                 console.log('INFLATE ERROR', err);
+                alert('Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.')
+                if(typeof Sentry !== 'undefined')
+                {
+                    Sentry.setContext('pako', pako);
+                }
+                throw new Error(err);
+
+                window.SCIM.hideLoader();
                 return;
             }
 
