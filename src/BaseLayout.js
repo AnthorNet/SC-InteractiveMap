@@ -34,6 +34,7 @@ import Building_FrackingSmasher                 from './Building/FrackingSmasher
 import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_Light                           from './Building/Light.js';
 import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
+import Building_RailroadTrack                   from './Building/RailroadTrack.js';
 import Building_TrainStation                    from './Building/TrainStation.js';
 
 import Spawn_Fill                               from './Spawn/Fill.js';
@@ -5850,6 +5851,10 @@ export default class BaseLayout
                 {
                     Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
                 }
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C')
+                {
+                    Building_RailroadTrack.bindTooltip(this, currentObject, tooltipOptions);
+                }
 
             e.target.closeTooltip.bind(this);
             e.target.bindTooltip(content, tooltipOptions);
@@ -5864,6 +5869,10 @@ export default class BaseLayout
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {
                     Building_RailroadSwitchControl.unbindTooltip(this, currentObject);
+                }
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C')
+                {
+                    Building_RailroadTrack.unbindTooltip(this, currentObject);
                 }
             }
 

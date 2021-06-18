@@ -1,49 +1,36 @@
 /* global L */
 
-export default class Building_RailroadSwitchControl
+export default class Building_RailroadTrack
 {
     static getConnectedComponents(baseLayout, currentObject)
     {
-        let mControlledConnection = baseLayout.getObjectProperty(currentObject, 'mControlledConnection');
-            if(mControlledConnection !== null)
-            {
-                let trackConnection1 = baseLayout.saveGameParser.getTargetObject(mControlledConnection.pathName);
-                    if(trackConnection1 !== null)
-                    {
-                        let mConnectedComponents    = baseLayout.getObjectProperty(trackConnection1, 'mConnectedComponents');
-                        let mSwitchPosition         = baseLayout.getObjectProperty(trackConnection1, 'mSwitchPosition');
-                        let connectedComponents     = [trackConnection1];
-
-                            if(mConnectedComponents !== null && mSwitchPosition !== null && mConnectedComponents.values[mSwitchPosition] !== undefined)
-                            {
-                                let trackConnection2 = baseLayout.saveGameParser.getTargetObject(mConnectedComponents.values[mSwitchPosition].pathName);
-                                    if(trackConnection2 !== null)
+        if(currentObject.children !== undefined)
+        {
+            let connectedComponents     = [];
+                for(let i = 0; i < currentObject.children.length; i++)
+                {
+                    let trackConnection1 = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                        if(trackConnection1 !== null)
+                        {
+                            let mConnectedComponents    = baseLayout.getObjectProperty(trackConnection1, 'mConnectedComponents');
+                                if(mConnectedComponents !== null)
+                                {
+                                    for(let j = 0; j < mConnectedComponents.values.length; j++)
                                     {
-                                        connectedComponents.push(trackConnection2);
+                                        let trackConnection2 = baseLayout.saveGameParser.getTargetObject(mConnectedComponents.values[j].pathName);
+                                            if(trackConnection2 !== null)
+                                            {
+                                                connectedComponents.push(trackConnection2);
+                                            }
                                     }
-                            }
+                                }
+                        }
+                }
 
-                        return connectedComponents;
-                    }
-            }
+            return connectedComponents;
+        }
 
         return null;
-    }
-
-    /**
-     * CONTEXT MENU
-     */
-    static addContextMenu(baseLayout, currentObject, contextMenu)
-    {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-
-            contextMenu.push({
-                text: 'Update "' + buildingData.name + '" connected railway',
-                callback: Building_RailroadSwitchControl.updateConnectedComponent
-            });
-            contextMenu.push({separator: true});
-
-        return contextMenu;
     }
 
     /**
@@ -54,7 +41,7 @@ export default class Building_RailroadSwitchControl
         tooltipOptions.direction    = 'bottom';
         tooltipOptions.opacity      = 0.7;
 
-        let connectedComponents = Building_RailroadSwitchControl.getConnectedComponents(baseLayout, currentObject);
+        let connectedComponents = Building_RailroadTrack.getConnectedComponents(baseLayout, currentObject);
             if(connectedComponents !== null)
             {
                 let markersSelected = [];
@@ -92,7 +79,7 @@ export default class Building_RailroadSwitchControl
     }
     static unbindTooltip(baseLayout, currentObject)
     {
-        let connectedComponents = Building_RailroadSwitchControl.getConnectedComponents(baseLayout, currentObject);
+        let connectedComponents = Building_RailroadTrack.getConnectedComponents(baseLayout, currentObject);
             if(connectedComponents !== null)
             {
                 for(let i = 0; i < connectedComponents.length; i++)
