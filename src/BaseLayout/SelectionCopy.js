@@ -478,7 +478,7 @@ export default class BaseLayout_Selection_Copy
                                             let keepPowerLine    = true;
                                             let currentPowerline = this.baseLayout.saveGameParser.getTargetObject(mWires.values[m].pathName);
 
-                                                if(currentPowerline !== null)
+                                                if(currentPowerline !== null && currentPowerline.extra !== undefined)
                                                 {
                                                     let testSourcePathName  = currentPowerline.extra.sourcePathName.split('.');
                                                         testSourcePathName.pop();
