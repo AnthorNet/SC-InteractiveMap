@@ -825,9 +825,12 @@ export default class BaseLayout_Tooltip
                         content.push('</div>');
                     }
 
-                    content.push('<div class="' + colSize + '">');
-                        content.push(this.setStationLoadMode(currentObject));
-                    content.push('</div>');
+                    if(buildingData.category === 'dockstation')
+                    {
+                        content.push('<div class="' + colSize + '">');
+                            content.push(this.setStationLoadMode(currentObject));
+                        content.push('</div>');
+                    }
 
                 content.push('</div>');
 
@@ -838,6 +841,8 @@ export default class BaseLayout_Tooltip
 
                     if(inventory !== null && inventory.length > 0 && inventory[0] !== null)
                     {
+                        content.push('<div style="width: 230px;height: 240px;">');
+
                         let itemType        = this.baseLayout.getItemDataFromClassName(inventory[0].className);
                         let currentFluid    = inventory[0].qty;
 
@@ -855,8 +860,10 @@ export default class BaseLayout_Tooltip
 
                         if(itemType !== null)
                         {
-                            content.push('<div class="pt-3"><strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentFluid / 100) / 10) + ' m³ of ' + itemType.name + '</strong></div>');
+                            content.push('<div style="padding-top: 225px;"><strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentFluid / 100) / 10) + ' m³ of ' + itemType.name + '</strong></div>');
                         }
+
+                        content.push('</div>');
                     }
                 }
             }
@@ -1856,7 +1863,8 @@ export default class BaseLayout_Tooltip
 
             content.push('<div style="position: absolute;margin-top: ' + 32 * imageRatio + 'px;margin-left: ' + 32 * imageRatio + 'px;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;background-color: ' + color + ';border-radius: 50%;opacity: ' + volumeOpacity + ';"></div>');
             content.push('<div style="position: absolute;margin-top: ' + 32 * imageRatio + 'px;margin-left: ' + 32 * imageRatio + 'px;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;border-radius: 50%;overflow: hidden;">');
-                content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/PROT_TX_Gas_01.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;" />');
+                content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/PROT_TX_Gas_01.png?v=' + this.baseLayout.scriptVersion + '" style="position: absolute;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;animation: loader-clockwise 40s infinite linear;" />');
+                content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/PROT_TX_Gas_01.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;animation: loader-counter-clockwise 60s infinite linear;" />');
             content.push('</div>');
             content.push('<div style="position: absolute;width: ' + backgroundImageSize + 'px;height: ' + backgroundImageSize + 'px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_GasModule_Small.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + backgroundImageSize + 'px;height: ' + backgroundImageSize + 'px;" /></div>');
 
