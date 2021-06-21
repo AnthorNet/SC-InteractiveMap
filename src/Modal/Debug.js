@@ -65,13 +65,13 @@ export default class Modal_Debug
             }
 
             html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
-            html.push('<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#advancedDebugObject-MAIN" role="tab">Main object</a></li>');
+            html.push('<li class="nav-item"><span class="nav-link active" data-toggle="tab" href="#advancedDebugObject-MAIN" role="tab" style="cursor:pointer;">Main object</span></li>');
 
             if(currentObject.children !== undefined)
             {
                 for(let i = 0; i < currentObject.children.length; i++)
                 {
-                    html.push('<li class="nav-item"><a class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '" role="tab">.' + currentObject.children[i].pathName.split('.').pop() + '</a></li>');
+                    html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '" role="tab" style="cursor:pointer;">.' + currentObject.children[i].pathName.split('.').pop() + '</span></li>');
 
                     let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
                         if(currentChildren !== null)
@@ -108,7 +108,7 @@ export default class Modal_Debug
 
             for(let j = 0; j < extraPathName.length; j++)
             {
-                html.push('<li class="nav-item"><a class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '" role="tab">' + extraPathName[j].replace('Persistent_Level:', '') + '</a></li>');
+                html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '" role="tab" style="cursor:pointer;">' + extraPathName[j].replace('Persistent_Level:', '') + '</span></li>');
             }
 
             html.push('</ul>');
