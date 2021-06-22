@@ -1251,34 +1251,19 @@ export default class SaveParser_Write
     writeFINNetworkTrace(value)
     {
         let saveBinary  = '';
+            saveBinary += this.writeString(value.levelName);
+            saveBinary += this.writeString(value.pathName);
 
-            if(value.isValid <= 1)
+            if(value.prev !== undefined)
             {
-                saveBinary += this.writeInt(value.isValid);
+                saveBinary += this.writeInt(1);
+                saveBinary += this.writeFINNetworkTrace(value.prev);
             }
 
-            if(value.isValid  === 0)
+            if(value.step !== undefined)
             {
-                saveBinary += this.writeString(value.pathName);
-            }
-
-            if(value.isValid >= 1)
-            {
-                saveBinary += this.writeString(value.levelName);
-                saveBinary += this.writeString(value.pathName);
-                saveBinary += this.writeInt(value.hasPrev);
-
-                if(value.hasPrev === 1)
-                {
-                    saveBinary += this.writeFINNetworkTrace(value.prev);
-                }
-
-                saveBinary += this.writeInt(value.hasStep);
-
-                if(value.hasStep === 1)
-                {
-                    saveBinary += this.writeString(value.step);
-                }
+                saveBinary += this.writeInt(1);
+                saveBinary += this.writeString(value.step);
             }
 
         return saveBinary;
@@ -1297,7 +1282,8 @@ export default class SaveParser_Write
             saveBinary += this.writeInt(value.reference.length);
             for(let i = 0; i < value.reference.length; i++)
             {
-                saveBinary += this.writeFINNetworkTrace(value.reference[i]);
+                saveBinary += this.writeString(value.reference[i].levelName);
+                saveBinary += this.writeString(value.reference[i].pathName);
             }
 
         saveBinary += this.writeString(value.unk1);

@@ -488,14 +488,13 @@ export default class SaveParser_Read
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
                     this.saveParser.objects[objectKey].extra    = {count: this.readInt(), objects: []};
                     let objectLength                            = this.readInt();
-
-                    for(let i = 0; i < objectLength; i++)
-                    {
-                        this.saveParser.objects[objectKey].extra.objects.push({
-                            name   : this.readString(),
-                            unk    : this.readHex(53)
-                        });
-                    }
+                        for(let i = 0; i < objectLength; i++)
+                        {
+                            this.saveParser.objects[objectKey].extra.objects.push({
+                                name   : this.readString(),
+                                unk    : this.readHex(53)
+                            });
+                        }
 
                     break;
                 default:
@@ -1351,38 +1350,19 @@ export default class SaveParser_Read
     readFINNetworkTrace()
     {
         let data            = {};
-            data.isValid    = this.readInt();
+            data.levelName  = this.readString();
+            data.pathName   = this.readString();
 
-            if(data.isValid >= 1)
-            {
-                if(data.isValid > 1) // Need to assume that isValid don't exists and skip if not BOOL
-                {
-                    this.currentByte -= 4;
-                }
-
-                data.levelName = this.readString();
-                data.pathName  = this.readString();
-                data.hasPrev   = this.readInt();
-
-                if(data.hasPrev === 1)
+            let hasPrev = this.readInt();
+                if(hasPrev === 1)
                 {
                     data.prev  = this.readFINNetworkTrace();
                 }
-
-                data.hasStep   = this.readInt();
-
-                if(data.hasStep === 1)
+            let hasStep = this.readInt();
+                if(hasStep === 1)
                 {
                     data.step  = this.readString();
                 }
-            }
-            else
-            {
-                if(data.isValid  === 0)
-                {
-                    data.pathName  = this.readString();
-                }
-            }
 
         return data;
     }
@@ -1400,7 +1380,10 @@ export default class SaveParser_Read
         let countReference  = this.readInt();
             for(let i = 0; i < countReference; i++)
             {
-                data.reference.push(this.readFINNetworkTrace());
+                data.reference.push({
+                    levelName: this.readString(),
+                    pathName: this.readString()
+                });
             }
 
         data.unk1 = this.readString();
