@@ -204,7 +204,7 @@ export default class BaseLayout
         $('#playerModsLayer .col-12').empty();
         $('#statisticsModal').off('show.bs.modal');
         $('#statisticsModal').off('hide.bs.modal');
-        $('#statisticsModal a[data-toggle="tab"]').off('shown.bs.tab');
+        $('#statisticsModal span[data-toggle="tab"]').off('shown.bs.tab');
         $('#researchModal').off('show.bs.modal');
         $('#optionsModal').off('show.bs.modal');
         $('#buildingsModal').off('show.bs.modal');
@@ -4928,6 +4928,21 @@ export default class BaseLayout
             {
                 this.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'BoolProperty');
                 marker.relatedTarget.setOpacity(window.SCIM.collectedOpacity);
+
+                /*
+                let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected')) - 1;
+                let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
+                    $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
+
+                    if(dataCollected === 0)
+                    {
+                        $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataTotal);
+                    }
+                    else
+                    {
+                        $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                    }
+                */
             }
             else
             {

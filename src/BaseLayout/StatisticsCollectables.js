@@ -37,12 +37,50 @@ export default class BaseLayout_Statistics_Collectables
                                             }
                                             if(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName] !== undefined)
                                             {
-                                                let updatedOpacity = 1;
+                                                if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
+                                                {
+                                                    let updatedOpacity = 1;
+                                                        if(collectedStatus === true)
+                                                        {
+                                                            updatedOpacity = window.SCIM.collectedOpacity;
+                                                        }
+                                                        this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(updatedOpacity);
+                                                }
+                                                else
+                                                {
                                                     if(collectedStatus === true)
                                                     {
-                                                        updatedOpacity = window.SCIM.collectedOpacity;
+                                                        if(this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].hasLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]))
+                                                        {
+                                                            this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].removeLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]);
+
+                                                            let dataCollected   = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected')) + 1;
+                                                            let dataTotal       = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-total'));
+                                                                $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', dataCollected);
+                                                                $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                                                        }
                                                     }
-                                                    this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(updatedOpacity);
+                                                    else
+                                                    {
+                                                        if(this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].hasLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]) === false)
+                                                        {
+                                                            this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].addLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]);
+
+                                                            let dataCollected   = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected')) - 1;
+                                                            let dataTotal       = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-total'));
+                                                                $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', dataCollected);
+
+                                                                if(dataCollected === 0)
+                                                                {
+                                                                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(dataTotal);
+                                                                }
+                                                                else
+                                                                {
+                                                                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                                                                }
+                                                        }
+                                                    }
+                                                }
                                             }
                                     }
                                 }
@@ -61,48 +99,6 @@ export default class BaseLayout_Statistics_Collectables
 
         let html                = [];
         let playerCollectables  = this.get();
-
-        for(let className in playerCollectables)
-        {
-            playerCollectables[className].used = 0;
-
-            if(typeof this.baseLayout.satisfactoryMap.mapOptions !== 'undefined' && this.baseLayout.satisfactoryMap.mapOptions !== undefined && this.baseLayout.satisfactoryMap.mapOptions !== null)
-            {
-                for(let i = 0; i < this.baseLayout.satisfactoryMap.mapOptions.length; i++)
-                {
-                    for(let j = 0; j < this.baseLayout.satisfactoryMap.mapOptions[i].options.length; j++)
-                    {
-                        for(let k = 0; k < this.baseLayout.satisfactoryMap.mapOptions[i].options[j].options.length; k++)
-                        {
-                            if(this.baseLayout.satisfactoryMap.mapOptions[i].options[j].options[k].layerId === playerCollectables[className].layerId)
-                            {
-                                playerCollectables[className].name      = this.baseLayout.satisfactoryMap.mapOptions[i].options[j].options[k].name;
-                                playerCollectables[className].image     = this.baseLayout.satisfactoryMap.mapOptions[i].options[j].options[k].icon;
-                                playerCollectables[className].markers   = this.baseLayout.satisfactoryMap.mapOptions[i].options[j].options[k].markers;
-
-                                for(let m = 0; m < playerCollectables[className].markers.length; m++)
-                                {
-                                    let collectedStatus = this.getStatusFromPathName(playerCollectables[className].markers[m].pathName, className);
-                                        if(collectedStatus === true)
-                                        {
-                                            playerCollectables[className].used++;
-                                        }
-                                        if(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName] !== undefined)
-                                        {
-                                            let updatedOpacity = 1;
-                                                if(collectedStatus === true)
-                                                {
-                                                    updatedOpacity = window.SCIM.collectedOpacity;
-                                                }
-                                                this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(updatedOpacity);
-                                        }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         html.push('<table class="table mb-0">');
 
@@ -130,7 +126,7 @@ export default class BaseLayout_Statistics_Collectables
 
                 html.push('</tr>');
                 html.push('<tr>');
-                html.push('<td colspan="3" class="pt-0"><div class="progress"><div class="progress-bar bg-secondary" role="progressbar" style="width: ' + (currentItem.used / currentItem.markers.length * 100) + '%"></div></div></td>');
+                html.push('<td colspan="3" class="pt-0"><div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: ' + (currentItem.used / currentItem.markers.length * 100) + '%"></div></div></td>');
                 html.push('</table></td>');
                 html.push('</tr>');
             }

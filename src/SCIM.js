@@ -100,6 +100,8 @@ export default class SCIM
 
     drawNewBaseLayout(options)
     {
+        $('#resetPreviousCollected').hide();
+
         if(this.baseLayout !== null)
         {
             this.baseLayout.reset();

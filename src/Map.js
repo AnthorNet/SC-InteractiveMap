@@ -221,7 +221,7 @@ export default class Map
             this.mappingBoundNorth     -= this.northOffset;
             this.mappingBoundSouth     += this.northOffset;
             this.backgroundSize        += this.extraBackgroundSize * 2;
-            this.zoom                   = this.zoomLevel(); //TODO: Rename to zoomRatio, not realted at a ll to zoom...
+            this.zoom                   = this.zoomLevel(); //TODO: Rename to zoomRatio, not related at all to zoom...
 
         // Add the base layers
         let baseLayersOptions = {
@@ -434,12 +434,6 @@ export default class Map
                                         let explodedPathName = marker.pathName.split('.');
                                             tooltip.push('<strong>' + option.name + ' (' + explodedPathName.pop() + ')</strong><br />');
 
-                                        let isCollected = this.collectedHardDrives.isCollected(marker.pathName);
-                                            if(isCollected === true)
-                                            {
-                                                currentMarkerOptions.opacity = this.collectedOpacity;
-                                            }
-
                                         if(marker.powerNeeded !== undefined && marker.powerNeeded !== false)
                                         {
                                             tooltip.push('Power needed: ' + new Intl.NumberFormat(this.language).format(marker.powerNeeded) + ' MW<br />');
@@ -560,7 +554,25 @@ export default class Map
 
                                     if(marker.pathName !== undefined)
                                     {
-                                        this.collectableMarkers[marker.pathName] = currentMarker;
+                                        this.collectableMarkers[marker.pathName]                    = currentMarker;
+                                        this.collectableMarkers[marker.pathName].options.layerId    = option.layerId;
+
+                                        if(option.layerId === 'hardDrives')
+                                        {
+                                            let isCollected = this.collectedHardDrives.isCollected(marker.pathName);
+                                                if(isCollected === true)
+                                                {
+                                                    $('#resetPreviousCollected').show();
+                                                    this.collectableMarkers[marker.pathName].setOpacity(this.collectedOpacity);
+                                                    //this.availableLayers[option.layerId].removeLayer(this.collectableMarkers[marker.pathName]);
+
+                                                    // Update badge!
+                                                    let dataCollected   = parseInt($('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-collected')) + 1;
+                                                    let dataTotal       = parseInt($('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-total'));
+                                                        $('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-collected', dataCollected);
+                                                        $('.updateLayerState[data-id="' + option.layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                                                }
+                                        }
                                     }
                                 }
                             }
@@ -760,6 +772,35 @@ export default class Map
                     }
                 }
             }.bind(this));
+        }.bind(this));
+
+        $('#resetPreviousCollected button').click(function(e){
+            let collected = this.collectedHardDrives.getCollectedHardDrives();
+                for(let i = 0; i < collected.length; i++)
+                {
+                    if(this.collectableMarkers[collected[i]] !== undefined)
+                    {
+                        let layerId = this.collectableMarkers[collected[i]].options.layerId;
+                            //this.collectableMarkers[collected[i]].addTo(this.availableLayers[layerId]);
+                            this.collectableMarkers[collected[i]].setOpacity(1);
+
+                            let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected')) - 1;
+                            let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
+                                $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
+
+                                if(dataCollected === 0)
+                                {
+                                    $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataTotal);
+                                }
+                                else
+                                {
+                                    $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                                }
+                    }
+                }
+                this.collectedHardDrives.resetCollected();
+                $('#resetPreviousCollected').hide();
+
         }.bind(this));
     }
 
