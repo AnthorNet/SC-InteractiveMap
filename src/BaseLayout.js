@@ -2547,19 +2547,23 @@ export default class BaseLayout
                 {
                     if(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
                     {
+                        let layerId         = this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.layerId;
+
+                        let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected')) + 1;
+                        let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
+
                         // Two nodes...
                         //TODO: Check coordinates...
-                        if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625')
+                        if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625' || extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614')
                         {
-                            this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614'].setOpacity(0);
-                        }
-                        if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614')
-                        {
-                            this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625'].setOpacity(0);
+                            dataCollected++
                         }
 
-                        this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].setOpacity(window.SCIM.collectedOpacity);
+                        this.satisfactoryMap.availableLayers[layerId].removeLayer(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName]);
                         this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.extractorPathName = currentObject.pathName;
+
+                        $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
+                        $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
                     }
                 }
         }
@@ -3056,7 +3060,23 @@ export default class BaseLayout
                     {
                         if(this.satisfactoryMap.collectableMarkers !== undefined && this.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
                         {
-                            this.satisfactoryMap.collectableMarkers[resourceNode.pathName].setOpacity(1);
+                            let layerId         = this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.layerId;
+
+                            let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected')) - 1;
+                            let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
+
+                            $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
+
+                            if(dataCollected === 0)
+                            {
+                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataTotal);
+                            }
+                            else
+                            {
+                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                            }
+
+                            this.satisfactoryMap.collectableMarkers[resourceNode.pathName].addTo(this.satisfactoryMap.availableLayers[layerId]);
                             delete this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
                         }
 
@@ -4923,32 +4943,35 @@ export default class BaseLayout
     toggleDropPodHasBeenOpened(marker)
     {
         let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let layerId         = marker.relatedTarget.options.layerId;
+
+        let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected'));
+        let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
+
         let hasBeenOpened   = this.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
             if(hasBeenOpened == 0)
             {
+                dataCollected++;
                 this.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'BoolProperty');
                 marker.relatedTarget.setOpacity(window.SCIM.collectedOpacity);
-
-                /*
-                let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected')) - 1;
-                let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
-                    $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
-
-                    if(dataCollected === 0)
-                    {
-                        $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataTotal);
-                    }
-                    else
-                    {
-                        $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
-                    }
-                */
             }
             else
             {
+                dataCollected--
                 this.deleteObjectProperty(currentObject, 'mHasBeenOpened');
                 marker.relatedTarget.setOpacity(1);
             }
+
+        $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
+
+        if(dataCollected === 0)
+        {
+            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataTotal);
+        }
+        else
+        {
+            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+        }
     }
 
     updateObjectProductionPausedStatus(marker)
