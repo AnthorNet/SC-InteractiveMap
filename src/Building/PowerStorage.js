@@ -76,7 +76,7 @@ export default class Building_PowerStorage
     static updatePowerStored(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.pauseMap();
+            baseLayout.satisfactoryMap.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let storedCharge    = Building_PowerStorage.storedCharge(baseLayout, currentObject);
@@ -93,7 +93,7 @@ export default class Building_PowerStorage
                 }],
                 callback    : function(values)
                 {
-                    this.unpauseMap();
+                    this.satisfactoryMap.unpauseMap();
 
                     if(values === null)
                     {

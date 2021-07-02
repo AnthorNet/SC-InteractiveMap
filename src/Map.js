@@ -1,4 +1,5 @@
 /* global L, Intl */
+import Building_Conveyor               from './Building/Conveyor.js';
 
 export default class Map
 {
@@ -348,9 +349,9 @@ export default class Map
                                         let roadPosition = option.markers[roadId].points.map(function(value){
                                                 return this.unproject(value);
                                             }.bind(this));
-                                        let road = L.corridor(roadPosition, {
-                                                corridor: ((option.markers[roadId].corridor !== undefined) ? option.markers[roadId].corridor : 2500),
-                                                color: 'purple'
+                                        let road = L.conveyor(roadPosition, {
+                                                weight      : ((option.markers[roadId].corridor !== undefined) ? option.markers[roadId].corridor : 2500),
+                                                color       : 'purple'
                                             });
 
                                             if(option.markers[roadId].name !== undefined)
@@ -822,6 +823,22 @@ export default class Map
         }
     }
 
+    pauseMap()
+    {
+        this.leafletMap.dragging.disable();
+        this.leafletMap.keyboard.disable();
+        this.leafletMap.doubleClickZoom.disable();
+        this.leafletMap.scrollWheelZoom.disable();
+    }
+
+    unpauseMap()
+    {
+        this.leafletMap.dragging.enable();
+        this.leafletMap.keyboard.enable();
+        this.leafletMap.doubleClickZoom.enable();
+        this.leafletMap.scrollWheelZoom.enable();
+    }
+
     /*
      * HASH
      */
@@ -1102,3 +1119,22 @@ export default class Map
        };
     }
 }
+
+/*
+ * Workaround for 1px lines appearing in some browsers due to fractional transforms
+ * and resulting anti-aliasing.
+ * https://github.com/Leaflet/Leaflet/issues/3575
+ */
+(function(){
+    let originalInitTile = L.GridLayer.prototype._initTile;
+        L.GridLayer.include({
+            _initTile: function(tile)
+            {
+                originalInitTile.call(this, tile);
+
+                let tileSize = this.getTileSize();
+                    tile.style.width = tileSize.x + 1 + 'px';
+                    tile.style.height = tileSize.y + 1 + 'px';
+            }
+        });
+})();

@@ -397,7 +397,7 @@ export default class Building_Light
     static updateIntensity(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.pauseMap();
+            baseLayout.satisfactoryMap.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let intensity       = Building_Light.getIntensity(baseLayout, currentObject);
@@ -414,7 +414,7 @@ export default class Building_Light
                 }],
                 callback    : function(values)
                 {
-                    this.unpauseMap();
+                    this.satisfactoryMap.unpauseMap();
 
                     if(values === null)
                     {

@@ -457,6 +457,6 @@ export default class Spawn_Road
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
         this.baseLayout.setBadgeLayerCount('playerFoundationsLayer');
-        this.baseLayout.unpauseMap();
+        this.baseLayout.satisfactoryMap.unpauseMap();
     }
 }

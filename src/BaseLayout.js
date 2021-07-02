@@ -90,6 +90,7 @@ export default class BaseLayout
         this.showBuildingsOnLoad                = (this.localStorage !== null && this.localStorage.getItem('mapShowBuildingsOnLoad') !== null) ? (this.localStorage.getItem('mapShowBuildingsOnLoad') === 'true') : true;
         this.showGeneratorsOnLoad               = (this.localStorage !== null && this.localStorage.getItem('mapShowGeneratorsOnLoad') !== null) ? (this.localStorage.getItem('mapShowGeneratorsOnLoad') === 'true') : true;
         this.showTransportationOnLoad           = (this.localStorage !== null && this.localStorage.getItem('mapShowTransportationOnLoad') !== null) ? (this.localStorage.getItem('mapShowTransportationOnLoad') === 'true') : true;
+        this.showNodesOnMiners                  = (this.localStorage !== null && this.localStorage.getItem('mapShowNodesOnMiners') !== null) ? (this.localStorage.getItem('showNodesOnMiners') === 'true') : false;
 
         this.showVehicleExtraMarker             = (this.localStorage !== null && this.localStorage.getItem('mapShowVehicleExtraMarker') !== null) ? (this.localStorage.getItem('mapShowVehicleExtraMarker') === 'true') : false;
 
@@ -986,6 +987,10 @@ export default class BaseLayout
             this.satisfactoryMap.leafletMap.addControl(this.altitudeSliderControl);
             this.altitudeSliderControl.startSlider();
 
+            // Canvas event forwarder
+            this.canvasEventForwarder = new L.eventForwarder({map: this.satisfactoryMap.leafletMap});
+            this.canvasEventForwarder.enable();
+
             // Collectables
             let statisticsCollectables = new BaseLayout_Statistics_Collectables({baseLayout: this});
                 statisticsCollectables.get();
@@ -1758,7 +1763,7 @@ export default class BaseLayout
 
     pivotPlayerFoundation(marker)
     {
-        this.pauseMap();
+        this.satisfactoryMap.pauseMap();
 
         let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
@@ -1778,7 +1783,7 @@ export default class BaseLayout
             ],
             callback: function(form)
             {
-                this.unpauseMap();
+                this.satisfactoryMap.unpauseMap();
 
                 if(form === null || form.angle === null)
                 {
@@ -1886,7 +1891,7 @@ export default class BaseLayout
                 currentRotationYaw  = BaseLayout_Math.clampEulerAxis(currentRotationYaw);
             }
 
-        this.pauseMap();
+        this.satisfactoryMap.pauseMap();
 
         Modal.form({
             title       : "Position",
@@ -1938,7 +1943,7 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
-                this.unpauseMap();
+                this.satisfactoryMap.unpauseMap();
 
                 if(form === null || form.x === null || form.y === null || form.z === null || form.pitch === null || form.roll === null || form.yaw === null)
                 {
@@ -2011,7 +2016,7 @@ export default class BaseLayout
             }
         }
 
-        this.pauseMap();
+        this.satisfactoryMap.pauseMap();
 
         Modal.form({
             title       : "Teleport player",
@@ -2025,7 +2030,7 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
-                this.unpauseMap();
+                this.satisfactoryMap.unpauseMap();
 
                 if(form === null || form.playerPathName === null)
                 {
@@ -2540,7 +2545,7 @@ export default class BaseLayout
         }
 
         // Update nodes used by extraction building
-        if(buildingData.category === 'extraction')
+        if(buildingData.category === 'extraction' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
         {
             let extractResourceNode     = this.getObjectProperty(currentObject, 'mExtractableResource');
                 if(extractResourceNode !== null)
@@ -2559,30 +2564,21 @@ export default class BaseLayout
                             dataCollected++
                         }
 
-                        this.satisfactoryMap.availableLayers[layerId].removeLayer(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName]);
+                        if(this.showNodesOnMiners === true)
+                        {
+                            this.satisfactoryMap.availableLayers[layerId].removeLayer(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName]);
+                        }
+                        else
+                        {
+                            this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].setOpacity(window.SCIM.collectedOpacity);
+                        }
+
                         this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.extractorPathName = currentObject.pathName;
 
                         $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
                         $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
                     }
                 }
-        }
-
-        // Calculate generator statistics
-        if(buildingData.category === 'generator')
-        {
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
-            {
-                // Update geothermal status
-                let extractResourceNode = this.getObjectProperty(currentObject, 'mExtractableResource');
-                    if(extractResourceNode !== null)
-                    {
-                        if(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
-                        {
-                            this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].setOpacity(window.SCIM.collectedOpacity);
-                        }
-                    }
-            }
         }
 
         // Add conveyor lift distance...
@@ -2620,6 +2616,10 @@ export default class BaseLayout
 
         // Create building instance
         let markerOptions   = {weight: weight};
+            if(this.playerLayers[layerId].renderer != undefined)
+            {
+                markerOptions.renderer = this.playerLayers[layerId].renderer;
+            }
 
         // Add lights halo
         if(buildingData.category === 'light' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/LightsControlPanel/Build_LightsControlPanel.Build_LightsControlPanel_C' && Building_Light.hasHalo(this, currentObject) === true)
@@ -2918,7 +2918,7 @@ export default class BaseLayout
 
         selectOptions.unshift({text: 'None', value: 'NULL'});
 
-        this.pauseMap();
+        this.satisfactoryMap.pauseMap();
 
         Modal.form({
             title       : 'Update "' + buildingData.name + '" recipe',
@@ -2933,7 +2933,7 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
-                this.unpauseMap();
+                this.satisfactoryMap.unpauseMap();
 
                 if(form === null || form.recipe === null)
                 {
@@ -3076,18 +3076,23 @@ export default class BaseLayout
                                 $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
                             }
 
-                            this.satisfactoryMap.collectableMarkers[resourceNode.pathName].addTo(this.satisfactoryMap.availableLayers[layerId]);
+                            if(this.showNodesOnMiners === true)
+                            {
+                                this.satisfactoryMap.collectableMarkers[resourceNode.pathName].addTo(this.satisfactoryMap.availableLayers[layerId]);
+                            }
+                            else
+                            {
+                                this.satisfactoryMap.collectableMarkers[resourceNode.pathName].setOpacity(1);
+                            }
+
                             delete this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
                         }
 
-                        for(let i = 0; i < resourceNode.properties.length; i++)
-                        {
-                            if(resourceNode.properties[i].name === 'mIsOccupied')
+                        let mIsOccupied = this.getObjectProperty(currentObject, 'mIsOccupied');
+                            if(mIsOccupied !== null)
                             {
-                                resourceNode.properties[i].value = 0;
-                                break;
+                                mIsOccupied = 0;
                             }
-                        }
                     }
                 }
         }
@@ -3344,24 +3349,23 @@ export default class BaseLayout
             }
         }
 
-        let beltCorridor    = L.corridor(
+        let belt = L.conveyor(
                 splineData.points,
                 {
-                    pathName: currentObject.pathName,
-                    corridor: 135,
-                    weight: 1,
-                    altitude: currentObject.transform.translation[2]
+                    pathName    : currentObject.pathName,
+                    weight      : 135,
+                    altitude    : currentObject.transform.translation[2]
                 }
         );
 
-        beltCorridor.bindContextMenu(this);
-        beltCorridor.on('mouseover', function(marker){
+        belt.bindContextMenu(this);
+        belt.on('mouseover', function(marker){
             let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
             let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
             let slotColor           = buildableSubSystem.getObjectPrimaryColor(currentObject);
                 marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')', opacity: 0.5});
         }.bind(this));
-        beltCorridor.on('mouseout', function(marker){
+        belt.on('mouseout', function(marker){
             let mouseOutStyle       = {opacity: 0.9};
             let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
                 if(currentObject !== null)
@@ -3375,16 +3379,16 @@ export default class BaseLayout
 
             marker.sourceTarget.setStyle(mouseOutStyle);
         }.bind(this));
-        beltCorridor.fire('mouseout');
+        belt.fire('mouseout');
 
-        this.autoBindTooltip(beltCorridor);
+        this.autoBindTooltip(belt);
 
         if(this.playerLayers[mapLayer].distance !== undefined)
         {
             this.playerLayers[mapLayer].distance += splineData.distance;
         }
 
-        this.playerLayers[mapLayer].elements.push(beltCorridor);
+        this.playerLayers[mapLayer].elements.push(belt);
 
         if(this.playerLayers[mapLayer].filtersCount !== undefined)
         {
@@ -3395,7 +3399,7 @@ export default class BaseLayout
             this.playerLayers[mapLayer].filtersCount[currentObject.className].distance += splineData.distance;
         }
 
-        return {layer: mapLayer, marker: beltCorridor};
+        return {layer: mapLayer, marker: belt};
     }
 
     unlinkObjectComponentConnection(currentObject)
@@ -3574,30 +3578,29 @@ export default class BaseLayout
         this.setupSubLayer('playerTracksLayer');
 
         let splineData      = BaseLayout_Math.extractSplineData(this, currentObject);
-        let trackCorridor   = L.corridor(
+        let track           = L.conveyor(
                 splineData.points,
                 {
-                    pathName: currentObject.pathName,
-                    corridor: 600,
-                    color: '#ff69b4',
-                    weight: 1,
-                    altitude: currentObject.transform.translation[2]
+                    pathName    : currentObject.pathName,
+                    weight      : 600,
+                    color       : '#ff69b4',
+                    altitude    : currentObject.transform.translation[2]
                 }
             );
 
-        trackCorridor.bindContextMenu(this);
-        trackCorridor.on('mouseover', function(){
+        track.bindContextMenu(this);
+        track.on('mouseover', function(){
             this.setStyle({color: '#bf4e87', opacity: 0.7});
         });
-        trackCorridor.on('mouseout', function(){
+        track.on('mouseout', function(){
             this.setStyle({color: '#ff69b4', opacity: 0.9});
         });
-        trackCorridor.fire('mouseout');
+        track.fire('mouseout');
 
-        this.autoBindTooltip(trackCorridor);
+        this.autoBindTooltip(track);
 
         this.playerLayers.playerTracksLayer.distance += splineData.distance;
-        this.playerLayers.playerTracksLayer.elements.push(trackCorridor);
+        this.playerLayers.playerTracksLayer.elements.push(track);
 
         if(this.playerLayers.playerTracksLayer.filtersCount !== undefined)
         {
@@ -3614,7 +3617,7 @@ export default class BaseLayout
             this.playerLayers.playerTracksLayer.filtersCount[trackClassName].distance += splineData.distance;
         }
 
-        return trackCorridor;
+        return track;
     }
 
     addPlayerPowerLine(currentObject)
@@ -4060,6 +4063,22 @@ export default class BaseLayout
                 this.satisfactoryMap.leafletMap.getPane(layerId).style.pointerEvents = 'none';
                 this.playerLayers[layerId].renderer = L.canvas({ pane: layerId });
             }
+            /* TRY NEW RENDERING...
+            if(['playerFoundationsLayer', 'playerPillarsLayer', 'playerWallsLayer', 'playerWalkwaysLayer', 'playerStatuesLayer'].includes(layerId))
+            {
+                let decorativePane = this.satisfactoryMap.leafletMap.getPane('decorative-pane');
+                    if(decorativePane === undefined)
+                    {
+                        this.satisfactoryMap.leafletMap.createPane('decorative-pane');
+                        decorativePane = this.satisfactoryMap.leafletMap.getPane('decorative-pane');
+                        decorativePane.style.zIndex = 390;
+
+                        this.satisfactoryMap.decorativeRenderer = L.canvas({ pane: 'decorative-pane' });
+                    }
+
+                    this.playerLayers[layerId].renderer = this.satisfactoryMap.decorativeRenderer;
+            }
+            */
         }
 
         if(this.playerLayers[layerId].subLayer === null)
@@ -5067,7 +5086,7 @@ export default class BaseLayout
 
     updateObjectClockSpeed(marker)
     {
-        this.pauseMap();
+        this.satisfactoryMap.pauseMap();
 
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
@@ -5091,7 +5110,7 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
-                this.unpauseMap();
+                this.satisfactoryMap.unpauseMap();
 
                 if(form === null || form.clockSpeed === null || form.useOwnPowershards === null)
                 {
@@ -5993,11 +6012,10 @@ export default class BaseLayout
 
         if(typeof currentObject === 'object')
         {
-            for(let k = 0; k < currentObject.properties.length; k++)
-            {
-                if(currentObject.properties[k].name === 'mBuiltWithRecipe')
+            let mBuiltWithRecipe = this.getObjectProperty(currentObject, 'mBuiltWithRecipe')
+                if(mBuiltWithRecipe !== null)
                 {
-                    let recipeName = currentObject.properties[k].value.pathName.split('.')[1];
+                    let recipeName = mBuiltWithRecipe.pathName.split('.')[1];
                         if(this.recipesData[recipeName] !== undefined)
                         {
                             for(let ingredient in this.recipesData[recipeName].ingredients)
@@ -6007,45 +6025,8 @@ export default class BaseLayout
                                     recipe.push(ingredient);
                                 }
                             }
-
-                            break;
                         }
                 }
-
-                // Before update 3
-                if(currentObject.properties[k].name === 'mDismantleRefund')
-                {
-                    let dismantleRefund = currentObject.properties[k].value.values;
-
-                        for(let m = 0; m < dismantleRefund.length; m++)
-                        {
-                            let currentClass    = null;
-                            let currentAmount   = null;
-
-                            for(let n = 0; n < dismantleRefund[m].length; n++)
-                            {
-                                if(dismantleRefund[m][n].name === 'ItemClass')
-                                {
-                                    currentClass    = dismantleRefund[m][n].value.pathName;
-                                }
-                                if(dismantleRefund[m][n].name === 'amount')
-                                {
-                                    currentAmount   = dismantleRefund[m][n].value;
-                                }
-                            }
-
-                            if(currentClass !== null && currentAmount !== null)
-                            {
-                                for(let i = 0; i < currentAmount; i++)
-                                {
-                                    recipe.push(currentClass);
-                                }
-                            }
-                        }
-
-                    break;
-                }
-            }
         }
         else
         {
@@ -6116,7 +6097,7 @@ export default class BaseLayout
     {
         let message                 = '';
         let selectedMarkersLength   = 0;
-            this.pauseMap();
+            this.satisfactoryMap.pauseMap();
 
         if(markers !== null)
         {
@@ -6925,7 +6906,7 @@ export default class BaseLayout
         this.markersSelected = undefined;
         this.satisfactoryMap.leafletMap.selectAreaFeature.removeSelectedArea();
 
-        this.unpauseMap();
+        this.satisfactoryMap.unpauseMap();
     }
 
     getSelectionBoundaries(markersSelected)
@@ -6998,20 +6979,166 @@ export default class BaseLayout
             centerY : (minY + maxY) / 2
         };
     }
-
-    pauseMap()
-    {
-        this.satisfactoryMap.leafletMap.dragging.disable();
-        this.satisfactoryMap.leafletMap.keyboard.disable();
-        this.satisfactoryMap.leafletMap.doubleClickZoom.disable();
-        this.satisfactoryMap.leafletMap.scrollWheelZoom.disable();
-    }
-
-    unpauseMap()
-    {
-        this.satisfactoryMap.leafletMap.dragging.enable();
-        this.satisfactoryMap.leafletMap.keyboard.enable();
-        this.satisfactoryMap.leafletMap.doubleClickZoom.enable();
-        this.satisfactoryMap.leafletMap.scrollWheelZoom.enable();
-    }
 }
+
+let _options;
+
+L.Map.EventForwarder = L.Class.extend({
+        _prevTarget: null,
+
+	initialize: function (options) {
+            _options                    = options;
+            _options.throttleMs         = 100;
+            _options.throttleOptions    = {
+                leading: true,
+                trailing: false
+            };
+	},
+
+	enable: function() {
+            //L.DomEvent.on(_options.map, 'click', this._handleClick, this);
+            L.DomEvent.on(_options.map, 'contextmenu', this._handleClick, this);
+            //L.DomEvent.on(_options.map, 'mousemove', this._throttle(this._handleMouseMove, _options.throttleMs, _options.throttleOptions), this);
+	},
+
+	disable: function() {
+		//L.DomEvent.off(_options.map, 'click', this._handleClick, this);
+                L.DomEvent.off(_options.map, 'contextmenu', this._handleClick, this);
+		//L.DomEvent.off(_options.map, 'mousemove', this._throttle(this._handleMouseMove, _options.throttleMs, _options.throttleOptions), this);
+	},
+
+	/**
+	 * Handle `mousemove` event from map, i.e. forwards unhandled events
+	 * @param event
+	 * @private
+	 */
+	_handleMouseMove: function(event) {
+            // we use the maps mousemove event to avoid registering listeners
+            // for each individual layer, however this means we don't receive
+            // the layers mouseover/out events so we need to fudge it a little
+            if(event.originalEvent._stopped) { return; }
+
+		// get the target pane
+		var currentTarget = event.originalEvent.target;
+		var stopped;
+		var removed;
+
+		// hide the target node
+		removed = { node: currentTarget, pointerEvents: currentTarget.style.pointerEvents };
+		currentTarget.style.pointerEvents = 'none';
+
+		// attempt to grab the next layer below
+		const nextTarget = document.elementFromPoint(event.originalEvent.clientX, event.originalEvent.clientY);
+		const isCanvas = nextTarget.nodeName.toLowerCase() === 'canvas';
+
+		// target has changed so trigger mouseout previous
+		if (L.Map.EventForwarder._prevTarget && L.Map.EventForwarder._prevTarget !== nextTarget) {
+			L.Map.EventForwarder._prevTarget.dispatchEvent(new MouseEvent('mouseout', event.originalEvent));
+		}
+		L.Map.EventForwarder._prevTarget = nextTarget;
+
+		// we keep drilling down until we get stopped,
+		// or we reach the map container itself
+		if (
+			nextTarget &&
+			nextTarget.nodeName.toLowerCase() !== 'body' &&
+			nextTarget.classList.value.indexOf('leaflet-container') === -1
+		) {
+			let eventType = isCanvas ? 'mousemove' : 'mouseover';
+			var ev = new MouseEvent(eventType, event.originalEvent);
+			stopped = !nextTarget.dispatchEvent(ev);
+			if (stopped || ev._stopped) {
+				L.DomEvent.stop(event);
+			}
+		}
+
+		// restore pointerEvents
+		removed.node.style.pointerEvents = removed.pointerEvents;
+	},
+
+	/**
+	 * Handle `click` event from map, i.e. forwards unhandled events
+	 * @param event
+	 * @private
+	 */
+	_handleClick: function(event) {
+
+		if (event.originalEvent._stopped) { return; }
+
+		// get the target pane
+		var currentTarget = event.originalEvent.target;
+		var stopped;
+		var removed;
+
+		// hide the target node
+		removed = { node: currentTarget, pointerEvents: currentTarget.style.pointerEvents };
+		currentTarget.style.pointerEvents = 'none';
+
+		// attempt to grab the next layer below
+		let nextTarget = document.elementFromPoint(event.originalEvent.clientX, event.originalEvent.clientY);
+
+		// we keep drilling down until we get stopped,
+		// or we reach the map container itself
+		if (
+			nextTarget &&
+			nextTarget.nodeName.toLowerCase() !== 'body' &&
+			nextTarget.classList.value.indexOf('leaflet-container') === -1
+		) {
+			var ev = new MouseEvent(event.originalEvent.type, event.originalEvent);
+			stopped = !nextTarget.dispatchEvent(ev);
+			if (stopped || ev._stopped) {
+				L.DomEvent.stop(event);
+			}
+		}
+
+		// restore pointerEvents
+		removed.node.style.pointerEvents = removed.pointerEvents;
+	},
+
+	/**
+	 * Pinched from underscore
+	 * @param func
+	 * @param wait
+	 * @param options
+	 * @returns {Function}
+	 * @private
+	 */
+	_throttle: function (func, wait, options) {
+		var context, args, result;
+		var timeout = null;
+		var previous = 0;
+		if (!options) options = {};
+		var later = function() {
+			previous = options.leading === false ? 0 : Date.now();
+			timeout = null;
+			result = func.apply(context, args);
+			if (!timeout) context = args = null;
+		};
+		return function() {
+			var now = Date.now();
+			if (!previous && options.leading === false) previous = now;
+			var remaining = wait - (now - previous);
+			context = this;
+			args = arguments;
+			if (remaining <= 0 || remaining > wait) {
+				if (timeout) {
+					clearTimeout(timeout);
+					timeout = null;
+				}
+				previous = now;
+				result = func.apply(context, args);
+				if (!timeout) context = args = null;
+			} else if (!timeout && options.trailing !== false) {
+				timeout = setTimeout(later, remaining);
+			}
+			return result;
+		};
+	}
+
+
+});
+
+L.eventForwarder = function(options)
+{
+    return new L.Map.EventForwarder(options);
+};

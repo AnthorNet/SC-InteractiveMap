@@ -203,16 +203,16 @@ export default class Modal_MapOptions
         html.push('</div>');
         html.push('</div><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowTransportationOnLoad" id="inputShowTransportationOnLoad" ' + ((this.baseLayout.showTransportationOnLoad === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowTransportationOnLoad">Show transportation by default?</label></div>');
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowNodesOnMiners" id="inputShowNodesOnMiners" ' + ((this.baseLayout.showNodesOnMiners === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowNodesOnMiners">Show nodes icons on miners?</label></div>');
         html.push('</div>');
         html.push('</div></div>');
 
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowVehicleExtraMarker" id="inputShowVehicleExtraMarker" ' + ((this.baseLayout.showVehicleExtraMarker === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowVehicleExtraMarker">Show vehicles map icons?</label></div>');
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowTransportationOnLoad" id="inputShowTransportationOnLoad" ' + ((this.baseLayout.showTransportationOnLoad === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowTransportationOnLoad">Show transportation by default?</label></div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
-
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowVehicleExtraMarker" id="inputShowVehicleExtraMarker" ' + ((this.baseLayout.showVehicleExtraMarker === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowVehicleExtraMarker">Show vehicles map icons?</label></div>');
         html.push('</div></div>');
 
         html.push('<div class="row"><div class="col-6">');
@@ -269,6 +269,9 @@ export default class Modal_MapOptions
 
                 this.baseLayout.showGeneratorsOnLoad        = (($('#inputShowGeneratorsOnLoad').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowGeneratorsOnLoad', this.baseLayout.showGeneratorsOnLoad);
+
+                this.baseLayout.showNodesOnMiners    = (($('#inputShowNodesOnMiners').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapShowNodesOnMiners', this.baseLayout.showNodesOnMiners);
 
                 this.baseLayout.showTransportationOnLoad    = (($('#inputShowTransportationOnLoad').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowTransportationOnLoad', this.baseLayout.showTransportationOnLoad);

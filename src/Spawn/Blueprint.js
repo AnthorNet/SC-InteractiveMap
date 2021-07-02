@@ -761,7 +761,7 @@ export default class Spawn_Blueprint
             // Update save/map
                 this.baseLayout.saveGameParser.addObject(newObject);
             let result = this.baseLayout.parseObject(newObject);
-                //TODO: Use promises when we have to laod a mod not yet loaded, silently pass for now...
+                //TODO: Use promises when we have to load a mod not yet loaded, silently pass for now...
                 if(result !== undefined) // Prevent unknown mod object from throwing error
                 {
                     results.push(result);
@@ -893,7 +893,7 @@ export default class Spawn_Blueprint
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
         console.timeEnd('pasteOnFoundation');
         this.baseLayout.updateRadioactivityLayer();
-        this.baseLayout.unpauseMap();
+        this.baseLayout.satisfactoryMap.unpauseMap();
     }
 
 

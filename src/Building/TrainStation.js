@@ -53,7 +53,7 @@ export default class Building_TrainStation
     static updateSign(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.pauseMap();
+            baseLayout.satisfactoryMap.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -70,7 +70,7 @@ export default class Building_TrainStation
                 }],
                 callback    : function(values)
                 {
-                    this.unpauseMap();
+                    this.satisfactoryMap.unpauseMap();
 
                     if(values === null)
                     {

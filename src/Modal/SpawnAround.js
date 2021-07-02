@@ -14,7 +14,7 @@ export default class Modal_SpawnAround
     static getHTML(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.pauseMap();
+            baseLayout.satisfactoryMap.pauseMap();
 
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
@@ -71,7 +71,7 @@ export default class Modal_SpawnAround
             {
                 if(form === null || form.form === null || form.useOwnMaterials === null)
                 {
-                    baseLayout.unpauseMap();
+                    baseLayout.satisfactoryMap.unpauseMap();
                     return;
                 }
 

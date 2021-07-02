@@ -60,3 +60,51 @@ export default class Building_Conveyor
             }
     }
 }
+
+L.Conveyor = L.Polyline.extend({
+    initialize: function(latlngs, options)
+    {
+        L.Polyline.prototype.initialize.call(this, latlngs, options);
+
+        this.weight = options.weight;
+
+        let self                = this;
+            this.updateCallback = function()
+            {
+                self._updateWeight(this);
+            };
+    },
+
+    onAdd: function(map)
+    {
+        L.Polyline.prototype.onAdd.call(this, map);
+        map.on('zoomend', this.updateCallback);
+        this._updateWeight(map);
+    },
+
+    onRemove: function(map)
+    {
+        map.off('zoomend', this.updateCallback);
+        L.Polyline.prototype.onRemove.call(this, map);
+    },
+
+    _updateWeight: function(map)
+    {
+        this.setStyle({
+            weight: this._getWeight(map, this.weight)
+        });
+    },
+
+    _getWeight: function(map, weight)
+    {
+        let position    = [window.SCIM.map.unproject([0, 0]), window.SCIM.map.unproject([10000, 0])];
+        let meterWeight = map.latLngToContainerPoint(position[1]).x - map.latLngToContainerPoint(position[0]).x;
+
+        return Math.max(2, (weight / 10000 * meterWeight));
+    }
+});
+
+L.conveyor = function(latlngs, options)
+{
+    return new L.Conveyor(latlngs, options || { weight: 100 });
+};
