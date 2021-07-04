@@ -174,68 +174,80 @@ export default class SaveParser_Read
         let entitiesToObjects           = [];
             this.saveParser.objects     = {};
             console.log('Reading: ' + countObjects + ' objects...');
-            for(let i = 0; i < countObjects; i++)
-            {
-                let objectType = this.readInt();
-                    switch(objectType)
-                    {
-                        case 0:
-                            let object                                      = this.readObjectV5();
-                                this.saveParser.objects[object.pathName]    = object;
-                                entitiesToObjects[i]                        = object.pathName;
-                            break;
-                        case 1:
-                            let actor                                       = this.readActorV5();
-                                this.saveParser.objects[actor.pathName]     = actor;
-                                entitiesToObjects[i]                        = actor.pathName;
-
-                                if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
-                                {
-                                    this.saveParser.gameStatePathName   = actor.pathName;
-                                }
-                                if(actor.className === '/Script/FactoryGame.FGTrainStationIdentifier' || actor.className === '/Script/FactoryGame.FGTrain')
-                                {
-                                    this.saveParser.trainIdentifiers.push(actor.pathName);
-                                }
-                            break;
-                        default:
-                            console.log('Unknown object type', objectType);
-                            break;
-                    }
-            }
-
-        let countEntities   = this.readInt();
-            console.log('Reading: ' + countEntities + ' entities...');
-            for(let i = 0; i < countEntities; i++)
-            {
-                this.readEntityV5(entitiesToObjects[i]);
-            }
-
-        this.saveParser.collectables   = [];
-        let countCollected  = this.readInt();
-            console.log('Reading: ' + countCollected + ' collectables...');
-            for(let i = 0; i < countCollected; i++)
-            {
-                let currentCollectable = {
-                    levelName: this.readString(),
-                    pathName: this.readString()
-                };
-                this.saveParser.collectables.push(currentCollectable);
-            }
-
-        this.arrayBuffer        = undefined;
-        this.bufferView         = undefined;
-
-        console.timeEnd('loadSave');
-
-        if(this.callback !== null)
-        {
-            $('#loaderProgressBar .progress-bar').css('width', '45%');
+            $('.loader h6').html('Parsing ' + countObjects + ' objects...');
 
             setTimeout(() => {
-                return this.callback();
+                for(let i = 0; i < countObjects; i++)
+                {
+                    let objectType = this.readInt();
+                        switch(objectType)
+                        {
+                            case 0:
+                                let object                                      = this.readObjectV5();
+                                    this.saveParser.objects[object.pathName]    = object;
+                                    entitiesToObjects[i]                        = object.pathName;
+                                break;
+                            case 1:
+                                let actor                                       = this.readActorV5();
+                                    this.saveParser.objects[actor.pathName]     = actor;
+                                    entitiesToObjects[i]                        = actor.pathName;
+
+                                    if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                                    {
+                                        this.saveParser.gameStatePathName   = actor.pathName;
+                                    }
+                                    if(actor.className === '/Script/FactoryGame.FGTrainStationIdentifier' || actor.className === '/Script/FactoryGame.FGTrain')
+                                    {
+                                        this.saveParser.trainIdentifiers.push(actor.pathName);
+                                    }
+                                break;
+                            default:
+                                console.log('Unknown object type', objectType);
+                                break;
+                        }
+                }
+
+                let countEntities   = this.readInt();
+                    console.log('Reading: ' + countEntities + ' entities...');
+                    $('.loader h6').html('Parsing ' + countEntities + ' entities...');
+
+                setTimeout(() => {
+                    for(let i = 0; i < countEntities; i++)
+                    {
+                        this.readEntityV5(entitiesToObjects[i]);
+                    }
+
+                    this.saveParser.collectables   = [];
+                        let countCollected  = this.readInt();
+                            console.log('Reading: ' + countCollected + ' collectables...');
+                            $('.loader h6').html('Parsing ' + countCollected + ' collectables...');
+
+                    setTimeout(() => {
+                            for(let i = 0; i < countCollected; i++)
+                            {
+                                let currentCollectable = {
+                                    levelName: this.readString(),
+                                    pathName: this.readString()
+                                };
+                                this.saveParser.collectables.push(currentCollectable);
+                            }
+
+                        this.arrayBuffer        = undefined;
+                        this.bufferView         = undefined;
+
+                        console.timeEnd('loadSave');
+
+                        if(this.callback !== null)
+                        {
+                            $('#loaderProgressBar .progress-bar').css('width', '45%');
+
+                            setTimeout(() => {
+                                return this.callback();
+                            }, 50);
+                        }
+                    }, 50);
+                }, 50);
             }, 50);
-        }
     }
 
     // V5 Functions
@@ -1305,33 +1317,35 @@ export default class SaveParser_Read
         if(strLength < 0)
         {
                 strLength   = strLength * -2;
-            let utf16       = new ArrayBuffer(strLength);
-            let utf16View   = new Uint16Array(utf16);
+            let string      = [];
 
             for(let i = 0; i < ((strLength / 2) -1); ++i)
             {
-                utf16View[i] = this.bufferView.getUint16(this.currentByte++, true);
+                string.push(String.fromCharCode(
+                    this.bufferView.getUint16(this.currentByte++, true)
+                ));
                 this.currentByte++;
             }
             this.currentByte++;
             this.currentByte++;
 
-            return String.fromCharCode.apply(null, utf16View);
+            return string.join('');
         }
 
         try
         {
                 strLength   = strLength -1;
-            let utf8        = new ArrayBuffer(strLength);
-            let utf8View    = new Uint8Array(utf8);
+            let string      = [];
 
             for(let i = 0; i < strLength; i++)
             {
-                utf8View[i] = this.bufferView.getUint8(this.currentByte++, true);
+                string.push(String.fromCharCode(
+                    this.bufferView.getUint8(this.currentByte++, true)
+                ));
             }
             this.currentByte++;
 
-            return String.fromCharCode.apply(null, utf8View);
+            return string.join('');
         }
         catch(error)
         {
