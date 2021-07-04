@@ -1259,11 +1259,19 @@ export default class SaveParser_Write
                 saveBinary += this.writeInt(1);
                 saveBinary += this.writeFINNetworkTrace(value.prev);
             }
+            else
+            {
+                saveBinary += this.writeInt(0);
+            }
 
             if(value.step !== undefined)
             {
                 saveBinary += this.writeInt(1);
                 saveBinary += this.writeString(value.step);
+            }
+            else
+            {
+                saveBinary += this.writeInt(0);
             }
 
         return saveBinary;
