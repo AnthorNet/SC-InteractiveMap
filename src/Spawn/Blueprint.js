@@ -555,7 +555,17 @@ export default class Spawn_Blueprint
 
                     if(this.clipboard.pipes[pipeNetworkID].fluid !== null)
                     {
-                        newPipeNetwork.properties.push({name: "mFluidDescriptor", type: "ObjectProperty", value: {levelName: "", pathName: this.clipboard.pipes[pipeNetworkID].fluid}});
+                        let newmFluidDescriptor = {name: "mFluidDescriptor", type: "ObjectProperty"};
+                            if(this.clipboard.pipes[pipeNetworkID].fluid.pathName !== undefined)
+                            {
+                                newmFluidDescriptor.value = this.clipboard.pipes[pipeNetworkID].fluid;
+                            }
+                            else
+                            {
+                                newmFluidDescriptor.value = {levelName: "", pathName: this.clipboard.pipes[pipeNetworkID].fluid};
+                            }
+
+                            newPipeNetwork.properties.push(newmFluidDescriptor);
                     }
 
                     if(this.clipboard.pipes[pipeNetworkID].interface.length > 0)
