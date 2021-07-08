@@ -554,6 +554,10 @@ export default class BaseLayout_Tooltip
                 if(this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type !== undefined)
                 {
                     itemType = this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type;
+                    if(itemType === 'Desc_LiquidOilWell_C')
+                    {
+                        itemType = 'Desc_LiquidOil_C';
+                    }
                 }
             }
 

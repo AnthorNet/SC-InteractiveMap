@@ -168,17 +168,25 @@ export default class Modal_Buildings
                                         {
                                             if(this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.purity !== undefined)
                                             {
-                                                purity = this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.purity;
+                                                purity      = this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.purity;
                                             }
-
                                             if(this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type !== undefined)
                                             {
-                                                itemType        = this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type;
+                                                itemType    = this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type;
+                                                if(itemType === 'Desc_LiquidOilWell_C')
+                                                {
+                                                    itemType = 'Desc_LiquidOil_C';
+                                                }
                                             }
                                         }
 
                                         if(itemType !== null)
                                         {
+                                            if(this.baseLayout.itemsData[itemType] === undefined)
+                                            {
+                                                console.log(itemType, this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options);
+                                            }
+
                                             htmlRow.push('<strong>' + this.baseLayout.itemsData[itemType].name + ' (' + (purity && purity[0].toUpperCase() + purity.slice(1)) + ')</strong><br />');
                                         }
                                     break;
