@@ -1083,6 +1083,7 @@ export default class SaveParser_Read
                     case 'FFPlotTask': // MOD: ???
                     case 'SInventory': // MOD: ???
                     case 'MFGBuildableAutoSplitterReplicatedProperties': // MOD: AutoSplitters
+                    case 'ItemAmount': // MOD: NogInserter?
                         currentProperty.value.values = [];
                         while(true)
                         {
@@ -1207,6 +1208,11 @@ export default class SaveParser_Read
 
                     currentProperty.arguments.push(currentArgumentsData);
                 }
+                break;
+            // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2268
+            case 10:
+                currentProperty.sourceText          = this.readTextProperty({});
+                currentProperty.transformType       = this.readByte();
                 break;
             case 255:
                 // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
