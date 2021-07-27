@@ -770,6 +770,26 @@ export default class SaveParser_Read
                                     });
                                     break;
 
+                                // MOD: FicsIt-Networks
+                                // See: https://github.com/CoderDE/FicsIt-Networks/blob/3472a437bcd684deb7096ede8f03a7e338b4a43d/Source/FicsItNetworks/Computer/FINComputerGPUT1.h#L42
+                                case 'FINGPUT1BufferPixel':
+                                    currentProperty.value.values.push({
+                                        character           : this.readHex(2),
+                                        foregroundColor     : {
+                                            r : this.readFloat(),
+                                            g : this.readFloat(),
+                                            b : this.readFloat(),
+                                            a : this.readFloat()
+                                        },
+                                        backgroundColor     : {
+                                            r : this.readFloat(),
+                                            g : this.readFloat(),
+                                            b : this.readFloat(),
+                                            a : this.readFloat()
+                                        }
+                                    });
+                                    break;
+
                                 case 'SpawnData':
                                 case 'Transform':
                                 case 'PhaseCost':
@@ -1084,6 +1104,7 @@ export default class SaveParser_Read
                     case 'SInventory': // MOD: ???
                     case 'MFGBuildableAutoSplitterReplicatedProperties': // MOD: AutoSplitters
                     case 'ItemAmount': // MOD: NogInserter?
+                    case 'FINGPUT1Buffer':
                         currentProperty.value.values = [];
                         while(true)
                         {
@@ -1355,9 +1376,10 @@ export default class SaveParser_Read
         }
         catch(error)
         {
-            this.currentByte = Math.max(0, startBytes - 512);
+            let debugSize = 512;
+            this.currentByte = Math.max(0, startBytes - (debugSize * 2));
 
-            let errorMessage = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(512) + '`=========`' + this.readHex(256) + '`';
+            let errorMessage = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
                 console.log(errorMessage);
                 Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                 throw new Error(errorMessage);
@@ -1390,7 +1412,7 @@ export default class SaveParser_Read
     // https://github.com/CoderDE/FicsIt-Networks/blob/master/Source/FicsItNetworks/FicsItKernel/Processor/Lua/LuaProcessorStateStorage.cpp#L6
     readFINLuaProcessorStateStorage()
     {
-        let data            = {trace: [], reference: []};
+        let data            = {trace: [], reference: [], structs: []};
         let countTrace      = this.readInt();
             for(let i = 0; i < countTrace; i++)
             {
@@ -1406,10 +1428,18 @@ export default class SaveParser_Read
                 });
             }
 
-        data.unk1 = this.readString();
-        data.unk2 = this.readString();
-        data.unk3 = this.readString();
+        data.thread     = this.readString();
+        data.globals    = this.readString();
 
+        let countStructs  = this.readInt();
+            for(let i = 0; i < countStructs; i++)
+            {
+                data.structs.push({
+                    levelName: this.readString(),
+                    pathName: this.readString()
+                });
+            }
+            
         return data;
     }
 }

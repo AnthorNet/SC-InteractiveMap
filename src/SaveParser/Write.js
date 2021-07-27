@@ -912,6 +912,20 @@ export default class SaveParser_Write
                                     structure += this.writeFloat(currentProperty.value.values[i].a);
                                     break;
 
+
+                                // MOD: FicsIt-Networks
+                                case 'FINGPUT1BufferPixel':
+                                    structure += this.writeHex(currentProperty.value.values[i].character);
+                                    structure += this.writeFloat(currentProperty.value.values[i].foregroundColor.r);
+                                    structure += this.writeFloat(currentProperty.value.values[i].foregroundColor.g);
+                                    structure += this.writeFloat(currentProperty.value.values[i].foregroundColor.b);
+                                    structure += this.writeFloat(currentProperty.value.values[i].foregroundColor.a);
+                                    structure += this.writeFloat(currentProperty.value.values[i].backgroundColor.r);
+                                    structure += this.writeFloat(currentProperty.value.values[i].backgroundColor.g);
+                                    structure += this.writeFloat(currentProperty.value.values[i].backgroundColor.b);
+                                    structure += this.writeFloat(currentProperty.value.values[i].backgroundColor.a);
+                                    break;
+
                                 default:
                                     for(let j = 0; j < currentProperty.value.values[i].length; j++)
                                     {
@@ -1284,8 +1298,8 @@ export default class SaveParser_Write
     writeFINLuaProcessorStateStorage(value)
     {
         let saveBinary  = '';
-            saveBinary += this.writeInt(value.trace.length);
 
+            saveBinary += this.writeInt(value.trace.length);
             for(let i = 0; i < value.trace.length; i++)
             {
                 saveBinary += this.writeFINNetworkTrace(value.trace[i]);
@@ -1298,9 +1312,15 @@ export default class SaveParser_Write
                 saveBinary += this.writeString(value.reference[i].pathName);
             }
 
-        saveBinary += this.writeString(value.unk1);
-        saveBinary += this.writeString(value.unk2);
-        saveBinary += this.writeString(value.unk3);
+            saveBinary += this.writeString(value.thread);
+            saveBinary += this.writeString(value.globals);
+
+            saveBinary += this.writeInt(value.structs.length);
+            for(let i = 0; i < value.structs.length; i++)
+            {
+                saveBinary += this.writeString(value.structs[i].levelName);
+                saveBinary += this.writeString(value.structs[i].pathName);
+            }
 
         return saveBinary;
     }
