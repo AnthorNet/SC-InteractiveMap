@@ -425,6 +425,14 @@ export default class Modal_SpawnAround
                                     min         : 1,
                                     max         : 255
                                 });
+                                roadOptions.push({
+                                    label       : 'Step <em class="small">(Between 1 and 255)</em>',
+                                    name        : 'step',
+                                    inputType   : 'number',
+                                    value       : 1,
+                                    min         : 1,
+                                    max         : 255
+                                });
 
                                 roadOptions.push({
                                     label           : 'Direction',
@@ -459,6 +467,7 @@ export default class Modal_SpawnAround
                                         marker          : marker,
                                         maxWidth        : values.maxWidth,
                                         maxHeight       : values.maxHeight,
+                                        step            : values.step,
                                         direction       : values.direction,
                                         curvature       : values.curvature,
                                         useOwnMaterials : form.useOwnMaterials
