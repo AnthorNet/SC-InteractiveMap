@@ -1105,6 +1105,7 @@ export default class SaveParser_Read
                     case 'MFGBuildableAutoSplitterReplicatedProperties': // MOD: AutoSplitters
                     case 'ItemAmount': // MOD: NogInserter?
                     case 'FINGPUT1Buffer':
+                    case 'Loot': // MOD: ???
                         currentProperty.value.values = [];
                         while(true)
                         {
@@ -1439,7 +1440,7 @@ export default class SaveParser_Read
                     pathName: this.readString()
                 });
             }
-            
+
         return data;
     }
 }
