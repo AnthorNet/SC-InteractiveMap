@@ -64,7 +64,7 @@ export default class SubSystem_Buildable
         let mColorSlotsPrimary_Linear       = this.getPrimaryColorSlots();
         let mColorSlotsSecondary_Linear     = this.getSecondaryColorSlots();
 
-            if(mColorSlotsPrimary_Linear === null)
+            if(mColorSlotsPrimary_Linear === null && this.buildableSubSystem !== null)
             {
                 mColorSlotsPrimary_Linear = {
                     name                    : "mColorSlotsPrimary_Linear",
@@ -84,7 +84,7 @@ export default class SubSystem_Buildable
                 mColorSlotsPrimary_Linear = this.getPrimaryColorSlots();
             }
 
-            if(mColorSlotsSecondary_Linear === null)
+            if(mColorSlotsSecondary_Linear === null && this.buildableSubSystem !== null)
             {
                 mColorSlotsSecondary_Linear = {
                     name                    : "mColorSlotsSecondary_Linear",
