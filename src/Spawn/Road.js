@@ -12,11 +12,13 @@ export default class Spawn_Road
 
         this.maxWidth           = parseInt(options.maxWidth);
         this.maxHeight          = parseInt(options.maxHeight);
+        this.step               = parseInt(options.step);
 
         this.useOwnMaterials    = options.useOwnMaterials;
 
         this.maxWidth           = (Math.min(255, (2* Math.floor(this.maxWidth / 2) + 1)) - 1) / 2;
         this.maxHeight          = Math.min(255, this.maxHeight);
+        this.step               = Math.max(1, Math.min(255, this.step));
 
         this.direction          = (options.direction !== undefined) ? options.direction : 'UP';
         this.curvature          = Math.max(-360, Math.min(360, parseInt(options.curvature)));
@@ -74,15 +76,15 @@ export default class Spawn_Road
 
         if(this.direction === 'DOWN')
         {
-            return this.loopDown(0, this.maxHeight);
+            return this.loopDown(0, this.maxHeight, this.step);
         }
 
-        return this.loopUp(0, -this.maxHeight);
+        return this.loopUp(0, -this.maxHeight, this.step);
     }
 
-    loopDown(height, maxHeight)
+    loopDown(height, maxHeight, step)
     {
-        for(height; height <= maxHeight; height++)
+        for(height; height <= maxHeight; height+=step)
         {
             let results = [];
                 if(this.curvature >= 0)
@@ -104,16 +106,16 @@ export default class Spawn_Road
                         this.baseLayout.addElementToLayer(result.layer, result.marker);
                 }
 
-                this.loopDown((height + 1), maxHeight);
+                this.loopDown((height + step), maxHeight, step);
             }.bind(this));
         }
 
         return this.release();
     }
 
-    loopUp(height, maxHeight)
+    loopUp(height, maxHeight, step)
     {
-        for(height; height >= maxHeight; height--)
+        for(height; height >= maxHeight; height-=step)
         {
             let results = [];
                 if(this.curvature >= 0)
@@ -135,7 +137,7 @@ export default class Spawn_Road
                         this.baseLayout.addElementToLayer(result.layer, result.marker);
                 }
 
-                this.loopUp((height - 1), maxHeight);
+                this.loopUp((height - step), maxHeight, step);
             }.bind(this));
         }
 
