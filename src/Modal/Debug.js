@@ -71,7 +71,7 @@ export default class Modal_Debug
             {
                 for(let i = 0; i < currentObject.children.length; i++)
                 {
-                    html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '" role="tab" style="cursor:pointer;">.' + currentObject.children[i].pathName.split('.').pop() + '</span></li>');
+                    html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;cursor:pointer;" data-toggle="tab" href="#advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">.' + currentObject.children[i].pathName.split('.').pop() + '</span></li>');
 
                     let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
                         if(currentChildren !== null)
