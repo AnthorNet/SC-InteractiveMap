@@ -815,6 +815,7 @@ export default class SaveParser_Read
                                 // MODS
                                 case 'LampGroup':
                                 case 'STRUCT_ProgElevator_Floor':
+                                case 'InserterBuildingProfile':
                                     let subStructProperties = [];
                                         while(true)
                                         {
