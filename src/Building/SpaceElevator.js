@@ -339,6 +339,7 @@ export default class Building_SpaceElevator
                 // Seal
                 if(sealStatus === true)
                 {
+                    content.push('<div style="position :absolute;margin-top: 171px;margin-left: 333px;width: 75px; height: 36px;background: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/SpaceElevator_Pusher.png?v=' + baseLayout.scriptVersion + ') no-repeat;"></div>');
                     content.push('<div style="position :absolute;margin-top: 194px;margin-left: 374px;width: 126px; height: 117px;background: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/SpaceElevator_Seal.png?v=' + baseLayout.scriptVersion + ') no-repeat;" class="blink"></div>');
                 }
             }
