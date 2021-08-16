@@ -96,6 +96,21 @@ export default class BaseLayout_ContextMenu
                         text        : 'Update "' + buildingData.name + '" phase',
                         callback    : Building_SpaceElevator.updatePhase
                     });
+                    /*
+                    let nextPhase = Building_SpaceElevator.getNextPhase(this.baseLayout);
+                        if(nextPhase !== null)
+                        {
+                            contextMenu.push({
+                                text        : 'Empty "' + buildingData.name + '" inventory',
+                                callback    : Building_SpaceElevator.emptyPhase
+                            });
+                            contextMenu.push({
+                                text        : 'Fill "' + buildingData.name + '" inventory',
+                                callback    : Building_SpaceElevator.fillPhase
+                            });
+                        }
+                    */
+                    contextMenu.push({separator: true});
                     break;
                 case '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C':
                 case '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C':

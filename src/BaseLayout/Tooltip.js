@@ -10,6 +10,7 @@ import Building_Locomotive                      from '../Building/Locomotive.js'
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
+import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
 
 export default class BaseLayout_Tooltip
@@ -123,6 +124,8 @@ export default class BaseLayout_Tooltip
                                             return Building_Locomotive.getTooltip(this.baseLayout, currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
                                             return Building_GeneratorGeoThermal.getTooltip(this.baseLayout, currentObject, buildingData);
+                                        case '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C':
+                                            return Building_SpaceElevator.getTooltip(this.baseLayout, currentObject, buildingData);
                                     }
                                     switch(buildingData.category)
                                     {

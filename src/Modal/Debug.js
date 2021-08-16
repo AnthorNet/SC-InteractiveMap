@@ -21,6 +21,11 @@ export default class Modal_Debug
             }
         }
 
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C')
+        {
+            extraPathName.push('Persistent_Level:PersistentLevel.GamePhaseManager');
+        }
+
         let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn'];
             for(let i = 0; i < extraProperties.length; i++)
             {
