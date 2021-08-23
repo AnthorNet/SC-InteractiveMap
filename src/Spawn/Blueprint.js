@@ -674,18 +674,21 @@ export default class Spawn_Blueprint
                                     currentTargetPoint.transform.translation[2]  = currentTargetPoint.transform.translation[2] + this.centerObject.transform.translation[2] + (this.centerObjectData.height * 100 / 2);
                             }
 
-                            for(let k = 0; k < currentTargetPoint.properties.length; k++)
+                            if(currentTargetPoint.properties !== undefined)
                             {
-                                if(currentTargetPoint.properties[k].name === 'mNext')
+                                for(let k = 0; k < currentTargetPoint.properties.length; k++)
                                 {
-                                    if(targetConversion[currentTargetPoint.properties[k].value.pathName] !== undefined)
+                                    if(currentTargetPoint.properties[k].name === 'mNext')
                                     {
-                                        currentTargetPoint.properties[k].value.pathName = targetConversion[currentTargetPoint.properties[k].value.pathName];
+                                        if(targetConversion[currentTargetPoint.properties[k].value.pathName] !== undefined)
+                                        {
+                                            currentTargetPoint.properties[k].value.pathName = targetConversion[currentTargetPoint.properties[k].value.pathName];
+                                        }
                                     }
-                                }
-                                if(currentTargetPoint.properties[k].name === 'mOwningVehicle')
-                                {
-                                    currentTargetPoint.properties[k].value.pathName = currentClipboard.parent.pathName;
+                                    if(currentTargetPoint.properties[k].name === 'mOwningVehicle')
+                                    {
+                                        currentTargetPoint.properties[k].value.pathName = currentClipboard.parent.pathName;
+                                    }
                                 }
                             }
 

@@ -253,7 +253,6 @@ export default class SaveParser_Write
                 console.timeEnd('writeFileSaveAs');
 
                 this.saveBlobArray  = [];
-                this.currentByte    = 0;
                 return;
             }
         }.bind(this), 5);
@@ -281,7 +280,6 @@ export default class SaveParser_Write
         }
 
         this.saveBinary     = '';
-        this.currentByte    = 0;
 
         return buffer;
     }
@@ -1143,8 +1141,8 @@ export default class SaveParser_Write
     // https://github.com/feross/buffer/blob/v6.0.3/index.js#L1440
     writeInt8(value, count = true)
     {
-        let arrayBuffer = new Uint8Array(1);
-            arrayBuffer[0] = (value & 0xff);
+        let arrayBuffer     = new Uint8Array(1);
+            arrayBuffer[0]  = (value & 0xff);
 
         if(count === true)
         {
@@ -1154,14 +1152,15 @@ export default class SaveParser_Write
 
         return String.fromCharCode.apply(null, arrayBuffer);
     }
+
     // https://github.com/feross/buffer/blob/v6.0.3/index.js#L1469
     writeInt(value, count = true)
     {
-        let arrayBuffer = new Uint8Array(4);
-            arrayBuffer[3] = (value >>> 24);
-            arrayBuffer[2] = (value >>> 16);
-            arrayBuffer[1] = (value >>> 8);
-            arrayBuffer[0] = (value & 0xff);
+        let arrayBuffer     = new Uint8Array(4);
+            arrayBuffer[3]  = (value >>> 24);
+            arrayBuffer[2]  = (value >>> 16);
+            arrayBuffer[1]  = (value >>> 8);
+            arrayBuffer[0]  = (value & 0xff);
 
         if(count === true)
         {
@@ -1171,6 +1170,7 @@ export default class SaveParser_Write
 
         return String.fromCharCode.apply(null, arrayBuffer);
     }
+    
     writeLong(value, count = true)
     {
         if(value instanceof Array)
