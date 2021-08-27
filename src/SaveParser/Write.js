@@ -1170,7 +1170,7 @@ export default class SaveParser_Write
 
         return String.fromCharCode.apply(null, arrayBuffer);
     }
-    
+
     writeLong(value, count = true)
     {
         if(value instanceof Array)
@@ -1318,8 +1318,13 @@ export default class SaveParser_Write
             saveBinary += this.writeInt(value.structs.length);
             for(let i = 0; i < value.structs.length; i++)
             {
-                saveBinary += this.writeString(value.structs[i].levelName);
-                saveBinary += this.writeString(value.structs[i].pathName);
+                saveBinary += this.writeInt(value.structs[i].unk1);
+                saveBinary += this.writeString(value.structs[i].unk2);
+                saveBinary += this.writeInt(value.structs[i].unk3);
+                saveBinary += this.writeString(value.structs[i].ink4);
+                saveBinary += this.writeInt(value.structs[i].unk5);
+                saveBinary += this.writeInt(value.structs[i].unk6);
+                saveBinary += this.writeInt(value.structs[i].unk7);
             }
 
         return saveBinary;

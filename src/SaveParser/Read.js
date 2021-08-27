@@ -1430,16 +1430,24 @@ export default class SaveParser_Read
                 });
             }
 
-        data.thread     = this.readString();
-        data.globals    = this.readString();
+        data.thread         = this.readString();
+        data.globals        = this.readString();
 
-        let countStructs  = this.readInt();
+        let countStructs    = this.readInt();
+            data.structs    = [];
+
             for(let i = 0; i < countStructs; i++)
             {
-                data.structs.push({
-                    levelName: this.readString(),
-                    pathName: this.readString()
-                });
+                let structure = {};
+                    structure.unk1  = this.readInt();
+                    structure.unk2  = this.readString();
+                    structure.unk3  = this.readInt();
+                    structure.unk4  = this.readString();
+                    structure.unk5  = this.readInt();
+                    structure.unk6  = this.readInt();
+                    structure.unk7  = this.readInt();
+
+                    data.structs.push(structure);
             }
 
         return data;
