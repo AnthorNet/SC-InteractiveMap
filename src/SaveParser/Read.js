@@ -816,6 +816,7 @@ export default class SaveParser_Read
                                 case 'LampGroup':
                                 case 'STRUCT_ProgElevator_Floor':
                                 case 'InserterBuildingProfile':
+                                case 'BRN_Base_FrackingSatelliteInfo':
                                     let subStructProperties = [];
                                         while(true)
                                         {
