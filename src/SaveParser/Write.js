@@ -1324,7 +1324,7 @@ export default class SaveParser_Write
                 if(value.structs[i].unk2 === '/Script/FactoryGame.InventoryStack')
                 {
                     saveBinary += this.writeInt(value.structs[i].unk3);
-                    saveBinary += this.writeString(value.structs[i].ink4);
+                    saveBinary += this.writeString(value.structs[i].unk4);
                     saveBinary += this.writeInt(value.structs[i].unk5);
                     saveBinary += this.writeInt(value.structs[i].unk6);
                     saveBinary += this.writeInt(value.structs[i].unk7);
