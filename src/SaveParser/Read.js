@@ -1442,11 +1442,15 @@ export default class SaveParser_Read
                 let structure = {};
                     structure.unk1  = this.readInt();
                     structure.unk2  = this.readString();
-                    structure.unk3  = this.readInt();
-                    structure.unk4  = this.readString();
-                    structure.unk5  = this.readInt();
-                    structure.unk6  = this.readInt();
-                    structure.unk7  = this.readInt();
+
+                    if(structure.unk2 === '/Script/FactoryGame.InventoryStack')
+                    {
+                        structure.unk3  = this.readInt();
+                        structure.unk4  = this.readString();
+                        structure.unk5  = this.readInt();
+                        structure.unk6  = this.readInt();
+                        structure.unk7  = this.readInt();
+                    }
 
                     data.structs.push(structure);
             }
