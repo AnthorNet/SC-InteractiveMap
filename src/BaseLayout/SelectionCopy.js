@@ -90,6 +90,7 @@ export default class BaseLayout_Selection_Copy
                      || currentObject.className === '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
                      || currentObject.className === '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C'
                      || currentObject.className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'
+                     || currentObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C' // Skip them and grab them from the port...
                 )
                 {
                     let newDataObject           = {};
@@ -104,26 +105,6 @@ export default class BaseLayout_Selection_Copy
                             let newObjectChildren = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName)));
                                 newDataObject.children.push(newObjectChildren);
                         }
-                    }
-
-                    // Removes drone action to reset it
-                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
-                    {
-                        this.baseLayout.setObjectProperty(newDataObject.parent, 'mCurrentDockingState', {
-                            type    : "DroneDockingStateInfo",
-                            values  : [
-                                {
-                                    name    : "State",
-                                    type    : "EnumProperty",
-                                    value   : {
-                                        name    : "EDroneDockingState",
-                                        value   : "EDroneDockingState::DS_DOCKED"
-                                    }
-                                }
-                            ]
-                        }, 'StructProperty');
-                        this.baseLayout.deleteObjectProperty(newDataObject.parent, 'mCurrentAction');
-                        this.baseLayout.deleteObjectProperty(newDataObject.parent, 'mActionsToExecute');
                     }
 
                     // Grab train station name?
@@ -163,6 +144,26 @@ export default class BaseLayout_Selection_Copy
                                                             JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(extraPropertyObject.children[k].pathName)))
                                                         );
                                                     }
+                                                }
+
+                                                // Removes drone action to reset it
+                                                if(extraPropertyNewObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
+                                                {
+                                                    this.baseLayout.setObjectProperty(extraPropertyNewObject.parent, 'mCurrentDockingState', {
+                                                        type    : "DroneDockingStateInfo",
+                                                        values  : [
+                                                            {
+                                                                name    : "State",
+                                                                type    : "EnumProperty",
+                                                                value   : {
+                                                                    name    : "EDroneDockingState",
+                                                                    value   : "EDroneDockingState::DS_DOCKED"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, 'StructProperty');
+                                                    this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mCurrentAction');
+                                                    this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mActionsToExecute');
                                                 }
 
                                             this.clipboard.data.push(extraPropertyNewObject);
