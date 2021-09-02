@@ -57,7 +57,7 @@ export default class BaseLayout_Statistics_Collectables
                                                             let dataCollected   = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected')) + 1;
                                                             let dataTotal       = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-total'));
                                                                 $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', dataCollected);
-                                                                $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                                                                $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
                                                         }
                                                     }
                                                     else
@@ -72,11 +72,11 @@ export default class BaseLayout_Statistics_Collectables
 
                                                                 if(dataCollected === 0)
                                                                 {
-                                                                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(dataTotal);
+                                                                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
                                                                 }
                                                                 else
                                                                 {
-                                                                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                                                                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
                                                                 }
                                                         }
                                                     }

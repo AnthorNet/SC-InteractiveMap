@@ -571,7 +571,7 @@ export default class Map
                                                     let dataCollected   = parseInt($('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-collected')) + 1;
                                                     let dataTotal       = parseInt($('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-total'));
                                                         $('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-collected', dataCollected);
-                                                        $('.updateLayerState[data-id="' + option.layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                                                        $('.updateLayerState[data-id="' + option.layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
                                                 }
                                         }
                                     }
@@ -791,11 +791,11 @@ export default class Map
 
                                 if(dataCollected === 0)
                                 {
-                                    $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataTotal);
+                                    $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataTotal));
                                 }
                                 else
                                 {
-                                    $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                                    $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
                                 }
                     }
                 }

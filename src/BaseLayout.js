@@ -215,6 +215,11 @@ export default class BaseLayout
             this.satisfactoryMap.collectableMarkers[pathName].setOpacity(1);
             delete this.satisfactoryMap.collectableMarkers[pathName].options.extractorPathName;
         }
+        $('.updateLayerState[data-collected]').each(function(i, el){
+            let total = $(el).attr('data-total');
+                $(el).attr('data-collected', 0);
+                $(el).find('.badge').html(new Intl.NumberFormat(this.language).format(total));
+        }.bind(this));
 
         for(let layerId in this.playerLayers)
         {
@@ -2576,7 +2581,7 @@ export default class BaseLayout
                         this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.extractorPathName = currentObject.pathName;
 
                         $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
-                        $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                        $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
                     }
                 }
         }
@@ -3069,11 +3074,11 @@ export default class BaseLayout
 
                             if(dataCollected === 0)
                             {
-                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataTotal);
+                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataTotal));
                             }
                             else
                             {
-                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
                             }
 
                             if(this.showNodesOnMiners === true)
@@ -4985,11 +4990,11 @@ export default class BaseLayout
 
         if(dataCollected === 0)
         {
-            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataTotal);
+            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataTotal));
         }
         else
         {
-            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(dataCollected + '/' + dataTotal);
+            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
         }
     }
 
