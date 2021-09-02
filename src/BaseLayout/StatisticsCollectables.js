@@ -39,12 +39,19 @@ export default class BaseLayout_Statistics_Collectables
                                             {
                                                 if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                                                 {
-                                                    let updatedOpacity = 1;
+                                                    let dataCollected   = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected'));
+                                                    let dataTotal       = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-total'));
+                                                    let updatedOpacity  = 1;
                                                         if(collectedStatus === true)
                                                         {
                                                             updatedOpacity = window.SCIM.collectedOpacity;
+                                                            dataCollected++;
                                                         }
+
                                                         this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(updatedOpacity);
+
+                                                        $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', dataCollected);
+                                                        $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
                                                 }
                                                 else
                                                 {
