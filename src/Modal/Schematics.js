@@ -134,7 +134,7 @@ export default class Modal_Schematics
 
         let html = [];
             html.push('<div class="card-body text-center">You can click on the status of the recipe to update its current state.</div>');
-
+            html.push('<div class="card-body text-center">You currently have x/y recipes unlocked.</div>');
             html.push('<table class="table mb-0">');
             html.push('<tr><td class="text-right" colspan="2"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
 
@@ -142,6 +142,8 @@ export default class Modal_Schematics
                 return this.baseLayout.schematicsData[a].name.localeCompare(this.baseLayout.schematicsData[b].name);
             }.bind(this));
 
+        let unlockedRecipes = 0;
+        let totalRecipes = 0;
         for(let i = 0; i < schematicsDataKey.length; i++)
         {
             if(schematicsDataKey[i].search('Schematic_Alternate_') !== -1)
@@ -150,6 +152,7 @@ export default class Modal_Schematics
                 let currentSchematic    = this.baseLayout.schematicsData[className];
 
                 html.push('<tr>');
+                ++totalRecipes;
 
                 if(currentSchematic.recipes !== undefined)
                 {
@@ -217,6 +220,7 @@ export default class Modal_Schematics
                 {
                     this.baseLayout.collectedSchematics.addCollected(className);
                     html.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
+                    ++unlockedRecipes;
                 }
                 else
                 {
@@ -235,6 +239,8 @@ export default class Modal_Schematics
         }
 
         html.push('</table>');
+
+        html[1] = '<div class="card-body text-center">You currently have ' + unlockedRecipes + '/' + totalRecipes + ' recipes unlocked.</div>';
 
         $('#statisticsModalAlternateRecipes').html(html.join(''));
 
