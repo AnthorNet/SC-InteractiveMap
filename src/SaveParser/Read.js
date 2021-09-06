@@ -1108,6 +1108,7 @@ export default class SaveParser_Read
                     case 'ItemAmount': // MOD: NogInserter?
                     case 'FINGPUT1Buffer':
                     case 'Loot': // MOD: ???
+                    case 'ProductionHandle': // MOD: ???
                         currentProperty.value.values = [];
                         while(true)
                         {
