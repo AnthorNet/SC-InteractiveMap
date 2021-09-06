@@ -1221,11 +1221,10 @@ export default class SaveParser_Write
     writeString(value, count = true)
     {
         let stringLength = value.length;
-
-        if(stringLength === 0)
-        {
-            return this.writeInt(0, count);
-        }
+            if(stringLength === 0)
+            {
+                return this.writeInt(0, count);
+            }
 
         // UTF8
         if(/^[\x00-\x7F]*$/.test(value) === true)
@@ -1245,14 +1244,13 @@ export default class SaveParser_Write
         // UTF16
         else
         {
-            let saveBinary      = this.writeInt(-stringLength, count);
+            let saveBinary      = this.writeInt(-stringLength - 1, count);
             let arrayBuffer     = new Uint8Array(stringLength * 2);
-
-            for (let i = 0; i < stringLength; i++)
-            {
-                arrayBuffer[i * 2] = value.charCodeAt(i) & 0xff;
-                arrayBuffer[i * 2 + 1] = (value.charCodeAt(i) >> 8) & 0xff;
-            }
+                for(let i = 0; i < stringLength; i++)
+                {
+                    arrayBuffer[i * 2]      = value.charCodeAt(i) & 0xff;
+                    arrayBuffer[i * 2 + 1]  = (value.charCodeAt(i) >> 8) & 0xff;
+                }
 
             if(count === true)
             {
@@ -1261,6 +1259,8 @@ export default class SaveParser_Write
             this.currentEntityLength += stringLength * 2;
 
             saveBinary += String.fromCharCode.apply(null, arrayBuffer);
+            saveBinary += this.writeByte(0, count);
+            saveBinary += this.writeByte(0, count);
 
             return saveBinary;
         }

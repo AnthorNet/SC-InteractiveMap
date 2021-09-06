@@ -589,11 +589,13 @@ export default class Map
             for(let index in this.activeLayers)
             {
                 let layerId = this.activeLayers[index];
-                    if(this.availableLayers[layerId] !== undefined)
+                    if(this.availableLayers[layerId] === undefined)
                     {
-                        this.leafletMap.addLayer(this.availableLayers[layerId]);
-                        $('.updateLayerState[data-id=' + layerId + ']').addClass(window.SCIM.outlineClass);
+                        this.availableLayers[layerId] = L.layerGroup();
                     }
+
+                    this.leafletMap.addLayer(this.availableLayers[layerId]);
+                    $('.updateLayerState[data-id="' + layerId + '"]').addClass(window.SCIM.outlineClass);
             }
 
             if(this.startCallback !== null)
@@ -685,7 +687,7 @@ export default class Map
                     {
                         this.removeActiveLayer(layerId);
                         this.leafletMap.removeLayer(this.availableLayers[layerId]);
-                        $('.updateLayerState[data-id=' + layerId + ']').removeClass(window.SCIM.outlineClass);
+                        $('.updateLayerState[data-id="' + layerId + '"]').removeClass(window.SCIM.outlineClass);
                     }
                 }
             }
@@ -807,19 +809,21 @@ export default class Map
 
     addActiveLayer(layerId)
     {
-        this.activeLayers.push(layerId);
+        if(this.activeLayers.includes(layerId) === false)
+        {
+            this.activeLayers.push(layerId);
+        }
     }
 
     removeActiveLayer(layerId)
     {
         if(this.activeLayers !== null)
         {
-            var index = this.activeLayers.indexOf(layerId);
-
-            if(index > -1)
-            {
-               this.activeLayers.splice(index, 1);
-            }
+            let index = this.activeLayers.indexOf(layerId);
+                if(index > -1)
+                {
+                   this.activeLayers.splice(index, 1);
+                }
         }
     }
 
@@ -964,13 +968,13 @@ export default class Map
 
                     if(initialHash.baseLayer === null)
                     {
-                        //$('.setBaseLayer[data-id=' + baseLayer + ']').trigger('click');
+                        //$('.setBaseLayer[data-id="' + baseLayer + '"]').trigger('click');
                     }
                     else
                     {
                         baseLayer    = initialHash.baseLayer;
                         setTimeout(function(){
-                            $('.setBaseLayer[data-id=' + baseLayer + ']').trigger('click');
+                            $('.setBaseLayer[data-id="' + baseLayer + '"]').trigger('click');
                         }, 150);
                     }
 

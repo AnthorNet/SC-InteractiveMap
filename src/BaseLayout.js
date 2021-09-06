@@ -291,6 +291,7 @@ export default class BaseLayout
         $('#researchButton').hide();
         $('#optionsButton').hide();
         $('#altitudeSliderInputs').hide();
+        $('#mods_resource_nodes').hide();
 
         this.detailedModels = {};
 
@@ -559,6 +560,60 @@ export default class BaseLayout
                 {
                     continue;
                 }
+            }
+
+            // Mod nodes
+            if([
+                '/RefinedPower/World/ResourceNodes/Element65/BP_Element65_Impure.BP_Element65_Impure_C',
+                '/RefinedPower/World/ResourceNodes/Element65/BP_Element65_Normal.BP_Element65_Normal_C',
+                '/RefinedPower/World/ResourceNodes/Element65/BP_Element65_Pure.BP_Element65_Pure_C'
+            ].includes(currentObject.className))
+            {
+                if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] === undefined)
+                {
+                    $('#mods_resource_nodes').show();
+
+                    let layoutId    = currentObject.className.split('.').pop();
+                        if(this.satisfactoryMap.availableLayers[layoutId] === undefined)
+                        {
+                            this.satisfactoryMap.availableLayers[layoutId] = L.layerGroup();
+                        }
+
+                    let button      = $('.updateLayerState[data-id="' + layoutId + '"]');
+                        button.attr('data-total', parseInt(button.attr('data-total')) + 1);
+                        button.find('.badge').html(new Intl.NumberFormat(this.language).format(parseInt(button.attr('data-total'))));
+                        button.parent().parent().show();
+
+                    let currentMarkerOptions    = {
+                            pathName: currentObject.pathName,
+                            icon: this.getMarkerIcon(button.attr('data-outside'), button.attr('data-inside'), button.attr('data-image')),
+                            riseOnHover: true,
+                            zIndexOffset: 1000
+                        };
+                    let tooltip                 = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
+                                                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                                                        ' + ((button.attr('data-original-title') !== undefined) ? button.attr('data-original-title') : button.attr('title')) + '\
+                                                    </div>\
+                                                </div>';
+                    let currentMarker           = L.marker(this.satisfactoryMap.unproject(currentObject.transform.translation), currentMarkerOptions)
+                                                    .bindTooltip(tooltip)
+                                                    .addTo(this.satisfactoryMap.availableLayers[layoutId]);
+
+                        this.satisfactoryMap.collectableMarkers[currentObject.pathName]                     = currentMarker;
+                        this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId     = layoutId;
+                        this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName    = currentObject.pathName;
+                }
+
+                this.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(this);
+
+                continue;
+            }
+            if([
+                '/RefinedPower/World/ResourceNodes/WaterTurbine/BP_WaterTurbineNode_Medium.BP_WaterTurbineNode_Medium_C',
+                '/RefinedPower/World/ResourceNodes/WaterTurbine/BP_WaterTurbineNode_Fast.BP_WaterTurbineNode_Fast_C',
+            ].includes(currentObject.className))
+            {
+                continue; // Too much so skip...
             }
 
             // Skip
@@ -1195,10 +1250,10 @@ export default class BaseLayout
                         let playerMarker    = L.marker(
                                 position,
                                 {
-                                    pathName: currentObject.pathName,
-                                    icon: this.getMarkerIcon('#FFFFFF', ((isOwnPlayer === true) ? '#b3b3b3' : '#666666'), this.staticUrl + '/img/mapPlayerIcon.png'),
-                                    riseOnHover: true,
-                                    zIndexOffset: 1000
+                                    pathName        : currentObject.pathName,
+                                    icon            : this.getMarkerIcon('#FFFFFF', ((isOwnPlayer === true) ? '#b3b3b3' : '#666666'), this.staticUrl + '/img/mapPlayerIcon.png'),
+                                    riseOnHover     : true,
+                                    zIndexOffset    : 1000
                                 }
                             );
 
@@ -2566,7 +2621,7 @@ export default class BaseLayout
                         //TODO: Check coordinates...
                         if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625' || extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614')
                         {
-                            dataCollected++
+                            dataCollected++;
                         }
 
                         if(this.showNodesOnMiners === true)

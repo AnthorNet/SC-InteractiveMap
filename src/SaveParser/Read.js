@@ -1346,15 +1346,16 @@ export default class SaveParser_Read
         // UTF16
         if(strLength < 0)
         {
-                strLength   = strLength * -2;
+                strLength   = -strLength - 1;
             let string      = [];
 
-            for(let i = 0; i < ((strLength / 2) -1); ++i)
+            for(let i = 0; i < strLength; ++i)
             {
-                string.push(String.fromCharCode(
-                    this.bufferView.getUint16(this.currentByte++, true)
-                ));
-                this.currentByte++;
+                let caracter = String.fromCharCode(
+                        this.bufferView.getUint16(this.currentByte++, true)
+                    );
+                    string.push(caracter);
+                    this.currentByte++;
             }
             this.currentByte++;
             this.currentByte++;
