@@ -26,7 +26,7 @@ export default class Modal_Debug
             extraPathName.push('Persistent_Level:PersistentLevel.GamePhaseManager');
         }
 
-        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn'];
+        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList'];
             for(let i = 0; i < extraProperties.length; i++)
             {
                 let extraProperty = baseLayout.getObjectProperty(currentObject, extraProperties[i]);
@@ -113,7 +113,7 @@ export default class Modal_Debug
 
             for(let j = 0; j < extraPathName.length; j++)
             {
-                html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;" data-toggle="tab" href="#advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '" role="tab" style="cursor:pointer;">' + extraPathName[j].replace('Persistent_Level:', '') + '</span></li>');
+                html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;cursor:pointer;" data-toggle="tab" href="#advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '">' + extraPathName[j].replace('Persistent_Level:', '') + '</span></li>');
             }
 
             html.push('</ul>');

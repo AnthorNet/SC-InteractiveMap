@@ -95,7 +95,7 @@ export default class Spawn_Blueprint
 
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    if(this.clipboard.data[i].parent.transform !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
+                    if(this.clipboard.data[i].parent.transform !== undefined && this.clipboard.data[i].parent.transform.translation !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
                     {
                         this.clipboard.data[i].parent.transform.translation[0] -= centerX;
                         this.clipboard.data[i].parent.transform.translation[1] -= centerY;
@@ -106,7 +106,6 @@ export default class Spawn_Blueprint
                             for(let j = 0; j < this.clipboard.data[i].targetPoints.length; j++)
                             {
                                 let currentTargetPoint  = this.clipboard.data[i].targetPoints[j];
-
                                     currentTargetPoint.transform.translation[0] -= centerX;
                                     currentTargetPoint.transform.translation[1] -= centerY;
                                     currentTargetPoint.transform.translation[2] -= minZ;
@@ -781,21 +780,18 @@ export default class Spawn_Blueprint
 
                     if(this.useHistory === true && this.baseLayout.history !== null)
                     {
-                        this.historyPathName.push([newObject.pathName, result.layerId]);
+                        this.historyPathName.push([newObject.pathName, result.layer]);
+                    }
+
+                    if(currentClipboard.linkedList !== undefined)
+                    {
+                        let vehicleDataMarker = this.baseLayout.getMarkerFromPathName(newObject.pathName + '_vehicleTrackData', result.layer);
+                            if(vehicleDataMarker !== null)
+                            {
+                                vehicleDataMarker.addTo(this.baseLayout.playerLayers[result.layer].subLayer);
+                            }
                     }
                 }
-
-            //TODO: ???
-            if(currentClipboard.linkedList !== undefined)
-            {
-                /*
-                let vehicleDataMarker = this.baseLayout.getMarkerFromPathName(newObject.pathName + '_vehicleTrackData', result.layer);
-                    if(vehicleDataMarker !== null)
-                    {
-                        vehicleDataMarker.addTo(this.playerLayers[result.layer].subLayer);
-                    }
-                */
-            }
 
             if(currentClipboard.children !== undefined)
             {

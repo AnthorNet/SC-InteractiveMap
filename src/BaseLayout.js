@@ -5309,47 +5309,35 @@ export default class BaseLayout
             if(currentTargetNodeLinkedList !== null)
             {
                 let targetNode = this.saveGameParser.getTargetObject(currentTargetNodeLinkedList.pathName);
-
-                if(targetNode.properties !== undefined && targetNode.properties.length > 0)
-                {
-                    let firstNode   = null;
-                    let lastNode    = null;
-
-                    for(let j = 0; j < targetNode.properties.length; j++)
+                    if(targetNode !== null)
                     {
-                        if(targetNode.properties[j].name === 'mFirst')
-                        {
-                            firstNode = this.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
-                        }
-                        if(targetNode.properties[j].name === 'mLast')
-                        {
-                            lastNode = this.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
-                        }
-                    }
+                        let mFirst  = this.getObjectProperty(targetNode, 'mFirst');
+                        let mLast   = this.getObjectProperty(targetNode, 'mLast');
 
-                    if(firstNode !== null && lastNode !== null)
-                    {
-                        let checkCurrentNode = firstNode;
+                            if(mFirst !== null && mLast !== null)
+                            {
+                                let firstNode   = this.saveGameParser.getTargetObject(mFirst.pathName);
+                                let lastNode    = this.saveGameParser.getTargetObject(mLast.pathName);
 
-                        while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
-                        {
-                            currentTrack.push(checkCurrentNode.transform.translation);
-
-                            let checkCurrentNodeProperties  = checkCurrentNode.properties;
-                                checkCurrentNode            = null;
-
-                                for(let k = 0; k < checkCurrentNodeProperties.length; k++)
-                                {
-                                    if(checkCurrentNodeProperties[k].name === 'mNext')
+                                    if(firstNode !== null && lastNode !== null)
                                     {
-                                        checkCurrentNode = this.saveGameParser.getTargetObject(checkCurrentNodeProperties[k].value.pathName);
-                                    }
-                                }
-                        }
+                                        let checkCurrentNode = firstNode;
+                                            while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
+                                            {
+                                                currentTrack.push(checkCurrentNode.transform.translation);
 
-                        currentTrack.push(lastNode.transform.translation);
+                                                let mNext               = this.getObjectProperty(checkCurrentNode, 'mNext');
+                                                    checkCurrentNode    = null;
+                                                    if(mNext !== null)
+                                                    {
+                                                        checkCurrentNode = this.saveGameParser.getTargetObject(mNext.pathName);
+                                                    }
+                                            }
+
+                                        currentTrack.push(lastNode.transform.translation);
+                                    }
+                            }
                     }
-                }
             }
 
         return currentTrack;

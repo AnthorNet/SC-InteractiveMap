@@ -173,34 +173,40 @@ export default class BaseLayout_Selection_Copy
                         }
 
                     // Does vehicle have a list of waypoints?
-                    let mTargetNodeLinkedList   = this.baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
+                    let mTargetNodeLinkedList = this.baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
                         if(mTargetNodeLinkedList !== null)
                         {
-                            let linkedList = this.baseLayout.saveGameParser.getTargetObject(mTargetNodeLinkedList.pathName);
-                                newDataObject.linkedList = linkedList;
+                            let linkedList                  = this.baseLayout.saveGameParser.getTargetObject(mTargetNodeLinkedList.pathName);
 
-                                if(linkedList.properties !== undefined && linkedList.properties.length > 0)
+                                if(linkedList !== null)
                                 {
-                                    let firstNode   = this.baseLayout.getObjectProperty(linkedList, 'mFirst');
-                                    let lastNode    = this.baseLayout.getObjectProperty(linkedList, 'mLast');
-                                        if(firstNode !== null && lastNode !== null)
+                                    let mFirst                      = this.baseLayout.getObjectProperty(linkedList, 'mFirst');
+                                    let mLast                       = this.baseLayout.getObjectProperty(linkedList, 'mLast');
+                                        newDataObject.linkedList    = linkedList;
+
+                                        if(mFirst !== null && mLast !== null)
                                         {
-                                                newDataObject.targetPoints  = [];
-                                            let checkCurrentNode            = firstNode;
-
-                                                while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
+                                            let firstNode   = this.baseLayout.saveGameParser.getTargetObject(mFirst.pathName);
+                                            let lastNode    = this.baseLayout.saveGameParser.getTargetObject(mLast.pathName);
+                                                if(firstNode !== null && lastNode !== null)
                                                 {
-                                                    newDataObject.targetPoints.push(checkCurrentNode);
+                                                    let checkCurrentNode            = firstNode;
+                                                        newDataObject.targetPoints  = [];
 
-                                                    let mNext               = this.baseLayout.getObjectProperty(checkCurrentNode, 'mNext');
-                                                        checkCurrentNode    = null;
-                                                        if(mNext !== null)
+                                                        while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
                                                         {
-                                                            checkCurrentNode = this.baseLayout.saveGameParser.getTargetObject(mNext.pathName);
-                                                        }
-                                                }
+                                                            newDataObject.targetPoints.push(checkCurrentNode);
 
-                                            newDataObject.targetPoints.push(lastNode);
+                                                            let mNext               = this.baseLayout.getObjectProperty(checkCurrentNode, 'mNext');
+                                                                checkCurrentNode    = null;
+                                                                if(mNext !== null)
+                                                                {
+                                                                    checkCurrentNode = this.baseLayout.saveGameParser.getTargetObject(mNext.pathName);
+                                                                }
+                                                        }
+
+                                                    newDataObject.targetPoints.push(lastNode);
+                                                }
                                         }
                                 }
                         }
