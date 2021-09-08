@@ -27,9 +27,8 @@ export default class Modal_Schematics
     {
         $('#statisticsModalSchematics').empty();
 
-        let purchasedAlternate      = this.getPurchasedSchematics();
-
-        let html = [];
+        let purchased   = this.getPurchasedSchematics();
+        let html        = [];
             html.push('<div class="card-body text-center">You can click on the status of the schematic to update its current state.</div>');
 
         let maxTier = 0;
@@ -51,55 +50,64 @@ export default class Modal_Schematics
         html.push('<div class="tab-content p-0 border border-top-0">');
         for(let i = 0; i <= maxTier; i++)
         {
-            html.push('<div class="tab-pane fade ' + ( (selectedTier === i) ? 'show active' : '' ) + '" id="playerUnlockedSchematics-' + i + '" role="tabpanel">');
-            html.push('<table class="table mb-0">');
-            html.push('<tr><td class="text-right" colspan="2"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + i + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
+            let htmlData        = [];
+            let unlocked        = 0;
+            let total           = 0;
 
-            let currentTierData   = {};
+            let currentData     = {};
                 for(let schematicId in this.baseLayout.schematicsData)
                 {
                     if(this.baseLayout.schematicsData[schematicId].tier !== undefined && this.baseLayout.schematicsData[schematicId].tier === i && (schematicId.startsWith('Schematic_') || schematicId.startsWith('Schem_') || schematicId.startsWith('/SS_Mod/Schematics/')))
                     {
-                        currentTierData[schematicId] = this.baseLayout.schematicsData[schematicId];
+                        currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
                     }
                 }
 
-            let schematicsDataKey = Object.keys(currentTierData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
+            let schematicsDataKey = Object.keys(currentData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
 
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
                 let className        = schematicsDataKey[j];
                 let currentSchematic = this.baseLayout.schematicsData[className];
+                    total++;
 
                 if(currentSchematic.tier !== undefined)
                 {
-                    html.push('<tr>');
-                    html.push('<td class="align-middle">');
-                        html.push('<strong style="font-size: 120%;">' + currentSchematic.name + '</strong>');
-                        html.push(this.getSchematicsUnlocks(currentSchematic));
-                    html.push('</td>');
-                    html.push('<td class="align-middle text-right">' + this.parseSchematicCost(currentSchematic) + '</td>');
+                    htmlData.push('<tr>');
+                    htmlData.push('<td class="align-middle">');
+                        htmlData.push('<strong style="font-size: 120%;">' + currentSchematic.name + '</strong>');
+                        htmlData.push(this.getSchematicsUnlocks(currentSchematic));
+                    htmlData.push('</td>');
+                    htmlData.push('<td class="align-middle text-right">' + this.parseSchematicCost(currentSchematic) + '</td>');
 
-                    if(currentSchematic.className !== undefined && purchasedAlternate.includes(currentSchematic.className))
+                    if(currentSchematic.className !== undefined && purchased.includes(currentSchematic.className))
                     {
-                        html.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="none" data-tier="' + currentSchematic.tier + '"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
+                        htmlData.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="none" data-tier="' + currentSchematic.tier + '"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
+                        unlocked++;
                     }
                     else
                     {
                         if(currentSchematic.className !== undefined)
                         {
-                            html.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available" data-tier="' + currentSchematic.tier + '"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
+                            htmlData.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available" data-tier="' + currentSchematic.tier + '"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
                         }
                         else
                         {
-                            html.push('<td></td>');
+                            htmlData.push('<td></td>');
                         }
                     }
 
-                    html.push('</tr>');
+                    htmlData.push('</tr>');
                 }
             }
 
+            html.push('<div class="tab-pane fade ' + ( (selectedTier === i) ? 'show active' : '' ) + '" id="playerUnlockedSchematics-' + i + '" role="tabpanel">');
+            html.push('<table class="table mb-0"><tr>');
+            html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
+            html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + i + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            html.push('</tr></table>');
+            html.push('<table class="table mb-0">');
+            html.push(htmlData.join(''));
             html.push('</table>');
             html.push('</div>');
         }
@@ -130,29 +138,25 @@ export default class Modal_Schematics
         $('#statisticsModalAlternateRecipes').empty();
         this.baseLayout.collectedSchematics.resetCollected();
 
-        let purchasedAlternate      = this.getPurchasedSchematics();
-
-        let html = [];
-            html.push('<div class="card-body text-center">You can click on the status of the recipe to update its current state.</div>');
-            html.push('<div class="card-body text-center">You currently have x/y recipes unlocked.</div>');
-            html.push('<table class="table mb-0">');
-            html.push('<tr><td class="text-right" colspan="2"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
+        let purchased   = this.getPurchasedSchematics();
+        let unlocked    = 0;
+        let total       = 0;
+        let htmlData    = [];
 
         let schematicsDataKey = Object.keys(this.baseLayout.schematicsData).sort(function(a,b){
                 return this.baseLayout.schematicsData[a].name.localeCompare(this.baseLayout.schematicsData[b].name);
             }.bind(this));
 
-        let unlockedRecipes = 0;
-        let totalRecipes = 0;
+
         for(let i = 0; i < schematicsDataKey.length; i++)
         {
             if(schematicsDataKey[i].search('Schematic_Alternate_') !== -1)
             {
                 let className           = schematicsDataKey[i];
                 let currentSchematic    = this.baseLayout.schematicsData[className];
+                    total++;
 
-                html.push('<tr>');
-                ++totalRecipes;
+                htmlData.push('<tr>');
 
                 if(currentSchematic.recipes !== undefined)
                 {
@@ -160,8 +164,8 @@ export default class Modal_Schematics
 
                         if(currentRecipe !== null)
                         {
-                            html.push('<td width="' + ((Object.keys(currentRecipe.produce).length * 48) + 10) + '" class="text-center">');
-                            html.push('<div class="d-flex flex-row justify-content-center">');
+                            htmlData.push('<td width="' + ((Object.keys(currentRecipe.produce).length * 48) + 10) + '" class="text-center">');
+                            htmlData.push('<div class="d-flex flex-row justify-content-center">');
 
                             for(let itemClassName in currentRecipe.produce)
                             {
@@ -179,68 +183,75 @@ export default class Modal_Schematics
                                         itemStyle       = 'border-radius: 50%;';
                                     }
 
-                                    html.push('<div class="d-flex flex-row" style="position:relative;margin: 1px;width: 48px;height: 48px;border: 1px solid #000000;' + itemStyle + 'padding: 5px;background-color: #FFFFFF;" data-hover="tooltip" title="' + itemData.name + '">');
-                                    html.push('<img src="' + itemData.image + '" class="img-fluid" />');
-                                    html.push('<span class="badge badge-warning align-middle" style="position: absolute;bottom: -1px; right: -1px;">' + new Intl.NumberFormat(this.language).format(itemProduced) + itemUnits + '</span>');
-                                    html.push('</div>');
+                                    htmlData.push('<div class="d-flex flex-row" style="position:relative;margin: 1px;width: 48px;height: 48px;border: 1px solid #000000;' + itemStyle + 'padding: 5px;background-color: #FFFFFF;" data-hover="tooltip" title="' + itemData.name + '">');
+                                    htmlData.push('<img src="' + itemData.image + '" class="img-fluid" />');
+                                    htmlData.push('<span class="badge badge-warning align-middle" style="position: absolute;bottom: -1px; right: -1px;">' + new Intl.NumberFormat(this.language).format(itemProduced) + itemUnits + '</span>');
+                                    htmlData.push('</div>');
                                 }
                             }
 
-                            html.push('</div>');
-                            html.push('</td>');
+                            htmlData.push('</div>');
+                            htmlData.push('</td>');
                         }
                         else
                         {
-                            html.push('<td></td>');
+                            htmlData.push('<td></td>');
                         }
                 }
                 else
                 {
                     if(currentSchematic.slots !== undefined)
                     {
-                        html.push('<td>');
-                        html.push('<div class="d-flex flex-row justify-content-center">');
-                        html.push('<div class="d-flex flex-row" style="position:relative;margin: 1px;width: 48px;height: 48px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background-color: #FFFFFF;" data-hover="tooltip" title="Inventory Slots">');
-                        html.push('<img src="' + this.baseLayout.staticUrl + '/img/gameUpdate4/ThumbsUp_256.png?v=' + this.baseLayout.scriptVersion + '" class="img-fluid" />');
-                        html.push('<span class="badge badge-warning align-middle" style="position: absolute;bottom: -1px; right: -1px;">' + new Intl.NumberFormat(this.language).format(currentSchematic.slots) + '</span>');
-                        html.push('</div>');
-                        html.push('</div>');
-                        html.push('</td>');
+                        htmlData.push('<td>');
+                        htmlData.push('<div class="d-flex flex-row justify-content-center">');
+                        htmlData.push('<div class="d-flex flex-row" style="position:relative;margin: 1px;width: 48px;height: 48px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background-color: #FFFFFF;" data-hover="tooltip" title="Inventory Slots">');
+                        htmlData.push('<img src="' + this.baseLayout.staticUrl + '/img/gameUpdate4/ThumbsUp_256.png?v=' + this.baseLayout.scriptVersion + '" class="img-fluid" />');
+                        htmlData.push('<span class="badge badge-warning align-middle" style="position: absolute;bottom: -1px; right: -1px;">' + new Intl.NumberFormat(this.language).format(currentSchematic.slots) + '</span>');
+                        htmlData.push('</div>');
+                        htmlData.push('</div>');
+                        htmlData.push('</td>');
                     }
                     else
                     {
-                        html.push('<td></td>');
+                        htmlData.push('<td></td>');
                     }
                 }
 
 
-                html.push('<td class="align-middle"><strong style="font-size: 120%;">' + currentSchematic.name + '</strong></td>');
+                htmlData.push('<td class="align-middle"><strong style="font-size: 120%;">' + currentSchematic.name + '</strong></td>');
 
-                if(currentSchematic.className !== undefined && purchasedAlternate.includes(currentSchematic.className))
+                if(currentSchematic.className !== undefined && purchased.includes(currentSchematic.className))
                 {
                     this.baseLayout.collectedSchematics.addCollected(className);
-                    html.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
-                    ++unlockedRecipes;
+                    htmlData.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
+                    unlocked++;
                 }
                 else
                 {
                     if(currentSchematic.className !== undefined)
                     {
-                        html.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
+                        htmlData.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
                     }
                     else
                     {
-                        html.push('<td></td>');
+                        htmlData.push('<td></td>');
                     }
                 }
 
-                html.push('</tr>');
+                htmlData.push('</tr>');
             }
         }
 
-        html.push('</table>');
+        let html = [];
+            html.push('<div class="card-body text-center">You can click on the status of the recipe to update its current state.</div>');
+            html.push('<table class="table mb-0"><tr>');
+            html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> alternative recipes unlocked.</td>');
+            html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            html.push('</tr></table>');
 
-        html[1] = '<div class="card-body text-center">You currently have ' + unlockedRecipes + '/' + totalRecipes + ' recipes unlocked.</div>';
+            html.push('<table class="table mb-0">');
+            html.push(htmlData.join(''));
+            html.push('</table>');
 
         $('#statisticsModalAlternateRecipes').html(html.join(''));
 
@@ -266,12 +277,8 @@ export default class Modal_Schematics
     {
         $('#statisticsModalMAM').empty();
 
-        let purchasedAlternate      = this.getPurchasedSchematics();
-
-        let html = [];
-            html.push('<div class="card-body text-center">You can click on the status of the schematic to update its current state.</div>');
-
-        let categories = [];
+        let purchased   = this.getPurchasedSchematics();
+        let categories  = [];
             for(let schematicId in this.baseLayout.schematicsData)
             {
                 if(this.baseLayout.schematicsData[schematicId].category !== undefined && schematicId.startsWith('Research_') && categories.includes(this.baseLayout.schematicsData[schematicId].category) === false)
@@ -282,68 +289,79 @@ export default class Modal_Schematics
             categories.sort(function(a,b){ return a.localeCompare(b); }.bind(this));
             if(selectedCategory === null){ selectedCategory = categories[0]; }
 
-        html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
-        for(let i = 0; i < categories.length; i++)
-        {
-            html.push('<li class="nav-item"><span class="nav-link px-3 ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedMAM-' + i + '" role="tab" style="cursor:pointer;">' + categories[i] + '</span></li>');
-        }
-        html.push('</ul>');
+        let html        = [];
+            html.push('<div class="card-body text-center">You can click on the status of the schematic to update its current state.</div>');
+            html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
+            for(let i = 0; i < categories.length; i++)
+            {
+                html.push('<li class="nav-item"><span class="nav-link px-3 ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedMAM-' + i + '" role="tab" style="cursor:pointer;">' + categories[i] + '</span></li>');
+            }
+            html.push('</ul>');
 
         html.push('<div class="tab-content p-0 border border-top-0">');
         for(let i = 0; i < categories.length; i++)
         {
-            html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedMAM-' + i + '" role="tabpanel">');
-            html.push('<table class="table mb-0">');
-            html.push('<tr><td class="text-right" colspan="2"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
+            let htmlData    = [];
+            let unlocked    = 0;
+            let total       = 0;
 
-            let currentTierData   = {};
+            let currentData = {};
                 for(let schematicId in this.baseLayout.schematicsData)
                 {
                     if(schematicId.startsWith('Research_'))
                     {
                         if(this.baseLayout.schematicsData[schematicId].category !== undefined && this.baseLayout.schematicsData[schematicId].category === categories[i])
                         {
-                            currentTierData[schematicId] = this.baseLayout.schematicsData[schematicId];
+                            currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
                         }
                     }
                 }
 
-            let schematicsDataKey = Object.keys(currentTierData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
+            let schematicsDataKey = Object.keys(currentData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
 
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
                 let className        = schematicsDataKey[j];
                 let currentSchematic = this.baseLayout.schematicsData[className];
+                    total++;
 
                 if(currentSchematic.category !== undefined)
                 {
-                    html.push('<tr>');
-                    html.push('<td class="align-middle">');
-                        html.push('<strong style="font-size: 120%;">' + currentSchematic.name + '</strong>');
-                        html.push(this.getSchematicsUnlocks(currentSchematic));
-                    html.push('</td>');
-                    html.push('<td class="align-middle text-right">' + this.parseSchematicCost(currentSchematic) + '</td>');
+                    htmlData.push('<tr>');
+                    htmlData.push('<td class="align-middle">');
+                        htmlData.push('<strong style="font-size: 120%;">' + currentSchematic.name + '</strong>');
+                        htmlData.push(this.getSchematicsUnlocks(currentSchematic));
+                    htmlData.push('</td>');
+                    htmlData.push('<td class="align-middle text-right">' + this.parseSchematicCost(currentSchematic) + '</td>');
 
-                    if(currentSchematic.className !== undefined && purchasedAlternate.includes(currentSchematic.className))
+                    if(currentSchematic.className !== undefined && purchased.includes(currentSchematic.className))
                     {
-                        html.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased" data-tier="' + currentSchematic.category + '"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
+                        htmlData.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased" data-tier="' + currentSchematic.category + '"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
+                        unlocked++;
                     }
                     else
                     {
                         if(currentSchematic.className !== undefined)
                         {
-                            html.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available" data-tier="' + currentSchematic.category + '"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
+                            htmlData.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available" data-tier="' + currentSchematic.category + '"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
                         }
                         else
                         {
-                            html.push('<td></td>');
+                            htmlData.push('<td></td>');
                         }
                     }
 
-                    html.push('</tr>');
+                    htmlData.push('</tr>');
                 }
             }
 
+            html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedMAM-' + i + '" role="tabpanel">');
+            html.push('<table class="table mb-0"><tr>');
+            html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
+            html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            html.push('</tr></table>');
+            html.push('<table class="table mb-0">');
+            html.push(htmlData.join(''));
             html.push('</table>');
             html.push('</div>');
         }
@@ -373,12 +391,8 @@ export default class Modal_Schematics
     {
         $('#statisticsModalAwesomeSink').empty();
 
-        let purchasedAlternate      = this.getPurchasedSchematics();
-
-        let html = [];
-            html.push('<div class="card-body text-center">You can click on the status of the schematic to update its current state.</div>');
-
-        let categories = [];
+        let purchased   = this.getPurchasedSchematics();
+        let categories  = [];
             for(let schematicId in this.baseLayout.schematicsData)
             {
                 if(this.baseLayout.schematicsData[schematicId].category !== undefined && schematicId.startsWith('ResourceSink_') && categories.includes(this.baseLayout.schematicsData[schematicId].category) === false)
@@ -389,68 +403,79 @@ export default class Modal_Schematics
             categories.sort(function(a,b){ return a.localeCompare(b); }.bind(this));
             if(selectedCategory === null){ selectedCategory = categories[0]; }
 
-        html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
-        for(let i = 0; i < categories.length; i++)
-        {
-            html.push('<li class="nav-item"><span class="nav-link ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedAwesomeSink-' + i + '" role="tab" style="cursor:pointer;">' + categories[i] + '</span></li>');
-        }
-        html.push('</ul>');
+        let html        = [];
+            html.push('<div class="card-body text-center">You can click on the status of the schematic to update its current state.</div>');
+            html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
+            for(let i = 0; i < categories.length; i++)
+            {
+                html.push('<li class="nav-item"><span class="nav-link ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedAwesomeSink-' + i + '" role="tab" style="cursor:pointer;">' + categories[i] + '</span></li>');
+            }
+            html.push('</ul>');
 
         html.push('<div class="tab-content p-0 border border-top-0">');
         for(let i = 0; i < categories.length; i++)
         {
-            html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedAwesomeSink-' + i + '" role="tabpanel">');
-            html.push('<table class="table mb-0">');
-            html.push('<tr><td class="text-right" colspan="2"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td><td></td></tr>');
+            let htmlData    = [];
+            let unlocked    = 0;
+            let total       = 0;
 
-            let currentTierData   = {};
+            let currentData = {};
                 for(let schematicId in this.baseLayout.schematicsData)
                 {
                     if(schematicId.startsWith('ResourceSink_'))
                     {
                         if(this.baseLayout.schematicsData[schematicId].category !== undefined && this.baseLayout.schematicsData[schematicId].category === categories[i])
                         {
-                            currentTierData[schematicId] = this.baseLayout.schematicsData[schematicId];
+                            currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
                         }
                     }
                 }
 
-            let schematicsDataKey = Object.keys(currentTierData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
+            let schematicsDataKey = Object.keys(currentData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
 
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
                 let className        = schematicsDataKey[j];
                 let currentSchematic = this.baseLayout.schematicsData[className];
+                    total++;
 
                 if(currentSchematic.category !== undefined)
                 {
-                    html.push('<tr>');
-                    html.push('<td class="align-middle">');
-                        html.push('<strong style="font-size: 120%;">' + currentSchematic.name + '</strong>');
-                        html.push(this.getSchematicsUnlocks(currentSchematic));
-                    html.push('</td>');
-                    html.push('<td class="align-middle text-right">' + this.parseSchematicCost(currentSchematic) + '</td>');
+                    htmlData.push('<tr>');
+                    htmlData.push('<td class="align-middle">');
+                        htmlData.push('<strong style="font-size: 120%;">' + currentSchematic.name + '</strong>');
+                        htmlData.push(this.getSchematicsUnlocks(currentSchematic));
+                    htmlData.push('</td>');
+                    htmlData.push('<td class="align-middle text-right">' + this.parseSchematicCost(currentSchematic) + '</td>');
 
-                    if(currentSchematic.className !== undefined && purchasedAlternate.includes(currentSchematic.className))
+                    if(currentSchematic.className !== undefined && purchased.includes(currentSchematic.className))
                     {
-                        html.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased" data-tier="' + currentSchematic.category + '"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
+                        htmlData.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased" data-tier="' + currentSchematic.category + '"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
+                        unlocked++;
                     }
                     else
                     {
                         if(currentSchematic.className !== undefined)
                         {
-                            html.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available" data-tier="' + currentSchematic.category + '"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
+                            htmlData.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available" data-tier="' + currentSchematic.category + '"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
                         }
                         else
                         {
-                            html.push('<td></td>');
+                            htmlData.push('<td></td>');
                         }
                     }
 
-                    html.push('</tr>');
+                    htmlData.push('</tr>');
                 }
             }
 
+            html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedAwesomeSink-' + i + '" role="tabpanel">');
+            html.push('<table class="table mb-0"><tr>');
+            html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
+            html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            html.push('</tr></table>');
+            html.push('<table class="table mb-0">');
+            html.push(htmlData.join(''));
             html.push('</table>');
             html.push('</div>');
         }
