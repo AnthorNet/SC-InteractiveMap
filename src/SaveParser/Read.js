@@ -1109,6 +1109,7 @@ export default class SaveParser_Read
                     case 'FINGPUT1Buffer':
                     case 'Loot': // MOD: ???
                     case 'ProductionHandle': // MOD: ???
+                    case 'ContentLib_Recipe': // MOD: ???
                         currentProperty.value.values = [];
                         while(true)
                         {
