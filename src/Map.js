@@ -663,19 +663,21 @@ export default class Map
 
         $('.updateLayerState').click(function(e){
             let layerId     = $(e.currentTarget).attr('data-id');
-
-            if(this.leafletMap.hasLayer(this.availableLayers[layerId]))
-            {
-                this.removeActiveLayer(layerId);
-                this.leafletMap.removeLayer(this.availableLayers[layerId]);
-                $(e.currentTarget).removeClass(window.SCIM.outlineClass);
-            }
-            else
-            {
-                this.addActiveLayer(layerId);
-                this.leafletMap.addLayer(this.availableLayers[layerId]);
-                $(e.currentTarget).addClass(window.SCIM.outlineClass);
-            }
+                if(this.availableLayers[layerId] !== undefined)
+                {
+                    if(this.leafletMap.hasLayer(this.availableLayers[layerId]))
+                    {
+                        this.removeActiveLayer(layerId);
+                        this.leafletMap.removeLayer(this.availableLayers[layerId]);
+                        $(e.currentTarget).removeClass(window.SCIM.outlineClass);
+                    }
+                    else
+                    {
+                        this.addActiveLayer(layerId);
+                        this.leafletMap.addLayer(this.availableLayers[layerId]);
+                        $(e.currentTarget).addClass(window.SCIM.outlineClass);
+                    }
+                }
         }.bind(this));
 
         $('#unselectAll').click(() => {

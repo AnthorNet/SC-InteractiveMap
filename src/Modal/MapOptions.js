@@ -9,9 +9,6 @@ export default class Modal_MapOptions
     {
         this.baseLayout                         = options.baseLayout;
 
-        this.defaultInventorySize               = 16;
-        this.defaultArmSlots                    = 1;
-
         this.defaultAvailableSchematics         = [ // Persistent_Level:PersistentLevel.schematicManager => mAvailableSchematics
             "/Game/FactoryGame/Schematics/Progression/Schematic_1-1.Schematic_1-1_C",
             "/Game/FactoryGame/Schematics/Progression/Schematic_1-2.Schematic_1-2_C",
@@ -466,52 +463,9 @@ export default class Modal_MapOptions
                     }
 
                 // Reset players tutorials
-                for(let i = 0; i < this.baseLayout.playersState.length; i++)
+                for(let pathName in this.baseLayout.players)
                 {
-                    this.baseLayout.deleteObjectProperty(this.baseLayout.playersState[i], 'mLastSchematicTierInUI');
-                    this.baseLayout.deleteObjectProperty(this.baseLayout.playersState[i], 'mShoppingList');
-                    this.baseLayout.deleteObjectProperty(this.baseLayout.playersState[i], 'mMessageData');
-
-                    // Update player inventories
-                    let mOwnedPawn = this.baseLayout.getObjectProperty(this.baseLayout.playersState[i], 'mOwnedPawn');
-                        if(mOwnedPawn !== null)
-                        {
-                            let currentPlayer   = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-
-                            let inventory       = this.baseLayout.getObjectInventory(currentPlayer, 'mInventory', true);
-                                for(let j = 0; j < inventory.properties.length; j++)
-                                {
-                                    if(inventory.properties[j].name === 'mAdjustedSizeDiff')
-                                    {
-                                        inventory.properties[j].value = 0;
-                                    }
-                                    if(inventory.properties[j].name === 'mInventoryStacks' || inventory.properties[j].name === 'mArbitrarySlotSizes' || inventory.properties[j].name === 'mAllowedItemDescriptors')
-                                    {
-                                        inventory.properties[j].value.values.splice(this.defaultInventorySize);
-
-                                        // Give Xeno Zapper, Always get prepared ^^
-                                        if(inventory.properties[j].name === 'mInventoryStacks')
-                                        {
-                                            inventory.properties[j].value.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
-                                            inventory.properties[j].value.values[0][0].value.properties[0].value    = 1;
-                                        }
-                                    }
-                                }
-
-                            let armSlot         = this.baseLayout.saveGameParser.getTargetObject(currentPlayer.pathName + '.ArmSlot');
-                                                  this.baseLayout.deleteObjectProperty(armSlot, 'mEquipmentInSlot');
-                                for(let j = 0; j < armSlot.properties.length; j++)
-                                {
-                                    if(armSlot.properties[j].name === 'mAdjustedSizeDiff' || armSlot.properties[j].name === 'mActiveEquipmentIndex')
-                                    {
-                                        armSlot.properties[j].value = 0;
-                                    }
-                                    if(armSlot.properties[j].name === 'mInventoryStacks' || armSlot.properties[j].name === 'mArbitrarySlotSizes' || armSlot.properties[j].name === 'mAllowedItemDescriptors')
-                                    {
-                                        armSlot.properties[j].value.values.splice(this.defaultArmSlots);
-                                    }
-                                }
-                        }
+                    this.baseLayout.players[pathName].reset();
                 }
 
                 // Refresh tabs...

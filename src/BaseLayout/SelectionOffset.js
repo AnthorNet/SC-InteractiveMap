@@ -56,7 +56,7 @@ export default class BaseLayout_Selection_Offset
                         {
                             case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
                                 // Find target
-                                let mOwnedPawn          = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
+                                let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
                                     if(mOwnedPawn !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);

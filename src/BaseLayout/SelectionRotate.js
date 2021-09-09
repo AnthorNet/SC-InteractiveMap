@@ -59,7 +59,7 @@ export default class BaseLayout_Selection_Rotate
                         switch(currentObject.className)
                         {
                             case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                                let mOwnedPawn          = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
+                                let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
                                     if(mOwnedPawn !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);

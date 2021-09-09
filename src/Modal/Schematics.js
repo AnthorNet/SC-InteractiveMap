@@ -40,10 +40,10 @@ export default class Modal_Schematics
                 }
             }
 
-        html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
+        html.push('<ul class="nav nav-tabs nav-fill">');
         for(let i = 0; i <= maxTier; i++)
         {
-            html.push('<li class="nav-item"><span class="nav-link ' + ( (selectedTier === i) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedSchematics-' + i + '" role="tab" style="cursor:pointer;">Tier ' + i + '</span></li>');
+            html.push('<li class="nav-item"><span class="nav-link ' + ( (selectedTier === i) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedSchematics-' + i + '" style="cursor:pointer;">Tier ' + i + '</span></li>');
         }
         html.push('</ul>');
 
@@ -101,7 +101,7 @@ export default class Modal_Schematics
                 }
             }
 
-            html.push('<div class="tab-pane fade ' + ( (selectedTier === i) ? 'show active' : '' ) + '" id="playerUnlockedSchematics-' + i + '" role="tabpanel">');
+            html.push('<div class="tab-pane fade ' + ( (selectedTier === i) ? 'show active' : '' ) + '" id="playerUnlockedSchematics-' + i + '">');
             html.push('<table class="table mb-0"><tr>');
             html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
             html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + i + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
@@ -291,10 +291,10 @@ export default class Modal_Schematics
 
         let html        = [];
             html.push('<div class="card-body text-center">You can click on the status of the schematic to update its current state.</div>');
-            html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
+            html.push('<ul class="nav nav-tabs nav-fill">');
             for(let i = 0; i < categories.length; i++)
             {
-                html.push('<li class="nav-item"><span class="nav-link px-3 ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedMAM-' + i + '" role="tab" style="cursor:pointer;">' + categories[i] + '</span></li>');
+                html.push('<li class="nav-item"><span class="nav-link px-3 ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedMAM-' + i + '" style="cursor:pointer;">' + categories[i] + '</span></li>');
             }
             html.push('</ul>');
 
@@ -355,7 +355,7 @@ export default class Modal_Schematics
                 }
             }
 
-            html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedMAM-' + i + '" role="tabpanel">');
+            html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedMAM-' + i + '">');
             html.push('<table class="table mb-0"><tr>');
             html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
             html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
@@ -405,10 +405,10 @@ export default class Modal_Schematics
 
         let html        = [];
             html.push('<div class="card-body text-center">You can click on the status of the schematic to update its current state.</div>');
-            html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
+            html.push('<ul class="nav nav-tabs nav-fill">');
             for(let i = 0; i < categories.length; i++)
             {
-                html.push('<li class="nav-item"><span class="nav-link ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedAwesomeSink-' + i + '" role="tab" style="cursor:pointer;">' + categories[i] + '</span></li>');
+                html.push('<li class="nav-item"><span class="nav-link ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedAwesomeSink-' + i + '" style="cursor:pointer;">' + categories[i] + '</span></li>');
             }
             html.push('</ul>');
 
@@ -469,7 +469,7 @@ export default class Modal_Schematics
                 }
             }
 
-            html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedAwesomeSink-' + i + '" role="tabpanel">');
+            html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedAwesomeSink-' + i + '">');
             html.push('<table class="table mb-0"><tr>');
             html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
             html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');

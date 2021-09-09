@@ -418,7 +418,7 @@ export default class BaseLayout_Tooltip
                 content.push('<strong>' + buildingData.name + '</strong>');
 
                 let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
-                    content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
+                    content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
                     content.push('<span style="font-size: 10px;" class="d-block mb-3">Mining - <span class="text-warning">' + currentProgress + '%</span></span>');
 
                 if(currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
@@ -594,7 +594,7 @@ export default class BaseLayout_Tooltip
                 content.push('<strong class="small">' + buildingData.name + '</strong>');
 
                 let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
-                    content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
+                    content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
                     content.push('<span style="font-size: 10px;" class="d-block mb-2">Extracting - <span class="text-warning">' + currentProgress + '%</span></span>');
 
             content.push(this.setTooltipFooter({craftingTime: craftingTime, clockSpeed: clockSpeed, singleLine: true}));
@@ -709,7 +709,7 @@ export default class BaseLayout_Tooltip
                 content.push('<strong>' + buildingData.name + '</strong>');
 
                 let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
-                    content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
+                    content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
                     content.push('<span style="font-size: 10px;" class="d-block mb-3">Extracting - <span class="text-warning">' + currentProgress + '%</span></span>');
 
                 let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
@@ -1398,7 +1398,7 @@ export default class BaseLayout_Tooltip
                 }
 
                 let currentProgress = Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentManufacturingProgress', 0) * 100);
-                    content.push('<div class="progress rounded-sm mx-2 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
+                    content.push('<div class="progress rounded-sm mx-2 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
 
                     if(currentProgress === 0)
                     {
@@ -1553,7 +1553,7 @@ export default class BaseLayout_Tooltip
                                     currentProgress = Math.round(currentProgress / 100) / 10;
                                 }
 
-                                content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + currentProgress + '%"></div></div>');
+                                content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
 
                                 if(currentProgress === 0) // TODO: Check fuel + supplemental
                                 {
@@ -1810,14 +1810,14 @@ export default class BaseLayout_Tooltip
                             }
 
                             content.push('</tr><tr>');
-                            content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + Math.min(100, (clockSpeed * 10000) / 100) + '%"></div></div></td>');
+                            content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + Math.min(100, (clockSpeed * 10000) / 100) + '%"></div></div></td>');
 
                             if(potentialInventory !== null)
                             {
                                 for(let i = 0; i < potentialInventory.length; i++)
                                 {
                                     let potentialProgress = Math.min(100, ((clockSpeed * 10000) / 100 - (100 + (i * 50))) * 2);
-                                        content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" role="progressbar" style="width: ' + potentialProgress + '%"></div></div></td>');
+                                        content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + potentialProgress + '%"></div></div></td>');
                                 }
                             }
 

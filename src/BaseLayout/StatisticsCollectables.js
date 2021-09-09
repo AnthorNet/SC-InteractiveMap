@@ -133,7 +133,7 @@ export default class BaseLayout_Statistics_Collectables
 
                 html.push('</tr>');
                 html.push('<tr>');
-                html.push('<td colspan="3" class="pt-0"><div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: ' + (currentItem.used / currentItem.markers.length * 100) + '%"></div></div></td>');
+                html.push('<td colspan="3" class="pt-0"><div class="progress"><div class="progress-bar bg-success" style="width: ' + (currentItem.used / currentItem.markers.length * 100) + '%"></div></div></td>');
                 html.push('</table></td>');
                 html.push('</tr>');
             }

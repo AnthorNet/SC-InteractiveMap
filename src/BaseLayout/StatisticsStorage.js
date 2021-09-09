@@ -106,7 +106,7 @@ export default class BaseLayout_Statistics_Storage
             html.push('<td class="text-right">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.qty) + ' units</td>');
             html.push('</tr>');
             html.push('<tr>');
-            html.push('<td colspan="2" class="pt-0"><div class="progress"><div class="progress-bar bg-secondary" role="progressbar" style="width: ' + (currentItem.qty / maxInventory * 100) + '%"></div></div></td>');
+            html.push('<td colspan="2" class="pt-0"><div class="progress"><div class="progress-bar bg-secondary" style="width: ' + (currentItem.qty / maxInventory * 100) + '%"></div></div></td>');
             html.push('</table></td>');
             html.push('</tr>');
         }

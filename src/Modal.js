@@ -13,7 +13,7 @@ export default class Modal
     static get templates()
     {
         return {
-            modal       : '<div class="modal fade" tabindex="-1" role="dialog">' +
+            modal       : '<div class="modal fade" tabindex="-1">' +
                           '    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">' +
                           '        <div class="modal-content">' +
                           '            <div class="modal-body"></div>' +

@@ -69,8 +69,8 @@ export default class Modal_Debug
                     }
             }
 
-            html.push('<ul class="nav nav-tabs nav-fill" role="tablist">');
-            html.push('<li class="nav-item"><span class="nav-link active" data-toggle="tab" href="#advancedDebugObject-MAIN" role="tab" style="cursor:pointer;">Main object</span></li>');
+            html.push('<ul class="nav nav-tabs nav-fill">');
+            html.push('<li class="nav-item"><span class="nav-link active" data-toggle="tab" href="#advancedDebugObject-MAIN" style="cursor:pointer;">Main object</span></li>');
 
             if(currentObject.children !== undefined)
             {

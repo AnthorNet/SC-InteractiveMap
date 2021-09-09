@@ -9,79 +9,72 @@ export default class Modal_MapHotbars
     {
         $('#statisticsPlayerHotBars').empty();
 
-        if(this.baseLayout.playersState.length > 0)
+        let hotbarHeaderHtml    = [];
+        let hotbarHtml          = [];
+
+        for(let pathName in this.baseLayout.players)
         {
-            let hotbarHeaderHtml    = [];
-            let hotbarHtml          = [];
+            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
 
-            for(let i = 0; i < this.baseLayout.playersState.length; i++)
+            if(this.baseLayout.players[pathName].isHost() === true)
             {
-                let isHost      = (this.baseLayout.playersState[i].pathName === this.baseLayout.saveGameParser.playerHostPathName);
-
-                hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((isHost === true) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab" style="cursor:pointer;">');
-
-                if(isHost === true)
-                {
-                    hotbarHeaderHtml.push('Host');
-                }
-                else
-                {
-                    hotbarHeaderHtml.push('Guest #' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', ''));
-                }
-
-                hotbarHeaderHtml.push('</span></li>');
-                hotbarHtml.push('<div class="tab-pane fade ' + ((isHost === true) ? 'show active' : '') + '" id="playerHotBars-' + this.baseLayout.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + this.parseHotbarsPlayer(this.baseLayout.playersState[i], options) + '</div>');
+                hotbarHeaderHtml.push('Host');
+            }
+            else
+            {
+                hotbarHeaderHtml.push('Guest #' + pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', ''));
             }
 
-            $('#statisticsPlayerHotBars').html('<ul class="nav nav-tabs nav-fill" role="tablist">' + hotbarHeaderHtml.join('') + '</ul><div class="tab-content p-3 border border-top-0">' + hotbarHtml.join('') + '</div>');
+            hotbarHeaderHtml.push('</span></li>');
+            hotbarHtml.push('<div class="tab-pane fade ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'show active' : '') + '" id="playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
+            hotbarHtml.push(this.parseHotbarsPlayer(this.baseLayout.players[pathName].player, options));
+            hotbarHtml.push('</div>');
+        }
 
-            $('#statisticsPlayerHotBars input[name="presetName"]').on('keyup click', function(e){
-                let playerStatePathName = $(e.currentTarget).parent().attr('data-pathName');
-                let newValue            = $(e.currentTarget).val();
-                let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
+        $('#statisticsPlayerHotBars').html('<ul class="nav nav-tabs nav-fill">' + hotbarHeaderHtml.join('') + '</ul><div class="tab-content p-3 border border-top-0">' + hotbarHtml.join('') + '</div>');
 
-                    if(playerState !== null)
-                    {
-                        let mPresetHotbars      = this.baseLayout.getObjectProperty(playerState, 'mPresetHotbars');
-                        let currentPreset       = $(e.currentTarget).parent().attr('data-index');
+        $('#statisticsPlayerHotBars input[name="presetName"]').on('keyup click', function(e){
+            let playerStatePathName = $(e.currentTarget).parent().attr('data-pathName');
+            let newValue            = $(e.currentTarget).val();
+            let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
 
-                            if(mPresetHotbars !== null)
+                if(playerState !== null)
+                {
+                    let mPresetHotbars      = this.baseLayout.getObjectProperty(playerState, 'mPresetHotbars');
+                    let currentPreset       = $(e.currentTarget).parent().attr('data-index');
+
+                        if(mPresetHotbars !== null)
+                        {
+                            for(let j = 0; j < mPresetHotbars.values[currentPreset].length; j++)
                             {
-                                for(let j = 0; j < mPresetHotbars.values[currentPreset].length; j++)
+                                if(mPresetHotbars.values[currentPreset][j].name === 'PresetName')
                                 {
-                                    if(mPresetHotbars.values[currentPreset][j].name === 'PresetName')
+                                    if(mPresetHotbars.values[currentPreset][j].value !== newValue)
                                     {
-                                        if(mPresetHotbars.values[currentPreset][j].value !== newValue)
-                                        {
-                                            mPresetHotbars.values[currentPreset][j].value = newValue;
-                                        }
-                                        break;
+                                        mPresetHotbars.values[currentPreset][j].value = newValue;
                                     }
+                                    break;
                                 }
                             }
-                    }
-            }.bind(this));
-            $('#statisticsPlayerHotBars input[name="presetName"] + .input-group-append .btn-danger').on('click', function(e){
-                let playerStatePathName = $(e.currentTarget).parent().parent().attr('data-pathName');
-                let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
+                        }
+                }
+        }.bind(this));
+        $('#statisticsPlayerHotBars input[name="presetName"] + .input-group-append .btn-danger').on('click', function(e){
+            let playerStatePathName = $(e.currentTarget).parent().parent().attr('data-pathName');
+            let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
 
-                    if(playerState !== null)
-                    {
-                        let mPresetHotbars      = this.baseLayout.getObjectProperty(playerState, 'mPresetHotbars');
-                        let currentPreset       = $(e.currentTarget).parent().parent().attr('data-index');
+                if(playerState !== null)
+                {
+                    let mPresetHotbars      = this.baseLayout.getObjectProperty(playerState, 'mPresetHotbars');
+                    let currentPreset       = $(e.currentTarget).parent().parent().attr('data-index');
 
-                            if(mPresetHotbars !== null)
-                            {
-                                mPresetHotbars.values.splice(currentPreset, 1);
-                                this.parse({playerState: playerStatePathName, showPresets :true});
-                            }
-                    }
-            }.bind(this));
-        }
-        else
-        {
-            $('#statisticsPlayerHotBars').html('<div class="alert alert-danger" role="alert">We could not find the player hotbar!</div>');
-        }
+                        if(mPresetHotbars !== null)
+                        {
+                            mPresetHotbars.values.splice(currentPreset, 1);
+                            this.parse({playerState: playerStatePathName, showPresets :true});
+                        }
+                }
+        }.bind(this));
     }
 
     parseHotbarsPlayer(player, options = {})
@@ -235,13 +228,13 @@ export default class Modal_MapHotbars
             let hotbarHtml          = [];
             let showPresets         = (options.showPresets !== undefined) ? options.showPresets : false;
 
-            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ( (showPresets === true) ? '' : 'active' ) + '" data-toggle="tab" href="#playerHotBarsPresets-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab" style="cursor:pointer;">HotBars</span></li>');
-            hotbarHtml.push('<div class="tab-pane fade ' + ( (showPresets === true) ? '' : 'show active' ) + '" id="playerHotBarsPresets-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + mHotbarsHtml.join('') + '</div>');
+            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ( (showPresets === true) ? '' : 'active' ) + '" data-toggle="tab" href="#playerHotBarsPresets-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">HotBars</span></li>');
+            hotbarHtml.push('<div class="tab-pane fade ' + ( (showPresets === true) ? '' : 'show active' ) + '" id="playerHotBarsPresets-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '">' + mHotbarsHtml.join('') + '</div>');
 
-            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ( (showPresets === true) ? 'active' : '' ) + '" data-toggle="tab" href="#playerHotBarsPresetsShow-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tab" style="cursor:pointer;">HotBar Presets</span></li>');
-            hotbarHtml.push('<div class="tab-pane fade ' + ( (showPresets === true) ? 'show active' : '' ) + '" id="playerHotBarsPresetsShow-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" role="tabpanel">' + mPresetHotbarsHtml.join('') + '</div>');
+            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ( (showPresets === true) ? 'active' : '' ) + '" data-toggle="tab" href="#playerHotBarsPresetsShow-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">HotBar Presets</span></li>');
+            hotbarHtml.push('<div class="tab-pane fade ' + ( (showPresets === true) ? 'show active' : '' ) + '" id="playerHotBarsPresetsShow-' + player.pathName.replace('Persistent_Level:PersistentLevel.', '') + '">' + mPresetHotbarsHtml.join('') + '</div>');
 
-            html.push('<ul class="nav nav-tabs nav-fill" role="tablist">' + hotbarHeaderHtml.join('') + '</ul><div class="tab-content p-3 border border-top-0">' + hotbarHtml.join('') + '</div>');
+            html.push('<ul class="nav nav-tabs nav-fill">' + hotbarHeaderHtml.join('') + '</ul><div class="tab-content p-3 border border-top-0">' + hotbarHtml.join('') + '</div>');
         }
 
         return html.join('');

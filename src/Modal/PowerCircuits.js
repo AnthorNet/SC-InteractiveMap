@@ -224,7 +224,7 @@ export default class Modal_PowerCircuits
                         html.push('<td class="text-right" width="20%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.powerGenerated) + 'MW</td>');
                         html.push('</tr>');
                         html.push('<tr>');
-                        html.push('<td colspan="3" class="pt-0"><div class="progress"><div class="progress-bar bg-secondary" role="progressbar" style="width: ' + (currentItem.powerGenerated / maxFuel * 100) + '%"></div></div></td>');
+                        html.push('<td colspan="3" class="pt-0"><div class="progress"><div class="progress-bar bg-secondary" style="width: ' + (currentItem.powerGenerated / maxFuel * 100) + '%"></div></div></td>');
                         html.push('</table></td>');
                         html.push('</tr>');
                     }

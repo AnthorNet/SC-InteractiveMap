@@ -403,10 +403,10 @@ export default class BaseLayout_Statistics_Production
             html.push('<tr>');
             html.push('<td colspan="3" class="pt-0"><div class="progress" style="position: relative;">');
             html.push('<div style="position: absolute;width: 1px;margin-right:-2px;border-right: 1px dashed #000;height: 1.4rem;left: 50%;margin-top: -0.2rem;"></div>');
-            html.push('<div class="progress-bar bg-success" role="progressbar" style="width: ' + (currentItem.produced / totalProduction * 100) + '%"></div>');
-            html.push('<div class="progress-bar bg-success" role="progressbar" style="opacity: 0.2;width: ' + (currentItem.offProduced / totalProduction * 100) + '%"></div>');
-            html.push('<div class="progress-bar bg-danger" role="progressbar" style="opacity: 0.2;width: ' + (currentItem.offConsumed / totalProduction * 100) + '%"></div>');
-            html.push('<div class="progress-bar bg-danger" role="progressbar" style="width: ' + (currentItem.consumed / totalProduction * 100) + '%"></div>');
+            html.push('<div class="progress-bar bg-success" style="width: ' + (currentItem.produced / totalProduction * 100) + '%"></div>');
+            html.push('<div class="progress-bar bg-success" style="opacity: 0.2;width: ' + (currentItem.offProduced / totalProduction * 100) + '%"></div>');
+            html.push('<div class="progress-bar bg-danger" style="opacity: 0.2;width: ' + (currentItem.offConsumed / totalProduction * 100) + '%"></div>');
+            html.push('<div class="progress-bar bg-danger" style="width: ' + (currentItem.consumed / totalProduction * 100) + '%"></div>');
             html.push('</div></td>');
             html.push('</table></td>');
             html.push('</tr>');

@@ -1036,7 +1036,7 @@ L.Control.ClipboardControl = L.Control.extend({
             .on(link2, 'dbclick', L.DomEvent.stopPropagation);
 
         let modal = new Array();
-            modal.push('<div class="modal fade" tabindex="-1" role="dialog" id="clipboardControlModal"><div class="modal-dialog modal-lg"><div class="modal-content">');
+            modal.push('<div class="modal fade" tabindex="-1" id="clipboardControlModal"><div class="modal-dialog modal-lg"><div class="modal-content">');
             modal.push('<div class="modal-header"><h5 class="modal-title">Blueprint</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>');
             modal.push('<div class="modal-body"><p>You can copy a selection of items using the <strong>Lasso tool</strong>, then export them into a file.</p><div id="dropBlueprint"><input name="bluePrintFile" type="file" id="blueprintFileInput" accept=".cbp"><label for="blueprintFileInput" class="m-0"><i class="fas fa-upload"></i> Click/Drop a blueprint file</label></div></div>');
             modal.push('<div class="modal-body"><button class="downloadButton btn btn-secondary w-100">Download current blueprint</button></div>');

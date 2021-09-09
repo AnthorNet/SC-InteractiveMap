@@ -13,6 +13,7 @@ import BaseLayout_Math                          from './BaseLayout/Math.js';
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 import SubSystem_Foliage                        from './SubSystem/Foliage.js';
+import SubSystem_Player                         from './SubSystem/Player.js';
 
 import BaseLayout_Statistics_Production         from './BaseLayout/StatisticsProduction.js';
 import BaseLayout_Statistics_Storage            from './BaseLayout/StatisticsStorage.js';
@@ -58,7 +59,7 @@ export default class BaseLayout
         this.frackingSmasherCores               = {};
 
         this.gameMode                           = [];
-        this.playersState                       = [];
+        this.players                            = {};
         this.buildingDataClassNameHashTable     = {};
         this.radioactivityLayerNeedsUpdate      = false;
         this.tooltipsEnabled                    = true;
@@ -722,7 +723,7 @@ export default class BaseLayout
             }
             if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
             {
-                this.playersState.push(currentObject);
+                this.players[currentObject.pathName] = new SubSystem_Player({baseLayout: this, player: currentObject});
                 continue;
             }
 
@@ -1056,9 +1057,9 @@ export default class BaseLayout
                 statisticsCollectables.get();
 
             // Player position
-            for(let i = 0; i < this.playersState.length; i++)
+            for(let pathName in this.players)
             {
-                this.addPlayerPosition(this.playersState[i], ((this.saveGameParser.playerHostPathName === this.playersState[i].pathName) ? true : false));
+                this.players[pathName].addMarker();
             }
 
             // Global modals
@@ -1232,65 +1233,6 @@ export default class BaseLayout
                 this.altitudeSliderControl.updateSliderAltitudes(this.minAltitude, this.maxAltitude);
             }
         }
-    }
-
-    // Player function
-    addPlayerPosition(currentObject, isOwnPlayer = false)
-    {
-        // Find target
-        let mOwnedPawn = this.getObjectProperty(currentObject, 'mOwnedPawn');
-            if(mOwnedPawn !== null)
-            {
-                let currentObjectTarget = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-                    if(currentObjectTarget !== null)
-                    {
-                        this.setupSubLayer('playerPositionLayer');
-
-                        let position        = this.satisfactoryMap.unproject(currentObjectTarget.transform.translation);
-                        let playerMarker    = L.marker(
-                                position,
-                                {
-                                    pathName        : currentObject.pathName,
-                                    icon            : this.getMarkerIcon('#FFFFFF', ((isOwnPlayer === true) ? '#b3b3b3' : '#666666'), this.staticUrl + '/img/mapPlayerIcon.png'),
-                                    riseOnHover     : true,
-                                    zIndexOffset    : 1000
-                                }
-                            );
-
-                        this.playerLayers.playerPositionLayer.elements.push(playerMarker);
-                        playerMarker.bindContextMenu(this);
-                        playerMarker.addTo(this.playerLayers.playerPositionLayer.subLayer);
-
-                        if(isOwnPlayer === true)
-                        {
-                            this.satisfactoryMap.leafletMap.setView(position, 7);
-                        }
-
-                        return playerMarker;
-                    }
-            }
-            else
-            {
-                console.log('mOwnedPawn not found... Deleting wonky player state', currentObject);
-
-                // Delete wonky player state...
-                if(this.playersState.length > 0)
-                {
-                    for(let i = 0; i < this.playersState.length; i++)
-                    {
-                        if(this.playersState[i].pathName === currentObject.pathName)
-                        {
-                            this.playersState.splice(i, 1);
-                            break;
-                        }
-                    }
-                }
-
-                this.saveGameParser.deleteObject(currentObject.pathName);
-            }
-
-
-        return null;
     }
 
     addPlayerFauna(currentObject)
@@ -1713,30 +1655,24 @@ export default class BaseLayout
         let playerPosition  = [0, 0, 0];
         let playerRotation  = [-0, 0, -0.4999995529651642, 0.8660256862640381];
 
-        for(let i = 0; i < this.playersState.length; i++)
+        for(let pathName in this.players)
         {
             // Find target
-            let currentObject       = this.playersState[i];
-            let currentObjectTarget = null;
-            for(let j = 0; j < currentObject.properties.length; j++)
-            {
-                if(currentObject.properties[j].name === 'mOwnedPawn')
+            let mOwnedPawn  = this.getObjectProperty(this.players[pathName].player, 'mOwnedPawn');
+                if(mOwnedPawn !== null)
                 {
-                    currentObjectTarget = this.saveGameParser.getTargetObject(currentObject.properties[j].value.pathName);
-                    break;
-                }
-            }
+                    let player = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                        if(player !== null)
+                        {
+                            playerPosition = player.transform.translation;
+                            playerRotation = player.transform.rotation;
+                        }
 
-            if(currentObjectTarget !== null)
-            {
-                playerPosition = currentObjectTarget.transform.translation;
-                playerRotation = currentObjectTarget.transform.rotation;
-
-                if(this.saveGameParser.playerHostPathName === this.playersState[i].pathName)
-                {
-                    break;
+                        if(this.players[pathName].isHost())
+                        {
+                            break; // No need to check further...
+                        }
                 }
-            }
         }
 
         let cratePathName   = this.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.BP_Crate_C_XXX'});
@@ -2062,19 +1998,21 @@ export default class BaseLayout
     teleportPlayer(marker)
     {
         let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let selectOptions   = [];
+        let newTranslation  = JSON.parse(JSON.stringify(currentObject.transform.translation));
 
-        for(let i = 0; i < this.playersState.length; i++)
-        {
-            if(this.saveGameParser.playerHostPathName === this.playersState[i].pathName)
+        let selectOptions   = [];
+            for(let pathName in this.players)
             {
-                selectOptions.push({text: 'Host', value: this.playersState[i].pathName});
+                selectOptions.push({
+                    text    : ((this.players[pathName].isHost() === true) ? 'Host' : 'Guest #' + pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', '')),
+                    value   : pathName
+                });
             }
-            else
+
+            if(selectOptions.length === 1) // Don't ask if there is only one player on the map...
             {
-                selectOptions.push({text: 'Guest #' + this.playersState[i].pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', ''), value: this.playersState[i].pathName});
+                return this.players[selectOptions[0].value].teleportTo(newTranslation);
             }
-        }
 
         this.satisfactoryMap.pauseMap();
 
@@ -2097,23 +2035,7 @@ export default class BaseLayout
                     return;
                 }
 
-                let playerStateObject   = this.saveGameParser.getTargetObject(form.playerPathName);
-                let mOwnedPawn          = this.getObjectProperty(playerStateObject, 'mOwnedPawn');
-                    if(mOwnedPawn !== null)
-                    {
-                        let currentPlayerObject                             = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-                            currentPlayerObject.transform.translation       = JSON.parse(JSON.stringify(currentObject.transform.translation));
-                            currentPlayerObject.transform.translation[2]   += 400;
-
-                            this.deleteObjectProperty(currentPlayerObject, 'mSavedDrivenVehicle');
-
-                        let currentPlayerMarker                             = this.getMarkerFromPathName(form.playerPathName, 'playerPositionLayer');
-                            currentPlayerMarker.setLatLng(this.satisfactoryMap.unproject(currentPlayerObject.transform.translation));
-                    }
-                    else
-                    {
-                        Modal.alert('Cannot teleport that player!');
-                    }
+                return this.players[form.playerPathName].teleportTo(newTranslation);
             }.bind(this)
         });
     }
@@ -6988,10 +6910,10 @@ export default class BaseLayout
 
                                     if(currentValue.name === 'Location')
                                     {
-                                        splineMinX            = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMaxX            = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMinY            = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                        splineMaxY            = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
+                                        splineMinX  = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
+                                        splineMaxX  = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
+                                        splineMinY  = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
+                                        splineMaxY  = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
                                     }
                             }
                         }
