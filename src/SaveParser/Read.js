@@ -915,7 +915,9 @@ export default class SaveParser_Read
                             {
                                 mapPropertySubProperties = this.readByte();
                             }
-
+                            break;
+                        case 'BoolProperty':
+                            mapPropertySubProperties = this.readByte();
                             break;
                         case 'IntProperty':
                             mapPropertySubProperties = this.readInt();

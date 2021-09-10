@@ -993,7 +993,9 @@ export default class SaveParser_Write
                             {
                                 property += this.writeByte(currentProperty.value.values[iMapProperty].value);
                             }
-
+                            break;
+                        case 'BoolProperty':
+                            property += this.writeByte(currentProperty.value.values[iMapProperty].value);
                             break;
                         case 'IntProperty':
                             property += this.writeInt(currentProperty.value.values[iMapProperty].value);
