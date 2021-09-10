@@ -4,7 +4,7 @@ const webpack                       = require('webpack');
 const path                          = require('path');
 
 const SentryWebpackPlugin           = require('@sentry/webpack-plugin');
-//const TerserPlugin                  = require("terser-webpack-plugin");
+const TerserPlugin                  = require("terser-webpack-plugin");
 const JsonMinimizerPlugin           = require("json-minimizer-webpack-plugin");
 const MergeJsonPlugin               = require("merge-json-webpack-plugin");
 const CopyPlugin                    = require("copy-webpack-plugin");
@@ -26,7 +26,7 @@ module.exports = env => {
         optimization    : {
             minimize        : true,
             minimizer       : [
-                //new TerserPlugin({test: /\.js(\?.*)?$/i}),
+                new TerserPlugin({test: /\.js(\?.*)?$/i}),
                 new JsonMinimizerPlugin({test: /\.json(\?.*)?$/i})
             ]
         },
