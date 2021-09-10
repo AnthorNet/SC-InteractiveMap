@@ -702,28 +702,30 @@ export default class Map
                 let havePurity  = $(el).attr('data-purity');
                 let layerId     = $(el).attr('data-id');
                 let hide        = true;
-
-                if(havePurity !== undefined && neededPurity === havePurity)
-                {
-                    hide = false;
-                }
-
-                if(this.leafletMap.hasLayer(this.availableLayers[layerId]))
-                {
-                    if(hide === true)
+                    if(havePurity !== undefined && neededPurity === havePurity)
                     {
-                        this.removeActiveLayer(layerId);
-                        this.leafletMap.removeLayer(this.availableLayers[layerId]);
-                        $(el).removeClass(window.SCIM.outlineClass);
+                        hide = false;
                     }
-                }
-                else
+
+                if(this.availableLayers[layerId] !== undefined)
                 {
-                    if(hide === false)
+                    if(this.leafletMap.hasLayer(this.availableLayers[layerId]))
                     {
-                        this.addActiveLayer(layerId);
-                        this.leafletMap.addLayer(this.availableLayers[layerId]);
-                        $(el).addClass(window.SCIM.outlineClass);
+                        if(hide === true)
+                        {
+                            this.removeActiveLayer(layerId);
+                            this.leafletMap.removeLayer(this.availableLayers[layerId]);
+                            $(el).removeClass(window.SCIM.outlineClass);
+                        }
+                    }
+                    else
+                    {
+                        if(hide === false)
+                        {
+                            this.addActiveLayer(layerId);
+                            this.leafletMap.addLayer(this.availableLayers[layerId]);
+                            $(el).addClass(window.SCIM.outlineClass);
+                        }
                     }
                 }
             }.bind(this));
@@ -736,7 +738,7 @@ export default class Map
                 let havePurity  = $(el).attr('data-purity');
                 let layerId     = $(el).attr('data-id');
 
-                if(havePurity !== undefined && neededPurity === havePurity)
+                if(havePurity !== undefined && neededPurity === havePurity && this.availableLayers[layerId] !== undefined)
                 {
                     if(this.leafletMap.hasLayer(this.availableLayers[layerId]))
                     {
