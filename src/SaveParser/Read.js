@@ -1112,6 +1112,7 @@ export default class SaveParser_Read
                     case 'Loot': // MOD: ???
                     case 'ProductionHandle': // MOD: ???
                     case 'ContentLib_Recipe': // MOD: ???
+                    case 'RPHeaterTask': // MOD: ???
                         currentProperty.value.values = [];
                         while(true)
                         {
