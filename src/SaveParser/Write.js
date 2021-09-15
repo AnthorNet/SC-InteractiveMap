@@ -1323,13 +1323,20 @@ export default class SaveParser_Write
                 saveBinary += this.writeInt(value.structs[i].unk1);
                 saveBinary += this.writeString(value.structs[i].unk2);
 
-                if(value.structs[i].unk2 === '/Script/FactoryGame.InventoryStack')
+                switch(value.structs[i].unk2)
                 {
-                    saveBinary += this.writeInt(value.structs[i].unk3);
-                    saveBinary += this.writeString(value.structs[i].unk4);
-                    saveBinary += this.writeInt(value.structs[i].unk5);
-                    saveBinary += this.writeInt(value.structs[i].unk6);
-                    saveBinary += this.writeInt(value.structs[i].unk7);
+                    case '/Script/CoreUObject.Vector':
+                        saveBinary += this.writeFloat(value.structs[i].x);
+                        saveBinary += this.writeFloat(value.structs[i].y);
+                        saveBinary += this.writeFloat(value.structs[i].z);
+                        break;
+                    case '/Script/FactoryGame.InventoryStack':
+                        saveBinary += this.writeInt(value.structs[i].unk3);
+                        saveBinary += this.writeString(value.structs[i].unk4);
+                        saveBinary += this.writeInt(value.structs[i].unk5);
+                        saveBinary += this.writeInt(value.structs[i].unk6);
+                        saveBinary += this.writeInt(value.structs[i].unk7);
+                        break;
                 }
             }
 

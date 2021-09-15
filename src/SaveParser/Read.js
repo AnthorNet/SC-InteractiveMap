@@ -1449,13 +1449,20 @@ export default class SaveParser_Read
                     structure.unk1  = this.readInt();
                     structure.unk2  = this.readString();
 
-                    if(structure.unk2 === '/Script/FactoryGame.InventoryStack')
+                    switch(structure.unk2)
                     {
-                        structure.unk3  = this.readInt();
-                        structure.unk4  = this.readString();
-                        structure.unk5  = this.readInt();
-                        structure.unk6  = this.readInt();
-                        structure.unk7  = this.readInt();
+                        case '/Script/CoreUObject.Vector':
+                            structure.x  = this.readFloat();
+                            structure.y  = this.readFloat();
+                            structure.z  = this.readFloat();
+                            break;
+                        case '/Script/FactoryGame.InventoryStack':
+                            structure.unk3  = this.readInt();
+                            structure.unk4  = this.readString();
+                            structure.unk5  = this.readInt();
+                            structure.unk6  = this.readInt();
+                            structure.unk7  = this.readInt();
+                            break;
                     }
 
                     data.structs.push(structure);
