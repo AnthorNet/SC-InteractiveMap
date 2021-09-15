@@ -471,7 +471,7 @@ export default class Modal_MapOptions
                 // Refresh tabs...
                 this.parse();
 
-                let mapPlayers = new Modal_MapPlayers({baseLayout: this});
+                let mapPlayers = new Modal_MapPlayers({baseLayout: this.baseLayout});
                     mapPlayers.parse();
             }, 250);
         });
