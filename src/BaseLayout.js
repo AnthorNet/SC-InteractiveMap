@@ -833,9 +833,9 @@ export default class BaseLayout
         }
 
         // Needed when moving players
-        if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
+        if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C' && this.players[currentObject.pathName] !== undefined)
         {
-            let playerState = this.addPlayerPosition(currentObject, ((this.ownPlayerPath === currentObject.pathName) ? true : false));
+            let playerState = this.players[currentObject.pathName].addMarker();
                 if(resolve === false)
                 {
                     return {layer: 'playerPositionLayer', marker: playerState};
