@@ -1463,6 +1463,16 @@ export default class SaveParser_Read
                             structure.unk6  = this.readInt();
                             structure.unk7  = this.readInt();
                             break;
+                        case '/Script/FactoryGame.InventoryItem': // Skip!
+                            break;
+                        default:
+                            Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                            if(typeof Sentry !== 'undefined')
+                            {
+                                Sentry.setContext('currentData', data);
+                            }
+                            throw new Error('Unimplemented `' + structure.unk2 + '` in readFINLuaProcessorStateStorage');
+                            break;
                     }
 
                     data.structs.push(structure);
