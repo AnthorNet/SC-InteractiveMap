@@ -291,6 +291,11 @@ export default class Modal
         let input = $( ((Modal.templates.input[options.inputType] !== undefined) ? Modal.templates.input[options.inputType] : Modal.templates.input['text']) );
             input.attr('name', options.name);
 
+            if(options.multiple !== undefined && options.multiple === true)
+            {
+                input.attr('multiple','multiple');
+            }
+
             switch(options.inputType)
             {
                 case 'select':
@@ -331,7 +336,17 @@ export default class Modal
                         input.append(optionGroups[group]);
                     }
 
-                    input.find('option[value="' + options.value + '"]').prop('selected', true);
+                    // Handle select array (multiple)
+                    if(options.multiple !== undefined && options.multiple === true)
+                    {
+                        $.each(options.value, function(_, value){
+                            input.find('option[value="' + value + '"]').prop('selected', true);
+                        });
+                    }
+                    else
+                    {
+                        input.find('option[value="' + options.value + '"]').prop('selected', true);
+                    }
                     break;
                 case 'toggle':
                     input.removeAttr('name');
