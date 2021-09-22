@@ -1126,7 +1126,7 @@ export default class BaseLayout
                                 mapColorSlots.parse();
                             break;
                         case '#statisticsModalLightColorSlots':
-                            let mapLightColorSlots = new Modal_LightColorSlots({baseLayout: this});
+                            let mapLightColorSlots = new Modal_Map_LightColorSlots({baseLayout: this});
                                 mapLightColorSlots.parse();
                             break;
                         case '#statisticsModalCollectables':
