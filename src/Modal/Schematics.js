@@ -1,5 +1,5 @@
 /* global Intl, Sentry */
-import Modal_MapPlayers                         from '../Modal/MapPlayers.js';
+import Modal_Map_Players                         from '../Modal/Map/Players.js';
 
 import Building_MAM                             from '../Building/MAM.js';
 
@@ -768,34 +768,31 @@ export default class Modal_Schematics
                     let unlockSubSystem     = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
                         if(unlockSubSystem !== null)
                         {
-                            switch(currentStatus)
-                            {
-                                case 'none': // Go to available state
-                                case 'purchased': // Go to none state
-                                    if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
-                                    {
-                                        let mapPlayers = new Modal_MapPlayers({baseLayout: this.baseLayout});
+                            let mapPlayers = new Modal_Map_Players({baseLayout: this.baseLayout});
+                                switch(currentStatus)
+                                {
+                                    case 'none': // Go to available state
+                                    case 'purchased': // Go to none state
+                                        if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
+                                        {
                                             mapPlayers.removeEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
-                                    }
-                                    if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].slots !== undefined)
-                                    {
-                                        let mapPlayers = new Modal_MapPlayers({baseLayout: this.baseLayout});
+                                        }
+                                        if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].slots !== undefined)
+                                        {
                                             mapPlayers.removeInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
-                                    }
-                                    break;
-                                case 'available': // Go to purchased state
-                                    if(this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
-                                    {
-                                        let mapPlayers = new Modal_MapPlayers({baseLayout: this.baseLayout});
+                                        }
+                                        break;
+                                    case 'available': // Go to purchased state
+                                        if(this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
+                                        {
                                             mapPlayers.addEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
-                                    }
-                                    if(this.baseLayout.schematicsData[schematicId].slots !== undefined)
-                                    {
-                                        let mapPlayers = new Modal_MapPlayers({baseLayout: this.baseLayout});
+                                        }
+                                        if(this.baseLayout.schematicsData[schematicId].slots !== undefined)
+                                        {
                                             mapPlayers.addInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
-                                    }
-                                    break;
-                            }
+                                        }
+                                        break;
+                                }
                         }
 
                     let researchManager = Building_MAM.getManager(this.baseLayout);

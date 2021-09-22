@@ -15,6 +15,8 @@ import Building_TrainStation                    from '../Building/TrainStation.j
 import Modal_Debug                              from '../Modal/Debug.js';
 import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
 
+import SubSystem_Player                         from '../SubSystem/Player.js';
+
 export default class BaseLayout_ContextMenu
 {
     constructor(options)
@@ -67,6 +69,13 @@ export default class BaseLayout_ContextMenu
                         text: 'Update "Loot Crate" position',
                         callback: this.baseLayout.updateObjectPosition.bind(this.baseLayout)
                     });
+                    /*
+                    contextMenu.push({
+                        text: 'Move "Loot Crate" to player inventory',
+                        callback: SubSystem_Player.fillInventoryFrom
+                    });
+                    */
+                    contextMenu.push({separator: true});
                     contextMenu.push({
                         text: 'Delete "Loot Crate"',
                         callback: this.baseLayout.deletePlayerLootCrate.bind(this.baseLayout)
@@ -166,7 +175,7 @@ export default class BaseLayout_ContextMenu
                     }
 
                     if(
-                           (buildingData.category === 'generator' || (buildingData.powerUsed !== undefined && buildingData.powerUsed > 0) || currentObject.className === '/Game/FactoryGame/Buildable/Factory/HadronCollider/Build_HadronCollider.Build_HadronCollider_C')
+                          (buildingData.category === 'generator' || (buildingData.powerUsed !== undefined && buildingData.powerUsed > 0) || currentObject.className === '/Game/FactoryGame/Buildable/Factory/HadronCollider/Build_HadronCollider.Build_HadronCollider_C')
                         && buildingData.category !== 'pad' && buildingData.category !== 'tower' && buildingData.category !== 'logistic' && buildingData.category !== 'dockstation' && buildingData.category !== 'vehicle'
                         && buildingData.category !== 'pipe'
                         && buildingData.category !== 'hyperTube'

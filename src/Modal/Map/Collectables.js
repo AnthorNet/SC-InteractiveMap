@@ -1,5 +1,5 @@
 /* global collectableMarkers, Intl */
-export default class BaseLayout_Statistics_Collectables
+export default class Modal_Map_Collectables
 {
     constructor(options)
     {
@@ -292,7 +292,7 @@ export default class BaseLayout_Statistics_Collectables
                                 }
                                 break;
                             default:
-                                console.log('BaseLayout_Statistics_Collectables::getStatusFromPathName', currentObject.properties[n].value.values[0]);
+                                console.log('Modal_Map_Collectables::getStatusFromPathName', currentObject.properties[n].value.values[0]);
                                 break;
                         }
 

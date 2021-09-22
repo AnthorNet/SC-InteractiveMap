@@ -1,5 +1,5 @@
 /* global Intl, gtag */
-export default class BaseLayout_Statistics_Storage
+export default class Modal_Statistics_Storage
 {
     constructor(options)
     {

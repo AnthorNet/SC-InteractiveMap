@@ -1,4 +1,4 @@
-export default class Modal_MapPlayers
+export default class Modal_Map_Players
 {
     constructor(options)
     {

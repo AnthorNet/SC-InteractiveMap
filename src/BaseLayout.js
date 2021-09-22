@@ -15,17 +15,19 @@ import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 import SubSystem_Foliage                        from './SubSystem/Foliage.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
 
-import BaseLayout_Statistics_Production         from './BaseLayout/StatisticsProduction.js';
-import BaseLayout_Statistics_Storage            from './BaseLayout/StatisticsStorage.js';
-import BaseLayout_Statistics_Collectables       from './BaseLayout/StatisticsCollectables.js';
-
 import Modal                                    from './Modal.js';
+
+import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
+import Modal_Map_ColorSlots                     from './Modal/Map/ColorSlots.js';
+import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
+import Modal_Map_LightColorSlots                from './Modal/Map/LightColorSlots.js';
+import Modal_Map_Players                        from './Modal/Map/Players.js';
+import Modal_Map_Options                        from './Modal/Map/Options.js';
+
+import Modal_Statistics_Production              from './Modal/Statistics/Production.js';
+import Modal_Statistics_Storage                 from './Modal/Statistics/Storage.js';
+
 import Modal_Buildings                          from './Modal/Buildings.js';
-import Modal_ColorSlots                         from './Modal/ColorSlots.js';
-import Modal_LightColorSlots                    from './Modal/LightColorSlots.js';
-import Modal_MapHotbars                         from './Modal/MapHotbars.js';
-import Modal_MapPlayers                         from './Modal/MapPlayers.js';
-import Modal_MapOptions                         from './Modal/MapOptions.js';
 import Modal_PowerCircuits                      from './Modal/PowerCircuits.js';
 import Modal_Schematics                         from './Modal/Schematics.js';
 import Modal_Trains                             from './Modal/Trains.js';
@@ -1053,7 +1055,7 @@ export default class BaseLayout
             this.canvasEventForwarder.enable();
 
             // Collectables
-            let statisticsCollectables = new BaseLayout_Statistics_Collectables({baseLayout: this});
+            let statisticsCollectables = new Modal_Map_Collectables({baseLayout: this});
                 statisticsCollectables.get();
 
             // Player position
@@ -1078,19 +1080,15 @@ export default class BaseLayout
                         case '#statisticsModalProduction':
                             if($('#statisticsModalProduction').html() === '')
                             {
-                                let statisticsProduction = new BaseLayout_Statistics_Production({
-                                    baseLayout      : this
-                                });
-                                $('#statisticsModalProduction').html(statisticsProduction.parse());
+                                let statisticsProduction = new Modal_Statistics_Production({baseLayout: this});
+                                    $('#statisticsModalProduction').html(statisticsProduction.parse());
                             }
                             break;
                         case '#statisticsModalStorage':
                             if($('#statisticsModalStorage').html() === '')
                             {
-                                let statisticsStorage = new BaseLayout_Statistics_Storage({
-                                    baseLayout      : this
-                                });
-                                $('#statisticsModalStorage').html(statisticsStorage.parse());
+                                let statisticsStorage = new Modal_Statistics_Storage({baseLayout: this});
+                                    $('#statisticsModalStorage').html(statisticsStorage.parse());
                             }
                             break;
                     }
@@ -1116,15 +1114,15 @@ export default class BaseLayout
                     switch(target)
                     {
                         case '#statisticsPlayerInventory':
-                            let mapPlayers = new Modal_MapPlayers({baseLayout: this});
+                            let mapPlayers = new Modal_Map_Players({baseLayout: this});
                                 mapPlayers.parse();
                             break;
                         case '#statisticsPlayerHotBars':
-                            let mapHotbars = new Modal_MapHotbars({baseLayout: this});
+                            let mapHotbars = new Modal_Map_Hotbars({baseLayout: this});
                                 mapHotbars.parse();
                             break;
                         case '#statisticsModalColorSlots':
-                            let mapColorSlots = new Modal_ColorSlots({baseLayout: this});
+                            let mapColorSlots = new Modal_Map_ColorSlots({baseLayout: this});
                                 mapColorSlots.parse();
                             break;
                         case '#statisticsModalLightColorSlots':
@@ -1132,11 +1130,11 @@ export default class BaseLayout
                                 mapLightColorSlots.parse();
                             break;
                         case '#statisticsModalCollectables':
-                            let statisticsCollectables = new BaseLayout_Statistics_Collectables({baseLayout: this});
+                            let statisticsCollectables = new Modal_Map_Collectables({baseLayout: this});
                                 statisticsCollectables.parse();
                             break;
                         case '#statisticsModalOptions':
-                            let mapOptions = new Modal_MapOptions({baseLayout: this});
+                            let mapOptions = new Modal_Map_Options({baseLayout: this});
                                 mapOptions.parse();
                             break;
                     }
@@ -6633,7 +6631,7 @@ export default class BaseLayout
     {
         if(this.markersSelected)
         {
-            let statisticsProduction = new BaseLayout_Statistics_Production({
+            let statisticsProduction = new Modal_Statistics_Production({
                     baseLayout      : this,
                     markersSelected : this.markersSelected
                 });
@@ -6652,7 +6650,7 @@ export default class BaseLayout
     {
         if(this.markersSelected)
         {
-            let statisticsStorage = new BaseLayout_Statistics_Storage({
+            let statisticsStorage = new Modal_Statistics_Storage({
                     baseLayout      : this,
                     markersSelected : this.markersSelected
                 });

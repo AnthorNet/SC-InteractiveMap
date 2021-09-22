@@ -1,9 +1,9 @@
 /* global iro */
-import BaseLayout_Math                          from '../BaseLayout/Math.js';
+import BaseLayout_Math                          from '../../BaseLayout/Math.js';
 
-import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
+import SubSystem_Buildable                      from '../../SubSystem/Buildable.js';
 
-export default class Modal_ColorSlots
+export default class Modal_Map_ColorSlots
 {
     constructor(options)
     {

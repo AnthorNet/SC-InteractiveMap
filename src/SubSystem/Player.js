@@ -27,6 +27,8 @@ export default class SubSystem_Player
         return null;
     }
 
+
+
     addMarker()
     {
         let mOwnedPawn = this.getOwnedPawn();
@@ -86,6 +88,8 @@ export default class SubSystem_Player
 
         Modal.alert('Cannot teleport that player!');
     }
+
+
 
     reset()
     {

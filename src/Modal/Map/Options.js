@@ -1,9 +1,9 @@
-import Modal_MapPlayers                         from '../Modal/MapPlayers.js';
+import Modal_Map_Players                        from './Players.js';
 
-import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
-import Building_MAM                             from '../Building/MAM.js';
+import Building_SpaceElevator                   from '../../Building/SpaceElevator.js';
+import Building_MAM                             from '../../Building/MAM.js';
 
-export default class Modal_MapOptions
+export default class Modal_Map_Options
 {
     constructor(options)
     {
@@ -471,7 +471,7 @@ export default class Modal_MapOptions
                 // Refresh tabs...
                 this.parse();
 
-                let mapPlayers = new Modal_MapPlayers({baseLayout: this.baseLayout});
+                let mapPlayers = new Modal_Map_Players({baseLayout: this.baseLayout});
                     mapPlayers.parse();
             }, 250);
         });

@@ -1,4 +1,4 @@
-export default class Modal_MapHotbars
+export default class Modal_Map_Hotbars
 {
     constructor(options)
     {
