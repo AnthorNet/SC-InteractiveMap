@@ -75,8 +75,11 @@ export default class BaseLayout
 
         this.dataUrl                            = options.dataUrl;
         this.buildingsData                      = null;
+        this.buildingsCategories                = {};
         this.itemsData                          = null;
+        this.itemsCategories                    = {};
         this.toolsData                          = null;
+        this.toolsCategories                    = {};
         this.recipesData                        = null;
         this.schematicsData                     = null;
 
@@ -316,12 +319,16 @@ export default class BaseLayout
                 }.bind(this)).then(() => {
                     $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, function(data)
                     {
-                        this.modsData       = data.modsData;
-                        this.buildingsData  = data.buildingsData;
-                        this.itemsData      = data.itemsData;
-                        this.toolsData      = data.toolsData;
-                        this.recipesData    = data.recipesData;
-                        this.schematicsData = data.schematicsData;
+                        this.buildingsData          = data.buildingsData;
+                        this.buildingsCategories    = data.buildingsCategories;
+                        this.itemsData              = data.itemsData;
+                        this.itemsCategories        = data.itemsCategories;
+                        this.toolsData              = data.toolsData;
+                        this.toolsCategories        = data.toolsCategories;
+
+                        this.recipesData            = data.recipesData;
+                        this.schematicsData         = data.schematicsData;
+                        this.modsData               = data.modsData;
 
                         this.loadDetailedModels();
                     }.bind(this));
@@ -2373,35 +2380,21 @@ export default class BaseLayout
 
     generateInventoryOptions(currentObject, addNULL = true)
     {
-        let selectOptions       = [];
-        let isFluidInventory    = false;
-        let itemsCategories = {
-            ore                 : 'Ores',
-            material            : 'Materials',
-            component           : 'Components',
-            fuel                : 'Fuels',
-            ammo                : 'Ammos',
-            special             : 'Special',
-            statue              : 'Statues',
-            ficsmas             : 'FICSMAS Holiday Event',
-            waste               : 'Waste',
-            mods                : 'Modded items'
-        };
+        let selectOptions           = [];
+        let isFluidInventory        = true;
+        let itemsCategories         = JSON.parse(JSON.stringify(this.itemsCategories));
+            itemsCategories.statue  = 'Statues';
+            itemsCategories.ficsmas = 'FICSMAS Holiday Event';
+            itemsCategories.mods    = 'Modded items';
 
         if(currentObject !== null)
         {
-            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
+            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className) === false)
             {
-                isFluidInventory = true;
+                isFluidInventory = false;
+                delete itemsCategories.liquid;
+                delete itemsCategories.gas;
             }
-        }
-
-        if(isFluidInventory === true)
-        {
-            itemsCategories = {
-                liquid          : 'Liquids',
-                gas             : 'Gas'
-            };
         }
 
         for(let category in itemsCategories)
@@ -2412,10 +2405,10 @@ export default class BaseLayout
                     if(this.itemsData[i].className !== undefined && this.itemsData[i].className !== null && this.itemsData[i].category === category)
                     {
                         categoryOptions.push({
-                            group: itemsCategories[category],
-                            dataContent: '<img src="' + this.itemsData[i].image + '" style="width: 24px;" /> ' + this.itemsData[i].name,
-                            value: this.itemsData[i].className,
-                            text: this.itemsData[i].name
+                            group       : itemsCategories[category],
+                            dataContent : '<img src="' + this.itemsData[i].image + '" style="width: 24px;" /> ' + this.itemsData[i].name,
+                            value       : this.itemsData[i].className,
+                            text        : this.itemsData[i].name
                         });
                     }
                 }
@@ -2431,10 +2424,10 @@ export default class BaseLayout
                     if(this.toolsData[i].className !== undefined && this.toolsData[i].className !== null)
                     {
                         toolsOptions.push({
-                            group: 'Tools',
-                            dataContent: '<img src="' + this.toolsData[i].image + '" style="width: 24px;" /> ' + this.toolsData[i].name,
-                            value: this.toolsData[i].className,
-                            text: this.toolsData[i].name
+                            group       : 'Tools - ' + ((this.toolsData[i].category === 'ficsmas') ? itemsCategories[this.toolsData[i].category] : this.toolsCategories[this.toolsData[i].category]),
+                            dataContent : '<img src="' + this.toolsData[i].image + '" style="width: 24px;" /> ' + this.toolsData[i].name,
+                            value       : this.toolsData[i].className,
+                            text        : this.toolsData[i].name
                         });
                     }
                 }
