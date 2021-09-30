@@ -1,8 +1,8 @@
-import Map                                      from './Map.js';
-import SaveParser                               from './SaveParser.js';
 import BaseLayout                               from './BaseLayout.js';
-
+import Map                                      from './Map.js';
 import Modal                                    from './Modal.js';
+import SaveParser                               from './SaveParser.js';
+import Translate                                from './Translate.js';
 
 export default class SCIM
 {
@@ -18,6 +18,7 @@ export default class SCIM
         this.mapDataUrl                 = "https://satisfactory-calculator.com/" + this.language + "/interactive-map/index/json";
         this.gameDataUrl                = "https://satisfactory-calculator.com/" + this.language + "/api/game";
         this.modsDataUrl                = "https://satisfactory-calculator.com/" + this.language + "/mods/index/json";
+        this.translationDataUrl         = "https://satisfactory-calculator.com/" + this.language + "/api/map/translation";
 
         this.collectedOpacity           = 0.3;
 
@@ -29,6 +30,7 @@ export default class SCIM
         // Hold...
         this.map                        = null;
         this.baseLayout                 = null;
+        this.translate                  = null;
     }
 
     start(startCallback)
@@ -38,36 +40,46 @@ export default class SCIM
             this.intervalScriptsVERSION = setInterval(this.checkVersion.bind(this), 300 * 1000);
         }
 
-        this.map = new Map({
+        this.translate = new Translate({
             build               : this.build,
             version             : this.scriptsVERSION,
 
-            collectedOpacity    : this.collectedOpacity,
-
-            staticUrl           : this.staticAssetsUrl,
-            dataUrl             : this.mapDataUrl,
+            dataUrl             : this.translationDataUrl,
 
             language            : this.language,
-            startCallback       : startCallback
+            startCallback       : function(){
+                this.map = new Map({
+                    build               : this.build,
+                    version             : this.scriptsVERSION,
+
+                    collectedOpacity    : this.collectedOpacity,
+
+                    staticUrl           : this.staticAssetsUrl,
+                    dataUrl             : this.mapDataUrl,
+
+                    language            : this.language,
+                    startCallback       : startCallback
+                });
+
+                if(window.File && window.FileReader && window.FileList && window.Blob)
+                {
+                    $('#dropSaveGame').on('drag dragstart dragend dragover dragenter dragleave drop', function(e){e.preventDefault();e.stopPropagation();})
+                                      .on('dragover dragenter', function(){$('#dropSaveGame').addClass('is-dragover');})
+                                      .on('dragleave dragend drop', function(){$('#dropSaveGame').removeClass('is-dragover');})
+                                      .on('drop', function(e){ this.processSaveGameFile(e.originalEvent.dataTransfer.files[0]); }.bind(this));
+                    $('#saveGameFileInput').on('change', function(e){
+                        let currentFile = $(e.currentTarget).prop('files')[0];
+                            $(e.currentTarget).val('');
+
+                        this.processSaveGameFile(currentFile);
+                    }.bind(this));
+                }
+                else
+                {
+                    $('#dropSaveGame').remove();
+                }
+            }.bind(this)
         });
-
-        if(window.File && window.FileReader && window.FileList && window.Blob)
-        {
-            $('#dropSaveGame').on('drag dragstart dragend dragover dragenter dragleave drop', function(e){e.preventDefault();e.stopPropagation();})
-                              .on('dragover dragenter', function(){$('#dropSaveGame').addClass('is-dragover');})
-                              .on('dragleave dragend drop', function(){$('#dropSaveGame').removeClass('is-dragover');})
-                              .on('drop', function(e){ this.processSaveGameFile(e.originalEvent.dataTransfer.files[0]); }.bind(this));
-            $('#saveGameFileInput').on('change', function(e){
-                let currentFile = $(e.currentTarget).prop('files')[0];
-                    $(e.currentTarget).val('');
-
-                this.processSaveGameFile(currentFile);
-            }.bind(this));
-        }
-        else
-        {
-            $('#dropSaveGame').remove();
-        }
     }
 
     processSaveGameFile(droppedFile)
@@ -108,20 +120,21 @@ export default class SCIM
         }
 
         setTimeout(function(){
-            options.build           = this.build;
-            options.debug           = this.debug;
+            options.build               = this.build;
+            options.debug               = this.debug;
+            options.version             = this.scriptsVERSION;
 
-            options.staticUrl       = this.staticAssetsUrl;
-            options.dataUrl         = this.gameDataUrl;
-            options.modsUrl         = this.modsDataUrl;
+            options.staticUrl           = this.staticAssetsUrl;
+            options.dataUrl             = this.gameDataUrl;
+            options.modsUrl             = this.modsDataUrl;
 
-            options.language        = this.language;
-            options.version         = this.scriptsVERSION;
+            options.language            = this.language;
+            options.translate           = this.translate;
 
-            options.satisfactoryMap = this.map;
-            options.saveGameParser  = new SaveParser(options.droppedFileResult, options.droppedFileName);
+            options.satisfactoryMap     = this.map;
+            options.saveGameParser      = new SaveParser(options.droppedFileResult, options.droppedFileName);
 
-            this.baseLayout         = new BaseLayout(options);
+            this.baseLayout = new BaseLayout(options);
             this.baseLayout.draw();
         }.bind(this), 250);
     }

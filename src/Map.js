@@ -1,6 +1,4 @@
 /* global L, Intl */
-import Building_Conveyor               from './Building/Conveyor.js';
-
 export default class Map
 {
     constructor(options)

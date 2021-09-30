@@ -87,6 +87,7 @@ export default class BaseLayout
         this.modsUrl                            = options.modsUrl;
 
         this.language                           = options.language;
+        this.translate                          = options.translate;
 
         this.collectedHardDrives                = new HardDrives({language: options.language});
         this.collectedSchematics                = new Schematics({language: options.language});
@@ -176,13 +177,13 @@ export default class BaseLayout
         {
             if(this.modsData[modId].isLoaded !== undefined && this.modsData[modId].isLoaded === true)
             {
-                let layerId                     = 'playerMods' + modId + 'Layer';
-                this.setupModSubLayer(modId, layerId);
+                let layerId = 'playerMods' + modId + 'Layer';
+                    this.setupModSubLayer(modId, layerId);
             }
         }
 
-        this.playerStatistics                   = {
-            collectables                            : {
+        this.playerStatistics = {
+            collectables : {
                 '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C': {items: [], layerId: 'berylNut'},
                 '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C': {items: [], layerId: 'paleBerry'},
                 '/Game/FactoryGame/World/Benefit/Mushroom/BP_Shroom_01.BP_Shroom_01_C': {items: [], layerId: 'baconAgaric'},
@@ -314,7 +315,7 @@ export default class BaseLayout
             {
                 return new Promise(function(resolve){
                     $('#loaderProgressBar .progress-bar').css('width', '47.5%');
-                    $('.loader h6').html('Loading game data...');
+                    $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading game data...'));
                     setTimeout(resolve, 50);
                 }.bind(this)).then(() => {
                     $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, function(data)
@@ -383,28 +384,28 @@ export default class BaseLayout
                     {
                         for(let item in data.Items)
                         {
-                            this.itemsData[item]                    = data.Items[item];
+                            this.itemsData[item] = data.Items[item];
                         }
                     }
                     if(data.Tools !== undefined)
                     {
                         for(let tool in data.Tools)
                         {
-                            this.toolsData[tool]                    = data.Tools[tool];
+                            this.toolsData[tool] = data.Tools[tool];
                         }
                     }
                     if(data.Recipes !== undefined)
                     {
                         for(let recipe in data.Recipes)
                         {
-                            this.recipesData[recipe]                = data.Recipes[recipe];
+                            this.recipesData[recipe] = data.Recipes[recipe];
                         }
                     }
                     if(data.Schematics !== undefined)
                     {
                         for(let schematic in data.Schematics)
                         {
-                            this.schematicsData[schematic]          = data.Schematics[schematic];
+                            this.schematicsData[schematic] = data.Schematics[schematic];
                         }
                     }
 
@@ -449,7 +450,7 @@ export default class BaseLayout
         {
             return new Promise(function(resolve){
                 $('#loaderProgressBar .progress-bar').css('width', '50%');
-                $('.loader h6').html('Loading detailed models...');
+                $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
                 setTimeout(resolve, 50);
             }.bind(this)).then(() => {
                 $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, function(data)
@@ -523,7 +524,7 @@ export default class BaseLayout
                 $('#saveGameInformation').html('<strong>' + header.sessionName + '</strong> <em><small>(' + hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's)</small></em>');
 
             $('#loaderProgressBar .progress-bar').css('width', '50%');
-            $('.loader h6').html('Rendering objects...');
+            $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', 0));
             console.time('renderObjects');
             setTimeout(resolve, 50);
         }.bind(this)).then(() => {
@@ -795,7 +796,7 @@ export default class BaseLayout
                 {
                     return Promise.all(promises).then(() => {
                         $('#loaderProgressBar .progress-bar').css('width', (50 + progress * 0.4) + '%');
-                        $('.loader h6').html('Rendering objects (' + progress + '%)...');
+                        $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', progress));
 
                         setTimeout(() => {
                             this.parseObjects((i + 1), objectsKeys);
@@ -1033,7 +1034,7 @@ export default class BaseLayout
                     let progress = Math.round(i / layersKeys.length * 100);
                         return new Promise(function(resolve){
                             $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
-                            $('.loader h6').html('Adding map layers (' + $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title') + ')...');
+                            $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s%)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
                             setTimeout(resolve, 5);
                         }.bind(this)).then(() => {
                             this.addLayers((i + 1));
@@ -1045,7 +1046,7 @@ export default class BaseLayout
 
         return new Promise(function(resolve){
             $('#loaderProgressBar .progress-bar').css('width', '100%');
-            $('.loader h6').html('Finalize statistics and controls...');
+            $('.loader h6').html(this.translate._('MAP\\LOADER\\Finalization of statistics and controls...'));
             setTimeout(resolve, 25);
         }.bind(this)).then(() => {
             // Altitude slider
@@ -2437,10 +2438,7 @@ export default class BaseLayout
 
         if(addNULL === true)
         {
-            selectOptions.unshift({
-                value: 'NULL',
-                text: '-----'
-            });
+            selectOptions.unshift({value: 'NULL', text: '-----'});
         }
 
         return selectOptions;
@@ -2509,8 +2507,6 @@ export default class BaseLayout
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipePump/Build_PipelinePump.Build_PipelinePump_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipePumpMk2/Build_PipelinePumpMK2.Build_PipelinePumpMk2_C')
         {
             let pumpAngle = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
-
-                //if(pumpAngle.roll <= -90 || pumpAngle.roll >= 90)
                 if(Math.round(pumpAngle.pitch) === 90 || Math.round(pumpAngle.pitch) === 270)
                 {
                     widthSize      = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
@@ -6629,7 +6625,7 @@ export default class BaseLayout
                     markersSelected : this.markersSelected
                 });
 
-            $('#genericModal .modal-title').empty().html('Statistics - Prodution');
+            $('#genericModal .modal-title').empty().html(this.translate._('MAP\\MODAL\\Statistics - Production'));
             $('#genericModal .modal-body').empty().html(statisticsProduction.parse());
             setTimeout(function(){
                 $('#genericModal').modal('show').modal('handleUpdate');
@@ -6648,7 +6644,7 @@ export default class BaseLayout
                     markersSelected : this.markersSelected
                 });
 
-            $('#genericModal .modal-title').empty().html('Statistics - Storage');
+            $('#genericModal .modal-title').empty().html(this.translate._('MAP\\MODAL\\Statistics - Storage'));
             $('#genericModal .modal-body').empty().html(statisticsStorage.parse());
             setTimeout(function(){
                 $('#genericModal').modal('show').modal('handleUpdate');
