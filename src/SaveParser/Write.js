@@ -913,15 +913,7 @@ export default class SaveParser_Write
 
                                 // MOD: FicsIt-Networks
                                 case 'FINGPUT1BufferPixel':
-                                    structure += this.writeHex(currentProperty.value.values[i].character);
-                                    structure += this.writeFloat(currentProperty.value.values[i].foregroundColor.r);
-                                    structure += this.writeFloat(currentProperty.value.values[i].foregroundColor.g);
-                                    structure += this.writeFloat(currentProperty.value.values[i].foregroundColor.b);
-                                    structure += this.writeFloat(currentProperty.value.values[i].foregroundColor.a);
-                                    structure += this.writeFloat(currentProperty.value.values[i].backgroundColor.r);
-                                    structure += this.writeFloat(currentProperty.value.values[i].backgroundColor.g);
-                                    structure += this.writeFloat(currentProperty.value.values[i].backgroundColor.b);
-                                    structure += this.writeFloat(currentProperty.value.values[i].backgroundColor.a);
+                                    structure += this.writeFINGPUT1BufferPixel(currentProperty.value.values[i]);
                                     break;
 
                                 default:
@@ -1268,6 +1260,22 @@ export default class SaveParser_Write
         }
     }
 
+    writeFINGPUT1BufferPixel(value)
+    {
+        let saveBinary  = '';
+            saveBinary += this.writeHex(value.character);
+            saveBinary += this.writeFloat(value.foregroundColor.r);
+            saveBinary += this.writeFloat(value.foregroundColor.g);
+            saveBinary += this.writeFloat(value.foregroundColor.b);
+            saveBinary += this.writeFloat(value.foregroundColor.a);
+            saveBinary += this.writeFloat(value.backgroundColor.r);
+            saveBinary += this.writeFloat(value.backgroundColor.g);
+            saveBinary += this.writeFloat(value.backgroundColor.b);
+            saveBinary += this.writeFloat(value.backgroundColor.a);
+
+        return saveBinary;
+    }
+
     writeFINNetworkTrace(value)
     {
         let saveBinary  = '';
@@ -1330,12 +1338,33 @@ export default class SaveParser_Write
                         saveBinary += this.writeFloat(value.structs[i].y);
                         saveBinary += this.writeFloat(value.structs[i].z);
                         break;
+                    case '/Script/CoreUObject.LinearColor':
+                        saveBinary += this.writeFloat(value.structs[i].r);
+                        saveBinary += this.writeFloat(value.structs[i].g);
+                        saveBinary += this.writeFloat(value.structs[i].b);
+                        saveBinary += this.writeFloat(value.structs[i].a);
+                        break;
                     case '/Script/FactoryGame.InventoryStack':
                         saveBinary += this.writeInt(value.structs[i].unk3);
                         saveBinary += this.writeString(value.structs[i].unk4);
                         saveBinary += this.writeInt(value.structs[i].unk5);
                         saveBinary += this.writeInt(value.structs[i].unk6);
                         saveBinary += this.writeInt(value.structs[i].unk7);
+                        break;
+                    case '/Script/FicsItNetworks.FINGPUT1Buffer':
+                        saveBinary += this.writeInt(value.structs[i].x);
+                        saveBinary += this.writeInt(value.structs[i].y);
+                        saveBinary += this.writeInt(value.structs[i].size);
+                        saveBinary += this.writeString(value.structs[i].name);
+                        saveBinary += this.writeString(value.structs[i].type);
+                        saveBinary += this.writeInt(value.structs[i].length);
+
+                        for(let size = 0; size < value.structs[i].size; size++)
+                        {
+                            saveBinary += this.writeFINGPUT1BufferPixel(value.structs[i].buffer[size]);
+                        }
+
+                        saveBinary += this.writeHex(value.structs[i].unk3);
                         break;
                 }
             }

@@ -773,21 +773,7 @@ export default class SaveParser_Read
                                 // MOD: FicsIt-Networks
                                 // See: https://github.com/CoderDE/FicsIt-Networks/blob/3472a437bcd684deb7096ede8f03a7e338b4a43d/Source/FicsItNetworks/Computer/FINComputerGPUT1.h#L42
                                 case 'FINGPUT1BufferPixel':
-                                    currentProperty.value.values.push({
-                                        character           : this.readHex(2),
-                                        foregroundColor     : {
-                                            r : this.readFloat(),
-                                            g : this.readFloat(),
-                                            b : this.readFloat(),
-                                            a : this.readFloat()
-                                        },
-                                        backgroundColor     : {
-                                            r : this.readFloat(),
-                                            g : this.readFloat(),
-                                            b : this.readFloat(),
-                                            a : this.readFloat()
-                                        }
-                                    });
+                                    currentProperty.value.values.push(this.readFINGPUT1BufferPixel());
                                     break;
 
                                 case 'SpawnData':
@@ -1397,6 +1383,25 @@ export default class SaveParser_Read
         return;
     }
 
+    readFINGPUT1BufferPixel()
+    {
+        return {
+            character           : this.readHex(2),
+            foregroundColor     : {
+                r : this.readFloat(),
+                g : this.readFloat(),
+                b : this.readFloat(),
+                a : this.readFloat()
+            },
+            backgroundColor     : {
+                r : this.readFloat(),
+                g : this.readFloat(),
+                b : this.readFloat(),
+                a : this.readFloat()
+            }
+        };
+    }
+
     // https://github.com/CoderDE/FicsIt-Networks/blob/ab918a81a8a7527aec0cf6cd35270edfc5a1ddfe/Source/FicsItNetworks/Network/FINNetworkTrace.cpp#L154
     readFINNetworkTrace()
     {
@@ -1456,6 +1461,12 @@ export default class SaveParser_Read
                             structure.y  = this.readFloat();
                             structure.z  = this.readFloat();
                             break;
+                        case '/Script/CoreUObject.LinearColor':
+                            structure.r  = this.readFloat();
+                            structure.g  = this.readFloat();
+                            structure.b  = this.readFloat();
+                            structure.a  = this.readFloat();
+                            break;
                         case '/Script/FactoryGame.InventoryStack':
                             structure.unk3  = this.readInt();
                             structure.unk4  = this.readString();
@@ -1464,6 +1475,20 @@ export default class SaveParser_Read
                             structure.unk7  = this.readInt();
                             break;
                         case '/Script/FactoryGame.InventoryItem': // Skip!
+                            break;
+                        case '/Script/FicsItNetworks.FINGPUT1Buffer':
+                            structure.x         = this.readInt();
+                            structure.y         = this.readInt();
+                            structure.size      = this.readInt();
+                            structure.name      = this.readString();
+                            structure.type      = this.readString();
+                            structure.length    = this.readInt();
+                            structure.buffer    = [];
+                                for(let size = 0; size < structure.size; size++)
+                                {
+                                    structure.buffer.push(this.readFINGPUT1BufferPixel());
+                                }
+                            structure.unk3      = this.readHex(45); //TODO: Not sure at all!
                             break;
                         default:
                             Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
