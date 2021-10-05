@@ -38,7 +38,14 @@ export default class Translate
 
         if(replace !== undefined)
         {
-            return value.replace('%1$s', replace);
+            if(Array.isArray(replace) === false)
+            {
+                replace = [replace];
+            }
+            for(let i = 0; i < replace.length; i++)
+            {
+                value = value.replace('%' + (i + 1) + '$s', replace[i]);
+            }
         }
 
         return value;

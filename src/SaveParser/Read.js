@@ -1,4 +1,4 @@
-/* global Sentry */
+/* global Sentry, Intl */
 import Modal                                    from '../Modal.js';
 import pako                                     from '../Lib/pako.esm.mjs';
 
@@ -10,6 +10,9 @@ export default class SaveParser_Read
 
         this.saveParser         = options.saveParser;
         this.callback           = options.callback;
+
+        this.language           = options.language;
+        this.translate          = options.translate;
 
         this.arrayBuffer        = this.saveParser.arrayBuffer;
         this.bufferView         = new DataView(this.arrayBuffer); // Still used for header...
@@ -55,7 +58,7 @@ export default class SaveParser_Read
         }
         else
         {
-            alert('That save version isn\'t supported anymore... Please save it again in the game.');
+            Modal.alert('That save version isn\'t supported anymore... Please save it again in the game.');
         }
     }
 
@@ -118,7 +121,7 @@ export default class SaveParser_Read
             catch(err)
             {
                 console.log('INFLATE ERROR', err);
-                alert('Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.')
+                Modal.alert('Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.')
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('pako', pako);
@@ -173,8 +176,8 @@ export default class SaveParser_Read
         let countObjects                = this.readInt();
         let entitiesToObjects           = [];
             this.saveParser.objects     = {};
-            console.log('Reading: ' + countObjects + ' objects...');
-            $('.loader h6').html('Parsing ' + countObjects + ' objects...');
+            console.log('Parsing: ' + countObjects + ' objects...');
+            $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Parsing %1$s objects...', new Intl.NumberFormat(this.language).format(countObjects)));
 
             setTimeout(() => {
                 for(let i = 0; i < countObjects; i++)
@@ -208,8 +211,8 @@ export default class SaveParser_Read
                 }
 
                 let countEntities   = this.readInt();
-                    console.log('Reading: ' + countEntities + ' entities...');
-                    $('.loader h6').html('Parsing ' + countEntities + ' entities...');
+                    console.log('Parsing: ' + countEntities + ' entities...');
+                    $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Parsing %1$s entities...', new Intl.NumberFormat(this.language).format(countEntities)));
 
                 setTimeout(() => {
                     for(let i = 0; i < countEntities; i++)
@@ -219,8 +222,8 @@ export default class SaveParser_Read
 
                     this.saveParser.collectables   = [];
                         let countCollected  = this.readInt();
-                            console.log('Reading: ' + countCollected + ' collectables...');
-                            $('.loader h6').html('Parsing ' + countCollected + ' collectables...');
+                            console.log('Parsing: ' + countCollected + ' collectables...');
+                            $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Parsing %1$s collectables...', new Intl.NumberFormat(this.language).format(countCollected)));
 
                     setTimeout(() => {
                             for(let i = 0; i < countCollected; i++)
@@ -514,11 +517,7 @@ export default class SaveParser_Read
                         if(missingBytes > 4)
                         {
                             this.saveParser.objects[objectKey].missing = this.readHex(missingBytes); // TODO
-
-                            console.log(
-                                'MISSING ' + missingBytes + '  BYTES',
-                                this.saveParser.objects[objectKey]
-                            );
+                            console.log('MISSING ' + missingBytes + '  BYTES', this.saveParser.objects[objectKey]);
                         }
                         else
                         {
@@ -1271,15 +1270,13 @@ export default class SaveParser_Read
     readHex(hexLength)
     {
         let hexPart = [];
-
-        for(let i = 0; i < hexLength; i++)
-        {
-            let currentHex = String.fromCharCode(
-                this.bufferView.getUint8(this.currentByte++, true)
-            );
-
-            hexPart.push(currentHex);
-        }
+            for(let i = 0; i < hexLength; i++)
+            {
+                let currentHex = String.fromCharCode(
+                        this.bufferView.getUint8(this.currentByte++, true)
+                    );
+                    hexPart.push(currentHex);
+            }
 
         return hexPart.join('');
     }
@@ -1292,35 +1289,35 @@ export default class SaveParser_Read
     readInt()
     {
         let data = this.bufferView.getInt32(this.currentByte, true);
-        this.currentByte += 4;
-        return data;
+            this.currentByte += 4;
+            return data;
     }
     readLong()
     {
         let data1   = this.readInt();
         let data2   = this.readInt();
 
-        if(data2 === 0)
-        {
-            return data1;
-        }
-        else
-        {
-            return [data1, data2];
-        }
+            if(data2 === 0)
+            {
+                return data1;
+            }
+            else
+            {
+                return [data1, data2];
+            }
     }
 
     readFloat()
     {
         let data = this.bufferView.getFloat32(this.currentByte, true);
-        this.currentByte += 4;
-        return data;
+            this.currentByte += 4;
+            return data;
     }
     readDouble()
     {
         let data = this.bufferView.getFloat64(this.currentByte, true);
-        this.currentByte += 8;
-        return data;
+            this.currentByte += 8;
+            return data;
     }
 
     readString()

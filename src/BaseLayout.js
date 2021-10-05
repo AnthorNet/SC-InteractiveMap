@@ -1034,7 +1034,7 @@ export default class BaseLayout
                     let progress = Math.round(i / layersKeys.length * 100);
                         return new Promise(function(resolve){
                             $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
-                            $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s%)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
+                            $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
                             setTimeout(resolve, 5);
                         }.bind(this)).then(() => {
                             this.addLayers((i + 1));

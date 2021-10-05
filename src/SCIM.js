@@ -132,7 +132,12 @@ export default class SCIM
             options.translate           = this.translate;
 
             options.satisfactoryMap     = this.map;
-            options.saveGameParser      = new SaveParser(options.droppedFileResult, options.droppedFileName);
+            options.saveGameParser      = new SaveParser({
+                arrayBuffer : options.droppedFileResult,
+                fileName    : options.droppedFileName,
+                language    : this.language,
+                translate   : this.translate
+            });
 
             this.baseLayout = new BaseLayout(options);
             this.baseLayout.draw();
@@ -199,7 +204,7 @@ export default class SCIM
                         clearInterval(this.intervalScriptsVERSION);
                         return false;
                     }
-                });
+                }.bind(this));
             }
         }
 

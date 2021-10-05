@@ -1,3 +1,5 @@
+/* global Intl */
+
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class SaveParser_Write
@@ -6,6 +8,9 @@ export default class SaveParser_Write
     {
         this.saveParser             = options.saveParser;
         this.callback               = options.callback;
+
+        this.language               = options.language;
+        this.translate              = options.translate;
 
         this.currentBufferLength    = 0; // Used for writing...
     }
@@ -74,7 +79,7 @@ export default class SaveParser_Write
                         this.pushSaveToChunk();
 
                         $('#loaderProgressBar .progress-bar').css('width', ((i / countObjects * 100) * 0.48) + '%');
-                        $('.loader h6').html('Compiling ' + i + '/' + countObjects + ' objects...');
+                        $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Compiling %1$s/%2$s objects...', [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]));
                         setTimeout(resolve, 5);
                     }.bind(this)).then(function(){
                         this.generateObjectsChunks((i + 1), objectsKeys);
@@ -104,7 +109,7 @@ export default class SaveParser_Write
                         this.pushSaveToChunk();
 
                         $('#loaderProgressBar .progress-bar').css('width', (48 + (i / countObjects * 100) * 0.48) + '%');
-                        $('.loader h6').html('Compiling ' + i + '/' + countObjects + ' entities...');
+                        $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Compiling %1$s/%2$s entities...', [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]));
                         setTimeout(resolve, 5);
                     }.bind(this)).then(function(){
                         this.generateEntitiesChunks((i + 1), objectsKeys);
@@ -121,7 +126,7 @@ export default class SaveParser_Write
 
     generateCollectablesChunks(i = 0, countCollectables)
     {
-        $('.loader h6').html('Compiling ' + countCollectables + ' collectables...');
+        $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Compiling %1$s collectables...', new Intl.NumberFormat(this.language).format(countCollectables)));
 
         for(i = 0; i < countCollectables; i++)
         {
@@ -233,7 +238,7 @@ export default class SaveParser_Write
         this.saveBlobArray.push(currentChunk.output);
 
         setTimeout(function(){
-            $('.loader h6').html('Generating save file...');
+            $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Generating save file...'));
 
             if(chunks.length > 0)
             {

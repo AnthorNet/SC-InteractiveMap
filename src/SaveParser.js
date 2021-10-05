@@ -3,10 +3,13 @@ import SaveParser_Write     from './SaveParser/Write.js';
 
 export default class SaveParser
 {
-    constructor(arrayBuffer, fileName)
+    constructor(options)
     {
-        this.fileName               = fileName;
-        this.arrayBuffer            = arrayBuffer;
+        this.fileName               = options.fileName;
+        this.arrayBuffer            = options.arrayBuffer;
+
+        this.language               = options.language;
+        this.translate              = options.translate;
 
         this.header                 = null;
         this.PACKAGE_FILE_TAG       = null;
@@ -61,7 +64,9 @@ export default class SaveParser
 
         new SaveParser_Read({
             saveParser  : this,
-            callback    : callback
+            callback    : callback,
+            language    : this.language,
+            translate   : this.translate
         });
     }
 
@@ -69,7 +74,9 @@ export default class SaveParser
     {
         let writer = new SaveParser_Write({
             saveParser  : this,
-            callback    : callback
+            callback    : callback,
+            language    : this.language,
+            translate   : this.translate
         });
             writer.streamSave();
     }
