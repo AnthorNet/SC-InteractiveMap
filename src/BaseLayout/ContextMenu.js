@@ -14,6 +14,7 @@ import Building_SpaceElevator                   from '../Building/SpaceElevator.
 import Building_TrainStation                    from '../Building/TrainStation.js';
 
 import Modal_Debug                              from '../Modal/Debug.js';
+import Modal_Object_Position                    from '../Modal/Object/Position.js';
 import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
 
 import SubSystem_Player                         from '../SubSystem/Player.js';
@@ -37,7 +38,7 @@ export default class BaseLayout_ContextMenu
                 {
                     contextMenu.push({
                         text: 'Update "' + faunaData.name + '" position',
-                        callback: this.baseLayout.updateObjectPosition.bind(this.baseLayout)
+                        callback: Modal_Object_Position.getHTML
                     });
                     contextMenu.push({
                         text: 'Delete "' + faunaData.name + '"',
@@ -68,7 +69,7 @@ export default class BaseLayout_ContextMenu
                 case '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C':
                     contextMenu.push({
                         text: 'Update "Loot Crate" position',
-                        callback: this.baseLayout.updateObjectPosition.bind(this.baseLayout)
+                        callback: Modal_Object_Position.getHTML
                     });
                     /*
                     contextMenu.push({
@@ -249,7 +250,7 @@ export default class BaseLayout_ContextMenu
                     {
                         contextMenu.push({
                             text: 'Update "' + buildingData.name + '" position',
-                            callback: this.baseLayout.updateObjectPosition.bind(this.baseLayout)
+                            callback: Modal_Object_Position.getHTML
                         });
                     }
 
