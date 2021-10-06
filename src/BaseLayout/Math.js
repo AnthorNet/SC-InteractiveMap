@@ -56,14 +56,12 @@ export default class BaseLayout_Math
 	let cosRoll         = this.scalarCos(rollNoWinding * radBy2);
         let sinRoll         = this.scalarSin(rollNoWinding * radBy2);
 
-	let rotationQuat    = [
-                 (cosRoll * sinPitch * sinYaw) - (sinRoll * cosPitch * cosYaw), // X
-                (-cosRoll * sinPitch * cosYaw) - (sinRoll * cosPitch * sinYaw), // Y
-                 (cosRoll * cosPitch * sinYaw) - (sinRoll * sinPitch * cosYaw), // Z
-                 (cosRoll * cosPitch * cosYaw) + (sinRoll * sinPitch * sinYaw)  // W
-            ];
-
-        return rotationQuat;
+	return [
+             (cosRoll * sinPitch * sinYaw) - (sinRoll * cosPitch * cosYaw), // X
+            (-cosRoll * sinPitch * cosYaw) - (sinRoll * cosPitch * sinYaw), // Y
+             (cosRoll * cosPitch * sinYaw) - (sinRoll * sinPitch * cosYaw), // Z
+             (cosRoll * cosPitch * cosYaw) + (sinRoll * sinPitch * sinYaw)  // W
+        ];
     }
 
     static getNewQuaternionRotate(quaternion, angle)
@@ -71,24 +69,71 @@ export default class BaseLayout_Math
         let eulerAngle      = this.getQuaternionToEuler(quaternion);
             eulerAngle.yaw  = this.clampEulerAxis(eulerAngle.yaw + angle);
 
-        let newQuaternion   = this.getEulerToQuaternion(eulerAngle);
-
-        return newQuaternion;
+        return this.getEulerToQuaternion(eulerAngle);
     }
 
     static getPointRotation(position, center, rotation)
     {
-        let degToRad    = Math.PI / 180;
         let eulerAngle  = this.getQuaternionToEuler(rotation);
+        let degToRad    = Math.PI / 180;
+        let cosYaw      = Math.cos(eulerAngle.yaw * degToRad);
+        let sinYaw      = Math.sin(eulerAngle.yaw * degToRad);
+
+        // Constraint PITCH/ROLL to avoid too malformed polygons
+        if(Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch)) > 60 && Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch)) < 90)
+        {
+            eulerAngle.pitch = 60;
+        }
+        if(Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch)) >= 90 && Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch)) < 120)
+        {
+            eulerAngle.pitch = 120;
+        }
+        if(Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) > 60 && Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) < 90)
+        {
+            eulerAngle.roll = 60;
+        }
+        if(Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) >= 90 && Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) < 120)
+        {
+            eulerAngle.roll = 120;
+        }
+        if(Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) > -60 && Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) < -90)
+        {
+            eulerAngle.roll = -60;
+        }
+        if(Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) >= -90 && Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) < -120)
+        {
+            eulerAngle.roll = -120;
+        }
+
+        let cosPitch    = Math.cos(eulerAngle.pitch * degToRad);
+        let sinPitch    = Math.sin(eulerAngle.pitch * degToRad);
+
+        let cosRoll     = Math.cos(eulerAngle.roll * degToRad);
+        let sinRoll     = Math.sin(eulerAngle.roll * degToRad);
+
+        let Axx         = cosYaw * cosPitch;
+        let Axy         = (cosYaw * sinPitch * sinRoll) - (sinYaw * cosRoll);
+
+        let Ayx         = sinYaw * cosPitch;
+        let Ayy         = (sinYaw * sinPitch * sinRoll) + (cosYaw * cosRoll);
+
+        return [
+            center[0] + (Axx * (position[0] - center[0])) + (Axy * (position[1] - center[1])),
+            center[1] + (Ayx * (position[0] - center[0])) + (Ayy * (position[1] - center[1]))
+        ];
+
+        /*
+        let eulerAngle  = this.getQuaternionToEuler(rotation);
+        let degToRad    = Math.PI / 180;
+
         let cos         = Math.cos(eulerAngle.yaw * degToRad);
         let sin         = Math.sin(eulerAngle.yaw * degToRad);
 
-        let newRotation = [
+        return [
             center[0] + (cos * (position[0] - center[0])) - (sin * (position[1] - center[1])),
             center[1] + (sin * (position[0] - center[0])) + (cos * (position[1] - center[1]))
         ];
-
-        return newRotation;
+        */
     }
 
 
