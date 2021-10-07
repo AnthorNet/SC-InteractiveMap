@@ -621,7 +621,19 @@ export default class Spawn_Blueprint
             if(currentClipboard.linkedList !== undefined)
             {
                 let newLinkedList           = currentClipboard.linkedList;
-                    newLinkedList.pathName  = currentClipboard.parent.pathName + '.LinkedList';
+                    let mTargetList = this.baseLayout.getObjectProperty(currentClipboard.parent, 'mTargetList');
+                        if(mTargetList !== null)
+                        {
+                            newLinkedList.pathName  = this.baseLayout.generateFastPathName(newLinkedList);
+                            mTargetList.pathName    = newLinkedList.pathName;
+                        }
+                    //TODO:OLD
+                    let mTargetNodeLinkedList = this.baseLayout.getObjectProperty(currentClipboard.parent, 'mTargetNodeLinkedList');
+                        if(mTargetNodeLinkedList !== null)
+                        {
+                            newLinkedList.pathName          = currentClipboard.parent.pathName + '.LinkedList';
+                            mTargetNodeLinkedList.pathName  = newLinkedList.pathName;
+                        }
 
                 let firstNode               = this.baseLayout.getObjectProperty(newLinkedList, 'mFirst');
                 let lastNode                = this.baseLayout.getObjectProperty(newLinkedList, 'mLast');
@@ -698,12 +710,6 @@ export default class Spawn_Blueprint
                 }
 
                 this.baseLayout.saveGameParser.addObject(newLinkedList);
-
-                let mTargetNodeLinkedList = this.baseLayout.getObjectProperty(currentClipboard.parent, 'mTargetNodeLinkedList');
-                    if(mTargetNodeLinkedList !== null)
-                    {
-                        mTargetNodeLinkedList.pathName = newLinkedList.pathName;
-                    }
             }
 
             // Parent object

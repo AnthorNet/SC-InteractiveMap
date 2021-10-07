@@ -767,11 +767,11 @@ export default class BaseLayout
             '/Script/FactoryGame.FGRailroadTrackConnectionComponent',
             '/Script/FactoryGame.FGTrainPlatformConnection',
              */
-            if(currentObject.className.startsWith('/Script/FactoryGame.') === true && currentObject.className !== '/Script/FactoryGame.FGItemPickup_Spawnable')
-            {
-                continue;
-            }
-            if(currentObject.className.startsWith('/Game/FactoryGame/-Shared/Blueprint/BP_') === true)
+            if(
+                    currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C'
+                 || (currentObject.className.startsWith('/Script/FactoryGame.') && currentObject.className !== '/Script/FactoryGame.FGItemPickup_Spawnable')
+                 || currentObject.className.startsWith('/Game/FactoryGame/-Shared/Blueprint/BP_')
+            )
             {
                 continue;
             }
@@ -2948,11 +2948,15 @@ export default class BaseLayout
         // Delete vehicles waypoints
         if(buildingData !== null && buildingData.category === 'vehicle')
         {
-            let currentTargetNodeLinkedList = this.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
+            let mTargetList = this.getObjectProperty(currentObject, 'mTargetList'); // Update 5
+                if(mTargetList === null) //TODO:OLD
+                {
+                    mTargetList = this.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
+                }
 
-            if(currentTargetNodeLinkedList !== null)
+            if(mTargetList !== null)
             {
-                let targetNode = this.saveGameParser.getTargetObject(currentTargetNodeLinkedList.pathName);
+                let targetNode = this.saveGameParser.getTargetObject(mTargetList.pathName);
 
                 if(targetNode.properties.length > 0)
                 {
@@ -3926,7 +3930,7 @@ export default class BaseLayout
 
                     this.playerLayers[layerId].renderer = this.satisfactoryMap.decorativeRenderer;
             }
-            */
+            /**/
         }
 
         if(this.playerLayers[layerId].subLayer === null)
@@ -5091,12 +5095,16 @@ export default class BaseLayout
      */
     getVehicleTrack(currentObject)
     {
-        let currentTrack                = [];
-        let currentTargetNodeLinkedList = this.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
-
-            if(currentTargetNodeLinkedList !== null)
+        let currentTrack    = [];
+        let mTargetList     = this.getObjectProperty(currentObject, 'mTargetList'); // Update 5
+            if(mTargetList === null) //TODO:OLD
             {
-                let targetNode = this.saveGameParser.getTargetObject(currentTargetNodeLinkedList.pathName);
+                mTargetList = this.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
+            }
+
+            if(mTargetList !== null)
+            {
+                let targetNode = this.saveGameParser.getTargetObject(mTargetList.pathName);
                     if(targetNode !== null)
                     {
                         let mFirst  = this.getObjectProperty(targetNode, 'mFirst');
@@ -5123,6 +5131,7 @@ export default class BaseLayout
                                             }
 
                                         currentTrack.push(lastNode.transform.translation);
+                                        currentTrack.push(firstNode.transform.translation); // Close the loop!
                                     }
                             }
                     }
@@ -6838,9 +6847,9 @@ L.Map.EventForwarder = L.Class.extend({
 	},
 
 	disable: function() {
-		//L.DomEvent.off(_options.map, 'click', this._handleClick, this);
-                L.DomEvent.off(_options.map, 'contextmenu', this._handleClick, this);
-		//L.DomEvent.off(_options.map, 'mousemove', this._throttle(this._handleMouseMove, _options.throttleMs, _options.throttleOptions), this);
+            //L.DomEvent.off(_options.map, 'click', this._handleClick, this);
+            L.DomEvent.off(_options.map, 'contextmenu', this._handleClick, this);
+            //L.DomEvent.off(_options.map, 'mousemove', this._throttle(this._handleMouseMove, _options.throttleMs, _options.throttleOptions), this);
 	},
 
 	/**
@@ -6897,38 +6906,38 @@ L.Map.EventForwarder = L.Class.extend({
 	 * @param event
 	 * @private
 	 */
-	_handleClick: function(event) {
+	_handleClick: function(event)
+        {
+            if (event.originalEvent._stopped) { return; }
 
-		if (event.originalEvent._stopped) { return; }
+            // get the target pane
+            var currentTarget = event.originalEvent.target;
+            var stopped;
+            var removed;
 
-		// get the target pane
-		var currentTarget = event.originalEvent.target;
-		var stopped;
-		var removed;
+            // hide the target node
+            removed = { node: currentTarget, pointerEvents: currentTarget.style.pointerEvents };
+            currentTarget.style.pointerEvents = 'none';
 
-		// hide the target node
-		removed = { node: currentTarget, pointerEvents: currentTarget.style.pointerEvents };
-		currentTarget.style.pointerEvents = 'none';
+            // attempt to grab the next layer below
+            let nextTarget = document.elementFromPoint(event.originalEvent.clientX, event.originalEvent.clientY);
 
-		// attempt to grab the next layer below
-		let nextTarget = document.elementFromPoint(event.originalEvent.clientX, event.originalEvent.clientY);
+            // we keep drilling down until we get stopped,
+            // or we reach the map container itself
+            if (
+                    nextTarget &&
+                    nextTarget.nodeName.toLowerCase() !== 'body' &&
+                    nextTarget.classList.value.indexOf('leaflet-container') === -1
+            ) {
+                    var ev = new MouseEvent(event.originalEvent.type, event.originalEvent);
+                    stopped = !nextTarget.dispatchEvent(ev);
+                    if (stopped || ev._stopped) {
+                            L.DomEvent.stop(event);
+                    }
+            }
 
-		// we keep drilling down until we get stopped,
-		// or we reach the map container itself
-		if (
-			nextTarget &&
-			nextTarget.nodeName.toLowerCase() !== 'body' &&
-			nextTarget.classList.value.indexOf('leaflet-container') === -1
-		) {
-			var ev = new MouseEvent(event.originalEvent.type, event.originalEvent);
-			stopped = !nextTarget.dispatchEvent(ev);
-			if (stopped || ev._stopped) {
-				L.DomEvent.stop(event);
-			}
-		}
-
-		// restore pointerEvents
-		removed.node.style.pointerEvents = removed.pointerEvents;
+            // restore pointerEvents
+            removed.node.style.pointerEvents = removed.pointerEvents;
 	},
 
 	/**

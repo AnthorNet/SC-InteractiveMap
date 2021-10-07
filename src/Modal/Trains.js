@@ -42,7 +42,7 @@ export default class Modal_Trains
             let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGameParser.trainIdentifiers[i]);
                 if(currentIdentifier !== null)
                 {
-                    if(currentIdentifier.className === '/Script/FactoryGame.FGTrain')
+                    if(['/Script/FactoryGame.FGTrain', '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C'].includes(currentIdentifier.className))
                     {
                         let haveTimetable   = this.baseLayout.getObjectProperty(currentIdentifier, 'TimeTable');
                             if(haveTimetable !== null && haveTimetable.pathName !== undefined)

@@ -173,10 +173,14 @@ export default class BaseLayout_Selection_Copy
                         }
 
                     // Does vehicle have a list of waypoints?
-                    let mTargetNodeLinkedList = this.baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
-                        if(mTargetNodeLinkedList !== null)
+                    let mTargetList = this.getObjectProperty(currentObject, 'mTargetList'); // Update 5
+                        if(mTargetList === null) //TODO:OLD
                         {
-                            let linkedList                  = this.baseLayout.saveGameParser.getTargetObject(mTargetNodeLinkedList.pathName);
+                            mTargetList = this.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
+                        }
+                        if(mTargetList !== null)
+                        {
+                            let linkedList = this.baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
 
                                 if(linkedList !== null)
                                 {

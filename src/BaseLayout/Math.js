@@ -105,6 +105,7 @@ export default class BaseLayout_Math
             eulerAngle.roll = -120;
         }
 
+        // Calculation
         let cosPitch    = Math.cos(eulerAngle.pitch * degToRad);
         let sinPitch    = Math.sin(eulerAngle.pitch * degToRad);
 
