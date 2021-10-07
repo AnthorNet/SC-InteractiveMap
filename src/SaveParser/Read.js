@@ -2,6 +2,10 @@
 import Modal                                    from '../Modal.js';
 import pako                                     from '../Lib/pako.esm.mjs';
 
+/*TODO:UPDATE5
+    - Implement TrainDockingRuleSet
+    - Check Persistent_Level:PersistentLevel.VehicleSubsystem
+*/
 export default class SaveParser_Read
 {
     constructor(options)
@@ -199,7 +203,7 @@ export default class SaveParser_Read
                                     {
                                         this.saveParser.gameStatePathName   = actor.pathName;
                                     }
-                                    if(actor.className === '/Script/FactoryGame.FGTrainStationIdentifier' || actor.className === '/Script/FactoryGame.FGTrain')
+                                    if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(actor.className))
                                     {
                                         this.saveParser.trainIdentifiers.push(actor.pathName);
                                     }
@@ -486,24 +490,9 @@ export default class SaveParser_Read
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
-                    this.saveParser.objects[objectKey].extra       = {
-                        unk1                : this.readString(), //TODO: What is it?
-                        unk2                : this.readString(), //TODO: What is it?
-                        previousLevelName   : this.readString(),
-                        previousPathName    : this.readString(),
-                        nextLevelName       : this.readString(),
-                        nextPathName        : this.readString()
-                    };
-
-                    break;
-                case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
                     this.saveParser.objects[objectKey].extra    = {count: this.readInt(), objects: []};
-                    let objectLength                            = this.readInt();
-                        for(let i = 0; i < objectLength; i++)
+                    let trainLength                             = this.readInt();
+                        for(let i = 0; i < trainLength; i++)
                         {
                             this.saveParser.objects[objectKey].extra.objects.push({
                                 name   : this.readString(),
@@ -511,6 +500,25 @@ export default class SaveParser_Read
                             });
                         }
 
+                    this.saveParser.objects[objectKey].extra.previousLevelName  = this.readString();
+                    this.saveParser.objects[objectKey].extra.previousPathName   = this.readString();
+                    this.saveParser.objects[objectKey].extra.nextLevelName      = this.readString();
+                    this.saveParser.objects[objectKey].extra.nextPathName       = this.readString();
+                    break;
+                case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
+                case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
+                case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
+                case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
+                case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
+                    this.saveParser.objects[objectKey].extra    = {count: this.readInt(), objects: []};
+                    let vehicleLength                           = this.readInt();
+                        for(let i = 0; i < vehicleLength; i++)
+                        {
+                            this.saveParser.objects[objectKey].extra.objects.push({
+                                name   : this.readString(),
+                                unk    : this.readHex(53)
+                            });
+                        }
                     break;
                 default:
                     let missingBytes = (startByte + entityLength) - this.currentByte;
@@ -797,6 +805,8 @@ export default class SaveParser_Read
                                 case 'ResearchTime':
                                 case 'ResearchCost':
                                 case 'CompletedResearch':
+                                case 'SubCategoryMaterialDefault':
+                                case 'FactoryCustomizationColorSlot':
                                 // MODS
                                 case 'LampGroup':
                                 case 'STRUCT_ProgElevator_Floor':
@@ -815,6 +825,11 @@ export default class SaveParser_Read
                                             subStructProperties.push(subStructProperty);
                                         }
                                         currentProperty.value.values.push(subStructProperties);
+
+                                        if(currentProperty.structureSubType === 'SubCategoryMaterialDefault' || currentProperty.structureSubType === 'FactoryCustomizationColorSlot') //TODO:UPDATE5
+                                        {
+                                            //console.log('structureSubType', currentProperty.structureSubType, subStructProperties);
+                                        }
                                     break;
                                 default:
                                     Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
@@ -1078,11 +1093,13 @@ export default class SaveParser_Read
                     case 'InventoryStack':
                     case 'ProjectileData':
                     case 'TrainSimulationData':
+                    case 'TrainDockingRuleSet':
                     case 'DroneDockingStateInfo':
                     case 'DroneTripInformation':
                     case 'ResearchData':
                     case 'Hotbar':
                     case 'LightSourceControlData':
+                    case 'FactoryCustomizationData':
                     case 'EnabledCheats': // MOD: Satisfactory Helper
                     case 'FICFloatAttribute': // MOD: ???
                     case 'FFCompostingTask': // MOD: ???
@@ -1118,6 +1135,10 @@ export default class SaveParser_Read
                             }
                         }
 
+                        if(currentProperty.value.type === 'FactoryCustomizationData') //TODO:UPDATE5
+                        {
+                            //console.log(currentProperty.value.type, currentProperty);
+                        }
                         break;
 
                     default:
