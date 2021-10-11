@@ -2375,6 +2375,7 @@ export default class BaseLayout
             }
 
         // Check building options
+        let useOnly2D       = false;
         let offset          = (buildingData.mapOffset !== undefined) ? buildingData.mapOffset : 0;
         let weight          = (buildingData.mapWeight !== undefined) ? buildingData.mapWeight : 1;
         let widthSize       = (buildingData.width !== undefined) ? (buildingData.width * 100) : 800;
@@ -2385,12 +2386,13 @@ export default class BaseLayout
             offset = 500;
         }
 
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipePump/Build_PipelinePump.Build_PipelinePump_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipePumpMk2/Build_PipelinePumpMK2.Build_PipelinePumpMk2_C')
+        if(buildingData.mapHaveHorizontal !== undefined && buildingData.mapHaveHorizontal === true)
         {
-            let pumpAngle = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
-                if(Math.round(pumpAngle.pitch) === 90 || Math.round(pumpAngle.pitch) === 270)
+            let objectAngle = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
+                if(Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 90 || Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 270)
                 {
-                    widthSize      = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
+                    widthSize   = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
+                    useOnly2D   = true;
                 }
         }
 
@@ -2568,7 +2570,7 @@ export default class BaseLayout
             }
         }
 
-        let building = this.createBuildingPolygon(currentObject, markerOptions, [widthSize, lenghtSize], offset);
+        let building = this.createBuildingPolygon(currentObject, markerOptions, [widthSize, lenghtSize], offset, useOnly2D);
             building.on('mouseover', function(marker){
                 this.setBuildingMouseOverStyle(marker.sourceTarget, buildingData);
             }.bind(this));
@@ -3781,7 +3783,7 @@ export default class BaseLayout
         });
     }
 
-    createBuildingPolygon(currentObject, options, size, offset = 0)
+    createBuildingPolygon(currentObject, options, size, offset = 0, useOnly2D = false)
     {
         let center          = [currentObject.transform.translation[0], currentObject.transform.translation[1]];
         let forms           = [];
@@ -3872,28 +3874,32 @@ export default class BaseLayout
                     BaseLayout_Math.getPointRotation(
                         [center[0] - ((size[0] - offset) / 2), center[1] - ((size[1] - offset) / 2)],
                         center,
-                        currentObject.transform.rotation
+                        currentObject.transform.rotation,
+                        useOnly2D
                     )
                 ));
                 currentPoints.push(this.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
                         [center[0] + ((size[0] - offset) / 2), center[1] - ((size[1] - offset) / 2)],
                         center,
-                        currentObject.transform.rotation
+                        currentObject.transform.rotation,
+                        useOnly2D
                     )
                 ));
                 currentPoints.push(this.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
                         [center[0] + ((size[0] - offset) / 2), center[1] + ((size[1] - offset) / 2)],
                         center,
-                        currentObject.transform.rotation
+                        currentObject.transform.rotation,
+                        useOnly2D
                     )
                 ));
                 currentPoints.push(this.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
                         [center[0] - ((size[0] - offset) / 2), center[1] + ((size[1] - offset) / 2)],
                         center,
-                        currentObject.transform.rotation
+                        currentObject.transform.rotation,
+                        useOnly2D
                     )
                 ));
 

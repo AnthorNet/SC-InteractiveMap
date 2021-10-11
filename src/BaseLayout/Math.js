@@ -72,12 +72,20 @@ export default class BaseLayout_Math
         return this.getEulerToQuaternion(eulerAngle);
     }
 
-    static getPointRotation(position, center, rotation)
+    static getPointRotation(position, center, rotation, useOnly2D = false)
     {
         let eulerAngle  = this.getQuaternionToEuler(rotation);
         let degToRad    = Math.PI / 180;
         let cosYaw      = Math.cos(eulerAngle.yaw * degToRad);
         let sinYaw      = Math.sin(eulerAngle.yaw * degToRad);
+
+        if(useOnly2D === true)
+        {
+            return [
+                center[0] + (cosYaw * (position[0] - center[0])) - (sinYaw * (position[1] - center[1])),
+                center[1] + (sinYaw * (position[0] - center[0])) + (cosYaw * (position[1] - center[1]))
+            ];
+        }
 
         // Constraint PITCH/ROLL to avoid too malformed polygons
         if(Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch)) > 60 && Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch)) < 90)
@@ -122,19 +130,6 @@ export default class BaseLayout_Math
             center[0] + (Axx * (position[0] - center[0])) + (Axy * (position[1] - center[1])),
             center[1] + (Ayx * (position[0] - center[0])) + (Ayy * (position[1] - center[1]))
         ];
-
-        /*
-        let eulerAngle  = this.getQuaternionToEuler(rotation);
-        let degToRad    = Math.PI / 180;
-
-        let cos         = Math.cos(eulerAngle.yaw * degToRad);
-        let sin         = Math.sin(eulerAngle.yaw * degToRad);
-
-        return [
-            center[0] + (cos * (position[0] - center[0])) - (sin * (position[1] - center[1])),
-            center[1] + (sin * (position[0] - center[0])) + (cos * (position[1] - center[1]))
-        ];
-        */
     }
 
 
