@@ -132,6 +132,7 @@ export default class BaseLayout
             playerPillarsLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerWallsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerWalkwaysLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
+            playerSignsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerStatuesLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true},
 
             playerHUBTerminalLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], useAltitude: true},
@@ -631,6 +632,7 @@ export default class BaseLayout
             if([
                 '/Game/FactoryGame/Buildable/Factory/TradingPost/BP_StartingPod.BP_StartingPod_C',
                 '/Game/FactoryGame/Character/Player/Char_Player.Char_Player_C',
+                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C',
 
                 '/Game/FactoryGame/Schematics/Progression/BP_SchematicManager.BP_SchematicManager_C',
                 '/Game/FactoryGame/Recipes/Research/BP_ResearchManager.BP_ResearchManager_C',
@@ -3088,6 +3090,16 @@ export default class BaseLayout
                     this.setObjectProperty(gameState, 'mIsSpaceElevatorBuilt', 0, 'BoolProperty');
                 }
         }
+
+        // Delete extra properties
+        let mSignPoles = this.getObjectProperty(currentObject, 'mSignPoles');
+            if(mSignPoles !== null)
+            {
+                for(let j = 0; j < mSignPoles.values.length; j++)
+                {
+                    this.saveGameParser.deleteObject(mSignPoles.values[j].pathName);
+                }
+            }
 
         // Delete extra marker!
         if(marker.relatedTarget.options.extraMarker !== undefined)

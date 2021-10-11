@@ -807,6 +807,8 @@ export default class SaveParser_Read
                                 case 'CompletedResearch':
                                 case 'SubCategoryMaterialDefault':
                                 case 'FactoryCustomizationColorSlot':
+                                case 'PrefabTextElementSaveData':
+                                case 'PrefabIconElementSaveData':
                                 // MODS
                                 case 'LampGroup':
                                 case 'STRUCT_ProgElevator_Floor':

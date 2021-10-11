@@ -26,13 +26,13 @@ export default class Modal_Debug
             extraPathName.push('Persistent_Level:PersistentLevel.GamePhaseManager');
         }
 
-        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList', 'mTargetList'];
+        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles'];
             for(let i = 0; i < extraProperties.length; i++)
             {
                 let extraProperty = baseLayout.getObjectProperty(currentObject, extraProperties[i]);
                     if(extraProperty !== null)
                     {
-                        if(extraProperties[i] === 'mActionsToExecute')
+                        if(['mSignPoles', 'mActionsToExecute'].includes(extraProperties[i]))
                         {
                             for(let j = 0; j < extraProperty.values.length; j++)
                             {

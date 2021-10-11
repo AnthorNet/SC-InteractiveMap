@@ -508,15 +508,18 @@ export default class Modal_Schematics
             {
                 for(let k = 0; k < currentSchematic.recipes.length; k++)
                 {
-                    let currentRecipe = this.baseLayout.getItemDataFromRecipeClassName(currentSchematic.recipes[k]);
-                        if(currentRecipe !== null)
-                        {
-                            unlocks.push(currentRecipe.name);
-                        }
-                        else
-                        {
-                            unlocks.push(currentSchematic.recipes[k]);
-                        }
+                    if(currentSchematic.recipes[k].startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/') === false)
+                    {
+                        let currentRecipe = this.baseLayout.getItemDataFromRecipeClassName(currentSchematic.recipes[k]);
+                            if(currentRecipe !== null)
+                            {
+                                unlocks.push(currentRecipe.name);
+                            }
+                            else
+                            {
+                                unlocks.push(currentSchematic.recipes[k]);
+                            }
+                    }
                 }
             }
             if(currentSchematic.scannerPairs !== undefined)
@@ -596,6 +599,7 @@ export default class Modal_Schematics
                                             && schematicId !== 'ResourceSink_GoldenCup_C'
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
+                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Customizer_Background/') === false
                                         )
                                         {
                                             if(typeof Sentry !== 'undefined' && this.baseLayout.useDebug === true)
