@@ -7,7 +7,6 @@ import Spawn_Circle                             from '../Spawn/Circle.js';
 import Spawn_Polygon                            from '../Spawn/Polygon.js';
 import Spawn_Rectangle                          from '../Spawn/Rectangle.js';
 import Spawn_Road                               from '../Spawn/Road.js';
-import Spawn_Text                               from '../Spawn/Text.js';
 
 export default class Modal_SpawnAround
 {
@@ -33,8 +32,6 @@ export default class Modal_SpawnAround
             inputOptions.push({group: 'Geometric form', text: 'Plain regular polygon', value: 'plainPolygon'});
             inputOptions.push({group: 'Geometric form', text: 'Hollow regular polygon', value: 'hollowPolygon'});
             inputOptions.push({group: 'Geometric form', text: 'Road', value: 'road'});
-
-            inputOptions.push({group: 'Geometric form', text: 'Pipe Text', value: 'pipeText'});
 
             for(let faunaClassName in allFauna)
             {
@@ -472,105 +469,6 @@ export default class Modal_SpawnAround
                                         curvature       : values.curvature,
                                         useOwnMaterials : form.useOwnMaterials
                                     });
-                                }.bind(baseLayout)
-                            });
-                            break;
-                        case 'pipeText':
-                            let pipeTextOptions = [];
-                                pipeTextOptions.push({
-                                    label           : 'Line 1',
-                                    name            : 'line1',
-                                    inputType       : 'text',
-                                    value           : 'Default text'
-                                });
-                                pipeTextOptions.push({
-                                    label           : 'Line 2',
-                                    name            : 'line2',
-                                    inputType       : 'text'
-                                });
-                                pipeTextOptions.push({
-                                    label           : 'Line 3',
-                                    name            : 'line3',
-                                    inputType       : 'text'
-                                });
-                                pipeTextOptions.push({
-                                    label           : 'Line 4',
-                                    name            : 'line4',
-                                    inputType       : 'text'
-                                });
-                                pipeTextOptions.push({
-                                    label           : 'Line 5',
-                                    name            : 'line5',
-                                    inputType       : 'text'
-                                });
-                                pipeTextOptions.push({
-                                    label           : 'Letter spacing',
-                                    name            : 'letterSpacing',
-                                    inputType       : 'number',
-                                    value           : 100
-                                });
-                                pipeTextOptions.push({
-                                    label           : 'Font',
-                                    name            : 'font',
-                                    inputType       : 'select',
-                                    inputOptions    : [
-                                        {text: 'Default font (By dontpokejosh)', value: 'dontpokejosh'},
-                                        {text: 'Default font (By ShinoHarvest)', value: 'ShinoHarvest'}
-                                    ],
-                                    value: 'dontpokejosh'
-                                });
-                                pipeTextOptions.push({
-                                    label           : 'Text alignment from foundation',
-                                    name            : 'textAlign',
-                                    inputType       : 'select',
-                                    inputOptions    : [
-                                        {text: 'Left', value: 'left'},
-                                        {text: 'Center', value: 'center'},
-                                        {text: 'Right', value: 'right'}
-                                    ],
-                                    value: 'center'
-                                });
-                                pipeTextOptions.push({
-                                    label           : 'Depth alignment from foundation',
-                                    name            : 'depthAlign',
-                                    inputType       : 'select',
-                                    inputOptions    : [
-                                        {text: 'Foreground', value: 300},
-                                        {text: 'Middle', value: 0},
-                                        {text: 'Background', value: -300}
-                                    ],
-                                    value: 0
-                                });
-
-                            Modal.form({
-                                title       : "Pipe text options",
-                                message     : '<div class="alert alert-danger text-center">Work in progress...</div>',
-                                container   : '#leafletMap',
-                                inputs      : pipeTextOptions,
-                                callback    : function(values)
-                                {
-                                    if(values === null || values.line1 === null || values.line2 === null || values.line3 === null || values.line4 === null || values.line5 === null || values.font === null || values.letterSpacing === null || values.textAlign === null || values.depthAlign === null)
-                                    {
-                                        return;
-                                    }
-
-                                    return new Spawn_Text({
-                                        marker          : marker,
-
-                                        line1           : values.line1,
-                                        line2           : values.line2,
-                                        line3           : values.line3,
-                                        line4           : values.line4,
-                                        line5           : values.line5,
-
-                                        font            : values.font,
-                                        letterSpacing   : values.letterSpacing,
-                                        textAlign       : values.textAlign,
-                                        depthAlign      : values.depthAlign,
-
-                                        useOwnMaterials : form.useOwnMaterials
-                                    });
-
                                 }.bind(baseLayout)
                             });
                             break;

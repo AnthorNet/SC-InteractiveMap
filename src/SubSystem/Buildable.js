@@ -12,6 +12,7 @@ export default class SubSystem_Buildable
         this.baseLayout             = options.baseLayout;
         this.buildableSubSystem     = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.BuildableSubsystem');
         this.gameState              = this.baseLayout.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
+        //console.log(this.buildableSubSystem)
     }
 
     getObjectPrimaryColorSlot(currentObject, raw = false)

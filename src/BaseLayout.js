@@ -114,7 +114,6 @@ export default class BaseLayout
         this.availableHyperPipeConnection       = ['.PipeHyperConnection0', '.PipeHyperConnection1', '.PipeHyperStartConnection'];
 
         this.detailedModels                     = {};
-        this.pipeLetters                        = null;
 
         this.setDefaultLayers();
     }
@@ -555,6 +554,11 @@ export default class BaseLayout
         for(i; i < countObjects; i++)
         {
             let currentObject = this.saveGameParser.getTargetObject(objectsKeys[i]);
+
+            if(currentObject.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches'))
+            {
+                console.log(currentObject)
+            }
 
             // Add menu to nodes...
             if([
