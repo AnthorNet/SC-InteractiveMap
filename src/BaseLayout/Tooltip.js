@@ -195,7 +195,7 @@ export default class BaseLayout_Tooltip
             content.push('</div>');
 
             // VOLUME
-            let maxFluid        = Math.PI * Math.pow((1.3 / 2), 2) * splineData.distanceStraight * 1000; // Use straigth calculation
+            let maxFluid        = 3.1415926535897932 * Math.pow((1.3 / 2), 2) * splineData.distanceStraight * 1000; // Use straigth calculation
             let itemType        = null;
 
             let fluidBox        = this.baseLayout.getObjectProperty(currentObject, 'mFluidBox');
@@ -1680,7 +1680,7 @@ export default class BaseLayout_Tooltip
         let direction   = '';
         let inverted    = '';
 
-        if(currentObject.className.search('Building/Foundation/Build_Foundation') !== -1 || currentObject.className.search('Building/Ramp/Build_Ramp') !== -1)
+        if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'wall')
         {
             let rotation  = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
             let angle     = rotation.yaw - 45;
@@ -1721,7 +1721,7 @@ export default class BaseLayout_Tooltip
             }
         }
 
-        if(buildingData.category === 'foundation' || buildingData.category === 'wall' || buildingData.category === 'walkway')
+        if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'wall' || buildingData.category === 'roof' || buildingData.category === 'walkway')
         {
             content.push('Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm');
         }

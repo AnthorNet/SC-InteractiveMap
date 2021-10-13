@@ -146,11 +146,7 @@ export default class BaseLayout_ContextMenu
 
             if(buildingData !== null && buildingData.className !== '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
             {
-                    if(
-                            currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation') === true
-                         || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_') === true
-                         || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') === true
-                    )
+                    if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof')
                     {
                         contextMenu.push({
                             text: 'Rotate "' + buildingData.name + '" by 90°',
@@ -236,14 +232,6 @@ export default class BaseLayout_ContextMenu
                     )
                     {
                         contextMenu = Building_SmartSplitter.addContextMenu(this.baseLayout, currentObject, contextMenu);
-                    }
-
-                    if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_8x4_01.Build_Wall_8x4_01_C')
-                    {
-                        contextMenu.push({
-                            text: 'Rotate "' + buildingData.name + '" by 180°',
-                            callback: this.baseLayout.rotationPlayerWall180.bind(this.baseLayout)
-                        });
                     }
 
                     if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C')

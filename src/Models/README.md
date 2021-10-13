@@ -38,3 +38,19 @@ this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Bui
 
 this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']                                                 = JSON.parse(JSON.stringify(this.detailedModels['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C']));
 this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].scale                                           = 2.25;
+
+
+// OLD
+{
+    "/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_8x4_01.Build_Wall_8x4_01_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-25, -400], [-25, 400], [25, 400],
+                    [25, 275], [10, 250], [10, 100], [25, 75], [25, -75], [10, -100], [10, -250], [25, -275],  [25, -400]
+                ]
+            }
+        ]
+    }
+}

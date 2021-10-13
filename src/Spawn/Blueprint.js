@@ -76,7 +76,7 @@ export default class Spawn_Blueprint
                         let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.clipboard.data[i].parent.className);
                             if(currentObjectData !== null)
                             {
-                                if(this.clipboard.data[i].parent.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_') || this.clipboard.data[i].parent.className.startsWith('/Game/FactoryGame/Buildable/Building/Foundation/Build_'))
+                                if(currentObjectData.category === 'frame' || currentObjectData.category === 'foundation' || currentObjectData.category === 'roof')
                                 {
                                     minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (currentObjectData.height * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
                                 }

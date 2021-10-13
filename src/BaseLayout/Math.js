@@ -1,6 +1,6 @@
 export default class BaseLayout_Math
 {
-    // See: https://github.com/EpicGames/UnrealEngine/blob/release/Engine/Source/Runtime/Core/Private/Math/UnrealMath.cpp#L595
+    // See: https://github.com/EpicGames/UnrealEngine/blob/4.26/Engine/Source/Runtime/Core/Private/Math/UnrealMath.cpp#L598
     static getQuaternionToEuler(quaternion)
     {
             quaternion              = {x: quaternion[0], y: quaternion[1], z: quaternion[2], w: quaternion[3]};
@@ -12,7 +12,7 @@ export default class BaseLayout_Math
 	let yawY                    = 2 * ((quaternion.w * quaternion.z) + (quaternion.x * quaternion.y));
 	let yawX                    = (1 - 2 * (Math.pow(quaternion.y, 2) + Math.pow(quaternion.z, 2)));
 
-	let radToDeg                = 180 / Math.PI;
+	let radToDeg                = 180 / 3.1415926535897932;
 
 	if(singularityTest < -singularityThreshold)
 	{
@@ -42,7 +42,7 @@ export default class BaseLayout_Math
     // See: https://github.com/EpicGames/UnrealEngine/blob/release/Engine/Source/Runtime/Core/Private/Math/UnrealMath.cpp#L457
     static getEulerToQuaternion(angle)
     {
-        let degToRad        = Math.PI / 180;
+        let degToRad        = 3.1415926535897932 / 180;
         let radBy2          = degToRad / 2;
 
 	let pitchNoWinding  = angle.pitch % 360;
@@ -75,7 +75,7 @@ export default class BaseLayout_Math
     static getPointRotation(position, center, rotation, useOnly2D = false)
     {
         let eulerAngle  = this.getQuaternionToEuler(rotation);
-        let degToRad    = Math.PI / 180;
+        let degToRad    = 3.1415926535897932 / 180;
         let cosYaw      = Math.cos(eulerAngle.yaw * degToRad);
         let sinYaw      = Math.sin(eulerAngle.yaw * degToRad);
 
@@ -175,18 +175,18 @@ export default class BaseLayout_Math
                 quotient = parseInt(quotient - 0.5);
             }
 
-        let y       = value - (2 * Math.PI) * quotient;
+        let y       = value - (2 * 3.1415926535897932) * quotient;
         let sign    = 1;
 
         // Map y to [-pi/2,pi/2] with sin(y) = sin(Value).
         if(y > 1.57079632679)
         {
-            y       = Math.PI - y;
+            y       = 3.1415926535897932 - y;
             sign    = -1;
         }
         if(y < -1.57079632679)
         {
-            y       = -Math.PI - y;
+            y       = -3.1415926535897932 - y;
             sign    = -1;
         }
 
@@ -210,16 +210,16 @@ export default class BaseLayout_Math
                 quotient = parseInt(quotient - 0.5);
             }
 
-        let y       = value - (2 * Math.PI) * quotient;
+        let y       = value - (2 * 3.1415926535897932) * quotient;
 
         // Map y to [-pi/2,pi/2] with sin(y) = sin(Value).
         if(y > 1.57079632679)
         {
-            y       = Math.PI - y;
+            y       = 3.1415926535897932 - y;
         }
         if(y < -1.57079632679)
         {
-            y       = -Math.PI - y;
+            y       = -3.1415926535897932 - y;
         }
 
         let y2  = y * y;

@@ -522,6 +522,22 @@ export default class Modal_Schematics
                     }
                 }
             }
+            if(currentSchematic.schematics !== undefined)
+            {
+                for(let k = 0; k < currentSchematic.schematics.length; k++)
+                {
+                    let schematicId = currentSchematic.schematics[k].split('.');
+                        schematicId = schematicId.pop();
+                    if(this.baseLayout.schematicsData[schematicId] !== undefined)
+                    {
+                        unlocks.push(this.baseLayout.schematicsData[schematicId].name);
+                    }
+                    else
+                    {
+                        unlocks.push(currentSchematic.schematics[k]);
+                    }
+                }
+            }
             if(currentSchematic.scannerPairs !== undefined)
             {
                 for(let k = 0; k < currentSchematic.scannerPairs.length; k++)

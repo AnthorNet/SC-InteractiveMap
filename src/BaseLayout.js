@@ -128,8 +128,10 @@ export default class BaseLayout
             playerLightsHaloLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: []},
 
             playerFoundationsLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
+            playerRoofsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerLightsLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerPillarsLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
+            playerBeamsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerWallsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerWalkwaysLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
             playerSignsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
@@ -1927,26 +1929,6 @@ export default class BaseLayout
         });
     }
 
-    rotationPlayerWall180(marker)
-    {
-        let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-            if(this.history !== null)
-            {
-                this.history.add({
-                    name: 'Undo: Rotate by 180°',
-                    values: [{
-                        pathName: marker.relatedTarget.options.pathName,
-                        callback: 'refreshMarkerPosition',
-                        properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
-                    }]
-                });
-            }
-
-        currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 180);
-
-        this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
-    }
-
     editPlayerStorageBuildingInventory(marker, inventoryProperty = 'mStorageInventory')
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
@@ -2377,6 +2359,7 @@ export default class BaseLayout
         // Check building options
         let useOnly2D       = false;
         let offset          = (buildingData.mapOffset !== undefined) ? buildingData.mapOffset : 0;
+        let xShift          = (buildingData.mapShiftX !== undefined) ? buildingData.mapShiftX : 0;
         let weight          = (buildingData.mapWeight !== undefined) ? buildingData.mapWeight : 1;
         let widthSize       = (buildingData.width !== undefined) ? (buildingData.width * 100) : 800;
         let lenghtSize      = (buildingData.length !== undefined) ? (buildingData.length * 100) : 800;
@@ -2393,6 +2376,19 @@ export default class BaseLayout
                 {
                     widthSize   = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
                     useOnly2D   = true;
+                }
+                else
+                {
+                    // Beam length?
+                    if(buildingData.category === 'beam' && Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 0)
+                    {
+                        let mLength = this.getObjectProperty(currentObject, 'mLength');
+                            if(mLength !== null)
+                            {
+                                widthSize   = mLength;
+                                xShift      = -mLength / 2;
+                            }
+                    }
                 }
         }
 
@@ -2570,7 +2566,13 @@ export default class BaseLayout
             }
         }
 
-        let building = this.createBuildingPolygon(currentObject, markerOptions, [widthSize, lenghtSize], offset, useOnly2D);
+        let building = this.createBuildingPolygon(currentObject, markerOptions, {
+            width       : widthSize,
+            length      : lenghtSize,
+            offset      : offset,
+            xShift      : xShift,
+            useOnly2D   : useOnly2D
+        });
             building.on('mouseover', function(marker){
                 this.setBuildingMouseOverStyle(marker.sourceTarget, buildingData);
             }.bind(this));
@@ -2595,37 +2597,24 @@ export default class BaseLayout
 
     setBuildingMouseOverStyle(marker, buildingData)
     {
-        let hoverColor      = '#999999';
+        marker.setStyle({
+                fillColor: '#999999',
+                fillOpacity: 0.9
+            });
 
-            if(buildingData.category === 'unknown' || buildingData.category === 'pad' || buildingData.category === 'walkway' || buildingData.category === 'stair' || (buildingData.mapUseSlotColor !== undefined && buildingData.mapUseSlotColor === false && buildingData.className !== '/Game/FactoryGame/Buildable/Building/Foundation/Build_FoundationGlass_01.Build_FoundationGlass_01_C'))
-            {
-                marker.setStyle({
-                    color: hoverColor,
-                    fillColor: buildingData.mapColor,
-                    fillOpacity: 0.9
-                });
-            }
-            else
-            {
-                marker.setStyle({
-                    fillColor: hoverColor,
-                    fillOpacity: 0.9
-                });
-            }
+        if(marker.options.extraMarker !== undefined)
+        {
+            marker.options.extraMarker.setIcon(this.getMarkerIcon('#BF0020', '#b3b3b3', buildingData.mapIconImage));
+        }
 
-            if(marker.options.extraMarker !== undefined)
-            {
-                marker.options.extraMarker.setIcon(this.getMarkerIcon('#BF0020', '#b3b3b3', buildingData.mapIconImage));
-            }
-
-            if(marker.options.vehicleTrackDataPathName !== undefined)
-            {
-                let vehicleTrackDataMarker = this.getMarkerFromPathName(marker.options.vehicleTrackDataPathName, 'playerVehiculesLayer');
-                    if(vehicleTrackDataMarker !== null)
-                    {
-                        vehicleTrackDataMarker.setStyle({color: '#BF0020'});
-                    }
-            }
+        if(marker.options.vehicleTrackDataPathName !== undefined)
+        {
+            let vehicleTrackDataMarker = this.getMarkerFromPathName(marker.options.vehicleTrackDataPathName, 'playerVehiculesLayer');
+                if(vehicleTrackDataMarker !== null)
+                {
+                    vehicleTrackDataMarker.setStyle({color: '#BF0020'});
+                }
+        }
     }
 
     setBuildingMouseOutStyle(marker, buildingData, currentObject = null)
@@ -2654,7 +2643,7 @@ export default class BaseLayout
             let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
 
             // See also /Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_Frame_01.Build_Foundation_Frame_01_C && /Game/FactoryGame/Buildable/Building/Foundation/Build_FoundationGlass_01.Build_FoundationGlass_01_C ?
-            if(buildingData !== null && buildingData.category === 'foundation')
+            if(buildingData !== null && (buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof'))
             {
                 let playerColors        = buildableSubSystem.getPlayerColorSlots();
                 let primaryColor        = playerColors[16].primaryColor;
@@ -2678,15 +2667,6 @@ export default class BaseLayout
             let slotColor = buildableSubSystem.getObjectPrimaryColor(currentObject);
                 switch(buildingData.category)
                 {
-                    case 'pad':
-                    case 'walkway':
-                    case 'stair':
-                        marker.setStyle({
-                            color       : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
-                            fillColor   : ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
-                            fillOpacity : mapOpacity
-                        });
-                        break;
                     case 'wall':
                         marker.setStyle({
                             color       : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
@@ -3719,7 +3699,7 @@ export default class BaseLayout
 
             for(let p = 0; p < radioactivityItems.length; p++)
             {
-                intensity += (radioactivityItems[p].qty * radioactivityItems[p].radioactiveDecay) / (4 * Math.PI * distance * distance) * Math.pow(Math.E, -0.0125 * distance);
+                intensity += (radioactivityItems[p].qty * radioactivityItems[p].radioactiveDecay) / (4 * 3.1415926535897932 * distance * distance) * Math.pow(Math.E, -0.0125 * distance);
             }
 
             if(intensity > 45)
@@ -3783,21 +3763,20 @@ export default class BaseLayout
         });
     }
 
-    createBuildingPolygon(currentObject, options, size, offset = 0, useOnly2D = false)
+    createBuildingPolygon(currentObject, markerOptions, options, size, offset = 0, useOnly2D = false)
     {
-        let center          = [currentObject.transform.translation[0], currentObject.transform.translation[1]];
-        let forms           = [];
-
-        options.pathName    = currentObject.pathName;
-        options.altitude    = currentObject.transform.translation[2];
+        let center                  = [currentObject.transform.translation[0], currentObject.transform.translation[1]];
+        let forms                   = [];
+            markerOptions.pathName  = currentObject.pathName;
+            markerOptions.altitude  = currentObject.transform.translation[2];
 
         if(this.useDetailedModels === true && this.detailedModels !== null && this.detailedModels[currentObject.className] !== undefined)
         {
-                options.smoothFactor    = this.useSmoothFactor;
-            let currentModel            = this.detailedModels[currentObject.className];
-            let currentModelScale       = currentModel.scale;
-            let currentModelXOffset     = (currentModel.xOffset !== undefined) ? currentModel.xOffset : 0;
-            let currentModelYOffset     = (currentModel.yOffset !== undefined) ? currentModel.yOffset : 0;
+                markerOptions.smoothFactor  = this.useSmoothFactor;
+            let currentModel                = this.detailedModels[currentObject.className];
+            let currentModelScale           = currentModel.scale;
+            let currentModelXOffset         = (currentModel.xOffset !== undefined) ? currentModel.xOffset : 0;
+            let currentModelYOffset         = (currentModel.yOffset !== undefined) ? currentModel.yOffset : 0;
 
             if(currentModel.formsLength === undefined)
             {
@@ -3808,11 +3787,10 @@ export default class BaseLayout
             {
                 let currentForm         = [];
                 let currentPoints       = [];
-
-                if(currentModel.forms[i].pointsLength === undefined)
-                {
-                    currentModel.forms[i].pointsLength = currentModel.forms[i].points.length;
-                }
+                    if(currentModel.forms[i].pointsLength === undefined)
+                    {
+                        currentModel.forms[i].pointsLength = currentModel.forms[i].points.length;
+                    }
 
                 for(let j = 0; j < currentModel.forms[i].pointsLength; j++)
                 {
@@ -3872,41 +3850,41 @@ export default class BaseLayout
             let currentPoints = [];
                 currentPoints.push(this.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [center[0] - ((size[0] - offset) / 2), center[1] - ((size[1] - offset) / 2)],
+                        [(center[0] - options.xShift) - ((options.width - options.offset) / 2), center[1] - ((options.length - options.offset) / 2)],
                         center,
                         currentObject.transform.rotation,
-                        useOnly2D
+                        options.useOnly2D
                     )
                 ));
                 currentPoints.push(this.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [center[0] + ((size[0] - offset) / 2), center[1] - ((size[1] - offset) / 2)],
+                        [(center[0] - options.xShift) + ((options.width - options.offset) / 2), center[1] - ((options.length - options.offset) / 2)],
                         center,
                         currentObject.transform.rotation,
-                        useOnly2D
+                        options.useOnly2D
                     )
                 ));
                 currentPoints.push(this.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [center[0] + ((size[0] - offset) / 2), center[1] + ((size[1] - offset) / 2)],
+                        [(center[0] - options.xShift) + ((options.width - options.offset) / 2), center[1] + ((options.length - options.offset) / 2)],
                         center,
                         currentObject.transform.rotation,
-                        useOnly2D
+                        options.useOnly2D
                     )
                 ));
                 currentPoints.push(this.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [center[0] - ((size[0] - offset) / 2), center[1] + ((size[1] - offset) / 2)],
+                        [(center[0] - options.xShift) - ((options.width - options.offset) / 2), center[1] + ((options.length - options.offset) / 2)],
                         center,
                         currentObject.transform.rotation,
-                        useOnly2D
+                        options.useOnly2D
                     )
                 ));
 
             forms.push([currentPoints]);
         }
 
-        let polygon         = L.polygon(forms, options);
+        let polygon         = L.polygon(forms, markerOptions);
             this.autoBindTooltip(polygon);
             polygon.bindContextMenu(this);
 
@@ -3934,7 +3912,7 @@ export default class BaseLayout
                 this.playerLayers[layerId].renderer = L.canvas({ pane: layerId });
             }
             /* TRY NEW RENDERING...
-            if(['playerFoundationsLayer', 'playerPillarsLayer', 'playerWallsLayer', 'playerWalkwaysLayer', 'playerStatuesLayer'].includes(layerId))
+            if(['playerFoundationsLayer', 'playerRoofsLayer', 'playerPillarsLayer', 'playerWallsLayer', 'playerWalkwaysLayer', 'playerStatuesLayer'].includes(layerId))
             {
                 let decorativePane = this.satisfactoryMap.leafletMap.getPane('decorative-pane');
                     if(decorativePane === undefined)
@@ -5472,7 +5450,23 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/Desc_Locomotive.Desc_Locomotive_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/Desc_FreightWagon.Desc_FreightWagon_C'; }
 
-        if(className === '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C' && this.buildingsData.Desc_GolfCart_C === undefined)
+        // Create fake angled railings with new width
+        if(this.buildingsData.Build_SM_RailingRamp_8x4_01_C === undefined)
+        {
+            this.buildingsData.Build_SM_RailingRamp_8x4_01_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_Railing_01_C));
+            this.buildingsData.Build_SM_RailingRamp_8x4_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x4_01.Build_SM_RailingRamp_8x4_01_C';
+            this.buildingsData.Build_SM_RailingRamp_8x4_01_C.length     = 8;
+
+            this.buildingsData.Build_SM_RailingRamp_8x2_01_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_Railing_01_C));
+            this.buildingsData.Build_SM_RailingRamp_8x2_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x2_01.Build_SM_RailingRamp_8x2_01_C';
+            this.buildingsData.Build_SM_RailingRamp_8x2_01_C.length     = 8;
+
+            this.buildingsData.Build_SM_RailingRamp_8x1_01_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_Railing_01_C));
+            this.buildingsData.Build_SM_RailingRamp_8x1_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x1_01.Build_SM_RailingRamp_8x1_01_C';
+            this.buildingsData.Build_SM_RailingRamp_8x1_01_C.length     = 8;
+        }
+
+        if(this.buildingsData.Desc_GolfCart_C === undefined && className === '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C')
         {
             this.buildingsData.Desc_GolfCart_C = {
                 className         : className,
@@ -6655,10 +6649,7 @@ export default class BaseLayout
 
                         if(currentObjectData !== null && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && currentObject.className !== '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
                         {
-                            if(
-                                    currentObject.className.search('/Game/FactoryGame/Buildable/Building/Ramp/Build_') !== - 1
-                                 || currentObject.className.search('/Game/FactoryGame/Buildable/Building/Foundation/Build_') !== -1
-                            )
+                            if(currentObjectData.category === 'frame' || currentObjectData.category === 'foundation' || currentObjectData.category === 'roof')
                             {
                                 minZ = Math.min(minZ, currentObject.transform.translation[2] - (currentObjectData.height * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
                             }
@@ -6821,7 +6812,7 @@ export default class BaseLayout
 
                 let objectOffset    = 0;
                 let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
-                    if(buildingData !== null && buildingData.category === 'foundation')
+                    if(buildingData !== null && (buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof'))
                     {
                         objectOffset = 400;
                     }
