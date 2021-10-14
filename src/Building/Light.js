@@ -3,7 +3,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import Modal                                    from '../Modal.js';
 
-import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
+import SubSystem_GameState                      from '../SubSystem/GameState.js';
 
 export default class Building_Light
 {
@@ -261,8 +261,8 @@ export default class Building_Light
         let gradientStops                   = {};
         let intensity                       = Building_Light.getIntensity(baseLayout, currentObject);
 
-        let buildableSubSystem              = new SubSystem_Buildable({baseLayout: baseLayout});
-        let color                           = buildableSubSystem.getObjectLightColor(currentObject);
+        let gameStateSubSystem              = new SubSystem_GameState({baseLayout: baseLayout});
+        let color                           = gameStateSubSystem.getObjectLightColor(currentObject);
 
             gradientStops[0]              = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 1)';
 
@@ -313,12 +313,12 @@ export default class Building_Light
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-        let buildableSubSystem  = new SubSystem_Buildable({baseLayout: baseLayout});
+        let gameStateSubSystem  = new SubSystem_GameState({baseLayout: baseLayout});
         let slotIndex           = Building_Light.getColorSlotIndex(baseLayout, currentObject);
-        let playerColors        = buildableSubSystem.getPlayerLightColorSlots();
+        let playerColors        = gameStateSubSystem.getPlayerLightColorSlots();
         let selectOptions       = [];
 
-        for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalLightColorSlots; slotIndex++)
+        for(let slotIndex = 0; slotIndex < SubSystem_GameState.totalLightColorSlots; slotIndex++)
         {
             selectOptions.push({
                 primaryColor    : 'rgb(' + playerColors[slotIndex].r + ', ' + playerColors[slotIndex].g + ', ' + playerColors[slotIndex].b + ')',

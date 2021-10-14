@@ -1,25 +1,24 @@
 /* global iro */
-import BaseLayout_Math                          from '../../BaseLayout/Math.js';
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
-import SubSystem_Buildable                      from '../../SubSystem/Buildable.js';
+import SubSystem_GameState                      from '../SubSystem/GameState.js';
 
-export default class Modal_Map_LightColorSlots
+export default class Modal_LightColorSlots
 {
     constructor(options)
     {
         this.baseLayout         = options.baseLayout;
-        this.buildableSubSystem = new SubSystem_Buildable({baseLayout: this.baseLayout});
+        this.gameStateSubSystem = new SubSystem_GameState({baseLayout: this.baseLayout});
     }
 
     parse()
     {
-        $('#statisticsModalLightColorSlots').empty();
-
+        $('#genericModal .modal-title').empty().html(this.baseLayout.translate._('GLOBAL\\Light color slots'));
         let html            = [];
-        let playerColors    = this.buildableSubSystem.getPlayerLightColorSlots();
-            for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalLightColorSlots; slotIndex++)
+        let playerColors    = this.gameStateSubSystem.getPlayerLightColorSlots();
+            for(let slotIndex = 0; slotIndex < SubSystem_GameState.totalLightColorSlots; slotIndex++)
             {
-                if(slotIndex % 4 === 0)
+                if(slotIndex % 3 === 0)
                 {
                     if(slotIndex > 0)
                     {
@@ -30,20 +29,15 @@ export default class Modal_Map_LightColorSlots
 
                 let style = 'background: rgb(' + playerColors[slotIndex].r + ', ' + playerColors[slotIndex].g + ', ' + playerColors[slotIndex].b + ');';
 
-                if(slotIndex === 0)
-                {
-                    html.push('<div class="d-flex flex-row selectColorSlot active align-items-center" style="' + style + 'position: relative;width: 96px;height: 96px;border: 3px solid #FFFFFF;border-radius: 5px;margin: 2px;" data-slot="' + slotIndex + '"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">#' + (slotIndex + 1) + '</strong></div></div>');
-                }
-                else
-                {
-                    html.push('<div class="d-flex flex-row selectColorSlot align-items-center" style="' + style + 'position: relative;width: 96px;height: 96px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="' + slotIndex + '"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">#' + (slotIndex + 1) + '</strong></div></div>');
-                }
+                html.push('<div class="d-flex flex-row selectColorSlot ' + ((slotIndex === 0) ? 'active ' : '') + 'align-items-center" style="' + style + 'position: relative;width: 144px;height: 144px;' + ((slotIndex === 0) ? 'border: 3px solid #FFF;' : 'border: 1px solid #000;') + 'border-radius: 50%;margin: 2px;" data-slot="' + slotIndex + '">');
+                html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">#' + (slotIndex + 1) + '</strong></div>');
+                html.push('</div>');
             }
 
         html.push('</div>');
 
-        $('#statisticsModalLightColorSlots').html('<div class="row">'
-                                           + '  <div class="col-5">' + html.join('') + '</div>'
+        $('#genericModal .modal-body').empty().html('<div class="row">'
+                                           + '  <div class="col-5 align-self-center">' + html.join('') + '</div>'
                                            + '  <div class="col-7">'
                                            + '      <div class="row">'
                                            + '          <div class="col-12">'
@@ -70,6 +64,9 @@ export default class Modal_Map_LightColorSlots
                                            + '      </div>'
                                            + '  </div>'
                                            + '</div>');
+        setTimeout(function(){
+            $('#genericModal').modal('show').modal('handleUpdate');
+        }, 250);
 
         let lightColorPicker      = new iro.ColorPicker('#lightColorPicker', {
                 width                       : 294,
@@ -97,18 +94,18 @@ export default class Modal_Map_LightColorSlots
                 $('#lightColorInputHex').val(lightColorPicker.color.hexString);
 
             let style                       = 'rgb(' + lightColorR + ', ' + lightColorG + ', ' + lightColorB + ')';
-                $('#statisticsModalLightColorSlots .selectColorSlot.active').css('background', style);
+                $('#genericModal .selectColorSlot.active').css('background', style);
 
-            let slotIndex                   = parseInt($('#statisticsModalLightColorSlots .selectColorSlot.active').attr('data-slot'));
+            let slotIndex                   = parseInt($('#genericModal .selectColorSlot.active').attr('data-slot'));
 
-            let mBuildableLightColorSlots   = this.buildableSubSystem.getLightColorSlots();
+            let mBuildableLightColorSlots   = this.gameStateSubSystem.getLightColorSlots();
                 if(mBuildableLightColorSlots !== null)
                 {
                     mBuildableLightColorSlots.values[slotIndex].r   = BaseLayout_Math.RGBToLinearColor(lightColorR);
                     mBuildableLightColorSlots.values[slotIndex].g   = BaseLayout_Math.RGBToLinearColor(lightColorG);
                     mBuildableLightColorSlots.values[slotIndex].b   = BaseLayout_Math.RGBToLinearColor(lightColorB);
 
-                    playerColors    = this.buildableSubSystem.getPlayerLightColorSlots(); // Refresh!
+                    playerColors    = this.gameStateSubSystem.getPlayerLightColorSlots(); // Refresh!
                 }
         });
         $('#lightColorInputHex').on('change keyup input', function(){
@@ -127,20 +124,20 @@ export default class Modal_Map_LightColorSlots
                 }
         });
 
-        $('#statisticsModalLightColorSlots .selectColorSlot').hover(
+        $('#genericModal .selectColorSlot').hover(
             function(){
-                $(this).css('border', '3px solid #FFFFFF');
+                $(this).css('border', '3px solid #FFF');
             },
             function(){
                 if($(this).hasClass('active') === false)
                 {
-                    $(this).css('border', '1px solid #000000');
+                    $(this).css('border', '1px solid #000');
                 }
             }
         );
-        $('#statisticsModalLightColorSlots .selectColorSlot').on('click', function(){
-            $('#statisticsModalLightColorSlots .selectColorSlot').removeClass('active').css('border', '1px solid #000000');
-            $(this).addClass('active').css('border', '3px solid #FFFFFF');
+        $('#genericModal .selectColorSlot').on('click', function(){
+            $('#genericModal .selectColorSlot').removeClass('active').css('border', '1px solid #000');
+            $(this).addClass('active').css('border', '3px solid #FFF');
 
             let slotIndex                       = parseInt($(this).attr('data-slot'));
                 lightColorPicker.color.rgb    = {r: playerColors[slotIndex].r, g: playerColors[slotIndex].g, b: playerColors[slotIndex].b};
@@ -152,8 +149,8 @@ export default class Modal_Map_LightColorSlots
             $('#lightColorInputHex').val(lightColorPicker.color.hexString);
         });
         $('#resetLightColorSlot').on('click', () => {
-            let slotIndex                 = parseInt($('#statisticsModalLightColorSlots .selectColorSlot.active').attr('data-slot'));
-            let lightColor                = this.buildableSubSystem.getDefaultLightColorSlot(slotIndex);
+            let slotIndex                 = parseInt($('#genericModal .selectColorSlot.active').attr('data-slot'));
+            let lightColor                = this.gameStateSubSystem.getDefaultLightColorSlot(slotIndex);
 
             lightColorPicker.color.rgb    = {r: lightColor.r, g: lightColor.g, b: lightColor.b};
 

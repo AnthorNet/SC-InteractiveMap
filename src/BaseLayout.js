@@ -18,11 +18,12 @@ import SubSystem_Player                         from './SubSystem/Player.js';
 import Modal                                    from './Modal.js';
 
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
-import Modal_Map_ColorSlots                     from './Modal/Map/ColorSlots.js';
 import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
-import Modal_Map_LightColorSlots                from './Modal/Map/LightColorSlots.js';
 import Modal_Map_Players                        from './Modal/Map/Players.js';
 import Modal_Map_Options                        from './Modal/Map/Options.js';
+
+import Modal_ColorSlots                         from './Modal/ColorSlots.js';
+import Modal_LightColorSlots                    from './Modal/LightColorSlots.js';
 
 import Modal_Statistics_Production              from './Modal/Statistics/Production.js';
 import Modal_Statistics_Storage                 from './Modal/Statistics/Storage.js';
@@ -218,6 +219,9 @@ export default class BaseLayout
         $('#researchModal').off('show.bs.modal');
         $('#optionsModal').off('show.bs.modal');
         $('#buildingsModal').off('show.bs.modal');
+        $('#colorSlotsModal').off('click');
+        $('#lightSlotsModal').off('click');
+        $('#modalPowerCircuits').off('click');
 
         for(let pathName in this.satisfactoryMap.collectableMarkers)
         {
@@ -280,7 +284,6 @@ export default class BaseLayout
         $('#statisticsPlayerInventory').empty();
         $('#statisticsPlayerHotBars').empty();
         $('#statisticsModalCollectables').empty();
-        $('#statisticsModalColorSlots').empty();
         $('#statisticsModalOptions').empty();
 
         $('#buildingsModalExtraction').empty();
@@ -1118,6 +1121,14 @@ export default class BaseLayout
                     statisticsSchematics.parseMAM();
                     statisticsSchematics.parseAwesomeSink();
             });
+            $('#colorSlotsModal').on('click', () => {
+                let colorSlots = new Modal_ColorSlots({baseLayout: this});
+                    colorSlots.parse();
+            });
+            $('#lightSlotsModal').on('click', () => {
+                let lightColorSlots = new Modal_LightColorSlots({baseLayout: this});
+                    lightColorSlots.parse();
+            });
             $('#modalPowerCircuits').on('click', () => {
                 let modalPowerCircuits = new Modal_PowerCircuits({
                         baseLayout      : this
@@ -1136,14 +1147,6 @@ export default class BaseLayout
                         case '#statisticsPlayerHotBars':
                             let mapHotbars = new Modal_Map_Hotbars({baseLayout: this});
                                 mapHotbars.parse();
-                            break;
-                        case '#statisticsModalColorSlots':
-                            let mapColorSlots = new Modal_Map_ColorSlots({baseLayout: this});
-                                mapColorSlots.parse();
-                            break;
-                        case '#statisticsModalLightColorSlots':
-                            let mapLightColorSlots = new Modal_Map_LightColorSlots({baseLayout: this});
-                                mapLightColorSlots.parse();
                             break;
                         case '#statisticsModalCollectables':
                             let statisticsCollectables = new Modal_Map_Collectables({baseLayout: this});
@@ -3980,11 +3983,6 @@ export default class BaseLayout
             $(this.playerLayers[layerId].mainDivId).show()
                                                    .parent().show();
 
-            if(this.playerLayers[layerId].mainDivId === '#playerGeneratorsLayer')
-            {
-                $('#modalPowerCircuits').show();
-            }
-
             if(this.playerLayers[layerId].filters !== undefined)
             {
                 this.playerLayers[layerId].filtersCount = {};
@@ -4026,7 +4024,13 @@ export default class BaseLayout
                             if(this.playerLayers.playerLightsHaloLayer.layerGroup.hasLayer(this.playerLayers.playerLightsHaloLayer.subLayer))
                             {
                                 this.playerLayers.playerLightsHaloLayer.layerGroup.removeLayer(this.playerLayers.playerLightsHaloLayer.subLayer);
+                                $('.updatePlayerLayerState[data-id="playerLightsHaloLayer"] > i').removeClass('fa-light-switch-on').addClass('fa-light-switch-off');
                             }
+                        }
+
+                        if(layerId === 'playerLightsHaloLayer')
+                        {
+                            $('.updatePlayerLayerState[data-id="playerLightsHaloLayer"] > i').removeClass('fa-light-switch-on').addClass('fa-light-switch-off');
                         }
                     }
                     else
@@ -4039,7 +4043,13 @@ export default class BaseLayout
                             if($('.updatePlayerLayerState[data-id="playerLightsHaloLayer"]').hasClass(window.SCIM.outlineClass))
                             {
                                 this.playerLayers.playerLightsHaloLayer.layerGroup.addLayer(this.playerLayers.playerLightsHaloLayer.subLayer);
+                                $('.updatePlayerLayerState[data-id="playerLightsHaloLayer"] > i').removeClass('fa-light-switch-off').addClass('fa-light-switch-on');
                             }
+                        }
+
+                        if(layerId === 'playerLightsHaloLayer')
+                        {
+                            $('.updatePlayerLayerState[data-id="playerLightsHaloLayer"] > i').removeClass('fa-light-switch-off').addClass('fa-light-switch-on');
                         }
                     }
                 }
