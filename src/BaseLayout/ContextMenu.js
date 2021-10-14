@@ -15,6 +15,7 @@ import Building_TrainStation                    from '../Building/TrainStation.j
 
 import Modal_Debug                              from '../Modal/Debug.js';
 import Modal_Object_Position                    from '../Modal/Object/Position.js';
+import Modal_Object_ColorSlot                   from '../Modal/Object/ColorSlot.js';
 import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
 
 import SubSystem_Player                         from '../SubSystem/Player.js';
@@ -37,11 +38,11 @@ export default class BaseLayout_ContextMenu
                 if(faunaData !== null)
                 {
                     contextMenu.push({
-                        text: 'Update "' + faunaData.name + '" position',
+                        text    : 'Update "' + faunaData.name + '" position',
                         callback: Modal_Object_Position.getHTML
                     });
                     contextMenu.push({
-                        text: 'Delete "' + faunaData.name + '"',
+                        text    : 'Delete "' + faunaData.name + '"',
                         callback: this.baseLayout.deleteFauna.bind(this.baseLayout)
                     });
                 }
@@ -63,42 +64,42 @@ export default class BaseLayout_ContextMenu
                 case '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C':
                 case '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C':
                     return [{
-                        text: 'Advanced Debug',
+                        text    : 'Advanced Debug',
                         callback: Modal_Debug.getHTML
                     }];
                 case '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C':
                     contextMenu.push({
-                        text: 'Update "Loot Crate" position',
+                        text    : 'Update "Loot Crate" position',
                         callback: Modal_Object_Position.getHTML
                     });
                     /*
                     contextMenu.push({
-                        text: 'Move "Loot Crate" to player inventory',
+                        text    : 'Move "Loot Crate" to player inventory',
                         callback: SubSystem_Player.fillInventoryFrom
                     });
                     */
                     contextMenu.push({separator: true});
                     contextMenu.push({
-                        text: 'Delete "Loot Crate"',
+                        text    : 'Delete "Loot Crate"',
                         callback: this.baseLayout.deletePlayerLootCrate.bind(this.baseLayout)
                     });
                     break;
                 case '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C':
                     contextMenu.push({
-                        text: 'Delete "Beacon"',
+                        text    : 'Delete "Beacon"',
                         callback: this.baseLayout.deletePlayerBeacon.bind(this.baseLayout)
                     });
                     break;
                 case '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C':
                     contextMenu.push({
-                        text: 'Delete "Resource Deposit"',
+                        text    : 'Delete "Resource Deposit"',
                         callback: this.baseLayout.deleteResourceDeposit.bind(this.baseLayout)
                     });
                     break;
                 case '/Script/FactoryGame.FGItemPickup_Spawnable':
                 case '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C':
                     contextMenu.push({
-                        text: 'Delete "Dropped Items"',
+                        text    : 'Delete "Dropped Items"',
                         callback: this.baseLayout.deleteItemPickUp.bind(this.baseLayout)
                     });
                     break;
@@ -129,7 +130,7 @@ export default class BaseLayout_ContextMenu
                 case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
                 case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
                     contextMenu.push({
-                        text: 'Teleport player',
+                        text    : 'Teleport player',
                         callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
                     });
 
@@ -137,7 +138,7 @@ export default class BaseLayout_ContextMenu
                     {
                         let hasBeenOpened = this.baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
                             contextMenu.push({
-                                text: ((hasBeenOpened === 1) ? '<strong class="text-danger">Close</strong>' : '<strong class="text-success">Open</strong>') + ' drop-pod',
+                                text    : ((hasBeenOpened === 1) ? '<strong class="text-danger">Close</strong>' : '<strong class="text-success">Open</strong>') + ' drop-pod',
                                 callback: this.baseLayout.toggleDropPodHasBeenOpened.bind(this.baseLayout)
                             });
                     }
@@ -149,25 +150,25 @@ export default class BaseLayout_ContextMenu
                     if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof')
                     {
                         contextMenu.push({
-                            text: 'Rotate "' + buildingData.name + '" by 90°',
+                            text    : 'Rotate "' + buildingData.name + '" by 90°',
                             callback: this.baseLayout.rotationPlayerFoundation.bind(this.baseLayout)
                         });
 
                         contextMenu.push({
-                            text: 'Pivot "' + buildingData.name + '" from the top-left corner',
+                            text    : 'Pivot "' + buildingData.name + '" from the top-left corner',
                             callback: this.baseLayout.pivotPlayerFoundation.bind(this.baseLayout)
                         });
 
                         if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal') === false && currentObject.className.search('_Corner_') === -1)
                         {
                             contextMenu.push({
-                                text: 'Spawn around "' + buildingData.name + '"',
+                                text    : 'Spawn around "' + buildingData.name + '"',
                                 callback: Modal_SpawnAround.getHTML
                             });
                         }
 
                         contextMenu.push({
-                            text: 'Teleport player on "' + buildingData.name + '"',
+                            text    : 'Teleport player on "' + buildingData.name + '"',
                             callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
                         });
                     }
@@ -183,14 +184,14 @@ export default class BaseLayout_ContextMenu
                     )
                     {
                         contextMenu.push({
-                            text: 'Turn "' + buildingData.name + '" ' + ((this.baseLayout.getBuildingIsOn(currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
+                            text    : 'Turn "' + buildingData.name + '" ' + ((this.baseLayout.getBuildingIsOn(currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
                             callback: this.baseLayout.updateObjectProductionPausedStatus.bind(this.baseLayout)
                         });
 
                         if(buildingData.category !== 'light'&& currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
                         {
                             contextMenu.push({
-                                text: 'Update "' + buildingData.name + '" clock speed',
+                                text    : 'Update "' + buildingData.name + '" clock speed',
                                 callback: this.baseLayout.updateObjectClockSpeed.bind(this.baseLayout)
                             });
                         }
@@ -237,7 +238,7 @@ export default class BaseLayout_ContextMenu
                     if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C')
                     {
                         contextMenu.push({
-                            text: 'Update "' + buildingData.name + '" position',
+                            text    : 'Update "' + buildingData.name + '" position',
                             callback: Modal_Object_Position.getHTML
                         });
                     }
@@ -257,9 +258,10 @@ export default class BaseLayout_ContextMenu
                          && (buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false)
                     )
                     {
+                        contextMenu.push({separator: true});
                         contextMenu.push({
-                            text: 'Update "' + buildingData.name + '" color slot',
-                            callback: this.baseLayout.updateObjectColorSlot.bind(this.baseLayout)
+                            text    : 'Update "' + buildingData.name + '" color slot',
+                            callback: Modal_Object_ColorSlot.getHTML
                         });
                     }
 
@@ -267,7 +269,7 @@ export default class BaseLayout_ContextMenu
                     {
                         contextMenu.push({separator: true});
                         contextMenu.push({
-                            text: 'Update "' + buildingData.name + '" recipe',
+                            text    : 'Update "' + buildingData.name + '" recipe',
                             callback: this.baseLayout.editPlayerProductionBuildingRecipe.bind(this.baseLayout)
                         });
                     }
@@ -275,7 +277,7 @@ export default class BaseLayout_ContextMenu
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
                     {
                         contextMenu.push({
-                            text: 'Fill "' + buildingData.name + '" inventory',
+                            text    : 'Fill "' + buildingData.name + '" inventory',
                             callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal.bind(this.baseLayout)
                         });
                     }
@@ -307,16 +309,16 @@ export default class BaseLayout_ContextMenu
                                 if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className) === false)
                                 {
                                     contextMenu.push({
-                                        text: 'Edit "' + buildingData.name + '" inventory',
+                                        text    : 'Edit "' + buildingData.name + '" inventory',
                                         callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
                                     });
                                 }
                                 contextMenu.push({
-                                    text: 'Fill "' + buildingData.name + '" inventory',
+                                    text    : 'Fill "' + buildingData.name + '" inventory',
                                     callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal.bind(this.baseLayout)
                                 });
                                 contextMenu.push({
-                                    text: 'Clear "' + buildingData.name + '" inventory',
+                                    text    : 'Clear "' + buildingData.name + '" inventory',
                                     callback: this.baseLayout.clearPlayerStorageBuildingInventory.bind(this.baseLayout)
                                 });
                             }
@@ -327,7 +329,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({separator: true});
                             contextMenu.push({
-                                text: 'Update pipe network fluid',
+                                text    : 'Update pipe network fluid',
                                 callback: this.baseLayout.updatePipeNetworkFluid.bind(this.baseLayout)
                             });
                         }
@@ -351,7 +353,7 @@ export default class BaseLayout_ContextMenu
                                         if(downgradeData !== null)
                                         {
                                             contextMenu.push({
-                                                text: 'Downgrade to "' + downgradeData.name + '"',
+                                                text    : 'Downgrade to "' + downgradeData.name + '"',
                                                 callback: Building_Conveyor.downgradeConveyor
                                             });
                                         }
@@ -362,7 +364,7 @@ export default class BaseLayout_ContextMenu
                                         if(upgradeData !== null)
                                         {
                                             contextMenu.push({
-                                                text: 'Upgrade to "' + upgradeData.name + '"',
+                                                text    : 'Upgrade to "' + upgradeData.name + '"',
                                                 callback: Building_Conveyor.upgradeConveyor
                                             });
                                         }
@@ -393,7 +395,7 @@ export default class BaseLayout_ContextMenu
                                         if(downgradeData !== null)
                                         {
                                             contextMenu.push({
-                                                text: 'Downgrade to "' + downgradeData.name + '"',
+                                                text    : 'Downgrade to "' + downgradeData.name + '"',
                                                 callback: Building_PowerPole.downgradePowerPole
                                             });
                                         }
@@ -404,7 +406,7 @@ export default class BaseLayout_ContextMenu
                                         if(upgradeData !== null)
                                         {
                                             contextMenu.push({
-                                                text: 'Upgrade to "' + upgradeData.name + '"',
+                                                text    : 'Upgrade to "' + upgradeData.name + '"',
                                                 callback: Building_PowerPole.upgradePowerPole
                                             });
                                         }
@@ -431,7 +433,7 @@ export default class BaseLayout_ContextMenu
                                         if(downgradeData !== null)
                                         {
                                             contextMenu.push({
-                                                text: 'Downgrade to "' + downgradeData.name + '"',
+                                                text    : 'Downgrade to "' + downgradeData.name + '"',
                                                 callback: Building_Pipeline.downgradePipeline
                                             });
                                         }
@@ -442,7 +444,7 @@ export default class BaseLayout_ContextMenu
                                         if(upgradeData !== null)
                                         {
                                             contextMenu.push({
-                                                text: 'Upgrade to "' + upgradeData.name + '"',
+                                                text    : 'Upgrade to "' + upgradeData.name + '"',
                                                 callback: Building_Pipeline.upgradePipeline
                                             });
                                         }
@@ -464,7 +466,7 @@ export default class BaseLayout_ContextMenu
                                         if(downgradeData !== null)
                                         {
                                             contextMenu.push({
-                                                text: 'Downgrade to "' + downgradeData.name + '"',
+                                                text    : 'Downgrade to "' + downgradeData.name + '"',
                                                 callback: Building_Miner.downgradeMiner
                                             });
                                         }
@@ -475,7 +477,7 @@ export default class BaseLayout_ContextMenu
                                         if(upgradeData !== null)
                                         {
                                             contextMenu.push({
-                                                text: 'Upgrade to "' + upgradeData.name + '"',
+                                                text    : 'Upgrade to "' + upgradeData.name + '"',
                                                 callback: Building_Miner.upgradeMiner
                                             });
                                         }
@@ -487,7 +489,7 @@ export default class BaseLayout_ContextMenu
                     {
                         contextMenu.push({separator: true});
                         contextMenu.push({
-                            text: 'Delete "' + buildingData.name + '"',
+                            text    : 'Delete "' + buildingData.name + '"',
                             callback: this.baseLayout.deleteGenericBuilding.bind(this.baseLayout)
                         });
                     }
@@ -499,7 +501,7 @@ export default class BaseLayout_ContextMenu
             contextMenu.push({separator: true});
         }
         contextMenu.push({
-            text: 'Advanced Debug',
+            text    : 'Advanced Debug',
             callback: Modal_Debug.getHTML
         });
 

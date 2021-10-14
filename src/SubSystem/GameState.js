@@ -2,9 +2,8 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import Building_Light                           from '../Building/Light.js';
 
-export default class SubSystem_Buildable
+export default class SubSystem_GameState
 {
-    static get totalColorSlots(){ return 16; }
     static get totalLightColorSlots(){ return 7; }
 
     constructor(options)
@@ -30,7 +29,7 @@ export default class SubSystem_Buildable
 
     getPlayerLightColorSlots()
     {
-        let totalColorSlot                  = SubSystem_Buildable.totalLightColorSlots;
+        let totalColorSlot                  = SubSystem_GameState.totalLightColorSlots;
         let playerColors                    = [];
         let mBuildableLightColorSlots       = this.getLightColorSlots();
 

@@ -3,7 +3,6 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 export default class SubSystem_Buildable
 {
     static get totalColorSlots(){ return 16; }
-    static get totalLightColorSlots(){ return 7; }
 
     constructor(options)
     {
@@ -34,6 +33,12 @@ export default class SubSystem_Buildable
         {
             return 17;
         }
+
+        let buildingData = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
+            if(buildingData !== null && (buildingData.category === 'foundation' || buildingData.category === 'roof'))
+            {
+                return 16;
+            }
 
         return 0;
     }

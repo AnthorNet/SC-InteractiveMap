@@ -17,39 +17,55 @@ export default class Modal_ColorSlots
         let html            = [];
         let playerColors    = this.buildableSubSystem.getPlayerColorSlots();
             console.log(this.buildableSubSystem);
-            for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
+
+
+
+        // Add factory slot
+        html.push('<div class="d-flex flex-row mb-3">');
+            html.push('<div class="d-flex flex-row selectColorSlot active align-items-center w-100" style="background: linear-gradient(135deg, rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ') 0%,'
+                          + 'rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ') 50%,'
+                          + 'rgb(' + playerColors[0].secondaryColor.r + ', ' + playerColors[0].secondaryColor.g + ', ' + playerColors[0].secondaryColor.b + ') 51%,'
+                          + 'rgb(' + playerColors[0].secondaryColor.r + ', ' + playerColors[0].secondaryColor.g + ', ' + playerColors[0].secondaryColor.b + ') 100%);position: relative;height: 48px;border: 3px solid #FFF;border-radius: 5px;margin: 2px;" data-slot="0">');
+            html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">FICSIT Factory</strong></div>');
+            html.push('</div>');
+        html.push('</div>');
+
+        for(let slotIndex = 1; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
+        {
+            if((slotIndex - 1) % 5 === 0)
             {
-                if(slotIndex % 4 === 0)
+                if(slotIndex > 1)
                 {
-                    if(slotIndex > 0)
-                    {
-                        html.push('</div>');
-                    }
-                    html.push('<div class="d-flex flex-row">');
+                    html.push('</div>');
                 }
-
-                let style = 'background: linear-gradient(135deg, rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ') 0%,'
-                          + 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ') 50%,'
-                          + 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ') 51%,'
-                          + 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ') 100%);';
-
-                html.push('<div class="d-flex flex-row selectColorSlot ' + ((slotIndex === 0) ? 'active ' : '') + ' align-items-center" style="' + style + 'position: relative;width: 96px;height: 96px;' + ((slotIndex === 0) ? 'border: 3px solid #FFF;' : 'border: 1px solid #000;') + 'border-radius: 50%;margin: 2px;" data-slot="' + slotIndex + '">');
-                html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">#' + (slotIndex + 1) + '</strong></div>');
-                html.push('</div>');
+                html.push('<div class="d-flex flex-row">');
             }
 
+            let style = 'background: linear-gradient(135deg, rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ') 0%,'
+                      + 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ') 50%,'
+                      + 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ') 51%,'
+                      + 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ') 100%);';
+
+            html.push('<div class="d-flex flex-row selectColorSlot align-items-center" style="' + style + 'position: relative;width: 85px;height: 85px;border: 1px solid #000;border-radius: 50%;margin: 2px;" data-slot="' + slotIndex + '">');
+            html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">Swatch ' + slotIndex + '</strong></div>');
+            html.push('</div>');
+        }
         html.push('</div>');
 
         // Add hidden slots
         html.push('<div class="d-flex flex-row mt-3">');
-            html.push('<div class="d-flex flex-row selectColorSlot align-items-center" style="background: linear-gradient(135deg, rgb(' + playerColors[16].primaryColor.r + ', ' + playerColors[16].primaryColor.g + ', ' + playerColors[16].primaryColor.b + ') 0%,'
+            html.push('<div class="d-flex flex-row selectColorSlot align-items-center w-50" style="background: linear-gradient(135deg, rgb(' + playerColors[16].primaryColor.r + ', ' + playerColors[16].primaryColor.g + ', ' + playerColors[16].primaryColor.b + ') 0%,'
                           + 'rgb(' + playerColors[16].primaryColor.r + ', ' + playerColors[16].primaryColor.g + ', ' + playerColors[16].primaryColor.b + ') 50%,'
                           + 'rgb(' + playerColors[16].secondaryColor.r + ', ' + playerColors[16].secondaryColor.g + ', ' + playerColors[16].secondaryColor.b + ') 51%,'
-                          + 'rgb(' + playerColors[16].secondaryColor.r + ', ' + playerColors[16].secondaryColor.g + ', ' + playerColors[16].secondaryColor.b + ') 100%);position: relative;width: 196px;height: 48px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="16"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">Foundations</strong></div></div>');
-            html.push('<div class="d-flex flex-row selectColorSlot align-items-center" style="background: linear-gradient(135deg, rgb(' + playerColors[17].primaryColor.r + ', ' + playerColors[17].primaryColor.g + ', ' + playerColors[17].primaryColor.b + ') 0%,'
+                          + 'rgb(' + playerColors[16].secondaryColor.r + ', ' + playerColors[16].secondaryColor.g + ', ' + playerColors[16].secondaryColor.b + ') 100%);position: relative;height: 48px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="16">');
+            html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">FICSIT Foundation</strong></div>');
+            html.push('</div>');
+            html.push('<div class="d-flex flex-row selectColorSlot align-items-center w-50" style="background: linear-gradient(135deg, rgb(' + playerColors[17].primaryColor.r + ', ' + playerColors[17].primaryColor.g + ', ' + playerColors[17].primaryColor.b + ') 0%,'
                           + 'rgb(' + playerColors[17].primaryColor.r + ', ' + playerColors[17].primaryColor.g + ', ' + playerColors[17].primaryColor.b + ') 50%,'
                           + 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ') 51%,'
-                          + 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ') 100%);position: relative;width: 196px;height: 48px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="17"><div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">Pipes</strong></div></div>');
+                          + 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ') 100%);position: relative;height: 48px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="17">');
+            html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">FICSIT Pipe</strong></div>');
+            html.push('</div>');
         html.push('</div>');
 
         $('#genericModal .modal-body').empty().html('<div class="row">'
