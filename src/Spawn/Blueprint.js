@@ -917,7 +917,8 @@ export default class Spawn_Blueprint
         let centerX             = ((this.clipboard.minX + this.clipboard.maxX) / 2) + this.xOffset;
         let centerY             = ((this.clipboard.minY + this.clipboard.maxY) / 2) + this.yOffset;
 
-        this.centerObject.properties.push({name: "mColorSlot", type: "ByteProperty", value: {enumName: "None", value: parseFloat(colorSlotHelper)}});
+        let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this.baseLayout});
+            buildableSubSystem.setObjectColorSlot(this.centerObject, parseint(colorSlotHelper));
 
         // Delete and add again!
         let resultCenter = this.baseLayout.parseObject(this.centerObject);

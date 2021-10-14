@@ -87,7 +87,7 @@ export default class Modal_SpawnAround
                                 colorSlotOptions.push({text: 'No foundation helper', value: 'NONE'});
                                 for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
                                 {
-                                    colorSlotOptions.push({text: 'Slot #' + (slotIndex + 1), value: slotIndex});
+                                    colorSlotOptions.push({text: 'Swatch #' + (slotIndex + 1), value: slotIndex});
                                 }
 
                             Modal.form({

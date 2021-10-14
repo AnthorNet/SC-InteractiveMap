@@ -427,16 +427,26 @@ export default class Modal
         {
             let html            = new Array();
             let totalColorSlot  = options.inputOptions.length;
+            let column          = 0;
 
             for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
             {
-                if(slotIndex % 4 === 0) //slotIndex === 0 || slotIndex === 4 || slotIndex === 8 || slotIndex === 12)
+                if(column % 5 === 0)
                 {
                     if(slotIndex > 0)
                     {
                         html.push('</div>');
                     }
-                    html.push('<div class="d-flex flex-row justify-content-center">');
+                    html.push('<div class="d-flex flex-row justify-content-center mb-3">');
+                }
+
+                if(options.inputOptions[slotIndex].fullWidth !== undefined && options.inputOptions[slotIndex].fullWidth === true)
+                {
+                    column = 0;
+                }
+                else
+                {
+                    column++;
                 }
 
                 let backgroundStyle = 'background: ' + options.inputOptions[slotIndex].primaryColor + ';';
@@ -447,17 +457,19 @@ export default class Modal
 
                 let borderStyle     = 'border: 1px solid #000000;';
                 let sizeStyle       = 'width: 96px;height: 96px;';
+                let radiusStyle     = 'border-radius: 50%;';
 
-                    if(slotIndex === options.value)
+                    if(options.inputOptions[slotIndex].value === options.value)
                     {
                         borderStyle     = 'border: 3px solid #FFFFFF;';
                     }
                     if(options.inputOptions[slotIndex].fullWidth !== undefined && options.inputOptions[slotIndex].fullWidth === true)
                     {
-                        sizeStyle       = 'width: 396px;height: 48px;';
+                        sizeStyle       = 'width: 495px;height: 48px;';
+                        radiusStyle     = 'border-radius: 5px;';
                     }
 
-                    html.push('<div class="d-flex flex-row modal-selectColorSlot align-items-center" style="position: relative;' + backgroundStyle + sizeStyle + borderStyle + 'border-radius: 5px;margin: 2px;" data-slot="' + slotIndex + '">');
+                    html.push('<div class="d-flex flex-row modal-selectColorSlot align-items-center" style="position: relative;' + backgroundStyle + sizeStyle + borderStyle + radiusStyle + 'margin: 2px;" data-slot="' + options.inputOptions[slotIndex].value + '">');
                         html.push('<div class="w-100 text-center">');
                             html.push('<strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">' + options.inputOptions[slotIndex].text + '</strong>');
                         html.push('</div>');

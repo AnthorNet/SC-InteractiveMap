@@ -171,6 +171,8 @@ export default class BaseLayout_ContextMenu
                             text    : 'Teleport player on "' + buildingData.name + '"',
                             callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
                         });
+
+                        contextMenu.push({separator: true});
                     }
 
                     if(
@@ -258,9 +260,8 @@ export default class BaseLayout_ContextMenu
                          && (buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false)
                     )
                     {
-                        contextMenu.push({separator: true});
                         contextMenu.push({
-                            text    : 'Update "' + buildingData.name + '" color slot',
+                            text    : 'Update "' + buildingData.name + '" color swatch',
                             callback: Modal_Object_ColorSlot.getHTML
                         });
                     }

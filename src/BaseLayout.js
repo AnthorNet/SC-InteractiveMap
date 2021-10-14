@@ -6040,10 +6040,11 @@ export default class BaseLayout
                         for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
                         {
                             selectOptionsColors.push({
+                                fullWidth       : ((slotIndex === 0) ? true : false),
                                 primaryColor    : 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
                                 secondaryColor  : 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
                                 value           : slotIndex,
-                                text            : (slotIndex + 1)
+                                text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
                             });
                         }
 
@@ -6075,10 +6076,11 @@ export default class BaseLayout
                             for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
                             {
                                 selectOptions.push({
+                                    fullWidth       : ((slotIndex === 0) ? true : false),
                                     primaryColor    : 'rgb(' + playerColorsHelpers[slotIndex].primaryColor.r + ', ' + playerColorsHelpers[slotIndex].primaryColor.g + ', ' + playerColorsHelpers[slotIndex].primaryColor.b + ')',
                                     secondaryColor  : 'rgb(' + playerColorsHelpers[slotIndex].secondaryColor.r + ', ' + playerColorsHelpers[slotIndex].secondaryColor.g + ', ' + playerColorsHelpers[slotIndex].secondaryColor.b + ')',
                                     value           : slotIndex,
-                                    text            : (slotIndex + 1)
+                                    text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
                                 });
                             }
 
@@ -6446,44 +6448,10 @@ export default class BaseLayout
                     {
                         if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.search('Modal_Object_ColorSlot') !== -1)
                         {
-                            //contextMenu[j].callback({relatedTarget: this.markersSelected[i]});
-                            /**/
+                            let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this.baseLayout});
                             let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
-                            let colorSlot       = this.getObjectProperty(currentObject, 'mColorSlot');
-
-                            if(colorSlot === null && slotIndex > 0)
-                            {
-                                currentObject.properties.push({
-                                    name: 'mColorSlot',
-                                    type: 'ByteProperty',
-                                    value: {
-                                        enumName: 'None',
-                                        value: slotIndex
-                                    }
-                                });
-                            }
-                            else
-                            {
-                                for(let i = 0; i < currentObject.properties.length; i++)
-                                {
-                                    if(currentObject.properties[i].name === 'mColorSlot')
-                                    {
-                                        if(slotIndex > 0)
-                                        {
-                                            currentObject.properties[i].value.value = slotIndex;
-                                        }
-                                        else
-                                        {
-                                            currentObject.properties.splice(i, 1);
-                                        }
-
-                                        break;
-                                    }
-                                }
-                            }
-
-                            this.markersSelected[i].fire('mouseout'); // Trigger a redraw
-                            /**/
+                                buildableSubSystem.setObjectColorSlot(currentObject, slotIndex);
+                                this.markersSelected[i].fire('mouseout'); // Trigger a redraw
                         }
                     }
                 }
@@ -6531,9 +6499,6 @@ export default class BaseLayout
                         translation     : [centerX, centerY, minZ + 100]
                     },
                     properties      : [
-                        { name: "mPrimaryColor", type: "StructProperty", value: { type: "LinearColor", values: { r: 0.10946200042963028, g: 0.10946200042963028, b: 0.10946200042963028, a: 1 } } },
-                        { name: "mSecondaryColor", type: "StructProperty", value: { type: "LinearColor", values: { r: 0.10946200042963028, g: 0.10946200042963028, b: 0.10946200042963028, a: 1 } } },
-                        {name: "mColorSlot", type: "ByteProperty", value: {enumName: "None", value: parseFloat(colorSlotHelper)}},
                         { name: "mBuildingID", type: "IntProperty", value: 25 },
                         { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
                         { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
@@ -6542,6 +6507,9 @@ export default class BaseLayout
                     entityPathName  : "Persistent_Level:PersistentLevel.BuildableSubsystem"
                 };
                 fakeFoundation.pathName = this.generateFastPathName(fakeFoundation);
+
+            let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this.baseLayout});
+                buildableSubSystem.setObjectColorSlot(fakeFoundation, parseInt(colorSlotHelper));
 
             this.saveGameParser.addObject(fakeFoundation);
             let resultCenter = this.parseObject(fakeFoundation);
