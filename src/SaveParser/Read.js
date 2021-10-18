@@ -562,7 +562,12 @@ export default class SaveParser_Read
         {
             case 'BoolProperty':
                 currentProperty.value = this.readByte();
-                this.skipBytes();
+
+                let unkBoolByte = this.readByte();
+                    if(unkBoolByte === 1)
+                    {
+                        currentProperty.unkBool = this.readHex(16);
+                    }
 
                 break;
 
@@ -574,7 +579,11 @@ export default class SaveParser_Read
 
             case 'IntProperty':
             case 'UInt32Property': // Mod?
-                this.skipBytes();
+                let unkIntByte = this.readByte();
+                    if(unkIntByte === 1)
+                    {
+                        currentProperty.unkInt = this.readHex(16);
+                    }
                 currentProperty.value = this.readInt();
 
                 break;

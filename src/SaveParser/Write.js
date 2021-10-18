@@ -511,7 +511,7 @@ export default class SaveParser_Write
                         entity += this.writeString(currentObject.extra.objects[i].name);
                         entity += this.writeHex(currentObject.extra.objects[i].unk);
                     }
-                    
+
                     entity += this.writeString(currentObject.extra.previousLevelName);
                     entity += this.writeString(currentObject.extra.previousPathName);
                     entity += this.writeString(currentObject.extra.nextLevelName);
@@ -583,7 +583,16 @@ export default class SaveParser_Write
         {
             case 'BoolProperty':
                 property += this.writeByte(currentProperty.value, false);
-                property += this.writeByte(0, false);
+
+                if(currentProperty.unkBool !== undefined)
+                {
+                    property += this.writeByte(1, false);
+                    property += this.writeHex(16, false);
+                }
+                else
+                {
+                    property += this.writeByte(0, false);
+                }
                 break;
 
             case 'Int8Property':
@@ -595,6 +604,15 @@ export default class SaveParser_Write
 
             case 'IntProperty':
             case 'UInt32Property': // Mod?
+                if(currentProperty.unkInt !== undefined)
+                {
+                    property += this.writeByte(1, false);
+                    property += this.writeHex(16, false);
+                }
+                else
+                {
+                    property += this.writeByte(0, false);
+                }
                 property += this.writeByte(0, false);
                 property += this.writeInt(currentProperty.value);
                 break;
