@@ -4,14 +4,16 @@ export default class Building_FrackingSmasher
     {
         let currentObjectSatellites = [];
         let extractedCore           = baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
-
-            for(let pathName in baseLayout.satisfactoryMap.collectableMarkers)
+            if(extractedCore !== null)
             {
-                if(pathName.startsWith('Persistent_Exploration_2:PersistentLevel.BP_FrackingSatellite') === true)
+                for(let pathName in baseLayout.satisfactoryMap.collectableMarkers)
                 {
-                    if(baseLayout.satisfactoryMap.collectableMarkers[pathName].options.core !== undefined && baseLayout.satisfactoryMap.collectableMarkers[pathName].options.core === extractedCore.pathName)
+                    if(pathName.startsWith('Persistent_Exploration_2:PersistentLevel.BP_FrackingSatellite') === true)
                     {
-                        currentObjectSatellites.push(baseLayout.satisfactoryMap.collectableMarkers[pathName]);
+                        if(baseLayout.satisfactoryMap.collectableMarkers[pathName].options.core !== undefined && baseLayout.satisfactoryMap.collectableMarkers[pathName].options.core === extractedCore.pathName)
+                        {
+                            currentObjectSatellites.push(baseLayout.satisfactoryMap.collectableMarkers[pathName]);
+                        }
                     }
                 }
             }
