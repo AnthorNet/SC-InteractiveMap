@@ -638,25 +638,13 @@ export default class Map
 
         $('.setBaseLayer').click(function(e){
             let layerId     = $(e.currentTarget).attr('data-id');
-                if(this.baseLayer !== 'greyLayer')
-                {
-                    this.leafletMap.removeLayer(this.baseLayers[this.baseLayer]);
-                }
+                this.leafletMap.removeLayer(this.baseLayers[this.baseLayer]);
 
             $('.setBaseLayer').removeClass(window.SCIM.outlineClass);
             this.baseLayer = layerId;
-
-            if(layerId !== 'greyLayer')
-            {
-                this.leafletMap.addLayer(this.baseLayers[layerId]);
-            }
+            this.leafletMap.addLayer(this.baseLayers[layerId]);
 
             $(e.currentTarget).addClass(window.SCIM.outlineClass);
-
-            if(layerId === 'greyLayer')
-            {
-                this.updateHash();
-            }
         }.bind(this));
 
         $('.updateLayerState').click(function(e){
