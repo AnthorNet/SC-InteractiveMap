@@ -5228,7 +5228,7 @@ export default class BaseLayout
 
         return null;
     }
-
+    
     getItemDataFromClassName(className, debugToConsole = true)
     {
         if(className === '/Game/FactoryGame/Resource/RawResources/CrudeOil/Desc_CrudeOil.Desc_CrudeOil_C'){ className = '/Game/FactoryGame/Resource/RawResources/CrudeOil/Desc_LiquidOil.Desc_LiquidOil_C'; }
@@ -5369,6 +5369,20 @@ export default class BaseLayout
         }
 
         return null;
+    }
+    
+    
+    getIconSrcFromId(iconId)
+    {
+        for(let i in this.itemsData)
+        {
+            if(this.itemsData[i].iconId !== undefined && this.itemsData[i].iconId === iconId)
+            {
+                return this.itemsData[i].image;
+            }
+        }
+        
+        return this.itemsData.Desc_IronIngot_C.image;
     }
 
     getBuildingIsOn(currentObject)

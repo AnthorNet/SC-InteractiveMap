@@ -24,11 +24,21 @@ export default class SubSystem_Buildable
                             {
                                 case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C':
                                     return 255;
+                                case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C': //TODO:UPDATE5
+                                    return 0;
                                 case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C':
                                     return 16;
                                 default:
                                     let slot = currentSwatchDesc.split('.');
-                                        return parseInt(slot[0].replace('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot', ''));
+                                        slot = parseInt(slot[0].replace('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot', ''));
+                                        
+                                        if(isNaN(slot))
+                                        {
+                                            console.log('getObjectColorSlot', currentSwatchDesc);
+                                            return 0;
+                                        }
+                                        
+                                        return slot;
                             }
                     }
                 }
@@ -94,7 +104,14 @@ export default class SubSystem_Buildable
     {
         let colorSlot           = this.getObjectColorSlot(currentObject);
         let playerColorSlots    = this.getPlayerColorSlots();
-            return playerColorSlots[colorSlot].primaryColor;
+        
+            if(playerColorSlots[colorSlot] === undefined)
+            {
+                console.log('getObjectPrimaryColor', colorSlot, currentObject);
+                return playerColorSlots[0].primaryColor;
+            }
+        
+        return playerColorSlots[colorSlot].primaryColor;
     }
 
 

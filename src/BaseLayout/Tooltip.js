@@ -9,6 +9,7 @@ import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoTh
 import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
+import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
@@ -131,6 +132,8 @@ export default class BaseLayout_Tooltip
                                     {
                                         case 'powerPole':
                                             return this.setPowerPoleTooltipContent(currentObject, buildingData);
+                                        case 'sign':
+                                            return Building_Sign.getTooltip(this.baseLayout, currentObject, buildingData);;
                                         case 'extraction':
                                             return this.setBuildingExtractionTooltipContent(currentObject, buildingData);
                                         case 'production':
