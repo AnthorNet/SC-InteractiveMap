@@ -613,7 +613,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeByte(0, false);
                 }
-                property += this.writeByte(0, false);
+
                 property += this.writeInt(currentProperty.value);
                 break;
 
