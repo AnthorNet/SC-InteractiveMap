@@ -823,6 +823,8 @@ export default class SaveParser_Read
                                 case 'STRUCT_ProgElevator_Floor':
                                 case 'InserterBuildingProfile':
                                 case 'BRN_Base_FrackingSatelliteInfo':
+                                case 'FINCommandLabelReferences':
+                                case 'FINCommandLabelData':
                                     let subStructProperties = [];
                                         while(true)
                                         {
