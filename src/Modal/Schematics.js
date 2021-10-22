@@ -74,6 +74,9 @@ export default class Modal_Schematics
                 if(currentSchematic.tier !== undefined)
                 {
                     htmlData.push('<tr>');
+                    htmlData.push('<td class="align-middle" width="88">');
+                        htmlData.push('<img src="' + currentSchematic.image + '" class="img-fluid" style="width: 64px;">');
+                    htmlData.push('</td>');
                     htmlData.push('<td class="align-middle">');
                         htmlData.push('<strong style="font-size: 120%;">' + currentSchematic.name + '</strong>');
                         htmlData.push(this.getSchematicsUnlocks(currentSchematic));
@@ -328,6 +331,9 @@ export default class Modal_Schematics
                 if(currentSchematic.category !== undefined)
                 {
                     htmlData.push('<tr>');
+                    htmlData.push('<td class="align-middle" width="88">');
+                        htmlData.push('<img src="' + currentSchematic.image + '" class="img-fluid" style="width: 64px;">');
+                    htmlData.push('</td>');
                     htmlData.push('<td class="align-middle">');
                         htmlData.push('<strong style="font-size: 120%;">' + currentSchematic.name + '</strong>');
                         htmlData.push(this.getSchematicsUnlocks(currentSchematic));
@@ -442,6 +448,9 @@ export default class Modal_Schematics
                 if(currentSchematic.category !== undefined)
                 {
                     htmlData.push('<tr>');
+                    htmlData.push('<td class="align-middle" width="88">');
+                        htmlData.push('<img src="' + currentSchematic.image + '" class="img-fluid" style="width: 64px;">');
+                    htmlData.push('</td>');
                     htmlData.push('<td class="align-middle">');
                         htmlData.push('<strong style="font-size: 120%;">' + currentSchematic.name + '</strong>');
                         htmlData.push(this.getSchematicsUnlocks(currentSchematic));
@@ -508,7 +517,10 @@ export default class Modal_Schematics
             {
                 for(let k = 0; k < currentSchematic.recipes.length; k++)
                 {
-                    if(currentSchematic.recipes[k].startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/') === false)
+                    if(
+                            currentSchematic.recipes[k].startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/') === false
+                         && currentSchematic.recipes[k] !== '/Game/FactoryGame/Schematics/ResourceSink/Patterns/CBG_PatternRemoval.CBG_PatternRemoval_C'
+                    )
                     {
                         let currentRecipe = this.baseLayout.getItemDataFromRecipeClassName(currentSchematic.recipes[k]);
                             if(currentRecipe !== null)
@@ -526,15 +538,21 @@ export default class Modal_Schematics
             {
                 for(let k = 0; k < currentSchematic.schematics.length; k++)
                 {
-                    let schematicId = currentSchematic.schematics[k].split('.');
-                        schematicId = schematicId.pop();
-                    if(this.baseLayout.schematicsData[schematicId] !== undefined)
+                    if(
+                            currentSchematic.schematics[k].startsWith('/Game/FactoryGame/Schematics/ResourceSink/Customizer_Background/') === false
+                         && currentSchematic.schematics[k] !== '/Game/FactoryGame/Schematics/Progression/CustomizerUnlock_PipelineSwatch.CustomizerUnlock_PipelineSwatch_C'
+                    )
                     {
-                        unlocks.push(this.baseLayout.schematicsData[schematicId].name);
-                    }
-                    else
-                    {
-                        unlocks.push(currentSchematic.schematics[k]);
+                        let schematicId = currentSchematic.schematics[k].split('.');
+                            schematicId = schematicId.pop();
+                        if(this.baseLayout.schematicsData[schematicId] !== undefined)
+                        {
+                            unlocks.push(this.baseLayout.schematicsData[schematicId].name);
+                        }
+                        else
+                        {
+                            unlocks.push(currentSchematic.schematics[k]);
+                        }
                     }
                 }
             }
@@ -616,6 +634,8 @@ export default class Modal_Schematics
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Customizer_Background/') === false
+                                            && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/Progression/CustomizerUnlock_PipelineSwatch.CustomizerUnlock_PipelineSwatch_C'
+                                            && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/ResourceSink/Patterns/CBG_PatternRemoval.CBG_PatternRemoval_C'
                                         )
                                         {
                                             if(typeof Sentry !== 'undefined' && this.baseLayout.useDebug === true)
