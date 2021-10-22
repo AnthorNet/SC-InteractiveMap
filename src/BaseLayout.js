@@ -2793,6 +2793,12 @@ export default class BaseLayout
                     buildingData            = this.getItemDataFromClassName(mDecorationDescriptor.pathName);
                     buildingData.mapLayer   = 'playerStatuesLayer';
             }
+            if(currentObject.className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
+            {
+                buildingData                = this.toolsData.BP_ItemDescriptorPortableMiner_C;
+                buildingData.mapLayer       = 'playerMinersLayer';
+            }
+                    
 
         let layerId         = (buildingData !== null && buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerHUBTerminalLayer';
 
