@@ -505,6 +505,13 @@ export default class BaseLayout
 
                     this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']                                                 = JSON.parse(JSON.stringify(this.detailedModels['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C']));
                     this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].scale                                           = 2.3;
+                    
+                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x8_Corner_01.Build_Wall_Orange_8x8_Corner_01_C']                                = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
+                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/ConcreteWallSet/Build_Wall_Concrete_8x4_Corner_01.Build_Wall_Concrete_8x4_Corner_01_C']                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
+                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/ConcreteWallSet/Build_Wall_Concrete_8x8_Corner_01.Build_Wall_Concrete_8x8_Corner_01_C']                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
+                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/SteelWallSet/Build_Wall_Steel_8x4_Corner_01.Build_Wall_Steel_8x4_Corner_01_C']                                   = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
+                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/SteelWallSet/Build_Wall_Steel_8x8_Corner_01.Build_Wall_Steel_8x8_Corner_01_C']                                   = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
+
 
                     this.renderObjects();
                 }.bind(this));
@@ -5379,6 +5386,20 @@ export default class BaseLayout
             if(this.itemsData[i].iconId !== undefined && this.itemsData[i].iconId === iconId)
             {
                 return this.itemsData[i].image;
+            }
+        }
+        for(let i in this.toolsData)
+        {
+            if(this.toolsData[i].iconId !== undefined && this.toolsData[i].iconId === iconId)
+            {
+                return this.toolsData[i].image;
+            }
+        }
+        for(let i in this.buildingsData)
+        {
+            if(this.buildingsData[i].iconId !== undefined && this.buildingsData[i].iconId === iconId)
+            {
+                return this.buildingsData[i].image;
             }
         }
         

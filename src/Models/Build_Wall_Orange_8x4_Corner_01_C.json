@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-400, 400], [400, 400], [400, -400]
+                ]
+            }
+        ]
+    }
+}
