@@ -2935,64 +2935,63 @@ export default class BaseLayout
             if(mTargetList !== null)
             {
                 let targetNode = this.saveGameParser.getTargetObject(mTargetList.pathName);
-
-                if(targetNode.properties.length > 0)
-                {
-                    let firstNode   = null;
-                    let lastNode    = null;
-
-                    for(let j = 0; j < targetNode.properties.length; j++)
+                    if(targetNode !== null && targetNode.properties.length > 0)
                     {
-                        if(targetNode.properties[j].name === 'mFirst')
+                        let firstNode   = null;
+                        let lastNode    = null;
+
+                        for(let j = 0; j < targetNode.properties.length; j++)
                         {
-                            firstNode = this.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
+                            if(targetNode.properties[j].name === 'mFirst')
+                            {
+                                firstNode = this.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
+                            }
+                            if(targetNode.properties[j].name === 'mLast')
+                            {
+                                lastNode = this.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
+                            }
+                            if(firstNode !== null && lastNode !== null)
+                            {
+                                break;
+                            }
                         }
-                        if(targetNode.properties[j].name === 'mLast')
-                        {
-                            lastNode = this.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
-                        }
+
                         if(firstNode !== null && lastNode !== null)
                         {
-                            break;
-                        }
-                    }
+                            let checkCurrentNode = firstNode;
 
-                    if(firstNode !== null && lastNode !== null)
-                    {
-                        let checkCurrentNode = firstNode;
-
-                        while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
-                        {
-                            let checkCurrentNodeProperties  = checkCurrentNode.properties;
-                                this.saveGameParser.deleteObject(checkCurrentNode.pathName);
-                                checkCurrentNode            = null;
-
-                            for(let k = 0; k < checkCurrentNodeProperties.length; k++)
+                            while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
                             {
-                                if(checkCurrentNodeProperties[k].name === 'mNext')
+                                let checkCurrentNodeProperties  = checkCurrentNode.properties;
+                                    this.saveGameParser.deleteObject(checkCurrentNode.pathName);
+                                    checkCurrentNode            = null;
+
+                                for(let k = 0; k < checkCurrentNodeProperties.length; k++)
                                 {
-                                    checkCurrentNode = this.saveGameParser.getTargetObject(checkCurrentNodeProperties[k].value.pathName);
-                                    break;
+                                    if(checkCurrentNodeProperties[k].name === 'mNext')
+                                    {
+                                        checkCurrentNode = this.saveGameParser.getTargetObject(checkCurrentNodeProperties[k].value.pathName);
+                                        break;
+                                    }
                                 }
                             }
+
+                            this.saveGameParser.deleteObject(lastNode.pathName);
                         }
 
-                        this.saveGameParser.deleteObject(lastNode.pathName);
-                    }
-
-                    let vehicleTrackData = this.getMarkerFromPathName(marker.relatedTarget.options.pathName + '_vehicleTrackData', 'playerVehiculesLayer');
-                        if(vehicleTrackData !== null)
-                        {
-                            this.deleteMarkerFromElements('playerVehiculesLayer', vehicleTrackData, fast);
-
-                            this.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData']--;
-
-                            if(this.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData'] === 0)
+                        let vehicleTrackData = this.getMarkerFromPathName(marker.relatedTarget.options.pathName + '_vehicleTrackData', 'playerVehiculesLayer');
+                            if(vehicleTrackData !== null)
                             {
-                                $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="/Game/SCIM/Buildable/Vehicle/TrackData"]').hide();
+                                this.deleteMarkerFromElements('playerVehiculesLayer', vehicleTrackData, fast);
+
+                                this.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData']--;
+
+                                if(this.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData'] === 0)
+                                {
+                                    $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="/Game/SCIM/Buildable/Vehicle/TrackData"]').hide();
+                                }
                             }
-                        }
-                }
+                    }
             }
 
             for(let n = this.saveGameRailVehicles.length - 1; n >= 0; n--)
