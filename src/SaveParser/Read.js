@@ -818,6 +818,7 @@ export default class SaveParser_Read
                                 case 'FactoryCustomizationColorSlot':
                                 case 'PrefabTextElementSaveData':
                                 case 'PrefabIconElementSaveData':
+                                case 'GlobalColorPreset':
                                 // MODS
                                 case 'LampGroup':
                                 case 'STRUCT_ProgElevator_Floor':
