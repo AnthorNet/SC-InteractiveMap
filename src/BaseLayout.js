@@ -6488,7 +6488,7 @@ export default class BaseLayout
                     {
                         if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.search('Modal_Object_ColorSlot') !== -1)
                         {
-                            let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this.baseLayout});
+                            let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
                             let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
                                 buildableSubSystem.setObjectColorSlot(currentObject, slotIndex);
                                 this.markersSelected[i].fire('mouseout'); // Trigger a redraw
@@ -6548,7 +6548,7 @@ export default class BaseLayout
                 };
                 fakeFoundation.pathName = this.generateFastPathName(fakeFoundation);
 
-            let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this.baseLayout});
+            let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
                 buildableSubSystem.setObjectColorSlot(fakeFoundation, parseInt(colorSlotHelper));
 
             this.saveGameParser.addObject(fakeFoundation);
