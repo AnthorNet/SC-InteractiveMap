@@ -1,6 +1,10 @@
 /* global Infinity, gtag, L */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
+
+import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
+
 import Modal                                    from '../Modal.js';
+
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class Spawn_Blueprint
@@ -918,7 +922,7 @@ export default class Spawn_Blueprint
         let centerY             = ((this.clipboard.minY + this.clipboard.maxY) / 2) + this.yOffset;
 
         let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this.baseLayout});
-            buildableSubSystem.setObjectColorSlot(this.centerObject, parseint(colorSlotHelper));
+            buildableSubSystem.setObjectColorSlot(this.centerObject, parseInt(colorSlotHelper));
 
         // Delete and add again!
         let resultCenter = this.baseLayout.parseObject(this.centerObject);
