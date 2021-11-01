@@ -5324,7 +5324,7 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/Desc_FreightWagon.Desc_FreightWagon_C'; }
 
         // Create fake angled railings with new width
-        if(this.buildingsData.Build_SM_RailingRamp_8x4_01_C === undefined)
+        if(this.buildingsData.Build_SM_RailingRamp_8x4_01_C === undefined && this.buildingsData.Build_Railing_01_C !== undefined)
         {
             this.buildingsData.Build_SM_RailingRamp_8x4_01_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_Railing_01_C));
             this.buildingsData.Build_SM_RailingRamp_8x4_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x4_01.Build_SM_RailingRamp_8x4_01_C';
