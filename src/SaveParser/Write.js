@@ -504,13 +504,21 @@ export default class SaveParser_Write
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
                     entity += this.writeInt(currentObject.extra.count);
-                    entity += this.writeInt(currentObject.extra.objects.length);
-
-                    for(let i = 0; i < currentObject.extra.objects.length; i++)
+                    
+                    if(currentObject.extra.objects !== undefined)
                     {
-                        entity += this.writeString(currentObject.extra.objects[i].name);
-                        entity += this.writeHex(currentObject.extra.objects[i].unk);
+                        entity += this.writeInt(currentObject.extra.objects.length);
+
+                        for(let i = 0; i < currentObject.extra.objects.length; i++)
+                        {
+                            entity += this.writeString(currentObject.extra.objects[i].name);
+                            entity += this.writeHex(currentObject.extra.objects[i].unk);
+                        }
                     }
+                    else
+                    {
+                        entity += this.writeInt(currentObject.extra.objects.length);
+                    }                        
 
                     entity += this.writeString(currentObject.extra.previousLevelName);
                     entity += this.writeString(currentObject.extra.previousPathName);
