@@ -207,7 +207,6 @@ export default class SubSystem_Buildable
             });
         }
 
-        //TODO: Get playerState custom swatch
         playerColors[255]                 = {};
         playerColors[255].primaryColor    = {
             r : BaseLayout_Math.linearColorToRGB(0),
@@ -221,6 +220,41 @@ export default class SubSystem_Buildable
             b : BaseLayout_Math.linearColorToRGB(0),
             a : BaseLayout_Math.linearColorToRGB(1)
         };
+        
+        for(let pathName in this.baseLayout.players)
+        {
+            let mCustomColorData  = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mCustomColorData');
+                if(mCustomColorData !== null)
+                {
+                    for(let j = 0; j < mCustomColorData.values.length; j++)
+                    {
+                        if(mCustomColorData.values[j].name === 'PrimaryColor')
+                        {
+                            playerColors[255].primaryColor    = {
+                                r : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.r),
+                                g : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.g),
+                                b : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.b),
+                                a : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.a)
+                            };
+                        }
+                        if(mCustomColorData.values[j].name === 'SecondaryColor')
+                        {
+                            playerColors[255].secondaryColor    = {
+                                r : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.r),
+                                g : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.g),
+                                b : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.b),
+                                a : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.a)
+                            };
+                        }
+                    }
+                    
+                    if(this.baseLayout.players[pathName].isHost())
+                    {
+                        break;
+                    }
+                }
+            
+        }
 
         return playerColors;
     }
