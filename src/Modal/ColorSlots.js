@@ -19,11 +19,17 @@ export default class Modal_ColorSlots
         
         // Add factory slot
         html.push('<div class="d-flex flex-row mb-3">');
-            html.push('<div class="d-flex flex-row selectColorSlot active align-items-center w-100" style="background: linear-gradient(135deg, rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ') 0%,'
+            html.push('<div class="d-flex flex-row selectColorSlot active align-items-center w-50" style="background: linear-gradient(135deg, rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ') 0%,'
                           + 'rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ') 50%,'
                           + 'rgb(' + playerColors[0].secondaryColor.r + ', ' + playerColors[0].secondaryColor.g + ', ' + playerColors[0].secondaryColor.b + ') 51%,'
                           + 'rgb(' + playerColors[0].secondaryColor.r + ', ' + playerColors[0].secondaryColor.g + ', ' + playerColors[0].secondaryColor.b + ') 100%);position: relative;height: 48px;border: 3px solid #FFF;border-radius: 5px;margin: 2px;" data-slot="0">');
             html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">FICSIT Factory</strong></div>');
+            html.push('</div>');
+            html.push('<div class="d-flex flex-row selectColorSlot align-items-center w-50" style="background: linear-gradient(135deg, rgb(' + playerColors[17].primaryColor.r + ', ' + playerColors[17].primaryColor.g + ', ' + playerColors[17].primaryColor.b + ') 0%,'
+                          + 'rgb(' + playerColors[17].primaryColor.r + ', ' + playerColors[17].primaryColor.g + ', ' + playerColors[17].primaryColor.b + ') 50%,'
+                          + 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ') 51%,'
+                          + 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ') 100%);position: relative;height: 48px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="17">');
+            html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">FICSIT Pipe</strong></div>');
             html.push('</div>');
         html.push('</div>');
 
@@ -57,11 +63,11 @@ export default class Modal_ColorSlots
                           + 'rgb(' + playerColors[16].secondaryColor.r + ', ' + playerColors[16].secondaryColor.g + ', ' + playerColors[16].secondaryColor.b + ') 100%);position: relative;height: 48px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="16">');
             html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">FICSIT Foundation</strong></div>');
             html.push('</div>');
-            html.push('<div class="d-flex flex-row selectColorSlot align-items-center w-50" style="background: linear-gradient(135deg, rgb(' + playerColors[17].primaryColor.r + ', ' + playerColors[17].primaryColor.g + ', ' + playerColors[17].primaryColor.b + ') 0%,'
-                          + 'rgb(' + playerColors[17].primaryColor.r + ', ' + playerColors[17].primaryColor.g + ', ' + playerColors[17].primaryColor.b + ') 50%,'
-                          + 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ') 51%,'
-                          + 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ') 100%);position: relative;height: 48px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="17">');
-            html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">FICSIT Pipe</strong></div>');
+            html.push('<div class="d-flex flex-row selectColorSlot align-items-center w-50" style="background: linear-gradient(135deg, rgb(' + playerColors[18].primaryColor.r + ', ' + playerColors[18].primaryColor.g + ', ' + playerColors[18].primaryColor.b + ') 0%,'
+                          + 'rgb(' + playerColors[18].primaryColor.r + ', ' + playerColors[18].primaryColor.g + ', ' + playerColors[18].primaryColor.b + ') 50%,'
+                          + 'rgb(' + playerColors[18].secondaryColor.r + ', ' + playerColors[18].secondaryColor.g + ', ' + playerColors[18].secondaryColor.b + ') 51%,'
+                          + 'rgb(' + playerColors[18].secondaryColor.r + ', ' + playerColors[18].secondaryColor.g + ', ' + playerColors[18].secondaryColor.b + ') 100%);position: relative;height: 48px;border: 1px solid #000000;border-radius: 5px;margin: 2px;" data-slot="18">');
+            html.push('<div class="w-100 text-center"><strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">Concrete Structure</strong></div>');
             html.push('</div>');
         html.push('</div>');
 

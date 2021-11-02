@@ -3,6 +3,8 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 export default class SubSystem_Buildable
 {
     static get totalColorSlots(){ return 16; }
+    static get extraColorSlots(){ return 3; }
+    
     static get primaryColors(){ return [
         {r: 0.9529412388801575, g: 0.3019607365131378, b: 0.06666668504476547, a: 1},
 
@@ -26,7 +28,8 @@ export default class SubSystem_Buildable
 
         // Hidden slots
         {r: 0.1098039299249649, g: 0.1098039299249649, b: 0.1098039299249649, a: 1},    // Foundations
-        {r: 0.9529412388801575, g: 0.3019607961177826, b: 0.06666667014360428, a: 1}    // Pipes
+        {r: 0.9529412388801575, g: 0.3019607961177826, b: 0.06666667014360428, a: 1},   // Pipes
+        {r: 1, g: 1, b: 1, a: 1}                                                        // Concrete
     ]; }
     static get secondaryColors(){ return [
         {r: 0.11372549831867218, g: 0.13333329558372498, b: 0.26274511218070984, a: 1},
@@ -51,7 +54,8 @@ export default class SubSystem_Buildable
 
         // Hidden slots
         {r: 0.1882353127002716, g: 0.1882353127002716, b: 0.1882353127002716, a: 1},    // Foundations
-        {r: 1, g: 0, b: 0.9294118285179138, a: 1}                                       // Pipes
+        {r: 1, g: 0, b: 0.9294118285179138, a: 1},                                      // Pipes
+        {r: 0.9529410004615784, g: 0.3019610047340393, b: 0.06666699796915054, a: 1}    // Concrete
     ]; }
 
     constructor(options)
@@ -74,8 +78,8 @@ export default class SubSystem_Buildable
                             {
                                 case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C':
                                     return 255;
-                                case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C': //TODO:UPDATE5
-                                    return 0;
+                                case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C':
+                                    return 18;
                                 case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C':
                                     return 16;
                                 default:
@@ -129,6 +133,9 @@ export default class SubSystem_Buildable
                             case 255:
                                 mCustomizationData.values[i].value.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C';
                                 break;
+                            case 18:
+                                mCustomizationData.values[i].value.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C';
+                                break;
                             case 16:
                                 mCustomizationData.values[i].value.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C';
                                 break;
@@ -173,8 +180,17 @@ export default class SubSystem_Buildable
         let primaryColorSlots   = this.getPrimaryColorSlots();
         let secondaryColorSlots = this.getSecondaryColorSlots();
 
-        for(let slotIndex = 0; slotIndex < (totalColorSlot + 2); slotIndex++)
+        for(let slotIndex = 0; slotIndex < (totalColorSlot + SubSystem_Buildable.extraColorSlots); slotIndex++)
         {
+            if(primaryColorSlots[slotIndex] === undefined)
+            {
+                primaryColorSlots[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
+            }
+            if(secondaryColorSlots[slotIndex] === undefined)
+            {
+                secondaryColorSlots[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
+            }
+            
             playerColors.push({
                 primaryColor    : {
                     r : BaseLayout_Math.linearColorToRGB(primaryColorSlots[slotIndex].r),
@@ -214,6 +230,24 @@ export default class SubSystem_Buildable
         let mColorSlots_Data = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlots_Data');
             if(mColorSlots_Data !== null)
             {
+                if(mColorSlots_Data.values[slotIndex] === undefined)
+                {
+                    mColorSlots_Data.values[slotIndex] = [
+                        {
+                            name    : "PrimaryColor",
+                            type    : "StructProperty",
+                            value   : {type: "LinearColor", values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))}
+                        },
+                        {
+                            name    : "SecondaryColor",
+                            type    : "StructProperty",
+                            value   : {type: "LinearColor", values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
+                        },
+                        {name: "Metallic", type: "FloatProperty", value: 0},
+                        {name: "Roughness", type: "FloatProperty", value: 0}
+                    ];
+                }
+                
                 for(let j = 0; j < mColorSlots_Data.values[slotIndex].length; j++)
                 {
                     if(mColorSlots_Data.values[slotIndex][j].name === 'PrimaryColor')
@@ -235,6 +269,11 @@ export default class SubSystem_Buildable
         let mColorSlotsPrimary_Linear = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsPrimary_Linear');
             if(mColorSlotsPrimary_Linear !== null)
             {
+                if(mColorSlotsPrimary_Linear.values[slotIndex] === undefined)
+                {
+                    mColorSlotsPrimary_Linear.values[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
+                }
+                
                 mColorSlotsPrimary_Linear.values[slotIndex].r   = primaryColor.r;
                 mColorSlotsPrimary_Linear.values[slotIndex].g   = primaryColor.g;
                 mColorSlotsPrimary_Linear.values[slotIndex].b   = primaryColor.b;
@@ -242,6 +281,11 @@ export default class SubSystem_Buildable
         let mColorSlotsSecondary_Linear = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsSecondary_Linear');
             if(mColorSlotsSecondary_Linear !== null)
             {
+                if(mColorSlotsSecondary_Linear.values[slotIndex] === undefined)
+                {
+                    mColorSlotsSecondary_Linear.values[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
+                }
+                
                 mColorSlotsSecondary_Linear.values[slotIndex].r = secondaryColor.r;
                 mColorSlotsSecondary_Linear.values[slotIndex].g = secondaryColor.g;
                 mColorSlotsSecondary_Linear.values[slotIndex].b = secondaryColor.b;
@@ -267,7 +311,7 @@ export default class SubSystem_Buildable
                         value               : {type: "StructProperty", values: []}
                     };
 
-                    for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + 2); slotIndex++)
+                    for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                     {
                         mColorSlots_Data.value.values.push([
                             {
@@ -321,7 +365,7 @@ export default class SubSystem_Buildable
                     value                   : {type: "StructProperty", values: []}
                 };
 
-                for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + 2); slotIndex++)
+                for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                 {
                     mColorSlotsPrimary_Linear.value.values.push(
                         JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))
@@ -391,7 +435,7 @@ export default class SubSystem_Buildable
                     value                   : {type: "StructProperty", values: []}
                 };
 
-                for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + 2); slotIndex++)
+                for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                 {
                     mColorSlotsSecondary_Linear.value.values.push(
                         JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))
