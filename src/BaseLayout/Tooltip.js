@@ -1709,7 +1709,7 @@ export default class BaseLayout_Tooltip
                 content.push('<div><strong>' + direction + inverted +  buildingData.name + '</strong></div>');
         }
         
-        if(buildingData.category === 'wall')
+        if(buildingData.category === 'wall' && (currentObject.className.includes('_Door_') || currentObject.className.includes('_CDoor_') || currentObject.className.includes('_SDoor_') || currentObject.className.includes('_Gate_Automated_')))
         {
             let mDoorConfiguration = this.baseLayout.getObjectProperty(currentObject, 'mDoorConfiguration');
                 if(mDoorConfiguration !== null)
@@ -1723,6 +1723,10 @@ export default class BaseLayout_Tooltip
                             content.push('<div>Status: <strong class="text-success">Always Open</strong></div>');
                             break;
                     }
+                }
+                else
+                {
+                    content.push('<div>Status: <strong class="text-warning">Automatic</strong></div>');
                 }
         }
 
