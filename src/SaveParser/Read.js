@@ -1115,6 +1115,7 @@ export default class SaveParser_Read
                     case 'LightSourceControlData':
                     case 'FactoryCustomizationData':
                     case 'FactoryCustomizationColorSlot':
+                    case 'RuntimeFloatCurve':
                     case 'EnabledCheats': // MOD: Satisfactory Helper
                     case 'FICFloatAttribute': // MOD: ???
                     case 'FFCompostingTask': // MOD: ???
