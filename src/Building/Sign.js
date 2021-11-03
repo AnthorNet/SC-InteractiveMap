@@ -331,6 +331,39 @@ export default class Building_Sign
                              + '</table>';
                     
                     
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_1.BPW_Sign4x1_1_C':
+                        return '<table style="width: 200px;height: 50px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_2.BPW_Sign4x1_2_C': // Same in game but left aligned...
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_3.BPW_Sign4x1_3_C':
+                        return '<table style="width: 200px;height: 50px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 32, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                             + '        </td>'
+                             + '        <td>'
+                             + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_4.BPW_Sign4x1_4_C':
+                        return '<table style="width: 200px;height: 50px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="display: flex;align-items: center;justify-content: center;">'
+                             + '                <span style="display: inline-block;border-radius: 5px;background: {{FOREGROUND_COLOR}};color: {{BACKGROUND_COLOR}};font-size: 20px;padding: 5px;"><strong>{{LABEL}}</strong></span>'
+                             + '            </div>'
+                             + '        </td>'
+                             + '        <td>'
+                             + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_5.BPW_Sign4x1_5_C':
                         return '<table style="width: 200px;height: 50px;">'
                              + '    <tr>'
