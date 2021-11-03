@@ -178,7 +178,7 @@ export default class Spawn_Blueprint
                     let oldPathName         = this.clipboard.hiddenConnections[pathName].pathName.split('.');
                     let extension           = oldPathName.pop();
 
-                        if(extension.search('_') !== -1)
+                        if(extension.includes('_'))
                         {
                             oldPathName.push(extension);
                         }
@@ -484,7 +484,7 @@ export default class Spawn_Blueprint
 
                         if(pathNameConversion[currentHiddenConnections.pathName.join('.')] !== undefined)
                         {
-                            if(extension.search('_') !== -1)
+                            if(extension.includes('_'))
                             {
                                 currentHiddenConnections.pathName   = pathNameConversion[currentHiddenConnections.pathName.join('.')];
                             }

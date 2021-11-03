@@ -939,9 +939,9 @@ export default class BaseLayout
              || currentObject.className === '/Game/InfiniteLogistics/Buildable/InfinitePipeHyper/Build_InfinitePipeHyper.Build_InfinitePipeHyper_C'
              || currentObject.className === '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C'
              // Belts
-             || currentObject.className.search('/Build_ConveyorBeltMk') !== -1
+             || currentObject.className.includes('/Build_ConveyorBeltMk')
              // Belts Mod
-             || (currentObject.className.startsWith('/CoveredConveyor') && currentObject.className.search('lift') === -1)
+             || (currentObject.className.startsWith('/CoveredConveyor') && currentObject.className.includes('lift') === false)
              || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
              || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
              || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
@@ -955,7 +955,7 @@ export default class BaseLayout
 
             return resolve();
         }
-        if(currentObject.className.search('Train/Track/Build_RailroadTrack') !== -1)
+        if(currentObject.className.includes('Train/Track/Build_RailroadTrack'))
         {
             let building = this.addPlayerTrack(currentObject);
                 if(resolve === false)
@@ -967,7 +967,7 @@ export default class BaseLayout
         }
 
         // Add fauna
-        if(currentObject.className.search('/Game/FactoryGame/Character/Creature/Wildlife/') !== -1 || currentObject.className.search('/Game/FactoryGame/Character/Creature/Enemy/') !== -1)
+        if(currentObject.className.includes('/Game/FactoryGame/Character/Creature/Wildlife/') || currentObject.className.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
         {
             let building = this.addPlayerFauna(currentObject);
                 if(resolve === false)
@@ -2361,7 +2361,7 @@ export default class BaseLayout
         let layerId         = (buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerUnknownLayer';
             this.setupSubLayer(layerId);
 
-            if(this.playerLayers[layerId].filtersCount !== undefined && currentObject.className.search('/Build_ConveyorLiftMk') === -1)
+            if(this.playerLayers[layerId].filtersCount !== undefined && currentObject.className.includes('/Build_ConveyorLiftMk') === false)
             {
                 if(this.playerLayers[layerId].filtersCount[currentObject.className] === undefined)
                 {
@@ -2444,7 +2444,7 @@ export default class BaseLayout
         }
 
         // Add conveyor lift distance...
-        if(currentObject.className.search('/Build_ConveyorLiftMk') !== -1)
+        if(currentObject.className.includes('/Build_ConveyorLiftMk'))
         {
             let mTopTransform = this.getObjectProperty(currentObject, 'mTopTransform');
                 if(mTopTransform !== null)
@@ -3095,7 +3095,7 @@ export default class BaseLayout
         this.deleteMarkerFromElements(layerId, marker.relatedTarget, fast);
 
         // Refresh radioactivity
-        if(currentObject.className.search('/Build_ConveyorBeltMk') !== -1)
+        if(currentObject.className.includes('/Build_ConveyorBeltMk'))
         {
             if(this.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
             {
@@ -5034,7 +5034,7 @@ export default class BaseLayout
                 {
                     for(let j = 0; j < contextMenu.length; j++)
                     {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.search('updateObjectClockSpeed') !== -1)
+                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.includes('updateObjectClockSpeed'))
                         {
                             let currentObject       = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
                             let currentClockSpeed   = this.getClockSpeed(currentObject) * 100;
@@ -5896,7 +5896,7 @@ export default class BaseLayout
                     }
                     else
                     {
-                        if(markers[i].options.pathName.search('_vehicleTrackData') === -1)
+                        if(markers[i].options.pathName.includes('_vehicleTrackData') === false)
                         {
                             console.log('MARKER FOR DELETE DO NOT EXISTS', markers[i]);
                         }
@@ -6486,7 +6486,7 @@ export default class BaseLayout
                     // Search for a delete callback in contextmenu...
                     for(let j = 0; j < contextMenu.length; j++)
                     {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.search('Modal_Object_ColorSlot') !== -1)
+                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.includes('Modal_Object_ColorSlot'))
                         {
                             let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
                             let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);

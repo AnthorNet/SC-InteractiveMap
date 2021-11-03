@@ -407,8 +407,8 @@ export default class SaveParser_Read
 
         // Read Conveyor missing bytes
         if(
-                this.saveParser.objects[objectKey].className.search('/Build_ConveyorBeltMk') !== -1
-             || this.saveParser.objects[objectKey].className.search('/Build_ConveyorLiftMk') !== -1
+                this.saveParser.objects[objectKey].className.includes('/Build_ConveyorBeltMk')
+             || this.saveParser.objects[objectKey].className.includes('/Build_ConveyorLiftMk')
              // MODS
              || this.saveParser.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_BeltMk')
              || this.saveParser.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')

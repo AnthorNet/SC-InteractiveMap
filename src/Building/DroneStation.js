@@ -200,17 +200,17 @@ export default class Building_DroneStation
                         let mCurrentAction = baseLayout.getObjectProperty(mStationDrone, 'mCurrentAction');
                             if(mCurrentAction !== null)
                             {
-                                if(mCurrentAction.pathName.search('FGDroneAction_TraversePath') !== -1)
+                                if(mCurrentAction.pathName.includes('FGDroneAction_TraversePath'))
                                 {
                                     content.push('<i style="font-size: 28px;line-height: 36px;" class="fas fa-angle-double-right"></i><br />');
                                     content.push('<span class="text-warning">EDS_EN_ROUTE</span>');
                                 }
-                                if(mCurrentAction.pathName.search('FGDroneAction_TakeoffSequence') !== -1)
+                                if(mCurrentAction.pathName.includes('FGDroneAction_TakeoffSequence'))
                                 {
                                     content.push('<i style="font-size: 28px;line-height: 36px;" class="fas fa-check"></i><br />');
                                     content.push('<span class="text-warning">Takeoff</span>');
                                 }
-                                if(mCurrentAction.pathName.search('FGDroneAction_DockingSequence') !== -1)
+                                if(mCurrentAction.pathName.includes('FGDroneAction_DockingSequence'))
                                 {
                                     content.push('<i style="font-size: 28px;line-height: 36px;" class="fas fa-check"></i><br />');
                                     content.push('<span class="text-warning">Docking</span>');

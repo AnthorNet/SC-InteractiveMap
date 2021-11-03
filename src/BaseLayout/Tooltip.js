@@ -50,8 +50,8 @@ export default class BaseLayout_Tooltip
             else
             {
                 if(
-                        currentObject.className.search('/Build_ConveyorBeltMk') !== -1
-                     || currentObject.className.search('/Build_ConveyorLiftMk') !== -1
+                        currentObject.className.includes('/Build_ConveyorBeltMk')
+                     || currentObject.className.includes('/Build_ConveyorLiftMk')
                      // Belts Mod
                      || currentObject.className.startsWith('/Game/CoveredConveyor')
                      || currentObject.className.startsWith('/CoveredConveyor')
@@ -815,7 +815,7 @@ export default class BaseLayout_Tooltip
                 content.push('<div>Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm</div>');
             }
 
-            if(buildingData.category === 'vehicle' && currentObject.className.search('/Game/FactoryGame/Buildable/Vehicle/Train/') === -1 && currentObject.className !== '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C')
+            if(buildingData.category === 'vehicle' && currentObject.className.includes('/Game/FactoryGame/Buildable/Vehicle/Train/') === false && currentObject.className !== '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C')
             {
                 content.push(this.setInventoryFuel(currentObject));
             }

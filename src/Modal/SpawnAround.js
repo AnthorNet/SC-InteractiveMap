@@ -35,7 +35,7 @@ export default class Modal_SpawnAround
 
             for(let faunaClassName in allFauna)
             {
-                if(faunaClassName.search('/Game/FactoryGame/Character/Creature/Wildlife/') !== -1)
+                if(faunaClassName.includes('/Game/FactoryGame/Character/Creature/Wildlife/'))
                 {
                     inputOptions.push({group: 'Fauna', text: allFauna[faunaClassName].name, value: faunaClassName});
                 }
@@ -43,7 +43,7 @@ export default class Modal_SpawnAround
 
             for(let faunaClassName in allFauna)
             {
-                if(faunaClassName.search('/Game/FactoryGame/Character/Creature/Enemy/') !== -1)
+                if(faunaClassName.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
                 {
                     inputOptions.push({group: 'Offensive Fauna', text: allFauna[faunaClassName].name, value: faunaClassName});
                 }

@@ -58,7 +58,7 @@ export default class BaseLayout_Selection_Copy
                         this.markersSelected.splice(i, 1);
                         continue;
                     }
-                    if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C' && currentObject.className.search('Integrated') !== -1)
+                    if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C' && currentObject.className.includes('Integrated'))
                     {
                         this.markersSelected.splice(i, 1);
                         continue;

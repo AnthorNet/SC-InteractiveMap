@@ -280,7 +280,7 @@ export default class BaseLayout_Math
         let mSplineData     = baseLayout.getObjectProperty(currentObject, 'mSplineData');
             if(mSplineData !== null)
             {
-                if(currentObject.className.search('Train/Track/Build_RailroadTrack') !== -1)
+                if(currentObject.className.includes('Train/Track/Build_RailroadTrack'))
                 {
                     nbPoints = 25;
                 }

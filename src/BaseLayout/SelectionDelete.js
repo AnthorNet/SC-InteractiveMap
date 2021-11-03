@@ -37,7 +37,7 @@ export default class BaseLayout_Selection_Delete
                     // Search for a delete callback in contextmenu...
                     for(let j = 0; j < contextMenu.length; j++)
                     {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.search('delete') !== -1)
+                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.includes('delete'))
                         {
                             if(this.keepDeleted === true)
                             {

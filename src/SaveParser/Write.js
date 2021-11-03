@@ -439,8 +439,8 @@ export default class SaveParser_Write
 
         // Extra properties!
         if(
-                currentObject.className.search('/Build_ConveyorBeltMk') !== -1
-             || currentObject.className.search('/Build_ConveyorLiftMk') !== -1
+                currentObject.className.includes('/Build_ConveyorBeltMk')
+             || currentObject.className.includes('/Build_ConveyorLiftMk')
              // MODS
              || currentObject.className.startsWith('/Conveyors_Mod/Build_BeltMk')
              || currentObject.className.startsWith('/Conveyors_Mod/Build_LiftMk')

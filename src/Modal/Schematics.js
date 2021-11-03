@@ -153,7 +153,7 @@ export default class Modal_Schematics
 
         for(let i = 0; i < schematicsDataKey.length; i++)
         {
-            if(schematicsDataKey[i].search('Schematic_Alternate_') !== -1)
+            if(schematicsDataKey[i].includes('Schematic_Alternate_'))
             {
                 let className           = schematicsDataKey[i];
                 let currentSchematic    = this.baseLayout.schematicsData[className];

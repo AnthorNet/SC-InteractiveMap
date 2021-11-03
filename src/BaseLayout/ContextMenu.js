@@ -159,7 +159,7 @@ export default class BaseLayout_ContextMenu
                             callback: this.baseLayout.pivotPlayerFoundation.bind(this.baseLayout)
                         });
 
-                        if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal') === false && currentObject.className.search('_Corner_') === -1)
+                        if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal') === false && currentObject.className.includes('_Corner_') === false)
                         {
                             contextMenu.push({
                                 text    : 'Spawn around "' + buildingData.name + '"',
@@ -254,7 +254,7 @@ export default class BaseLayout_ContextMenu
                          && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'
                          && currentObject.className !== '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C'
                          && currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'
-                         && currentObject.className.search('_Steel') === -1
+                         && currentObject.className.includes('_Steel') === false
                          && (buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false)
                     )
                     {
