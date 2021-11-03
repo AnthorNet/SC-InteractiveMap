@@ -1708,6 +1708,23 @@ export default class BaseLayout_Tooltip
             default:
                 content.push('<div><strong>' + direction + inverted +  buildingData.name + '</strong></div>');
         }
+        
+        if(buildingData.category === 'wall')
+        {
+            let mDoorConfiguration = this.baseLayout.getObjectProperty(currentObject, 'mDoorConfiguration');
+                if(mDoorConfiguration !== null)
+                {
+                    switch(mDoorConfiguration.value)
+                    {
+                        case 'EDoorConfiguration::DC_Closed':
+                            content.push('<div>Status: <strong class="text-danger">Always Close</strong></div>');
+                            break;
+                        case 'EDoorConfiguration::DC_Open':
+                            content.push('<div>Status: <strong class="text-success">Always Open</strong></div>');
+                            break;
+                    }
+                }
+        }
 
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
         {
