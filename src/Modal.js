@@ -33,6 +33,7 @@ export default class Modal
             formGroup   : '<div class="form-group"></div>',
             input       : {
                 text            : '<input class="form-control text-center" autocomplete="off" type="text">',
+                textArea        : '<textarea class="form-control text-center" autocomplete="off" rows="5"></textarea>',
                 toggle          : '<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" value="1"><label class="custom-control-label">Toggle label</label></div>',
                 select          : '<select class="form-control"></select>',
                 selectPicker    : '<select class="form-control selectpicker"></select>',
@@ -241,6 +242,9 @@ export default class Modal
                                 {
                                     values[input.name] = 1;
                                 }
+                                break;
+                            case 'textArea':
+                                values[input.name] = input.element.find('textarea').val();
                                 break;
                             default:
                                 values[input.name] = input.element.find('input').val();
