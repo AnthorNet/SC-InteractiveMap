@@ -42,6 +42,8 @@ export default class Building_Sign
     {
         switch(iconId)
         {
+            case 330:
+                return baseLayout.staticUrl + '/img/patternIcons/TXUI_MIcon_Arrow_DownLeft.png';
             case 332:
                 return baseLayout.staticUrl + '/img/patternIcons/TXUI_MIcon_Arrow_Left.png';
         }
@@ -199,7 +201,7 @@ export default class Building_Sign
         return '';
     }
     
-    static getImageTemplate(name, size, shadowColor = null)
+    static getImageTemplate(name, size, shadowColor)
     {
         return   '<div style="display: flex;align-items: center;justify-content: center;">'
                + '    <div style="width: ' + size + 'px;height: ' + size + 'px;overflow: hidden;">'
@@ -210,7 +212,7 @@ export default class Building_Sign
     
     
    
-    static getLayoutTemplate(baseLayout, currentObject, shadowColor = null, otherShadowColor = null)
+    static getLayoutTemplate(baseLayout, currentObject, shadowColor, otherShadowColor)
     {
         let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
             if(mActivePrefabLayout !== null)
@@ -222,7 +224,7 @@ export default class Building_Sign
                              + '    <tr>'
                              + '        <td>'
                              + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, shadowColor)
+                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
                              + '            </div>'
                              + '        </td>'
                              + '    </tr>'
@@ -231,7 +233,7 @@ export default class Building_Sign
                         return '<table style="width: 200px;height: 200px;">'
                              + '    <tr>'
                              + '        <td>'
-                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 172, shadowColor)
+                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 172, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
@@ -249,7 +251,7 @@ export default class Building_Sign
                         return '<table style="width: 400px;height: 200px;">'
                              + '    <tr>'
                              + '        <td>'
-                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 96, shadowColor) + '</div>'
+                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 96, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
                              + '        </td>'
                              + '        <td>'
                              + '            <div style="font-size: 40px;"><strong>{{TEXT}}</strong></div>'
@@ -261,7 +263,7 @@ export default class Building_Sign
                         return '<table style="width: 400px;height: 200px;">'
                              + '    <tr>'
                              + '        <td>'
-                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 128, shadowColor) + '</div>'
+                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 128, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
                              + '        </td>'
                              + '        <td>'
                              + '            <div style="font-size: 28px;"><strong>{{TEXT}}</strong></div>'
@@ -273,7 +275,7 @@ export default class Building_Sign
                         return '<table style="width: 400px;height: 200px;">'
                              + '    <tr>'
                              + '        <td>'
-                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 196, shadowColor)
+                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 196, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
@@ -284,7 +286,7 @@ export default class Building_Sign
                              + '    <tr>'
                              + '        <td>'
                              + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, shadowColor)
+                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
                              + '            </div>'
                              + '        </td>'
                              + '    </tr>'
@@ -298,7 +300,7 @@ export default class Building_Sign
                         return '<table style="width: 200px;height: 300px;">'
                              + '    <tr>'
                              + '        <td>'
-                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 172, shadowColor)
+                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 172, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
                              + '        </td>'
                              + '    </tr>'
                              + '    <tr>'
@@ -311,7 +313,7 @@ export default class Building_Sign
                         return '<table style="width: 200px;height: 300px;">'
                              + '    <tr>'
                              + '        <td>'
-                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 200, shadowColor)
+                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 200, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
                              + '        </td>'
                              + '    </tr>'
                              + '    <tr>'
@@ -329,15 +331,28 @@ export default class Building_Sign
                              + '</table>';
                     
                     
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_5.BPW_Sign4x1_5_C':
+                        return '<table style="width: 200px;height: 50px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 40px; height: 40px;" class="mr-3">'
+                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 32, ((shadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
+                             + '            </div>'
+                             + '        </td>'
+                             + '        <td>'
+                             + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_6.BPW_Sign4x1_6_C':
                         return '<table style="width: 200px;height: 50px;">'
                              + '    <tr>'
                              + '        <td>'
-                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 40, otherShadowColor) + '</div>'
+                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 36, ((otherShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
                              + '        </td>'
                              + '        <td>'
                              + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 40px; height: 40px;" class="mr-3">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 32, shadowColor)
+                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 32, ((shadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
                              + '            </div>'
                              + '        </td>'
                              + '        <td>'
@@ -366,20 +381,20 @@ export default class Building_Sign
     {
         let backgroundColor     = Building_Sign.getBackgroundColor(baseLayout, currentObject);
         let foregroundColor     = Building_Sign.getForegroundColor(baseLayout, currentObject);
-        let shadowColor         = null;
-        let otherShadowColor    = null;
+        let shadowColor         = false;
+        let otherShadowColor    = false;
 
         let iconSrc = Building_Sign.getIcon(baseLayout, currentObject);
             if(Array.isArray(iconSrc))
             {
                 iconSrc             = iconSrc[0];
-                shadowColor         = foregroundColor;
+                shadowColor         = true;
             }
         let otherIconSrc = Building_Sign.getOtherIcon(baseLayout, currentObject);
             if(Array.isArray(otherIconSrc))
             {
                 otherIconSrc        = otherIconSrc[0];
-                otherShadowColor    = foregroundColor;
+                otherShadowColor    = true;
             }
         
         let layoutTemplate  = Building_Sign.getLayoutTemplate(baseLayout, currentObject, shadowColor, otherShadowColor);
@@ -389,8 +404,8 @@ export default class Building_Sign
             layoutTemplate  = layoutTemplate.replace('{{LABEL}}', Building_Sign.getLabel(baseLayout, currentObject));
             layoutTemplate  = layoutTemplate.replace('{{TEXT}}', Building_Sign.getText(baseLayout, currentObject));
 
-            layoutTemplate  = layoutTemplate.replace('{{BACKGROUND_COLOR}}', backgroundColor);
-            layoutTemplate  = layoutTemplate.replace('{{FOREGROUND_COLOR}}', foregroundColor);
+            layoutTemplate  = layoutTemplate.replace(/{{BACKGROUND_COLOR}}/g, backgroundColor);
+            layoutTemplate  = layoutTemplate.replace(/{{FOREGROUND_COLOR}}/g, foregroundColor);
 
 
         return '<div class="d-flex" style="border-radius: 5px;background: #828382;margin: -7px;padding: 6px">\
