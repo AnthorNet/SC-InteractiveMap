@@ -1,5 +1,6 @@
 
 import Building_Conveyor                        from '../Building/Conveyor.js';
+import Building_Door                            from '../Building/Door.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_Light                           from '../Building/Light.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
@@ -201,6 +202,10 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({separator: true});
                     }
 
+                    if(buildingData.category === 'wall' && (currentObject.className.includes('_Door_') || currentObject.className.includes('_CDoor_') || currentObject.className.includes('_SDoor_') || currentObject.className.includes('_Gate_Automated_')))
+                    {
+                        contextMenu = Building_Door.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                    }
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C')
                     {
                         contextMenu = Building_DroneStation.addContextMenu(this.baseLayout, currentObject, contextMenu);
