@@ -10,6 +10,7 @@ import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 import Building_RailroadSwitchControl           from '../Building/RailroadSwitchControl.js';
+import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
@@ -205,6 +206,10 @@ export default class BaseLayout_ContextMenu
                     if(buildingData.category === 'wall' && (currentObject.className.includes('_Door_') || currentObject.className.includes('_CDoor_') || currentObject.className.includes('_SDoor_') || currentObject.className.includes('_Gate_Automated_')))
                     {
                         contextMenu = Building_Door.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                    }
+                    if(buildingData.category === 'sign')
+                    {
+                        contextMenu = Building_Sign.addContextMenu(this.baseLayout, currentObject, contextMenu);
                     }
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C')
                     {

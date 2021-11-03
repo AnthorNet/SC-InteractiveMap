@@ -1,4 +1,5 @@
 /* global Sentry */
+import Modal                                    from '../Modal.js';
 
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
@@ -146,14 +147,14 @@ export default class Building_Sign
                             }
                         }
                         
-                        if(elementName !== null && text !== null && elementName === 'Other_Text')
+                        if(elementName !== null && text !== null && elementName === 'Label')
                         {
-                            return text;
+                            return text.replace('\n', '<br />');
                         }
                 }
             }
 
-        return 'Shennanigans';
+        return 'A';
     }
 
     static getText(baseLayout, currentObject)
@@ -216,6 +217,34 @@ export default class Building_Sign
             {
                 switch(mActivePrefabLayout.pathName)
                 {
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_0.BPW_Sign1x1_0_C':
+                        return '<table style="width: 200px;height: 200px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
+                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, shadowColor)
+                             + '            </div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_1.BPW_Sign1x1_1_C':
+                        return '<table style="width: 200px;height: 200px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 172, shadowColor)
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C':                    
+                        return '<table style="width: 200px;height: 200px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    
+                    
                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_2.BPW_Sign2x1_2_C':                    
                         return '<table style="width: 400px;height: 200px;">'
                              + '    <tr>'
@@ -249,8 +278,59 @@ export default class Building_Sign
                              + '    </tr>'
                              + '</table>';
                     
+                    
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_0.BPW_Sign2x3_0_C':
+                        return '<table style="width: 200px;height: 300px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
+                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, shadowColor)
+                             + '            </div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_1.BPW_Sign2x3_1_C':
+                        return '<table style="width: 200px;height: 300px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 172, shadowColor)
+                             + '        </td>'
+                             + '    </tr>'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_2.BPW_Sign2x3_2_C':
+                        return '<table style="width: 200px;height: 300px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 200, shadowColor)
+                             + '        </td>'
+                             + '    </tr>'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="display: flex;align-items: center;justify-content: center;">'
+                             + '                <span style="display: inline-block;border-radius: 5px;background: {{FOREGROUND_COLOR}};color: {{BACKGROUND_COLOR}};font-size: 30px;padding: 5px;"><strong>{{LABEL}}</strong></span>'
+                             + '            </div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    
+                    
                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_6.BPW_Sign4x1_6_C':
-                        return '<table style="width: 200px;height: 40px;">'
+                        return '<table style="width: 200px;height: 50px;">'
                              + '    <tr>'
                              + '        <td>'
                              + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 40, otherShadowColor) + '</div>'
@@ -325,16 +405,143 @@ export default class Building_Sign
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let layoutTemplate  = Building_Sign.getLayoutTemplate(baseLayout, currentObject);
 
-            contextMenu.push({
-                text: 'Update "' + buildingData.name + '" status',
-                callback: Building_Sign.updateStatus
-            });
+            if(layoutTemplate.includes('{{TEXT}}'))
+            {
+                contextMenu.push({
+                    text: 'Update "' + buildingData.name + '" text',
+                    callback: Building_Sign.updateText
+                });
+            }
+            if(layoutTemplate.includes('{{LABEL}}'))
+            {
+                contextMenu.push({
+                    text: 'Update "' + buildingData.name + '" label',
+                    callback: Building_Sign.updateLabel
+                });
+            }
+            
             contextMenu.push({separator: true});
 
         return contextMenu;
     }
 
+    /**
+     * MODALS
+     */
+    static updateText(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+            baseLayout.satisfactoryMap.pauseMap();
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mPrefabTextElementSaveData',
+                    inputType   : 'textArea',
+                    value       : Building_Sign.getText(baseLayout, currentObject)
+                }],
+                callback    : function(values)
+                {
+                    this.satisfactoryMap.unpauseMap();
+
+                    if(values === null)
+                    {
+                        return;
+                    }
+
+                    let mPrefabTextElementSaveData = baseLayout.getObjectProperty(currentObject, 'mPrefabTextElementSaveData');
+                        if(mPrefabTextElementSaveData !== null)
+                        {
+                            for(let i = 0; i < mPrefabTextElementSaveData.values.length; i++)
+                            {
+                                let currentValues   = mPrefabTextElementSaveData.values[i];
+                                let elementName     = null;
+                                let text            = null;
+                                let textKey         = 0;
+                                    for(let j = 0; j < currentValues.length; j++)
+                                    {
+                                        if(currentValues[j].name === 'ElementName')
+                                        {
+                                            elementName = currentValues[j].value;
+                                        }
+                                        if(currentValues[j].name === 'Text')
+                                        {
+                                            text    = currentValues[j].value;
+                                            textKey = j;
+                                        }
+                                    }
+
+                                    if(elementName !== null && text !== null && elementName === 'Name')
+                                    {
+                                        mPrefabTextElementSaveData.values[i][textKey].value = values.mPrefabTextElementSaveData;
+                                        return;
+                                    }
+                            }
+                        }
+                }.bind(baseLayout)
+            });
+    }
     
+    static updateLabel(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+            baseLayout.satisfactoryMap.pauseMap();
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mPrefabTextElementSaveData',
+                    inputType   : 'textArea',
+                    value       : Building_Sign.getLabel(baseLayout, currentObject)
+                }],
+                callback    : function(values)
+                {
+                    this.satisfactoryMap.unpauseMap();
+
+                    if(values === null)
+                    {
+                        return;
+                    }
+
+                    let mPrefabTextElementSaveData = baseLayout.getObjectProperty(currentObject, 'mPrefabTextElementSaveData');
+                        if(mPrefabTextElementSaveData !== null)
+                        {
+                            for(let i = 0; i < mPrefabTextElementSaveData.values.length; i++)
+                            {
+                                let currentValues   = mPrefabTextElementSaveData.values[i];
+                                let elementName     = null;
+                                let text            = null;
+                                let textKey         = 0;
+                                    for(let j = 0; j < currentValues.length; j++)
+                                    {
+                                        if(currentValues[j].name === 'ElementName')
+                                        {
+                                            elementName = currentValues[j].value;
+                                        }
+                                        if(currentValues[j].name === 'Text')
+                                        {
+                                            text    = currentValues[j].value;
+                                            textKey = j;
+                                        }
+                                    }
+
+                                    if(elementName !== null && text !== null && elementName === 'Label')
+                                    {
+                                        mPrefabTextElementSaveData.values[i][textKey].value = values.mPrefabTextElementSaveData;
+                                        return;
+                                    }
+                            }
+                        }
+                }.bind(baseLayout)
+            });
+    }
 }
