@@ -510,6 +510,7 @@ export default class SaveParser_Read
                 case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
+                case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
                     this.saveParser.objects[objectKey].extra    = {count: this.readInt(), objects: []};
                     let vehicleLength                           = this.readInt();
                         for(let i = 0; i < vehicleLength; i++)

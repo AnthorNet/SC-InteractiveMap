@@ -5339,27 +5339,17 @@ export default class BaseLayout
             this.buildingsData.Build_SM_RailingRamp_8x1_01_C.length     = 8;
         }
 
-        if(this.buildingsData.Desc_GolfCart_C === undefined && className === '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C')
+        if(this.buildingsData.Desc_GolfCart_C === undefined && className === '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C' && this.toolsData.Desc_GolfCart_C !== undefined)
         {
-            this.buildingsData.Desc_GolfCart_C = {
-                className         : className,
-                name              : 'FICSIT Factory Cart™',
-                category          : 'vehicle',
-                maxSlot           : 1,
-
-                width             : 1,
-                length            : 1,
-                height            : 2,
-
-                image             : this.toolsData.Desc_GolfCart_C.image,
-
-                mapLayer          : 'playerVehiculesLayer',
-                mapUseCount       : true,
-                mapColor          : '#bf4e87',
-                mapOpacity        : 0.75,
-                mapUseSlotColor   : false,
-                mapIconImage      : this.toolsData.Desc_GolfCart_C.image
-            };
+            this.buildingsData.Desc_GolfCart_C                  = JSON.parse(JSON.stringify(this.toolsData.Desc_GolfCart_C));
+            this.buildingsData.Desc_GolfCart_C.className        = className;
+            this.buildingsData.Desc_GolfCart_C.category         = 'vehicle';
+        }
+        if(this.buildingsData.Desc_GolfcartGold_C === undefined && className === '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C' && this.toolsData.Desc_GolfCartGold_C !== undefined)
+        {
+            this.buildingsData.Desc_GolfcartGold_C              = JSON.parse(JSON.stringify(this.toolsData.Desc_GolfCartGold_C));
+            this.buildingsData.Desc_GolfcartGold_C.className    = className;
+            this.buildingsData.Desc_GolfcartGold_C.category     = 'vehicle';
         }
 
         // Mods
@@ -5406,6 +5396,12 @@ export default class BaseLayout
             {
                 return this.buildingsData[i].image;
             }
+        }
+        
+        console.log('Missing iconID: ' + iconId);
+        if(typeof Sentry !== 'undefined')
+        {
+            Sentry.captureMessage('Missing iconID: ' + iconId);
         }
         
         return this.itemsData.Desc_IronIngot_C.image;
