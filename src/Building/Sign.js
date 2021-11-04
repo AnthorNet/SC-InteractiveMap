@@ -5,6 +5,49 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 export default class Building_Sign
 {
+    static get getMonochromeIcons(){
+        return {
+            329: ['Arrow Down', '/img/patternIcons/TXUI_MIcon_Arrow_Down.png'],
+            330: ['Arrow Down Left', '/img/patternIcons/TXUI_MIcon_Arrow_DownLeft.png'],
+            331: ['Arrow Down Right', '/img/patternIcons/TXUI_MIcon_Arrow_DownRight.png'],
+            332: ['Arrow Left', '/img/patternIcons/TXUI_MIcon_Arrow_Left.png'],
+            333: ['Arrow Up Left', '/img/patternIcons/TXUI_MIcon_Arrow_UpLeft.png'],
+            334: ['Arrow Up', '/img/patternIcons/TXUI_MIcon_Arrow_Up.png'],
+            335: ['Arrow Up Right', '/img/patternIcons/TXUI_MIcon_Arrow_UpRight.png'],
+            336: ['Arrow Right', '/img/patternIcons/TXUI_MIcon_Arrow_Right.png'],
+            
+            337: ['Drop', '/img/patternIcons/TXUI_MIcon_Drop.png'],
+            338: ['Radiation', '/img/patternIcons/TXUI_MIcon_Radiation.png'],
+            339: ['Thumb Up', '/img/patternIcons/TXUI_MIcon_ThumbUp.png'],
+            340: ['Thumb Down', '/img/patternIcons/TXUI_MIcon_ThumbDown.png'],
+            341: ['Stop X', '/img/patternIcons/TXUI_MIcon_Stop_X.png'],
+            
+            342: ['Road Arrow Down', '/img/patternIcons/TXUI_MIcon_RoadArrow_Down.png'],
+            343: ['Road Arrow Turn Around', '/img/patternIcons/TXUI_MIcon_RoadArrow_TurnAround.png'],
+            344: ['Road Arrow Turn Left', '/img/patternIcons/TXUI_MIcon_RoadArrow_TurnLeft.png'],
+            345: ['Road Arrow Turn Right', '/img/patternIcons/TXUI_MIcon_RoadArrow_TurnRight.png'],
+            346: ['Road Arrow Up', '/img/patternIcons/TXUI_MIcon_RoadArrow_Up.png'],
+            
+            347: ['Storage Crate', '/img/patternIcons/TXUI_MIcon_Crate.png'],
+            348: ['Exit Door', '/img/patternIcons/TXUI_MIcon_Exit.png'],
+            349: ['Factory', '/img/patternIcons/TXUI_MIcon_Factory.png'],
+            350: ['Home House', '/img/patternIcons/TXUI_MIcon_Home.png'],
+            351: ['Player Pioneer', '/img/patternIcons/TXUI_MIcon_Pioneer.png'],
+            352: ['Power', '/img/patternIcons/TXUI_MIcon_Power.png'],
+            
+            353: ['Vehicle Tractor', '/img/patternIcons/TXUI_MIcon_Tractor.png'],
+            354: ['Vehicle Explorer', '/img/patternIcons/TXUI_MIcon_Explorer.png'],
+            355: ['Vehicle Truck', '/img/patternIcons/TXUI_MIcon_Truck.png'],
+            356: ['Vehicle Train', '/img/patternIcons/TXUI_MIcon_Train.png'],
+            357: ['Vehicle Factory Cart', '/img/patternIcons/TXUI_MIcon_FactoryCart.png'],
+            358: ['Vehicle Drone', '/img/patternIcons/TXUI_MIcon_Drone.png'],
+            
+            362: ['Warning', '/img/patternIcons/TXUI_MIcon_Warning.png'],
+            
+            598: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png']
+        };
+    }
+    
     static getBackgroundColor(baseLayout, currentObject)
     {
         let mBackgroundColor = baseLayout.getObjectProperty(currentObject, 'mBackgroundColor');
@@ -38,14 +81,11 @@ export default class Building_Sign
         return '#FA9549';
     }
     
-    static getPatternIcon(baseLayout, iconId)
+    static getMonochromeIcon(baseLayout, iconId)
     {
-        switch(iconId)
+        if(Building_Sign.getMonochromeIcons[iconId] !== undefined)
         {
-            case 330:
-                return baseLayout.staticUrl + '/img/patternIcons/TXUI_MIcon_Arrow_DownLeft.png';
-            case 332:
-                return baseLayout.staticUrl + '/img/patternIcons/TXUI_MIcon_Arrow_Left.png';
+            return baseLayout.staticUrl + Building_Sign.getMonochromeIcons[iconId][1];
         }
         
         return null;
@@ -75,7 +115,7 @@ export default class Building_Sign
                         
                         if(elementName !== null && iconId !== null && elementName === 'Icon')
                         {
-                            let patternIcon = Building_Sign.getPatternIcon(baseLayout, iconId);
+                            let patternIcon = Building_Sign.getMonochromeIcon(baseLayout, iconId);
                                 if(patternIcon !== null)
                                 {
                                     return [patternIcon];
@@ -113,7 +153,7 @@ export default class Building_Sign
                         
                         if(elementName !== null && iconId !== null && elementName === 'Other_Icon')
                         {
-                            let patternIcon = Building_Sign.getPatternIcon(baseLayout, iconId);
+                            let patternIcon = Building_Sign.getMonochromeIcon(baseLayout, iconId);
                                 if(patternIcon !== null)
                                 {
                                     return [patternIcon];
@@ -205,7 +245,7 @@ export default class Building_Sign
     {
         return   '<div style="display: flex;align-items: center;justify-content: center;">'
                + '    <div style="width: ' + size + 'px;height: ' + size + 'px;overflow: hidden;">'
-               + '        <span style="display: block;width: ' + size + 'px;height: 100%;background-size: contain;background-image: url(' + name + ');' + Building_Sign.getFilterShadow(size, shadowColor) + '"></span>'
+               + '        <span style="display: block;width: ' + size + 'px;height: 100%;background-size: contain;background-image: url(\'' + name + '\');' + Building_Sign.getFilterShadow(size, shadowColor) + '"></span>'
                + '    </div>'
                + '</div>';
     }
@@ -224,7 +264,7 @@ export default class Building_Sign
                              + '    <tr>'
                              + '        <td>'
                              + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((shadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
                              + '            </div>'
                              + '        </td>'
                              + '    </tr>'
@@ -258,7 +298,6 @@ export default class Building_Sign
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
-                     
                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_4.BPW_Sign2x1_4_C':                   
                         return '<table style="width: 400px;height: 200px;">'
                              + '    <tr>'
@@ -270,12 +309,35 @@ export default class Building_Sign
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
-                     
                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_5.BPW_Sign2x1_5_C':                  
                         return '<table style="width: 400px;height: 200px;">'
                              + '    <tr>'
                              + '        <td>'
                              + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 196, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_12.BPW_Sign2x1_12_C':
+                        return '<table style="width: 400px;height: 200px;">'
+                             + '    <tr>'
+                             + '        <td width="50%">'
+                             + '            ' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 160, ((otherShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                             + '        </td>'
+                             + '        <td>'
+                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
+                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((shadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
+                             + '            </div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_13.BPW_Sign2x1_13_C':
+                        return '<table style="width: 400px;height: 200px;">'
+                             + '    <tr>'
+                             + '        <td width="50%">'
+                             + '            ' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 160, ((otherShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                             + '        </td>'
+                             + '        <td>'
+                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
@@ -286,7 +348,7 @@ export default class Building_Sign
                              + '    <tr>'
                              + '        <td>'
                              + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((shadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
                              + '            </div>'
                              + '        </td>'
                              + '    </tr>'
