@@ -4,7 +4,7 @@ export default class SubSystem_Buildable
 {
     static get totalColorSlots(){ return 16; }
     static get extraColorSlots(){ return 3; }
-    
+
     static get primaryColors(){ return [
         {r: 0.9529412388801575, g: 0.3019607365131378, b: 0.06666668504476547, a: 1},
 
@@ -85,13 +85,13 @@ export default class SubSystem_Buildable
                                 default:
                                     let slot = currentSwatchDesc.split('.');
                                         slot = parseInt(slot[0].replace('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot', ''));
-                                        
+
                                         if(isNaN(slot))
                                         {
                                             console.log('getObjectColorSlot', currentSwatchDesc);
                                             return 0;
                                         }
-                                        
+
                                         return slot;
                             }
                     }
@@ -161,14 +161,27 @@ export default class SubSystem_Buildable
     {
         let colorSlot           = this.getObjectColorSlot(currentObject);
         let playerColorSlots    = this.getPlayerColorSlots();
-        
+
             if(playerColorSlots[colorSlot] === undefined)
             {
                 console.log('getObjectPrimaryColor', colorSlot, currentObject);
                 return playerColorSlots[0].primaryColor;
             }
-        
+
         return playerColorSlots[colorSlot].primaryColor;
+    }
+    getObjectSecondaryColor(currentObject)
+    {
+        let colorSlot           = this.getObjectColorSlot(currentObject);
+        let playerColorSlots    = this.getPlayerColorSlots();
+
+            if(playerColorSlots[colorSlot] === undefined)
+            {
+                console.log('getObjectSecondaryColor', colorSlot, currentObject);
+                return playerColorSlots[0].secondaryColor;
+            }
+
+        return playerColorSlots[colorSlot].secondaryColor;
     }
 
 
@@ -190,7 +203,7 @@ export default class SubSystem_Buildable
             {
                 secondaryColorSlots[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
             }
-            
+
             playerColors.push({
                 primaryColor    : {
                     r : BaseLayout_Math.linearColorToRGB(primaryColorSlots[slotIndex].r),
@@ -220,7 +233,7 @@ export default class SubSystem_Buildable
             b : BaseLayout_Math.linearColorToRGB(0),
             a : BaseLayout_Math.linearColorToRGB(1)
         };
-        
+
         for(let pathName in this.baseLayout.players)
         {
             let mCustomColorData  = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mCustomColorData');
@@ -247,13 +260,13 @@ export default class SubSystem_Buildable
                             };
                         }
                     }
-                    
+
                     if(this.baseLayout.players[pathName].isHost())
                     {
                         break;
                     }
                 }
-            
+
         }
 
         return playerColors;
@@ -281,7 +294,7 @@ export default class SubSystem_Buildable
                         {name: "Roughness", type: "FloatProperty", value: 0}
                     ];
                 }
-                
+
                 for(let j = 0; j < mColorSlots_Data.values[slotIndex].length; j++)
                 {
                     if(mColorSlots_Data.values[slotIndex][j].name === 'PrimaryColor')
@@ -307,7 +320,7 @@ export default class SubSystem_Buildable
                 {
                     mColorSlotsPrimary_Linear.values[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
                 }
-                
+
                 mColorSlotsPrimary_Linear.values[slotIndex].r   = primaryColor.r;
                 mColorSlotsPrimary_Linear.values[slotIndex].g   = primaryColor.g;
                 mColorSlotsPrimary_Linear.values[slotIndex].b   = primaryColor.b;
@@ -319,7 +332,7 @@ export default class SubSystem_Buildable
                 {
                     mColorSlotsSecondary_Linear.values[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
                 }
-                
+
                 mColorSlotsSecondary_Linear.values[slotIndex].r = secondaryColor.r;
                 mColorSlotsSecondary_Linear.values[slotIndex].g = secondaryColor.g;
                 mColorSlotsSecondary_Linear.values[slotIndex].b = secondaryColor.b;
@@ -414,7 +427,7 @@ export default class SubSystem_Buildable
         {
             return mColorSlotsPrimary_Linear.values;
         }
-        
+
         return SubSystem_Buildable.primaryColors;
     }
 
@@ -484,7 +497,7 @@ export default class SubSystem_Buildable
         {
             return mColorSlotsSecondary_Linear.values;
         }
-        
+
         return SubSystem_Buildable.secondaryColors;
     }
 

@@ -1,0 +1,29 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Factory.PatternDesc_Icon_Factory_C": {
+        "scale"     : 0.9,
+        "forms"     : [
+            {
+                "points": [
+                    [-255,225],[255,225],[255,-5],[-150,-5],[-170,-225],[-235,-225],[-255,-5]
+                ]
+            },
+            {
+                "points": [
+                    [-125,-35],[-20,-140],[-20,-35]
+                ]
+            },
+            {
+                "points": [
+                    [15,-35],[120,-140],[120,-35]
+                ]
+            },
+            {
+                "points": [
+                    [150,-35],[255,-140],[255,-35]
+                ]
+            }
+
+
+        ]
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Arrows/PatternDesc_ArrowStraight.PatternDesc_ArrowStraight_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [-110,-30],[-30,-30],[-30,190],[30,190],[30,-30],[110,-30],[0,-190]
+                ]
+            }
+        ]
+    }
+}

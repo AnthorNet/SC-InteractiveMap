@@ -100,6 +100,7 @@ export default class BaseLayout
         this.showTransportationOnLoad           = (this.localStorage !== null && this.localStorage.getItem('mapShowTransportationOnLoad') !== null) ? (this.localStorage.getItem('mapShowTransportationOnLoad') === 'true') : true;
         this.showNodesOnMiners                  = (this.localStorage !== null && this.localStorage.getItem('mapShowNodesOnMiners') !== null) ? (this.localStorage.getItem('showNodesOnMiners') === 'true') : false;
 
+        this.showPatterns                       = (this.localStorage !== null && this.localStorage.getItem('mapShowPatterns') !== null) ? (this.localStorage.getItem('mapShowPatterns') === 'true') : true;
         this.showVehicleExtraMarker             = (this.localStorage !== null && this.localStorage.getItem('mapShowVehicleExtraMarker') !== null) ? (this.localStorage.getItem('mapShowVehicleExtraMarker') === 'true') : false;
 
         this.useRadioactivity                   = (this.localStorage !== null && this.localStorage.getItem('mapUseRadioactivity') !== null) ? (this.localStorage.getItem('mapUseRadioactivity') === 'true') : true;
@@ -451,7 +452,7 @@ export default class BaseLayout
 
     loadDetailedModels()
     {
-        if(this.useDetailedModels)
+        if(this.useDetailedModels === true || this.showPatterns === true)
         {
             return new Promise(function(resolve){
                 $('#loaderProgressBar .progress-bar').css('width', '50%');
@@ -505,7 +506,7 @@ export default class BaseLayout
 
                     this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']                                                 = JSON.parse(JSON.stringify(this.detailedModels['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C']));
                     this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].scale                                           = 2.3;
-                    
+
                     this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x8_Corner_01.Build_Wall_Orange_8x8_Corner_01_C']                                = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
                     this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/ConcreteWallSet/Build_Wall_Concrete_8x4_Corner_01.Build_Wall_Concrete_8x4_Corner_01_C']                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
                     this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/ConcreteWallSet/Build_Wall_Concrete_8x8_Corner_01.Build_Wall_Concrete_8x8_Corner_01_C']                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
@@ -556,9 +557,11 @@ export default class BaseLayout
         let parseObjectsProgress    = Math.round(i / countObjects * 100);
         let promises                = [];
 
+        // Performance warning!!!
         if(countObjects > 500000)
         {
-            this.useDetailedModels = false;
+            this.useDetailedModels  = false;
+            this.showPatterns       = false;
         }
 
         for(i; i < countObjects; i++)
@@ -1256,6 +1259,15 @@ export default class BaseLayout
             {
                 this.altitudeSliderControl.updateSliderAltitudes(this.minAltitude, this.maxAltitude);
             }
+        }
+
+        if(element.options.extraPattern !== undefined)
+        {
+            element.options.extraPattern.addTo(this.playerLayers[layerId].subLayer);
+        }
+        if(element.options.extraMarker !== undefined)
+        {
+            element.options.extraMarker.addTo(this.playerLayers[layerId].subLayer);
         }
     }
 
@@ -2371,25 +2383,26 @@ export default class BaseLayout
             }
 
         // Check building options
-        let useOnly2D       = false;
-        let offset          = (buildingData.mapOffset !== undefined) ? buildingData.mapOffset : 0;
-        let xShift          = (buildingData.mapShiftX !== undefined) ? buildingData.mapShiftX : 0;
         let weight          = (buildingData.mapWeight !== undefined) ? buildingData.mapWeight : 1;
-        let widthSize       = (buildingData.width !== undefined) ? (buildingData.width * 100) : 800;
-        let lenghtSize      = (buildingData.length !== undefined) ? (buildingData.length * 100) : 800;
+        let polygonOptions  = {
+            width       : (buildingData.width !== undefined) ? (buildingData.width * 100) : 800,
+            length      : (buildingData.length !== undefined) ? (buildingData.length * 100) : 800,
+            offset      : (buildingData.mapOffset !== undefined) ? buildingData.mapOffset : 0,
+            xShift      : (buildingData.mapShiftX !== undefined) ? buildingData.mapShiftX : 0,
+            useOnly2D   : false
+        };
 
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C')
-        {
-            offset = 500;
-        }
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C')
+            {
+                polygonOptions.offset = 500;
+            }
 
         if(buildingData.mapHaveHorizontal !== undefined && buildingData.mapHaveHorizontal === true)
         {
             let objectAngle = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
                 if(Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 90 || Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 270)
                 {
-                    widthSize   = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
-                    useOnly2D   = true;
+                    polygonOptions.useOnly2D = true;
                 }
                 else
                 {
@@ -2399,8 +2412,7 @@ export default class BaseLayout
                         let mLength = this.getObjectProperty(currentObject, 'mLength');
                             if(mLength !== null)
                             {
-                                widthSize   = mLength;
-                                xShift      = -mLength / 2;
+                                polygonOptions.xShift = -mLength / 2;
                             }
                     }
                 }
@@ -2554,6 +2566,72 @@ export default class BaseLayout
             }
         }
 
+        // Add pattern
+        if(buildingData.category === 'foundation' && this.showPatterns === true && this.detailedModels !== null)
+        {
+            let mCustomizationData = this.getObjectProperty(currentObject, 'mCustomizationData');
+                if(mCustomizationData !== null)
+                {
+                    let currentPattern          = null;
+                    let currentPatternRotation  = 0;
+                        for(let i = 0; i < mCustomizationData.values.length; i++)
+                        {
+                            if(mCustomizationData.values[i].name === 'PatternDesc')
+                            {
+                                currentPattern = mCustomizationData.values[i].value.pathName;
+                            }
+                            if(mCustomizationData.values[i].name === 'PatternRotation')
+                            {
+                                currentPatternRotation = mCustomizationData.values[i].value.value;
+                            }
+                        }
+
+                        if(currentPattern !== null)
+                        {
+                            if(this.detailedModels[currentPattern] !== undefined)
+                            {
+                                let patternTransform    = JSON.parse(JSON.stringify(currentObject.transform));
+                                let patternRotation     = BaseLayout_Math.getQuaternionToEuler(patternTransform.rotation);
+                                    patternRotation.yaw = BaseLayout_Math.clampEulerAxis(patternRotation.yaw);
+                                    switch(currentPatternRotation)
+                                    {
+                                        case 1: // 180°
+                                            patternRotation.yaw         = BaseLayout_Math.clampEulerAxis(patternRotation.yaw + 180);
+                                            patternTransform.rotation   = BaseLayout_Math.getEulerToQuaternion(patternRotation);
+                                            break;
+                                        case 2: // 90°
+                                            patternRotation.yaw         = BaseLayout_Math.clampEulerAxis(patternRotation.yaw + 90);
+                                            patternTransform.rotation   = BaseLayout_Math.getEulerToQuaternion(patternRotation);
+                                            break;
+                                        case 3: // 0°
+                                            break;
+                                        default: // -90°
+                                            patternRotation.yaw         = BaseLayout_Math.clampEulerAxis(patternRotation.yaw - 90);
+                                            patternTransform.rotation   = BaseLayout_Math.getEulerToQuaternion(patternRotation);
+                                            break;
+                                    }
+
+                                markerOptions.extraPattern = L.polygon(
+                                    this.generatePolygonForms(patternTransform, currentPattern, polygonOptions),
+                                    {
+                                        weight          : 0,
+                                        originPathName  : currentObject.pathName,
+                                        interactive     : false
+                                    }
+                                );
+                            }
+                            else
+                            {
+                                console.log('Missing pattern: ' + currentPattern);
+                                if(typeof Sentry !== 'undefined')
+                                {
+                                    Sentry.captureMessage('Missing pattern: ' + currentPattern);
+                                }
+                            }
+                        }
+                }
+        }
+
         // Extra marker?
         if(buildingData.mapIconImage !== undefined)
         {
@@ -2563,30 +2641,11 @@ export default class BaseLayout
                     markerOptions.extraMarker = L.marker(
                         position,
                         {originPathName: currentObject.pathName}
-                    ).addTo(this.playerLayers[layerId].subLayer);
-
-                    //TODO: Mouseout not working?
-                    /*
-                    markerOptions.extraMarker.on('mouseover', function(marker){
-                        let markerSource = this.getMarkerFromPathName(marker.sourceTarget.options.originPathName);
-                            this.setBuildingMouseOverStyle(markerSource, buildingData);
-                    }.bind(this));
-                    markerOptions.extraMarker.on('mouseout', function(marker){
-                        console.log('out?');
-                        let markerSource = this.getMarkerFromPathName(marker.sourceTarget.options.originPathName);
-                            this.setBuildingMouseOutStyle(markerSource, buildingData);
-                    }.bind(this));
-                    */
+                    );
             }
         }
 
-        let building = this.createBuildingPolygon(currentObject, markerOptions, {
-            width       : widthSize,
-            length      : lenghtSize,
-            offset      : offset,
-            xShift      : xShift,
-            useOnly2D   : useOnly2D
-        });
+        let building = this.createBuildingPolygon(currentObject, markerOptions, polygonOptions);
             building.on('mouseover', function(marker){
                 this.setBuildingMouseOverStyle(marker.sourceTarget, buildingData);
             }.bind(this));
@@ -2616,6 +2675,10 @@ export default class BaseLayout
                 fillOpacity: 0.9
             });
 
+        if(marker.options.extraPattern !== undefined)
+        {
+            marker.options.extraPattern.setStyle({fillOpacity: 0.9});
+        }
         if(marker.options.extraMarker !== undefined)
         {
             marker.options.extraMarker.setIcon(this.getMarkerIcon('#BF0020', '#b3b3b3', buildingData.mapIconImage));
@@ -2639,7 +2702,8 @@ export default class BaseLayout
             if(currentObject === null){ return; }
         }
 
-        let mapOpacity = (buildingData !== null && buildingData.mapOpacity !== undefined) ? buildingData.mapOpacity : 0.2;
+        let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
+        let mapOpacity          = (buildingData !== null && buildingData.mapOpacity !== undefined) ? buildingData.mapOpacity : 0.2;
 
         if(buildingData !== null && buildingData.mapUseSlotColor !== undefined && buildingData.mapUseSlotColor === false)
         {
@@ -2651,8 +2715,7 @@ export default class BaseLayout
         }
         else
         {
-            let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
-            let slotColor           = buildableSubSystem.getObjectPrimaryColor(currentObject);
+            let slotColor = buildableSubSystem.getObjectPrimaryColor(currentObject);
                 switch(buildingData.category)
                 {
                     case 'wall':
@@ -2670,6 +2733,16 @@ export default class BaseLayout
                         });
                         break;
                 }
+        }
+
+        if(marker.options.extraPattern !== undefined)
+        {
+            let patternColor = buildableSubSystem.getObjectSecondaryColor(currentObject);
+                marker.options.extraPattern.setStyle({
+                    color       : 'rgb(' + patternColor.r + ', ' + patternColor.g + ', ' + patternColor.b + ')',
+                    fillColor   : 'rgb(' + patternColor.r + ', ' + patternColor.g + ', ' + patternColor.b + ')',
+                    fillOpacity : mapOpacity
+                });
         }
 
         if(marker.options.extraMarker !== undefined)
@@ -2798,7 +2871,7 @@ export default class BaseLayout
                 buildingData                = this.toolsData.BP_ItemDescriptorPortableMiner_C;
                 buildingData.mapLayer       = 'playerMinersLayer';
             }
-                    
+
 
         let layerId         = (buildingData !== null && buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerHUBTerminalLayer';
 
@@ -3756,20 +3829,37 @@ export default class BaseLayout
         });
     }
 
-    createBuildingPolygon(currentObject, markerOptions, options, size, offset = 0, useOnly2D = false)
+    createBuildingPolygon(currentObject, markerOptions, options)
     {
-        let center                  = [currentObject.transform.translation[0], currentObject.transform.translation[1]];
-        let forms                   = [];
-            markerOptions.pathName  = currentObject.pathName;
-            markerOptions.altitude  = currentObject.transform.translation[2];
+        markerOptions.pathName  = currentObject.pathName;
+        markerOptions.altitude  = currentObject.transform.translation[2];
 
         if(this.useDetailedModels === true && this.detailedModels !== null && this.detailedModels[currentObject.className] !== undefined)
         {
                 markerOptions.smoothFactor  = this.useSmoothFactor;
-            let currentModel                = this.detailedModels[currentObject.className];
-            let currentModelScale           = currentModel.scale;
-            let currentModelXOffset         = (currentModel.xOffset !== undefined) ? currentModel.xOffset : 0;
-            let currentModelYOffset         = (currentModel.yOffset !== undefined) ? currentModel.yOffset : 0;
+        }
+
+        let polygon = L.polygon(
+                this.generatePolygonForms(currentObject.transform, currentObject.className, options),
+                markerOptions
+            );
+            this.autoBindTooltip(polygon);
+            polygon.bindContextMenu(this);
+
+        return polygon;
+    }
+
+    generatePolygonForms(transform, model, options)
+    {
+        let center  = [transform.translation[0], transform.translation[1]];
+        let forms   = [];
+
+        if(this.useDetailedModels === true && this.detailedModels !== null && this.detailedModels[model] !== undefined)
+        {
+            let currentModel        = this.detailedModels[model];
+            let currentModelScale   = (currentModel.scale !== undefined) ? currentModel.scale : 1;
+            let currentModelXOffset = (currentModel.xOffset !== undefined) ? currentModel.xOffset : 0;
+            let currentModelYOffset = (currentModel.yOffset !== undefined) ? currentModel.yOffset : 0;
 
             if(currentModel.formsLength === undefined)
             {
@@ -3794,7 +3884,7 @@ export default class BaseLayout
                                 center[1] + ((currentModel.forms[i].points[j][1] + currentModelYOffset) * currentModelScale)
                             ],
                             center,
-                            currentObject.transform.rotation
+                            transform.rotation
                         )
                     ));
                 }
@@ -3826,7 +3916,7 @@ export default class BaseLayout
                                         center[1] + ((currentModel.forms[i].holes[j][k][1] + currentModelYOffset) * currentModelScale)
                                     ],
                                     center,
-                                    currentObject.transform.rotation
+                                    transform.rotation
                                 )
                             ));
                         }
@@ -3845,7 +3935,7 @@ export default class BaseLayout
                     BaseLayout_Math.getPointRotation(
                         [(center[0] - options.xShift) - ((options.width - options.offset) / 2), center[1] - ((options.length - options.offset) / 2)],
                         center,
-                        currentObject.transform.rotation,
+                        transform.rotation,
                         options.useOnly2D
                     )
                 ));
@@ -3853,7 +3943,7 @@ export default class BaseLayout
                     BaseLayout_Math.getPointRotation(
                         [(center[0] - options.xShift) + ((options.width - options.offset) / 2), center[1] - ((options.length - options.offset) / 2)],
                         center,
-                        currentObject.transform.rotation,
+                        transform.rotation,
                         options.useOnly2D
                     )
                 ));
@@ -3861,7 +3951,7 @@ export default class BaseLayout
                     BaseLayout_Math.getPointRotation(
                         [(center[0] - options.xShift) + ((options.width - options.offset) / 2), center[1] + ((options.length - options.offset) / 2)],
                         center,
-                        currentObject.transform.rotation,
+                        transform.rotation,
                         options.useOnly2D
                     )
                 ));
@@ -3869,7 +3959,7 @@ export default class BaseLayout
                     BaseLayout_Math.getPointRotation(
                         [(center[0] - options.xShift) - ((options.width - options.offset) / 2), center[1] + ((options.length - options.offset) / 2)],
                         center,
-                        currentObject.transform.rotation,
+                        transform.rotation,
                         options.useOnly2D
                     )
                 ));
@@ -3877,11 +3967,7 @@ export default class BaseLayout
             forms.push([currentPoints]);
         }
 
-        let polygon         = L.polygon(forms, markerOptions);
-            this.autoBindTooltip(polygon);
-            polygon.bindContextMenu(this);
-
-        return polygon;
+        return forms;
     }
 
     // Layers
@@ -4223,6 +4309,10 @@ export default class BaseLayout
                         {
                             currentSubLayer.removeLayer(currentMarker);
 
+                            if(currentMarker.options.extraPattern !== undefined)
+                            {
+                                currentSubLayer.removeLayer(currentMarker.options.extraPattern);
+                            }
                             if(currentMarker.options.extraMarker !== undefined)
                             {
                                 currentSubLayer.removeLayer(currentMarker.options.extraMarker);
@@ -4246,6 +4336,10 @@ export default class BaseLayout
                                                 {
                                                     currentSubLayer.addLayer(currentMarker);
 
+                                                    if(currentMarker.options.extraPattern !== undefined)
+                                                    {
+                                                        currentSubLayer.addLayer(currentMarker.options.extraPattern);
+                                                    }
                                                     if(currentMarker.options.extraMarker !== undefined)
                                                     {
                                                         currentSubLayer.addLayer(currentMarker.options.extraMarker);
@@ -4271,6 +4365,10 @@ export default class BaseLayout
                                 {
                                     currentSubLayer.addLayer(currentMarker);
 
+                                    if(currentMarker.options.extraPattern !== undefined)
+                                    {
+                                        currentSubLayer.addLayer(currentMarker.options.extraPattern);
+                                    }
                                     if(currentMarker.options.extraMarker !== undefined)
                                     {
                                         currentSubLayer.addLayer(currentMarker.options.extraMarker);
@@ -5240,7 +5338,7 @@ export default class BaseLayout
 
         return null;
     }
-    
+
     getItemDataFromClassName(className, debugToConsole = true)
     {
         if(className === '/Game/FactoryGame/Resource/RawResources/CrudeOil/Desc_CrudeOil.Desc_CrudeOil_C'){ className = '/Game/FactoryGame/Resource/RawResources/CrudeOil/Desc_LiquidOil.Desc_LiquidOil_C'; }
@@ -5372,8 +5470,8 @@ export default class BaseLayout
 
         return null;
     }
-    
-    
+
+
     getIconSrcFromId(iconId)
     {
         for(let i in this.itemsData)
@@ -5397,13 +5495,13 @@ export default class BaseLayout
                 return this.buildingsData[i].image;
             }
         }
-        
+
         console.log('Missing iconID: ' + iconId);
         if(typeof Sentry !== 'undefined')
         {
             Sentry.captureMessage('Missing iconID: ' + iconId);
         }
-        
+
         return this.itemsData.Desc_IronIngot_C.image;
     }
 
@@ -5726,6 +5824,10 @@ export default class BaseLayout
                         this.playerLayers[layerId].elements.splice(i, 1);
                         this.playerLayers[layerId].subLayer.removeLayer(marker);
 
+                        if(marker.options.extraPattern !== undefined)
+                        {
+                            this.playerLayers[layerId].subLayer.removeLayer(marker.options.extraPattern);
+                        }
                         if(marker.options.extraMarker !== undefined)
                         {
                             this.playerLayers[layerId].subLayer.removeLayer(marker.options.extraMarker);

@@ -238,6 +238,12 @@ export default class Modal_Map_Options
         html.push('</select></div></div>');
         html.push('</div></div>');
 
+        html.push('<div class="row"><div class="col-6">');
+        html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowPatterns" id="inputShowPatterns" ' + ((this.baseLayout.showPatterns === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowPatterns">Show patterns?</label></div>');
+        html.push('</div>');
+        html.push('</div></div>');
+
         html.push('<hr />');
         html.push('<h4>Hard reset:</h4>');
         html.push('<div class="row"><div class="col-12">');
@@ -272,6 +278,9 @@ export default class Modal_Map_Options
 
                 this.baseLayout.showTransportationOnLoad    = (($('#inputShowTransportationOnLoad').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowTransportationOnLoad', this.baseLayout.showTransportationOnLoad);
+
+                this.baseLayout.showPatterns    = (($('#inputShowPatterns').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapShowPatterns', this.baseLayout.showPatterns);
 
                 this.baseLayout.showVehicleExtraMarker    = (($('#inputShowVehicleExtraMarker').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowVehicleExtraMarker', this.baseLayout.showVehicleExtraMarker);
