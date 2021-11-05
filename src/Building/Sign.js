@@ -15,39 +15,46 @@ export default class Building_Sign
             334: ['Arrow Up', '/img/patternIcons/TXUI_MIcon_Arrow_Up.png'],
             335: ['Arrow Up Right', '/img/patternIcons/TXUI_MIcon_Arrow_UpRight.png'],
             336: ['Arrow Right', '/img/patternIcons/TXUI_MIcon_Arrow_Right.png'],
-            
+
             337: ['Drop', '/img/patternIcons/TXUI_MIcon_Drop.png'],
             338: ['Radiation', '/img/patternIcons/TXUI_MIcon_Radiation.png'],
             339: ['Thumb Up', '/img/patternIcons/TXUI_MIcon_ThumbUp.png'],
             340: ['Thumb Down', '/img/patternIcons/TXUI_MIcon_ThumbDown.png'],
             341: ['Stop X', '/img/patternIcons/TXUI_MIcon_Stop_X.png'],
-            
+
             342: ['Road Arrow Down', '/img/patternIcons/TXUI_MIcon_RoadArrow_Down.png'],
             343: ['Road Arrow Turn Around', '/img/patternIcons/TXUI_MIcon_RoadArrow_TurnAround.png'],
             344: ['Road Arrow Turn Left', '/img/patternIcons/TXUI_MIcon_RoadArrow_TurnLeft.png'],
             345: ['Road Arrow Turn Right', '/img/patternIcons/TXUI_MIcon_RoadArrow_TurnRight.png'],
             346: ['Road Arrow Up', '/img/patternIcons/TXUI_MIcon_RoadArrow_Up.png'],
-            
+
             347: ['Storage Crate', '/img/patternIcons/TXUI_MIcon_Crate.png'],
             348: ['Exit Door', '/img/patternIcons/TXUI_MIcon_Exit.png'],
             349: ['Factory', '/img/patternIcons/TXUI_MIcon_Factory.png'],
             350: ['Home House', '/img/patternIcons/TXUI_MIcon_Home.png'],
             351: ['Player Pioneer', '/img/patternIcons/TXUI_MIcon_Pioneer.png'],
             352: ['Power', '/img/patternIcons/TXUI_MIcon_Power.png'],
-            
+
             353: ['Vehicle Tractor', '/img/patternIcons/TXUI_MIcon_Tractor.png'],
             354: ['Vehicle Explorer', '/img/patternIcons/TXUI_MIcon_Explorer.png'],
             355: ['Vehicle Truck', '/img/patternIcons/TXUI_MIcon_Truck.png'],
             356: ['Vehicle Train', '/img/patternIcons/TXUI_MIcon_Train.png'],
             357: ['Vehicle Factory Cart', '/img/patternIcons/TXUI_MIcon_FactoryCart.png'],
             358: ['Vehicle Drone', '/img/patternIcons/TXUI_MIcon_Drone.png'],
-            
+
             362: ['Warning', '/img/patternIcons/TXUI_MIcon_Warning.png'],
-            
+
             598: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png']
         };
     }
-    
+
+    static get getBackgroundIcons(){
+        return {
+
+            598: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png']
+        };
+    }
+
     static getBackgroundColor(baseLayout, currentObject)
     {
         let mBackgroundColor = baseLayout.getObjectProperty(currentObject, 'mBackgroundColor');
@@ -80,14 +87,18 @@ export default class Building_Sign
 
         return '#FA9549';
     }
-    
+
     static getMonochromeIcon(baseLayout, iconId)
     {
         if(Building_Sign.getMonochromeIcons[iconId] !== undefined)
         {
             return baseLayout.staticUrl + Building_Sign.getMonochromeIcons[iconId][1];
         }
-        
+        if(Building_Sign.getBackgroundIcons[iconId] !== undefined)
+        {
+            return baseLayout.staticUrl + Building_Sign.getBackgroundIcons[iconId][1];
+        }
+
         return null;
     }
 
@@ -112,7 +123,7 @@ export default class Building_Sign
                                 iconId = currentValues[j].value;
                             }
                         }
-                        
+
                         if(elementName !== null && iconId !== null && elementName === 'Icon')
                         {
                             let patternIcon = Building_Sign.getMonochromeIcon(baseLayout, iconId);
@@ -120,7 +131,7 @@ export default class Building_Sign
                                 {
                                     return [patternIcon];
                                 }
-                            
+
                             return baseLayout.getIconSrcFromId(iconId);
                         }
                 }
@@ -150,7 +161,7 @@ export default class Building_Sign
                                 iconId = currentValues[j].value;
                             }
                         }
-                        
+
                         if(elementName !== null && iconId !== null && elementName === 'Other_Icon')
                         {
                             let patternIcon = Building_Sign.getMonochromeIcon(baseLayout, iconId);
@@ -158,7 +169,7 @@ export default class Building_Sign
                                 {
                                     return [patternIcon];
                                 }
-                            
+
                             return baseLayout.getIconSrcFromId(iconId);
                         }
                 }
@@ -188,7 +199,7 @@ export default class Building_Sign
                                 text = currentValues[j].value;
                             }
                         }
-                        
+
                         if(elementName !== null && text !== null && elementName === 'Label')
                         {
                             return text.replace('\n', '<br />');
@@ -220,7 +231,7 @@ export default class Building_Sign
                                 text = currentValues[j].value;
                             }
                         }
-                        
+
                         if(elementName !== null && text !== null && elementName === 'Name')
                         {
                             return text.replace('\n', '<br />');
@@ -230,17 +241,17 @@ export default class Building_Sign
 
         return 'Shennanigans';
     }
-    
+
     static getFilterShadow(size, shadowColor)
     {
         if(shadowColor !== null)
         {
             return 'filter: drop-shadow(' + size + 'px 0px ' + shadowColor + ');background-position: -100%;margin-left: -100%;';
         }
-        
+
         return '';
     }
-    
+
     static getImageTemplate(name, size, shadowColor)
     {
         return   '<div style="display: flex;align-items: center;justify-content: center;">'
@@ -249,9 +260,9 @@ export default class Building_Sign
                + '    </div>'
                + '</div>';
     }
-    
-    
-   
+
+
+
     static getLayoutTemplate(baseLayout, currentObject, shadowColor, otherShadowColor)
     {
         let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
@@ -277,7 +288,7 @@ export default class Building_Sign
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C':                    
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C':
                         return '<table style="width: 200px;height: 200px;">'
                              + '    <tr>'
                              + '        <td>'
@@ -285,9 +296,17 @@ export default class Building_Sign
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
-                    
-                    
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_2.BPW_Sign2x1_2_C':                    
+
+
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_1.BPW_Sign2x1_1_C':
+                        return '<table style="width: 400px;height: 200px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="font-size: 40px;"><strong>{{TEXT}}</strong></div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_2.BPW_Sign2x1_2_C':
                         return '<table style="width: 400px;height: 200px;">'
                              + '    <tr>'
                              + '        <td>'
@@ -298,7 +317,7 @@ export default class Building_Sign
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_4.BPW_Sign2x1_4_C':                   
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_4.BPW_Sign2x1_4_C':
                         return '<table style="width: 400px;height: 200px;">'
                              + '    <tr>'
                              + '        <td>'
@@ -309,11 +328,37 @@ export default class Building_Sign
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_5.BPW_Sign2x1_5_C':                  
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_5.BPW_Sign2x1_5_C':
                         return '<table style="width: 400px;height: 200px;">'
                              + '    <tr>'
                              + '        <td>'
                              + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 196, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_9.BPW_Sign2x1_9_C':
+                        return '<table style="width: 400px;height: 200px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
+                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((shadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
+                             + '            </div>'
+                             + '        </td>'
+                             + '        <td>'
+                             + '            <div style="font-size: 28px;text-align: left;"><strong>{{TEXT}}</strong></div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '</table>';
+                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_10.BPW_Sign2x1_10_C':
+                        return '<table style="width: 400px;height: 200px;">'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 128, ((shadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
+                             + '        </td>'
+                             + '    </tr>'
+                             + '    <tr>'
+                             + '        <td>'
+                             + '            <div style="font-size: 28px;"><strong>{{TEXT}}</strong></div>'
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
@@ -341,8 +386,8 @@ export default class Building_Sign
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
-                    
-                    
+
+
                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_0.BPW_Sign2x3_0_C':
                         return '<table style="width: 200px;height: 300px;">'
                              + '    <tr>'
@@ -391,8 +436,8 @@ export default class Building_Sign
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
-                    
-                    
+
+
                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_1.BPW_Sign4x1_1_C':
                         return '<table style="width: 200px;height: 50px;">'
                              + '    <tr>'
@@ -455,7 +500,7 @@ export default class Building_Sign
                              + '        </td>'
                              + '    </tr>'
                              + '</table>';
-                     
+
                     default:
                         console.log('Missing sign layout: ' + mActivePrefabLayout.pathName);
                         if(typeof Sentry !== 'undefined')
@@ -491,11 +536,11 @@ export default class Building_Sign
                 otherIconSrc        = otherIconSrc[0];
                 otherShadowColor    = true;
             }
-        
+
         let layoutTemplate  = Building_Sign.getLayoutTemplate(baseLayout, currentObject, shadowColor, otherShadowColor);
             layoutTemplate  = layoutTemplate.replace('{{ICON_SRC}}', iconSrc);
             layoutTemplate  = layoutTemplate.replace('{{OTHER_ICON_SRC}}', otherIconSrc);
-            
+
             layoutTemplate  = layoutTemplate.replace('{{LABEL}}', Building_Sign.getLabel(baseLayout, currentObject));
             layoutTemplate  = layoutTemplate.replace('{{TEXT}}', Building_Sign.getText(baseLayout, currentObject));
 
@@ -509,7 +554,7 @@ export default class Building_Sign
                     </div>\
                 </div>';
     }
-    
+
     /**
      * CONTEXT MENU
      */
@@ -532,7 +577,7 @@ export default class Building_Sign
                     callback: Building_Sign.updateLabel
                 });
             }
-            
+
             contextMenu.push({separator: true});
 
         return contextMenu;
@@ -597,7 +642,7 @@ export default class Building_Sign
                 }.bind(baseLayout)
             });
     }
-    
+
     static updateLabel(marker)
     {
         let baseLayout      = marker.baseLayout;
