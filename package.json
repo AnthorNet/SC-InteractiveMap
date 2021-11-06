@@ -7,7 +7,6 @@
     "devDependencies": {
         "@sentry/webpack-plugin": "^1.17.1",
         "merge-json-webpack-plugin": "^5.1.0",
-        "copy-webpack-plugin": "^6.4.1",
         "terser-webpack-plugin": "^5.2.3",
         "json-minimizer-webpack-plugin": "^2.1.0",
         "webpack": "^5.52.0",

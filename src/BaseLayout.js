@@ -2741,7 +2741,7 @@ export default class BaseLayout
                 marker.options.extraPattern.setStyle({
                     color       : 'rgb(' + patternColor.r + ', ' + patternColor.g + ', ' + patternColor.b + ')',
                     fillColor   : 'rgb(' + patternColor.r + ', ' + patternColor.g + ', ' + patternColor.b + ')',
-                    fillOpacity : mapOpacity
+                    fillOpacity : Math.min(1, (mapOpacity + 0.3))
                 });
         }
 
@@ -3483,6 +3483,18 @@ export default class BaseLayout
                 this.deleteGenericBuilding({relatedTarget: nextTrain});
             }
         }
+
+        // Pipe/Lift Floor Hole
+        let mBottomSnappedConnection = this.getObjectProperty(currentObject, 'mBottomSnappedConnection');
+            if(mBottomSnappedConnection !== null)
+            {
+
+            }
+        let mTopSnappedConnection = this.getObjectProperty(currentObject, 'mTopSnappedConnection');
+            if(mTopSnappedConnection !== null)
+            {
+
+            }
     }
 
     addPlayerTrack(currentObject)

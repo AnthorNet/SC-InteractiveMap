@@ -94,7 +94,7 @@ export default class Spawn_Blueprint
 
                 if(this.zOffset !== 0)
                 {
-                    minZ -= this.zOffset; // Inverse as it removed from the object translation
+                    minZ -= this.zOffset; // Inverse as it's removed from the object translation
                 }
 
                 for(let i = 0; i < this.clipboard.data.length; i++)
