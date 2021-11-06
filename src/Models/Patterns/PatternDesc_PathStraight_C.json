@@ -1,0 +1,22 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Pathways/PatternDesc_PathStraight.PatternDesc_PathStraight_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [-200,-400],[-160,-400],[-160,400],[-200,400]
+                ]
+            },
+            {
+                "points": [
+                    [-120,-400],[120,-400],[120,400],[-120,400]
+                ]
+            },
+            {
+                "points": [
+                    [160,-400],[200,-400],[200,400],[160,400]
+                ]
+            }
+        ]
+    }
+}
