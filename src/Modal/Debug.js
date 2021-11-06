@@ -26,7 +26,7 @@ export default class Modal_Debug
             extraPathName.push('Persistent_Level:PersistentLevel.GamePhaseManager');
         }
 
-        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles'];
+        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles', 'mBottomSnappedConnection', 'mTopSnappedConnection'];
             for(let i = 0; i < extraProperties.length; i++)
             {
                 let extraProperty = baseLayout.getObjectProperty(currentObject, extraProperties[i]);
