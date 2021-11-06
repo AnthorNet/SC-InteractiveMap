@@ -269,8 +269,9 @@ export default class BaseLayout_ContextMenu
                     )
                     {
                         contextMenu.push({
-                            text    : 'Update "' + buildingData.name + '" color swatch',
-                            callback: Modal_Object_ColorSlot.getHTML
+                            text        : 'Update "' + buildingData.name + '" color swatch',
+                            callback    : Modal_Object_ColorSlot.getHTML,
+                            className   : 'Modal_Object_ColorSlot',
                         });
                     }
 

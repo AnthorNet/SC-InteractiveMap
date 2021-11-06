@@ -6571,28 +6571,27 @@ export default class BaseLayout
 
     updateMultipleObjectColorSlot(slotIndex)
     {
-        slotIndex    = parseInt(slotIndex);
+        let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
+            slotIndex           = parseInt(slotIndex);
 
         if(this.markersSelected)
         {
             for(let i = 0; i < this.markersSelected.length; i++)
             {
                 let contextMenu = this.getContextMenu(this.markersSelected[i]);
-
-                if(contextMenu !== false)
-                {
-                    // Search for a delete callback in contextmenu...
-                    for(let j = 0; j < contextMenu.length; j++)
+                    if(contextMenu !== false)
                     {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.includes('Modal_Object_ColorSlot'))
+                        // Search for a delete callback in contextmenu...
+                        for(let j = 0; j < contextMenu.length; j++)
                         {
-                            let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
-                            let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
-                                buildableSubSystem.setObjectColorSlot(currentObject, slotIndex);
-                                this.markersSelected[i].fire('mouseout'); // Trigger a redraw
+                            if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_ColorSlot')
+                            {
+                                let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
+                                    buildableSubSystem.setObjectColorSlot(currentObject, slotIndex);
+                                    this.markersSelected[i].fire('mouseout'); // Trigger a redraw
+                            }
                         }
                     }
-                }
             }
         }
 
