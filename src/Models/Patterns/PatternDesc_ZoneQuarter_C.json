@@ -1,0 +1,32 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Zones/PatternDesc_ZoneQuarter.PatternDesc_ZoneQuarter_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [-400,-400],[-320,-400],[-400,-320]
+                ]
+            },
+            {
+                "points": [
+                    [-240,-400],[-160,-400],[-400,-160],[-400,-240]
+                ]
+            },
+            {
+                "points": [
+                    [-80,-400],[0,-400],[-400,0],[-400,-80]
+                ]
+            },
+            {
+                "points": [
+                    [0,-320],[0,-240],[-240,0],[-320,0]
+                ]
+            },
+            {
+                "points": [
+                    [0,-160],[0,-80],[-80,0],[-160,0]
+                ]
+            }
+        ]
+    }
+}

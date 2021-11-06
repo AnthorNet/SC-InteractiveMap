@@ -1,0 +1,22 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_DottedSide.PatternDesc_DottedSide_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [-400,-350],[-385,-350],[-385,-170],[-400,-170]
+                ]
+            },
+            {
+                "points": [
+                    [-400,-90],[-385,-90],[-385,90],[-400,90]
+                ]
+            },
+            {
+                "points": [
+                    [-400,350],[-385,350],[-385,170],[-400,170]
+                ]
+            }
+        ]
+    }
+}
