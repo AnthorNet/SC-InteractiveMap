@@ -8,15 +8,14 @@ export default class Modal_ColorSlots
     constructor(options)
     {
         this.baseLayout         = options.baseLayout;
-        this.buildableSubSystem = new SubSystem_Buildable({baseLayout: this.baseLayout});
     }
 
     parse()
     {
         $('#genericModal .modal-title').empty().html(this.baseLayout.translate._('GLOBAL\\Color swatches'));
         let html            = [];
-        let playerColors    = this.buildableSubSystem.getPlayerColorSlots();
-        
+        let playerColors    = this.baseLayout.buildableSubSystem.getPlayerColorSlots();
+
         // Add factory slot
         html.push('<div class="d-flex flex-row mb-3">');
             html.push('<div class="d-flex flex-row selectColorSlot active align-items-center w-50" style="background: linear-gradient(135deg, rgb(' + playerColors[0].primaryColor.r + ', ' + playerColors[0].primaryColor.g + ', ' + playerColors[0].primaryColor.b + ') 0%,'
@@ -168,7 +167,7 @@ export default class Modal_ColorSlots
             let style                       = 'linear-gradient(135deg, rgb(' + primaryColorR + ', ' + primaryColorG + ', ' + primaryColorB + ') 0%, rgb(' + primaryColorR + ', ' + primaryColorG + ', ' + primaryColorB + ') 50%, rgb(' + secondaryColorR + ', ' + secondaryColorG + ', ' + secondaryColorB + ') 51%, rgb(' + secondaryColorR + ', ' + secondaryColorG + ', ' + secondaryColorB + ') 100%)';
                 $('#genericModal .selectColorSlot.active').css('background', style);
 
-            this.buildableSubSystem.setPlayerColorSlot(
+            this.baseLayout.buildableSubSystem.setPlayerColorSlot(
                 parseInt($('#genericModal .selectColorSlot.active').attr('data-slot')),
                 {
                     r : BaseLayout_Math.RGBToLinearColor(primaryColorR),
@@ -181,7 +180,7 @@ export default class Modal_ColorSlots
                     b : BaseLayout_Math.RGBToLinearColor(secondaryColorB),
                 }
             );
-            playerColors    = this.buildableSubSystem.getPlayerColorSlots(); // Refresh
+            playerColors    = this.baseLayout.buildableSubSystem.getPlayerColorSlots(); // Refresh
         });
         $('#primaryColorInputHex').on('change keyup input', function(){
             let hexColor                        = $(this).val();
@@ -247,8 +246,8 @@ export default class Modal_ColorSlots
         });
         $('#resetColorSlot').on('click', () => {
             let slotIndex                   = parseInt($('#genericModal .selectColorSlot.active').attr('data-slot'));
-            let primaryColor                = this.buildableSubSystem.getDefaultPrimaryColorSlot(slotIndex);
-            let secondaryColor              = this.buildableSubSystem.getDefaultSecondaryColorSlot(slotIndex);
+            let primaryColor                = this.baseLayout.buildableSubSystem.getDefaultPrimaryColorSlot(slotIndex);
+            let secondaryColor              = this.baseLayout.buildableSubSystem.getDefaultSecondaryColorSlot(slotIndex);
 
             primaryColorPicker.color.rgb    = {r: primaryColor.r, g: primaryColor.g, b: primaryColor.b};
             secondaryColorPicker.color.rgb  = {r: secondaryColor.r, g: secondaryColor.g, b: secondaryColor.b};

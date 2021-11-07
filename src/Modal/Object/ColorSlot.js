@@ -14,9 +14,8 @@ export default class Modal_Object_ColorSlot
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-        let buildableSubSystem  = new SubSystem_Buildable({baseLayout: baseLayout});
-        let slotIndex           = buildableSubSystem.getObjectColorSlot(currentObject);
-        let playerColors        = buildableSubSystem.getPlayerColorSlots();
+        let slotIndex           = baseLayout.buildableSubSystem.getObjectColorSlot(currentObject);
+        let playerColors        = baseLayout.buildableSubSystem.getPlayerColorSlots();
         let selectOptions       = [];
 
         selectOptions.push({
@@ -84,7 +83,7 @@ export default class Modal_Object_ColorSlot
                     return;
                 }
 
-                buildableSubSystem.setObjectColorSlot(currentObject, parseInt(values.slotIndex));
+                baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(values.slotIndex));
                 marker.relatedTarget.fire('mouseout'); // Trigger a redraw
             }
         });

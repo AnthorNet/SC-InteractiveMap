@@ -317,6 +317,9 @@ export default class BaseLayout
         this.collectedSchematics.resetCollected();
 
         this.saveGameParser.load(() => {
+            // Hold sub system to get performance better
+            this.buildableSubSystem = new SubSystem_Buildable({baseLayout: this});
+
             if(this.buildingsData === null)
             {
                 return new Promise(function(resolve){
@@ -567,11 +570,6 @@ export default class BaseLayout
         for(i; i < countObjects; i++)
         {
             let currentObject = this.saveGameParser.getTargetObject(objectsKeys[i]);
-
-            if(currentObject.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches'))
-            {
-                console.log(currentObject)
-            }
 
             // Add menu to nodes...
             if([
@@ -2702,7 +2700,6 @@ export default class BaseLayout
             if(currentObject === null){ return; }
         }
 
-        let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
         let mapOpacity          = (buildingData !== null && buildingData.mapOpacity !== undefined) ? buildingData.mapOpacity : 0.2;
 
         if(buildingData !== null && buildingData.mapUseSlotColor !== undefined && buildingData.mapUseSlotColor === false)
@@ -2715,7 +2712,7 @@ export default class BaseLayout
         }
         else
         {
-            let slotColor = buildableSubSystem.getObjectPrimaryColor(currentObject);
+            let slotColor = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
                 switch(buildingData.category)
                 {
                     case 'wall':
@@ -2737,7 +2734,7 @@ export default class BaseLayout
 
         if(marker.options.extraPattern !== undefined)
         {
-            let patternColor = buildableSubSystem.getObjectSecondaryColor(currentObject);
+            let patternColor = this.buildableSubSystem.getObjectSecondaryColor(currentObject);
                 marker.options.extraPattern.setStyle({
                     color       : 'rgb(' + patternColor.r + ', ' + patternColor.g + ', ' + patternColor.b + ')',
                     fillColor   : 'rgb(' + patternColor.r + ', ' + patternColor.g + ', ' + patternColor.b + ')',
@@ -3273,8 +3270,7 @@ export default class BaseLayout
         belt.bindContextMenu(this);
         belt.on('mouseover', function(marker){
             let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-            let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
-            let slotColor           = buildableSubSystem.getObjectPrimaryColor(currentObject);
+            let slotColor           = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
                 marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')', opacity: 0.5});
         }.bind(this));
         belt.on('mouseout', function(marker){
@@ -6090,8 +6086,6 @@ export default class BaseLayout
                     return;
                 }
 
-                let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
-
                 switch(form.form)
                 {
                     case 'delete':
@@ -6184,7 +6178,7 @@ export default class BaseLayout
                         return;
 
                     case 'color':
-                        let playerColors        = buildableSubSystem.getPlayerColorSlots();
+                        let playerColors        = this.buildableSubSystem.getPlayerColorSlots();
                         let selectOptionsColors = [];
 
                         for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
@@ -6220,7 +6214,7 @@ export default class BaseLayout
                         return;
 
                     case 'helpers':
-                        let playerColorsHelpers = buildableSubSystem.getPlayerColorSlots();
+                        let playerColorsHelpers = this.buildableSubSystem.getPlayerColorSlots();
                         let selectOptions       = [];
 
                             for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
@@ -6583,8 +6577,7 @@ export default class BaseLayout
 
     updateMultipleObjectColorSlot(slotIndex)
     {
-        let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
-            slotIndex           = parseInt(slotIndex);
+        slotIndex           = parseInt(slotIndex);
 
         if(this.markersSelected)
         {
@@ -6599,7 +6592,7 @@ export default class BaseLayout
                             if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_ColorSlot')
                             {
                                 let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
-                                    buildableSubSystem.setObjectColorSlot(currentObject, slotIndex);
+                                    this.buildableSubSystem.setObjectColorSlot(currentObject, slotIndex);
                                     this.markersSelected[i].fire('mouseout'); // Trigger a redraw
                             }
                         }
@@ -6657,8 +6650,7 @@ export default class BaseLayout
                 };
                 fakeFoundation.pathName = this.generateFastPathName(fakeFoundation);
 
-            let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this});
-                buildableSubSystem.setObjectColorSlot(fakeFoundation, parseInt(colorSlotHelper));
+            this.buildableSubSystem.setObjectColorSlot(fakeFoundation, parseInt(colorSlotHelper));
 
             this.saveGameParser.addObject(fakeFoundation);
             let resultCenter = this.parseObject(fakeFoundation);

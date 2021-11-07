@@ -188,88 +188,93 @@ export default class SubSystem_Buildable
 
     getPlayerColorSlots()
     {
-        let totalColorSlot      = SubSystem_Buildable.totalColorSlots;
-        let playerColors        = [];
-        let primaryColorSlots   = this.getPrimaryColorSlots();
-        let secondaryColorSlots = this.getSecondaryColorSlots();
-
-        for(let slotIndex = 0; slotIndex < (totalColorSlot + SubSystem_Buildable.extraColorSlots); slotIndex++)
+        if(this.playerColorSlots === undefined || this.playerColorSlots === null)
         {
-            if(primaryColorSlots[slotIndex] === undefined)
+            let totalColorSlot      = SubSystem_Buildable.totalColorSlots;
+            let playerColors        = [];
+            let primaryColorSlots   = this.getPrimaryColorSlots();
+            let secondaryColorSlots = this.getSecondaryColorSlots();
+
+            for(let slotIndex = 0; slotIndex < (totalColorSlot + SubSystem_Buildable.extraColorSlots); slotIndex++)
             {
-                primaryColorSlots[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
-            }
-            if(secondaryColorSlots[slotIndex] === undefined)
-            {
-                secondaryColorSlots[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
-            }
-
-            playerColors.push({
-                primaryColor    : {
-                    r : BaseLayout_Math.linearColorToRGB(primaryColorSlots[slotIndex].r),
-                    g : BaseLayout_Math.linearColorToRGB(primaryColorSlots[slotIndex].g),
-                    b : BaseLayout_Math.linearColorToRGB(primaryColorSlots[slotIndex].b),
-                    a : BaseLayout_Math.linearColorToRGB(primaryColorSlots[slotIndex].a)
-                },
-                secondaryColor  : {
-                    r: BaseLayout_Math.linearColorToRGB(secondaryColorSlots[slotIndex].r),
-                    g: BaseLayout_Math.linearColorToRGB(secondaryColorSlots[slotIndex].g),
-                    b: BaseLayout_Math.linearColorToRGB(secondaryColorSlots[slotIndex].b),
-                    a: BaseLayout_Math.linearColorToRGB(secondaryColorSlots[slotIndex].a)
-                }
-            });
-        }
-
-        playerColors[255]                 = {};
-        playerColors[255].primaryColor    = {
-            r : BaseLayout_Math.linearColorToRGB(0),
-            g : BaseLayout_Math.linearColorToRGB(0),
-            b : BaseLayout_Math.linearColorToRGB(0),
-            a : BaseLayout_Math.linearColorToRGB(1)
-        };
-        playerColors[255].secondaryColor  = {
-            r : BaseLayout_Math.linearColorToRGB(0),
-            g : BaseLayout_Math.linearColorToRGB(0),
-            b : BaseLayout_Math.linearColorToRGB(0),
-            a : BaseLayout_Math.linearColorToRGB(1)
-        };
-
-        for(let pathName in this.baseLayout.players)
-        {
-            let mCustomColorData  = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mCustomColorData');
-                if(mCustomColorData !== null)
+                if(primaryColorSlots[slotIndex] === undefined)
                 {
-                    for(let j = 0; j < mCustomColorData.values.length; j++)
-                    {
-                        if(mCustomColorData.values[j].name === 'PrimaryColor')
-                        {
-                            playerColors[255].primaryColor    = {
-                                r : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.r),
-                                g : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.g),
-                                b : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.b),
-                                a : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.a)
-                            };
-                        }
-                        if(mCustomColorData.values[j].name === 'SecondaryColor')
-                        {
-                            playerColors[255].secondaryColor    = {
-                                r : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.r),
-                                g : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.g),
-                                b : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.b),
-                                a : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.a)
-                            };
-                        }
-                    }
-
-                    if(this.baseLayout.players[pathName].isHost())
-                    {
-                        break;
-                    }
+                    primaryColorSlots[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
+                }
+                if(secondaryColorSlots[slotIndex] === undefined)
+                {
+                    secondaryColorSlots[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
                 }
 
+                playerColors.push({
+                    primaryColor    : {
+                        r : BaseLayout_Math.linearColorToRGB(primaryColorSlots[slotIndex].r),
+                        g : BaseLayout_Math.linearColorToRGB(primaryColorSlots[slotIndex].g),
+                        b : BaseLayout_Math.linearColorToRGB(primaryColorSlots[slotIndex].b),
+                        a : BaseLayout_Math.linearColorToRGB(primaryColorSlots[slotIndex].a)
+                    },
+                    secondaryColor  : {
+                        r: BaseLayout_Math.linearColorToRGB(secondaryColorSlots[slotIndex].r),
+                        g: BaseLayout_Math.linearColorToRGB(secondaryColorSlots[slotIndex].g),
+                        b: BaseLayout_Math.linearColorToRGB(secondaryColorSlots[slotIndex].b),
+                        a: BaseLayout_Math.linearColorToRGB(secondaryColorSlots[slotIndex].a)
+                    }
+                });
+            }
+
+            playerColors[255]                 = {};
+            playerColors[255].primaryColor    = {
+                r : BaseLayout_Math.linearColorToRGB(0),
+                g : BaseLayout_Math.linearColorToRGB(0),
+                b : BaseLayout_Math.linearColorToRGB(0),
+                a : BaseLayout_Math.linearColorToRGB(1)
+            };
+            playerColors[255].secondaryColor  = {
+                r : BaseLayout_Math.linearColorToRGB(0),
+                g : BaseLayout_Math.linearColorToRGB(0),
+                b : BaseLayout_Math.linearColorToRGB(0),
+                a : BaseLayout_Math.linearColorToRGB(1)
+            };
+
+            for(let pathName in this.baseLayout.players)
+            {
+                let mCustomColorData  = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mCustomColorData');
+                    if(mCustomColorData !== null)
+                    {
+                        for(let j = 0; j < mCustomColorData.values.length; j++)
+                        {
+                            if(mCustomColorData.values[j].name === 'PrimaryColor')
+                            {
+                                playerColors[255].primaryColor    = {
+                                    r : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.r),
+                                    g : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.g),
+                                    b : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.b),
+                                    a : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.a)
+                                };
+                            }
+                            if(mCustomColorData.values[j].name === 'SecondaryColor')
+                            {
+                                playerColors[255].secondaryColor    = {
+                                    r : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.r),
+                                    g : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.g),
+                                    b : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.b),
+                                    a : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.a)
+                                };
+                            }
+                        }
+
+                        if(this.baseLayout.players[pathName].isHost())
+                        {
+                            break;
+                        }
+                    }
+
+            }
+
+            this.playerColorSlots = playerColors;
         }
 
-        return playerColors;
+        return this.playerColorSlots;
     }
 
     setPlayerColorSlot(slotIndex, primaryColor, secondaryColor)
@@ -337,6 +342,8 @@ export default class SubSystem_Buildable
                 mColorSlotsSecondary_Linear.values[slotIndex].g = secondaryColor.g;
                 mColorSlotsSecondary_Linear.values[slotIndex].b = secondaryColor.b;
             }
+
+        this.playerColorSlots = null;
     }
 
 
