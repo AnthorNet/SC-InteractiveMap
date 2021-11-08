@@ -1,0 +1,27 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Pathways/PatternDesc_PathZebra.PatternDesc_PathZebra_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [-200,-400],[-200,-330],[200,-330],[200,-400]
+                ]
+            },
+            {
+                "points": [
+                    [-200,-200],[200,-200],[200,-70],[-200,-70]
+                ]
+            },
+            {
+                "points": [
+                    [-200,200],[200,200],[200,70],[-200,70]
+                ]
+            },
+            {
+                "points": [
+                    [-200,400],[-200,330],[200,330],[200,400]
+                ]
+            }
+        ]
+    }
+}

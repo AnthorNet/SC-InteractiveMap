@@ -1,0 +1,15 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Numbers/PatternDesc_Number4.PatternDesc_Number4_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [30,-255],[130,-255],[130,65],[195,65],[195,150],[130,150],[130,255],[30,255],[30,150],[-195,150],[-195,75]
+                ],
+                "holes": [
+                    [[30,-135],[25,65],[-95,65]]
+                ]
+            }
+        ]
+    }
+}

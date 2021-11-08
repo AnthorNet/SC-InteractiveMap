@@ -1,0 +1,17 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_LineDouble.PatternDesc_LineDouble_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [-400,-400],[-385,-400],[-385,400],[-400,400]
+                ]
+            },
+            {
+                "points": [
+                    [400,-400],[385,-400],[385,400],[400,400]
+                ]
+            }
+        ]
+    }
+}

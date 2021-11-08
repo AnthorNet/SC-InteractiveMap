@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Numbers/PatternDesc_Number7.PatternDesc_Number7_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [-185,-255],[180,-255],[180,-190],[-10,255],[-120,255],[65,-165],[-185,-165]
+                ]
+            }
+        ]
+    }
+}

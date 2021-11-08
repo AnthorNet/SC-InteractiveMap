@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Power.PatternDesc_Icon_Power_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [-110,-245],[-100,-255],[55,-255],[65,-245],[-5,-35],[100,-35],[110,-25],[0,250],[-10,255],[-20,250],[-20,25],[-100,25],[-110,15]
+                ]
+            }
+        ]
+    }
+}
