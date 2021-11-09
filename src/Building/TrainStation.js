@@ -53,7 +53,6 @@ export default class Building_TrainStation
     static updateSign(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -70,29 +69,25 @@ export default class Building_TrainStation
                 }],
                 callback    : function(values)
                 {
-                    this.satisfactoryMap.unpauseMap();
-
-                    if(values === null)
+                    if(values !== null)
                     {
-                        return;
-                    }
-
-                    if(values.mStationName !== '')
-                    {
-                        if(mStationName !== null)
+                        if(values.mStationName !== '')
                         {
-                            this.setObjectProperty(information, 'mStationName', values.mStationName);
-                        }
-                        else
-                        {
-                            information.properties.push({
-                                flags                       : 18,
-                                hasCultureInvariantString   : 1,
-                                historyType                 : 255,
-                                name                        : "mStationName",
-                                type                        : "TextProperty",
-                                value                       : values.mStationName
-                            });
+                            if(mStationName !== null)
+                            {
+                                this.setObjectProperty(information, 'mStationName', values.mStationName);
+                            }
+                            else
+                            {
+                                information.properties.push({
+                                    flags                       : 18,
+                                    hasCultureInvariantString   : 1,
+                                    historyType                 : 255,
+                                    name                        : "mStationName",
+                                    type                        : "TextProperty",
+                                    value                       : values.mStationName
+                                });
+                            }
                         }
                     }
                 }.bind(baseLayout)

@@ -8,9 +8,7 @@ export default class Modal_Object_ColorSlot
 {
     static getHTML(marker)
     {
-        let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
-
+        let baseLayout          = marker.baseLayout;
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -85,15 +83,11 @@ export default class Modal_Object_ColorSlot
             }],
             callback    : function(values)
             {
-                baseLayout.satisfactoryMap.unpauseMap();
-
-                if(values === null)
+                if(values !== null)
                 {
-                    return;
+                    baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(values.slotIndex));
+                    marker.relatedTarget.fire('mouseout'); // Trigger a redraw
                 }
-
-                baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(values.slotIndex));
-                marker.relatedTarget.fire('mouseout'); // Trigger a redraw
             }
         });
     }

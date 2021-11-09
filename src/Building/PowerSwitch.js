@@ -51,7 +51,6 @@ export default class Building_PowerSwitch
     static updateSign(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let currentSign     = Building_PowerSwitch.getSign(baseLayout, currentObject);
@@ -66,22 +65,18 @@ export default class Building_PowerSwitch
                 }],
                 callback    : function(values)
                 {
-                    this.satisfactoryMap.unpauseMap();
-
-                    if(values === null)
+                    if(values !== null)
                     {
-                        return;
-                    }
-
-                    if(values.mBuildingTag !== '')
-                    {
-                        this.setObjectProperty(currentObject, 'mHasBuildingTag', 1, 'BoolProperty');
-                        this.setObjectProperty(currentObject, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
-                    }
-                    else
-                    {
-                        this.deleteObjectProperty(currentObject, 'mHasBuildingTag');
-                        this.deleteObjectProperty(currentObject, 'mBuildingTag');
+                        if(values.mBuildingTag !== '')
+                        {
+                            this.setObjectProperty(currentObject, 'mHasBuildingTag', 1, 'BoolProperty');
+                            this.setObjectProperty(currentObject, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
+                        }
+                        else
+                        {
+                            this.deleteObjectProperty(currentObject, 'mHasBuildingTag');
+                            this.deleteObjectProperty(currentObject, 'mBuildingTag');
+                        }
                     }
                 }.bind(baseLayout)
             });

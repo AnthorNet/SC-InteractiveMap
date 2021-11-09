@@ -24,7 +24,6 @@ export default class Building_Door
     static updateStatus(marker)
     {
         let baseLayout          = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let mDoorConfiguration  = baseLayout.getObjectProperty(currentObject, 'mDoorConfiguration');
@@ -44,21 +43,17 @@ export default class Building_Door
                 }],
                 callback    : function(values)
                 {
-                    this.satisfactoryMap.unpauseMap();
-
-                    if(values === null)
+                    if(values !== null)
                     {
-                        return;
-                    }
-                    
-                    this.deleteObjectProperty(currentObject, 'mDoorConfiguration');
+                        this.deleteObjectProperty(currentObject, 'mDoorConfiguration');
 
-                    if(values.mDoorConfiguration !== 'Automatic')
-                    {
-                        currentObject.properties.push({
-                            name: "mDoorConfiguration", type: "EnumProperty",
-                            value: { name: "EDoorConfiguration", value: values.mDoorConfiguration}
-                        });
+                        if(values.mDoorConfiguration !== 'Automatic')
+                        {
+                            currentObject.properties.push({
+                                name: "mDoorConfiguration", type: "EnumProperty",
+                                value: { name: "EDoorConfiguration", value: values.mDoorConfiguration}
+                            });
+                        }
                     }
                 }.bind(baseLayout)
             });

@@ -119,12 +119,13 @@ export default class Modal
                 {
                     modalContent.off('escape.close.modal');
                     modalContent.off('click');
+                    window.SCIM.map.unpauseMap();
                 }
             });
             modalContent.one('hidden.bs.modal', function(e){
                 if(e.target === this)
                 {
-                    modalContent.remove();
+                    modalContent.empty().remove();
                 }
             });
 
@@ -167,6 +168,7 @@ export default class Modal
             });
 
             // Add it to the content!
+            window.SCIM.map.pauseMap();
             $(options.container).append(modalContent);
             modalContent.modal({
                 backdrop: options.backdrop,
@@ -175,7 +177,7 @@ export default class Modal
 
             if(options.backdrop === 'static' && options.container !== 'body')
             {
-                $('.modal-backdrop').css('z-index', -1); // Temp fix...
+                $('.modal-backdrop').css('z-index', -1); //TODO: Temp fix...
             }
     }
 
@@ -238,6 +240,7 @@ export default class Modal
 
         options.buttons.cancel.callback = options.onEscape = function(){
             form.find('.selectpicker').selectpicker('destroy');
+
             return options.callback.call(this, null);
         };
 
@@ -274,12 +277,6 @@ export default class Modal
                                     g: parseInt(input.element.find('.inputG').val()) || 0,
                                     b: parseInt(input.element.find('.inputB').val()) || 0
                                 };
-                                input.element.find('.inputR').off('change keyup input');
-                                input.element.find('.inputG').off('change keyup input');
-                                input.element.find('.inputB').off('change keyup input');
-                                input.element.find('.inputHex').off('change keyup input');
-
-                                //TODO: Destroy IRO?
                                 break;
                             default:
                                 values[input.name] = input.element.find('input').val();

@@ -1794,8 +1794,6 @@ export default class BaseLayout
 
     pivotPlayerFoundation(marker)
     {
-        this.satisfactoryMap.pauseMap();
-
         let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
 
@@ -1814,46 +1812,42 @@ export default class BaseLayout
             ],
             callback: function(form)
             {
-                this.satisfactoryMap.unpauseMap();
-
-                if(form === null || form.angle === null)
+                if(form !== null && form.angle !== null)
                 {
-                    return;
+                    let angle  = Math.min(180, Math.max(-180, parseInt(form.angle)));
+
+                    if(this.history !== null)
+                    {
+                        this.history.add({
+                            name: 'Undo: Pivot by ' + angle + '°',
+                            values: [{
+                                pathName: marker.relatedTarget.options.pathName,
+                                callback: 'refreshMarkerPosition',
+                                properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
+                            }]
+                        });
+                    }
+
+                    let center          = [currentObject.transform.translation[0], currentObject.transform.translation[1]];
+                    let topLeftCorner   = BaseLayout_Math.getPointRotation(
+                            [center[0] - 400, center[1] - 400],
+                            center,
+                            currentObject.transform.rotation
+                        );
+
+                    currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, angle);
+
+                    let newCenter       = BaseLayout_Math.getPointRotation(
+                            [topLeftCorner[0] + 400, topLeftCorner[1] + 400],
+                            topLeftCorner,
+                            currentObject.transform.rotation
+                        );
+
+                    currentObject.transform.translation[0] = newCenter[0];
+                    currentObject.transform.translation[1] = newCenter[1];
+
+                    this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
                 }
-
-                let angle  = Math.min(180, Math.max(-180, parseInt(form.angle)));
-
-                if(this.history !== null)
-                {
-                    this.history.add({
-                        name: 'Undo: Pivot by ' + angle + '°',
-                        values: [{
-                            pathName: marker.relatedTarget.options.pathName,
-                            callback: 'refreshMarkerPosition',
-                            properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
-                        }]
-                    });
-                }
-
-                let center          = [currentObject.transform.translation[0], currentObject.transform.translation[1]];
-                let topLeftCorner   = BaseLayout_Math.getPointRotation(
-                        [center[0] - 400, center[1] - 400],
-                        center,
-                        currentObject.transform.rotation
-                    );
-
-                currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, angle);
-
-                let newCenter       = BaseLayout_Math.getPointRotation(
-                        [topLeftCorner[0] + 400, topLeftCorner[1] + 400],
-                        topLeftCorner,
-                        currentObject.transform.rotation
-                    );
-
-                currentObject.transform.translation[0] = newCenter[0];
-                currentObject.transform.translation[1] = newCenter[1];
-
-                this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
             }.bind(this)
         });
     }
@@ -1928,8 +1922,6 @@ export default class BaseLayout
                 return this.players[selectOptions[0].value].teleportTo(newTranslation);
             }
 
-        this.satisfactoryMap.pauseMap();
-
         Modal.form({
             title       : "Teleport player",
             container   : '#leafletMap',
@@ -1942,14 +1934,10 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
-                this.satisfactoryMap.unpauseMap();
-
-                if(form === null || form.playerPathName === null)
+                if(form !== null && form.playerPathName !== null)
                 {
-                    return;
+                    return this.players[form.playerPathName].teleportTo(newTranslation);
                 }
-
-                return this.players[form.playerPathName].teleportTo(newTranslation);
             }.bind(this)
         });
     }
@@ -1997,7 +1985,7 @@ export default class BaseLayout
             inputs      : inventoryOptions,
             callback    : function(values)
             {
-                if(values === null)
+                if(values !== null)
                 {
                     return;
                 }
@@ -2034,7 +2022,6 @@ export default class BaseLayout
                 this.radioactivityLayerNeedsUpdate = true;
                 this.getObjectRadioactivity(currentObject, inventoryProperty);
                 this.updateRadioactivityLayer();
-                this.ficsitRadioactiveAlert = undefined;
             }.bind(this)
         });
     }
@@ -2065,14 +2052,11 @@ export default class BaseLayout
             }],
             callback    : function(values)
             {
-                if(values === null)
+                if(values !== null)
                 {
-                    return;
+                    this.fillPlayerStorageBuildingInventory(currentObject, values.fillWith, inventoryProperty);
+                    this.updateRadioactivityLayer();
                 }
-
-                this.fillPlayerStorageBuildingInventory(currentObject, values.fillWith, inventoryProperty);
-                this.updateRadioactivityLayer();
-                this.ficsitRadioactiveAlert = undefined;
             }.bind(this)
         });
     }
@@ -2227,18 +2211,16 @@ export default class BaseLayout
                     }],
                     callback    : function(values)
                     {
-                        if(values === null)
+                        if(values !== null)
                         {
-                            return;
-                        }
-
-                        if(values.mFluidDescriptor === 'NULL')
-                        {
-                            this.deleteObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
-                        }
-                        else
-                        {
-                            this.setObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor', {levelName: "", pathName: values.mFluidDescriptor}, 'ObjectProperty');
+                            if(values.mFluidDescriptor === 'NULL')
+                            {
+                                this.deleteObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
+                            }
+                            else
+                            {
+                                this.setObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor', {levelName: "", pathName: values.mFluidDescriptor}, 'ObjectProperty');
+                            }
                         }
                     }.bind(this)
                 });
@@ -2809,8 +2791,6 @@ export default class BaseLayout
 
         selectOptions.unshift({text: 'None', value: 'NULL'});
 
-        this.satisfactoryMap.pauseMap();
-
         Modal.form({
             title       : 'Update "' + buildingData.name + '" recipe',
             container   : '#leafletMap',
@@ -2824,30 +2804,26 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
-                this.satisfactoryMap.unpauseMap();
-
-                if(form === null || form.recipe === null)
+                if(form !== null && form.recipe !== null)
                 {
-                    return;
-                }
-
-                if(form.recipe === 'NULL')
-                {
-                    this.deleteObjectProperty(currentObject, 'mCurrentRecipe');
-                }
-                else
-                {
-                    if(mCurrentRecipe === null)
+                    if(form.recipe === 'NULL')
                     {
-                         currentObject.properties.push({name: "mCurrentRecipe", type: "ObjectProperty", value: {levelName: "", pathName: form.recipe}});
+                        this.deleteObjectProperty(currentObject, 'mCurrentRecipe');
                     }
                     else
                     {
-                        mCurrentRecipe.pathName = form.recipe;
+                        if(mCurrentRecipe === null)
+                        {
+                             currentObject.properties.push({name: "mCurrentRecipe", type: "ObjectProperty", value: {levelName: "", pathName: form.recipe}});
+                        }
+                        else
+                        {
+                            mCurrentRecipe.pathName = form.recipe;
+                        }
                     }
-                }
 
-                //TODO: Clean output inventories...
+                    //TODO: Clean output inventories...
+                }
             }.bind(this)
         });
     }
@@ -5041,8 +5017,6 @@ export default class BaseLayout
 
     updateObjectClockSpeed(marker)
     {
-        this.satisfactoryMap.pauseMap();
-
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
 
@@ -5065,64 +5039,60 @@ export default class BaseLayout
             ],
             callback    : function(form)
             {
-                this.satisfactoryMap.unpauseMap();
-
-                if(form === null || form.clockSpeed === null || form.useOwnPowershards === null)
+                if(form !== null && form.clockSpeed !== null && form.useOwnPowershards !== null)
                 {
-                    return;
-                }
+                    let clockSpeed          = Math.max(1, Math.min(Math.round(form.clockSpeed), 250));
+                    let totalPowerShards    = Math.ceil((clockSpeed - 100) / 50);
 
-                let clockSpeed          = Math.max(1, Math.min(Math.round(form.clockSpeed), 250));
-                let totalPowerShards    = Math.ceil((clockSpeed - 100) / 50);
-
-                if(totalPowerShards > 0)
-                {
-                    let potentialInventory = this.getObjectInventory(currentObject, 'mInventoryPotential', true);
-                        if(potentialInventory !== null)
-                        {
-                            for(let i = 0; i < potentialInventory.properties.length; i++)
+                    if(totalPowerShards > 0)
+                    {
+                        let potentialInventory = this.getObjectInventory(currentObject, 'mInventoryPotential', true);
+                            if(potentialInventory !== null)
                             {
-                                if(potentialInventory.properties[i].name === 'mInventoryStacks')
+                                for(let i = 0; i < potentialInventory.properties.length; i++)
                                 {
-                                    for(let j = 0; j < totalPowerShards; j++)
+                                    if(potentialInventory.properties[i].name === 'mInventoryStacks')
                                     {
-                                        if(parseInt(form.useOwnPowershards) === 1)
+                                        for(let j = 0; j < totalPowerShards; j++)
                                         {
-                                            let result = this.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
-                                                if(result === false)
-                                                {
-                                                    clockSpeed = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
-                                                    break;
-                                                }
-                                        }
+                                            if(parseInt(form.useOwnPowershards) === 1)
+                                            {
+                                                let result = this.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
+                                                    if(result === false)
+                                                    {
+                                                        clockSpeed = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
+                                                        break;
+                                                    }
+                                            }
 
-                                        potentialInventory.properties[i].value.values[j][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                        this.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, 'NumItems', 1, 'IntProperty');
+                                            potentialInventory.properties[i].value.values[j][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
+                                            this.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, 'NumItems', 1, 'IntProperty');
+                                        }
                                     }
                                 }
                             }
-                        }
-                }
+                    }
 
-                this.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
-                this.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+                    this.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
+                    this.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
 
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
-                {
-                    // Update all linked extractors
-                    let satellites  = Building_FrackingSmasher.getSatellites(this, currentObject);
-                        for(let i = 0; i < satellites.length; i++)
-                        {
-                            if(satellites[i].options.extractorPathName !== undefined)
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
+                    {
+                        // Update all linked extractors
+                        let satellites  = Building_FrackingSmasher.getSatellites(this, currentObject);
+                            for(let i = 0; i < satellites.length; i++)
                             {
-                                let currentExtractor = this.saveGameParser.getTargetObject(satellites[i].options.extractorPathName);
-                                    if(currentExtractor !== null)
-                                    {
-                                        this.setObjectProperty(currentExtractor, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
-                                        this.setObjectProperty(currentExtractor, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
-                                    }
+                                if(satellites[i].options.extractorPathName !== undefined)
+                                {
+                                    let currentExtractor = this.saveGameParser.getTargetObject(satellites[i].options.extractorPathName);
+                                        if(currentExtractor !== null)
+                                        {
+                                            this.setObjectProperty(currentExtractor, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
+                                            this.setObjectProperty(currentExtractor, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+                                        }
+                                }
                             }
-                        }
+                    }
                 }
             }.bind(this)
         });
@@ -5962,7 +5932,6 @@ export default class BaseLayout
     {
         let message                 = '';
         let selectedMarkersLength   = 0;
-            this.satisfactoryMap.pauseMap();
 
         if(markers !== null)
         {
@@ -6469,7 +6438,6 @@ export default class BaseLayout
         }
 
         this.updateRadioactivityLayer();
-        this.ficsitRadioactiveAlert = undefined;
         this.cancelSelectMultipleMarkers();
     }
 
@@ -6484,7 +6452,6 @@ export default class BaseLayout
         }
 
         this.updateRadioactivityLayer();
-        this.ficsitRadioactiveAlert = undefined;
         this.cancelSelectMultipleMarkers();
     }
 
@@ -6794,7 +6761,6 @@ export default class BaseLayout
     {
         this.markersSelected = undefined;
         this.satisfactoryMap.leafletMap.selectAreaFeature.removeSelectedArea();
-
         this.satisfactoryMap.unpauseMap();
     }
 

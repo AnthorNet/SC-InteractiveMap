@@ -338,88 +338,8 @@ export default class Building_Light
             }],
             callback    : function(values)
             {
-                if(values === null)
+                if(values !== null)
                 {
-                    return;
-                }
-                let connectedLights     = [];
-                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/LightsControlPanel/Build_LightsControlPanel.Build_LightsControlPanel_C')
-                    {
-                        connectedLights = Building_Light.getConnectedLights(baseLayout, currentObject);
-                    }
-                    else
-                    {
-                        connectedLights.push(currentObject);
-                    }
-
-                    for(let i = 0; i < connectedLights.length; i++)
-                    {
-                        let currentLight        = connectedLights[i];
-                        let currentLightMarker  = baseLayout.getMarkerFromPathName(currentLight.pathName, 'playerLightsLayer');
-                        let mLightControlData   = Building_Light.getControlData(this, currentLight);
-                            if(mLightControlData !== null)
-                            {
-                                let newSlotIndex = parseInt(values.slotIndex);
-
-                                if(slotIndex === 0)
-                                {
-                                    mLightControlData.values.push({name: "ColorSlotIndex", type: "IntProperty", value: newSlotIndex});
-                                }
-                                else
-                                {
-                                    for(let i = 0; i < mLightControlData.values.length; i++)
-                                    {
-                                        if(mLightControlData.values[i].name === 'ColorSlotIndex')
-                                        {
-                                            if(newSlotIndex === 0)
-                                            {
-                                                mLightControlData.values.splice(i, 1);
-                                            }
-                                            else
-                                            {
-                                                mLightControlData.values[i].value = newSlotIndex;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if(currentLightMarker.options.haloMarker !== undefined)
-                                {
-                                    this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(currentLightMarker.options.haloMarker);
-                                }
-                                this.refreshMarkerPosition({marker: currentLightMarker, transform: currentLight.transform, object: currentLight});
-                            }
-                    }
-            }.bind(baseLayout)
-        });
-    }
-
-    static updateIntensity(marker)
-    {
-        let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
-        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let intensity       = Building_Light.getIntensity(baseLayout, currentObject);
-
-            Modal.form({
-                title       : 'Update "<strong>' + buildingData.name + '</strong>" intensity',
-                container   : '#leafletMap',
-                inputs      : [{
-                    name        : 'intensity',
-                    inputType   : 'number',
-                    min         : 0,
-                    max         : 100,
-                    value       : Math.round(intensity)
-                }],
-                callback    : function(values)
-                {
-                    this.satisfactoryMap.unpauseMap();
-
-                    if(values === null)
-                    {
-                        return;
-                    }
                     let connectedLights     = [];
                         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/LightsControlPanel/Build_LightsControlPanel.Build_LightsControlPanel_C')
                         {
@@ -437,25 +357,25 @@ export default class Building_Light
                             let mLightControlData   = Building_Light.getControlData(this, currentLight);
                                 if(mLightControlData !== null)
                                 {
-                                    let newIntensity = parseFloat(values.intensity);
+                                    let newSlotIndex = parseInt(values.slotIndex);
 
-                                    if(intensity === 50)
+                                    if(slotIndex === 0)
                                     {
-                                        mLightControlData.values.push({name: "Intensity", type: "FloatProperty", value: (newIntensity / 5)});
+                                        mLightControlData.values.push({name: "ColorSlotIndex", type: "IntProperty", value: newSlotIndex});
                                     }
                                     else
                                     {
                                         for(let i = 0; i < mLightControlData.values.length; i++)
                                         {
-                                            if(mLightControlData.values[i].name === 'Intensity')
+                                            if(mLightControlData.values[i].name === 'ColorSlotIndex')
                                             {
-                                                if(newIntensity === 50)
+                                                if(newSlotIndex === 0)
                                                 {
                                                     mLightControlData.values.splice(i, 1);
                                                 }
                                                 else
                                                 {
-                                                    mLightControlData.values[i].value = (newIntensity / 5);
+                                                    mLightControlData.values[i].value = newSlotIndex;
                                                 }
                                             }
                                         }
@@ -468,6 +388,81 @@ export default class Building_Light
                                     this.refreshMarkerPosition({marker: currentLightMarker, transform: currentLight.transform, object: currentLight});
                                 }
                         }
+                }
+            }.bind(baseLayout)
+        });
+    }
+
+    static updateIntensity(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let intensity       = Building_Light.getIntensity(baseLayout, currentObject);
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" intensity',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'intensity',
+                    inputType   : 'number',
+                    min         : 0,
+                    max         : 100,
+                    value       : Math.round(intensity)
+                }],
+                callback    : function(values)
+                {
+                    if(values !== null)
+                    {
+                        let connectedLights     = [];
+                            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/LightsControlPanel/Build_LightsControlPanel.Build_LightsControlPanel_C')
+                            {
+                                connectedLights = Building_Light.getConnectedLights(baseLayout, currentObject);
+                            }
+                            else
+                            {
+                                connectedLights.push(currentObject);
+                            }
+
+                            for(let i = 0; i < connectedLights.length; i++)
+                            {
+                                let currentLight        = connectedLights[i];
+                                let currentLightMarker  = baseLayout.getMarkerFromPathName(currentLight.pathName, 'playerLightsLayer');
+                                let mLightControlData   = Building_Light.getControlData(this, currentLight);
+                                    if(mLightControlData !== null)
+                                    {
+                                        let newIntensity = parseFloat(values.intensity);
+
+                                        if(intensity === 50)
+                                        {
+                                            mLightControlData.values.push({name: "Intensity", type: "FloatProperty", value: (newIntensity / 5)});
+                                        }
+                                        else
+                                        {
+                                            for(let i = 0; i < mLightControlData.values.length; i++)
+                                            {
+                                                if(mLightControlData.values[i].name === 'Intensity')
+                                                {
+                                                    if(newIntensity === 50)
+                                                    {
+                                                        mLightControlData.values.splice(i, 1);
+                                                    }
+                                                    else
+                                                    {
+                                                        mLightControlData.values[i].value = (newIntensity / 5);
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if(currentLightMarker.options.haloMarker !== undefined)
+                                        {
+                                            this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(currentLightMarker.options.haloMarker);
+                                        }
+                                        this.refreshMarkerPosition({marker: currentLightMarker, transform: currentLight.transform, object: currentLight});
+                                    }
+                            }
+                    }
                 }.bind(baseLayout)
             });
     }

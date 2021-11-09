@@ -8,9 +8,7 @@ export default class Modal_Object_CustomColor
 {
     static getHTML(marker)
     {
-        let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
-
+        let baseLayout              = marker.baseLayout;
         let currentObject           = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData            = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -32,17 +30,11 @@ export default class Modal_Object_CustomColor
             }],
             callback    : function(values)
             {
-                baseLayout.satisfactoryMap.unpauseMap();
-
-                if(values === null)
+                if(values !== null)
                 {
-                    return;
+                    baseLayout.buildableSubSystem.setObjectCustomColor(currentObject, values.primaryColor, values.secondaryColor);
+                    marker.relatedTarget.fire('mouseout'); // Trigger a redraw
                 }
-
-                console.log(values);
-
-                baseLayout.buildableSubSystem.setObjectCustomColor(currentObject, values.primaryColor, values.secondaryColor);
-                marker.relatedTarget.fire('mouseout'); // Trigger a redraw
             }
         });
     }

@@ -185,26 +185,25 @@ export default class Building_SpaceElevator
                 }],
                 callback    : function(values)
                 {
-                    if(values === null)
+                    if(values !== null)
                     {
-                        return;
-                    }
-                    Building_SpaceElevator.initiate(baseLayout);
+                        Building_SpaceElevator.initiate(baseLayout);
 
-                    let phaseManager    = Building_SpaceElevator.getManager(baseLayout);
-                    let mGamePhase      = baseLayout.getObjectProperty(phaseManager, 'mGamePhase');
-                        if(mGamePhase === null)
-                        {
-                            phaseManager.properties.push({
-                                name: "mGamePhase",
-                                type: "ByteProperty",
-                                value: {enumName    : "EGamePhase", valueName: values.mGamePhase}
-                            });
-                        }
-                        else
-                        {
-                            mGamePhase.valueName    = values.mGamePhase;
-                        }
+                        let phaseManager    = Building_SpaceElevator.getManager(baseLayout);
+                        let mGamePhase      = baseLayout.getObjectProperty(phaseManager, 'mGamePhase');
+                            if(mGamePhase === null)
+                            {
+                                phaseManager.properties.push({
+                                    name: "mGamePhase",
+                                    type: "ByteProperty",
+                                    value: {enumName    : "EGamePhase", valueName: values.mGamePhase}
+                                });
+                            }
+                            else
+                            {
+                                mGamePhase.valueName    = values.mGamePhase;
+                            }
+                    }
                 }.bind(baseLayout)
             });
     }

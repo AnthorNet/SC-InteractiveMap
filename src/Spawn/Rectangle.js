@@ -157,6 +157,5 @@ export default class Spawn_Rectangle
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
         this.baseLayout.setBadgeLayerCount('playerFoundationsLayer');
-        this.baseLayout.satisfactoryMap.unpauseMap();
     }
 }

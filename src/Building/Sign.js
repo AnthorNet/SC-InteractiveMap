@@ -589,7 +589,6 @@ export default class Building_Sign
     static updateText(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -603,42 +602,38 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    this.satisfactoryMap.unpauseMap();
-
-                    if(values === null)
+                    if(values !== null)
                     {
-                        return;
-                    }
-
-                    let mPrefabTextElementSaveData = baseLayout.getObjectProperty(currentObject, 'mPrefabTextElementSaveData');
-                        if(mPrefabTextElementSaveData !== null)
-                        {
-                            for(let i = 0; i < mPrefabTextElementSaveData.values.length; i++)
+                        let mPrefabTextElementSaveData = baseLayout.getObjectProperty(currentObject, 'mPrefabTextElementSaveData');
+                            if(mPrefabTextElementSaveData !== null)
                             {
-                                let currentValues   = mPrefabTextElementSaveData.values[i];
-                                let elementName     = null;
-                                let text            = null;
-                                let textKey         = 0;
-                                    for(let j = 0; j < currentValues.length; j++)
-                                    {
-                                        if(currentValues[j].name === 'ElementName')
+                                for(let i = 0; i < mPrefabTextElementSaveData.values.length; i++)
+                                {
+                                    let currentValues   = mPrefabTextElementSaveData.values[i];
+                                    let elementName     = null;
+                                    let text            = null;
+                                    let textKey         = 0;
+                                        for(let j = 0; j < currentValues.length; j++)
                                         {
-                                            elementName = currentValues[j].value;
+                                            if(currentValues[j].name === 'ElementName')
+                                            {
+                                                elementName = currentValues[j].value;
+                                            }
+                                            if(currentValues[j].name === 'Text')
+                                            {
+                                                text    = currentValues[j].value;
+                                                textKey = j;
+                                            }
                                         }
-                                        if(currentValues[j].name === 'Text')
-                                        {
-                                            text    = currentValues[j].value;
-                                            textKey = j;
-                                        }
-                                    }
 
-                                    if(elementName !== null && text !== null && elementName === 'Name')
-                                    {
-                                        mPrefabTextElementSaveData.values[i][textKey].value = values.mPrefabTextElementSaveData;
-                                        return;
-                                    }
+                                        if(elementName !== null && text !== null && elementName === 'Name')
+                                        {
+                                            mPrefabTextElementSaveData.values[i][textKey].value = values.mPrefabTextElementSaveData;
+                                            return;
+                                        }
+                                }
                             }
-                        }
+                    }
                 }.bind(baseLayout)
             });
     }
@@ -646,7 +641,6 @@ export default class Building_Sign
     static updateLabel(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -660,42 +654,38 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    this.satisfactoryMap.unpauseMap();
-
-                    if(values === null)
+                    if(values !== null)
                     {
-                        return;
-                    }
-
-                    let mPrefabTextElementSaveData = baseLayout.getObjectProperty(currentObject, 'mPrefabTextElementSaveData');
-                        if(mPrefabTextElementSaveData !== null)
-                        {
-                            for(let i = 0; i < mPrefabTextElementSaveData.values.length; i++)
+                        let mPrefabTextElementSaveData = baseLayout.getObjectProperty(currentObject, 'mPrefabTextElementSaveData');
+                            if(mPrefabTextElementSaveData !== null)
                             {
-                                let currentValues   = mPrefabTextElementSaveData.values[i];
-                                let elementName     = null;
-                                let text            = null;
-                                let textKey         = 0;
-                                    for(let j = 0; j < currentValues.length; j++)
-                                    {
-                                        if(currentValues[j].name === 'ElementName')
+                                for(let i = 0; i < mPrefabTextElementSaveData.values.length; i++)
+                                {
+                                    let currentValues   = mPrefabTextElementSaveData.values[i];
+                                    let elementName     = null;
+                                    let text            = null;
+                                    let textKey         = 0;
+                                        for(let j = 0; j < currentValues.length; j++)
                                         {
-                                            elementName = currentValues[j].value;
+                                            if(currentValues[j].name === 'ElementName')
+                                            {
+                                                elementName = currentValues[j].value;
+                                            }
+                                            if(currentValues[j].name === 'Text')
+                                            {
+                                                text    = currentValues[j].value;
+                                                textKey = j;
+                                            }
                                         }
-                                        if(currentValues[j].name === 'Text')
-                                        {
-                                            text    = currentValues[j].value;
-                                            textKey = j;
-                                        }
-                                    }
 
-                                    if(elementName !== null && text !== null && elementName === 'Label')
-                                    {
-                                        mPrefabTextElementSaveData.values[i][textKey].value = values.mPrefabTextElementSaveData;
-                                        return;
-                                    }
+                                        if(elementName !== null && text !== null && elementName === 'Label')
+                                        {
+                                            mPrefabTextElementSaveData.values[i][textKey].value = values.mPrefabTextElementSaveData;
+                                            return;
+                                        }
+                                }
                             }
-                        }
+                    }
                 }.bind(baseLayout)
             });
     }

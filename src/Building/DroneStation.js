@@ -120,7 +120,6 @@ export default class Building_DroneStation
     static updateSign(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let currentSign     = Building_DroneStation.getSign(baseLayout, currentObject);
@@ -135,20 +134,16 @@ export default class Building_DroneStation
                 }],
                 callback    : function(values)
                 {
-                    this.satisfactoryMap.unpauseMap();
-
-                    if(values === null)
+                    if(values !== null)
                     {
-                        return;
-                    }
-
-                    if(values.mBuildingTag !== '')
-                    {
-                        let mInfo = Building_DroneStation.getInformation(this, currentObject);
-                            if(mInfo !== null)
-                            {
-                                this.setObjectProperty(mInfo, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
-                            }
+                        if(values.mBuildingTag !== '')
+                        {
+                            let mInfo = Building_DroneStation.getInformation(this, currentObject);
+                                if(mInfo !== null)
+                                {
+                                    this.setObjectProperty(mInfo, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
+                                }
+                        }
                     }
                 }.bind(baseLayout)
             });

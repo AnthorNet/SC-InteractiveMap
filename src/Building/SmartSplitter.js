@@ -103,7 +103,6 @@ export default class Building_SmartSplitter
     static updateRules(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -156,36 +155,32 @@ export default class Building_SmartSplitter
                 }],
                 callback    : function(values)
                 {
-                    this.satisfactoryMap.unpauseMap();
-
-                    if(values === null)
+                    if(values !== null)
                     {
-                        return;
+                        baseLayout.deleteObjectProperty(currentObject, 'mSortRules');
+
+                        let mSortRules = {
+                                name: "mSortRules", type: "ArrayProperty", value: {type: "StructProperty", values: []},
+                                structureName: "mSortRules", structureType: "StructProperty", structureSubType: "SplitterSortRule"
+                            };
+                            for(let outputIndex in values)
+                            {
+                                if(Array.isArray(values[outputIndex]) === false)
+                                {
+                                    values[outputIndex] = [values[outputIndex]];
+                                }
+
+                                for(let i = 0; i < values[outputIndex].length; i++)
+                                {
+                                    mSortRules.value.values.push([
+                                        {name: "ItemClass", type: "ObjectProperty", value: {levelName: "", pathName: values[outputIndex][i]}},
+                                        {name: "OutputIndex", type: "IntProperty", value: parseInt(outputIndex)}
+                                    ]);
+                                }
+                            }
+
+                            currentObject.properties.push(mSortRules);
                     }
-
-                    baseLayout.deleteObjectProperty(currentObject, 'mSortRules');
-
-                    let mSortRules = {
-                            name: "mSortRules", type: "ArrayProperty", value: {type: "StructProperty", values: []},
-                            structureName: "mSortRules", structureType: "StructProperty", structureSubType: "SplitterSortRule"
-                        };
-                        for(let outputIndex in values)
-                        {
-                            if(Array.isArray(values[outputIndex]) === false)
-                            {
-                                values[outputIndex] = [values[outputIndex]];
-                            }
-
-                            for(let i = 0; i < values[outputIndex].length; i++)
-                            {
-                                mSortRules.value.values.push([
-                                    {name: "ItemClass", type: "ObjectProperty", value: {levelName: "", pathName: values[outputIndex][i]}},
-                                    {name: "OutputIndex", type: "IntProperty", value: parseInt(outputIndex)}
-                                ]);
-                            }
-                        }
-
-                        currentObject.properties.push(mSortRules);
                 }.bind(baseLayout)
             });
     }

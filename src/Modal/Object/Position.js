@@ -6,9 +6,7 @@ export default class Modal_Object_Position
 {
     static getHTML(marker)
     {
-        let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
-
+        let baseLayout          = marker.baseLayout;
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -70,58 +68,54 @@ export default class Modal_Object_Position
             ],
             callback    : function(form)
             {
-                baseLayout.satisfactoryMap.unpauseMap();
-
-                if(form === null || form.x === null || form.y === null || form.z === null || form.pitch === null || form.roll === null || form.yaw === null)
+                if(form !== null && form.x !== null && form.y !== null && form.z !== null && form.pitch !== null && form.roll !== null && form.yaw !== null)
                 {
-                    return;
+                    form.x                                  = parseFloat(form.x);
+                    form.y                                  = parseFloat(form.y);
+                    form.z                                  = parseFloat(form.z);
+                    form.pitch                              = parseFloat(form.pitch);
+                    form.roll                               = parseFloat(form.roll);
+                    form.yaw                                = parseFloat(form.yaw);
+
+                    if(buildingData !== null && buildingData.mapCorrectedAngle !== undefined)
+                    {
+                        form.yaw -= buildingData.mapCorrectedAngle;
+                        form.yaw  = BaseLayout_Math.clampEulerAxis(form.yaw);
+                    }
+
+                    if(baseLayout.history !== null)
+                    {
+                        baseLayout.history.add({
+                            name: 'Undo: Update position',
+                            values: [{
+                                pathName: marker.relatedTarget.options.pathName,
+                                callback: 'refreshMarkerPosition',
+                                properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
+                            }]
+                        });
+                    }
+
+                        let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
+                            if(isNaN(form.x) === false)
+                            {
+                                newTransform.translation[0] = form.x;
+                            }
+                            if(isNaN(form.y) === false)
+                            {
+                                newTransform.translation[1] = form.y;
+                            }
+                            if(isNaN(form.z) === false)
+                            {
+                                newTransform.translation[2] = form.z;
+                            }
+                            if(isNaN(form.roll) === false && isNaN(form.pitch) === false && isNaN(form.yaw) === false)
+                            {
+                                newTransform.rotation = BaseLayout_Math.getEulerToQuaternion({roll: form.roll, pitch: form.pitch, yaw: form.yaw});
+                            }
+
+                    baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: JSON.parse(JSON.stringify(newTransform)), object: currentObject});
+                    baseLayout.updateRadioactivityLayer();
                 }
-
-                form.x                                  = parseFloat(form.x);
-                form.y                                  = parseFloat(form.y);
-                form.z                                  = parseFloat(form.z);
-                form.pitch                              = parseFloat(form.pitch);
-                form.roll                               = parseFloat(form.roll);
-                form.yaw                                = parseFloat(form.yaw);
-
-                if(buildingData !== null && buildingData.mapCorrectedAngle !== undefined)
-                {
-                    form.yaw -= buildingData.mapCorrectedAngle;
-                    form.yaw  = BaseLayout_Math.clampEulerAxis(form.yaw);
-                }
-
-                if(baseLayout.history !== null)
-                {
-                    baseLayout.history.add({
-                        name: 'Undo: Update position',
-                        values: [{
-                            pathName: marker.relatedTarget.options.pathName,
-                            callback: 'refreshMarkerPosition',
-                            properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
-                        }]
-                    });
-                }
-
-                    let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
-                        if(isNaN(form.x) === false)
-                        {
-                            newTransform.translation[0] = form.x;
-                        }
-                        if(isNaN(form.y) === false)
-                        {
-                            newTransform.translation[1] = form.y;
-                        }
-                        if(isNaN(form.z) === false)
-                        {
-                            newTransform.translation[2] = form.z;
-                        }
-                        if(isNaN(form.roll) === false && isNaN(form.pitch) === false && isNaN(form.yaw) === false)
-                        {
-                            newTransform.rotation = BaseLayout_Math.getEulerToQuaternion({roll: form.roll, pitch: form.pitch, yaw: form.yaw});
-                        }
-
-                baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: JSON.parse(JSON.stringify(newTransform)), object: currentObject});
-                baseLayout.updateRadioactivityLayer();
             }
         });
 

@@ -912,7 +912,6 @@ export default class Spawn_Blueprint
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
         console.timeEnd('pasteOnFoundation');
         this.baseLayout.updateRadioactivityLayer();
-        this.baseLayout.satisfactoryMap.unpauseMap();
     }
 
 

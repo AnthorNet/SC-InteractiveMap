@@ -150,6 +150,5 @@ export default class Spawn_Circle
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
         this.baseLayout.setBadgeLayerCount('playerFoundationsLayer');
-        this.baseLayout.satisfactoryMap.unpauseMap();
     }
 }

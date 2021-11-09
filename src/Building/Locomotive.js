@@ -168,7 +168,6 @@ export default class Building_Locomotive
     static updateSign(marker)
     {
         let baseLayout      = marker.baseLayout;
-            baseLayout.satisfactoryMap.pauseMap();
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -185,34 +184,30 @@ export default class Building_Locomotive
                 }],
                 callback    : function(values)
                 {
-                    this.satisfactoryMap.unpauseMap();
-
-                    if(values === null)
+                    if(values !== null)
                     {
-                        return;
-                    }
-
-                    if(values.mTrainName !== '')
-                    {
-                        if(mTrainName !== null)
+                        if(values.mTrainName !== '')
                         {
-                            this.setObjectProperty(information, 'mTrainName', values.mTrainName);
+                            if(mTrainName !== null)
+                            {
+                                this.setObjectProperty(information, 'mTrainName', values.mTrainName);
+                            }
+                            else
+                            {
+                                information.properties.push({
+                                    flags                       : 18,
+                                    hasCultureInvariantString   : 1,
+                                    historyType                 : 255,
+                                    name                        : "mTrainName",
+                                    type                        : "TextProperty",
+                                    value                       : values.mTrainName
+                                });
+                            }
                         }
                         else
                         {
-                            information.properties.push({
-                                flags                       : 18,
-                                hasCultureInvariantString   : 1,
-                                historyType                 : 255,
-                                name                        : "mTrainName",
-                                type                        : "TextProperty",
-                                value                       : values.mTrainName
-                            });
+                            this.deleteObjectProperty(information, 'mTrainName');
                         }
-                    }
-                    else
-                    {
-                        this.deleteObjectProperty(information, 'mTrainName');
                     }
                 }.bind(baseLayout)
             });
