@@ -825,8 +825,6 @@ export default class Map
         this.leafletMap.doubleClickZoom.disable();
         this.leafletMap.scrollWheelZoom.disable();
         this.leafletMap.boxZoom.disable();
-
-        //console.log(this.leafletMap);
     }
 
     unpauseMap()

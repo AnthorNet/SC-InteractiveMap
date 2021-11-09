@@ -1078,6 +1078,7 @@ export default class BaseLayout
             this.altitudeSliderControl.startSlider();
 
             // Canvas event forwarder
+            //TODO: Fix the forwarding...
             this.canvasEventForwarder = new L.eventForwarder({map: this.satisfactoryMap.leafletMap});
             this.canvasEventForwarder.enable();
 

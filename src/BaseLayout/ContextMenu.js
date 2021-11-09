@@ -81,7 +81,7 @@ export default class BaseLayout_ContextMenu
                         callback: SubSystem_Player.fillInventoryFrom
                     });
                     */
-                    contextMenu.push({separator: true});
+                    contextMenu.push('-');
                     contextMenu.push({
                         text    : 'Delete "Loot Crate"',
                         callback: this.baseLayout.deletePlayerLootCrate.bind(this.baseLayout)
@@ -125,7 +125,7 @@ export default class BaseLayout_ContextMenu
                             });
                         }
                     */
-                    contextMenu.push({separator: true});
+                    contextMenu.push('-');
                     break;
                 case '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C':
                 case '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C':
@@ -175,7 +175,7 @@ export default class BaseLayout_ContextMenu
                             callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
                         });
 
-                        contextMenu.push({separator: true});
+                        contextMenu.push('-');
                     }
 
                     if(
@@ -201,7 +201,7 @@ export default class BaseLayout_ContextMenu
                             });
                         }
 
-                        contextMenu.push({separator: true});
+                        contextMenu.push('-');
                     }
 
                     if(buildingData.category === 'wall' && (currentObject.className.includes('_Door_') || currentObject.className.includes('_CDoor_') || currentObject.className.includes('_SDoor_') || currentObject.className.includes('_Gate_Automated_')))
@@ -288,7 +288,7 @@ export default class BaseLayout_ContextMenu
 
                     if(buildingData.category === 'production')
                     {
-                        contextMenu.push({separator: true});
+                        contextMenu.push('-');
                         contextMenu.push({
                             text    : 'Update "' + buildingData.name + '" recipe',
                             callback: this.baseLayout.editPlayerProductionBuildingRecipe.bind(this.baseLayout)
@@ -326,7 +326,7 @@ export default class BaseLayout_ContextMenu
 
                             if(inventoryType === 'solid')
                             {
-                                contextMenu.push({separator: true});
+                                contextMenu.push('-');
                                 if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className) === false)
                                 {
                                     contextMenu.push({
@@ -348,7 +348,7 @@ export default class BaseLayout_ContextMenu
                     let currentObjectPipeNetwork = this.baseLayout.getObjectPipeNetwork(currentObject);
                         if(currentObjectPipeNetwork !== null)
                         {
-                            contextMenu.push({separator: true});
+                            contextMenu.push('-');
                             contextMenu.push({
                                 text    : 'Update pipe network fluid',
                                 callback: this.baseLayout.updatePipeNetworkFluid.bind(this.baseLayout)
@@ -366,7 +366,7 @@ export default class BaseLayout_ContextMenu
                         let poolIndex   = usePool.indexOf(currentObject.className);
                             if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
                             {
-                                contextMenu.push({separator: true});
+                                contextMenu.push('-');
 
                                 if(poolIndex > 0)
                                 {
@@ -408,7 +408,7 @@ export default class BaseLayout_ContextMenu
                         let poolIndex   = usePool.indexOf(currentObject.className);
                             if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
                             {
-                                contextMenu.push({separator: true});
+                                contextMenu.push('-');
 
                                 if(poolIndex > 0)
                                 {
@@ -446,7 +446,7 @@ export default class BaseLayout_ContextMenu
                         let poolIndex   = usePool.indexOf(currentObject.className);
                             if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
                             {
-                                contextMenu.push({separator: true});
+                                contextMenu.push('-');
 
                                 if(poolIndex > 0)
                                 {
@@ -479,7 +479,7 @@ export default class BaseLayout_ContextMenu
                         let poolIndex   = usePool.indexOf(currentObject.className);
                             if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
                             {
-                                contextMenu.push({separator: true});
+                                contextMenu.push('-');
 
                                 if(poolIndex > 0)
                                 {
@@ -508,7 +508,7 @@ export default class BaseLayout_ContextMenu
 
                     if(['/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C', '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'].includes(currentObject.className) === false)
                     {
-                        contextMenu.push({separator: true});
+                        contextMenu.push('-');
                         contextMenu.push({
                             text    : 'Delete "' + buildingData.name + '"',
                             callback: this.baseLayout.deleteGenericBuilding.bind(this.baseLayout)
@@ -519,7 +519,7 @@ export default class BaseLayout_ContextMenu
 
         if(contextMenu.length > 0)
         {
-            contextMenu.push({separator: true});
+            contextMenu.push('-');
         }
         contextMenu.push({
             text    : 'Advanced Debug',
@@ -529,3 +529,277 @@ export default class BaseLayout_ContextMenu
         return contextMenu;
     }
 }
+
+L.Map.mergeOptions({contextmenuItems: []});
+
+L.Map.ContextMenu = L.Handler.extend({
+    _touchstart: L.Browser.msPointer ? 'MSPointerDown' : L.Browser.pointer ? 'pointerdown' : 'touchstart',
+
+    statics: { BASE_CLS: 'leaflet-contextmenu' },
+
+    initialize: function(map)
+    {
+        L.Handler.prototype.initialize.call(this, map);
+
+        this._items                     = [];
+        this._visible                   = false;
+
+        let container                   = this._container = L.DomUtil.create('div', L.Map.ContextMenu.BASE_CLS, map._container);
+            container.style.zIndex      = 10000;
+            container.style.position    = 'absolute';
+
+        if(map.options.contextmenuWidth)
+        {
+            container.style.width = map.options.contextmenuWidth + 'px';
+        }
+
+        L.DomEvent
+            .on(container, 'click', L.DomEvent.stop)
+            .on(container, 'mousedown', L.DomEvent.stop)
+            .on(container, 'dblclick', L.DomEvent.stop)
+            .on(container, 'contextmenu', L.DomEvent.stop);
+    },
+
+    insertItem: function (options, baseLayout)
+    {
+        let item = this._createItem(this._container, options, baseLayout);
+            this._items.push(item);
+
+        return item.element;
+    },
+
+    _createItem: function(container, options, baseLayout)
+    {
+        if(options === '-')
+        {
+            let separator = this._insertElement('div', L.Map.ContextMenu.BASE_CLS + '-separator', container);
+                return {id: L.Util.stamp(separator), element: separator};
+        }
+
+        let element     = this._insertElement('a', L.Map.ContextMenu.BASE_CLS + '-item', container);
+        let callback    = this._createCallback(element, options.callback, options.context, baseLayout);
+
+        element.innerHTML = options.text;
+        element.href = '#';
+
+        L.DomEvent
+            .on(element, 'mouseover', this._onItemMouseOver, this)
+            .on(element, 'mouseout', this._onItemMouseOut, this)
+            .on(element, 'mousedown', L.DomEvent.stopPropagation)
+            .on(element, 'click', callback);
+
+        if(L.Browser.touch)
+        {
+            L.DomEvent.on(element, this._touchstart, L.DomEvent.stopPropagation);
+        }
+
+        // Devices without a mouse fire "mouseover" on tap, but never “mouseout"
+        if(!L.Browser.pointer)
+        {
+            L.DomEvent.on(element, 'click', this._onItemMouseOut, this);
+        }
+
+        return {
+            id: L.Util.stamp(element),
+            element: element,
+            callback: callback
+        };
+    },
+
+    _createCallback: function(element, callback, context, baseLayout)
+    {
+        return function(e)
+        {
+            if(L.DomUtil.hasClass(element, L.Map.ContextMenu.BASE_CLS + '-item-disabled'))
+            {
+                return;
+            }
+
+            let data                = {};
+                data.containerPoint = this._showLocation.containerPoint;
+                data.layerPoint     = this._map.containerPointToLayerPoint(data.containerPoint);
+                data.latlng         = this._map.layerPointToLatLng(data.layerPoint);
+                data.relatedTarget  = this._showLocation.relatedTarget;
+                data.baseLayout     = baseLayout;
+
+            this._hide();
+
+            if(callback)
+            {
+                callback.call(context || this._map, data);
+            }
+        }.bind(this);
+    },
+
+    _insertElement: function(tagName, className, container)
+    {
+        let element              = document.createElement(tagName);
+            element.className    = className;
+
+        container.appendChild(element);
+
+        return element;
+    },
+
+    showAtPoint: function(pt, data)
+    {
+        if(pt instanceof L.LatLng)
+        {
+            pt = this._map.latLngToContainerPoint(pt);
+        }
+
+        if(this._items.length > 0)
+        {
+            this._showLocation = {containerPoint: pt};
+
+            if(data && data.relatedTarget)
+            {
+                this._showLocation.relatedTarget = data.relatedTarget;
+            }
+
+            this._setPosition(pt);
+
+            if(!this._visible)
+            {
+                this._container.style.display = 'block';
+                this._visible = true;
+                this._map.on('mousedown zoomstart movestart', this._hide, this);
+            }
+        }
+        L.DomEvent.stopPropagation(data);
+    },
+
+    _hide: function()
+    {
+        if(this._visible)
+        {
+            this._visible                   = false;
+            this._container.style.display   = 'none';
+
+            for(let i = 0; i < this._items.length; i++)
+            {
+                let element = this._items[i].element;
+                    if(this._items[i].callback)
+                    {
+                        L.DomEvent
+                            .off(element, 'mouseover', this._onItemMouseOver, this)
+                            .off(element, 'mouseover', this._onItemMouseOut, this)
+                            .off(element, 'mousedown', L.DomEvent.stopPropagation)
+                            .off(element, 'click', this._items[i].callback);
+
+                        if(L.Browser.touch)
+                        {
+                            L.DomEvent.off(element, this._touchstart, L.DomEvent.stopPropagation);
+                        }
+
+                        if(!L.Browser.pointer)
+                        {
+                            L.DomEvent.on(element, 'click', this._onItemMouseOut, this);
+                        }
+                    }
+
+                this._container.removeChild(element);
+            }
+
+            this._items = [];
+
+            this._map.off('mousedown zoomstart movestart', this._hide, this);
+        }
+    },
+
+    _setPosition: function(pt)
+    {
+        let mapSize         = this._map.getSize();
+        let containerSize   = this._getElementSize(this._container);
+
+        this._container._leaflet_pos = pt;
+
+        if(pt.x + containerSize.x > mapSize.x)
+        {
+            this._container.style.left      = 'auto';
+            this._container.style.right     = Math.min(Math.max(mapSize.x - pt.x, 0), mapSize.x - containerSize.x - 1) + 'px';
+        }
+        else
+        {
+            this._container.style.left      = Math.max(pt.x, 0) + 'px';
+            this._container.style.right     = 'auto';
+        }
+
+        if(pt.y + containerSize.y > mapSize.y)
+        {
+            this._container.style.top       = 'auto';
+            this._container.style.bottom    = Math.min(Math.max(mapSize.y - pt.y, 0), mapSize.y - containerSize.y - 1) + 'px';
+        }
+        else
+        {
+            this._container.style.top       = Math.max(pt.y, 0) + 'px';
+            this._container.style.bottom    = 'auto';
+        }
+    },
+
+    _getElementSize: function(element)
+    {
+        let initialDisplay  = element.style.display;
+        let size            = {};
+
+            element.style.left = '-999999px';
+            element.style.right = 'auto';
+            element.style.display = 'block';
+
+            size.x = element.offsetWidth;
+            size.y = element.offsetHeight;
+
+            element.style.left = 'auto';
+            element.style.display = initialDisplay;
+
+        return size;
+    },
+
+    _onItemMouseOver: function(e)
+    {
+        L.DomUtil.addClass(e.target || e.srcElement, 'over');
+    },
+
+    _onItemMouseOut: function(e)
+    {
+        L.DomUtil.removeClass(e.target || e.srcElement, 'over');
+    }
+});
+
+L.Mixin.ContextMenu = {
+    bindContextMenu: function(baseLayout)
+    {
+        this.baseLayout = baseLayout;
+        this._items     = [];
+        this.on('contextmenu', this._showContextMenu, this);
+
+        return this;
+    },
+
+    _showContextMenu: function(e)
+    {
+        if(this.baseLayout !== undefined)
+        {
+            let currentMarkerOptions = this.baseLayout.getContextMenu(this);
+                if(currentMarkerOptions !== false && currentMarkerOptions.length > 0)
+                {
+                    for(let i = 0; i < currentMarkerOptions.length; i++)
+                    {
+                        this._items.push(this._map.contextmenu.insertItem(
+                            currentMarkerOptions[i],
+                            this.baseLayout
+                        ));
+                    }
+
+                    this._map.contextmenu.showAtPoint(
+                        this._map.mouseEventToContainerPoint(e.originalEvent),
+                        L.extend({relatedTarget: this}, e)
+                    );
+                }
+        }
+    }
+};
+
+L.Map.addInitHook('addHandler', 'contextmenu', L.Map.ContextMenu);
+L.Marker.include(L.Mixin.ContextMenu);
+L.Path.include(L.Mixin.ContextMenu);
