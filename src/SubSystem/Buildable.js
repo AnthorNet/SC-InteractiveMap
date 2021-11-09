@@ -124,7 +124,7 @@ export default class SubSystem_Buildable
         let mCustomizationData = this.baseLayout.getObjectProperty(currentObject, 'mCustomizationData');
             if(mCustomizationData !== null)
             {
-                for(let i = 0; i < mCustomizationData.values.length; i++)
+                for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
                 {
                     if(mCustomizationData.values[i].name === 'SwatchDesc')
                     {
@@ -143,6 +143,17 @@ export default class SubSystem_Buildable
                                 mCustomizationData.values[i].value.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot' + slotIndex + '.SwatchDesc_Slot' + slotIndex + '_C';
                         }
                     }
+
+                    if(mCustomizationData.values[i].name === 'OverrideColorData')
+                    {
+                        mCustomizationData.values.splice(i, 1);
+                    }
+                }
+
+                if(slotIndex === 255)
+                {
+                    let customColor = this.getPlayerCustomColor();
+                        this.setObjectCustomColor(currentObject, customColor.primaryColor, customColor.secondaryColor);
                 }
             }
 
@@ -153,6 +164,55 @@ export default class SubSystem_Buildable
             type    : 'ByteProperty',
             value   : {enumName: 'None', value: slotIndex}
         });
+    }
+
+    setObjectCustomColor(currentObject, primaryColor, secondaryColor)
+    {
+        let mCustomizationData = this.baseLayout.getObjectProperty(currentObject, 'mCustomizationData');
+            if(mCustomizationData !== null)
+            {
+                for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
+                {
+                    if(mCustomizationData.values[i].name === 'OverrideColorData')
+                    {
+                        mCustomizationData.values.splice(i, 1);
+                    }
+                }
+
+                mCustomizationData.values.push( {
+                    name    : 'OverrideColorData',
+                    type    : 'StructProperty',
+                    value   : {
+                        type    : 'FactoryCustomizationColorSlot',
+                        values  : [
+                            {
+                                name    : 'PrimaryColor', type: 'StructProperty',
+                                value   : {
+                                    type    : 'LinearColor',
+                                    values  : {
+                                        r       : BaseLayout_Math.RGBToLinearColor(primaryColor.r),
+                                        g       : BaseLayout_Math.RGBToLinearColor(primaryColor.g),
+                                        b       : BaseLayout_Math.RGBToLinearColor(primaryColor.b),
+                                        a       : 1
+                                    }
+                                }
+                            },
+                            {
+                                name    : 'SecondaryColor', type: 'StructProperty',
+                                value   : {
+                                    type    : 'LinearColor',
+                                    values  : {
+                                        r       : BaseLayout_Math.RGBToLinearColor(secondaryColor.r),
+                                        g       : BaseLayout_Math.RGBToLinearColor(secondaryColor.g),
+                                        b       : BaseLayout_Math.RGBToLinearColor(secondaryColor.b),
+                                        a       : 1
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                });
+            }
     }
 
 
@@ -178,7 +238,7 @@ export default class SubSystem_Buildable
                                             g : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.g),
                                             b : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.b),
                                             a : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.a)
-                                        }
+                                        };
                                     }
                                 }
                             }
@@ -219,7 +279,7 @@ export default class SubSystem_Buildable
                                             g : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.g),
                                             b : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.b),
                                             a : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.a)
-                                        }
+                                        };
                                     }
                                 }
                             }
@@ -330,9 +390,9 @@ export default class SubSystem_Buildable
                         }
                     }
 
-                    if(pathName = null && this.baseLayout.players[currentPathName].isHost())
+                    if(pathName === null && this.baseLayout.players[currentPathName].isHost())
                     {
-                        break;
+                        return customColor;
                     }
                 }
 
@@ -350,17 +410,17 @@ export default class SubSystem_Buildable
                 {
                     mColorSlots_Data.values[slotIndex] = [
                         {
-                            name    : "PrimaryColor",
-                            type    : "StructProperty",
-                            value   : {type: "LinearColor", values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))}
+                            name    : 'PrimaryColor',
+                            type    : 'StructProperty',
+                            value   : {type: 'LinearColor', values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))}
                         },
                         {
-                            name    : "SecondaryColor",
-                            type    : "StructProperty",
-                            value   : {type: "LinearColor", values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
+                            name    : 'SecondaryColor',
+                            type    : 'StructProperty',
+                            value   : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
                         },
-                        {name: "Metallic", type: "FloatProperty", value: 0},
-                        {name: "Roughness", type: "FloatProperty", value: 0}
+                        {name: 'Metallic', type: 'FloatProperty', value: 0},
+                        {name: 'Roughness', type: 'FloatProperty', value: 0}
                     ];
                 }
 
@@ -421,29 +481,29 @@ export default class SubSystem_Buildable
                     console.log('Creating missing mColorSlots_Data');
 
                     mColorSlots_Data = {
-                        name                : "mColorSlots_Data",
-                        structureName       : "mColorSlots_Data",
-                        structureType       : "StructProperty",
-                        structureSubType    : "FactoryCustomizationColorSlot",
-                        type                : "ArrayProperty",
-                        value               : {type: "StructProperty", values: []}
+                        name                : 'mColorSlots_Data',
+                        structureName       : 'mColorSlots_Data',
+                        structureType       : 'StructProperty',
+                        structureSubType    : 'FactoryCustomizationColorSlot',
+                        type                : 'ArrayProperty',
+                        value               : {type: 'StructProperty', values: []}
                     };
 
                     for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                     {
                         mColorSlots_Data.value.values.push([
                             {
-                                name    : "PrimaryColor",
-                                type    : "StructProperty",
-                                value   : {type: "LinearColor", values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))}
+                                name    : 'PrimaryColor',
+                                type    : 'StructProperty',
+                                value   : {type: 'LinearColor', values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))}
                             },
                             {
-                                name    : "SecondaryColor",
-                                type    : "StructProperty",
-                                value   : {type: "LinearColor", values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
+                                name    : 'SecondaryColor',
+                                type    : 'StructProperty',
+                                value   : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
                             },
-                            {name: "Metallic", type: "FloatProperty", value: 0},
-                            {name: "Roughness", type: "FloatProperty", value: 0}
+                            {name: 'Metallic', type: 'FloatProperty', value: 0},
+                            {name: 'Roughness', type: 'FloatProperty', value: 0}
                         ]);
                     }
 
@@ -475,12 +535,12 @@ export default class SubSystem_Buildable
                 console.log('Creating missing mColorSlotsPrimary_Linear');
 
                 mColorSlotsPrimary_Linear = {
-                    name                    : "mColorSlotsPrimary_Linear",
-                    structureName           : "mColorSlotsPrimary_Linear",
-                    structureSubType        : "LinearColor",
-                    structureType           : "StructProperty",
-                    type                    : "ArrayProperty",
-                    value                   : {type: "StructProperty", values: []}
+                    name                    : 'mColorSlotsPrimary_Linear',
+                    structureName           : 'mColorSlotsPrimary_Linear',
+                    structureSubType        : 'LinearColor',
+                    structureType           : 'StructProperty',
+                    type                    : 'ArrayProperty',
+                    value                   : {type: 'StructProperty', values: []}
                 };
 
                 for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
@@ -545,12 +605,12 @@ export default class SubSystem_Buildable
                 console.log('Creating missing mColorSlotsPrimary_Linear');
 
                 mColorSlotsSecondary_Linear = {
-                    name                    : "mColorSlotsSecondary_Linear",
-                    structureName           : "mColorSlotsSecondary_Linear",
-                    structureSubType        : "LinearColor",
-                    structureType           : "StructProperty",
-                    type                    : "ArrayProperty",
-                    value                   : {type: "StructProperty", values: []}
+                    name                    : 'mColorSlotsSecondary_Linear',
+                    structureName           : 'mColorSlotsSecondary_Linear',
+                    structureSubType        : 'LinearColor',
+                    structureType           : 'StructProperty',
+                    type                    : 'ArrayProperty',
+                    value                   : {type: 'StructProperty', values: []}
                 };
 
                 for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)

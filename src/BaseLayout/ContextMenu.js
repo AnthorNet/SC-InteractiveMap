@@ -18,6 +18,7 @@ import Building_TrainStation                    from '../Building/TrainStation.j
 import Modal_Debug                              from '../Modal/Debug.js';
 import Modal_Object_Position                    from '../Modal/Object/Position.js';
 import Modal_Object_ColorSlot                   from '../Modal/Object/ColorSlot.js';
+import Modal_Object_CustomColor                 from '../Modal/Object/CustomColor.js';
 import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
 
 import SubSystem_Player                         from '../SubSystem/Player.js';
@@ -273,6 +274,16 @@ export default class BaseLayout_ContextMenu
                             callback    : Modal_Object_ColorSlot.getHTML,
                             className   : 'Modal_Object_ColorSlot',
                         });
+
+                        let slotIndex = this.baseLayout.buildableSubSystem.getObjectColorSlot(currentObject);
+                            if(slotIndex === 255)
+                            {
+                                contextMenu.push({
+                                    text        : 'Update "' + buildingData.name + '" custom color',
+                                    callback    : Modal_Object_CustomColor.getHTML,
+                                    className   : 'Modal_Object_CustomColor',
+                                });
+                            }
                     }
 
                     if(buildingData.category === 'production')

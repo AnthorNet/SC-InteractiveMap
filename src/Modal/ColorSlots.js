@@ -151,13 +151,13 @@ export default class Modal_ColorSlots
         });
 
         $('#primaryColorInputR, #primaryColorInputG, #primaryColorInputB, #secondaryColorInputR, #secondaryColorInputG, #secondaryColorInputB').on('change keyup input', () => {
-            let primaryColorR               = parseInt($('#primaryColorInputR').val());
-            let primaryColorG               = parseInt($('#primaryColorInputG').val());
-            let primaryColorB               = parseInt($('#primaryColorInputB').val());
+            let primaryColorR               = parseInt($('#primaryColorInputR').val()) || 0;
+            let primaryColorG               = parseInt($('#primaryColorInputG').val()) || 0;
+            let primaryColorB               = parseInt($('#primaryColorInputB').val()) || 0;
 
-            let secondaryColorR             = parseInt($('#secondaryColorInputR').val());
-            let secondaryColorG             = parseInt($('#secondaryColorInputG').val());
-            let secondaryColorB             = parseInt($('#secondaryColorInputB').val());
+            let secondaryColorR             = parseInt($('#secondaryColorInputR').val()) || 0;
+            let secondaryColorG             = parseInt($('#secondaryColorInputG').val()) || 0;
+            let secondaryColorB             = parseInt($('#secondaryColorInputB').val()) || 0;
 
                 primaryColorPicker.color.rgb    = {r: primaryColorR, g: primaryColorG, b: primaryColorB};
                 secondaryColorPicker.color.rgb  = {r: secondaryColorR, g: secondaryColorG, b: secondaryColorB};

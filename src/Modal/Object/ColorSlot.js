@@ -59,6 +59,13 @@ export default class Modal_Object_ColorSlot
 
         let objectPrimaryColor      = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
         let objectSecondaryColor    = baseLayout.buildableSubSystem.getObjectSecondaryColor(currentObject);
+            if(slotIndex !== 255)
+            {
+                let playerCustomColor       = baseLayout.buildableSubSystem.getPlayerCustomColor();
+                    objectPrimaryColor      = playerCustomColor.primaryColor;
+                    objectSecondaryColor    = playerCustomColor.secondaryColor;
+            }
+
             selectOptions.push({
                 fullWidth       : true,
                 primaryColor    : 'rgb(' + objectPrimaryColor.r + ', ' + objectPrimaryColor.g + ', ' + objectPrimaryColor.b + ')',

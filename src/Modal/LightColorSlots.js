@@ -86,9 +86,9 @@ export default class Modal_LightColorSlots
         });
 
         $('#lightColorInputR, #lightColorInputG, #lightColorInputB').on('change keyup input', () => {
-            let lightColorR               = parseInt($('#lightColorInputR').val());
-            let lightColorG               = parseInt($('#lightColorInputG').val());
-            let lightColorB               = parseInt($('#lightColorInputB').val());
+            let lightColorR               = parseInt($('#lightColorInputR').val()) || 0;
+            let lightColorG               = parseInt($('#lightColorInputG').val()) || 0;
+            let lightColorB               = parseInt($('#lightColorInputB').val()) || 0;
 
                 lightColorPicker.color.rgb = {r: lightColorR, g: lightColorG, b: lightColorB};
                 $('#lightColorInputHex').val(lightColorPicker.color.hexString);

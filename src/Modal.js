@@ -1,3 +1,5 @@
+/* global iro */
+
 export default class Modal
 {
     static get defaultOptions()
@@ -40,6 +42,26 @@ export default class Modal
                 colorSlots      : '<select class="form-control"></select>',
                 inventoryItem   : '<select class="form-control selectpicker"></select>',
                 option          : '<option></option>',
+                colorPicker     : '<div class="row">'
+                                + '    <div class="col-6">'
+                                + '        <div class="colorPicker"></div>'
+                                + '    </div>'
+                                + '    <div class="col-6">'
+                                + '        <div class="row mt-3 no-gutters">'
+                                + '            <div class="input-group col-12">'
+                                + '                <div class="input-group-prepend">'
+                                + '                    <span class="input-group-text" style="width: 70px">HEX</span>'
+                                + '                </div>'
+                                + '                <input type="text" class="form-control text-center inputHex" value="">'
+                                + '            </div>'
+                                + '        </div>'
+                                + '        <div class="row mt-1 no-gutters">'
+                                + '            <div class="input-group col-4"><div class="input-group-prepend"><span class="input-group-text">R</span></div><input type="number" class="form-control pl-2 inputR" min="0" max="255"></div>'
+                                + '            <div class="col-4 px-1"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">G</span></div><input type="number" class="form-control px-2 inputG" min="0" max="255"></div></div>'
+                                + '            <div class="input-group col-4"><div class="input-group-prepend"><span class="input-group-text">B</span></div><input type="number" class="form-control pl-2 inputB" min="0" max="255"></div>'
+                                + '        </div>'
+                                + '    </div>'
+                                + '</div>'
             }
         };
     }
@@ -246,6 +268,19 @@ export default class Modal
                             case 'textArea':
                                 values[input.name] = input.element.find('textarea').val();
                                 break;
+                            case 'colorPicker':
+                                values[input.name] = {
+                                    r: parseInt(input.element.find('.inputR').val()) || 0,
+                                    g: parseInt(input.element.find('.inputG').val()) || 0,
+                                    b: parseInt(input.element.find('.inputB').val()) || 0
+                                };
+                                input.element.find('.inputR').off('change keyup input');
+                                input.element.find('.inputG').off('change keyup input');
+                                input.element.find('.inputB').off('change keyup input');
+                                input.element.find('.inputHex').off('change keyup input');
+
+                                //TODO: Destroy IRO?
+                                break;
                             default:
                                 values[input.name] = input.element.find('input').val();
                         }
@@ -366,6 +401,53 @@ export default class Modal
                     {
                         input.find('input').prop('checked', true);
                     }
+                    break;
+                case 'colorPicker':
+                    input.find('.inputR').val(options.value.r);
+                    input.find('.inputG').val(options.value.g);
+                    input.find('.inputB').val(options.value.b);
+
+                    input.ColorPicker = new iro.ColorPicker(input.find('.colorPicker')[0], {
+                        width       : 294,
+                        display     : 'inline-block',
+                        color       : 'rgb(' + options.value.r + ', ' + options.value.g + ', ' + options.value.b + ')',
+                        borderWidth : 1,
+                        borderColor : "#000000"
+                    });
+                    input.find('.inputHex').val(input.ColorPicker.color.hexString);
+
+                    input.ColorPicker.on('input:change', function(color){
+                        input.find('.inputR').val(color.rgb.r);
+                        input.find('.inputG').val(color.rgb.g);
+                        input.find('.inputB').val(color.rgb.b);
+
+                        input.find('.inputHex').val(color.hexString);
+                    });
+
+                    input.find('.inputR, .inputG, .inputB').on('change keyup input', () => {
+                        let primaryColorR               = parseInt(input.find('.inputR').val()) || 0;
+                        let primaryColorG               = parseInt(input.find('.inputG').val()) || 0;
+                        let primaryColorB               = parseInt(input.find('.inputB').val()) || 0;
+
+                            input.ColorPicker.color.rgb = {r: primaryColorR, g: primaryColorG, b: primaryColorB};
+                            input.find('.inputHex').val(input.ColorPicker.color.hexString);
+                    });
+                    input.find('.inputHex').on('change keyup input', function(){
+                        let hexColor = $(this).val();
+                            if([...hexColor].length === 7)
+                            {
+                                try
+                                {
+                                    input.ColorPicker.color.hexString = hexColor;
+
+                                    input.find('.inputR').val(input.ColorPicker.color.rgb.r);
+                                    input.find('.inputG').val(input.ColorPicker.color.rgb.g);
+                                    input.find('.inputB').val(input.ColorPicker.color.rgb.b);
+                                }
+                                catch(e){}; // Silently fail until a correct value is entered...
+                            }
+                    });
+
                     break;
                 default:
                     input.val(options.value);
