@@ -117,6 +117,7 @@ export default class Modal_Map_Options
 
         let mCheatNoCost                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoCost', 0);
         let mCheatNoPower                   = this.baseLayout.getObjectProperty(gameState, 'mCheatNoPower', 0);
+        let mCheatNoFuel                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoFuel', 0);
 
         if(unlockSubSystem !== null)
         {
@@ -171,13 +172,17 @@ export default class Modal_Map_Options
 
         html.push('<hr />');
         html.push('<h4>Creative mode:</h4>');
-        html.push('<div class="row"><div class="col-6">');
+        html.push('<div class="row"><div class="col-4">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputCheatNoCost" id="inputCheatNoCost" ' + ((mCheatNoCost === 1) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputCheatNoCost">No cost?</label></div>');
         html.push('</div>');
-        html.push('</div><div class="col-6">');
+        html.push('</div><div class="col-4">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputCheatNoPower" id="inputCheatNoPower" ' + ((mCheatNoPower === 1) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputCheatNoPower">No power?</label></div>');
+        html.push('</div>');
+        html.push('</div><div class="col-4">');
+        html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputCheatNoFuel" id="inputCheatNoFuel" ' + ((mCheatNoFuel === 1) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputCheatNoFuel">No fuel?</label></div>');
         html.push('</div>');
         html.push('</div></div>');
 
@@ -354,6 +359,15 @@ export default class Modal_Map_Options
             else
             {
                 this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoPower');
+            }
+
+            if($('#inputCheatNoFuel').is(':checked') === true)
+            {
+                this.baseLayout.setObjectProperty(gameState, 'mCheatNoFuel', (($('#inputCheatNoFuel').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+            }
+            else
+            {
+                this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoFuel');
             }
 
             this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
