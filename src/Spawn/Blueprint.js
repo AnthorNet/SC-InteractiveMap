@@ -281,18 +281,31 @@ export default class Spawn_Blueprint
                         for(let j = 0; j < this.clipboard.data[i].parent.properties.length; j++)
                         {
                             let currentProperty = this.clipboard.data[i].parent.properties[j];
-                                /*
+
                                 if(currentProperty.type === 'ArrayProperty' && currentProperty.value.values !== undefined)
                                 {
                                     for(let k = 0; k < currentProperty.value.values.length; k++)
                                     {
-                                        if(pathNameConversion[currentProperty.value.values[k].pathName] !== undefined)
+                                        if(currentProperty.value.values[k].pathName !== undefined && currentProperty.value.values[k].pathName !== '')
                                         {
-                                            currentProperty.value.values[k].pathName = pathNameConversion[currentProperty.value.values[k].pathName];
+                                            if(pathNameConversion[currentProperty.value.values[k].pathName] !== undefined)
+                                            {
+                                                currentProperty.value.values[k].pathName = pathNameConversion[currentProperty.value.values[k].pathName];
+                                            }
+                                            else
+                                            {
+                                                let testPathName    = currentProperty.value.values[k].pathName.split('.');
+                                                let extraPart       = testPathName.pop();
+                                                    testPathName    = testPathName.join('.');
+
+                                                if(pathNameConversion[testPathName] !== undefined)
+                                                {
+                                                    currentProperty.value.values[k].pathName = pathNameConversion[testPathName] + '.' + extraPart;
+                                                }
+                                            }
                                         }
                                     }
                                 }
-                                */
                                 if(currentProperty.value !== undefined && currentProperty.value.pathName !== undefined)
                                 {
                                     if(pathNameConversion[currentProperty.value.pathName] !== undefined)

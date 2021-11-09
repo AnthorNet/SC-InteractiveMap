@@ -168,7 +168,7 @@ export default class BaseLayout
             playerPowerGridLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], count: 0, distance: 0, useAltitude: true},
 
             // Last...
-            playerResourceDepositsLayer             : {layerGroup: null, subLayer: null, elements: [], useAltitude: true},
+            playerResourceDepositsLayer             : {layerGroup: null, subLayer: null, elements: [], useAltitude: true, filters: []},
             playerItemsPickupLayer                  : {layerGroup: null, subLayer: null, elements: [], useAltitude: true},
             playerPositionLayer                     : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer'},
             playerSpaceRabbitLayer                  : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer', count: 0, useAltitude: true},
@@ -1039,26 +1039,25 @@ export default class BaseLayout
             for(i; i < layersKeys.length; i++)
             {
                 let layerId = layersKeys[i];
+                    if(layerId !== 'playerRadioactivityLayer' && layerId !== 'playerFogOfWar' && layerId !== 'playerPositionLayer' && this.playerLayers[layerId].elements !== undefined)
+                    {
+                        let currentLayerLength = this.playerLayers[layerId].elements.length;
+                            for(let j = 0; j < currentLayerLength; j++)
+                            {
+                                this.addElementToLayer(layerId, this.playerLayers[layerId].elements[j]);
+                            }
 
-                if(layerId !== 'playerRadioactivityLayer' && layerId !== 'playerFogOfWar' && layerId !== 'playerPositionLayer' && this.playerLayers[layerId].elements !== undefined)
-                {
-                    let currentLayerLength = this.playerLayers[layerId].elements.length;
-                        for(let j = 0; j < currentLayerLength; j++)
-                        {
-                            this.addElementToLayer(layerId, this.playerLayers[layerId].elements[j]);
-                        }
+                        this.setBadgeLayerCount(layerId);
 
-                    this.setBadgeLayerCount(layerId);
-
-                    let progress = Math.round(i / layersKeys.length * 100);
-                        return new Promise(function(resolve){
-                            $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
-                            $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
-                            setTimeout(resolve, 5);
-                        }.bind(this)).then(() => {
-                            this.addLayers((i + 1));
-                        });
-                }
+                        let progress = Math.round(i / layersKeys.length * 100);
+                            return new Promise(function(resolve){
+                                $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
+                                $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
+                                setTimeout(resolve, 5);
+                            }.bind(this)).then(() => {
+                                this.addLayers((i + 1));
+                            });
+                    }
             }
 
         console.timeEnd('addMapLayers');
@@ -1423,85 +1422,55 @@ export default class BaseLayout
 
     addResourceDeposit(currentObject)
     {
-        let mResourceDepositTableIndex  = this.getObjectProperty(currentObject, 'mResourceDepositTableIndex');
+        let layerId                     = 'playerResourceDepositsLayer';
         let mResourcesLeft              = this.getObjectProperty(currentObject, 'mResourcesLeft');
         let mIsEmptied                  = this.getObjectProperty(currentObject, 'mIsEmptied');
 
-            if(mIsEmptied === null && mResourcesLeft !== null && mResourceDepositTableIndex !== null)
+            if(mIsEmptied === null && mResourcesLeft !== null)
             {
-                let itemId = null;
+                let itemId = this.getItemIdFromDepositTableIndex(currentObject);
+                    if(itemId !== null)
+                    {
+                        this.setupSubLayer(layerId, false);
 
-                switch(mResourceDepositTableIndex)
-                {
-                    case 0:
-                        itemId = 'Desc_Stone_C';
-                        break;
-                    case 1:
-                        itemId = 'Desc_OreIron_C';
-                        break;
-                    case 2:
-                        itemId = 'Desc_OreCopper_C';
-                        break;
-                    case 3:
-                        itemId = 'Desc_Coal_C';
-                        break;
-                    case 4:
-                        itemId = 'Desc_OreGold_C';
-                        break;
-                    case 5:
-                        itemId = 'Desc_Sulfur_C';
-                        break;
-                    case 6:
-                        itemId = 'Desc_RawQuartz_C';
-                        break;
-                    case 7:
-                        itemId = 'Desc_OreBauxite_C';
-                        break;
-                    case 8:
-                        itemId = 'Desc_SAM_C';
-                        break;
-                    case 9:
-                        itemId = 'Desc_OreUranium_C';
-                        break;
-                    default:
-                        console.log('Unknown mResourceDepositTableIndex', currentObject);
-                        break;
-                }
+                        let position    = this.satisfactoryMap.unproject(currentObject.transform.translation);
+                        let iconType    = layerId + itemId;
+                            if(this.satisfactoryMap.availableIcons[iconType] === undefined)
+                            {
+                                if(this.itemsData[itemId] !== undefined)
+                                {
+                                    this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
+                                        className   : "leaflet-data-marker",
+                                        html        : this.satisfactoryMap.availableIcons[layerId].options.html.replace(this.itemsData.Desc_OreIron_C.image, this.itemsData[itemId].image),
+                                        iconAnchor  : [48, 78],
+                                        iconSize    : [50, 80]
+                                    });
+                                }
+                            }
 
-                if(itemId !== null)
-                {
-                    this.setupSubLayer('playerResourceDepositsLayer', false);
+                        let depositMarker = L.marker(
+                                position,
+                                {
+                                    pathName    : currentObject.pathName,
+                                    itemId      : itemId,
+                                    itemQty     : mResourcesLeft,
+                                    icon        : this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
+                                }
+                            );
+                            depositMarker.bindContextMenu(this);
+                            this.autoBindTooltip(depositMarker);
 
-                    let position    = this.satisfactoryMap.unproject(currentObject.transform.translation);
-                    let iconType    = 'playerResourceDepositsLayer_' + itemId;
-                        if(this.satisfactoryMap.availableIcons[iconType] === undefined)
+                        this.playerLayers[layerId].elements.push(depositMarker);
+
+                        if(this.playerLayers[layerId].filtersCount !== undefined)
                         {
-                            if(this.itemsData[itemId] !== undefined)
+                            if(this.playerLayers[layerId].filtersCount[itemId] === undefined)
                             {
-                                this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
-                                    className   : "leaflet-data-marker",
-                                    html        : this.satisfactoryMap.availableIcons['playerResourceDepositsLayer'].options.html.replace(this.itemsData.Desc_OreIron_C.image, this.itemsData[itemId].image),
-                                    iconAnchor  : [48, 78],
-                                    iconSize    : [50, 80]
-                                });
+                                this.playerLayers[layerId].filtersCount[itemId] = 0;
                             }
+                            this.playerLayers[layerId].filtersCount[itemId]++;
                         }
-
-                    let depositMarker = L.marker(
-                            position,
-                            {
-                                pathName    : currentObject.pathName,
-                                itemId      : itemId,
-                                itemQty     : mResourcesLeft,
-                                icon        : this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
-                            }
-                        );
-                        depositMarker.bindContextMenu(this);
-                        this.autoBindTooltip(depositMarker);
-
-                    this.playerLayers.playerResourceDepositsLayer.elements.push(depositMarker);
-                    depositMarker.addTo(this.playerLayers.playerResourceDepositsLayer.subLayer);
-                }
+                    }
             }
     }
 
@@ -1987,41 +1956,39 @@ export default class BaseLayout
             {
                 if(values !== null)
                 {
-                    return;
-                }
-
-                let oldInventory = this.getObjectInventory(currentObject, inventoryProperty, true);
-                    for(let i = 0; i < oldInventory.properties.length; i++)
-                    {
-                        if(oldInventory.properties[i].name === 'mInventoryStacks')
+                    let oldInventory = this.getObjectInventory(currentObject, inventoryProperty, true);
+                        for(let i = 0; i < oldInventory.properties.length; i++)
                         {
-                            oldInventory = oldInventory.properties[i].value.values;
-
-                            for(let j = 0; j < buildingData.maxSlot; j++)
+                            if(oldInventory.properties[i].name === 'mInventoryStacks')
                             {
-                                if(oldInventory[j] !== undefined)
+                                oldInventory = oldInventory.properties[i].value.values;
+
+                                for(let j = 0; j < buildingData.maxSlot; j++)
                                 {
-                                    if(values['slot' + (j + 1)] === 'NULL')
+                                    if(oldInventory[j] !== undefined)
                                     {
-                                        oldInventory[j][0].value.itemName = "";
-                                        this.setObjectProperty(oldInventory[j][0].value, 'NumItems', 0, 'IntProperty');
+                                        if(values['slot' + (j + 1)] === 'NULL')
+                                        {
+                                            oldInventory[j][0].value.itemName = "";
+                                            this.setObjectProperty(oldInventory[j][0].value, 'NumItems', 0, 'IntProperty');
+                                        }
+                                        else
+                                        {
+                                            oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
+                                            this.setObjectProperty(oldInventory[j][0].value, 'NumItems', Math.max(1, parseInt(values['QTY_slot' + (j + 1)])), 'IntProperty');
+                                        }
                                     }
-                                    else
-                                    {
-                                        oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
-                                        this.setObjectProperty(oldInventory[j][0].value, 'NumItems', Math.max(1, parseInt(values['QTY_slot' + (j + 1)])), 'IntProperty');
-                                    }
+
                                 }
-
+                                break;
                             }
-                            break;
                         }
-                    }
 
-                delete this.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
-                this.radioactivityLayerNeedsUpdate = true;
-                this.getObjectRadioactivity(currentObject, inventoryProperty);
-                this.updateRadioactivityLayer();
+                    delete this.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
+                    this.radioactivityLayerNeedsUpdate = true;
+                    this.getObjectRadioactivity(currentObject, inventoryProperty);
+                    this.updateRadioactivityLayer();
+                }
             }.bind(this)
         });
     }
@@ -4182,7 +4149,13 @@ export default class BaseLayout
                                     {
                                         if(currentObject !== null)
                                         {
-                                            if(currentSubLayer.hasLayer(currentMarker) && this.playerLayers[layerId].filters.includes(currentObject.className))
+                                            let currentClassName = currentObject.className;
+                                                if(layerId === 'playerResourceDepositsLayer')
+                                                {
+                                                    currentClassName = this.getItemIdFromDepositTableIndex(currentObject);
+                                                }
+
+                                            if(currentSubLayer.hasLayer(currentMarker) && this.playerLayers[layerId].filters.includes(currentClassName))
                                             {
                                                 currentSubLayer.removeLayer(currentMarker);
 
@@ -4203,7 +4176,7 @@ export default class BaseLayout
                                             }
                                             else
                                             {
-                                                if(currentSubLayer.hasLayer(currentMarker) === false && this.playerLayers[layerId].filters.includes(currentObject.className) === false)
+                                                if(currentSubLayer.hasLayer(currentMarker) === false && this.playerLayers[layerId].filters.includes(currentClassName) === false)
                                                 {
                                                     if(this.playerLayers[layerId].useAltitude !== undefined && this.playerLayers[layerId].useAltitude === true)
                                                     {
@@ -4840,7 +4813,7 @@ export default class BaseLayout
                 }
             }
 
-            let currentLength = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter:visible').length;
+            let currentLength = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter:not([style*="display: none"])').length;
                 $('.updatePlayerLayerState[data-id=' + layerId + '] .radial').css('width', ((currentLength * 60) + 10) + 'px');
                 $('.updatePlayerLayerState[data-id=' + layerId + '] .radial > div').css('width', ((currentLength * 60) + 10) + 'px');
         }
@@ -5385,6 +5358,37 @@ export default class BaseLayout
         return null;
     }
 
+    getItemIdFromDepositTableIndex(currentObject)
+    {
+        let mResourceDepositTableIndex  = this.getObjectProperty(currentObject, 'mResourceDepositTableIndex');
+            switch(mResourceDepositTableIndex)
+            {
+                case 0:
+                    return 'Desc_Stone_C';
+                case 1:
+                    return 'Desc_OreIron_C';
+                case 2:
+                    return 'Desc_OreCopper_C';
+                case 3:
+                    return 'Desc_Coal_C';
+                case 4:
+                    return 'Desc_OreGold_C';
+                case 5:
+                    return 'Desc_Sulfur_C';
+                case 6:
+                    return 'Desc_RawQuartz_C';
+                case 7:
+                    return 'Desc_OreBauxite_C';
+                case 8:
+                    return 'Desc_SAM_C';
+                case 9:
+                    return 'Desc_OreUranium_C';
+                default:
+                    console.log('Unknown mResourceDepositTableIndex', currentObject);
+            }
+
+        return null;
+    }
 
     getBuildingDataFromClassName(className)
     {
