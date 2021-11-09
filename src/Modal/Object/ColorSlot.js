@@ -57,13 +57,15 @@ export default class Modal_Object_ColorSlot
             });
         }
 
-        selectOptions.push({
-            fullWidth       : true,
-            primaryColor    : 'rgb(' + playerColors[255].primaryColor.r + ', ' + playerColors[255].primaryColor.g + ', ' + playerColors[255].primaryColor.b + ')',
-            secondaryColor  : 'rgb(' + playerColors[255].secondaryColor.r + ', ' + playerColors[255].secondaryColor.g + ', ' + playerColors[255].secondaryColor.b + ')',
-            value           : 255,
-            text            : 'Custom Swatch'
-        });
+        let objectPrimaryColor      = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
+        let objectSecondaryColor    = baseLayout.buildableSubSystem.getObjectSecondaryColor(currentObject);
+            selectOptions.push({
+                fullWidth       : true,
+                primaryColor    : 'rgb(' + objectPrimaryColor.r + ', ' + objectPrimaryColor.g + ', ' + objectPrimaryColor.b + ')',
+                secondaryColor  : 'rgb(' + objectSecondaryColor.r + ', ' + objectSecondaryColor.g + ', ' + objectSecondaryColor.b + ')',
+                value           : 255,
+                text            : 'Custom Swatch'
+            });
 
         Modal.form({
             title       : 'Update "<strong>' + buildingData.name + '</strong>" color swatch',

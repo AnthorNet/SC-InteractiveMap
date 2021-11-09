@@ -160,8 +160,36 @@ export default class SubSystem_Buildable
     getObjectPrimaryColor(currentObject)
     {
         let colorSlot           = this.getObjectColorSlot(currentObject);
-        let playerColorSlots    = this.getPlayerColorSlots();
+            if(colorSlot === 255)
+            {
+                let mCustomizationData = this.baseLayout.getObjectProperty(currentObject, 'mCustomizationData');
+                    if(mCustomizationData !== null)
+                    {
+                        for(let i = 0; i < mCustomizationData.values.length; i++)
+                        {
+                            if(mCustomizationData.values[i].name === 'OverrideColorData')
+                            {
+                                for(let j = 0; j < mCustomizationData.values[i].value.values.length; j++)
+                                {
+                                    if(mCustomizationData.values[i].value.values[j].name === 'PrimaryColor')
+                                    {
+                                        return {
+                                            r : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.r),
+                                            g : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.g),
+                                            b : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.b),
+                                            a : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.a)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
+                let customColor = this.getPlayerCustomColor();
+                    return customColor.primaryColor;
+            }
+
+        let playerColorSlots    = this.getPlayerColorSlots();
             if(playerColorSlots[colorSlot] === undefined)
             {
                 console.log('getObjectPrimaryColor', colorSlot, currentObject);
@@ -173,8 +201,36 @@ export default class SubSystem_Buildable
     getObjectSecondaryColor(currentObject)
     {
         let colorSlot           = this.getObjectColorSlot(currentObject);
-        let playerColorSlots    = this.getPlayerColorSlots();
+            if(colorSlot === 255)
+            {
+                let mCustomizationData = this.baseLayout.getObjectProperty(currentObject, 'mCustomizationData');
+                    if(mCustomizationData !== null)
+                    {
+                        for(let i = 0; i < mCustomizationData.values.length; i++)
+                        {
+                            if(mCustomizationData.values[i].name === 'OverrideColorData')
+                            {
+                                for(let j = 0; j < mCustomizationData.values[i].value.values.length; j++)
+                                {
+                                    if(mCustomizationData.values[i].value.values[j].name === 'SecondaryColor')
+                                    {
+                                        return {
+                                            r : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.r),
+                                            g : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.g),
+                                            b : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.b),
+                                            a : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.a)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
+                let customColor = this.getPlayerCustomColor();
+                    return customColor.secondaryColor;
+            }
+
+        let playerColorSlots    = this.getPlayerColorSlots();
             if(playerColorSlots[colorSlot] === undefined)
             {
                 console.log('getObjectSecondaryColor', colorSlot, currentObject);
@@ -222,30 +278,40 @@ export default class SubSystem_Buildable
                 });
             }
 
-            playerColors[255]                 = {};
-            playerColors[255].primaryColor    = {
+            this.playerColorSlots = playerColors;
+        }
+
+        return this.playerColorSlots;
+    }
+
+    getPlayerCustomColor(pathName = null)
+    {
+        let customColor = {};
+            customColor.primaryColor    = {
                 r : BaseLayout_Math.linearColorToRGB(0),
                 g : BaseLayout_Math.linearColorToRGB(0),
                 b : BaseLayout_Math.linearColorToRGB(0),
                 a : BaseLayout_Math.linearColorToRGB(1)
             };
-            playerColors[255].secondaryColor  = {
+           customColor.secondaryColor  = {
                 r : BaseLayout_Math.linearColorToRGB(0),
                 g : BaseLayout_Math.linearColorToRGB(0),
                 b : BaseLayout_Math.linearColorToRGB(0),
                 a : BaseLayout_Math.linearColorToRGB(1)
             };
 
-            for(let pathName in this.baseLayout.players)
-            {
-                let mCustomColorData  = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mCustomColorData');
-                    if(mCustomColorData !== null)
+        for(let currentPathName in this.baseLayout.players)
+        {
+            let mCustomColorData  = this.baseLayout.getObjectProperty(this.baseLayout.players[currentPathName].player, 'mCustomColorData');
+                if(mCustomColorData !== null)
+                {
+                    if(pathName === null || pathName === currentPathName)
                     {
                         for(let j = 0; j < mCustomColorData.values.length; j++)
                         {
                             if(mCustomColorData.values[j].name === 'PrimaryColor')
                             {
-                                playerColors[255].primaryColor    = {
+                               customColor.primaryColor    = {
                                     r : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.r),
                                     g : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.g),
                                     b : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.b),
@@ -254,7 +320,7 @@ export default class SubSystem_Buildable
                             }
                             if(mCustomColorData.values[j].name === 'SecondaryColor')
                             {
-                                playerColors[255].secondaryColor    = {
+                               customColor.secondaryColor    = {
                                     r : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.r),
                                     g : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.g),
                                     b : BaseLayout_Math.linearColorToRGB(mCustomColorData.values[j].value.values.b),
@@ -262,19 +328,17 @@ export default class SubSystem_Buildable
                                 };
                             }
                         }
-
-                        if(this.baseLayout.players[pathName].isHost())
-                        {
-                            break;
-                        }
                     }
 
-            }
+                    if(pathName = null && this.baseLayout.players[currentPathName].isHost())
+                    {
+                        break;
+                    }
+                }
 
-            this.playerColorSlots = playerColors;
         }
 
-        return this.playerColorSlots;
+        return customColor;
     }
 
     setPlayerColorSlot(slotIndex, primaryColor, secondaryColor)
