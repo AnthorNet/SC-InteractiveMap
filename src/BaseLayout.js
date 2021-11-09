@@ -6181,17 +6181,25 @@ export default class BaseLayout
                     case 'colorSlot':
                         let playerColors        = this.buildableSubSystem.getPlayerColorSlots();
                         let selectOptionsColors = [];
+                            for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
+                            {
+                                selectOptionsColors.push({
+                                    fullWidth       : ((slotIndex === 0) ? true : false),
+                                    primaryColor    : 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
+                                    secondaryColor  : 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
+                                    value           : slotIndex,
+                                    text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
+                                });
+                            }
 
-                        for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
-                        {
+                        let playerCustomColor       = this.buildableSubSystem.getPlayerCustomColor();
                             selectOptionsColors.push({
-                                fullWidth       : ((slotIndex === 0) ? true : false),
-                                primaryColor    : 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
-                                secondaryColor  : 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
-                                value           : slotIndex,
-                                text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
+                                fullWidth       : true,
+                                primaryColor    : 'rgb(' + playerCustomColor.primaryColor.r + ', ' + playerCustomColor.primaryColor.g + ', ' + playerCustomColor.primaryColor.b + ')',
+                                secondaryColor  : 'rgb(' + playerCustomColor.secondaryColor.r + ', ' + playerCustomColor.secondaryColor.g + ', ' + playerCustomColor.secondaryColor.b + ')',
+                                value           : 255,
+                                text            : 'Custom Swatch'
                             });
-                        }
 
                         Modal.form({
                             title       : 'You have selected ' + selectedMarkersLength + ' items',
