@@ -821,16 +821,22 @@ export default class Map
     {
         this.leafletMap.dragging.disable();
         this.leafletMap.keyboard.disable();
+        this.leafletMap.touchZoom.disable();
         this.leafletMap.doubleClickZoom.disable();
         this.leafletMap.scrollWheelZoom.disable();
+        this.leafletMap.boxZoom.disable();
+
+        //console.log(this.leafletMap);
     }
 
     unpauseMap()
     {
         this.leafletMap.dragging.enable();
         this.leafletMap.keyboard.enable();
+        this.leafletMap.touchZoom.enable();
         this.leafletMap.doubleClickZoom.enable();
         this.leafletMap.scrollWheelZoom.enable();
+        this.leafletMap.boxZoom.enable();
     }
 
     /*

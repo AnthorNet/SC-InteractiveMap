@@ -6029,7 +6029,8 @@ export default class BaseLayout
             if(markers !== null)
             {
                 inputOptions.push({text: 'Delete selected items', value: 'delete'});
-                inputOptions.push({text: 'Update selected items color', value: 'color'});
+                inputOptions.push({text: 'Update selected items color slot', value: 'colorSlot'});
+                inputOptions.push({text: 'Update selected items custom color', value: 'customColor'});
 
                 inputOptions.push({group: 'Positioning', text: 'Offset selected items position', value: 'offset'});
                 inputOptions.push({group: 'Positioning', text: 'Rotate selected items position', value: 'rotate'});
@@ -6177,7 +6178,7 @@ export default class BaseLayout
                         });
                         return;
 
-                    case 'color':
+                    case 'colorSlot':
                         let playerColors        = this.buildableSubSystem.getPlayerColorSlots();
                         let selectOptionsColors = [];
 
@@ -6209,6 +6210,35 @@ export default class BaseLayout
                                 }
 
                                 return this.updateMultipleObjectColorSlot(form.slotIndex);
+                            }.bind(this)
+                        });
+                        return;
+
+                    case 'customColor':
+                        let customColor = this.buildableSubSystem.getPlayerCustomColor();
+
+                        Modal.form({
+                            title       : 'You have selected ' + selectedMarkersLength + ' items',
+                            container   : '#leafletMap',
+                            inputs      : [{
+                                name            : 'primaryColor',
+                                inputType       : 'colorPicker',
+                                value           : customColor.primaryColor
+                            },
+                            {
+                                name            : 'secondaryColor',
+                                inputType       : 'colorPicker',
+                                value           : customColor.secondaryColor
+                            }],
+                            callback    : function(form)
+                            {
+                                if(form === null || form.primaryColor === null || form.secondaryColor === null)
+                                {
+                                    this.cancelSelectMultipleMarkers();
+                                    return;
+                                }
+
+                                return this.updateMultipleObjectCustomColor(form.primaryColor, form.secondaryColor);
                             }.bind(this)
                         });
                         return;
@@ -6586,13 +6616,39 @@ export default class BaseLayout
                 let contextMenu = this.getContextMenu(this.markersSelected[i]);
                     if(contextMenu !== false)
                     {
-                        // Search for a delete callback in contextmenu...
+                        // Search for a callback in contextmenu...
                         for(let j = 0; j < contextMenu.length; j++)
                         {
                             if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_ColorSlot')
                             {
                                 let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
                                     this.buildableSubSystem.setObjectColorSlot(currentObject, slotIndex);
+                                    this.markersSelected[i].fire('mouseout'); // Trigger a redraw
+                            }
+                        }
+                    }
+            }
+        }
+
+        this.cancelSelectMultipleMarkers();
+    }
+
+    updateMultipleObjectCustomColor(primaryColor, secondaryColor)
+    {
+        if(this.markersSelected)
+        {
+            for(let i = 0; i < this.markersSelected.length; i++)
+            {
+                let contextMenu = this.getContextMenu(this.markersSelected[i]);
+                    if(contextMenu !== false)
+                    {
+                        // Search for a callback in contextmenu...
+                        for(let j = 0; j < contextMenu.length; j++)
+                        {
+                            if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_CustomColor')
+                            {
+                                let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
+                                    this.buildableSubSystem.setObjectCustomColor(currentObject, primaryColor, secondaryColor);
                                     this.markersSelected[i].fire('mouseout'); // Trigger a redraw
                             }
                         }
