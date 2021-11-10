@@ -42,7 +42,7 @@ export default class Building_TrainStation
                 text: 'Update "' + buildingData.name + '" sign',
                 callback: Building_TrainStation.updateSign
             });
-            contextMenu.push({separator: true});
+            contextMenu.push('-');
 
         return contextMenu;
     }

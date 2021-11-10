@@ -157,7 +157,7 @@ export default class Building_Locomotive
                 text: 'Turn "' + buildingData.name + '" auto-pilot ' + ((Building_Locomotive.isAutoPilotOn(baseLayout, currentObject)) ? '<strong class="text-danger">Off</strong>' : '<strong class="text-success">On</strong>'),
                 callback: Building_Locomotive.updateAutoPilot
             });
-            contextMenu.push({separator: true});
+            contextMenu.push('-');
 
         return contextMenu;
     }

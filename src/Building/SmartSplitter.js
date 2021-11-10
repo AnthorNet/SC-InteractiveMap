@@ -92,7 +92,7 @@ export default class Building_SmartSplitter
                 text: 'Update "' + buildingData.name + '" rules',
                 callback: Building_SmartSplitter.updateRules
             });
-            contextMenu.push({separator: true});
+            contextMenu.push('-');
 
         return contextMenu;
     }

@@ -40,7 +40,7 @@ export default class Building_PowerSwitch
                 text: 'Update "' + buildingData.name + '" sign',
                 callback: Building_PowerSwitch.updateSign
             });
-            contextMenu.push({separator: true});
+            contextMenu.push('-');
 
         return contextMenu;
     }

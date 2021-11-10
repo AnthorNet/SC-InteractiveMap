@@ -295,7 +295,7 @@ export default class Building_Light
                 text: 'Turn "' + buildingData.name + '" night mode ' + ((Building_Light.getIsTimeOfDayAware(baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
                 callback: Building_Light.updateState
             });
-            contextMenu.push({separator: true});
+            contextMenu.push('-');
 
         return contextMenu;
     }

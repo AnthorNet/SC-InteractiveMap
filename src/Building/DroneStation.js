@@ -109,7 +109,7 @@ export default class Building_DroneStation
                 text: 'Update "' + buildingData.name + '" sign',
                 callback: Building_DroneStation.updateSign
             });
-            contextMenu.push({separator: true});
+            contextMenu.push('-');
 
         return contextMenu;
     }

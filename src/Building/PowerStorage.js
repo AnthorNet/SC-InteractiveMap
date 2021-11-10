@@ -65,7 +65,7 @@ export default class Building_PowerStorage
             text: 'Update "' + buildingData.name + '" stored power',
             callback: Building_PowerStorage.updatePowerStored
         });
-        contextMenu.push({separator: true});
+        contextMenu.push('-');
 
         return contextMenu;
     }

@@ -13,7 +13,7 @@ export default class Building_Door
                 text: 'Update "' + buildingData.name + '" status',
                 callback: Building_Door.updateStatus
             });
-            contextMenu.push({separator: true});
+            contextMenu.push('-');
 
         return contextMenu;
     }

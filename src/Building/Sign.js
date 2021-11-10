@@ -578,7 +578,7 @@ export default class Building_Sign
                 });
             }
 
-            contextMenu.push({separator: true});
+            contextMenu.push('-');
 
         return contextMenu;
     }

@@ -41,7 +41,7 @@ export default class Building_RailroadSwitchControl
                 text: 'Update "' + buildingData.name + '" connected railway',
                 callback: Building_RailroadSwitchControl.updateConnectedComponent
             });
-            contextMenu.push({separator: true});
+            contextMenu.push('-');
 
         return contextMenu;
     }
