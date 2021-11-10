@@ -994,18 +994,6 @@ export default class BaseLayout
             }
             else
             {
-                // Used when pasting a new blueprint!
-                if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(currentObject.className) && this.saveGameParser.trainIdentifiers.includes(currentObject.pathName) === false)
-                {
-                    this.saveGameParser.trainIdentifiers.push(currentObject.pathName);
-
-                    if(resolve !== false)
-                    {
-                        return resolve();
-                    }
-                    return;
-                }
-
                 if(currentObject.className.indexOf('Build_') !== -1 || currentObject.className.startsWith('/CoveredConveyor'))
                 {
                     if(typeof Sentry !== 'undefined' && this.useDebug === true)
@@ -1032,6 +1020,18 @@ export default class BaseLayout
                 }
                 else
                 {
+                    // Used when pasting a new blueprint!
+                    if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(currentObject.className) && this.saveGameParser.trainIdentifiers.includes(currentObject.pathName) === false)
+                    {
+                        this.saveGameParser.trainIdentifiers.push(currentObject.pathName);
+
+                        if(resolve !== false)
+                        {
+                            return resolve();
+                        }
+                        return;
+                    }
+
                     if(this.useDebug === true && currentObject.className.startsWith('/Game/FactoryGame/Equipment/') === false && currentObject.className.startsWith('/Script/FactoryGame.') === false)
                     {
                         console.log('Unknown?', currentObject);
@@ -3500,9 +3500,11 @@ export default class BaseLayout
     {
         this.setupSubLayer('playerPowerGridLayer');
 
-        // Orphaned power lines from Area Action?
+        // Orphaned power lines (Most likely when mods are removed)
         if(currentObject.extra.sourcePathName === '' || currentObject.extra.targetPathName === '')
         {
+            console.log('Deleting orphaned power line...');
+            this.deletePlayerPowerLine({options: {pathName: currentObject.pathName}});
             return false;
         }
 
