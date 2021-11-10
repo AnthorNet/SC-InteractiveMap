@@ -994,6 +994,18 @@ export default class BaseLayout
             }
             else
             {
+                // Used when pasting a new blueprint!
+                if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(currentObject.className) && this.saveGameParser.trainIdentifiers.includes(currentObject.pathName) === false)
+                {
+                    this.saveGameParser.trainIdentifiers.push(currentObject.pathName);
+
+                    if(resolve !== false)
+                    {
+                        return resolve();
+                    }
+                    return;
+                }
+
                 if(currentObject.className.indexOf('Build_') !== -1 || currentObject.className.startsWith('/CoveredConveyor'))
                 {
                     if(typeof Sentry !== 'undefined' && this.useDebug === true)

@@ -53,7 +53,7 @@ export default class Modal_Trains
                                         let mStops = this.baseLayout.getObjectProperty(currentTimetable, 'mStops');
                                             if(mStops !== null)
                                             {
-                                                let mCurrentStop    = this.baseLayout.getObjectProperty(currentTimetable, 'mCurrentStop');
+                                                let mCurrentStop    = this.baseLayout.getObjectProperty(currentTimetable, 'mCurrentStop', 0);
                                                 let haveName        = this.baseLayout.getObjectProperty(currentIdentifier, 'mTrainName');
                                                     if(haveName === null)
                                                     {

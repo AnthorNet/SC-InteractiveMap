@@ -105,14 +105,15 @@ export default class BaseLayout_Selection_Copy
                         }
                     }
 
-                    // Grab train station name?
-                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C')
+                    // Grab train/station name?
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C')
                     {
                         let trainIdentifier = Building_TrainStation.getInformation(this.baseLayout, currentObject);
                             if(trainIdentifier !== null)
                             {
                                 let trainIdentifierNewObject          = {};
                                     trainIdentifierNewObject.parent   = JSON.parse(JSON.stringify(trainIdentifier));
+                                    this.baseLayout.deleteObjectProperty(trainIdentifierNewObject.parent, 'TimeTable'); //TODO: Handle timetable copy!
 
                                     this.clipboard.data.push(trainIdentifierNewObject);
                                     availablePathName.push(trainIdentifierNewObject.parent.pathName);

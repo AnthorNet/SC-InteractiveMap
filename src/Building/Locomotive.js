@@ -118,7 +118,7 @@ export default class Building_Locomotive
             if(timeTable !== null)
             {
                 let mStops          = baseLayout.getObjectProperty(timeTable, 'mStops');
-                let mCurrentStop    = baseLayout.getObjectProperty(timeTable, 'mCurrentStop');
+                let mCurrentStop    = baseLayout.getObjectProperty(timeTable, 'mCurrentStop', 0);
                     if(mStops !== null && mCurrentStop !== null)
                     {
                         if(mStops.values[mCurrentStop] !== undefined)
@@ -158,6 +158,12 @@ export default class Building_Locomotive
                 callback: Building_Locomotive.updateAutoPilot
             });
             contextMenu.push('-');
+
+            let timeTable = Building_Locomotive.getTimeTable(baseLayout, currentObject);
+                if(timeTable !== null)
+                {
+                    
+                }
 
         return contextMenu;
     }
