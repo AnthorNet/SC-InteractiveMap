@@ -1,6 +1,7 @@
 /* global Intl */
 
 import Modal                                    from '../Modal.js';
+import Modal_Train_Timetable                    from '../Modal/Train/Timetable.js';
 
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
@@ -8,6 +9,23 @@ import Building_TrainStation                    from '../Building/TrainStation.j
 
 export default class Building_Locomotive
 {
+    static getTrainName(baseLayout, currentObject, defaultName = null)
+    {
+        let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
+        let mTrainName      = baseLayout.getObjectProperty(information, 'mTrainName');
+            if(mTrainName !== null)
+            {
+                return mTrainName;
+            }
+
+            if(defaultName !== null)
+            {
+                return defaultName;
+            }
+
+        return null;
+    }
+
     static getFreightWagons(baseLayout, currentObject)
     {
         let includedPathName    = [currentObject.pathName];
@@ -112,13 +130,18 @@ export default class Building_Locomotive
         return null;
     }
 
-    static getNextStop(baseLayout, currentObject)
+    static getNextStop(baseLayout, currentObject, specificStop = null)
     {
         let timeTable       = Building_Locomotive.getTimeTable(baseLayout, currentObject);
             if(timeTable !== null)
             {
                 let mStops          = baseLayout.getObjectProperty(timeTable, 'mStops');
                 let mCurrentStop    = baseLayout.getObjectProperty(timeTable, 'mCurrentStop', 0);
+                    if(specificStop !== null)
+                    {
+                        mCurrentStop = specificStop;
+                    }
+
                     if(mStops !== null && mCurrentStop !== null)
                     {
                         if(mStops.values[mCurrentStop] !== undefined)
@@ -147,14 +170,15 @@ export default class Building_Locomotive
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let locomotiveName  = Building_Locomotive.getTrainName(baseLayout, currentObject, buildingData.name);
 
             contextMenu.push({
-                text: 'Update "' + buildingData.name + '" sign',
+                text: 'Update "' + locomotiveName + '" sign',
                 callback: Building_Locomotive.updateSign
             });
             contextMenu.push({
-                text: 'Turn "' + buildingData.name + '" auto-pilot ' + ((Building_Locomotive.isAutoPilotOn(baseLayout, currentObject)) ? '<strong class="text-danger">Off</strong>' : '<strong class="text-success">On</strong>'),
+                text: 'Turn "' + locomotiveName + '" auto-pilot ' + ((Building_Locomotive.isAutoPilotOn(baseLayout, currentObject)) ? '<strong class="text-danger">Off</strong>' : '<strong class="text-success">On</strong>'),
                 callback: Building_Locomotive.updateAutoPilot
             });
             contextMenu.push('-');
@@ -162,7 +186,18 @@ export default class Building_Locomotive
             let timeTable = Building_Locomotive.getTimeTable(baseLayout, currentObject);
                 if(timeTable !== null)
                 {
-                    
+                    let mStops = baseLayout.getObjectProperty(timeTable, 'mStops');
+                        if(mStops !== null)
+                        {
+                            contextMenu.push({
+                                text: 'See "' + locomotiveName + '" timetable',
+                                callback: function(){
+                                    let modalTimetable = new Modal_Train_Timetable({baseLayout: baseLayout, locomotive: currentObject});
+                                        modalTimetable.parse();
+                                }
+                            });
+                            contextMenu.push('-');
+                        }
                 }
 
         return contextMenu;
@@ -242,9 +277,7 @@ export default class Building_Locomotive
     static getTooltip(baseLayout, currentObject, buildingData)
     {
         let content         = [];
-        let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
-
-        let mTrainName      = baseLayout.getObjectProperty(information, 'mTrainName');
+        let mTrainName      = Building_Locomotive.getTrainName(baseLayout, currentObject);
             if(mTrainName !== null)
             {
                 content.push('<div><strong>' + mTrainName + ' <em class="small">(' + buildingData.name + ')</em></strong></div>');
@@ -261,12 +294,6 @@ export default class Building_Locomotive
                 }
 
                 content.push('<td><table class="text-left">');
-
-                let freightWagons   = Building_Locomotive.getFreightWagons(baseLayout, currentObject);
-                    if(freightWagons.length > 0)
-                    {
-                        content.push('<tr><td>Freight wagons:</td><td class="pl-3 text-right">' + new Intl.NumberFormat(baseLayout.language).format(freightWagons.length) + ' </td></tr>');
-                    }
 
                 let velocity = Building_Locomotive.getVelocity(baseLayout, currentObject);
                     if(velocity !== null)
@@ -292,6 +319,12 @@ export default class Building_Locomotive
                     else
                     {
                         content.push('<tr><td>Auto-pilot:</td><td class="pl-3 text-right text-danger">Off</td></tr>');
+                    }
+
+                let freightWagons   = Building_Locomotive.getFreightWagons(baseLayout, currentObject);
+                    if(freightWagons.length > 0)
+                    {
+                        content.push('<tr><td>Freight wagons:</td><td class="pl-3 text-right">' + new Intl.NumberFormat(baseLayout.language).format(freightWagons.length) + ' </td></tr>');
                     }
 
 

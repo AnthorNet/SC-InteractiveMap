@@ -1,4 +1,7 @@
-/* global gtag */
+/* global gtag, Intl */
+
+import Building_Locomotive                      from '../Building/Locomotive.js';
+
 export default class Modal_Trains
 {
     constructor(options)
@@ -34,7 +37,6 @@ export default class Modal_Trains
 
     parse()
     {
-        $('#statisticsModalTrains').empty();
         let html = [];
 
         for(let i = 0; i < this.baseLayout.saveGameParser.trainIdentifiers.length; i++)
@@ -50,54 +52,134 @@ export default class Modal_Trains
                                 let currentTimetable = this.baseLayout.saveGameParser.getTargetObject(haveTimetable.pathName);
                                     if(currentTimetable !== null)
                                     {
-                                        let mStops = this.baseLayout.getObjectProperty(currentTimetable, 'mStops');
-                                            if(mStops !== null)
-                                            {
-                                                let mCurrentStop    = this.baseLayout.getObjectProperty(currentTimetable, 'mCurrentStop', 0);
-                                                let haveName        = this.baseLayout.getObjectProperty(currentIdentifier, 'mTrainName');
-                                                    if(haveName === null)
-                                                    {
-                                                        haveName = currentIdentifier.pathName.split('.');
-                                                        haveName = haveName.pop();
-                                                    }
-
-                                                html.push('<div class="card">');
-                                                html.push('<div class="card-header"><strong>' + haveName + '</strong></div>');
-                                                html.push('<ul class="list-group list-group-flush">');
-                                                    for(let j = 0; j < mStops.values.length; j++)
-                                                    {
-                                                        for(let k = 0; k < mStops.values[j].length; k++)
-                                                        {
-                                                            if(mStops.values[j][k].name === 'Station' && mStops.values[j][k].value.pathName !== undefined)
-                                                            {
-                                                                let trainStationIdentifier = this.baseLayout.saveGameParser.getTargetObject(mStops.values[j][k].value.pathName);
-                                                                    if(trainStationIdentifier !== null)
-                                                                    {
-                                                                        let mStationName = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
-                                                                            if(mStationName !== null)
-                                                                            {
-                                                                                if(j === mCurrentStop)
-                                                                                {
-                                                                                    html.push('<li class="list-group-item">' + mStationName + ' <span class="badge badge-warning">Next stop</span></li>');
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    html.push('<li class="list-group-item">' + mStationName + '</li>');
-                                                                                }
-                                                                            }
-                                                                    }
-                                                            }
-                                                        }
-                                                    }
-                                                html.push('</ul>');
-                                                html.push('</div>');
-                                            }
+                                        html.push(this.getCurrentTimeTable(currentIdentifier, currentTimetable));
                                     }
                             }
                     }
                 }
         }
 
-        $('#statisticsModalTrains').html(html.join(''));
+        $('#statisticsModalTrains').empty().html(html.join(''));
+        $('#statisticsModalTrains .fa-search-location').on('click', function(e){
+                let x = parseFloat($(e.currentTarget).attr('data-x'));
+                let y = parseFloat($(e.currentTarget).attr('data-y'));
+
+                let position    = this.baseLayout.satisfactoryMap.unproject([x, y]);
+                    this.baseLayout.satisfactoryMap.leafletMap.setView(position, 9);
+            }.bind(this));
+    }
+
+    getCurrentTrainFromIdentifier(currentIdentifier)
+    {
+        let FirstVehicle = this.baseLayout.getObjectProperty(currentIdentifier, 'FirstVehicle');
+            if(FirstVehicle !== null)
+            {
+                let FirstVehicleTarget  = this.baseLayout.saveGameParser.getTargetObject(FirstVehicle.pathName);
+                    if(FirstVehicleTarget !== null && FirstVehicleTarget.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                    {
+                        return FirstVehicleTarget;
+                    }
+            }
+        let LastVehicle = this.baseLayout.getObjectProperty(currentIdentifier, 'LastVehicle');
+            if(LastVehicle !== null)
+            {
+                let LastVehicleTarget  = this.baseLayout.saveGameParser.getTargetObject(LastVehicle.pathName);
+                    if(LastVehicleTarget !== null && LastVehicleTarget.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                    {
+                        return LastVehicleTarget;
+                    }
+            }
+
+        return null;
+    }
+
+    getCurrentTimeTable(currentIdentifier, currentTimetable)
+    {
+        let html = [];
+        let mStops = this.baseLayout.getObjectProperty(currentTimetable, 'mStops');
+            if(mStops !== null)
+            {
+                let currentTrain    = this.getCurrentTrainFromIdentifier(currentIdentifier);
+                let haveName        = this.baseLayout.getObjectProperty(currentIdentifier, 'mTrainName');
+                    if(haveName === null)
+                    {
+                        haveName = currentIdentifier.pathName.split('.');
+                        haveName = haveName.pop();
+                    }
+
+                html.push('<div class="card">');
+                html.push('<div class="card-header">');
+                html.push('<span class="float-right"><i class="fas fa-search-location" style="cursor: pointer;font-size: 24px;" data-x="' + currentTrain.transform.translation[0] + '" data-y="' + currentTrain.transform.translation[1] + '"></i></span>');
+                html.push('<strong>' + haveName + '</strong>');
+                html.push('</div>');
+                html.push('<table class="table">');
+
+                let firstStop       = Building_Locomotive.getNextStop(this.baseLayout, currentTrain, 0);
+                let lastStop        = Building_Locomotive.getNextStop(this.baseLayout, currentTrain, (mStops.values.length - 1));
+                let isAutoPilotOn   = Building_Locomotive.isAutoPilotOn(this.baseLayout, currentTrain);
+
+                    if(firstStop !== null && lastStop !== null)
+                    {
+                        let firstStopStationIdentifier  = this.baseLayout.saveGameParser.getTargetObject(firstStop.pathName);
+                        let lastStopStationIdentifier   = this.baseLayout.saveGameParser.getTargetObject(lastStop.pathName);
+                            if(firstStopStationIdentifier !== null && lastStopStationIdentifier !== null)
+                            {
+                                let firstStopStationName    = this.baseLayout.getObjectProperty(firstStopStationIdentifier, 'mStationName');
+                                let lastStopStationName     = this.baseLayout.getObjectProperty(lastStopStationIdentifier, 'mStationName');
+                                    if(firstStopStationName !== null && lastStopStationName !== null)
+                                    {
+                                        html.push('<tr><td colspan="2" width="50%">Route:</td><td colspan="2" class="pl-3 text-right">' + firstStopStationName + ' <i class="fas fa-chevron-left"></i><i class="fas fa-train"></i><i class="fas fa-chevron-right"></i> ' + lastStopStationName + ' </td></tr>');
+                                    }
+                            }
+                    }
+                    if(isAutoPilotOn === true)
+                    {
+                        let nextStop = Building_Locomotive.getNextStop(this.baseLayout, currentTrain);
+                            if(nextStop !== null)
+                            {
+                                let mStationName = this.baseLayout.getObjectProperty(nextStop, 'mStationName');
+                                    if(mStationName !== null)
+                                    {
+                                        html.push('<tr><td colspan="2" width="50%">Next stop:</td><td colspan="2" class="pl-3 text-right">' + mStationName + '</td></tr>');
+                                    }
+                            }
+                    }
+
+                html.push('<tr>');
+
+                    if(isAutoPilotOn === true)
+                    {
+                        html.push('<td width="25%">Auto-pilot:</td><td class="pl-3 text-right text-success">On</td>');
+                    }
+                    else
+                    {
+                        html.push('<td width="25%">Auto-pilot:</td><td class="pl-3 text-right text-danger">Off</td>');
+                    }
+
+
+
+                let velocity = Building_Locomotive.getVelocity(this.baseLayout, currentTrain);
+                    if(velocity !== null)
+                    {
+                        html.push('<td width="25%">Current speed:</td><td class="pl-3 text-right">' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(velocity)) + ' km/h</td>');
+                    }
+                    else
+                    {
+                        html.push('<td></td><td></td>');
+                    }
+
+                html.push('</tr>');
+
+                let freightWagons   = Building_Locomotive.getFreightWagons(this.baseLayout, currentTrain);
+                    if(freightWagons.length > 0)
+                    {
+                        html.push('<tr><td colspan="2" width="25%">Freight wagons:</td><td colspan="2" class="pl-3 text-right">' + new Intl.NumberFormat(this.baseLayout.language).format(freightWagons.length) + ' </td></tr>');
+                    }
+
+                html.push('</table>');
+                html.push('</div>');
+            }
+
+        return html.join('');
     }
 }

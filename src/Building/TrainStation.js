@@ -10,22 +10,25 @@ export default class Building_TrainStation
      */
     static getInformation(baseLayout, currentObject)
     {
-        for(let i = 0; i < baseLayout.saveGameParser.trainIdentifiers.length; i++)
+        if(currentObject !== null)
         {
-            let currentIdentifier = baseLayout.saveGameParser.getTargetObject(baseLayout.saveGameParser.trainIdentifiers[i]);
-                if(currentIdentifier !== null)
-                {
-                    for(let j = 0; j < currentIdentifier.properties.length; j++)
+            for(let i = 0; i < baseLayout.saveGameParser.trainIdentifiers.length; i++)
+            {
+                let currentIdentifier = baseLayout.saveGameParser.getTargetObject(baseLayout.saveGameParser.trainIdentifiers[i]);
+                    if(currentIdentifier !== null)
                     {
-                        if(currentIdentifier.properties[j].type === 'ObjectProperty')
+                        for(let j = 0; j < currentIdentifier.properties.length; j++)
                         {
-                            if(currentIdentifier.properties[j].value.pathName === currentObject.pathName)
+                            if(currentIdentifier.properties[j].type === 'ObjectProperty')
                             {
-                                return currentIdentifier;
+                                if(currentIdentifier.properties[j].value.pathName === currentObject.pathName)
+                                {
+                                    return currentIdentifier;
+                                }
                             }
                         }
                     }
-                }
+            }
         }
 
         return null;
