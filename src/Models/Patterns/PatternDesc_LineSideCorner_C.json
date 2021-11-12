@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_LineSideCorner.PatternDesc_LineSideCorner_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [-400,-400],[-385,-400],[-385,385],[400,385],[400,400],[-400,400]
+                ]
+            }
+        ]
+    }
+}
