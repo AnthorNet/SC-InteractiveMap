@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_StopCross.PatternDesc_Icon_StopCross_C": {
+        "scale"     : 0.8,
+        "forms"     : [
+            {
+                "points": [
+                    [-150,-250],[0,-100],[150,-250],[250,-150],[100,0],[250,150],[150,250],[0,100],[-150,250],[-250,150],[-100,0],[-250,-150]
+                ]
+            }
+        ]
+    }
+}

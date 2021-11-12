@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_LineCross.PatternDesc_LineCross_C": {
+        "scale"     : 1,
+        "forms"     : [
+            {
+                "points": [
+                    [-15,-400],[15,-400],[15,-15],[400,-15],[400,15],[15,15],[15,400],[-15,400],[-15,15],[-400,15],[-400,-15],[-15,-15]
+                ]
+            }
+        ]
+    }
+}

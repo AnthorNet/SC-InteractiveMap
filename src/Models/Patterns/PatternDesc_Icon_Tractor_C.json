@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Tractor.PatternDesc_Icon_Tractor_C": {
-        "scale"     : 1,
+        "scale"     : 0.8,
         "forms"     : [
             {
                 "points": [
