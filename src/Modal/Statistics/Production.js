@@ -262,7 +262,6 @@ export default class Modal_Statistics_Production
 
                             if(buildingData.category === 'generator')
                             {
-                                let fuelEnergyValue             = null;
                                 let clockSpeed                  = this.baseLayout.getClockSpeed(currentObject);
                                 let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
                                 let powerGenerated              = buildingData.powerGenerated * Math.pow(clockSpeed, 1 / mPowerProductionExponent);
@@ -274,8 +273,7 @@ export default class Modal_Statistics_Production
 
                                     if(fuelItem !== null && fuelItem.energy !== undefined)
                                     {
-                                            fuelEnergyValue     = fuelItem.energy;
-                                        let fuelConsumed        = 60 / (fuelEnergyValue / powerGenerated);
+                                        let fuelConsumed        = (60 / (fuelItem.energy / powerGenerated) * Math.pow(clockSpeed, -1 / mPowerProductionExponent));
                                         let onFuelConsumed      = 0;
                                         let offFuelConsumed     = 0;
                                             if(buildingIsOn === true)
