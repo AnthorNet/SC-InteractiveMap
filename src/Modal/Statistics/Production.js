@@ -262,16 +262,11 @@ export default class Modal_Statistics_Production
 
                             if(buildingData.category === 'generator')
                             {
-                                let fuelEnergyValue     = null;
-                                let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
-                                let powerGenerated      = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.3);
-
-                                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
-                                    {
-                                        powerGenerated = buildingData.powerGenerated * Math.pow(clockSpeed, 1/1.321928);
-                                    }
-
-                                let fuelClass           = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
+                                let fuelEnergyValue             = null;
+                                let clockSpeed                  = this.baseLayout.getClockSpeed(currentObject);
+                                let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
+                                let powerGenerated              = buildingData.powerGenerated * Math.pow(clockSpeed, 1 / mPowerProductionExponent);
+                                let fuelClass                   = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
 
                                 if(fuelClass !== null)
                                 {
@@ -279,19 +274,18 @@ export default class Modal_Statistics_Production
 
                                     if(fuelItem !== null && fuelItem.energy !== undefined)
                                     {
-                                        fuelEnergyValue = fuelItem.energy;
-
-                                        let fuelConsumed    = 0;
-                                        let offFuelConsumed = 0;
-
-                                        if(buildingIsOn === true)
-                                        {
-                                            fuelConsumed = (60 / (fuelEnergyValue / powerGenerated));
-                                        }
-                                        else
-                                        {
-                                            offFuelConsumed = (60 / (fuelEnergyValue / powerGenerated));
-                                        }
+                                            fuelEnergyValue     = fuelItem.energy;
+                                        let fuelConsumed        = 60 / (fuelEnergyValue / powerGenerated);
+                                        let onFuelConsumed      = 0;
+                                        let offFuelConsumed     = 0;
+                                            if(buildingIsOn === true)
+                                            {
+                                                onFuelConsumed = fuelConsumed;
+                                            }
+                                            else
+                                            {
+                                                offFuelConsumed = fuelConsumed;
+                                            }
 
                                         if(playerProduction[fuelItem.className] === undefined)
                                         {
@@ -301,27 +295,28 @@ export default class Modal_Statistics_Production
                                                 category    : fuelItem.category,
                                                 produced    : 0,
                                                 offProduced : 0,
-                                                consumed    : fuelConsumed,
+                                                consumed    : onFuelConsumed,
                                                 offConsumed : offFuelConsumed
                                             };
                                         }
                                         else
                                         {
-                                            playerProduction[fuelItem.className].consumed       += fuelConsumed;
+                                            playerProduction[fuelItem.className].consumed       += onFuelConsumed;
                                             playerProduction[fuelItem.className].offConsumed    += offFuelConsumed;
                                         }
 
-                                        if(buildingData.supplementalLoadType !== undefined && buildingData.supplementalLoadAmount !== undefined)
+                                        if(buildingData.supplementalLoadType !== undefined && buildingData.supplementalLoadRatio !== undefined)
                                         {
-                                            let supplementalLoadConsumed    = 0;
-                                            let offSupplementalLoadConsumed = 0;
+                                            let supplementalLoadConsumed        = 60 * powerGenerated * buildingData.supplementalLoadRatio;
+                                            let onSupplementalLoadConsumed      = 0;
+                                            let offSupplementalLoadConsumed     = 0;
                                                 if(buildingIsOn === true)
                                                 {
-                                                    supplementalLoadConsumed = buildingData.supplementalLoadAmount * Math.pow(clockSpeed, 1/1.3);
+                                                    onSupplementalLoadConsumed = supplementalLoadConsumed;
                                                 }
                                                 else
                                                 {
-                                                    offSupplementalLoadConsumed = buildingData.supplementalLoadAmount * Math.pow(clockSpeed, 1/1.3);
+                                                    offSupplementalLoadConsumed = supplementalLoadConsumed;
                                                 }
 
                                             let supplementalLoadClassName   = this.baseLayout.itemsData[buildingData.supplementalLoadType].className;
@@ -333,13 +328,13 @@ export default class Modal_Statistics_Production
                                                         category    : this.baseLayout.itemsData[buildingData.supplementalLoadType].category,
                                                         produced    : 0,
                                                         offProduced : 0,
-                                                        consumed    : supplementalLoadConsumed,
+                                                        consumed    : onSupplementalLoadConsumed,
                                                         offConsumed : offSupplementalLoadConsumed
                                                     };
                                                 }
                                                 else
                                                 {
-                                                    playerProduction[supplementalLoadClassName].consumed       += supplementalLoadConsumed;
+                                                    playerProduction[supplementalLoadClassName].consumed       += onSupplementalLoadConsumed;
                                                     playerProduction[supplementalLoadClassName].offConsumed    += offSupplementalLoadConsumed;
                                                 }
                                         }
