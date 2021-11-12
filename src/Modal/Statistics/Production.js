@@ -264,7 +264,6 @@ export default class Modal_Statistics_Production
                             {
                                 let clockSpeed                  = this.baseLayout.getClockSpeed(currentObject);
                                 let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
-                                let powerGenerated              = buildingData.powerGenerated * Math.pow(clockSpeed, 1 / mPowerProductionExponent);
                                 let fuelClass                   = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
 
                                 if(fuelClass !== null)
@@ -273,7 +272,7 @@ export default class Modal_Statistics_Production
 
                                     if(fuelItem !== null && fuelItem.energy !== undefined)
                                     {
-                                        let fuelConsumed        = (60 / (fuelItem.energy / powerGenerated) * Math.pow(clockSpeed, -1 / mPowerProductionExponent));
+                                        let fuelConsumed        = (60 / (fuelItem.energy / buildingData.powerGenerated) * Math.pow(clockSpeed, 1 / mPowerProductionExponent));
                                         let onFuelConsumed      = 0;
                                         let offFuelConsumed     = 0;
                                             if(buildingIsOn === true)
@@ -305,7 +304,7 @@ export default class Modal_Statistics_Production
 
                                         if(buildingData.supplementalLoadType !== undefined && buildingData.supplementalLoadRatio !== undefined)
                                         {
-                                            let supplementalLoadConsumed        = 60 * powerGenerated * buildingData.supplementalLoadRatio;
+                                            let supplementalLoadConsumed        = 60 * (buildingData.powerGenerated * Math.pow(clockSpeed, 1 / mPowerProductionExponent)) * buildingData.supplementalLoadRatio;
                                             let onSupplementalLoadConsumed      = 0;
                                             let offSupplementalLoadConsumed     = 0;
                                                 if(buildingIsOn === true)

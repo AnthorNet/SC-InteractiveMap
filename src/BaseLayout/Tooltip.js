@@ -1494,23 +1494,14 @@ export default class BaseLayout_Tooltip
 
         let clockSpeed                  = this.baseLayout.getClockSpeed(currentObject);
         let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
-        let powerGenerated              = buildingData.powerGenerated * Math.pow(clockSpeed, 1 / mPowerProductionExponent);
-        let buildingPowerInfo           = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.powerInfo');
+        let fuelClass                   = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
 
-        let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
-            if(mDynamicProductionCapacity !== null)
-            {
-                powerGenerated = mDynamicProductionCapacity;
-            }
+            craftingTime               /= clockSpeed; // Overclocking...
 
-        let fuelClass           = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
+        let inventoryIn                 = this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory');
 
-            craftingTime       /= clockSpeed; // Overclocking...
-
-        let inventoryIn         = this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory');
-
-        let currentFluid        = 0;
-        let maxFluid            = (buildingData.maxFluid !== undefined) ? buildingData.maxFluid : 50000;
+        let currentFluid                = 0;
+        let maxFluid                    = (buildingData.maxFluid !== undefined) ? buildingData.maxFluid : 50000;
 
         // VOLUME
         if(buildingData.supplementalLoadType !== undefined)
@@ -1532,7 +1523,57 @@ export default class BaseLayout_Tooltip
         let content                 = [];
         let circuitSubSystem        = new SubSystem_Circuit({baseLayout: this.baseLayout});
         let objectCircuit           = circuitSubSystem.getObjectCircuit(currentObject);
-        let tooltipFooterOptions    = {circuit: objectCircuit, clockSpeed: clockSpeed, powerGenerated: powerGenerated, singleLine: true, mPowerProductionExponent: mPowerProductionExponent};
+        let tooltipFooterOptions    = {circuit: objectCircuit, clockSpeed: clockSpeed, powerGenerated: buildingData.powerGenerated, singleLine: true, mPowerProductionExponent: mPowerProductionExponent};
+
+            // BOTTOM
+            content.push('<div style="position: absolute;margin-top: 176px;margin-left: 315px; width: 165px;height: 125px;background: #FFFFFF;border: 2px solid #373737;border-radius: 10px;line-height: 1;">');
+            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
+
+                if(fuelClass !== null)
+                {
+                    let fuelItem = this.baseLayout.getItemDataFromClassName(fuelClass.pathName);
+                        if(fuelItem !== null && fuelItem.energy !== undefined)
+                        {
+                            content.push('<strong>' + fuelItem.name + '</strong><br />');
+
+                            if(fuelItem.energy !== null)
+                            {
+                                let consumptionRatio = (60 / (fuelItem.energy / buildingData.powerGenerated) * Math.pow(clockSpeed, 1 / mPowerProductionExponent));
+
+                                    if(fuelItem.category === 'liquid' || fuelItem.category === 'gas')
+                                    {
+                                        content.push('<span class="small"><strong class="text-warning">' + +(Math.round((consumptionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span><br />');
+                                        tooltipFooterOptions.burningTime = 60 / (consumptionRatio / 1000);
+                                    }
+                                    else
+                                    {
+                                        content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio * 100) / 100) + '</strong> Parts per minute</span><br />');
+                                        tooltipFooterOptions.burningTime = 60 / consumptionRatio;
+                                    }
+                            }
+                        }
+                }
+
+                content.push('<table class="w-100 mt-2"><tr>');
+
+                content.push('<td class="text-center"><div class="small">Fuel</div>');
+                    content.push('<table class="mx-auto"><tr><td>' + this.baseLayout.getInventoryImage(inventoryIn[0], 48) + '</td></tr></table>');
+                content.push('</td>');
+
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
+                {
+                    let inventoryOut    = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
+
+                        content.push('<td class="text-center"><i class="fas fa-arrow-alt-right"></i></td>');
+                        content.push('<td class="text-center"><div class="small">' + this.baseLayout.translate._('MAP\\TOOLTIP\\Waste') + '</div>');
+                            content.push('<table class="mx-auto"><tr><td>' + this.baseLayout.getInventoryImage(inventoryOut[0], 48) + '</td></tr></table>');
+                        content.push('</td>');
+                }
+
+                content.push('</tr></table>');
+
+            content.push('</div></div>');
+            content.push('</div>');
 
             // TOP
             content.push('<div style="position: absolute;margin-top: 26px;margin-left: 315px; width: 165px;height: 135px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + BaseLayout_Tooltip.uiGradient + '">');
@@ -1570,55 +1611,7 @@ export default class BaseLayout_Tooltip
             content.push('</div></div>');
             content.push('</div>');
 
-            // BOTTOM
-            content.push('<div style="position: absolute;margin-top: 176px;margin-left: 315px; width: 165px;height: 125px;background: #FFFFFF;border: 2px solid #373737;border-radius: 10px;line-height: 1;">');
-            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
-
-                if(fuelClass !== null)
-                {
-                    let fuelItem = this.baseLayout.getItemDataFromClassName(fuelClass.pathName);
-                        if(fuelItem !== null && fuelItem.energy !== undefined)
-                        {
-                            content.push('<strong>' + fuelItem.name + '</strong><br />');
-
-                            if(fuelItem.energy !== null)
-                            {
-                                let consumptionRatio = (60 / (fuelItem.energy / powerGenerated) * Math.pow(clockSpeed, -1 / mPowerProductionExponent));
-
-                                    if(fuelItem.category === 'liquid' || fuelItem.category === 'gas')
-                                    {
-                                        content.push('<span class="small"><strong class="text-warning">' + +(Math.round((consumptionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span><br />');
-                                    }
-                                    else
-                                    {
-                                        content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio * 100) / 100) + '</strong> Parts per minute</span><br />');
-                                    }
-                            }
-                        }
-                }
-
-                content.push('<table class="w-100 mt-2"><tr>');
-
-                content.push('<td class="text-center"><div class="small">Fuel</div>');
-                    content.push('<table class="mx-auto"><tr><td>' + this.baseLayout.getInventoryImage(inventoryIn[0], 48) + '</td></tr></table>');
-                content.push('</td>');
-
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorNuclear/Build_GeneratorNuclear.Build_GeneratorNuclear_C')
-                {
-                    let inventoryOut    = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
-
-                        content.push('<td class="text-center"><i class="fas fa-arrow-alt-right"></i></td>');
-                        content.push('<td class="text-center"><div class="small">' + this.baseLayout.translate._('MAP\\TOOLTIP\\Waste') + '</div>');
-                            content.push('<table class="mx-auto"><tr><td>' + this.baseLayout.getInventoryImage(inventoryOut[0], 48) + '</td></tr></table>');
-                        content.push('</td>');
-                }
-
-                content.push('</tr></table>');
-
-            content.push('</div></div>');
-            content.push('</div>');
             content.push('<div style="position: absolute;margin-top: 306px;margin-left: 367px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>INPUT</strong></div>');
-
             content.push('<div style="position: absolute;margin-top: 152px;margin-left: 381px; width: 32px;height: 32px;color: #FFFFFF;background: #404040;border-radius: 50%;line-height: 32px;text-align: center;font-size: 18px;box-shadow: 0 0 2px 0px rgba(0,0,0,0.75);"><i class="fas fa-arrow-alt-down"></i></div>');
 
             // VOLUME
@@ -1641,7 +1634,7 @@ export default class BaseLayout_Tooltip
                 content.push('</div>');
 
                 // CONSUMPTION
-                let supplementalLoadConsumed   = 60 * powerGenerated * buildingData.supplementalLoadRatio;
+                let supplementalLoadConsumed   = 60 * (buildingData.powerGenerated * Math.pow(clockSpeed, 1 / mPowerProductionExponent)) * buildingData.supplementalLoadRatio;
                     content.push('<div style="position: absolute;margin-top: 245px;margin-left: 107px;width: 96px;text-align: center;font-size: 13px;color: #5b5b5b;">');
                     content.push('<span class="small">Consumption:</span><br /><i class="fas fa-industry-alt"></i><br /><strong>' + +(Math.round((supplementalLoadConsumed / 1000) * 100) / 100) + 'm³</strong>');
                     content.push('</div>');
@@ -1916,10 +1909,11 @@ export default class BaseLayout_Tooltip
 
     setTooltipFooter(options)
     {
-        let header1     = [];
-        let header2     = [];
-        let content1    = [];
-        let content2    = [];
+        let header1                     = [];
+        let header2                     = [];
+        let content1                    = [];
+        let content2                    = [];
+        let mPowerProductionExponent    = options.mPowerProductionExponent || 1.3;
 
             // FIRST LINE
             if(options.circuit !== undefined && options.circuit !== null)
@@ -1939,9 +1933,9 @@ export default class BaseLayout_Tooltip
             {
                 content1.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerUsed * 100) / 100) + 'MW</td>');
             }
-            if(options.powerGenerated !== undefined)
+            if(options.powerGenerated !== undefined && options.clockSpeed !== undefined)
             {
-                content1.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.powerGenerated * 100) / 100) + 'MW</td>');
+                content1.push('<td class="text-center text-warning small px-1">' + +(Math.round((options.powerGenerated * Math.pow(options.clockSpeed, 1 / mPowerProductionExponent)) * 100) / 100) + 'MW</td>');
             }
 
             // SECOND LINE
@@ -1949,7 +1943,7 @@ export default class BaseLayout_Tooltip
             {
                 header2.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
             }
-            if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
+            if(options.burningTime !== undefined)
             {
                 header2.push('<td class="text-center mb-1 px-1"><i class="fas fa-stopwatch"></i></td>');
             }
@@ -1958,10 +1952,9 @@ export default class BaseLayout_Tooltip
             {
                 content2.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.craftingTime * options.clockSpeed * 100) / 100) + 's</td>');
             }
-            if(options.fuelEnergyValue !== undefined && options.fuelEnergyValue !== null && options.powerGenerated !== undefined && options.clockSpeed !== undefined)
+            if(options.burningTime !== undefined)
             {
-                let mPowerProductionExponent = options.mPowerProductionExponent || 1.3;
-                    content2.push('<td class="text-center text-warning small px-1">' + +(Math.round((options.fuelEnergyValue / options.powerGenerated) * Math.pow(options.clockSpeed, -1/mPowerProductionExponent) * 100) / 100) + 's</td>');
+                content2.push('<td class="text-center text-warning small px-1">' + +(Math.round(options.burningTime * 100) / 100) + 's</td>');
             }
 
         if(options.singleLine !== undefined && options.singleLine === true)
