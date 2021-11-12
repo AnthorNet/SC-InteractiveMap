@@ -2401,10 +2401,32 @@ export default class BaseLayout
                         if(this.showNodesOnMiners === true)
                         {
                             this.satisfactoryMap.availableLayers[layerId].removeLayer(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName]);
+
+                            // Two nodes...
+                            //TODO: Check coordinates...
+                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625')
+                            {
+                                this.satisfactoryMap.availableLayers[layerId].removeLayer(this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614']);
+                            }
+                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614')
+                            {
+                                this.satisfactoryMap.availableLayers[layerId].removeLayer(this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625']);
+                            }
                         }
                         else
                         {
                             this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].setOpacity(window.SCIM.collectedOpacity);
+
+                            // Two nodes...
+                            //TODO: Check coordinates...
+                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625')
+                            {
+                                this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614'].setOpacity(window.SCIM.collectedOpacity);
+                            }
+                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614')
+                            {
+                                this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625'].setOpacity(window.SCIM.collectedOpacity);
+                            }
                         }
 
                         this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.extractorPathName = currentObject.pathName;
