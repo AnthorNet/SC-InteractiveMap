@@ -562,18 +562,18 @@ export default class Modal_Schematics
                 {
                     if(currentSchematic.scannerPairs[k] === '/Game/FactoryGame/Resource/RawResources/Geyser/Desc_Geyser.Desc_Geyser_C')
                     {
-                        unlocks.push('Object Scanner: Geyser');
+                        unlocks.push('Resource Scanner: Geyser');
                     }
                     else
                     {
                         let currentRecipe = this.baseLayout.getItemDataFromClassName(currentSchematic.scannerPairs[k]);
                             if(currentRecipe !== null)
                             {
-                                unlocks.push('Object Scanner: ' + currentRecipe.name);
+                                unlocks.push('Resource Scanner: ' + currentRecipe.name);
                             }
                             else
                             {
-                                unlocks.push('Object Scanner: ' + currentSchematic.scannerPairs[k]);
+                                unlocks.push('Resource Scanner: ' + currentSchematic.scannerPairs[k]);
                             }
                     }
                 }
