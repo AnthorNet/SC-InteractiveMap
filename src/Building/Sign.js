@@ -50,10 +50,22 @@ export default class Building_Sign
 
     static get getBackgroundIcons(){
         return {
-            375: ['Warning', '/img/patternIcons/Ficsit_Monochrome_Logo.png'],
+            363: ['Background Blueprint Grid', '/img/patternIcons/TXUI_MIcon_BG_BlueprintGrid.png'],
+            364: ['Background Grid', '/img/patternIcons/TXUI_MIcon_BG_Grid.png'],
+            365: ['Background Checkered', '/img/patternIcons/TXUI_MIcon_BG_Checkered.png'],
+            366: ['Background Diagonal Lines', '/img/patternIcons/TXUI_MIcon_BG_DiagonalLines.png'],
+            367: ['Background Dots', '/img/patternIcons/TXUI_MIcon_BG_Dots.png'],
+            368: ['Background Rectangles', '/img/patternIcons/TXUI_MIcon_BG_Rectangles.png'],
 
+            369: ['None', '/img/patternIcons/TXUI_MIcon_None.png'],
 
-            598: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png']
+            370: ['Radial Gradient', '/img/patternIcons/radialGradient.png'],
+            371: ['Waves', '/img/patternIcons/waves.png'],
+            372: ['Vertical Gradient', '/img/patternIcons/verticalGradient.png'],
+            373: ['Horizontal Gradient', '/img/patternIcons/horizontalGradient.png'],
+
+            598: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png'],
+            375: ['FICSIT', '/img/patternIcons/Ficsit_Monochrome_Logo.png']
         };
     }
 
