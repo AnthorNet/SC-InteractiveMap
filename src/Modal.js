@@ -400,17 +400,17 @@ export default class Modal
                     }
                     break;
                 case 'colorPicker':
-                    input.find('.inputR').val(options.value.r);
-                    input.find('.inputG').val(options.value.g);
-                    input.find('.inputB').val(options.value.b);
-
                     input.ColorPicker = new iro.ColorPicker(input.find('.colorPicker')[0], {
                         width       : 294,
                         display     : 'inline-block',
-                        color       : 'rgb(' + options.value.r + ', ' + options.value.g + ', ' + options.value.b + ')',
+                        color       : ((options.value instanceof Object && options.value.r !== undefined) ? 'rgb(' + options.value.r + ', ' + options.value.g + ', ' + options.value.b + ')' : options.value),
                         borderWidth : 1,
                         borderColor : "#000000"
                     });
+
+                    input.find('.inputR').val(input.ColorPicker.color.rgb.r);
+                    input.find('.inputG').val(input.ColorPicker.color.rgb.g);
+                    input.find('.inputB').val(input.ColorPicker.color.rgb.b);
                     input.find('.inputHex').val(input.ColorPicker.color.hexString);
 
                     input.ColorPicker.on('input:change', function(color){

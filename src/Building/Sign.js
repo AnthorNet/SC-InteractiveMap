@@ -50,6 +50,8 @@ export default class Building_Sign
 
     static get getBackgroundIcons(){
         return {
+            375: ['Warning', '/img/patternIcons/Ficsit_Monochrome_Logo.png'],
+
 
             598: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png']
         };
@@ -263,11 +265,25 @@ export default class Building_Sign
 
 
 
-    static getLayoutTemplate(baseLayout, currentObject, shadowColor, otherShadowColor)
+    static getLayoutTemplate(baseLayout, currentObject)
     {
         let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
             if(mActivePrefabLayout !== null)
             {
+                let shadowColor         = false;
+                let otherShadowColor    = false;
+
+                let iconSrc = Building_Sign.getIcon(baseLayout, currentObject);
+                    if(Array.isArray(iconSrc))
+                    {
+                        shadowColor         = true;
+                    }
+                let otherIconSrc = Building_Sign.getOtherIcon(baseLayout, currentObject);
+                    if(Array.isArray(otherIconSrc))
+                    {
+                        otherShadowColor    = true;
+                    }
+
                 switch(mActivePrefabLayout.pathName)
                 {
                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_0.BPW_Sign1x1_0_C':
@@ -521,23 +537,19 @@ export default class Building_Sign
     {
         let backgroundColor     = Building_Sign.getBackgroundColor(baseLayout, currentObject);
         let foregroundColor     = Building_Sign.getForegroundColor(baseLayout, currentObject);
-        let shadowColor         = false;
-        let otherShadowColor    = false;
 
-        let iconSrc = Building_Sign.getIcon(baseLayout, currentObject);
+        let iconSrc             = Building_Sign.getIcon(baseLayout, currentObject);
             if(Array.isArray(iconSrc))
             {
                 iconSrc             = iconSrc[0];
-                shadowColor         = true;
             }
-        let otherIconSrc = Building_Sign.getOtherIcon(baseLayout, currentObject);
+        let otherIconSrc        = Building_Sign.getOtherIcon(baseLayout, currentObject);
             if(Array.isArray(otherIconSrc))
             {
                 otherIconSrc        = otherIconSrc[0];
-                otherShadowColor    = true;
             }
 
-        let layoutTemplate  = Building_Sign.getLayoutTemplate(baseLayout, currentObject, shadowColor, otherShadowColor);
+        let layoutTemplate  = Building_Sign.getLayoutTemplate(baseLayout, currentObject);
             layoutTemplate  = layoutTemplate.replace('{{ICON_SRC}}', iconSrc);
             layoutTemplate  = layoutTemplate.replace('{{OTHER_ICON_SRC}}', otherIconSrc);
 
@@ -562,6 +574,15 @@ export default class Building_Sign
     {
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let layoutTemplate  = Building_Sign.getLayoutTemplate(baseLayout, currentObject);
+
+            contextMenu.push({
+                text: 'Update "' + buildingData.name + '" background color',
+                callback: Building_Sign.updateBackgroundColor
+            });
+            contextMenu.push({
+                text: 'Update "' + buildingData.name + '" foreground color',
+                callback: Building_Sign.updateForegroundColor
+            });
 
             if(layoutTemplate.includes('{{TEXT}}'))
             {
@@ -684,6 +705,72 @@ export default class Building_Sign
                                             return;
                                         }
                                 }
+                            }
+                    }
+                }.bind(baseLayout)
+            });
+    }
+
+    static updateBackgroundColor(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" backgroundcolor',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mBackgroundColor',
+                    inputType   : 'colorPicker',
+                    value       : Building_Sign.getBackgroundColor(baseLayout, currentObject)
+                }],
+                callback    : function(values)
+                {
+                    if(values !== null)
+                    {
+                        let mBackgroundColor = baseLayout.getObjectProperty(currentObject, 'mBackgroundColor');
+                            if(mBackgroundColor !== null)
+                            {
+                                mBackgroundColor.values = {
+                                    r       : BaseLayout_Math.RGBToLinearColor(values.mBackgroundColor.r),
+                                    g       : BaseLayout_Math.RGBToLinearColor(values.mBackgroundColor.g),
+                                    b       : BaseLayout_Math.RGBToLinearColor(values.mBackgroundColor.b),
+                                    a       : 1
+                                };
+                            }
+                    }
+                }.bind(baseLayout)
+            });
+    }
+
+    static updateForegroundColor(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" foreground color',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mForegroundColor',
+                    inputType   : 'colorPicker',
+                    value       : Building_Sign.getForegroundColor(baseLayout, currentObject)
+                }],
+                callback    : function(values)
+                {
+                    if(values !== null)
+                    {
+                        let mForegroundColor = baseLayout.getObjectProperty(currentObject, 'mForegroundColor');
+                            if(mForegroundColor !== null)
+                            {
+                                mForegroundColor.values = {
+                                    r       : BaseLayout_Math.RGBToLinearColor(values.mForegroundColor.r),
+                                    g       : BaseLayout_Math.RGBToLinearColor(values.mForegroundColor.g),
+                                    b       : BaseLayout_Math.RGBToLinearColor(values.mForegroundColor.b),
+                                    a       : 1
+                                };
                             }
                     }
                 }.bind(baseLayout)
