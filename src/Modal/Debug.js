@@ -82,8 +82,7 @@ export default class Modal_Debug
                         if(currentChildren !== null)
                         {
                             htmlChildren.push('<div class="tab-pane fade" id="advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">');
-                            htmlChildren.push('<textarea class="form-control updateObject" style="height: 75vh;" data-pathName="' + currentObject.children[i].pathName + '">' + JSON.stringify(currentChildren, null, 4) + '</textarea>');
-                            //htmlChildren.push('<button class="btn btn-warning w-100" data-pathName="' + currentObject.children[i].pathName + '" disabled>Update</button>');
+                            html.push(Modal_Debug.getJsonViewer(currentChildren));
                             htmlChildren.push('</div>');
 
                             let mHiddenConnections = baseLayout.getObjectProperty(currentChildren, 'mHiddenConnections');
@@ -120,8 +119,7 @@ export default class Modal_Debug
 
             html.push('<div class="tab-content">');
             html.push('<div class="tab-pane fade show active" id="advancedDebugObject-MAIN">');
-            html.push('<textarea class="form-control updateObject" style="height: 75vh;" data-pathName="' + currentObject.pathName + '">' + JSON.stringify(currentObject, null, 4) + '</textarea>');
-            //html.push('<button class="btn btn-warning w-100" data-pathName="' + currentObject.pathName + '" disabled>Update</button>');
+            html.push(Modal_Debug.getJsonViewer(currentObject));
             html.push('</div>');
             html.push(htmlChildren.join(''));
 
@@ -129,8 +127,7 @@ export default class Modal_Debug
             {
                 let currentExtraObject = baseLayout.saveGameParser.getTargetObject(extraPathName[j]);
                     html.push('<div class="tab-pane fade" id="advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '">');
-                    html.push('<textarea class="form-control updateObject" style="height: 75vh;" data-pathName="' + extraPathName[j] + '">' + JSON.stringify(currentExtraObject, null, 4) + '</textarea>');
-                    //html.push('<button class="btn btn-warning w-100" data-pathName="' + extraPathName[j] + '" disabled>Update</button>');
+                    html.push(Modal_Debug.getJsonViewer(currentExtraObject));
                     html.push('</div>');
             }
 
@@ -138,11 +135,147 @@ export default class Modal_Debug
 
         $('#genericModal .modal-title').empty().html('Advanced Debug - ' + marker.relatedTarget.options.pathName);
         $('#genericModal .modal-body').empty().html(html.join(''));
+
+        $('#genericModal .modal-body .json-document').find('.json-toggle').click(function(){
+            let target = $(this).toggleClass('collapsed').siblings('ul.json-dict, ol.json-array');
+                target.toggle();
+
+            if(target.is(':visible'))
+            {
+                target.siblings('.json-placeholder').remove();
+            }
+            else
+            {
+                let count       = target.children('li').length;
+                let placeholder = count + (count > 1 ? ' items' : ' item');
+                let name        = $(this).attr('data-name');
+                    if(name !== undefined)
+                    {
+                        placeholder = name + ' (' + placeholder + ')';
+                    }
+
+                    target.after('<span class="json-placeholder">' + placeholder + '</span>');
+            }
+            return false;
+        });
+        $('#genericModal .modal-body .json-document').on('click', '.json-placeholder', function(){
+            $(this).siblings('.json-toggle').click();
+            return false;
+        });
+        $('#genericModal .modal-body').find('.json-toggle').click();
+
         setTimeout(function(){
             $('#genericModal').modal('show').modal('handleUpdate');
-            $('textarea.updateObject').on('keyup', function(){
-                $(this).next('button').attr('disabled', false);
-            });
         }, 250);
+    }
+
+    static getJsonViewer(json)
+    {
+        let html = [];
+            html.push('<div class="json-document" style="height: 75vh;overflow-y: scroll;">');
+            html.push(Modal_Debug.jsonToHTML(json));
+            html.push('</div>');
+
+            return html.join('');
+    }
+
+    static jsonToHTML(json)
+    {
+        switch(typeof json)
+        {
+            case 'string':
+                // Escape tags and quotes
+                json = json
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/'/g, '&apos;')
+                        .replace(/"/g, '&quot;');
+                json = json.replace(/&quot;/g, '\\&quot;');
+                return '<span class="json-string">"' + json + '"</span>';
+            case 'number':
+            case 'boolean':
+            case null:
+                return '<span class="json-literal">' + json + '</span>';
+        }
+
+        if(json instanceof Array)
+        {
+            if(json.length > 0)
+            {
+                let html = [];
+                    for(let i = 0; i < json.length; ++i)
+                    {
+                        html.push('<li>');
+                        if(json[i] instanceof Object && Object.keys(json[i]).length > 0)
+                        {
+                            if(json[i].name !== undefined)
+                            {
+                                html.push('<span class="json-toggle" data-name="' + json[i].name + '"></span>');
+                            }
+                            else
+                            {
+                                html.push('<span class="json-toggle"></span>');
+                            }
+                        }
+                        html.push(Modal_Debug.jsonToHTML(json[i]));
+
+                        if(i < (json.length - 1))
+                        {
+                            html.push(',');
+                        }
+                        html.push('</li>');
+                    }
+
+                return '[<ol class="json-array">' + html.join('') + '</ol>]';
+            }
+
+            return '[]';
+        }
+
+        if(typeof json === 'object')
+        {
+            let keyCount = Object.keys(json).length;
+                if(keyCount > 0)
+                {
+                    let html = [];
+                        for(let key in json)
+                        {
+                            if(Object.prototype.hasOwnProperty.call(json, key))
+                            {
+                                html.push('<li>');
+                                let keyRepr = '<span class="json-string">"' + key + '"</span>';
+                                    if(json[key] instanceof Object && Object.keys(json[key]).length > 0)
+                                    {
+                                        if(json[key].name !== undefined)
+                                        {
+                                            html.push('<span class="json-toggle" data-name="' + json[key].name + '">' + keyRepr + '</span>');
+                                        }
+                                        else
+                                        {
+                                            html.push('<span class="json-toggle">' + keyRepr + '</span>');
+                                        }
+                                    }
+                                    else
+                                    {
+                                        html.push(keyRepr);
+                                    }
+                                html.push(': ' + Modal_Debug.jsonToHTML(json[key]));
+
+                                if(--keyCount > 0)
+                                {
+                                    html.push(',');
+                                }
+                                html.push('</li>');
+                            }
+                        }
+
+                    return '[<ul class="json-dict">' + html.join('') + '</ul>]';
+                }
+
+            return '{}';
+        }
+
+        return '';
     }
 }
