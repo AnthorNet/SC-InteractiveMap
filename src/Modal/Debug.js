@@ -192,11 +192,11 @@ export default class Modal_Debug
                         .replace(/'/g, '&apos;')
                         .replace(/"/g, '&quot;');
                 json = json.replace(/&quot;/g, '\\&quot;');
-                return '<span class="json-string">"' + json + '"</span>';
+                return '<span class="json-string" style="user-select: text;">"' + json + '"</span>';
             case 'number':
             case 'boolean':
             case null:
-                return '<span class="json-literal">' + json + '</span>';
+                return '<span class="json-literal" style="user-select: text;">' + json + '</span>';
         }
 
         if(json instanceof Array)
