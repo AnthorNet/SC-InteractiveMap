@@ -82,7 +82,7 @@ export default class Modal_Debug
                         if(currentChildren !== null)
                         {
                             htmlChildren.push('<div class="tab-pane fade" id="advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">');
-                            html.push(Modal_Debug.getJsonViewer(currentChildren));
+                            htmlChildren.push(Modal_Debug.getJsonViewer(currentChildren));
                             htmlChildren.push('</div>');
 
                             let mHiddenConnections = baseLayout.getObjectProperty(currentChildren, 'mHiddenConnections');
