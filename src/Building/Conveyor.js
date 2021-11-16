@@ -1,3 +1,7 @@
+import Modal                                    from '../Modal.js';
+
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
+
 export default class Building_Conveyor
 {
     static get availableConveyorBelts()
@@ -22,6 +26,67 @@ export default class Building_Conveyor
         ];
     }
 
+    /**
+     * CONTEXT MENU
+     */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        let haveSeparator = false;
+            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true)
+            {
+                haveSeparator = true;
+                contextMenu.push({
+                    text    : 'Merge adjacent conveyor belts (Performance test)',
+                    callback: Building_Conveyor.mergeConveyors
+                });
+            }
+
+        let usePool = Building_Conveyor.availableConveyorBelts;
+            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorLift') === true)
+            {
+                usePool = Building_Conveyor.availableConveyorLifts;
+            }
+
+        let poolIndex   = usePool.indexOf(currentObject.className);
+            if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
+            {
+                haveSeparator = true;
+
+                if(poolIndex > 0)
+                {
+                    let downgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex - 1]);
+                        if(downgradeData !== null)
+                        {
+                            contextMenu.push({
+                                text    : 'Downgrade to "' + downgradeData.name + '"',
+                                callback: Building_Conveyor.downgradeConveyor
+                            });
+                        }
+                }
+                if(poolIndex < (usePool.length - 1))
+                {
+                    let upgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex + 1]);
+                        if(upgradeData !== null)
+                        {
+                            contextMenu.push({
+                                text    : 'Upgrade to "' + upgradeData.name + '"',
+                                callback: Building_Conveyor.upgradeConveyor
+                            });
+                        }
+                }
+            }
+
+            if(haveSeparator === true)
+            {
+                contextMenu.push('-');
+            }
+
+        return contextMenu;
+    }
+
+    /**
+     * DOWNGRADE/UPGRADE
+     */
     static downgradeConveyor(marker)
     {
         let baseLayout      = marker.baseLayout;
@@ -57,6 +122,148 @@ export default class Building_Conveyor
             {
                 currentObject.className = usePool[poolIndex + 1];
                 baseLayout.updateBuiltWithRecipe(currentObject);
+            }
+    }
+
+    static mergeNextConveyor(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true)
+            {
+                let middleConveyorAny1          = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny1');
+                let middleConveyorSplineData    = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
+                let offsetDistance              = middleConveyorSplineData.distance * 100;
+
+                    // Merge next belt
+                    if(middleConveyorAny1 !== null)
+                    {
+                        let mConnectedComponentAny1 = baseLayout.getObjectProperty(middleConveyorAny1, 'mConnectedComponent');
+                            if(mConnectedComponentAny1 !== null)
+                            {
+                                let nextConveyorAny0 = baseLayout.saveGameParser.getTargetObject(mConnectedComponentAny1.pathName);
+                                    if(nextConveyorAny0 !== null)
+                                    {
+                                        let nextConveyor = baseLayout.saveGameParser.getTargetObject(nextConveyorAny0.outerPathName)
+                                            if(nextConveyor !== null && nextConveyor.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true)
+                                            {
+                                                // Append spline data to middle
+                                                let middleSplineData    = baseLayout.getObjectProperty(currentObject, 'mSplineData');
+                                                let nextSplineData      = baseLayout.getObjectProperty(nextConveyor, 'mSplineData');
+                                                    for(let i = 0; i < nextSplineData.values.length; i++)
+                                                    {
+                                                        let newSplineData = nextSplineData.values[i];
+                                                            for(let j = 0; j < newSplineData.length; j++)
+                                                            {
+                                                                if(newSplineData[j].name === 'Location')
+                                                                {
+                                                                    newSplineData[j].value.values.x += nextConveyor.transform.translation[0] - currentObject.transform.translation[0];
+                                                                    newSplineData[j].value.values.y += nextConveyor.transform.translation[1] - currentObject.transform.translation[1];
+                                                                    newSplineData[j].value.values.z += nextConveyor.transform.translation[2] - currentObject.transform.translation[2];
+                                                                }
+                                                            }
+                                                            middleSplineData.values.push(newSplineData);
+                                                    }
+
+                                                // Append extra items to middle
+                                                if(nextConveyor.extra.items.length > 0)
+                                                {
+                                                    for(let i = (nextConveyor.extra.items.length - 1); i >= 0; i--)
+                                                    {
+                                                        nextConveyor.extra.items[i].position += offsetDistance;
+                                                        currentObject.extra.items.unshift(nextConveyor.extra.items[i]);
+                                                    }
+                                                }
+
+                                                // Delete nextConveyorAny0
+                                                baseLayout.saveGameParser.deleteObject(nextConveyorAny0.pathName);
+
+                                                // Switch nextConveyorAny1 to middleConveyorAny1
+                                                let nextConveyorAny1 = baseLayout.saveGameParser.getTargetObject(nextConveyor.pathName + '.ConveyorAny1');
+                                                    if(nextConveyorAny1 !== null)
+                                                    {
+                                                        let mNextConnectedComponentAny1     = baseLayout.getObjectProperty(nextConveyorAny1, 'mConnectedComponent');
+                                                            if(mNextConnectedComponentAny1 !== null)
+                                                            {
+                                                                baseLayout.setObjectProperty(middleConveyorAny1, 'mConnectedComponent', mNextConnectedComponentAny1);
+
+                                                                let inputConnectedComponent = baseLayout.saveGameParser.getTargetObject(mNextConnectedComponentAny1.pathName);
+                                                                    if(inputConnectedComponent !== null)
+                                                                    {
+                                                                        baseLayout.setObjectProperty(inputConnectedComponent, 'mConnectedComponent', {
+                                                                            levelName   : 'Persistent_Level',
+                                                                            pathName    : middleConveyorAny1.pathName
+                                                                        });
+                                                                    }
+
+                                                            }
+
+                                                        baseLayout.saveGameParser.deleteObject(nextConveyorAny1.pathName);
+                                                    }
+
+                                                // Delete nextConveyor!
+                                                baseLayout.deleteGenericBuilding({baseLayout: baseLayout, relatedTarget: baseLayout.getMarkerFromPathName(nextConveyor.pathName, buildingData.layerId)})
+
+                                                // Redraw middle conveyor!
+                                                baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: JSON.parse(JSON.stringify(currentObject.transform)), object: currentObject});
+                                                return true;
+                                            }
+                                    }
+                            }
+                    }
+            }
+
+        return false;
+    }
+
+    static mergeConveyors(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true)
+            {
+                let middleConveyorAny0          = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny0');
+
+                    // Merge previous belt?
+                    if(middleConveyorAny0 !== null)
+                    {
+                        let mConnectedComponent = baseLayout.getObjectProperty(middleConveyorAny0, 'mConnectedComponent');
+                            if(mConnectedComponent !== null)
+                            {
+                                let previousConveyorAny1 = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName);
+                                    if(previousConveyorAny1 !== null)
+                                    {
+                                        let previousConveyor = baseLayout.saveGameParser.getTargetObject(previousConveyorAny1.outerPathName)
+                                            if(previousConveyor !== null && previousConveyor.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true)
+                                            {
+                                                // Find previous marker and pivot
+                                                let previousMarker = baseLayout.getMarkerFromPathName(previousConveyor.pathName, buildingData.layerId);
+                                                    if(previousMarker !== null)
+                                                    {
+                                                        let haveMerged = Building_Conveyor.mergeNextConveyor({baseLayout: baseLayout, relatedTarget: previousMarker});
+                                                            if(haveMerged === true)
+                                                            {
+                                                                marker = {baseLayout: baseLayout, relatedTarget: baseLayout.getMarkerFromPathName(previousConveyor.pathName, buildingData.layerId)};
+                                                            }
+                                                    }
+
+                                            }
+                                    }
+                            }
+                    }
+
+                    // Merge next belt
+                    Building_Conveyor.mergeNextConveyor(marker);
+
+                Modal.notification({
+                    image   : buildingData.image,
+                    title   : 'Merge adjacent conveyor belts',
+                    message : 'Are you nuts?!'
+                })
             }
     }
 }
