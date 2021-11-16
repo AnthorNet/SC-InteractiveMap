@@ -72,6 +72,22 @@ export default class SaveParser
 
     save(callback = null)
     {
+        // Delete ghost identifiers...
+        for(let i = (this.trainIdentifiers.length - 1); i >= 0; i--)
+        {
+            let currentIdentifier = this.getTargetObject(this.trainIdentifiers[i]);
+                if(currentIdentifier !== null)
+                {
+                    // Either no properties or station without name and pathname link
+                    if(currentIdentifier.properties.length <= 1)
+                    {
+                        console.log('Removing ghost identifier', currentIdentifier.pathName);
+                        this.deleteObject(currentIdentifier.pathName);
+                        this.trainIdentifiers.splice(i, 1);
+                    }
+                }
+        }
+
         let writer = new SaveParser_Write({
             saveParser  : this,
             callback    : callback,
