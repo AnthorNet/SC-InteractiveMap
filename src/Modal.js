@@ -15,25 +15,25 @@ export default class Modal
     static get templates()
     {
         return {
-            modal       : '<div class="modal fade" tabindex="-1">' +
-                          '    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">' +
-                          '        <div class="modal-content">' +
-                          '            <div class="modal-body"></div>' +
-                          '        </div>' +
-                          '    </div>' +
-                          '</div>',
+            modal           : '<div class="modal fade" tabindex="-1">'
+                            + '    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">'
+                            + '        <div class="modal-content">'
+                            + '            <div class="modal-body"></div>'
+                            + '        </div>'
+                            + '    </div>'
+                            + '</div>',
+            modalHeader : '<div class="modal-header"><h5 class="modal-title"></h5></div>',
+            modalFooter : '<div class="modal-footer"></div>',
 
-            header      : '<div class="modal-header">' +
-                          '    <h5 class="modal-title"></h5>' +
-                          '</div>',
-            footer      : '<div class="modal-footer"></div>',
+            toast           : '<div class="toast" style="position: fixed; top: 86px; right: 10px;"><div class="toast-body"></div></div>',
+            toastHeader     : '<div class="toast-header"><strong class="mr-auto"></strong></div>',
 
-            button      : '<button type="button" class="btn"></button>',
-            closeButton : '<button type="button" class="close">&times;</button>',
+            button          : '<button type="button" class="btn"></button>',
+            closeButton     : '<button type="button" class="close">&times;</button>',
 
-            form        : '<form></form>',
-            formGroup   : '<div class="form-group"></div>',
-            input       : {
+            form            : '<form></form>',
+            formGroup       : '<div class="form-group"></div>',
+            input           : {
                 text            : '<input class="form-control text-center" autocomplete="off" type="text">',
                 textArea        : '<textarea class="form-control text-center" autocomplete="off" rows="5"></textarea>',
                 toggle          : '<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" value="1"><label class="custom-control-label">Toggle label</label></div>',
@@ -77,8 +77,7 @@ export default class Modal
             // Buttons?
             if(Object.keys(options.buttons).length > 0)
             {
-                let footer = $(Modal.templates.footer);
-
+                let modalFooter = $(Modal.templates.modalFooter);
                     for(let buttonKey in options.buttons)
                     {
                         if(options.buttons[buttonKey].element === undefined)
@@ -86,16 +85,16 @@ export default class Modal
                             options.buttons[buttonKey].element = Modal.prepareButton(buttonKey, options.buttons[buttonKey]);
                         }
 
-                        footer.append(options.buttons[buttonKey].element);
+                        modalFooter.append(options.buttons[buttonKey].element);
                     }
 
-                    modalBody.after(footer);
+                    modalBody.after(modalFooter);
             }
 
             // Title?
             if(options.title)
             {
-                modalBody.before(Modal.templates.header);
+                modalBody.before(Modal.templates.modalHeader);
                 modalContent.find('.modal-title').html(options.title);
             }
 
@@ -179,6 +178,42 @@ export default class Modal
             {
                 $('.modal-backdrop').css('z-index', -1); //TODO: Temp fix...
             }
+    }
+
+    static notification(options)
+    {
+        if($.fn.toast)
+        {
+            let toastContent    = $(Modal.templates.toast);
+            let toastBody       = toastContent.find('.toast-body');
+                toastBody.html(options.message);
+
+                // Title?
+                if(options.title || options.image)
+                {
+                    toastBody.before(Modal.templates.toastHeader);
+
+                    if(options.title)
+                    {
+                        toastContent.find('.toast-header > strong').html(options.title);
+                    }
+
+                    if(options.image)
+                    {
+                        toastContent.find('.toast-header').prepend('<img src="' + options.image + '" style="width: 24px;" class="rounded mr-2">');
+                    }
+                }
+
+                $('body').append(toastContent);
+                toastContent.toast({delay: 1000}).toast('show');
+                toastContent.on('hidden.bs.toast', function(){
+                    toastContent.remove();
+                });
+        }
+        else
+        {
+            alert(options.message);
+        }
     }
 
     static alert(value)
