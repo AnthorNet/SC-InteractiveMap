@@ -2256,7 +2256,7 @@ export default class BaseLayout
                     {
                         categoryOptions.push({
                             group       : itemsCategories[category],
-                            dataContent : '<img src="' + this.itemsData[i].image + '" style="width: 24px;" /> ' + this.itemsData[i].name,
+                            dataContent : '<img src="' + this.itemsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.itemsData[i].name,
                             value       : this.itemsData[i].className,
                             text        : this.itemsData[i].name
                         });
@@ -2275,7 +2275,7 @@ export default class BaseLayout
                     {
                         toolsOptions.push({
                             group       : 'Tools - ' + ((this.toolsData[i].category === 'ficsmas') ? itemsCategories[this.toolsData[i].category] : this.toolsCategories[this.toolsData[i].category]),
-                            dataContent : '<img src="' + this.toolsData[i].image + '" style="width: 24px;" /> ' + this.toolsData[i].name,
+                            dataContent : '<img src="' + this.toolsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.toolsData[i].name,
                             value       : this.toolsData[i].className,
                             text        : this.toolsData[i].name
                         });
@@ -6403,7 +6403,7 @@ export default class BaseLayout
                     if(this.buildingsData[i].category === 'foundation')
                     {
                         inputOptions.push({
-                            dataContent: '<img src="' + this.buildingsData[i].image + '" style="width: 24px;" /> ' + this.buildingsData[i].name,
+                            dataContent: '<img src="' + this.buildingsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.buildingsData[i].name,
                             value: this.buildingsData[i].className,
                             text: this.buildingsData[i].name
                         });
