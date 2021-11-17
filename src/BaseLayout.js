@@ -2854,7 +2854,7 @@ export default class BaseLayout
             }
 
 
-        let layerId         = (buildingData !== null && buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerHUBTerminalLayer';
+        let layerId = (buildingData !== null && buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerHUBTerminalLayer';
 
             if(baseLayout.playerLayers[layerId].filtersCount !== undefined)
             {
@@ -3093,7 +3093,7 @@ export default class BaseLayout
                     let railroadTrackMarker = baseLayout.getMarkerFromPathName(mRailroadTrack.pathName, layerId);
                         if(railroadTrackMarker !== null)
                         {
-                            baseLayout.deleteGenericBuilding({relatedTarget: railroadTrackMarker});
+                            baseLayout.deleteGenericBuilding({baseLayout: baseLayout, relatedTarget: railroadTrackMarker});
                         }
                 }
 
@@ -3456,11 +3456,11 @@ export default class BaseLayout
 
             if(previousTrain !== null)
             {
-                this.deleteGenericBuilding({relatedTarget: previousTrain});
+                this.deleteGenericBuilding({baseLayout: this, relatedTarget: previousTrain});
             }
             if(nextTrain !== null)
             {
-                this.deleteGenericBuilding({relatedTarget: nextTrain});
+                this.deleteGenericBuilding({baseLayout: this, relatedTarget: nextTrain});
             }
         }
 

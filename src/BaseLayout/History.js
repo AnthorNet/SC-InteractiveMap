@@ -74,11 +74,11 @@ export default class BaseLayout_History
                                 case 'deleteGenericBuilding':
                                     if(currentOperation.properties.fast !== undefined && currentOperation.properties.fast === true)
                                     {
-                                        this.baseLayout.deleteGenericBuilding({relatedTarget: currentOperation.properties.marker}, false, true);
+                                        this.baseLayout.deleteGenericBuilding({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker}, false, true);
                                     }
                                     else
                                     {
-                                        this.baseLayout.deleteGenericBuilding({relatedTarget: currentOperation.properties.marker}, false);
+                                        this.baseLayout.deleteGenericBuilding({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker}, false);
                                     }
                                     break;
                                 case 'restoreState':
