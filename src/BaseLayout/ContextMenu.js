@@ -157,26 +157,30 @@ export default class BaseLayout_ContextMenu
                 if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof')
                 {
                     contextMenu.push({
-                        text    : 'Rotate "' + buildingData.name + '" by 90°',
-                        callback: this.baseLayout.rotationPlayerFoundation.bind(this.baseLayout)
+                        icon        : 'fa-redo',
+                        text        : 'Rotate "' + buildingData.name + '" by 90°',
+                        callback    : this.baseLayout.rotationPlayerFoundation.bind(this.baseLayout)
                     });
 
                     contextMenu.push({
-                        text    : 'Pivot "' + buildingData.name + '" from the top-left corner',
-                        callback: this.baseLayout.pivotPlayerFoundation.bind(this.baseLayout)
+                        icon        : 'fa-share',
+                        text        : 'Pivot "' + buildingData.name + '" from the top-left corner',
+                        callback    : this.baseLayout.pivotPlayerFoundation.bind(this.baseLayout)
                     });
 
                     if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal') === false && currentObject.className.includes('_Corner_') === false)
                     {
                         contextMenu.push({
-                            text    : 'Spawn around "' + buildingData.name + '"',
-                            callback: Modal_SpawnAround.getHTML
+                            icon        : 'fa-building',
+                            text        : 'Spawn around "' + buildingData.name + '"',
+                            callback    : Modal_SpawnAround.getHTML
                         });
                     }
 
                     contextMenu.push({
-                        text    : 'Teleport player on "' + buildingData.name + '"',
-                        callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                        icon        : 'fa-portal-exit',
+                        text        : 'Teleport player on "' + buildingData.name + '"',
+                        callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
                     });
 
                     contextMenu.push('-');
@@ -356,15 +360,18 @@ export default class BaseLayout_ContextMenu
                             if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className) === false)
                             {
                                 contextMenu.push({
+                                    icon    : 'fa-box',
                                     text    : 'Edit inventory',
                                     callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
                                 });
                             }
                             contextMenu.push({
+                                icon    : 'fa-box-full',
                                 text    : 'Fill inventory',
                                 callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal.bind(this.baseLayout)
                             });
                             contextMenu.push({
+                                icon    : 'fa-box-open',
                                 text    : 'Clear inventory',
                                 callback: this.baseLayout.clearPlayerStorageBuildingInventory.bind(this.baseLayout)
                             });
@@ -376,8 +383,9 @@ export default class BaseLayout_ContextMenu
                     {
                         contextMenu.push('-');
                         contextMenu.push({
-                            text    : 'Update pipe network fluid',
-                            callback: this.baseLayout.updatePipeNetworkFluid.bind(this.baseLayout)
+                            icon        : 'fa-potion',
+                            text        : 'Update pipe network fluid',
+                            callback    : this.baseLayout.updatePipeNetworkFluid.bind(this.baseLayout)
                         });
                     }
 
