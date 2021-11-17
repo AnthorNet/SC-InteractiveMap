@@ -270,7 +270,7 @@ export default class Modal_Debug
                             }
                         }
 
-                    return '[<ul class="json-dict">' + html.join('') + '</ul>]';
+                    return '{<ul class="json-dict">' + html.join('') + '</ul>}';
                 }
 
             return '{}';
