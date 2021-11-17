@@ -711,7 +711,7 @@ export default class Modal_Schematics
                                 if(schematicManager.properties[i].name === 'mAvailableSchematics')
                                 {
                                     let mAvailableSchematics = schematicManager.properties[i].value.values;
-                                        for(let j = mAvailableSchematics.length - 1; j >= 0; j--)
+                                        for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
                                         {
                                             if(mAvailableSchematics[j].pathName === currentSchematic)
                                             {
@@ -723,7 +723,7 @@ export default class Modal_Schematics
                                 if(schematicManager.properties[i].name === 'mPurchasedSchematics')
                                 {
                                     let mPurchasedSchematics = schematicManager.properties[i].value.values;
-                                        for(let j = mPurchasedSchematics.length - 1; j >= 0; j--)
+                                        for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
                                         {
                                             if(mPurchasedSchematics[j].pathName === currentSchematic)
                                             {
@@ -739,7 +739,7 @@ export default class Modal_Schematics
                                 if(schematicManager.properties[i].name === 'mAvailableSchematics')
                                 {
                                     let mAvailableSchematics = schematicManager.properties[i].value.values;
-                                        for(let j = mAvailableSchematics.length - 1; j >= 0; j--)
+                                        for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
                                         {
                                             if(mAvailableSchematics[j].pathName === currentSchematic)
                                             {
@@ -793,7 +793,7 @@ export default class Modal_Schematics
                                 if(schematicManager.properties[i].name === 'mPurchasedSchematics')
                                 {
                                     let mPurchasedSchematics = schematicManager.properties[i].value.values;
-                                        for(let j = mPurchasedSchematics.length - 1; j >= 0; j--)
+                                        for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
                                         {
                                             if(mPurchasedSchematics[j].pathName === currentSchematic)
                                             {

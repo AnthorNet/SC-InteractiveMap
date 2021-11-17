@@ -46,7 +46,7 @@ export default class Modal_Train_Timetable
 
             $('#genericModal .modal-body table tr[data-stop]').hover(function(){
                 let stop = $(this).attr('data-stop');
-                    $('#genericModal .modal-body .img-thumnail span[data-stop=' + stop + ']')
+                    $('#genericModal .modal-body .img-thumbnail span[data-stop=' + stop + ']')
                         .css('border-color', '#FF0000')
                         .css('z-index', 2)
             }, function(){

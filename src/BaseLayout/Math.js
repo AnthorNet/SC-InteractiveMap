@@ -396,7 +396,7 @@ export default class BaseLayout_Math
                 let x           = point.lat, y = point.lng;
 
                 let inside = false;
-                    for(let i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++)
+                    for(let i = 0, j = (polyPoints.length - 1); i < polyPoints.length; j = i++)
                     {
                         let xi = polyPoints[i].lat, yi = polyPoints[i].lng;
                         let xj = polyPoints[j].lat, yj = polyPoints[j].lng;

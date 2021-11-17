@@ -233,7 +233,7 @@ export default class BaseLayout_Tooltip
                     let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGamePipeNetworks[pipeNetworkId]);
                         if(currentPipeNetwork !== null)
                         {
-                            for(let n = currentPipeNetwork.properties.length - 1; n >= 0; n--)
+                            for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
                             {
                                 if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
                                 {
@@ -941,7 +941,7 @@ export default class BaseLayout_Tooltip
                 let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGamePipeNetworks[pipeNetworkId]);
                     if(currentPipeNetwork !== null)
                     {
-                        for(let n = currentPipeNetwork.properties.length - 1; n >= 0; n--)
+                        for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
                         {
                             if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
                             {

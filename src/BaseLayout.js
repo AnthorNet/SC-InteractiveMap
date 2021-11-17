@@ -3042,7 +3042,7 @@ export default class BaseLayout
                     }
             }
 
-            for(let n = this.saveGameRailVehicles.length - 1; n >= 0; n--)
+            for(let n = (this.saveGameRailVehicles.length - 1); n >= 0; n--)
             {
                 if(this.saveGameRailVehicles[n].pathName === currentObject.pathName)
                 {
@@ -3057,7 +3057,7 @@ export default class BaseLayout
             || currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'
         )
         {
-            for(let n = this.saveGameRailVehicles.length - 1; n >= 0; n--)
+            for(let n = (this.saveGameRailVehicles.length - 1); n >= 0; n--)
             {
                 let mTrackPosition = this.getObjectProperty(this.saveGameRailVehicles[n], 'mTrackPosition');
                     if(mTrackPosition !== null)
@@ -5909,7 +5909,7 @@ export default class BaseLayout
             recipe.push(currentObject);
         }
 
-        for(let i = storages.length - 1; i >= 0; i--)
+        for(let i = (storages.length - 1); i >= 0; i--)
         {
             if(storages[i].options.pathName !== undefined)
             {

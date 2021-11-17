@@ -289,7 +289,7 @@ export default class SubSystem_Circuit
             {
                 if(currentCiruitSubSystem.properties[j].name === 'mComponents')
                 {
-                    for(let k = currentCiruitSubSystem.properties[j].value.values.length - 1; k >= 0; k--)
+                    for(let k = (currentCiruitSubSystem.properties[j].value.values.length - 1); k >= 0; k--)
                     {
                         let currentObject = this.baseLayout.saveGameParser.getTargetObject(currentCiruitSubSystem.properties[j].value.values[k].pathName);
                             if(currentObject === null)

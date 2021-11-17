@@ -219,7 +219,7 @@ export default class BaseLayout_Selection_Copy
                 }
             }
 
-            for(let i = this.clipboard.data.length - 1; i >= 0; i--)
+            for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
             {
                 if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {
@@ -320,7 +320,7 @@ export default class BaseLayout_Selection_Copy
                         let mConnectedComponents = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedComponents');
                             if(mConnectedComponents !== null && this.baseLayout.availableRailwayConnection.includes(endWith))
                             {
-                                for(let n = mConnectedComponents.values.length - 1; n >= 0; n--)
+                                for(let n = (mConnectedComponents.values.length - 1); n >= 0; n--)
                                 {
                                     let testPathName    = mConnectedComponents.values[n].pathName.split('.');
                                         testPathName.pop();
@@ -366,7 +366,7 @@ export default class BaseLayout_Selection_Copy
                                 let mWires = this.baseLayout.getObjectProperty(currentChildren, 'mWires');
                                     if(mWires !== null)
                                     {
-                                        for(let m = mWires.values.length - 1; m >= 0; m--)
+                                        for(let m = (mWires.values.length - 1); m >= 0; m--)
                                         {
                                             let keepPowerLine    = true;
                                             let currentPowerline = this.baseLayout.saveGameParser.getTargetObject(mWires.values[m].pathName);
@@ -414,7 +414,7 @@ export default class BaseLayout_Selection_Copy
                                 let mHiddenConnections = this.baseLayout.getObjectProperty(currentChildren, 'mHiddenConnections');
                                     if(mHiddenConnections !== null)
                                     {
-                                        for(let m = mHiddenConnections.values.length - 1; m >= 0; m--)
+                                        for(let m = (mHiddenConnections.values.length - 1); m >= 0; m--)
                                         {
                                             let currentHiddenConnection = this.baseLayout.saveGameParser.getTargetObject(mHiddenConnections.values[m].pathName);
 
@@ -425,7 +425,7 @@ export default class BaseLayout_Selection_Copy
 
                                                         if(mCurrentHiddenConnections !== null)
                                                         {
-                                                            for(let n = mCurrentHiddenConnections.values.length - 1; n >= 0; n--)
+                                                            for(let n = (mCurrentHiddenConnections.values.length - 1); n >= 0; n--)
                                                             {
                                                                 let testSourcePathName  = mCurrentHiddenConnections.values[n].pathName.split('.');
                                                                     testSourcePathName.pop();

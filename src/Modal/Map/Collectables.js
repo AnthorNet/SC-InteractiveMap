@@ -179,7 +179,7 @@ export default class Modal_Map_Collectables
                 {
                     if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                     {
-                        for(let i = currentObject.properties.length - 1; i >= 0; i--)
+                        for(let i = (currentObject.properties.length - 1); i >= 0; i--)
                         {
                             if(currentObject.properties[i].name === 'mHasBeenOpened')
                             {
@@ -207,7 +207,7 @@ export default class Modal_Map_Collectables
                                 }
                             };
 
-                            for(let i = currentObject.properties.length - 1; i >= 0; i--)
+                            for(let i = (currentObject.properties.length - 1); i >= 0; i--)
                             {
                                 if(currentObject.properties[i].name === 'mPickupItems')
                                 {
@@ -218,7 +218,7 @@ export default class Modal_Map_Collectables
                         }
                         else
                         {
-                            for(let i = currentObject.properties.length - 1; i >= 0; i--)
+                            for(let i = (currentObject.properties.length - 1); i >= 0; i--)
                             {
                                 if(currentObject.properties[i].name === 'mPickupItems')
                                 {
@@ -231,7 +231,7 @@ export default class Modal_Map_Collectables
                 }
                 else
                 {
-                    for(let i = collectables.length - 1; i >= 0; i--)
+                    for(let i = (collectables.length - 1); i >= 0; i--)
                     {
                         if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
                         {
