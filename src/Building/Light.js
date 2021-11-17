@@ -281,21 +281,22 @@ export default class Building_Light
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-
-            contextMenu.push({
-                text: 'Update "' + buildingData.name + '" light color slot',
-                callback: Building_Light.updateLightColorSlot
-            });
-            contextMenu.push({
-                text: 'Update "' + buildingData.name + '" intensity',
-                callback: Building_Light.updateIntensity
-            });
-            contextMenu.push({
-                text: 'Turn "' + buildingData.name + '" night mode ' + ((Building_Light.getIsTimeOfDayAware(baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
-                callback: Building_Light.updateState
-            });
-            contextMenu.push('-');
+        contextMenu.push({
+            icon        : 'fa-palette',
+            text        : 'Update light color slot',
+            callback    : Building_Light.updateLightColorSlot
+        });
+        contextMenu.push({
+            icon        : 'fa-lightbulb-on',
+            text        : 'Update intensity',
+            callback    : Building_Light.updateIntensity
+        });
+        contextMenu.push({
+            icon        : 'fa-moon',
+            text        : 'Turn night mode ' + ((Building_Light.getIsTimeOfDayAware(baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
+            callback    : Building_Light.updateState
+        });
+        contextMenu.push('-');
 
         return contextMenu;
     }

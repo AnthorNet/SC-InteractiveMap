@@ -649,25 +649,27 @@ export default class Building_Sign
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let layoutTemplate  = Building_Sign.getLayoutTemplate(baseLayout, currentObject);
 
             contextMenu.push({
-                text: 'Update "' + buildingData.name + '" background color',
-                callback: Building_Sign.updateBackgroundColor
+                icon        : 'fa-paint-brush',
+                text        : 'Update background color',
+                callback    : Building_Sign.updateBackgroundColor
             });
 
             if(layoutTemplate.includes('{{AUXILARY_COLOR}}'))
             {
                 contextMenu.push({
-                    text: 'Update "' + buildingData.name + '" auxilary color',
-                    callback: Building_Sign.updateAuxilaryColor
+                    icon        : 'fa-paint-brush',
+                    text        : 'Update auxilary color',
+                    callback    : Building_Sign.updateAuxilaryColor
                 });
             }
 
             contextMenu.push({
-                text: 'Update "' + buildingData.name + '" foreground color',
-                callback: Building_Sign.updateForegroundColor
+                icon        : 'fa-paint-brush',
+                text        : 'Update foreground color',
+                callback    : Building_Sign.updateForegroundColor
             });
 
             contextMenu.push('-');
@@ -677,15 +679,17 @@ export default class Building_Sign
                 if(layoutTemplate.includes('{{TEXT}}'))
                 {
                     contextMenu.push({
-                        text: 'Update "' + buildingData.name + '" text',
-                        callback: Building_Sign.updateText
+                        icon        : 'fa-pen',
+                        text        : 'Update text',
+                        callback    : Building_Sign.updateText
                     });
                 }
                 if(layoutTemplate.includes('{{LABEL}}'))
                 {
                     contextMenu.push({
-                        text: 'Update "' + buildingData.name + '" label',
-                        callback: Building_Sign.updateLabel
+                        icon        : 'fa-pen',
+                        text        : 'Update label',
+                        callback    : Building_Sign.updateLabel
                     });
                 }
 
@@ -697,22 +701,25 @@ export default class Building_Sign
                 if(layoutTemplate.includes('{{ICON_SRC}}'))
                 {
                     contextMenu.push({
-                        text: 'Update "' + buildingData.name + '" icon',
-                        callback: Building_Sign.updateIcon
+                        icon        : 'fa-icons',
+                        text        : 'Update icon',
+                        callback    : Building_Sign.updateIcon
                     });
                 }
                 if(layoutTemplate.includes('{{OTHER_ICON_SRC}}'))
                 {
                     contextMenu.push({
-                        text: 'Update "' + buildingData.name + '" other icon',
-                        callback: Building_Sign.updateOtherIcon
+                        icon        : 'fa-icons',
+                        text        : 'Update other icon',
+                        callback    : Building_Sign.updateOtherIcon
                     });
                 }
                 if(layoutTemplate.includes('{{BACKGROUND_ICON_SRC}}'))
                 {
                     contextMenu.push({
-                        text: 'Update "' + buildingData.name + '" background',
-                        callback: Building_Sign.updateBackgroundIcon
+                        icon        : 'fa-icons',
+                        text        : 'Update background',
+                        callback    : Building_Sign.updateBackgroundIcon
                     });
                 }
 

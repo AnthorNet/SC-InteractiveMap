@@ -16,6 +16,54 @@ export default class Building_Pipeline
         ];
     }
 
+    /**
+     * CONTEXT MENU
+     */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        let usePool     = Building_Pipeline.availablePipelines;
+            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PipePump') === true)
+            {
+                usePool = Building_Pipeline.availablePipePumps;
+            }
+
+        let poolIndex   = usePool.indexOf(currentObject.className);
+            if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
+            {
+                if(poolIndex > 0)
+                {
+                    let downgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex - 1]);
+                        if(downgradeData !== null)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-level-down-alt',
+                                text        : 'Downgrade to "' + downgradeData.name + '"',
+                                callback    : Building_Pipeline.downgradePipeline
+                            });
+                        }
+                }
+                if(poolIndex < (usePool.length - 1))
+                {
+                    let upgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex + 1]);
+                        if(upgradeData !== null)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-level-up-alt',
+                                text        : 'Upgrade to "' + upgradeData.name + '"',
+                                callback    : Building_Pipeline.upgradePipeline
+                            });
+                        }
+                }
+
+                contextMenu.push('-');
+            }
+
+        return contextMenu;
+    }
+
+    /**
+     * DOWNGRADE/UPGRADE
+     */
     static downgradePipeline(marker)
     {
         let baseLayout      = marker.baseLayout;

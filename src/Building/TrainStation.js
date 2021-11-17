@@ -39,13 +39,12 @@ export default class Building_TrainStation
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-
-            contextMenu.push({
-                text: 'Update "' + buildingData.name + '" sign',
-                callback: Building_TrainStation.updateSign
-            });
-            contextMenu.push('-');
+        contextMenu.push({
+            icon        : 'fa-pen',
+            text        : 'Update name',
+            callback    : Building_TrainStation.updateSign
+        });
+        contextMenu.push('-');
 
         return contextMenu;
     }

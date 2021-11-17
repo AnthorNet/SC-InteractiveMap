@@ -1413,23 +1413,24 @@ export default class BaseLayout
 
     deleteFauna(marker)
     {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let layerId         = 'playerFaunaLayer';
 
         if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
         {
                 layerId                 = 'playerSpaceRabbitLayer';
-            let isSpaceRabbitPersistent = this.getObjectProperty(currentObject, 'mIsPersistent');
+            let isSpaceRabbitPersistent = baseLayout.getObjectProperty(currentObject, 'mIsPersistent');
 
             if(isSpaceRabbitPersistent !== null)
             {
-                this.playerLayers.playerCratesLayer.count--;
+                baseLayout.playerLayers.playerCratesLayer.count--;
             }
         }
 
-        this.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
-        this.deleteMarkerFromElements(layerId, marker.relatedTarget);
-        this.setBadgeLayerCount(layerId);
+        baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
+        baseLayout.deleteMarkerFromElements(layerId, marker.relatedTarget);
+        baseLayout.setBadgeLayerCount(layerId);
     }
 
     addResourceDeposit(currentObject)
@@ -1488,18 +1489,19 @@ export default class BaseLayout
 
     deleteResourceDeposit(marker)
     {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let mIsEmptied      = this.getObjectProperty(currentObject, 'mIsEmptied');
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let mIsEmptied      = baseLayout.getObjectProperty(currentObject, 'mIsEmptied');
 
             if(mIsEmptied === null)
             {
                 currentObject.properties.push({name: "mIsEmptied", type: "BoolProperty", value: 1});
             }
 
-            this.deleteObjectProperty(currentObject, 'mResourcesLeft');
+            baseLayout.deleteObjectProperty(currentObject, 'mResourcesLeft');
 
-        this.deleteMarkerFromElements('playerResourceDepositsLayer', marker.relatedTarget);
-        this.setBadgeLayerCount('playerResourceDepositsLayer');
+        baseLayout.deleteMarkerFromElements('playerResourceDepositsLayer', marker.relatedTarget);
+        baseLayout.setBadgeLayerCount('playerResourceDepositsLayer');
     }
 
     addItemPickup(currentObject)
@@ -1573,17 +1575,18 @@ export default class BaseLayout
 
     deleteItemPickUp(marker)
     {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
 
             // User dropped items...
             if(currentObject.className === '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C')
             {
-                this.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
+                baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
             }
             // Game droppped items...
             else
             {
-                let mPickupItems    = this.getObjectProperty(currentObject, 'mPickupItems');
+                let mPickupItems    = baseLayout.getObjectProperty(currentObject, 'mPickupItems');
 
                     if(mPickupItems !== null && mPickupItems.values[0].value.properties[0].value > 0)
                     {
@@ -1591,8 +1594,8 @@ export default class BaseLayout
                     }
             }
 
-        this.deleteMarkerFromElements('playerItemsPickupLayer', marker.relatedTarget);
-        this.setBadgeLayerCount('playerItemsPickupLayer');
+        baseLayout.deleteMarkerFromElements('playerItemsPickupLayer', marker.relatedTarget);
+        baseLayout.setBadgeLayerCount('playerItemsPickupLayer');
     }
 
     addPlayerBeacon(currentObject)
@@ -1629,10 +1632,11 @@ export default class BaseLayout
 
     deletePlayerBeacon(marker)
     {
-        this.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
-        this.deleteMarkerFromElements('playerOrientationLayer', marker.relatedTarget);
-        this.playerLayers.playerOrientationLayer.count--;
-        this.setBadgeLayerCount('playerOrientationLayer');
+        let baseLayout = marker.baseLayout;
+            baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
+            baseLayout.deleteMarkerFromElements('playerOrientationLayer', marker.relatedTarget);
+            baseLayout.playerLayers.playerOrientationLayer.count--;
+            baseLayout.setBadgeLayerCount('playerOrientationLayer');
     }
 
     addPlayerLootCrate(currentObject)
@@ -1660,10 +1664,11 @@ export default class BaseLayout
 
     deletePlayerLootCrate(marker)
     {
-        this.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
-        this.deleteMarkerFromElements('playerCratesLayer', marker.relatedTarget);
-        this.playerLayers.playerCratesLayer.count--;
-        this.setBadgeLayerCount('playerCratesLayer');
+        let baseLayout = marker.baseLayout;
+            baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
+            baseLayout.deleteMarkerFromElements('playerCratesLayer', marker.relatedTarget);
+            baseLayout.playerLayers.playerCratesLayer.count--;
+            baseLayout.setBadgeLayerCount('playerCratesLayer');
     }
 
     spawnNewLootCrateNearPlayer()
@@ -2831,41 +2836,42 @@ export default class BaseLayout
 
     deleteGenericBuilding(marker, updateRadioactivity = true, fast = false)
     {
+        let baseLayout      = marker.baseLayout;
         let pathName        = marker.relatedTarget.options.pathName;
-        let currentObject   = this.saveGameParser.getTargetObject(pathName);
-        let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
             if(currentObject.className === '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C')
             {
-                let mDecorationDescriptor   = this.getObjectProperty(currentObject, 'mDecorationDescriptor');
-                    buildingData            = this.getItemDataFromClassName(mDecorationDescriptor.pathName);
+                let mDecorationDescriptor   = baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
+                    buildingData            = baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
                     buildingData.mapLayer   = 'playerStatuesLayer';
             }
             if(currentObject.className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
             {
-                buildingData                = this.toolsData.BP_ItemDescriptorPortableMiner_C;
+                buildingData                = baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C;
                 buildingData.mapLayer       = 'playerMinersLayer';
             }
 
 
         let layerId         = (buildingData !== null && buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerHUBTerminalLayer';
 
-            if(this.playerLayers[layerId].filtersCount !== undefined)
+            if(baseLayout.playerLayers[layerId].filtersCount !== undefined)
             {
-                if(this.playerLayers[layerId].filtersCount[currentObject.className] !== undefined)
+                if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className] !== undefined)
                 {
-                    if(this.playerLayers[layerId].filtersCount[currentObject.className].distance !== undefined)
+                    if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance !== undefined)
                     {
-                        if(this.playerLayers[layerId].distance !== undefined)
+                        if(baseLayout.playerLayers[layerId].distance !== undefined)
                         {
-                            let splineData = BaseLayout_Math.extractSplineData(this, currentObject);
+                            let splineData = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
                                 if(splineData !== null)
                                 {
-                                    this.playerLayers[layerId].filtersCount[currentObject.className].distance -= splineData.distance;
+                                    baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance -= splineData.distance;
 
-                                    if(this.playerLayers[layerId].filtersCount[currentObject.className].distance <= 0)
+                                    if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance <= 0)
                                     {
-                                        this.playerLayers[layerId].filtersCount[currentObject.className].distance = 0;
+                                        baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance = 0;
                                         $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((currentObject.className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : currentObject.className) + '"]').hide();
                                     }
                                 }
@@ -2873,9 +2879,9 @@ export default class BaseLayout
                     }
                     else
                     {
-                        this.playerLayers[layerId].filtersCount[currentObject.className]--;
+                        baseLayout.playerLayers[layerId].filtersCount[currentObject.className]--;
 
-                        if(this.playerLayers[layerId].filtersCount[currentObject.className] === 0)
+                        if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className] === 0)
                         {
                             $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((currentObject.className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : currentObject.className) + '"]').hide();
                         }
@@ -2891,50 +2897,50 @@ export default class BaseLayout
                 let childrenPathName    = currentObject.children[i].pathName;
                 let childrenType        = '.' + childrenPathName.split('.').pop();
 
-                if(this.availablePowerConnection.indexOf(childrenType) !== -1)
+                if(baseLayout.availablePowerConnection.indexOf(childrenType) !== -1)
                 {
-                    let currentObjectChildren = this.saveGameParser.getTargetObject(pathName + childrenType);
+                    let currentObjectChildren = baseLayout.saveGameParser.getTargetObject(pathName + childrenType);
                         if(currentObjectChildren !== null)
                         {
-                            this.deletePlayerWiresFromPowerConnection(currentObjectChildren);
+                            baseLayout.deletePlayerWiresFromPowerConnection(currentObjectChildren);
                         }
                 }
             }
         }
 
         // Remove belt/track connection if needed
-        this.unlinkObjectComponentConnection(currentObject);
+        baseLayout.unlinkObjectComponentConnection(currentObject);
 
         // Does the layer have a distance field to update?
-        if(this.playerLayers[layerId].distance !== undefined)
+        if(baseLayout.playerLayers[layerId].distance !== undefined)
         {
-            let splineData = BaseLayout_Math.extractSplineData(this, currentObject);
+            let splineData = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
                 if(splineData !== null)
                 {
-                    this.playerLayers[layerId].distance -= splineData.distance;
+                    baseLayout.playerLayers[layerId].distance -= splineData.distance;
                 }
         }
 
         //MOD: Efficiency Checker
-        let innerPipelineAttachment = this.getObjectProperty(currentObject, 'innerPipelineAttachment');
+        let innerPipelineAttachment = baseLayout.getObjectProperty(currentObject, 'innerPipelineAttachment');
             if(innerPipelineAttachment !== null)
             {
-                this.saveGameParser.deleteObject(innerPipelineAttachment.pathName);
+                baseLayout.saveGameParser.deleteObject(innerPipelineAttachment.pathName);
             }
 
         // Extraction buildings need to release the connected node!
         if((buildingData !== null && buildingData.category === 'extraction') || currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
         {
-            let resourceNode     = this.getObjectProperty(currentObject, 'mExtractableResource');
+            let resourceNode     = baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
                 if(resourceNode !== null)
                 {
-                    resourceNode    = this.saveGameParser.getTargetObject(resourceNode.pathName);
+                    resourceNode    = baseLayout.saveGameParser.getTargetObject(resourceNode.pathName);
 
                     if(resourceNode !== null) // Prevent water volumes ^^
                     {
-                        if(this.satisfactoryMap.collectableMarkers !== undefined && this.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
+                        if(baseLayout.satisfactoryMap.collectableMarkers !== undefined && baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
                         {
-                            let layerId         = this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.layerId;
+                            let layerId         = baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.layerId;
 
                             let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected')) - 1;
                             let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
@@ -2943,26 +2949,26 @@ export default class BaseLayout
 
                             if(dataCollected === 0)
                             {
-                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataTotal));
+                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(baseLayout.language).format(dataTotal));
                             }
                             else
                             {
-                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
+                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(baseLayout.language).format(dataTotal));
                             }
 
-                            if(this.showNodesOnMiners === true)
+                            if(baseLayout.showNodesOnMiners === true)
                             {
-                                this.satisfactoryMap.collectableMarkers[resourceNode.pathName].addTo(this.satisfactoryMap.availableLayers[layerId]);
+                                baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].addTo(baseLayout.satisfactoryMap.availableLayers[layerId]);
                             }
                             else
                             {
-                                this.satisfactoryMap.collectableMarkers[resourceNode.pathName].setOpacity(1);
+                                baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].setOpacity(1);
                             }
 
-                            delete this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
+                            delete baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
                         }
 
-                        let mIsOccupied = this.getObjectProperty(currentObject, 'mIsOccupied');
+                        let mIsOccupied = baseLayout.getObjectProperty(currentObject, 'mIsOccupied');
                             if(mIsOccupied !== null)
                             {
                                 mIsOccupied = 0;
@@ -2974,15 +2980,15 @@ export default class BaseLayout
         // Delete vehicles waypoints
         if(buildingData !== null && buildingData.category === 'vehicle')
         {
-            let mTargetList = this.getObjectProperty(currentObject, 'mTargetList'); // Update 5
+            let mTargetList = baseLayout.getObjectProperty(currentObject, 'mTargetList'); // Update 5
                 if(mTargetList === null) //TODO:OLD
                 {
-                    mTargetList = this.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
+                    mTargetList = baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
                 }
 
             if(mTargetList !== null)
             {
-                let targetNode = this.saveGameParser.getTargetObject(mTargetList.pathName);
+                let targetNode = baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
                     if(targetNode !== null && targetNode.properties.length > 0)
                     {
                         let firstNode   = null;
@@ -2992,11 +2998,11 @@ export default class BaseLayout
                         {
                             if(targetNode.properties[j].name === 'mFirst')
                             {
-                                firstNode = this.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
+                                firstNode = baseLayout.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
                             }
                             if(targetNode.properties[j].name === 'mLast')
                             {
-                                lastNode = this.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
+                                lastNode = baseLayout.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
                             }
                             if(firstNode !== null && lastNode !== null)
                             {
@@ -3011,30 +3017,30 @@ export default class BaseLayout
                             while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
                             {
                                 let checkCurrentNodeProperties  = checkCurrentNode.properties;
-                                    this.saveGameParser.deleteObject(checkCurrentNode.pathName);
+                                    baseLayout.saveGameParser.deleteObject(checkCurrentNode.pathName);
                                     checkCurrentNode            = null;
 
                                 for(let k = 0; k < checkCurrentNodeProperties.length; k++)
                                 {
                                     if(checkCurrentNodeProperties[k].name === 'mNext')
                                     {
-                                        checkCurrentNode = this.saveGameParser.getTargetObject(checkCurrentNodeProperties[k].value.pathName);
+                                        checkCurrentNode = baseLayout.saveGameParser.getTargetObject(checkCurrentNodeProperties[k].value.pathName);
                                         break;
                                     }
                                 }
                             }
 
-                            this.saveGameParser.deleteObject(lastNode.pathName);
+                            baseLayout.saveGameParser.deleteObject(lastNode.pathName);
                         }
 
-                        let vehicleTrackData = this.getMarkerFromPathName(marker.relatedTarget.options.pathName + '_vehicleTrackData', 'playerVehiculesLayer');
+                        let vehicleTrackData = baseLayout.getMarkerFromPathName(marker.relatedTarget.options.pathName + '_vehicleTrackData', 'playerVehiculesLayer');
                             if(vehicleTrackData !== null)
                             {
-                                this.deleteMarkerFromElements('playerVehiculesLayer', vehicleTrackData, fast);
+                                baseLayout.deleteMarkerFromElements('playerVehiculesLayer', vehicleTrackData, fast);
 
-                                this.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData']--;
+                                baseLayout.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData']--;
 
-                                if(this.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData'] === 0)
+                                if(baseLayout.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData'] === 0)
                                 {
                                     $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="/Game/SCIM/Buildable/Vehicle/TrackData"]').hide();
                                 }
@@ -3042,11 +3048,11 @@ export default class BaseLayout
                     }
             }
 
-            for(let n = (this.saveGameRailVehicles.length - 1); n >= 0; n--)
+            for(let n = (baseLayout.saveGameRailVehicles.length - 1); n >= 0; n--)
             {
-                if(this.saveGameRailVehicles[n].pathName === currentObject.pathName)
+                if(baseLayout.saveGameRailVehicles[n].pathName === currentObject.pathName)
                 {
-                    this.saveGameRailVehicles.splice(n, 1);
+                    baseLayout.saveGameRailVehicles.splice(n, 1);
                 }
             }
         }
@@ -3057,16 +3063,16 @@ export default class BaseLayout
             || currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'
         )
         {
-            for(let n = (this.saveGameRailVehicles.length - 1); n >= 0; n--)
+            for(let n = (baseLayout.saveGameRailVehicles.length - 1); n >= 0; n--)
             {
-                let mTrackPosition = this.getObjectProperty(this.saveGameRailVehicles[n], 'mTrackPosition');
+                let mTrackPosition = baseLayout.getObjectProperty(baseLayout.saveGameRailVehicles[n], 'mTrackPosition');
                     if(mTrackPosition !== null)
                     {
                         if(mTrackPosition.pathName === currentObject.pathName)
                         {
-                            this.saveGameParser.deleteObject(this.saveGameRailVehicles[n].pathName);
-                            this.deleteMarkerFromElements('playerTrainsLayer', this.getMarkerFromPathName(this.saveGameRailVehicles[n].pathName, 'playerTrainsLayer'), fast);
-                            this.saveGameRailVehicles.splice(n, 1);
+                            baseLayout.saveGameParser.deleteObject(baseLayout.saveGameRailVehicles[n].pathName);
+                            baseLayout.deleteMarkerFromElements('playerTrainsLayer', baseLayout.getMarkerFromPathName(baseLayout.saveGameRailVehicles[n].pathName, 'playerTrainsLayer'), fast);
+                            baseLayout.saveGameRailVehicles.splice(n, 1);
                         }
                     }
             }
@@ -3081,80 +3087,80 @@ export default class BaseLayout
             || layerId === 'playerTrainsLayer'
         )
         {
-            let mRailroadTrack = this.getObjectProperty(currentObject, 'mRailroadTrack');
+            let mRailroadTrack = baseLayout.getObjectProperty(currentObject, 'mRailroadTrack');
                 if(mRailroadTrack !== null)
                 {
-                    let railroadTrackMarker = this.getMarkerFromPathName(mRailroadTrack.pathName, layerId);
+                    let railroadTrackMarker = baseLayout.getMarkerFromPathName(mRailroadTrack.pathName, layerId);
                         if(railroadTrackMarker !== null)
                         {
-                            this.deleteGenericBuilding({relatedTarget: railroadTrackMarker});
+                            baseLayout.deleteGenericBuilding({relatedTarget: railroadTrackMarker});
                         }
                 }
 
-            let information     = Building_TrainStation.getInformation(this, currentObject);
+            let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
                 if(information !== null)
                 {
-                    let timeTable = this.getObjectProperty(information, 'TimeTable');
+                    let timeTable = baseLayout.getObjectProperty(information, 'TimeTable');
                         if(timeTable !== null)
                         {
-                            this.saveGameParser.deleteObject(timeTable.pathName);
+                            baseLayout.saveGameParser.deleteObject(timeTable.pathName);
                         }
 
-                    this.saveGameParser.deleteObject(information.pathName);
+                    baseLayout.saveGameParser.deleteObject(information.pathName);
                 }
         }
 
         // Release space elevator!
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C')
         {
-            let gameState = this.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
+            let gameState = baseLayout.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
                 if(gameState !== null)
                 {
-                    this.setObjectProperty(gameState, 'mIsSpaceElevatorBuilt', 0, 'BoolProperty');
+                    baseLayout.setObjectProperty(gameState, 'mIsSpaceElevatorBuilt', 0, 'BoolProperty');
                 }
         }
 
         // Delete extra properties
-        let mSignPoles = this.getObjectProperty(currentObject, 'mSignPoles');
+        let mSignPoles = baseLayout.getObjectProperty(currentObject, 'mSignPoles');
             if(mSignPoles !== null)
             {
                 for(let j = 0; j < mSignPoles.values.length; j++)
                 {
-                    this.saveGameParser.deleteObject(mSignPoles.values[j].pathName);
+                    baseLayout.saveGameParser.deleteObject(mSignPoles.values[j].pathName);
                 }
             }
 
         // Delete extra marker!
         if(marker.relatedTarget.options.extraMarker !== undefined)
         {
-            this.playerLayers[layerId].subLayer.removeLayer(marker.relatedTarget.options.extraMarker);
+            baseLayout.playerLayers[layerId].subLayer.removeLayer(marker.relatedTarget.options.extraMarker);
         }
         if(marker.relatedTarget.options.haloMarker !== undefined)
         {
-            this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(marker.relatedTarget.options.haloMarker);
+            baseLayout.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(marker.relatedTarget.options.haloMarker);
         }
 
         // Delete current object
-        if(this.playerLayers[layerId].count !== undefined && buildingData.mapUseCount !== undefined && buildingData.mapUseCount === true)
+        if(baseLayout.playerLayers[layerId].count !== undefined && buildingData.mapUseCount !== undefined && buildingData.mapUseCount === true)
         {
-            this.playerLayers[layerId].count--;
+            baseLayout.playerLayers[layerId].count--;
         }
-        this.saveGameParser.deleteObject(pathName);
-        this.deleteMarkerFromElements(layerId, marker.relatedTarget, fast);
+        baseLayout.saveGameParser.deleteObject(pathName);
+        baseLayout.deleteMarkerFromElements(layerId, marker.relatedTarget, fast);
 
         // Refresh radioactivity
         if(currentObject.className.includes('/Build_ConveyorBeltMk'))
         {
-            if(this.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
+            if(baseLayout.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
             {
                 for(let i = 0; i < currentObject.extra.items.length; i++)
                 {
-                    let currentItemData = this.getItemDataFromClassName(currentObject.extra.items[i].name);
+                    let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name);
                         if(currentItemData !== null)
                         {
                             if(currentItemData.radioactiveDecay !== undefined)
                             {
-                                delete this.playerLayers.playerRadioactivityLayer.elements[pathName + '_' + i];
+                                delete baseLayout.playerLayers.playerRadioactivityLayer.elements[pathName + '_' + i];
                             }
                         }
                 }
@@ -3162,14 +3168,14 @@ export default class BaseLayout
         }
         else
         {
-            delete this.playerLayers.playerRadioactivityLayer.elements[pathName];
+            delete baseLayout.playerLayers.playerRadioactivityLayer.elements[pathName];
         }
 
-        this.radioactivityLayerNeedsUpdate = true;
+        baseLayout.radioactivityLayerNeedsUpdate = true;
 
         if(updateRadioactivity === true)
         {
-            this.updateRadioactivityLayer();
+            baseLayout.updateRadioactivityLayer();
         }
     }
 

@@ -170,35 +170,34 @@ export default class Building_Locomotive
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let locomotiveName  = Building_Locomotive.getTrainName(baseLayout, currentObject, buildingData.name);
+        contextMenu.push({
+            icon        : 'fa-pen',
+            text        : 'Update name',
+            callback    : Building_Locomotive.updateSign
+        });
+        contextMenu.push({
+            text        : 'Turn auto-pilot ' + ((Building_Locomotive.isAutoPilotOn(baseLayout, currentObject)) ? '<strong class="text-danger">Off</strong>' : '<strong class="text-success">On</strong>'),
+            callback    : Building_Locomotive.updateAutoPilot
+        });
+        contextMenu.push('-');
 
-            contextMenu.push({
-                text: 'Update "' + locomotiveName + '" sign',
-                callback: Building_Locomotive.updateSign
-            });
-            contextMenu.push({
-                text: 'Turn "' + locomotiveName + '" auto-pilot ' + ((Building_Locomotive.isAutoPilotOn(baseLayout, currentObject)) ? '<strong class="text-danger">Off</strong>' : '<strong class="text-success">On</strong>'),
-                callback: Building_Locomotive.updateAutoPilot
-            });
-            contextMenu.push('-');
-
-            let timeTable = Building_Locomotive.getTimeTable(baseLayout, currentObject);
-                if(timeTable !== null)
-                {
-                    let mStops = baseLayout.getObjectProperty(timeTable, 'mStops');
-                        if(mStops !== null)
-                        {
-                            contextMenu.push({
-                                text: 'See "' + locomotiveName + '" timetable',
-                                callback: function(){
-                                    let modalTimetable = new Modal_Train_Timetable({baseLayout: baseLayout, locomotive: currentObject});
-                                        modalTimetable.parse();
-                                }
-                            });
-                            contextMenu.push('-');
-                        }
-                }
+        let timeTable = Building_Locomotive.getTimeTable(baseLayout, currentObject);
+            if(timeTable !== null)
+            {
+                let mStops = baseLayout.getObjectProperty(timeTable, 'mStops');
+                    if(mStops !== null)
+                    {
+                        contextMenu.push({
+                            icon        : 'fa-train',
+                            text        : 'See timetable',
+                            callback    : function(){
+                                let modalTimetable = new Modal_Train_Timetable({baseLayout: baseLayout, locomotive: currentObject});
+                                    modalTimetable.parse();
+                            }
+                        });
+                        contextMenu.push('-');
+                    }
+            }
 
         return contextMenu;
     }

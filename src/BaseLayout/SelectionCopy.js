@@ -451,52 +451,6 @@ export default class BaseLayout_Selection_Copy
                 }
             }
 
-            // CODE TO EXTRACT PIPE LETTERS
-            /*
-            if(this.baseLayout.useDebug === true)
-            {
-                let xOffset = -150.09375;
-                let data    = {pipes: []};
-                for(let i = 0; i < this.clipboard.data.length; i++)
-                {
-                    if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C')
-                    {
-                        let mSplineData = this.baseLayout.getObjectProperty(this.clipboard.data[i].parent, 'mSplineData');
-
-                            if(mSplineData !== null)
-                            {
-                                let currentPipe         = {
-                                    x: this.clipboard.data[i].parent.transform.translation[0] + xOffset - (Math.round((this.clipboard.data[i].parent.transform.translation[0] + xOffset) / 800) * 800),
-                                    y: this.clipboard.data[i].parent.transform.translation[1] + 57400,
-                                    z: this.clipboard.data[i].parent.transform.translation[2] - 1975,
-                                    spline: []
-                                };
-
-                                    for(let j = 0; j < mSplineData.values.length; j++)
-                                    {
-                                        let currentSplineData   = {};
-
-                                        for(let k = 0; k < mSplineData.values[j].length; k++)
-                                        {
-                                            currentSplineData[mSplineData.values[j][k].name] = {
-                                                x: mSplineData.values[j][k].value.values.x,
-                                                y: mSplineData.values[j][k].value.values.y,
-                                                z: mSplineData.values[j][k].value.values.z
-                                            };
-                                        }
-
-                                        currentPipe.spline.push(currentSplineData);
-                                    }
-
-                                data.pipes.push(currentPipe);
-                            }
-
-                    }
-                }
-                console.log(JSON.stringify(data));
-            }
-            /**/
-
             if(this.baseLayout.useDebug === true)
             {
                 console.log('COPY', this.clipboard);

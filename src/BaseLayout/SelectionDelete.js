@@ -86,7 +86,7 @@ export default class BaseLayout_Selection_Delete
                                     }
                             }
 
-                            contextMenu[j].callback({relatedTarget: this.markersSelected[i]}, false, true);
+                            contextMenu[j].callback({baseLayout: this.baseLayout, relatedTarget: this.markersSelected[i]}, false, true);
                         }
                     }
                 }

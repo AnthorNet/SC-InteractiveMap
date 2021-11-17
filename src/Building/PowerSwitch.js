@@ -29,18 +29,18 @@ export default class Building_PowerSwitch
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        contextMenu.push({
+            icon        : 'fa-power-off',
+            text        : 'Turn ' + ((Building_PowerSwitch.isOn(baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
+            callback    : Building_PowerSwitch.updateState
+        });
 
-            contextMenu.push({
-                text: 'Turn "' + buildingData.name + '" ' + ((Building_PowerSwitch.isOn(baseLayout, currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
-                callback: Building_PowerSwitch.updateState
-            });
-
-            contextMenu.push({
-                text: 'Update "' + buildingData.name + '" sign',
-                callback: Building_PowerSwitch.updateSign
-            });
-            contextMenu.push('-');
+        contextMenu.push({
+            icon        : 'fa-pen',
+            text        : 'Update name',
+            callback    : Building_PowerSwitch.updateSign
+        });
+        contextMenu.push('-');
 
         return contextMenu;
     }

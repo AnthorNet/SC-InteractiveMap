@@ -103,13 +103,12 @@ export default class Building_DroneStation
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-
-            contextMenu.push({
-                text: 'Update "' + buildingData.name + '" sign',
-                callback: Building_DroneStation.updateSign
-            });
-            contextMenu.push('-');
+        contextMenu.push({
+            icon        : 'fa-pen',
+            text        : 'Update name',
+            callback    : Building_DroneStation.updateSign
+        });
+        contextMenu.push('-');
 
         return contextMenu;
     }

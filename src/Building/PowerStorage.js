@@ -59,11 +59,10 @@ export default class Building_PowerStorage
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-
         contextMenu.push({
-            text: 'Update "' + buildingData.name + '" stored power',
-            callback: Building_PowerStorage.updatePowerStored
+            icon        : 'fa-battery-half',
+            text        : 'Update stored power',
+            callback    : Building_PowerStorage.updatePowerStored
         });
         contextMenu.push('-');
 

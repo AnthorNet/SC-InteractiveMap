@@ -87,12 +87,12 @@ export default class Building_SmartSplitter
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-            contextMenu.push({
-                text: 'Update "' + buildingData.name + '" rules',
-                callback: Building_SmartSplitter.updateRules
-            });
-            contextMenu.push('-');
+        contextMenu.push({
+            icon        : 'fa-random',
+            text        : 'Update rules',
+            callback    : Building_SmartSplitter.updateRules
+        });
+        contextMenu.push('-');
 
         return contextMenu;
     }

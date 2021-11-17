@@ -7,13 +7,14 @@ export default class Building_Door
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let mDoorConfiguration  = baseLayout.getObjectProperty(currentObject, 'mDoorConfiguration');
 
-            contextMenu.push({
-                text: 'Update "' + buildingData.name + '" status',
-                callback: Building_Door.updateStatus
-            });
-            contextMenu.push('-');
+        contextMenu.push({
+            icon        : ((mDoorConfiguration !== null) ? ((mDoorConfiguration.value === 'EDoorConfiguration::DC_Open') ? 'fa-door-open' : 'fa-door-close') : 'fa-door-open'),
+            text        : 'Update status',
+            callback    : Building_Door.updateStatus
+        });
+        contextMenu.push('-');
 
         return contextMenu;
     }

@@ -275,6 +275,34 @@ export default class Building_SpaceElevator
     }
 
     /**
+     * CONTEXT MENU
+     */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        contextMenu.push({
+            text        : 'Update phase',
+            callback    : Building_SpaceElevator.updatePhase
+        });
+        /*
+        let nextPhase = Building_SpaceElevator.getNextPhase(baseLayout);
+            if(nextPhase !== null)
+            {
+                contextMenu.push({
+                    text        : 'Empty phase inventory',
+                    callback    : Building_SpaceElevator.emptyPhase
+                });
+                contextMenu.push({
+                    text        : 'Fill phase inventory',
+                    callback    : Building_SpaceElevator.fillPhase
+                });
+            }
+        */
+        contextMenu.push('-');
+
+        return contextMenu;
+    }
+
+    /**
      * TOOLTIP
      */
     static getTooltip(baseLayout, currentObject, buildingData)

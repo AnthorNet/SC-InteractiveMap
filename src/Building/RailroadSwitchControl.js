@@ -35,13 +35,12 @@ export default class Building_RailroadSwitchControl
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-
-            contextMenu.push({
-                text: 'Update "' + buildingData.name + '" connected railway',
-                callback: Building_RailroadSwitchControl.updateConnectedComponent
-            });
-            contextMenu.push('-');
+        contextMenu.push({
+            icon        : 'fa-code-merge',
+            text        : 'Update connected railway',
+            callback    : Building_RailroadSwitchControl.updateConnectedComponent
+        });
+        contextMenu.push('-');
 
         return contextMenu;
     }

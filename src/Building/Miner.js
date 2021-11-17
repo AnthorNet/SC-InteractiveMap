@@ -9,6 +9,49 @@ export default class Building_Miner
         ];
     }
 
+    /**
+     * CONTEXT MENU
+     */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        let usePool     = Building_Miner.availableMiners;
+        let poolIndex   = usePool.indexOf(currentObject.className);
+            if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
+            {
+                if(poolIndex > 0)
+                {
+                    let downgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex - 1]);
+                        if(downgradeData !== null)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-level-down-alt',
+                                text        : 'Downgrade to "' + downgradeData.name + '"',
+                                callback    : Building_Miner.downgradeMiner
+                            });
+                        }
+                }
+                if(poolIndex < (usePool.length - 1))
+                {
+                    let upgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex + 1]);
+                        if(upgradeData !== null)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-level-up-alt',
+                                text        : 'Upgrade to "' + upgradeData.name + '"',
+                                callback    : Building_Miner.upgradeMiner
+                            });
+                        }
+                }
+
+                contextMenu.push('-');
+            }
+
+        return contextMenu;
+    }
+
+    /**
+     * DOWNGRADE/UPGRADE
+     */
     static downgradeMiner(marker)
     {
         let baseLayout      = marker.baseLayout;
