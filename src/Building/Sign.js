@@ -27,7 +27,8 @@ export default class Building_Sign
             605: ['Emote Scissors', '/img/patternIcons/IconDesc_EmoteScissors_256.png'],
             606: ['Emote Point', '/img/patternIcons/IconDesc_EmotePoint_256.png'],
             607: ['Emote Wave', '/img/patternIcons/IconDesc_EmoteWave_256.png'],
-            608: ['Checkit', '/img/patternIcons/TXUI_Checkit_256.png']
+            608: ['Checkit', '/img/patternIcons/TXUI_Checkit_256.png'],
+            609: ['Lizard Doggo', '/img/patternIcons/TXUI_LizardDoggo_256.png']
         };
     }
 
