@@ -96,6 +96,78 @@ export default class Building_Sign
         };
     }
 
+    static getAvailableLayouts(currentObject)
+    {
+        let layoutPool = [
+            {
+                classNames  : [
+                    '/Game/FactoryGame/Buildable/Factory/SignDigital/Build_StandaloneWidgetSign_Square_Tiny.Build_StandaloneWidgetSign_Square_Tiny_C',
+                    '/Game/FactoryGame/Buildable/Factory/SignDigital/Build_StandaloneWidgetSign_Square_Small.Build_StandaloneWidgetSign_Square_Small_C',
+                    '/Game/FactoryGame/Buildable/Factory/SignDigital/Build_StandaloneWidgetSign_Square.Build_StandaloneWidgetSign_Square_C'
+                ],
+                layouts     : [
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_0.BPW_Sign1x1_0_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_1.BPW_Sign1x1_1_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_3.BPW_Sign1x1_3_C' //TODO: Shows 10?!
+                ]
+            },
+            {
+                classNames  : [
+                    '/Game/FactoryGame/Buildable/Factory/SignDigital/Build_StandaloneWidgetSign_Portrait.Build_StandaloneWidgetSign_Portrait_C'
+                ],
+                layouts     : [
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_0.BPW_Sign2x3_0_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_1.BPW_Sign2x3_1_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_2.BPW_Sign2x3_2_C'
+                ]
+            },
+            {
+                classNames  : [
+                    '/Game/FactoryGame/Buildable/Factory/SignDigital/Build_StandaloneWidgetSign_Small.Build_StandaloneWidgetSign_Small_C',
+                    '/Game/FactoryGame/Buildable/Factory/SignDigital/Build_StandaloneWidgetSign_SmallWide.Build_StandaloneWidgetSign_SmallWide_C',
+                    '/Game/FactoryGame/Buildable/Factory/SignDigital/Build_StandaloneWidgetSign_SmallVeryWide.Build_StandaloneWidgetSign_SmallVeryWide_C'
+                ],
+                layouts     : [
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_1.BPW_Sign4x1_1_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_2.BPW_Sign4x1_2_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_3.BPW_Sign4x1_3_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_4.BPW_Sign4x1_4_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_5.BPW_Sign4x1_5_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_6.BPW_Sign4x1_6_C'
+                ]
+            },
+            {
+                classNames  : [
+                    '/Game/FactoryGame/Buildable/Factory/SignDigital/Build_StandaloneWidgetSign_Medium.Build_StandaloneWidgetSign_Medium_C',
+                    '/Game/FactoryGame/Buildable/Factory/SignDigital/Build_StandaloneWidgetSign_Large.Build_StandaloneWidgetSign_Large_C',
+                    '/Game/FactoryGame/Buildable/Factory/SignDigital/Build_StandaloneWidgetSign_Huge.Build_StandaloneWidgetSign_Huge_C'
+                ],
+                layouts     : [
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_1.BPW_Sign2x1_1_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_2.BPW_Sign2x1_2_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_4.BPW_Sign2x1_4_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_5.BPW_Sign2x1_5_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_9.BPW_Sign2x1_9_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_10.BPW_Sign2x1_10_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_12.BPW_Sign2x1_12_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_13.BPW_Sign2x1_13_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_14.BPW_Sign2x1_14_C' //TODO: Shows 10?!
+                ]
+            }
+        ];
+
+        for(let i = 0; i < layoutPool.length; i++)
+        {
+            if(layoutPool[i].classNames.includes(currentObject.className))
+            {
+                return layoutPool[i].layouts;
+            }
+        }
+
+        return null;
+    }
+
     static getBackgroundColor(baseLayout, currentObject)
     {
         let mBackgroundColor = baseLayout.getObjectProperty(currentObject, 'mBackgroundColor');
@@ -261,7 +333,7 @@ export default class Building_Sign
         }
 
         return   '<div style="position: absolute;width: ' + width + 'px;height: ' + height + 'px;overflow: hidden;">'
-               + '    <div style="width: 640px;height: 640px;background: url(\'' + name + '\');background-size: 64px;' + Building_Sign.getFilterShadow([640, 640], shadowColor) + '" class="animatedDisplaySignBackground"></div>'
+               + '    <div style="width: 640px;height: 640px;background: url(\'' + name + '\');background-size: 64px;' + Building_Sign.getFilterShadow([640, 640], shadowColor) + 'animation: displaySignBackground 15s infinite linear;"></div>'
                + '</div>';
     }
 
@@ -279,291 +351,363 @@ export default class Building_Sign
                + '</div>';
     }
 
-
-
-    static getLayoutTemplate(baseLayout, currentObject)
+    static getActivePrefabLayout(baseLayout, currentObject)
     {
         let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
             if(mActivePrefabLayout !== null)
             {
-                let iconShadowColor             = false;
-                let otherIconShadowColor        = false;
-                let backgroundIconShadowColor   = false;
-
-                let iconSrc = Building_Sign.getIconSrc(baseLayout, currentObject);
-                    if(Array.isArray(iconSrc))
-                    {
-                        iconShadowColor             = true;
-                    }
-                let otherIconSrc = Building_Sign.getOtherIconSrc(baseLayout, currentObject);
-                    if(Array.isArray(otherIconSrc))
-                    {
-                        otherIconShadowColor        = true;
-                    }
-                let backgroundIconSrc = Building_Sign.getBackgroundIconSrc(baseLayout, currentObject);
-                    if(Array.isArray(backgroundIconSrc))
-                    {
-                        backgroundIconShadowColor   = true;
-                    }
-
-                switch(mActivePrefabLayout.pathName)
-                {
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_0.BPW_Sign1x1_0_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 200px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
-                             + '            </div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                     case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_1.BPW_Sign1x1_1_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 200px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 172, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 200px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-
-
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_1.BPW_Sign2x1_1_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 400px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="font-size: 40px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_2.BPW_Sign2x1_2_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 400px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 96, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
-                             + '        </td>'
-                             + '        <td>'
-                             + '            <div style="font-size: 40px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_4.BPW_Sign2x1_4_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 400px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 128, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
-                             + '        </td>'
-                             + '        <td>'
-                             + '            <div style="font-size: 28px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_5.BPW_Sign2x1_5_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 400px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 196, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_9.BPW_Sign2x1_9_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 400px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
-                             + '            </div>'
-                             + '        </td>'
-                             + '        <td>'
-                             + '            <div style="font-size: 28px;text-align: left;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_10.BPW_Sign2x1_10_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 400px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 128, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="font-size: 28px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_12.BPW_Sign2x1_12_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 400px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td width="50%">'
-                             + '            ' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 160, ((otherIconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
-                             + '        </td>'
-                             + '        <td>'
-                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
-                             + '            </div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_13.BPW_Sign2x1_13_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 400px;height: 200px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td width="50%">'
-                             + '            ' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 160, ((otherIconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
-                             + '        </td>'
-                             + '        <td>'
-                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-
-
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_0.BPW_Sign2x3_0_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 200px;height: 300px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
-                             + '            </div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_1.BPW_Sign2x3_1_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 200px;height: 300px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 172, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
-                             + '        </td>'
-                             + '    </tr>'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_2.BPW_Sign2x3_2_C':
-                        return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
-                             + '<table style="width: 200px;height: 300px;position: relative;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 200, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
-                             + '        </td>'
-                             + '    </tr>'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="display: flex;align-items: center;justify-content: center;">'
-                             + '                <span style="display: inline-block;border-radius: 5px;background: {{FOREGROUND_COLOR}};color: {{BACKGROUND_COLOR}};font-size: 30px;padding: 5px;"><strong>{{LABEL}}</strong></span>'
-                             + '            </div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-
-
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_1.BPW_Sign4x1_1_C':
-                        return '<table style="width: 200px;height: 50px;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_2.BPW_Sign4x1_2_C': // Same in game but left aligned...
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_3.BPW_Sign4x1_3_C':
-                        return '<table style="width: 200px;height: 50px;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 32, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
-                             + '        </td>'
-                             + '        <td>'
-                             + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_4.BPW_Sign4x1_4_C':
-                        return '<table style="width: 200px;height: 50px;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="display: flex;align-items: center;justify-content: center;">'
-                             + '                <span style="display: inline-block;border-radius: 5px;background: {{FOREGROUND_COLOR}};color: {{BACKGROUND_COLOR}};font-size: 20px;padding: 5px;"><strong>{{LABEL}}</strong></span>'
-                             + '            </div>'
-                             + '        </td>'
-                             + '        <td>'
-                             + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_5.BPW_Sign4x1_5_C':
-                        return '<table style="width: 200px;height: 50px;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 40px; height: 40px;" class="mr-3">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 32, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
-                             + '            </div>'
-                             + '        </td>'
-                             + '        <td>'
-                             + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-                    case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_6.BPW_Sign4x1_6_C':
-                        return '<table style="width: 200px;height: 50px;">'
-                             + '    <tr>'
-                             + '        <td>'
-                             + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 36, ((otherIconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
-                             + '        </td>'
-                             + '        <td>'
-                             + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 40px; height: 40px;" class="mr-3">'
-                             + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 32, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
-                             + '            </div>'
-                             + '        </td>'
-                             + '        <td>'
-                             + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
-                             + '        </td>'
-                             + '    </tr>'
-                             + '</table>';
-
-                    default:
-                        console.log('Missing sign layout: ' + mActivePrefabLayout.pathName);
-                        if(typeof Sentry !== 'undefined')
-                        {
-                            Sentry.setContext('currentObject', currentObject);
-                            Sentry.captureMessage('Missing sign layout: ' + mActivePrefabLayout.pathName);
-                        }
-                }
+                return mActivePrefabLayout.pathName;
             }
 
-        return '<div><strong>{{TEXT}}</strong></div>';
+        return null;
+    }
+
+    static getLayoutTemplate(baseLayout, currentObject, pathName = null)
+    {
+        if(pathName === null)
+        {
+            pathName = Building_Sign.getActivePrefabLayout(baseLayout, currentObject);
+        }
+
+        if(pathName !== null)
+        {
+            let iconShadowColor             = false;
+            let otherIconShadowColor        = false;
+            let backgroundIconShadowColor   = false;
+
+            let iconSrc = Building_Sign.getIconSrc(baseLayout, currentObject);
+                if(Array.isArray(iconSrc))
+                {
+                    iconShadowColor             = true;
+                }
+            let otherIconSrc = Building_Sign.getOtherIconSrc(baseLayout, currentObject);
+                if(Array.isArray(otherIconSrc))
+                {
+                    otherIconShadowColor        = true;
+                }
+            let backgroundIconSrc = Building_Sign.getBackgroundIconSrc(baseLayout, currentObject);
+                if(Array.isArray(backgroundIconSrc))
+                {
+                    backgroundIconShadowColor   = true;
+                }
+
+            switch(pathName)
+            {
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_0.BPW_Sign1x1_0_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 200px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
+                         + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
+                         + '            </div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_1.BPW_Sign1x1_1_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 200px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 172, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 200px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+             case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_3.BPW_Sign1x1_3_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 200px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 40px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+
+
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_1.BPW_Sign2x1_1_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 400px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 40px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_2.BPW_Sign2x1_2_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 400px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 96, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
+                         + '        </td>'
+                         + '        <td>'
+                         + '            <div style="font-size: 40px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_4.BPW_Sign2x1_4_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 400px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 128, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
+                         + '        </td>'
+                         + '        <td>'
+                         + '            <div style="font-size: 28px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_5.BPW_Sign2x1_5_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 400px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 196, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_9.BPW_Sign2x1_9_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 400px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
+                         + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
+                         + '            </div>'
+                         + '        </td>'
+                         + '        <td>'
+                         + '            <div style="font-size: 28px;text-align: left;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_10.BPW_Sign2x1_10_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 400px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 128, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 28px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_12.BPW_Sign2x1_12_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 400px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td width="50%">'
+                         + '            ' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 160, ((otherIconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                         + '        </td>'
+                         + '        <td>'
+                         + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
+                         + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
+                         + '            </div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_13.BPW_Sign2x1_13_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 400px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td width="50%">'
+                         + '            ' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 160, ((otherIconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                         + '        </td>'
+                         + '        <td>'
+                         + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_14.BPW_Sign2x1_14_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 400px;height: 200px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 40px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+
+
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_0.BPW_Sign2x3_0_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 200px;height: 300px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 200px; height: 200px;">'
+                         + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 160, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
+                         + '            </div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_1.BPW_Sign2x3_1_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 200px;height: 300px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 172, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                         + '        </td>'
+                         + '    </tr>'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_2.BPW_Sign2x3_2_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                         + '<table style="width: 200px;height: 300px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 200, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                         + '        </td>'
+                         + '    </tr>'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="display: flex;align-items: center;justify-content: center;">'
+                         + '                <span style="display: inline-block;border-radius: 5px;background: {{FOREGROUND_COLOR}};color: {{BACKGROUND_COLOR}};font-size: 30px;padding: 5px;"><strong>{{LABEL}}</strong></span>'
+                         + '            </div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+
+
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_1.BPW_Sign4x1_1_C':
+                    return '<table style="width: 200px;height: 50px;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_2.BPW_Sign4x1_2_C': // Same in game but left aligned...
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_3.BPW_Sign4x1_3_C':
+                    return '<table style="width: 200px;height: 50px;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 32, ((iconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null))
+                         + '        </td>'
+                         + '        <td>'
+                         + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_4.BPW_Sign4x1_4_C':
+                    return '<table style="width: 200px;height: 50px;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="display: flex;align-items: center;justify-content: center;">'
+                         + '                <span style="display: inline-block;border-radius: 5px;background: {{FOREGROUND_COLOR}};color: {{BACKGROUND_COLOR}};font-size: 20px;padding: 5px;"><strong>{{LABEL}}</strong></span>'
+                         + '            </div>'
+                         + '        </td>'
+                         + '        <td>'
+                         + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_5.BPW_Sign4x1_5_C':
+                    return '<table style="width: 200px;height: 50px;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 40px; height: 40px;" class="mr-3">'
+                         + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 32, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
+                         + '            </div>'
+                         + '        </td>'
+                         + '        <td>'
+                         + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign4x1_6.BPW_Sign4x1_6_C':
+                    return '<table style="width: 200px;height: 50px;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div class="mr-3">' + Building_Sign.getImageTemplate('{{OTHER_ICON_SRC}}', 36, ((otherIconShadowColor === true) ? '{{FOREGROUND_COLOR}}' : null)) + '</div>'
+                         + '        </td>'
+                         + '        <td>'
+                         + '            <div style="display: flex;align-items: center;justify-content: center;border-radius: 5px;background: {{FOREGROUND_COLOR}};width: 40px; height: 40px;" class="mr-3">'
+                         + '                ' + Building_Sign.getImageTemplate('{{ICON_SRC}}', 32, ((iconShadowColor === true) ? '{{BACKGROUND_COLOR}}' : null))
+                         + '            </div>'
+                         + '        </td>'
+                         + '        <td>'
+                         + '            <div style="font-size: 20px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+
+                default:
+                    console.log('Missing sign layout: ' + pathName);
+                    if(typeof Sentry !== 'undefined')
+                    {
+                        Sentry.setContext('currentObject', currentObject);
+                        Sentry.captureMessage('Missing sign layout: ' + pathName);
+                    }
+            }
+        }
+
+        return '<div style=""><strong>{{TEXT}}</strong></div>';
+    }
+
+    static getLayoutHtml(baseLayout, currentObject, pathName = null)
+    {
+        let backgroundColor     = Building_Sign.getBackgroundColor(baseLayout, currentObject);
+        let auxilaryColor       = Building_Sign.getAuxilaryColor(baseLayout, currentObject);
+        let foregroundColor     = Building_Sign.getForegroundColor(baseLayout, currentObject);
+
+        let iconSrc             = Building_Sign.getIconSrc(baseLayout, currentObject);
+            if(Array.isArray(iconSrc))
+            {
+                iconSrc             = iconSrc[0];
+            }
+        let otherIconSrc        = Building_Sign.getOtherIconSrc(baseLayout, currentObject);
+            if(Array.isArray(otherIconSrc))
+            {
+                otherIconSrc        = otherIconSrc[0];
+            }
+        let backgroundIconSrc = Building_Sign.getBackgroundIconSrc(baseLayout, currentObject);
+            if(Array.isArray(backgroundIconSrc))
+            {
+                backgroundIconSrc        = backgroundIconSrc[0];
+            }
+
+        let layoutTemplate  = Building_Sign.getLayoutTemplate(baseLayout, currentObject, pathName);
+            layoutTemplate  = layoutTemplate.replace('{{ICON_SRC}}', iconSrc);
+            layoutTemplate  = layoutTemplate.replace('{{OTHER_ICON_SRC}}', otherIconSrc);
+            layoutTemplate  = layoutTemplate.replace('{{BACKGROUND_ICON_SRC}}', backgroundIconSrc);
+
+            layoutTemplate  = layoutTemplate.replace('{{LABEL}}', Building_Sign.getLabel(baseLayout, currentObject));
+            layoutTemplate  = layoutTemplate.replace('{{TEXT}}', Building_Sign.getText(baseLayout, currentObject));
+
+            layoutTemplate  = layoutTemplate.replace(/{{BACKGROUND_COLOR}}/g, backgroundColor);
+            layoutTemplate  = layoutTemplate.replace(/{{AUXILARY_COLOR}}/g, auxilaryColor);
+            layoutTemplate  = layoutTemplate.replace(/{{FOREGROUND_COLOR}}/g, foregroundColor);
+
+        return '<div class="justify-content-center align-self-center text-center">'
+             + '    <div style="border-radius: 5px;background-color: ' + backgroundColor + ';color: ' + foregroundColor + ';padding: 10px;" class="d-inline-block">'
+             +          layoutTemplate
+             + '    </div>'
+             + '</div>';
     }
 
     static updatePrefabData(baseLayout, currentObject, propertyName, elementKey, elementName, value)
@@ -604,43 +748,8 @@ export default class Building_Sign
      */
     static getTooltip(baseLayout, currentObject, buildingData)
     {
-        let backgroundColor     = Building_Sign.getBackgroundColor(baseLayout, currentObject);
-        let auxilaryColor       = Building_Sign.getAuxilaryColor(baseLayout, currentObject);
-        let foregroundColor     = Building_Sign.getForegroundColor(baseLayout, currentObject);
-
-        let iconSrc             = Building_Sign.getIconSrc(baseLayout, currentObject);
-            if(Array.isArray(iconSrc))
-            {
-                iconSrc             = iconSrc[0];
-            }
-        let otherIconSrc        = Building_Sign.getOtherIconSrc(baseLayout, currentObject);
-            if(Array.isArray(otherIconSrc))
-            {
-                otherIconSrc        = otherIconSrc[0];
-            }
-        let backgroundIconSrc = Building_Sign.getBackgroundIconSrc(baseLayout, currentObject);
-            if(Array.isArray(backgroundIconSrc))
-            {
-                backgroundIconSrc        = backgroundIconSrc[0];
-            }
-
-        let layoutTemplate  = Building_Sign.getLayoutTemplate(baseLayout, currentObject);
-            layoutTemplate  = layoutTemplate.replace('{{ICON_SRC}}', iconSrc);
-            layoutTemplate  = layoutTemplate.replace('{{OTHER_ICON_SRC}}', otherIconSrc);
-            layoutTemplate  = layoutTemplate.replace('{{BACKGROUND_ICON_SRC}}', backgroundIconSrc);
-
-            layoutTemplate  = layoutTemplate.replace('{{LABEL}}', Building_Sign.getLabel(baseLayout, currentObject));
-            layoutTemplate  = layoutTemplate.replace('{{TEXT}}', Building_Sign.getText(baseLayout, currentObject));
-
-            layoutTemplate  = layoutTemplate.replace(/{{BACKGROUND_COLOR}}/g, backgroundColor);
-            layoutTemplate  = layoutTemplate.replace(/{{AUXILARY_COLOR}}/g, auxilaryColor);
-            layoutTemplate  = layoutTemplate.replace(/{{FOREGROUND_COLOR}}/g, foregroundColor);
-
-
         return '<div class="d-flex" style="border-radius: 5px;background: #828382;margin: -7px;padding: 6px">\
-                    <div class="justify-content-center align-self-center w-100 text-center" style="border-radius: 5px;background: ' + backgroundColor + ';color: ' + foregroundColor + ';padding: 10px;">\
-                        ' + layoutTemplate + '\
-                    </div>\
+                    ' + Building_Sign.getLayoutHtml(baseLayout, currentObject) + '\
                 </div>';
     }
 
@@ -649,7 +758,18 @@ export default class Building_Sign
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let layoutTemplate  = Building_Sign.getLayoutTemplate(baseLayout, currentObject);
+        let availableLayouts = Building_Sign.getAvailableLayouts(currentObject);
+        let layoutTemplate   = Building_Sign.getLayoutTemplate(baseLayout, currentObject);
+
+            if(availableLayouts !== null)
+            {
+                contextMenu.push({
+                    icon        : 'fa-table',
+                    text        : 'Update layout',
+                    callback    : Building_Sign.updateLayout
+                });
+                contextMenu.push('-');
+            }
 
             contextMenu.push({
                 icon        : 'fa-paint-brush',
@@ -730,6 +850,51 @@ export default class Building_Sign
     }
 
     /**
+     * MODALS LAYOUT
+     */
+    static updateLayout(marker)
+    {
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+        let availableLayouts    = Building_Sign.getAvailableLayouts(currentObject);
+        let inputOptions        = [];
+            for(let i = 0; i < availableLayouts.length; i++)
+            {
+                inputOptions.push({
+                    dataContent : Building_Sign.getLayoutHtml(baseLayout, currentObject, availableLayouts[i]),
+                    value       : availableLayouts[i],
+                    text        : availableLayouts[i]
+                });
+            }
+
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" layout',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mActivePrefabLayout',
+                    inputHeight : true,
+                    inputType   : 'selectPicker',
+                    inputOptions: inputOptions,
+                    value       : Building_Sign.getActivePrefabLayout(baseLayout, currentObject)
+                }],
+                callback    : function(values)
+                {
+                    if(values !== null)
+                    {
+                        let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
+                            if(mActivePrefabLayout !== null)
+                            {
+                                mActivePrefabLayout.pathName = values.mActivePrefabLayout;
+                            }
+                    }
+                }.bind(baseLayout)
+            });
+    }
+
+    /**
      * MODALS COLORS
      */
     static updateBackgroundColor(marker)
@@ -739,7 +904,7 @@ export default class Building_Sign
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
             Modal.form({
-                title       : 'Update "<strong>' + buildingData.name + '</strong>" backgroundcolor',
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" background color',
                 container   : '#leafletMap',
                 inputs      : [{
                     name        : 'mBackgroundColor',

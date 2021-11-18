@@ -351,6 +351,17 @@ export default class Modal
             if(selectPickers.length > 0)
             {
                 $(selectPickers).selectpicker({liveSearch: true, container: 'body'});
+
+                let updateHeight = $(selectPickers).attr('data-height');
+                    if(updateHeight === 'true')
+                    {
+                        $(selectPickers).on('loaded.bs.select changed.bs.select', function (e){
+                            let button = $(e.target).next('button');
+                                button.parent('.bootstrap-select').css('height', 'auto');
+                            let height = parseInt(button.find('.filter-option-inner').outerHeight()) + parseInt(button.css('padding-top')) + parseInt(button.css('padding-bottom')) - 2;
+                                button.css('height', height + 'px');
+                        });
+                    }
             }
 
         options.message = form;
@@ -365,6 +376,10 @@ export default class Modal
             if(options.multiple !== undefined && options.multiple === true)
             {
                 input.attr('multiple','multiple');
+            }
+            if(options.inputHeight)
+            {
+                input.attr('data-height', 'true');
             }
 
             switch(options.inputType)
