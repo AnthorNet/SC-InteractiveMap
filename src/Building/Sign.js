@@ -329,7 +329,7 @@ export default class Building_Sign
     {
         if(shadowColor !== null)
         {
-            return 'filter: drop-shadow(' + size[0] + 'px ' + size[1] + 'px ' + shadowColor + ');background-position: -100%;margin-left: -100%;';
+            return 'filter:{{EXTRA_FILTER}} drop-shadow(' + size[0] + 'px ' + size[1] + 'px ' + shadowColor + ');background-position: -100%;margin-left: -100%;';
         }
 
         return '';
@@ -342,22 +342,21 @@ export default class Building_Sign
             return '';
         }
 
-
-            if(backgroundIconSrc !== null && Array.isArray(backgroundIconSrc))
+        if(backgroundIconSrc !== null && Array.isArray(backgroundIconSrc))
+        {
+            let backgroundSize      = 64;
+                backgroundIconSrc   = backgroundIconSrc[0];
+            if(backgroundIconSrc.includes('TXUI_MIcon_BG_Rectangles'))
             {
-                let backgroundSize      = 64;
-                    backgroundIconSrc   = backgroundIconSrc[0];
-                if(backgroundIconSrc.includes('TXUI_MIcon_BG_Rectangles'))
-                {
-                    backgroundSize = 128;
-                }
-
-                return   '<div style="position: absolute;width: ' + width + 'px;height: ' + height + 'px;overflow: hidden;">'
-                       + '    <div style="width: 640px;height: 640px;background: url(\'' + name + '\');background-size: ' + backgroundSize + 'px;' + Building_Sign.getFilterShadow([640, 640], shadowColor) + 'animation: displaySignBackground 20s infinite linear;"></div>'
-                       + '</div>';
+                backgroundSize = 128;
             }
 
-        return '<div style="position: absolute;width: ' + width + 'px;height: ' + height + 'px;background: url(\'' + name + '\') center;background-size: 96px;"></div>';
+            return   '<div style="position: absolute;width: ' + width + 'px;height: ' + height + 'px;overflow: hidden;">'
+                   + '    <div style="width: 640px;height: 640px;background: url(\'' + name + '\');background-size: ' + backgroundSize + 'px;' + Building_Sign.getFilterShadow([640, 640], shadowColor) + 'animation: displaySignBackground 20s infinite linear;"></div>'
+                   + '</div>';
+        }
+
+        return '<div style="position: absolute;width: ' + width + 'px;height: ' + height + 'px;background: url(\'' + name + '\');background-size: 128px;"></div>';
     }
 
     static getImageTemplate(name, size, shadowColor)
@@ -689,7 +688,7 @@ export default class Building_Sign
             }
         }
 
-        return '<div style=""><strong>{{TEXT}}</strong></div>';
+        return '<div><strong>{{TEXT}}</strong></div>';
     }
 
     static getLayoutHtml(baseLayout, currentObject, pathName = null)
@@ -728,8 +727,30 @@ export default class Building_Sign
             layoutTemplate  = layoutTemplate.replace(/{{AUXILARY_COLOR}}/g, auxilaryColor);
             layoutTemplate  = layoutTemplate.replace(/{{FOREGROUND_COLOR}}/g, foregroundColor);
 
+        let emissiveStyle   = '';
+        let mEmissive       = baseLayout.getObjectProperty(currentObject, 'mEmissive');
+            if(mEmissive !== null)
+            {
+                switch(mEmissive)
+                {
+                    case 1:
+                        emissiveStyle   = 'text-shadow: 0 0 5px ' + foregroundColor + ';filter: brightness(1.25);';
+                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(1.25)');
+                        break;
+                    case 2:
+                        emissiveStyle = 'text-shadow: 0 0 15px ' + foregroundColor + ';filter: brightness(1.50);';
+                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(1.50)');
+                        break;
+                    case 3:
+                        emissiveStyle = 'text-shadow: 0 0 30px ' + foregroundColor + ';filter: brightness(1.75);';
+                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(1.75)');
+                        break;
+                }
+            }
+            layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  '');
+
         return '<div class="justify-content-center align-self-center text-center">'
-             + '    <div style="border-radius: 5px;background-color: ' + backgroundColor + ';color: ' + foregroundColor + ';padding: 10px;" class="d-inline-block">'
+             + '    <div style="border-radius: 5px;background-color: ' + backgroundColor + ';color: ' + foregroundColor + ';' + emissiveStyle + 'padding: 10px;line-height: 1;" class="d-inline-block">'
              +          layoutTemplate
              + '    </div>'
              + '</div>';
@@ -892,6 +913,19 @@ export default class Building_Sign
 
                 contextMenu.push('-');
             }
+
+            contextMenu.push({
+                icon        : 'fa-adjust',
+                text        : 'Update emission strength',
+                callback    : Building_Sign.updateEmission
+            });
+            contextMenu.push({
+                icon        : 'fa-border-style',
+                text        : 'Update surface finish',
+                callback    : Building_Sign.updateGlossiness
+            });
+
+            contextMenu.push('-');
 
         return contextMenu;
     }
@@ -1076,7 +1110,7 @@ export default class Building_Sign
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let label           = Building_Sign.getLabel(baseLayout, currentObject);
+        let text            = Building_Sign.getLabel(baseLayout, currentObject);
 
             Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
@@ -1084,7 +1118,7 @@ export default class Building_Sign
                 inputs      : [{
                     name        : 'mPrefabTextElementSaveData',
                     inputType   : 'textArea',
-                    value       : label.replace(/<br \/>/g, '\n')
+                    value       : text.replace(/<br \/>/g, '\n')
                 }],
                 callback    : function(values)
                 {
@@ -1101,7 +1135,7 @@ export default class Building_Sign
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let label           = Building_Sign.getOther0(baseLayout, currentObject);
+        let text            = Building_Sign.getOther0(baseLayout, currentObject);
 
             Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
@@ -1109,7 +1143,7 @@ export default class Building_Sign
                 inputs      : [{
                     name        : 'mPrefabTextElementSaveData',
                     inputType   : 'textArea',
-                    value       : label.replace(/<br \/>/g, '\n')
+                    value       : text.replace(/<br \/>/g, '\n')
                 }],
                 callback    : function(values)
                 {
@@ -1126,7 +1160,7 @@ export default class Building_Sign
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let label           = Building_Sign.getOther1(baseLayout, currentObject);
+        let text            = Building_Sign.getOther1(baseLayout, currentObject);
 
             Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
@@ -1134,13 +1168,81 @@ export default class Building_Sign
                 inputs      : [{
                     name        : 'mPrefabTextElementSaveData',
                     inputType   : 'textArea',
-                    value       : label.replace(/<br \/>/g, '\n')
+                    value       : text.replace(/<br \/>/g, '\n')
                 }],
                 callback    : function(values)
                 {
                     if(values !== null)
                     {
                         return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_1', values.mPrefabTextElementSaveData);
+                    }
+                }.bind(baseLayout)
+            });
+    }
+
+    static updateEmission(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let mEmissive       = baseLayout.getObjectProperty(currentObject, 'mEmissive');
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" emission strength',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name            : 'mEmissive',
+                    inputType       : 'select',
+                    inputOptions    : [
+                        {value: 0, text: 'Off'},
+                        {value: 1, text: '1'},
+                        {value: 2, text: '2'},
+                        {value: 3, text: '3'}
+                    ],
+                    value           : mEmissive
+                }],
+                callback    : function(values)
+                {
+                    if(values !== null)
+                    {
+                        baseLayout.deleteObjectProperty(currentObject, 'mEmissive');
+                        if(parseInt(values.mEmissive) !== 0)
+                        {
+                            this.setObjectProperty(currentObject, 'mEmissive', parseInt(values.mEmissive), 'FloatProperty');
+                        }
+                    }
+                }.bind(baseLayout)
+            });
+    }
+
+    static updateGlossiness(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let mGlossiness     = baseLayout.getObjectProperty(currentObject, 'mGlossiness');
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" surface finish',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name            : 'mGlossiness',
+                    inputType       : 'select',
+                    inputOptions    : [
+                        {value: 0, text: 'Matte'},
+                        {value: 1, text: 'Glossy'}
+                    ],
+                    value           : mGlossiness
+                }],
+                callback    : function(values)
+                {
+                    if(values !== null)
+                    {
+                        baseLayout.deleteObjectProperty(currentObject, 'mGlossiness');
+                        if(parseInt(values.mGlossiness) !== 0)
+                        {
+                            this.setObjectProperty(currentObject, 'mGlossiness', 1, 'FloatProperty');
+                        }
                     }
                 }.bind(baseLayout)
             });
