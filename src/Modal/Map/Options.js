@@ -247,6 +247,10 @@ export default class Modal_Map_Options
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowPatterns" id="inputShowPatterns" ' + ((this.baseLayout.showPatterns === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowPatterns">Show patterns?</label></div>');
         html.push('</div>');
+        html.push('</div><div class="col-6">');
+        html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowCollected" id="inputShowCollected" ' + ((this.baseLayout.showCollected === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowCollected">Show collected icons?</label></div>');
+        html.push('</div>');
         html.push('</div></div>');
 
         html.push('<hr />');
@@ -280,6 +284,9 @@ export default class Modal_Map_Options
 
                 this.baseLayout.showNodesOnMiners    = (($('#inputShowNodesOnMiners').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowNodesOnMiners', this.baseLayout.showNodesOnMiners);
+
+                this.baseLayout.showCollected       = (($('#inputShowCollected').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapShowCollected', this.baseLayout.showCollected);
 
                 this.baseLayout.showTransportationOnLoad    = (($('#inputShowTransportationOnLoad').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowTransportationOnLoad', this.baseLayout.showTransportationOnLoad);

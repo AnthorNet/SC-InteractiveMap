@@ -9,6 +9,11 @@ export default class Modal_Map_Collectables
     get()
     {
         let playerCollectables  = this.baseLayout.playerStatistics.collectables;
+            $('.updateLayerState[data-collected]').each(function(i, el){
+                let total = $(el).attr('data-total');
+                    $(el).attr('data-collected', 0);
+                    $(el).find('.badge').html(new Intl.NumberFormat(this.language).format(total));
+            }.bind(this));
 
             for(let className in playerCollectables)
             {
@@ -59,7 +64,18 @@ export default class Modal_Map_Collectables
                                                     {
                                                         if(this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].hasLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]))
                                                         {
-                                                            this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].removeLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]);
+                                                            if(this.baseLayout.showCollected === true)
+                                                            {
+                                                                if(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].options.opacity !== window.SCIM.collectedOpacity)
+                                                                {
+                                                                    this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(window.SCIM.collectedOpacity);
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].removeLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]);
+                                                            }
+
 
                                                             let dataCollected   = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected')) + 1;
                                                             let dataTotal       = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-total'));
@@ -72,19 +88,16 @@ export default class Modal_Map_Collectables
                                                         if(this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].hasLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]) === false)
                                                         {
                                                             this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].addLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]);
-
-                                                            let dataCollected   = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected')) - 1;
-                                                            let dataTotal       = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-total'));
-                                                                $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', dataCollected);
-
-                                                                if(dataCollected === 0)
+                                                        }
+                                                        else
+                                                        {
+                                                            if(this.baseLayout.showCollected === true)
+                                                            {
+                                                                if(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].options.opacity !== 1)
                                                                 {
-                                                                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
+                                                                    this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(1);
                                                                 }
-                                                                else
-                                                                {
-                                                                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
-                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }

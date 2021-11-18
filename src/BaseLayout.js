@@ -98,7 +98,8 @@ export default class BaseLayout
         this.showBuildingsOnLoad                = (this.localStorage !== null && this.localStorage.getItem('mapShowBuildingsOnLoad') !== null) ? (this.localStorage.getItem('mapShowBuildingsOnLoad') === 'true') : true;
         this.showGeneratorsOnLoad               = (this.localStorage !== null && this.localStorage.getItem('mapShowGeneratorsOnLoad') !== null) ? (this.localStorage.getItem('mapShowGeneratorsOnLoad') === 'true') : true;
         this.showTransportationOnLoad           = (this.localStorage !== null && this.localStorage.getItem('mapShowTransportationOnLoad') !== null) ? (this.localStorage.getItem('mapShowTransportationOnLoad') === 'true') : true;
-        this.showNodesOnMiners                  = (this.localStorage !== null && this.localStorage.getItem('mapShowNodesOnMiners') !== null) ? (this.localStorage.getItem('showNodesOnMiners') === 'true') : false;
+        this.showNodesOnMiners                  = (this.localStorage !== null && this.localStorage.getItem('mapShowNodesOnMiners') !== null) ? (this.localStorage.getItem('mapShowNodesOnMiners') === 'true') : false;
+        this.showCollected                      = (this.localStorage !== null && this.localStorage.getItem('mapShowCollected') !== null) ? (this.localStorage.getItem('mapShowCollected') === 'true') : false;
 
         this.showPatterns                       = (this.localStorage !== null && this.localStorage.getItem('mapShowPatterns') !== null) ? (this.localStorage.getItem('mapShowPatterns') === 'true') : true;
         this.showVehicleExtraMarker             = (this.localStorage !== null && this.localStorage.getItem('mapShowVehicleExtraMarker') !== null) ? (this.localStorage.getItem('mapShowVehicleExtraMarker') === 'true') : false;
