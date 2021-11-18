@@ -342,22 +342,22 @@ export default class Building_Sign
             return '';
         }
 
-        let backgroundSize = 64;
-            if(backgroundIconSrc !== null)
+
+            if(backgroundIconSrc !== null && Array.isArray(backgroundIconSrc))
             {
-                if(Array.isArray(backgroundIconSrc))
-                {
-                    backgroundIconSrc = backgroundIconSrc[0];
-                }
+                let backgroundSize      = 64;
+                    backgroundIconSrc   = backgroundIconSrc[0];
                 if(backgroundIconSrc.includes('TXUI_MIcon_BG_Rectangles'))
                 {
                     backgroundSize = 128;
                 }
+
+                return   '<div style="position: absolute;width: ' + width + 'px;height: ' + height + 'px;overflow: hidden;">'
+                       + '    <div style="width: 640px;height: 640px;background: url(\'' + name + '\');background-size: ' + backgroundSize + 'px;' + Building_Sign.getFilterShadow([640, 640], shadowColor) + 'animation: displaySignBackground 20s infinite linear;"></div>'
+                       + '</div>';
             }
 
-        return   '<div style="position: absolute;width: ' + width + 'px;height: ' + height + 'px;overflow: hidden;">'
-               + '    <div style="width: 640px;height: 640px;background: url(\'' + name + '\');background-size: ' + backgroundSize + 'px;' + Building_Sign.getFilterShadow([640, 640], shadowColor) + 'animation: displaySignBackground 20s infinite linear;"></div>'
-               + '</div>';
+        return '<div style="position: absolute;width: ' + width + 'px;height: ' + height + 'px;background: url(\'' + name + '\') center;background-size: 96px;"></div>';
     }
 
     static getImageTemplate(name, size, shadowColor)
