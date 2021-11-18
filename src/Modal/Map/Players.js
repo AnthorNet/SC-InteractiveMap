@@ -35,16 +35,7 @@ export default class Modal_Map_Players
                     if(mOwnedPawn !== null)
                     {
                         inventoryHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'active' : '') + '" data-toggle="tab" href="#playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
-
-                        if(this.baseLayout.players[pathName].isHost() === true)
-                        {
-                            inventoryHeaderHtml.push('Host');
-                        }
-                        else
-                        {
-                            inventoryHeaderHtml.push('Guest #' + pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', ''));
-                        }
-
+                        inventoryHeaderHtml.push(this.baseLayout.players[pathName].getDisplayName());
                         inventoryHeaderHtml.push('</span></li>');
 
                         inventoryHtml.push('<div class="tab-pane fade ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'show active' : '') + '" id="playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');

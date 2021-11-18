@@ -16,6 +16,16 @@ export default class SubSystem_Player
         return (this.baseLayout.saveGameParser.playerHostPathName === this.player.pathName);
     }
 
+    getDisplayName()
+    {
+        if(this.isHost() === true)
+        {
+            return 'Host';
+        }
+
+        return 'Guest #' + this.player.pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', '');
+    }
+
     getOwnedPawn()
     {
         let mOwnedPawn  = this.baseLayout.getObjectProperty(this.player, 'mOwnedPawn');

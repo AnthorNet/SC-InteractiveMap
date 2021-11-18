@@ -59,6 +59,11 @@ export default class BaseLayout_ContextMenu
             let buildingData = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
                 switch(currentObject.className)
                 {
+                    case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
+                        contextMenu.push({
+                            text        : this.baseLayout.players[currentObject.pathName].getDisplayName()
+                        });
+                        break;
                     case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
                         let mDecorationDescriptor   = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
                             buildingData            = this.baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
@@ -347,7 +352,7 @@ export default class BaseLayout_ContextMenu
                         });
                     }
 
-                    
+
 
                 if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C')
                 {

@@ -15,17 +15,9 @@ export default class Modal_Map_Hotbars
         for(let pathName in this.baseLayout.players)
         {
             hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
-
-            if(this.baseLayout.players[pathName].isHost() === true)
-            {
-                hotbarHeaderHtml.push('Host');
-            }
-            else
-            {
-                hotbarHeaderHtml.push('Guest #' + pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', ''));
-            }
-
+            hotbarHeaderHtml.push(this.baseLayout.players[pathName].getDisplayName());
             hotbarHeaderHtml.push('</span></li>');
+            
             hotbarHtml.push('<div class="tab-pane fade ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'show active' : '') + '" id="playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
             hotbarHtml.push(this.parseHotbarsPlayer(this.baseLayout.players[pathName].player, options));
             hotbarHtml.push('</div>');

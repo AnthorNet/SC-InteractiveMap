@@ -1899,7 +1899,7 @@ export default class BaseLayout
             for(let pathName in this.players)
             {
                 selectOptions.push({
-                    text    : ((this.players[pathName].isHost() === true) ? 'Host' : 'Guest #' + pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', '')),
+                    text    : this.players[pathName].getDisplayName(),
                     value   : pathName
                 });
             }
