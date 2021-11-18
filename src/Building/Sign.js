@@ -734,16 +734,16 @@ export default class Building_Sign
                 switch(mEmissive)
                 {
                     case 1:
-                        emissiveStyle   = 'text-shadow: 0 0 5px ' + foregroundColor + ';filter: brightness(1.25);';
-                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(1.25)');
+                        emissiveStyle   = 'text-shadow: 0 0 10px ' + foregroundColor + ';filter: brightness(1.5);';
+                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(1.5) blur(0.5px)');
                         break;
                     case 2:
-                        emissiveStyle = 'text-shadow: 0 0 15px ' + foregroundColor + ';filter: brightness(1.50);';
-                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(1.50)');
+                        emissiveStyle = 'text-shadow: 0 0 20px ' + foregroundColor + ';filter: brightness(2);';
+                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(2) blur(1px)');
                         break;
                     case 3:
-                        emissiveStyle = 'text-shadow: 0 0 30px ' + foregroundColor + ';filter: brightness(1.75);';
-                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(1.75)');
+                        emissiveStyle = 'text-shadow: 0 0 40px ' + foregroundColor + ';filter: brightness(2.5);';
+                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(2.5) blur(1.5px)');
                         break;
                 }
             }
