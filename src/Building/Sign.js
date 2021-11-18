@@ -335,15 +335,28 @@ export default class Building_Sign
         return '';
     }
 
-    static getBackgroundTemplate(name, width, height, shadowColor)
+    static getBackgroundTemplate(name, width, height, shadowColor, backgroundIconSrc = null)
     {
         if(name === null)
         {
             return '';
         }
 
+        let backgroundSize = 64;
+            if(backgroundIconSrc !== null)
+            {
+                if(Array.isArray(backgroundIconSrc))
+                {
+                    backgroundIconSrc = backgroundIconSrc[0];
+                }
+                if(backgroundIconSrc.includes('TXUI_MIcon_BG_Rectangles'))
+                {
+                    backgroundSize = 128;
+                }
+            }
+
         return   '<div style="position: absolute;width: ' + width + 'px;height: ' + height + 'px;overflow: hidden;">'
-               + '    <div style="width: 640px;height: 640px;background: url(\'' + name + '\');background-size: 64px;' + Building_Sign.getFilterShadow([640, 640], shadowColor) + 'animation: displaySignBackground 15s infinite linear;"></div>'
+               + '    <div style="width: 640px;height: 640px;background: url(\'' + name + '\');background-size: ' + backgroundSize + 'px;' + Building_Sign.getFilterShadow([640, 640], shadowColor) + 'animation: displaySignBackground 20s infinite linear;"></div>'
                + '</div>';
     }
 
@@ -404,7 +417,7 @@ export default class Building_Sign
             switch(pathName)
             {
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_0.BPW_Sign1x1_0_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 200px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -415,7 +428,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                  case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_1.BPW_Sign1x1_1_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 200px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -424,7 +437,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 200px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -433,7 +446,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
              case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_3.BPW_Sign1x1_3_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 200px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -444,7 +457,7 @@ export default class Building_Sign
 
 
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_1.BPW_Sign2x1_1_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 400px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -453,7 +466,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_2.BPW_Sign2x1_2_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 400px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -465,7 +478,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_4.BPW_Sign2x1_4_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 400px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -477,7 +490,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_5.BPW_Sign2x1_5_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 400px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -486,7 +499,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_9.BPW_Sign2x1_9_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 400px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -500,7 +513,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_10.BPW_Sign2x1_10_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 400px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -514,7 +527,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_12.BPW_Sign2x1_12_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 400px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td width="50%">'
@@ -528,7 +541,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_13.BPW_Sign2x1_13_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 400px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td width="50%">'
@@ -540,7 +553,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_14.BPW_Sign2x1_14_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 400, 200, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 400px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -551,7 +564,7 @@ export default class Building_Sign
 
 
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_0.BPW_Sign2x3_0_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 200px;height: 300px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -567,7 +580,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_1.BPW_Sign2x3_1_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 200px;height: 300px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
@@ -581,7 +594,7 @@ export default class Building_Sign
                          + '    </tr>'
                          + '</table>';
                 case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_2.BPW_Sign2x3_2_C':
-                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null))
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
                          + '<table style="width: 200px;height: 300px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
