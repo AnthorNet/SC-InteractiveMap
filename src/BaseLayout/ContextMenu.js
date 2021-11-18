@@ -276,51 +276,9 @@ export default class BaseLayout_ContextMenu
                 {
                     contextMenu = Building_Miner.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
-
-                if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C')
-                {
-                    contextMenu.push({
-                        icon        : 'fa-arrows-alt',
-                        text        : 'Update position',
-                        callback    : Modal_Object_Position.getHTML
-                    });
-                    contextMenu.push('-');
-                }
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C')
                 {
                     contextMenu = Building_SpaceElevator.addContextMenu(this.baseLayout, currentObject, contextMenu);
-                }
-
-                if(
-                        currentObject.className !== '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_8x4_02.Build_Wall_8x4_02_C'
-                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/ConveyorPole/Build_ConveyorPole.Build_ConveyorPole_C'
-                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C'
-                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'
-                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'
-                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'
-                     && currentObject.className !== '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C'
-                     && currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'
-                     && currentObject.className.includes('_Steel') === false
-                     && (buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false)
-                )
-                {
-                    contextMenu.push({
-                        icon        : 'fa-palette',
-                        text        : 'Update color swatch',
-                        callback    : Modal_Object_ColorSlot.getHTML,
-                        className   : 'Modal_Object_ColorSlot',
-                    });
-
-                    let slotIndex = this.baseLayout.buildableSubSystem.getObjectColorSlot(currentObject);
-                        if(slotIndex === 255)
-                        {
-                            contextMenu.push({
-                                icon        : 'fa-paint-brush',
-                                text        : 'Update custom color',
-                                callback    : Modal_Object_CustomColor.getHTML,
-                                className   : 'Modal_Object_CustomColor',
-                            });
-                        }
                 }
 
                 if(buildingData.category === 'production')
@@ -388,6 +346,51 @@ export default class BaseLayout_ContextMenu
                             callback    : this.baseLayout.updatePipeNetworkFluid.bind(this.baseLayout)
                         });
                     }
+
+                    
+
+                if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C')
+                {
+                    contextMenu.push({
+                        icon        : 'fa-arrows-alt',
+                        text        : 'Update position',
+                        callback    : Modal_Object_Position.getHTML
+                    });
+                }
+
+                if(
+                        currentObject.className !== '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_8x4_02.Build_Wall_8x4_02_C'
+                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/ConveyorPole/Build_ConveyorPole.Build_ConveyorPole_C'
+                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C'
+                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'
+                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'
+                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'
+                     && currentObject.className !== '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C'
+                     && currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'
+                     && currentObject.className.includes('_Steel') === false
+                     && (buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false)
+                )
+                {
+                    contextMenu.push('-');
+
+                    contextMenu.push({
+                        icon        : 'fa-palette',
+                        text        : 'Update color swatch',
+                        callback    : Modal_Object_ColorSlot.getHTML,
+                        className   : 'Modal_Object_ColorSlot',
+                    });
+
+                    let slotIndex = this.baseLayout.buildableSubSystem.getObjectColorSlot(currentObject);
+                        if(slotIndex === 255)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-paint-brush',
+                                text        : 'Update custom color',
+                                callback    : Modal_Object_CustomColor.getHTML,
+                                className   : 'Modal_Object_CustomColor',
+                            });
+                        }
+                }
 
                 if(['/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C', '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'].includes(currentObject.className) === false)
                 {
