@@ -109,7 +109,7 @@ export default class Building_Sign
                     '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_0.BPW_Sign1x1_0_C',
                     '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_1.BPW_Sign1x1_1_C',
                     '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C',
-                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_3.BPW_Sign1x1_3_C' //TODO: Shows 10?!
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_3.BPW_Sign1x1_3_C'
                 ]
             },
             {
@@ -152,7 +152,7 @@ export default class Building_Sign
                     '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_10.BPW_Sign2x1_10_C',
                     '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_12.BPW_Sign2x1_12_C',
                     '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_13.BPW_Sign2x1_13_C',
-                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_14.BPW_Sign2x1_14_C' //TODO: Shows 10?!
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x1_14.BPW_Sign2x1_14_C'
                 ]
             }
         ];
@@ -281,6 +281,16 @@ export default class Building_Sign
     static getLabel(baseLayout, currentObject)
     {
         return Building_Sign.getText(baseLayout, currentObject, 'Label', 'A');
+    }
+
+    static getOther0(baseLayout, currentObject)
+    {
+        return Building_Sign.getText(baseLayout, currentObject, 'Other_0', 'Other Text');
+    }
+
+    static getOther1(baseLayout, currentObject)
+    {
+        return Building_Sign.getText(baseLayout, currentObject, 'Other_1', '10');
     }
 
     static getText(baseLayout, currentObject, elementName = 'Name', defaultName = 'Shennanigans')
@@ -427,7 +437,7 @@ export default class Building_Sign
                          + '<table style="width: 200px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
-                         + '            <div style="font-size: 40px;"><strong>{{TEXT}}</strong></div>'
+                         + '            <div style="font-size: 120px;"><strong>{{OTHER_1}}</strong></div>'
                          + '        </td>'
                          + '    </tr>'
                          + '</table>';
@@ -534,7 +544,7 @@ export default class Building_Sign
                          + '<table style="width: 400px;height: 200px;position: relative;">'
                          + '    <tr>'
                          + '        <td>'
-                         + '            <div style="font-size: 40px;"><strong>{{TEXT}}</strong></div>'
+                         + '            <div style="font-size: 120px;"><strong>{{OTHER_1}}</strong></div>'
                          + '        </td>'
                          + '    </tr>'
                          + '</table>';
@@ -696,6 +706,8 @@ export default class Building_Sign
             layoutTemplate  = layoutTemplate.replace('{{OTHER_ICON_SRC}}', otherIconSrc);
             layoutTemplate  = layoutTemplate.replace('{{BACKGROUND_ICON_SRC}}', backgroundIconSrc);
 
+            layoutTemplate  = layoutTemplate.replace('{{OTHER_0}}', Building_Sign.getOther0(baseLayout, currentObject));
+            layoutTemplate  = layoutTemplate.replace('{{OTHER_1}}', Building_Sign.getOther1(baseLayout, currentObject));
             layoutTemplate  = layoutTemplate.replace('{{LABEL}}', Building_Sign.getLabel(baseLayout, currentObject));
             layoutTemplate  = layoutTemplate.replace('{{TEXT}}', Building_Sign.getText(baseLayout, currentObject));
 
@@ -740,6 +752,12 @@ export default class Building_Sign
                             return;
                         }
                 }
+
+                // Create if don't exists
+                mPropertyName.values.push([
+                    {name: 'ElementName', type: 'StrProperty', value: elementName},
+                    {name: elementKey, type: 'StrProperty', value: value}
+                ])
             }
     }
 
@@ -794,7 +812,7 @@ export default class Building_Sign
 
             contextMenu.push('-');
 
-            if(layoutTemplate.includes('{{TEXT}}') || layoutTemplate.includes('{{LABEL}}'))
+            if(layoutTemplate.includes('{{TEXT}}') || layoutTemplate.includes('{{LABEL}}') || layoutTemplate.includes('{{OTHER_0}}') || layoutTemplate.includes('{{OTHER_1}}'))
             {
                 if(layoutTemplate.includes('{{TEXT}}'))
                 {
@@ -810,6 +828,22 @@ export default class Building_Sign
                         icon        : 'fa-pen',
                         text        : 'Update label',
                         callback    : Building_Sign.updateLabel
+                    });
+                }
+                if(layoutTemplate.includes('{{OTHER_0}}'))
+                {
+                    contextMenu.push({
+                        icon        : 'fa-pen',
+                        text        : 'Update text',
+                        callback    : Building_Sign.updateOther0
+                    });
+                }
+                if(layoutTemplate.includes('{{OTHER_1}}'))
+                {
+                    contextMenu.push({
+                        icon        : 'fa-pen',
+                        text        : 'Update text',
+                        callback    : Building_Sign.updateOther1
                     });
                 }
 
@@ -1044,6 +1078,56 @@ export default class Building_Sign
                     if(values !== null)
                     {
                         return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Label', values.mPrefabTextElementSaveData);
+                    }
+                }.bind(baseLayout)
+            });
+    }
+
+    static updateOther0(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let label           = Building_Sign.getOther0(baseLayout, currentObject);
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mPrefabTextElementSaveData',
+                    inputType   : 'textArea',
+                    value       : label.replace(/<br \/>/g, '\n')
+                }],
+                callback    : function(values)
+                {
+                    if(values !== null)
+                    {
+                        return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_0', values.mPrefabTextElementSaveData);
+                    }
+                }.bind(baseLayout)
+            });
+    }
+
+    static updateOther1(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let label           = Building_Sign.getOther1(baseLayout, currentObject);
+
+            Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mPrefabTextElementSaveData',
+                    inputType   : 'textArea',
+                    value       : label.replace(/<br \/>/g, '\n')
+                }],
+                callback    : function(values)
+                {
+                    if(values !== null)
+                    {
+                        return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_1', values.mPrefabTextElementSaveData);
                     }
                 }.bind(baseLayout)
             });
