@@ -5398,19 +5398,13 @@ export default class BaseLayout
     }
     getItemDataFromId(itemId)
     {
-        for(let i in this.itemsData)
+        if(this.itemsData[itemId] !== undefined)
         {
-            if(i === itemId)
-            {
-                return this.itemsData[i];
-            }
+            return this.itemsData[itemId];
         }
-        for(let i in this.toolsData)
+        if(this.toolsData[itemId] !== undefined)
         {
-            if(i === itemId)
-            {
-                return this.toolsData[i];
-            }
+            return this.toolsData[itemId];
         }
 
         console.log('Missing item itemId', itemId);
@@ -5446,6 +5440,16 @@ export default class BaseLayout
                 default:
                     console.log('Unknown mResourceDepositTableIndex', currentObject);
             }
+
+        return null;
+    }
+
+    getBuildingDataFromId(buildingId)
+    {
+        if(this.buildingsData[buildingId] !== undefined)
+        {
+            return this.buildingsData[buildingId];
+        }
 
         return null;
     }
@@ -6074,6 +6078,20 @@ export default class BaseLayout
 
                 inputOptions.push({group: 'Overclocking', text: 'Offset selected items clock speed', value: 'updateClockSpeed'});
 
+                inputOptions.push({group: 'Materials', text: 'Switch to "FICSIT Foundation"', value: 'switchMaterial_foundation_Ficsit'});
+                inputOptions.push({group: 'Materials', text: 'Switch to "Concrete Foundation"', value: 'switchMaterial_foundation_Concrete'});
+                inputOptions.push({group: 'Materials', text: 'Switch to "Grip Metal Foundation"', value: 'switchMaterial_foundation_GripMetal'});
+                inputOptions.push({group: 'Materials', text: 'Switch to "Coated Concrete Foundation"', value: 'switchMaterial_foundation_ConcretePolished'});
+
+                inputOptions.push({group: 'Materials', text: 'Switch to "FICSIT Wall"', value: 'switchMaterial_wall_Ficsit'});
+                inputOptions.push({group: 'Materials', text: 'Switch to "Concrete Wall"', value: 'switchMaterial_wall_Concrete'});
+                inputOptions.push({group: 'Materials', text: 'Switch to "Steel Wall"', value: 'switchMaterial_wall_Steel'});
+
+                inputOptions.push({group: 'Materials', text: 'Switch to "FICSIT Roof"', value: 'switchMaterial_roof_Ficsit'});
+                inputOptions.push({group: 'Materials', text: 'Switch to "Tar Roof"', value: 'switchMaterial_roof_Tar'});
+                inputOptions.push({group: 'Materials', text: 'Switch to "Metal Roof"', value: 'switchMaterial_roof_Metal'});
+                inputOptions.push({group: 'Materials', text: 'Switch to "Glass Roof"', value: 'switchMaterial_roof_Glass'});
+
                 inputOptions.push({group: 'Downgrade', text: 'Downgrade selected belts/lifts', value: 'downgradeConveyor'});
                 inputOptions.push({group: 'Downgrade', text: 'Downgrade selected power poles', value: 'downgradePowerPole'});
                 inputOptions.push({group: 'Downgrade', text: 'Downgrade selected pipelines/pumps', value: 'downgradePipeline'});
@@ -6284,6 +6302,31 @@ export default class BaseLayout
                             }.bind(this)
                         });
                         return;
+
+                    case 'switchMaterial_foundation_Ficsit':
+                        return this.updateMultipleObjectMaterial('foundation', 'Ficsit');
+                    case 'switchMaterial_foundation_Concrete':
+                        return this.updateMultipleObjectMaterial('foundation', 'Concrete');
+                    case 'switchMaterial_foundation_GripMetal':
+                        return this.updateMultipleObjectMaterial('foundation', 'GripMetal');
+                    case 'switchMaterial_foundation_ConcretePolished':
+                        return this.updateMultipleObjectMaterial('foundation', 'ConcretePolished');
+
+                    case 'switchMaterial_wall_Ficsit':
+                        return this.updateMultipleObjectMaterial('wall', 'Ficsit');
+                    case 'switchMaterial_wall_Concrete':
+                        return this.updateMultipleObjectMaterial('wall', 'Concrete');
+                    case 'switchMaterial_wall_Steel':
+                        return this.updateMultipleObjectMaterial('wall', 'Steel');
+
+                    case 'switchMaterial_roof_Ficsit':
+                        return this.updateMultipleObjectMaterial('roof', 'Ficsit');
+                    case 'switchMaterial_roof_Tar':
+                        return this.updateMultipleObjectMaterial('roof', 'Tar');
+                    case 'switchMaterial_roof_Metal':
+                        return this.updateMultipleObjectMaterial('roof', 'Metal');
+                    case 'switchMaterial_roof_Glass':
+                        return this.updateMultipleObjectMaterial('roof', 'Glass');
 
                     case 'helpers':
                         let playerColorsHelpers = this.buildableSubSystem.getPlayerColorSlots();
@@ -6690,6 +6733,33 @@ export default class BaseLayout
                                 let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
                                     this.buildableSubSystem.setObjectCustomColor(currentObject, primaryColor, secondaryColor);
                                     this.markersSelected[i].fire('mouseout'); // Trigger a redraw
+                            }
+                        }
+                    }
+            }
+        }
+
+        this.cancelSelectMultipleMarkers();
+    }
+
+    updateMultipleObjectMaterial(category, material)
+    {
+        if(this.markersSelected)
+        {
+            for(let i = 0; i < this.markersSelected.length; i++)
+            {
+                let contextMenu = this.getContextMenu(this.markersSelected[i]);
+                    if(contextMenu !== false)
+                    {
+                        // Search for a callback in contextmenu...
+                        for(let j = 0; j < contextMenu.length; j++)
+                        {
+                            if(contextMenu[j].className !== undefined && contextMenu[j].className === 'buildableSubSystem_switchObjectMaterial')
+                            {
+                                if(contextMenu[j].argument !== undefined && contextMenu[j].argument[0] === category && contextMenu[j].argument[1] === material)
+                                {
+                                    this.buildableSubSystem.switchObjectMaterial({relatedTarget: this.markersSelected[i], baseLayout: this}, [category, material]);
+                                }
                             }
                         }
                     }

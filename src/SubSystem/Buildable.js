@@ -648,4 +648,34 @@ export default class SubSystem_Buildable
                 b: BaseLayout_Math.linearColorToRGB(returnColor.b)
             };
     }
+
+
+
+    switchObjectMaterial(marker, data)
+    {
+        let category    = data[0];
+        let material    = data[1];
+
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+        if(buildingData !== null && buildingData.category === category && buildingData.switchMaterial !== undefined && buildingData.switchMaterial[material] !== undefined)
+        {
+            let newBuildingData = baseLayout.getBuildingDataFromId(buildingData.switchMaterial[material]);
+                if(newBuildingData !== null)
+                {
+                    // Switch object
+                    currentObject.className = newBuildingData.className;
+                    baseLayout.updateBuiltWithRecipe(currentObject);
+
+                    // Do we need to update the color slot?
+
+                    // Redraw!
+                    let result = baseLayout.parseObject(currentObject);
+                        baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                        baseLayout.addElementToLayer(result.layer, result.marker);
+                }
+        }
+    }
 }

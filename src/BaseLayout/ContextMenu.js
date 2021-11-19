@@ -66,11 +66,16 @@ export default class BaseLayout_ContextMenu
                         });
                         break;
                     case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
-                        let mDecorationDescriptor   = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
-                            buildingData            = this.baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
+                        let mDecorationDescriptor           = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
+                            buildingData                    = this.baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
+                            if(buildingData !== null)
+                            {
+                                buildingData.mapUseSlotColor    = false;
+                            }
                         break;
                     case '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C':
-                        buildingData                = this.baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C;
+                        buildingData                        = this.baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C;
+                        buildingData.mapUseSlotColor        = false;
                         break;
                     case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
                     case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
@@ -371,18 +376,7 @@ export default class BaseLayout_ContextMenu
                     });
                 }
 
-                if(
-                        currentObject.className !== '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_8x4_02.Build_Wall_8x4_02_C'
-                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/ConveyorPole/Build_ConveyorPole.Build_ConveyorPole_C'
-                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C'
-                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'
-                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'
-                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'
-                     && currentObject.className !== '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C'
-                     && currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'
-                     && currentObject.className.includes('_Steel') === false
-                     && (buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false)
-                )
+                if((buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false) && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C')
                 {
                     contextMenu.push('-');
 
@@ -404,6 +398,134 @@ export default class BaseLayout_ContextMenu
                             });
                         }
                 }
+
+                if(buildingData.switchMaterial !== undefined)
+                {
+                    contextMenu.push('-');
+
+                    if(buildingData.category === 'foundation')
+                    {
+                        if(buildingData.switchMaterial.Ficsit !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "FICSIT Foundation"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['foundation', 'Ficsit'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.Concrete !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Concrete Foundation"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['foundation', 'Concrete'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.GripMetal !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Grip Metal Foundation"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['foundation', 'GripMetal'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.ConcretePolished !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Coated Concrete Foundation"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['foundation', 'ConcretePolished'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                    }
+
+                    if(buildingData.category === 'wall')
+                    {
+                        if(buildingData.switchMaterial.Ficsit !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "FICSIT Wall"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['wall', 'Ficsit'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.Concrete !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Concrete Wall"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['wall', 'Concrete'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.Steel !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Steel Wall"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['wall', 'Steel'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                    }
+
+                    if(buildingData.category === 'roof')
+                    {
+                        if(buildingData.switchMaterial.Ficsit !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "FICSIT Roof"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['roof', 'Ficsit'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.Tar !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Tar Roof"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['roof', 'Tar'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.Metal !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Metal Roof"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['roof', 'Metal'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.Glass !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Glass Roof"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['roof', 'Glass'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                    }
+                }
+
 
                 if(['/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C', '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'].includes(currentObject.className) === false)
                 {
@@ -490,7 +612,7 @@ L.Map.ContextMenu = L.Handler.extend({
         }
 
         let element             = this._insertElement('a', L.Map.ContextMenu.BASE_CLS + '-item', container);
-        let callback            = this._createCallback(element, options.callback, options.context, baseLayout);
+        let callback            = this._createCallback(options.callback, options.context, baseLayout, options.argument);
 
             element.innerHTML   = '<i class="fas ' + ((options.icon) ? options.icon : '') + ' fa-fw mr-2"></i>' + options.text;
             element.href        = '#';
@@ -519,7 +641,7 @@ L.Map.ContextMenu = L.Handler.extend({
         };
     },
 
-    _createCallback: function(element, callback, context, baseLayout)
+    _createCallback: function(callback, context, baseLayout, argument)
     {
         return function(e)
         {
@@ -534,7 +656,7 @@ L.Map.ContextMenu = L.Handler.extend({
 
             if(callback)
             {
-                callback.call(context || this._map, data);
+                callback.call(context || this._map, data, argument);
             }
         }.bind(this);
     },
