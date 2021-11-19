@@ -2,10 +2,6 @@
 import Modal                                    from '../Modal.js';
 import pako                                     from '../Lib/pako.esm.mjs';
 
-/*TODO:UPDATE5
-    - Implement TrainDockingRuleSet
-    - Check Persistent_Level:PersistentLevel.VehicleSubsystem
-*/
 export default class SaveParser_Read
 {
     constructor(options)
@@ -455,11 +451,30 @@ export default class SaveParser_Read
                     }
 
                     break;
-                //TODO: Not 0 here so bypass those special cases, but why? We mainly do not want to get warned here...
                 case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
+                    /*
+                    this.saveParser.objects[objectKey].extra    = {count: this.readInt(), type: this.readByte()};
+                    if(this.saveParser.objects[objectKey].extra.type === 248) // EOS?
+                    {
+                        console.log(this.readString())
+                        console.log(this.readString())
+                    }
+                    else
+                    {
+                        console.log(this.saveParser.objects[objectKey].extra)
+                        //console.log(this.readInt())
+                        //console.log(this.readHex(25))
+                        //console.log(this.readString())
+                    }
+                    /**/
+
                     let missingPlayerState                      = (startByte + entityLength) - this.currentByte;
                     this.saveParser.objects[objectKey].missing  = this.readHex(missingPlayerState);
+                    break;
+                //TODO: Not 0 here so bypass those special cases, but why? We mainly do not want to get warned here...
+                case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
+                    let missingDrone                                = (startByte + entityLength) - this.currentByte;
+                        this.saveParser.objects[objectKey].missing  = this.readHex(missingDrone);
 
                     break;
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
@@ -820,6 +835,7 @@ export default class SaveParser_Read
                                 case 'PrefabTextElementSaveData':
                                 case 'PrefabIconElementSaveData':
                                 case 'GlobalColorPreset':
+                                case 'SwatchGroupData':
                                 // MODS
                                 case 'LampGroup':
                                 case 'STRUCT_ProgElevator_Floor':
@@ -840,11 +856,6 @@ export default class SaveParser_Read
                                             subStructProperties.push(subStructProperty);
                                         }
                                         currentProperty.value.values.push(subStructProperties);
-
-                                        if(currentProperty.structureSubType === 'SubCategoryMaterialDefault' || currentProperty.structureSubType === 'FactoryCustomizationColorSlot') //TODO:UPDATE5
-                                        {
-                                            //console.log('structureSubType', currentProperty.structureSubType, subStructProperties);
-                                        }
                                     break;
                                 default:
                                     Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
