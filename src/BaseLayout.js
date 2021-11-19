@@ -2443,14 +2443,45 @@ export default class BaseLayout
                 }
         }
 
-        // Add conveyor lift distance...
+        // Conveyor Lift
         if(currentObject.className.includes('/Build_ConveyorLiftMk'))
         {
             let mTopTransform = this.getObjectProperty(currentObject, 'mTopTransform');
                 if(mTopTransform !== null)
                 {
+                    polygonOptions.customModel      = 'Build_ConveyorLiftMkXXX__0';
+                    polygonOptions.customPolygon    = [[-100,-100],[100,-100],[100,-75],[175,-75],[175,75],[100,75],[100,100],[-100,100]];
+
                     for(let i = 0; i < mTopTransform.values.length; i++)
                     {
+                        // Update polygon based on top rotation
+                        if(mTopTransform.values[i].name === 'Rotation')
+                        {
+                            let topAngle    = Math.round(BaseLayout_Math.getQuaternionToEuler([
+                                    mTopTransform.values[i].value.values.a,
+                                    mTopTransform.values[i].value.values.b,
+                                    mTopTransform.values[i].value.values.c,
+                                    mTopTransform.values[i].value.values.d
+                                ]).yaw);
+
+                                switch(topAngle)
+                                {
+                                    case -90:
+                                    case 270:
+                                        polygonOptions.customModel      = 'Build_ConveyorLiftMkXXX__270';
+                                        polygonOptions.customPolygon    = [[-100,-100],[-75,-100],[-75,-175],[75,-175],[75,-100],[100,-100],[100,-75],[175,-75],[175,75],[100,75],[100,100],[-100,100]];
+                                        break;
+                                    case 180:
+                                        polygonOptions.customModel      = 'Build_ConveyorLiftMkXXX__180';
+                                        polygonOptions.customPolygon    = [[-175,-75],[-100,-75],[-100,-100],[100,-100],[100,-75],[175,-75],[175,75],[100,75],[100,100],[-100,100],[-100,75],[-175,75]];
+                                        break;
+                                    case 90:
+                                        polygonOptions.customModel      = 'Build_ConveyorLiftMkXXX__90';
+                                        polygonOptions.customPolygon    = [[-100,-100],[-100,100],[-75,100],[-75,175],[75,175],[75,100],[100,100],[100,75],[175,75],[175,-75],[100,-75],[100,-100]];
+                                        break;
+                                }
+                        }
+                        // Add distance...
                         if(mTopTransform.values[i].name === 'Translation')
                         {
                             let height      = Math.abs(mTopTransform.values[i].value.values.z) / 100;
@@ -2861,24 +2892,7 @@ export default class BaseLayout
             {
                 if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className] !== undefined)
                 {
-                    if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance !== undefined)
-                    {
-                        if(baseLayout.playerLayers[layerId].distance !== undefined)
-                        {
-                            let splineData = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
-                                if(splineData !== null)
-                                {
-                                    baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance -= splineData.distance;
-
-                                    if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance <= 0)
-                                    {
-                                        baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance = 0;
-                                        $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((currentObject.className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : currentObject.className) + '"]').hide();
-                                    }
-                                }
-                        }
-                    }
-                    else
+                    if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance === undefined)
                     {
                         baseLayout.playerLayers[layerId].filtersCount[currentObject.className]--;
 
@@ -2919,7 +2933,52 @@ export default class BaseLayout
                 if(splineData !== null)
                 {
                     baseLayout.playerLayers[layerId].distance -= splineData.distance;
+
+                    if(baseLayout.playerLayers[layerId].filtersCount !== undefined)
+                    {
+                        if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className] !== undefined)
+                        {
+                            if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance !== undefined)
+                            {
+                                baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance -= splineData.distance;
+                            }
+                        }
+                    }
                 }
+
+            if(currentObject.className.includes('/Build_ConveyorLiftMk'))
+            {
+                let mTopTransform = baseLayout.getObjectProperty(currentObject, 'mTopTransform');
+                    if(mTopTransform !== null)
+                    {
+                        for(let i = 0; i < mTopTransform.values.length; i++)
+                        {
+                            // Remove distance...
+                            if(mTopTransform.values[i].name === 'Translation')
+                            {
+                                let height      = Math.abs(mTopTransform.values[i].value.values.z) / 100;
+                                    baseLayout.playerLayers[layerId].distance -= height;
+
+                                    if(baseLayout.playerLayers[layerId].filtersCount !== undefined)
+                                    {
+                                        if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className] !== undefined)
+                                        {
+                                            if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance !== undefined)
+                                            {
+                                                baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance -= height;
+
+                                                if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance <= 0)
+                                                {
+                                                    baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance = 0;
+                                                    $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((currentObject.className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : currentObject.className) + '"]').hide();
+                                                }
+                                            }
+                                        }
+                                    }
+                            }
+                        }
+                    }
+            }
         }
 
         //MOD: Efficiency Checker
@@ -3849,7 +3908,14 @@ export default class BaseLayout
         let center  = [transform.translation[0], transform.translation[1]];
         let forms   = [];
 
-        if(this.useDetailedModels === true && this.detailedModels !== null && this.detailedModels[model] !== undefined)
+        // Only used for convoyer lift orientation
+        if(options.customPolygon !== undefined && options.customModel !== undefined)
+        {
+            model                       = options.customModel;
+            this.detailedModels[model]  = {forms: [{points: options.customPolygon}]};
+        }
+
+        if(((this.useDetailedModels === true && this.detailedModels !== null) || options.customPolygon !== undefined) && this.detailedModels[model] !== undefined)
         {
             let currentModel        = this.detailedModels[model];
             let currentModelScale   = (currentModel.scale !== undefined) ? currentModel.scale : 1;
