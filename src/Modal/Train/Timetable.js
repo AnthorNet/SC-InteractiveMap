@@ -26,7 +26,7 @@ export default class Modal_Train_Timetable
             $('#genericModal .modal-title').empty().html('Timetable - ' + Building_Locomotive.getTrainName(this.baseLayout, this.locomotive, this.information.pathName));
             let html = [];
                 html.push('<div class="row">');
-                    html.push('<div class="col-6">');
+                    html.push('<div class="col-6" style="max-height: 512px;overflow-y: scroll;">');
                         html.push(this.getTimeTableList());
                     html.push('</div>');
                     html.push('<div class="col-6">');
@@ -35,9 +35,6 @@ export default class Modal_Train_Timetable
                         html.push('</div>');
                     html.push('</div>');
                 html.push('</div>');
-
-
-            //backgroundGame_512.jpg
 
             $('#genericModal .modal-body').empty().html(html.join(''));
             setTimeout(function(){
@@ -66,7 +63,7 @@ export default class Modal_Train_Timetable
             {
                 let mCurrentStop    = this.baseLayout.getObjectProperty(this.timeTable, 'mCurrentStop', 0);
 
-                html.push('<table class="table table-hover">');
+                html.push('<table class="table table-hover mb-0">');
                     for(let j = 0; j < mStops.values.length; j++)
                     {
                         let trainStationIdentifier  = null;

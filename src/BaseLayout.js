@@ -40,6 +40,7 @@ import Building_Light                           from './Building/Light.js';
 import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
 import Building_TrainStation                    from './Building/TrainStation.js';
+import Building_Vehicle                         from './Building/Vehicle.js';
 
 import Spawn_Fill                               from './Spawn/Fill.js';
 
@@ -2535,8 +2536,8 @@ export default class BaseLayout
         // Add vehicle tracks
         if(buildingData.category === 'vehicle')
         {
-            let vehicleTrack   = this.getVehicleTrack(currentObject);
-                if(vehicleTrack.length > 0)
+            let vehicleTrack   = Building_Vehicle.getTrackData(this, currentObject);
+                if(vehicleTrack !== null)
                 {
                     let vehicleTrackData     = [];
                         for(let k = 0; k < vehicleTrack.length; k++)
@@ -5243,56 +5244,6 @@ export default class BaseLayout
         }
 
         this.cancelSelectMultipleMarkers();
-    }
-
-    /*
-     * VEHICLES
-     */
-    getVehicleTrack(currentObject)
-    {
-        let currentTrack    = [];
-        let mTargetList     = this.getObjectProperty(currentObject, 'mTargetList'); // Update 5
-            if(mTargetList === null) //TODO:OLD
-            {
-                mTargetList = this.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
-            }
-
-            if(mTargetList !== null)
-            {
-                let targetNode = this.saveGameParser.getTargetObject(mTargetList.pathName);
-                    if(targetNode !== null)
-                    {
-                        let mFirst  = this.getObjectProperty(targetNode, 'mFirst');
-                        let mLast   = this.getObjectProperty(targetNode, 'mLast');
-
-                            if(mFirst !== null && mLast !== null)
-                            {
-                                let firstNode   = this.saveGameParser.getTargetObject(mFirst.pathName);
-                                let lastNode    = this.saveGameParser.getTargetObject(mLast.pathName);
-
-                                    if(firstNode !== null && lastNode !== null)
-                                    {
-                                        let checkCurrentNode = firstNode;
-                                            while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
-                                            {
-                                                currentTrack.push(checkCurrentNode.transform.translation);
-
-                                                let mNext               = this.getObjectProperty(checkCurrentNode, 'mNext');
-                                                    checkCurrentNode    = null;
-                                                    if(mNext !== null)
-                                                    {
-                                                        checkCurrentNode = this.saveGameParser.getTargetObject(mNext.pathName);
-                                                    }
-                                            }
-
-                                        currentTrack.push(lastNode.transform.translation);
-                                        currentTrack.push(firstNode.transform.translation); // Close the loop!
-                                    }
-                            }
-                    }
-            }
-
-        return currentTrack;
     }
 
     getObjectProperty(currentObject, propertyName, defaultPropertyValue = null)

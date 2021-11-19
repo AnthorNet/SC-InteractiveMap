@@ -14,6 +14,7 @@ import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
+import Building_Vehicle                         from '../Building/Vehicle.js';
 
 import Modal_Debug                              from '../Modal/Debug.js';
 import Modal_Object_Position                    from '../Modal/Object/Position.js';
@@ -238,6 +239,13 @@ export default class BaseLayout_ContextMenu
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
                 {
                     contextMenu = Building_Locomotive.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                }
+                else
+                {
+                    if(buildingData.category === 'vehicle')
+                    {
+                        contextMenu = Building_Vehicle.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                    }
                 }
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C')
                 {
