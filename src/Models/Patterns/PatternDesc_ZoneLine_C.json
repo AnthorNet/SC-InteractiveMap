@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Zones/PatternDesc_ZoneLine.PatternDesc_ZoneLine_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_LineFactoryZone_256.png",
+        "patternName"   : "Factory Zone Line",
+        "patternGroup"  : "Zones",
+
         "scale"     : 1,
         "forms"     : [
             {

@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Numbers/PatternDesc_Number1.PatternDesc_Number1_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_Number1_256.png",
+        "patternName"   : "1",
+        "patternGroup"  : "Numbers",
+
         "scale"     : 1,
         "forms"     : [
             {

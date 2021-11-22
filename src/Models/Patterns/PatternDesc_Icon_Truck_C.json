@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Truck.PatternDesc_Icon_Truck_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_TruckStencil_256.png",
+        "patternName"   : "Truck Icon",
+        "patternGroup"  : "Icons",
+
         "scale"     : 1,
         "forms"     : [
             {

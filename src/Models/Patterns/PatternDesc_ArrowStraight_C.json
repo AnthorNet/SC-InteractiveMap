@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Arrows/PatternDesc_ArrowStraight.PatternDesc_ArrowStraight_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_StraightArrow_256.png",
+        "patternName"   : "Straight Arrow",
+        "patternGroup"  : "Arrows",
+
         "scale"     : 1,
         "forms"     : [
             {

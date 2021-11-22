@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Pathways/PatternDesc_PathZebra.PatternDesc_PathZebra_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_SmallCrosswalk_256.png",
+        "patternName"   : "Small Crosswalk",
+        "patternGroup"  : "Paths",
+
         "scale"     : 1,
         "forms"     : [
             {

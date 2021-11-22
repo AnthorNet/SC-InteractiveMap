@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Pathways/PatternDesc_PathCross.PatternDesc_PathCross_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_CrossPath_256.png",
+        "patternName"   : "Cross Path",
+        "patternGroup"  : "Paths",
+
         "scale"     : 1,
         "forms"     : [
             {

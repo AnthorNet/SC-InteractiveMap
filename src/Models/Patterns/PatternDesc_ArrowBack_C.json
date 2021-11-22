@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Arrows/PatternDesc_ArrowBack.PatternDesc_ArrowBack_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_UTurnArrow_256.png",
+        "patternName"   : "U-Turn Arrow",
+        "patternGroup"  : "Arrows",
+
         "scale"     : 1,
         "forms"     : [
             {

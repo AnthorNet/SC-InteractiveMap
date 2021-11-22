@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Parking.PatternDesc_Icon_Parking_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_ParkingStencil_256.png",
+        "patternName"   : "Parking Icon",
+        "patternGroup"  : "Icons",
+
         "scale"     : 0.8,
         "forms"     : [
             {

@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_StopCross.PatternDesc_Icon_StopCross_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_CrossStencil_256.png",
+        "patternName"   : "Cross Icon",
+        "patternGroup"  : "Icons",
+
         "scale"     : 0.8,
         "forms"     : [
             {

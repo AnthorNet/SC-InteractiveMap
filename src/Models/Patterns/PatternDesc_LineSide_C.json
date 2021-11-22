@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_LineSide.PatternDesc_LineSide_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_SideLine_256.png",
+        "patternName"   : "Side Line",
+        "patternGroup"  : "Lines",
+
         "scale"     : 1,
         "forms"     : [
             {

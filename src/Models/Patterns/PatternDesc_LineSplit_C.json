@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_LineSplit.PatternDesc_LineSplit_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_SplitLine_256.png",
+        "patternName"   : "Split Line",
+        "patternGroup"  : "Lines",
+
         "scale"     : 1,
         "forms"     : [
             {

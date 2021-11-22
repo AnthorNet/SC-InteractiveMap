@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_LineCentreCorner.PatternDesc_LineCentreCorner_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_CenterCornerLine_256.png",
+        "patternName"   : "Centre Corner Line",
+        "patternGroup"  : "Lines",
+
         "scale"     : 1,
         "forms"     : [
             {

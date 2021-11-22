@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Storage.PatternDesc_Icon_Storage_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_StorageStencil_256.png",
+        "patternName"   : "Storage Icon",
+        "patternGroup"  : "Icons",
+
         "scale"     : 0.8,
         "forms"     : [
             {

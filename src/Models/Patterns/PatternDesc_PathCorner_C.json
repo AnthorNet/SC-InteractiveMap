@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Pathways/PatternDesc_PathCorner.PatternDesc_PathCorner_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_CornerPath_256.png",
+        "patternName"   : "Corner Path",
+        "patternGroup"  : "Paths",
+
         "scale"     : 1,
         "forms"     : [
             {

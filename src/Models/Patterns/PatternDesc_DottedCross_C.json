@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_DottedCross.PatternDesc_DottedCross_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_CrossDottedLine_256.png",
+        "patternName"   : "Cross Dotted Line",
+        "patternGroup"  : "Lines",
+
         "scale"     : 1,
         "forms"     : [
             {

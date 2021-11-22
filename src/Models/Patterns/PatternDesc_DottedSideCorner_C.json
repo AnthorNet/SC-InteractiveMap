@@ -1,5 +1,9 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_DottedSideCorner.PatternDesc_DottedSideCorner_C": {
+        "patternImage"  : "/img/gameUpdate5/IconDesc_SideCornerDottedLine_256.png",
+        "patternName"   : "Side Corner Dotted Line",
+        "patternGroup"  : "Lines",
+
         "scale"     : 1,
         "forms"     : [
             {
