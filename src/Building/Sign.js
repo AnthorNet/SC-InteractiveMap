@@ -119,7 +119,9 @@ export default class Building_Sign
                 layouts     : [
                     '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_0.BPW_Sign2x3_0_C',
                     '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_1.BPW_Sign2x3_1_C',
-                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_2.BPW_Sign2x3_2_C'
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_2.BPW_Sign2x3_2_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_3.BPW_Sign2x3_3_C',
+                    '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_4.BPW_Sign2x3_4_C'
                 ]
             },
             {
@@ -610,6 +612,24 @@ export default class Building_Sign
                          + '    <tr>'
                          + '        <td>'
                          + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_3.BPW_Sign2x3_3_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
+                         + '<table style="width: 200px;height: 300px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 30px;"><strong>{{TEXT}}</strong></div>'
+                         + '        </td>'
+                         + '    </tr>'
+                         + '</table>';
+                case '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign2x3_4.BPW_Sign2x3_4_C':
+                    return Building_Sign.getBackgroundTemplate(((backgroundIconSrc !== null) ? '{{BACKGROUND_ICON_SRC}}' : null), 200, 300, ((backgroundIconShadowColor === true) ? '{{AUXILARY_COLOR}}' : null), backgroundIconSrc)
+                         + '<table style="width: 200px;height: 300px;position: relative;">'
+                         + '    <tr>'
+                         + '        <td>'
+                         + '            <div style="font-size: 200px;"><strong>{{LABEL}}</strong></div>'
                          + '        </td>'
                          + '    </tr>'
                          + '</table>';
@@ -1338,6 +1358,8 @@ export default class Building_Sign
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let options         = Building_Sign.generateIconOptions(baseLayout);
+            options.push({value: 31, text: 'TEST ICON ID'});
 
             Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" icon',
@@ -1345,7 +1367,7 @@ export default class Building_Sign
                 inputs      : [{
                     name        : 'mPrefabIconElementSaveData',
                     inputType   : 'selectPicker',
-                    inputOptions: Building_Sign.generateIconOptions(baseLayout),
+                    inputOptions: options,
                     value       : Building_Sign.getIconID(baseLayout, currentObject)
                 }],
                 callback    : function(values)
