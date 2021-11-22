@@ -457,76 +457,69 @@ export default class BaseLayout
 
     loadDetailedModels()
     {
-        if(this.useDetailedModels === true || this.showPatterns === true)
-        {
-            return new Promise(function(resolve){
-                $('#loaderProgressBar .progress-bar').css('width', '50%');
-                $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
-                setTimeout(resolve, 50);
-            }.bind(this)).then(() => {
-                $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, function(data)
+        return new Promise(function(resolve){
+            $('#loaderProgressBar .progress-bar').css('width', '50%');
+            $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
+            setTimeout(resolve, 50);
+        }.bind(this)).then(() => {
+            $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, function(data)
+            {
+                for(let className in data)
                 {
-                    for(let className in data)
-                    {
-                        this.detailedModels[className] = data[className];
-                    }
+                    this.detailedModels[className] = data[className];
+                }
 
-                    // Duplicates
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x1_01.Build_Foundation_8x1_01_C']                                                        = this.detailedModels['/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x4_01.Build_Foundation_8x4_01_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x2_01.Build_Foundation_8x2_01_C']                                                        = this.detailedModels['/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x4_01.Build_Foundation_8x4_01_C'];
+                // Duplicates
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x1_01.Build_Foundation_8x1_01_C']                                                        = this.detailedModels['/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x4_01.Build_Foundation_8x4_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x2_01.Build_Foundation_8x2_01_C']                                                        = this.detailedModels['/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x4_01.Build_Foundation_8x4_01_C'];
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x1_01.Build_Ramp_8x1_01_C']                                                                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble_8x1.Build_RampDouble_8x1_C']                                                                    = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampInverted_8x1.Build_RampInverted_8x1_C']                                                                = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x1_01.Build_Ramp_8x1_01_C']                                                                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble_8x1.Build_RampDouble_8x1_C']                                                                    = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampInverted_8x1.Build_RampInverted_8x1_C']                                                                = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x2_01.Build_Ramp_8x2_01_C']                                                                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble.Build_RampDouble_C']                                                                            = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampInverted_8x2_01.Build_RampInverted_8x2_01_C']                                                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x2_01.Build_Ramp_8x2_01_C']                                                                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble.Build_RampDouble_C']                                                                            = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampInverted_8x2_01.Build_RampInverted_8x2_01_C']                                                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_Inverted_01.Build_Ramp_8x4_Inverted_01_C']                                                        = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x8x8.Build_Ramp_8x8x8_C']                                                                            = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_Inverted_01.Build_Ramp_8x4_Inverted_01_C']                                                        = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x8x8.Build_Ramp_8x8x8_C']                                                                            = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x4_01.Build_Ramp_8x4_01_C'];
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x4_01.Build_Ramp_Diagonal_8x4_01_C']                                                        = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_01.Build_Ramp_Diagonal_8x2_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x4_01.Build_Ramp_Diagonal_8x4_01_C']                                                        = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_01.Build_Ramp_Diagonal_8x2_01_C'];
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x1_02.Build_Ramp_Diagonal_8x1_02_C']                                                        = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_02.Build_Ramp_Diagonal_8x2_02_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampInverted_8x1_Corner_01.Build_RampInverted_8x1_Corner_01_C']                                            = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_02.Build_Ramp_Diagonal_8x2_02_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampInverted_8x2_Corner_01.Build_RampInverted_8x2_Corner_01_C']                                            = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_02.Build_Ramp_Diagonal_8x2_02_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x1_02.Build_Ramp_Diagonal_8x1_02_C']                                                        = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_02.Build_Ramp_Diagonal_8x2_02_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampInverted_8x1_Corner_01.Build_RampInverted_8x1_Corner_01_C']                                            = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_02.Build_Ramp_Diagonal_8x2_02_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampInverted_8x2_Corner_01.Build_RampInverted_8x2_Corner_01_C']                                            = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_02.Build_Ramp_Diagonal_8x2_02_C'];
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampInverted_8x4_Corner_01.Build_RampInverted_8x4_Corner_01_C']                                            = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_02.Build_Ramp_Diagonal_8x2_02_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_RampInverted_8x4_Corner_01.Build_RampInverted_8x4_Corner_01_C']                                            = this.detailedModels['/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_02.Build_Ramp_Diagonal_8x2_02_C'];
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/CA_SplitterSmart/Build_ConveyorAttachmentSplitterSmart.Build_ConveyorAttachmentSplitterSmart_C']                       = this.detailedModels['/Game/FactoryGame/Buildable/Factory/CA_Splitter/Build_ConveyorAttachmentSplitter.Build_ConveyorAttachmentSplitter_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/CA_SplitterProgrammable/Build_ConveyorAttachmentSplitterProgrammable.Build_ConveyorAttachmentSplitterProgrammable_C']  = this.detailedModels['/Game/FactoryGame/Buildable/Factory/CA_Splitter/Build_ConveyorAttachmentSplitter.Build_ConveyorAttachmentSplitter_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/CA_SplitterSmart/Build_ConveyorAttachmentSplitterSmart.Build_ConveyorAttachmentSplitterSmart_C']                       = this.detailedModels['/Game/FactoryGame/Buildable/Factory/CA_Splitter/Build_ConveyorAttachmentSplitter.Build_ConveyorAttachmentSplitter_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/CA_SplitterProgrammable/Build_ConveyorAttachmentSplitterProgrammable.Build_ConveyorAttachmentSplitterProgrammable_C']  = this.detailedModels['/Game/FactoryGame/Buildable/Factory/CA_Splitter/Build_ConveyorAttachmentSplitter.Build_ConveyorAttachmentSplitter_C'];
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/MinerMk2/Build_MinerMk2.Build_MinerMk2_C']                                                                             = this.detailedModels['/Game/FactoryGame/Buildable/Factory/MinerMK1/Build_MinerMk1.Build_MinerMk1_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/MinerMk3/Build_MinerMk3.Build_MinerMk3_C']                                                                             = this.detailedModels['/Game/FactoryGame/Buildable/Factory/MinerMK1/Build_MinerMk1.Build_MinerMk1_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/StorageContainerMk2/Build_StorageContainerMk2.Build_StorageContainerMk2_C']                                            = this.detailedModels['/Game/FactoryGame/Buildable/Factory/StorageContainerMk1/Build_StorageContainerMk1.Build_StorageContainerMk1_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainPlatformEmpty.Build_TrainPlatformEmpty_C']                                                    = this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C']                                                  = this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C']                                      = this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/MinerMk2/Build_MinerMk2.Build_MinerMk2_C']                                                                             = this.detailedModels['/Game/FactoryGame/Buildable/Factory/MinerMK1/Build_MinerMk1.Build_MinerMk1_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/MinerMk3/Build_MinerMk3.Build_MinerMk3_C']                                                                             = this.detailedModels['/Game/FactoryGame/Buildable/Factory/MinerMK1/Build_MinerMk1.Build_MinerMk1_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/StorageContainerMk2/Build_StorageContainerMk2.Build_StorageContainerMk2_C']                                            = this.detailedModels['/Game/FactoryGame/Buildable/Factory/StorageContainerMk1/Build_StorageContainerMk1.Build_StorageContainerMk1_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainPlatformEmpty.Build_TrainPlatformEmpty_C']                                                    = this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C']                                                  = this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C']                                      = this.detailedModels['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C'];
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall_Mk2.Build_PowerPoleWall_Mk2_C']                                                      = this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall.Build_PowerPoleWall_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall_Mk3.Build_PowerPoleWall_Mk3_C']                                                      = this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall.Build_PowerPoleWall_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble_Mk2.Build_PowerPoleWallDouble_Mk2_C']                                    = this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble.Build_PowerPoleWallDouble_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble_Mk3.Build_PowerPoleWallDouble_Mk3_C']                                    = this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble.Build_PowerPoleWallDouble_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall_Mk2.Build_PowerPoleWall_Mk2_C']                                                      = this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall.Build_PowerPoleWall_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall_Mk3.Build_PowerPoleWall_Mk3_C']                                                      = this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWall/Build_PowerPoleWall.Build_PowerPoleWall_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble_Mk2.Build_PowerPoleWallDouble_Mk2_C']                                    = this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble.Build_PowerPoleWallDouble_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble_Mk3.Build_PowerPoleWallDouble_Mk3_C']                                    = this.detailedModels['/Game/FactoryGame/Buildable/Factory/PowerPoleWallDouble/Build_PowerPoleWallDouble.Build_PowerPoleWallDouble_C'];
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']                                                 = JSON.parse(JSON.stringify(this.detailedModels['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C']));
-                    this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].scale                                           = 2.3;
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']                                                 = JSON.parse(JSON.stringify(this.detailedModels['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C']));
+                this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].scale                                           = 2.3;
 
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x8_Corner_01.Build_Wall_Orange_8x8_Corner_01_C']                                = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/ConcreteWallSet/Build_Wall_Concrete_8x4_Corner_01.Build_Wall_Concrete_8x4_Corner_01_C']                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/ConcreteWallSet/Build_Wall_Concrete_8x8_Corner_01.Build_Wall_Concrete_8x8_Corner_01_C']                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/SteelWallSet/Build_Wall_Steel_8x4_Corner_01.Build_Wall_Steel_8x4_Corner_01_C']                                   = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
-                    this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/SteelWallSet/Build_Wall_Steel_8x8_Corner_01.Build_Wall_Steel_8x8_Corner_01_C']                                   = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x8_Corner_01.Build_Wall_Orange_8x8_Corner_01_C']                                = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/ConcreteWallSet/Build_Wall_Concrete_8x4_Corner_01.Build_Wall_Concrete_8x4_Corner_01_C']                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/ConcreteWallSet/Build_Wall_Concrete_8x8_Corner_01.Build_Wall_Concrete_8x8_Corner_01_C']                          = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/SteelWallSet/Build_Wall_Steel_8x4_Corner_01.Build_Wall_Steel_8x4_Corner_01_C']                                   = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
+                this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/SteelWallSet/Build_Wall_Steel_8x8_Corner_01.Build_Wall_Steel_8x8_Corner_01_C']                                   = this.detailedModels['/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x4_Corner_01.Build_Wall_Orange_8x4_Corner_01_C'];
 
 
-                    this.renderObjects();
-                }.bind(this));
-            });
-        }
-        else
-        {
-            this.renderObjects();
-        }
+                this.renderObjects();
+            }.bind(this));
+        });
     }
 
     renderObjects()
@@ -2369,17 +2362,20 @@ export default class BaseLayout
             let objectAngle = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
                 if(Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 90 || Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 270)
                 {
+                    polygonOptions.width     = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
                     polygonOptions.useOnly2D = true;
                 }
                 else
                 {
                     // Beam length?
+                    //TODO: Calculate length based on proper pitch angle...
                     if(buildingData.category === 'beam' && Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 0)
                     {
                         let mLength = this.getObjectProperty(currentObject, 'mLength');
                             if(mLength !== null)
                             {
-                                polygonOptions.xShift = -mLength / 2;
+                                polygonOptions.width    = mLength;
+                                polygonOptions.xShift   = -mLength / 2;
                             }
                     }
                 }
@@ -2589,66 +2585,55 @@ export default class BaseLayout
         // Add pattern
         if(buildingData.category === 'foundation' && this.showPatterns === true && this.detailedModels !== null)
         {
-            let mCustomizationData = this.getObjectProperty(currentObject, 'mCustomizationData');
-                if(mCustomizationData !== null)
+            let currentPattern          = this.buildableSubSystem.getObjectCustomizationData(currentObject, 'PatternDesc');
+                if(currentPattern !== null)
                 {
-                    let currentPattern          = null;
-                    let currentPatternRotation  = 0;
-                        for(let i = 0; i < mCustomizationData.values.length; i++)
+                    let currentPatternRotation  = this.buildableSubSystem.getObjectCustomizationData(currentObject, 'PatternRotation');
+                        if(currentPatternRotation === null)
                         {
-                            if(mCustomizationData.values[i].name === 'PatternDesc')
-                            {
-                                currentPattern = mCustomizationData.values[i].value.pathName;
-                            }
-                            if(mCustomizationData.values[i].name === 'PatternRotation')
-                            {
-                                currentPatternRotation = mCustomizationData.values[i].value.value;
-                            }
+                            currentPatternRotation = {value: {value: 0}};
                         }
 
-                        if(currentPattern !== null)
-                        {
-                            if(this.detailedModels[currentPattern] !== undefined)
+                    if(this.detailedModels[currentPattern.value.pathName] !== undefined)
+                    {
+                        let patternTransform    = JSON.parse(JSON.stringify(currentObject.transform));
+                        let patternRotation     = BaseLayout_Math.getQuaternionToEuler(patternTransform.rotation);
+                            patternRotation.yaw = BaseLayout_Math.clampEulerAxis(patternRotation.yaw);
+                            switch(currentPatternRotation.value.value)
                             {
-                                let patternTransform    = JSON.parse(JSON.stringify(currentObject.transform));
-                                let patternRotation     = BaseLayout_Math.getQuaternionToEuler(patternTransform.rotation);
-                                    patternRotation.yaw = BaseLayout_Math.clampEulerAxis(patternRotation.yaw);
-                                    switch(currentPatternRotation)
-                                    {
-                                        case 1: // 180°
-                                            patternRotation.yaw         = BaseLayout_Math.clampEulerAxis(patternRotation.yaw + 180);
-                                            patternTransform.rotation   = BaseLayout_Math.getEulerToQuaternion(patternRotation);
-                                            break;
-                                        case 2: // 90°
-                                            patternRotation.yaw         = BaseLayout_Math.clampEulerAxis(patternRotation.yaw + 90);
-                                            patternTransform.rotation   = BaseLayout_Math.getEulerToQuaternion(patternRotation);
-                                            break;
-                                        case 3: // 0°
-                                            break;
-                                        default: // -90°
-                                            patternRotation.yaw         = BaseLayout_Math.clampEulerAxis(patternRotation.yaw - 90);
-                                            patternTransform.rotation   = BaseLayout_Math.getEulerToQuaternion(patternRotation);
-                                            break;
-                                    }
+                                case 1: // 180°
+                                    patternRotation.yaw         = BaseLayout_Math.clampEulerAxis(patternRotation.yaw + 180);
+                                    patternTransform.rotation   = BaseLayout_Math.getEulerToQuaternion(patternRotation);
+                                    break;
+                                case 2: // 90°
+                                    patternRotation.yaw         = BaseLayout_Math.clampEulerAxis(patternRotation.yaw + 90);
+                                    patternTransform.rotation   = BaseLayout_Math.getEulerToQuaternion(patternRotation);
+                                    break;
+                                case 3: // 0°
+                                    break;
+                                default: // -90°
+                                    patternRotation.yaw         = BaseLayout_Math.clampEulerAxis(patternRotation.yaw - 90);
+                                    patternTransform.rotation   = BaseLayout_Math.getEulerToQuaternion(patternRotation);
+                                    break;
+                            }
 
-                                markerOptions.extraPattern = L.polygon(
-                                    this.generatePolygonForms(patternTransform, currentPattern, polygonOptions),
-                                    {
-                                        weight          : 0,
-                                        originPathName  : currentObject.pathName,
-                                        interactive     : false
-                                    }
-                                );
-                            }
-                            else
+                        markerOptions.extraPattern = L.polygon(
+                            this.generatePolygonForms(patternTransform, currentPattern.value.pathName, polygonOptions),
                             {
-                                console.log('Missing pattern: ' + currentPattern);
-                                if(typeof Sentry !== 'undefined')
-                                {
-                                    Sentry.captureMessage('Missing pattern: ' + currentPattern);
-                                }
+                                weight          : 0,
+                                originPathName  : currentObject.pathName,
+                                interactive     : false
                             }
+                        );
+                    }
+                    else
+                    {
+                        console.log('Missing pattern: ' + currentPattern.value.pathName);
+                        if(typeof Sentry !== 'undefined')
+                        {
+                            Sentry.captureMessage('Missing pattern: ' + currentPattern.value.pathName);
                         }
+                    }
                 }
         }
 
@@ -3613,7 +3598,7 @@ export default class BaseLayout
 
                         // Does source or target have a connection anchor?
                         let sourceTranslation = currentObjectSourceOuterPath.transform.translation;
-                            if(this.detailedModels !== null && this.detailedModels[currentObjectSourceOuterPath.className] !== undefined && this.detailedModels[currentObjectSourceOuterPath.className].powerConnection !== undefined)
+                            if(this.useDetailedModels === true && this.detailedModels !== null && this.detailedModels[currentObjectSourceOuterPath.className] !== undefined && this.detailedModels[currentObjectSourceOuterPath.className].powerConnection !== undefined)
                             {
                                 let currentModel = this.detailedModels[currentObjectSourceOuterPath.className];
                                     sourceTranslation= BaseLayout_Math.getPointRotation(
@@ -3626,7 +3611,7 @@ export default class BaseLayout
                                     );
                             }
                         let targetTranslation = currentObjectTargetOuterPath.transform.translation;
-                            if(this.detailedModels !== null && this.detailedModels[currentObjectTargetOuterPath.className] !== undefined && this.detailedModels[currentObjectTargetOuterPath.className].powerConnection !== undefined)
+                            if(this.useDetailedModels === true && this.detailedModels !== null && this.detailedModels[currentObjectTargetOuterPath.className] !== undefined && this.detailedModels[currentObjectTargetOuterPath.className].powerConnection !== undefined)
                             {
                                 let currentModel = this.detailedModels[currentObjectTargetOuterPath.className];
                                     targetTranslation= BaseLayout_Math.getPointRotation(
@@ -5646,25 +5631,38 @@ export default class BaseLayout
                 pathName    : 'Persistent_Level:PersistentLevel.Char_Spitter_Alternative_C_'
             },
 
-            //TODO: Find proper name and missing class
-            '/Game/FactoryGame/Character/Creature/Enemy/Stinger/Char_CaveStinger.Char_CaveStinger_C': {
-                name        : 'Stinger (Size?)',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_CaveStinger_C_'
-            },
             '/Game/FactoryGame/Character/Creature/Enemy/Stinger/SmallStinger/Char_Stinger_Child.Char_Stinger_Child_C': {
-                name        : 'Stinger (Size?)',
+                name        : 'Small Stinger',
                 iconColor   : defaultIconColor,
                 iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
                 pathName    : 'Persistent_Level:PersistentLevel.Char_Stinger_Child_C_'
             },
             '/Game/FactoryGame/Character/Creature/Enemy/Stinger/SmallStinger/Char_CaveStinger_Child.Char_CaveStinger_Child_C': {
-                name        : 'Stinger (Size?)',
+                name        : 'Small Cave Stinger',
                 iconColor   : defaultIconColor,
                 iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
                 pathName    : 'Persistent_Level:PersistentLevel.Char_CaveStinger_Child_C_'
             },
+
+            '/Game/FactoryGame/Character/Creature/Enemy/Stinger/Char_Stinger.Char_Stinger_C': {
+                name        : 'Big Stinger',
+                iconColor   : defaultIconColor,
+                iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
+                pathName    : 'Persistent_Level:PersistentLevel.Char_Stinger_C_'
+            },
+            '/Game/FactoryGame/Character/Creature/Enemy/Stinger/Char_CaveStinger.Char_CaveStinger_C': {
+                name        : 'Large Stinger',
+                iconColor   : defaultIconColor,
+                iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
+                pathName    : 'Persistent_Level:PersistentLevel.Char_CaveStinger_C_'
+            },
+            '/Game/FactoryGame/Character/Creature/Enemy/Stinger/BigStinger/Char_EliteCaveStinger.Char_EliteCaveStinger_C': {
+                name        : 'Elite Stinger',
+                iconColor   : defaultIconColor,
+                iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
+                pathName    : 'Persistent_Level:PersistentLevel.Char_EliteCaveStinger_C_'
+            },
+
             '/Game/FactoryGame/Character/Creature/Enemy/Hog/Char_Hog.Char_Hog_C': {
                 name        : 'Fluffy-tailed Hog',
                 iconColor   : defaultIconColor,
@@ -5702,6 +5700,14 @@ export default class BaseLayout
             if(availableFauna[className] !== undefined)
             {
                 return availableFauna[className];
+            }
+            if(className.includes('/Game/FactoryGame/Character/Creature/Wildlife/') || className.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
+            {
+                if(typeof Sentry !== 'undefined')
+                {
+                    Sentry.setContext('className', {className: className});
+                    Sentry.captureMessage('Missing fauna className: ' + className);
+                }
             }
         }
 
@@ -6082,6 +6088,7 @@ export default class BaseLayout
                 inputOptions.push({group: 'Materials', text: 'Switch to "Concrete Foundation"', value: 'switchMaterial_foundation_Concrete'});
                 inputOptions.push({group: 'Materials', text: 'Switch to "Grip Metal Foundation"', value: 'switchMaterial_foundation_GripMetal'});
                 inputOptions.push({group: 'Materials', text: 'Switch to "Coated Concrete Foundation"', value: 'switchMaterial_foundation_ConcretePolished'});
+                inputOptions.push({group: 'Materials', text: 'Switch to "Asphalt Foundation"', value: 'switchMaterial_foundation_Asphalt'});
 
                 inputOptions.push({group: 'Materials', text: 'Switch to "FICSIT Wall"', value: 'switchMaterial_wall_Ficsit'});
                 inputOptions.push({group: 'Materials', text: 'Switch to "Concrete Wall"', value: 'switchMaterial_wall_Concrete'});
@@ -6243,6 +6250,20 @@ export default class BaseLayout
                                     text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
                                 });
                             }
+                            selectOptionsColors.push({
+                                fullWidth       : true,
+                                primaryColor    : 'rgb(' + playerColors[16].primaryColor.r + ', ' + playerColors[16].primaryColor.g + ', ' + playerColors[16].primaryColor.b + ')',
+                                secondaryColor  : 'rgb(' + playerColors[16].secondaryColor.r + ', ' + playerColors[16].secondaryColor.g + ', ' + playerColors[16].secondaryColor.b + ')',
+                                value           : 16,
+                                text            : 'FICSIT Foundation'
+                            });
+                            selectOptionsColors.push({
+                                fullWidth       : true,
+                                primaryColor    : 'rgb(' + playerColors[18].primaryColor.r + ', ' + playerColors[18].primaryColor.g + ', ' + playerColors[18].primaryColor.b + ')',
+                                secondaryColor  : 'rgb(' + playerColors[18].secondaryColor.r + ', ' + playerColors[18].secondaryColor.g + ', ' + playerColors[18].secondaryColor.b + ')',
+                                value           : 18,
+                                text            : 'Concrete Structure'
+                            });
 
                         let playerCustomColor       = this.buildableSubSystem.getPlayerCustomColor();
                             selectOptionsColors.push({
@@ -6311,6 +6332,8 @@ export default class BaseLayout
                         return this.updateMultipleObjectMaterial('foundation', 'GripMetal');
                     case 'switchMaterial_foundation_ConcretePolished':
                         return this.updateMultipleObjectMaterial('foundation', 'ConcretePolished');
+                    case 'switchMaterial_foundation_Asphalt':
+                        return this.updateMultipleObjectMaterial('foundation', 'Asphalt');
 
                     case 'switchMaterial_wall_Ficsit':
                         return this.updateMultipleObjectMaterial('wall', 'Ficsit');

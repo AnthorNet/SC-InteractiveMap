@@ -17,9 +17,10 @@ import Building_TrainStation                    from '../Building/TrainStation.j
 import Building_Vehicle                         from '../Building/Vehicle.js';
 
 import Modal_Debug                              from '../Modal/Debug.js';
-import Modal_Object_Position                    from '../Modal/Object/Position.js';
 import Modal_Object_ColorSlot                   from '../Modal/Object/ColorSlot.js';
 import Modal_Object_CustomColor                 from '../Modal/Object/CustomColor.js';
+import Modal_Object_Pattern                     from '../Modal/Object/Pattern.js';
+import Modal_Object_Position                    from '../Modal/Object/Position.js';
 import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
 
 import SubSystem_Player                         from '../SubSystem/Player.js';
@@ -168,7 +169,7 @@ export default class BaseLayout_ContextMenu
                 if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof')
                 {
                     contextMenu.push({
-                        icon        : 'fa-redo',
+                        icon        : 'fa-redo fa-spin',
                         text        : 'Rotate "' + buildingData.name + '" by 90°',
                         callback    : this.baseLayout.rotationPlayerFoundation.bind(this.baseLayout)
                     });
@@ -301,12 +302,12 @@ export default class BaseLayout_ContextMenu
 
                 if(buildingData.category === 'production')
                 {
-                    contextMenu.push('-');
                     contextMenu.push({
                         icon        : 'fa-exchange',
                         text        : 'Update recipe',
                         callback    : this.baseLayout.editPlayerProductionBuildingRecipe.bind(this.baseLayout)
                     });
+                    contextMenu.push('-');
                 }
 
                 if((buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')) //TODO: Handle fluid storage...
@@ -332,7 +333,6 @@ export default class BaseLayout_ContextMenu
 
                         if(inventoryType === 'solid')
                         {
-                            contextMenu.push('-');
                             if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className) === false)
                             {
                                 contextMenu.push({
@@ -351,18 +351,19 @@ export default class BaseLayout_ContextMenu
                                 text    : 'Clear inventory',
                                 callback: this.baseLayout.clearPlayerStorageBuildingInventory.bind(this.baseLayout)
                             });
+                            contextMenu.push('-');
                         }
                 }
 
                 let currentObjectPipeNetwork = this.baseLayout.getObjectPipeNetwork(currentObject);
                     if(currentObjectPipeNetwork !== null)
                     {
-                        contextMenu.push('-');
                         contextMenu.push({
                             icon        : 'fa-potion',
                             text        : 'Update pipe network fluid',
                             callback    : this.baseLayout.updatePipeNetworkFluid.bind(this.baseLayout)
                         });
+                        contextMenu.push('-');
                     }
 
 
@@ -395,6 +396,27 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Update custom color',
                                 callback    : Modal_Object_CustomColor.getHTML,
                                 className   : 'Modal_Object_CustomColor',
+                            });
+                        }
+                }
+
+                if(buildingData.category === 'foundation')
+                {
+                    contextMenu.push('-');
+                    contextMenu.push({
+                        icon        : 'fa-shapes',
+                        text        : 'Update pattern',
+                        callback    : Modal_Object_Pattern.getHTML,
+                        className   : 'Modal_Object_Pattern',
+                    });
+
+                    let PatternDesc = this.baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject, 'PatternDesc');
+                        if(PatternDesc !== null)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-shapes fa-spin',
+                                text        : 'Rotate pattern by 90°',
+                                callback    : this.baseLayout.buildableSubSystem.rotateObjectPattern
                             });
                         }
                 }
@@ -442,6 +464,16 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Coated Concrete Foundation"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'ConcretePolished'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.Asphalt !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Asphalt Foundation"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['foundation', 'Asphalt'],
                                 className   : 'buildableSubSystem_switchObjectMaterial',
                             });
                         }

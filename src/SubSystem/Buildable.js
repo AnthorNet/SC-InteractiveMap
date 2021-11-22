@@ -64,38 +64,54 @@ export default class SubSystem_Buildable
         this.buildableSubSystem     = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.BuildableSubsystem');
     }
 
-    getObjectColorSlot(currentObject)
+    getObjectCustomizationData(currentObject, property = null)
     {
         let mCustomizationData = this.baseLayout.getObjectProperty(currentObject, 'mCustomizationData');
             if(mCustomizationData !== null)
             {
+                if(property === null)
+                {
+                    return mCustomizationData;
+                }
+
                 for(let i = 0; i < mCustomizationData.values.length; i++)
                 {
-                    if(mCustomizationData.values[i].name === 'SwatchDesc')
+                    if(mCustomizationData.values[i].name === property)
                     {
-                        let currentSwatchDesc = mCustomizationData.values[i].value.pathName;
-                            switch(currentSwatchDesc)
-                            {
-                                case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C':
-                                    return 255;
-                                case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C':
-                                    return 18;
-                                case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C':
-                                    return 16;
-                                default:
-                                    let slot = currentSwatchDesc.split('.');
-                                        slot = parseInt(slot[0].replace('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot', ''));
-
-                                        if(isNaN(slot))
-                                        {
-                                            console.log('getObjectColorSlot', currentSwatchDesc);
-                                            return 0;
-                                        }
-
-                                        return slot;
-                            }
+                        return mCustomizationData.values[i];
                     }
                 }
+            }
+
+        return null;
+    }
+
+    getObjectColorSlot(currentObject)
+    {
+        let SwatchDesc  = this.getObjectCustomizationData(currentObject, 'SwatchDesc');
+            if(SwatchDesc !== null)
+            {
+                let currentSwatchDesc = SwatchDesc.value.pathName;
+                    switch(currentSwatchDesc)
+                    {
+                        case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C':
+                            return 255;
+                        case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C':
+                            return 18;
+                        case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C':
+                            return 16;
+                        default:
+                            let slot = currentSwatchDesc.split('.');
+                                slot = parseInt(slot[0].replace('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot', ''));
+
+                                if(isNaN(slot))
+                                {
+                                    console.log('getObjectColorSlot', currentSwatchDesc);
+                                    return 0;
+                                }
+
+                                return slot;
+                    }
             }
 
         //TODO:OLD
@@ -121,7 +137,7 @@ export default class SubSystem_Buildable
 
     setObjectColorSlot(currentObject, slotIndex)
     {
-        let mCustomizationData = this.baseLayout.getObjectProperty(currentObject, 'mCustomizationData');
+        let mCustomizationData = this.getObjectCustomizationData(currentObject);
             if(mCustomizationData !== null)
             {
                 for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
@@ -168,7 +184,7 @@ export default class SubSystem_Buildable
 
     setObjectCustomColor(currentObject, primaryColor, secondaryColor)
     {
-        let mCustomizationData = this.baseLayout.getObjectProperty(currentObject, 'mCustomizationData');
+        let mCustomizationData = this.getObjectCustomizationData(currentObject);
             if(mCustomizationData !== null)
             {
                 for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
@@ -222,25 +238,19 @@ export default class SubSystem_Buildable
         let colorSlot           = this.getObjectColorSlot(currentObject);
             if(colorSlot === 255)
             {
-                let mCustomizationData = this.baseLayout.getObjectProperty(currentObject, 'mCustomizationData');
-                    if(mCustomizationData !== null)
+                let OverrideColorData = this.getObjectCustomizationData(currentObject, 'OverrideColorData');
+                    if(OverrideColorData !== null)
                     {
-                        for(let i = 0; i < mCustomizationData.values.length; i++)
+                        for(let j = 0; j < OverrideColorData.value.values.length; j++)
                         {
-                            if(mCustomizationData.values[i].name === 'OverrideColorData')
+                            if(OverrideColorData.value.values[j].name === 'PrimaryColor')
                             {
-                                for(let j = 0; j < mCustomizationData.values[i].value.values.length; j++)
-                                {
-                                    if(mCustomizationData.values[i].value.values[j].name === 'PrimaryColor')
-                                    {
-                                        return {
-                                            r : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.r),
-                                            g : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.g),
-                                            b : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.b),
-                                            a : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.a)
-                                        };
-                                    }
-                                }
+                                return {
+                                    r : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.r),
+                                    g : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.g),
+                                    b : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.b),
+                                    a : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.a)
+                                };
                             }
                         }
                     }
@@ -263,25 +273,19 @@ export default class SubSystem_Buildable
         let colorSlot           = this.getObjectColorSlot(currentObject);
             if(colorSlot === 255)
             {
-                let mCustomizationData = this.baseLayout.getObjectProperty(currentObject, 'mCustomizationData');
-                    if(mCustomizationData !== null)
+                let OverrideColorData = this.getObjectCustomizationData(currentObject, 'OverrideColorData');
+                    if(OverrideColorData !== null)
                     {
-                        for(let i = 0; i < mCustomizationData.values.length; i++)
+                        for(let j = 0; j < OverrideColorData.value.values.length; j++)
                         {
-                            if(mCustomizationData.values[i].name === 'OverrideColorData')
+                            if(OverrideColorData.value.values[j].name === 'SecondaryColor')
                             {
-                                for(let j = 0; j < mCustomizationData.values[i].value.values.length; j++)
-                                {
-                                    if(mCustomizationData.values[i].value.values[j].name === 'SecondaryColor')
-                                    {
-                                        return {
-                                            r : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.r),
-                                            g : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.g),
-                                            b : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.b),
-                                            a : BaseLayout_Math.linearColorToRGB(mCustomizationData.values[i].value.values[j].value.values.a)
-                                        };
-                                    }
-                                }
+                                return {
+                                    r : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.r),
+                                    g : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.g),
+                                    b : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.b),
+                                    a : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.a)
+                                };
                             }
                         }
                     }
@@ -677,5 +681,49 @@ export default class SubSystem_Buildable
                         baseLayout.addElementToLayer(result.layer, result.marker);
                 }
         }
+    }
+
+    rotateObjectPattern(marker)
+    {
+        let baseLayout              = marker.baseLayout;
+        let currentObject           = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+
+        let currentPatternRotation  = baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject, 'PatternRotation');
+        let mCustomizationData      = baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject);
+            if(currentPatternRotation === null)
+            {
+                currentPatternRotation = {value: {value: 0}};
+            }
+
+            // Delete
+            for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
+            {
+                if(mCustomizationData.values[i].name === 'PatternRotation')
+                {
+                    mCustomizationData.values.splice(i, 1);
+                }
+            }
+
+            // Push
+            switch(currentPatternRotation.value.value)
+            {
+                case 1: // 180° => -90°
+                    mCustomizationData.values.push({name: 'PatternRotation', type: 'ByteProperty', value: {enumName: 'None', value: 0}});
+                    break;
+                case 2: // 90° => 180°
+                    mCustomizationData.values.push({name: 'PatternRotation', type: 'ByteProperty', value: {enumName: 'None', value: 1}});
+                    break;
+                case 3: // 0° => 90°
+                    mCustomizationData.values.push({name: 'PatternRotation', type: 'ByteProperty', value: {enumName: 'None', value: 2}});
+                    break;
+                default: // -90° => 0°
+                    mCustomizationData.values.push({name: 'PatternRotation', type: 'ByteProperty', value: {enumName: 'None', value: 3}});
+                    break;
+            }
+
+        // Redraw!
+        let result = baseLayout.parseObject(currentObject);
+            baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+            baseLayout.addElementToLayer(result.layer, result.marker);
     }
 }

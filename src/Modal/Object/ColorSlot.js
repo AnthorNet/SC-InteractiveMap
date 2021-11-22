@@ -44,6 +44,16 @@ export default class Modal_Object_ColorSlot
                 text            : 'FICSIT Foundation'
             });
         }
+        if(buildingData.category === 'foundation' || buildingData.category === 'wall')
+        {
+            selectOptions.push({
+                fullWidth       : true,
+                primaryColor    : 'rgb(' + playerColors[18].primaryColor.r + ', ' + playerColors[18].primaryColor.g + ', ' + playerColors[18].primaryColor.b + ')',
+                secondaryColor  : 'rgb(' + playerColors[18].secondaryColor.r + ', ' + playerColors[18].secondaryColor.g + ', ' + playerColors[18].secondaryColor.b + ')',
+                value           : 18,
+                text            : 'Concrete Structure'
+            });
+        }
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C')
         {
             selectOptions.push({
