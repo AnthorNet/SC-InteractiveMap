@@ -2720,23 +2720,11 @@ export default class BaseLayout
         else
         {
             let slotColor = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
-                switch(buildingData.category)
-                {
-                    case 'wall':
-                        marker.setStyle({
-                            color       : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
-                            fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
-                            fillOpacity : mapOpacity
-                        });
-                        break;
-                    default:
-                        marker.setStyle({
-                            color       : buildingData.mapColor,
-                            fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
-                            fillOpacity : mapOpacity
-                        });
-                        break;
-                }
+                marker.setStyle({
+                    color       : buildingData.mapColor,
+                    fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                    fillOpacity : mapOpacity
+                });
         }
 
         if(marker.options.extraPattern !== undefined)
