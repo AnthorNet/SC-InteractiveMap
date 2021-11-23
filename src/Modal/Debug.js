@@ -25,6 +25,10 @@ export default class Modal_Debug
         {
             extraPathName.push('Persistent_Level:PersistentLevel.GamePhaseManager');
         }
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/ResourceSink/Build_ResourceSink.Build_ResourceSink_C')
+        {
+            extraPathName.push('Persistent_Level:PersistentLevel.ResourceSinkSubsystem');
+        }
 
         let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles', 'mBottomSnappedConnection', 'mTopSnappedConnection'];
             for(let i = 0; i < extraProperties.length; i++)

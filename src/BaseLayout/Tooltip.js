@@ -3,6 +3,7 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 
+import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_FrackingSmasher                 from '../Building/FrackingSmasher.js';
 import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoThermal.js';
@@ -127,6 +128,8 @@ export default class BaseLayout_Tooltip
                                             return Building_GeneratorGeoThermal.getTooltip(this.baseLayout, currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C':
                                             return Building_SpaceElevator.getTooltip(this.baseLayout, currentObject, buildingData);
+                                        case '/Game/FactoryGame/Buildable/Factory/ResourceSink/Build_ResourceSink.Build_ResourceSink_C':
+                                            return Building_AwesomeSink.getTooltip(this.baseLayout, currentObject, buildingData);
                                     }
                                     switch(buildingData.category)
                                     {

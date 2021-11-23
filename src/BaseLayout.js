@@ -762,8 +762,6 @@ export default class BaseLayout
             }
 
             /*
-            '/Script/FactoryGame.FGResourceSinkSubsystem', //TODO: Handle...
-
             '/Script/FactoryGame.FGDroneStationInfo',
             '/Script/FactoryGame.FGDroneAction_TakeoffSequence',
             '/Script/FactoryGame.FGDroneAction_DockingSequence',
@@ -2719,12 +2717,24 @@ export default class BaseLayout
         }
         else
         {
-            let slotColor = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
+            // Coloring is allowed but mostly for pattern!
+            if(currentObject.className.includes('AsphaltSet') || currentObject.className.includes('GripMetal'))
+            {
                 marker.setStyle({
                     color       : buildingData.mapColor,
-                    fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                    fillColor   : buildingData.mapColor,
                     fillOpacity : mapOpacity
                 });
+            }
+            else
+            {
+                let slotColor = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
+                    marker.setStyle({
+                        color       : buildingData.mapColor,
+                        fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                        fillOpacity : mapOpacity
+                    });
+            }
         }
 
         if(marker.options.extraPattern !== undefined)

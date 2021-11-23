@@ -47,19 +47,22 @@ export default class Modal_Object_Pattern
                 if(values !== null)
                 {
                     let mCustomizationData      = baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject);
-                        // Delete
-                        for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
+                        if(mCustomizationData !== null)
                         {
-                            if(mCustomizationData.values[i].name === 'PatternDesc')
+                            // Delete
+                            for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
                             {
-                                mCustomizationData.values.splice(i, 1);
+                                if(mCustomizationData.values[i].name === 'PatternDesc')
+                                {
+                                    mCustomizationData.values.splice(i, 1);
+                                }
                             }
-                        }
 
-                        // Push
-                        if(values.PatternDesc !== 'NULL')
-                        {
-                            mCustomizationData.values.push({name: 'PatternDesc', type: 'ObjectProperty', value: {levelName: '', pathName: values.PatternDesc}});
+                            // Push
+                            if(values.PatternDesc !== 'NULL')
+                            {
+                                mCustomizationData.values.push({name: 'PatternDesc', type: 'ObjectProperty', value: {levelName: '', pathName: values.PatternDesc}});
+                            }
                         }
 
                     // Redraw!

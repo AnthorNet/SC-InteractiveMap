@@ -1,4 +1,4 @@
-
+import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_Door                            from '../Building/Door.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
@@ -298,6 +298,10 @@ export default class BaseLayout_ContextMenu
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C')
                 {
                     contextMenu = Building_SpaceElevator.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                }
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/ResourceSink/Build_ResourceSink.Build_ResourceSink_C')
+                {
+                    contextMenu = Building_AwesomeSink.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
 
                 if(buildingData.category === 'production')
