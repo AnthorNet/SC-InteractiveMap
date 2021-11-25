@@ -150,29 +150,31 @@ export default class BaseLayout_Selection_Rotate
                             for(let j = 0; j < currentObject.children.length; j++)
                             {
                                 let currentObjectChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName);
-
-                                // Grab wires for redraw...
-                                for(let k = 0; k < this.baseLayout.availablePowerConnection.length; k++)
-                                {
-                                    if(currentObjectChildren.pathName.endsWith(this.baseLayout.availablePowerConnection[k]))
+                                    if(currentObjectChildren !== null)
                                     {
-                                        for(let m = 0; m < currentObjectChildren.properties.length; m++)
+                                        // Grab wires for redraw...
+                                        for(let k = 0; k < this.baseLayout.availablePowerConnection.length; k++)
                                         {
-                                            if(currentObjectChildren.properties[m].name === 'mWires')
+                                            if(currentObjectChildren.pathName.endsWith(this.baseLayout.availablePowerConnection[k]))
                                             {
-                                                for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
+                                                for(let m = 0; m < currentObjectChildren.properties.length; m++)
                                                 {
-                                                    if(wires.includes(currentObjectChildren.properties[m].value.values[n].pathName) === false)
+                                                    if(currentObjectChildren.properties[m].name === 'mWires')
                                                     {
-                                                        wires.push(currentObjectChildren.properties[m].value.values[n].pathName);
+                                                        for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
+                                                        {
+                                                            if(wires.includes(currentObjectChildren.properties[m].value.values[n].pathName) === false)
+                                                            {
+                                                                wires.push(currentObjectChildren.properties[m].value.values[n].pathName);
+                                                            }
+                                                        }
+
+                                                        break;
                                                     }
                                                 }
-
-                                                break;
                                             }
                                         }
                                     }
-                                }
                             }
                         }
 

@@ -138,6 +138,23 @@ export default class SubSystem_Buildable
     setObjectColorSlot(currentObject, slotIndex)
     {
         let mCustomizationData = this.getObjectCustomizationData(currentObject);
+            if(mCustomizationData === null)
+            {
+                currentObject.properties.push({
+                    name    : 'mCustomizationData',
+                    type    : 'StructProperty',
+                    value   : {
+                        type    : 'FactoryCustomizationData',
+                        values  : [{
+                            name    : 'SwatchDesc',
+                            type    : 'ObjectProperty',
+                            value   : {levelName : '', pathName: '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot0.SwatchDesc_Slot0_C'}
+                        }]
+                    }
+                });
+                mCustomizationData = this.getObjectCustomizationData(currentObject);
+            }
+
             if(mCustomizationData !== null)
             {
                 for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)

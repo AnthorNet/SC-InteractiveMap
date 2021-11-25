@@ -258,14 +258,7 @@ export default class SaveParser_Read
     {
         let object                  = {type : 0};
             object.className        = this.readString();
-
-            let levelName           = this.readString();
-                if(levelName !== 'Persistent_Level')
-                {
-                    object.levelName     = levelName;
-                }
-
-            object.pathName         = this.readString();
+            object                  = this.readObjectProperty(object);
             object.outerPathName    = this.readString();
 
         return object;
@@ -275,14 +268,7 @@ export default class SaveParser_Read
     {
         let actor               = {type : 1};
             actor.className     = this.readString();
-
-        let levelName           = this.readString();
-            if(levelName !== 'Persistent_Level')
-            {
-                actor.levelName     = levelName;
-            }
-
-            actor.pathName      = this.readString();
+            actor               = this.readObjectProperty(actor);
 
         let needTransform       = this.readInt();
             if(needTransform !== 0)
@@ -364,7 +350,12 @@ export default class SaveParser_Read
 
         if(this.saveParser.objects[objectKey].type === 1)
         {
-            this.saveParser.objects[objectKey].entityLevelName  = this.readString();
+            let entityLevelName = this.readString();
+                if(entityLevelName !== 'Persistent_Level')
+                {
+                    this.saveParser.objects[objectKey].entityLevelName  = entityLevelName;
+                }
+
             this.saveParser.objects[objectKey].entityPathName   = this.readString();
 
             let countChild  = this.readInt();
@@ -374,10 +365,7 @@ export default class SaveParser_Read
 
                     for(let i = 0; i < countChild; i++)
                     {
-                        this.saveParser.objects[objectKey].children.push({
-                            levelName   : this.readString(),
-                            pathName    : this.readString()
-                        });
+                        this.saveParser.objects[objectKey].children.push(this.readObjectProperty({}));
                     }
                 }
         }
@@ -439,10 +427,7 @@ export default class SaveParser_Read
 
                     for(let i = 0; i < gameLength; i++)
                     {
-                        this.saveParser.objects[objectKey].extra.game.push({
-                            levelName   : this.readString(),
-                            pathName    : this.readString()
-                        });
+                        this.saveParser.objects[objectKey].extra.game.push(this.readObjectProperty({}));
 
                         if(i === 0 && this.saveParser.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
                         {
@@ -633,11 +618,7 @@ export default class SaveParser_Read
             case 'ObjectProperty':
             case 'InterfaceProperty':
                 this.skipBytes();
-                currentProperty.value = {
-                    levelName: this.readString(),
-                    pathName: this.readString()
-                };
-
+                currentProperty.value = this.readObjectProperty({});
                 break;
 
             case 'EnumProperty':
@@ -728,7 +709,7 @@ export default class SaveParser_Read
                     case 'InterfaceProperty':
                         for(let i = 0; i < currentArrayPropertyCount; i++)
                         {
-                            currentProperty.value.values.push({levelName: this.readString(), pathName: this.readString()});
+                            currentProperty.value.values.push(this.readObjectProperty({}));
                         }
                         break;
 
@@ -909,10 +890,7 @@ export default class SaveParser_Read
                             mapPropertyKey = this.readString();
                             break;
                         case 'ObjectProperty':
-                            mapPropertyKey = {
-                                levelName   : this.readString(),
-                                pathName    : this.readString()
-                            };
+                            mapPropertyKey = this.readObjectProperty({});
                             break;
                         case 'EnumProperty':
                             mapPropertyKey = {
@@ -952,10 +930,7 @@ export default class SaveParser_Read
                             mapPropertySubProperties = this.readString();
                             break;
                         case 'ObjectProperty':
-                            mapPropertySubProperties = {
-                                levelName: this.readString(),
-                                pathName: this.readString()
-                            };
+                            mapPropertySubProperties = this.readObjectProperty({});
                             break;
                         case 'StructProperty':
                             while(true)
@@ -1070,8 +1045,7 @@ export default class SaveParser_Read
                         break;
 
                     case 'RailroadTrackPosition':
-                        currentProperty.value.levelName     = this.readString();
-                        currentProperty.value.pathName      = this.readString();
+                        currentProperty.value               = this.readObjectProperty(currentProperty.value);
                         currentProperty.value.offset        = this.readFloat();
                         currentProperty.value.forward       = this.readFloat();
 
@@ -1089,8 +1063,7 @@ export default class SaveParser_Read
                     case 'InventoryItem':
                         currentProperty.value.unk1          = this.readInt();
                         currentProperty.value.itemName      = this.readString();
-                        currentProperty.value.levelName     = this.readString();
-                        currentProperty.value.pathName      = this.readString();
+                        currentProperty.value               = this.readObjectProperty(currentProperty.value);
                         currentProperty.value.properties    = [];
                         currentProperty.value.properties.push(this.readPropertyV5());
                         break;
@@ -1190,10 +1163,7 @@ export default class SaveParser_Read
                     switch(currentProperty.value.type)
                     {
                         case 'ObjectProperty': // MOD: Efficiency Checker
-                            currentProperty.value.values.push({
-                                levelName: this.readString(),
-                                pathName: this.readString()
-                            });
+                            currentProperty.value.values.push(this.readObjectProperty({}));
                             break;
                         case 'StructProperty': // MOD: FicsIt-Networks
                             currentProperty.value.values.push(this.readFINNetworkTrace());
@@ -1301,6 +1271,17 @@ export default class SaveParser_Read
                 }
                 throw new Error('Unimplemented historyType `' + currentProperty.historyType + '` in TextProperty `' + currentProperty.name + '`');
         }
+
+        return currentProperty;
+    }
+    readObjectProperty(currentProperty)
+    {
+        let levelName   = this.readString();
+            if(levelName !== 'Persistent_Level')
+            {
+                currentProperty.levelName = levelName;
+            }
+        currentProperty.pathName  = this.readString();
 
         return currentProperty;
     }

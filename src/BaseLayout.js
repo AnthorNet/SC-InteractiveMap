@@ -1326,12 +1326,12 @@ export default class BaseLayout
 
         let newFauna        = {
             type                : 1,
-            children            : [{levelName: 'Persistent_Level', pathName: pathName + '.HealthComponent'}],
+            children            : [{pathName: pathName + '.HealthComponent'}],
             className           : className,
             pathName            : pathName,
             entityLevelName     : '',
             entityPathName      : '',
-            properties          : [{name: 'mHealthComponent', type: 'ObjectProperty', value: {levelName: 'Persistent_Level', pathName: pathName + '.HealthComponent'}}],
+            properties          : [{name: 'mHealthComponent', type: 'ObjectProperty', value: {pathName: pathName + '.HealthComponent'}}],
             transform           : {
                 rotation            : [0, -0, currentObject.transform.rotation[2], currentObject.transform.rotation[3]],
                 translation         : [
@@ -1346,12 +1346,12 @@ export default class BaseLayout
         {
             layerId = 'playerSpaceRabbitLayer';
 
-            newFauna.children.unshift({levelName: 'Persistent_Level', pathName: pathName + '.mInventory'});
+            newFauna.children.unshift({pathName: pathName + '.mInventory'});
 
             let currentPlayerObject = this.saveGameParser.getTargetObject(this.saveGameParser.playerHostPathName);
             let mOwnedPawn          = this.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
 
-            newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {levelName: 'Persistent_Level', pathName: mOwnedPawn.pathName}});
+            newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {pathName: mOwnedPawn.pathName}});
             newFauna.properties.push({name: 'mLootTableIndex', type: 'IntProperty', value: 0});
             newFauna.properties.push({name: 'mLootTimerHandle', type: 'StructProperty', value: {handle: 'None', type: 'TimerHandle'}});
             newFauna.properties.push({name: 'mIsPersistent', type: 'BoolProperty', value: 1});
@@ -1702,12 +1702,11 @@ export default class BaseLayout
                     playerPosition[2] + Math.floor(Math.random() * (800 + 1))
                 ]
             },
-            children                : [{levelName: "Persistent_Level", pathName: cratePathName + ".inventory"}],
+            children                : [{pathName: cratePathName + ".inventory"}],
             properties              : [{
                 name                    : "mInventory",
                 type                    : "ObjectProperty",
-                index                   : 0,
-                value                   : {levelName: "Persistent_Level", pathName: cratePathName + ".inventory"}
+                value                   : {pathName: cratePathName + ".inventory"}
             }],
             entityLevelName         : "",
             entityPathName          : ""
@@ -1724,7 +1723,6 @@ export default class BaseLayout
                 {
                     name                : "mInventoryStacks",
                     type                : "ArrayProperty",
-                    index               : 0,
                     value               : {type: "StructProperty", values: []}, // Push items
                     structureName       : "mInventoryStacks",
                     structureType       : "StructProperty",
@@ -5191,28 +5189,31 @@ export default class BaseLayout
                                     if(totalPowerShards > 0 && clockSpeed > currentClockSpeed)
                                     {
                                         let potentialInventory = this.getObjectInventory(currentObject, 'mInventoryPotential', true);
-                                        for(let k = 0; k < potentialInventory.properties.length; k++)
-                                        {
-                                            if(potentialInventory.properties[k].name === 'mInventoryStacks')
+                                            if(potentialInventory !== null)
                                             {
-                                                for(let m = 0; m < totalPowerShards; m++)
+                                                for(let k = 0; k < potentialInventory.properties.length; k++)
                                                 {
-                                                    if(useOwnPowershards === 1)
+                                                    if(potentialInventory.properties[k].name === 'mInventoryStacks')
                                                     {
-                                                        let result = this.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
-
-                                                        if(result === false)
+                                                        for(let m = 0; m < totalPowerShards; m++)
                                                         {
-                                                            clockSpeed = Math.min(clockSpeed, 100 + (m * 50)); // Downgrade...
-                                                            break;
+                                                            if(useOwnPowershards === 1)
+                                                            {
+                                                                let result = this.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
+
+                                                                if(result === false)
+                                                                {
+                                                                    clockSpeed = Math.min(clockSpeed, 100 + (m * 50)); // Downgrade...
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            potentialInventory.properties[k].value.values[m][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
+                                                            this.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, 'NumItems', 1, 'IntProperty');
                                                         }
                                                     }
-
-                                                    potentialInventory.properties[k].value.values[m][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                                    this.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, 'NumItems', 1, 'IntProperty');
                                                 }
                                             }
-                                        }
                                     }
 
                                 this.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
@@ -6828,11 +6829,9 @@ export default class BaseLayout
                         translation     : [centerX, centerY, minZ + 100]
                     },
                     properties      : [
-                        { name: "mBuildingID", type: "IntProperty", value: 25 },
                         { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
                         { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
                     ],
-                    entityLevelName : "Persistent_Level",
                     entityPathName  : "Persistent_Level:PersistentLevel.BuildableSubsystem"
                 };
                 fakeFoundation.pathName = this.generateFastPathName(fakeFoundation);

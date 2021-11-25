@@ -321,17 +321,7 @@ export default class SaveParser_Write
     {
         let object  = this.writeInt(0, false);
             object += this.writeString(currentObject.className, false);
-
-            if(currentObject.levelName !== undefined)
-            {
-                object += this.writeString(currentObject.levelName, false);
-            }
-            else
-            {
-                object += this.writeString('Persistent_Level', false);
-            }
-
-            object += this.writeString(currentObject.pathName, false);
+            object += this.writeObjectProperty(currentObject, false);
             object += this.writeString(currentObject.outerPathName, false);
 
         return object;
@@ -341,17 +331,7 @@ export default class SaveParser_Write
     {
         let actor  = this.writeInt(1, false);
             actor += this.writeString(currentActor.className, false);
-
-            if(currentActor.levelName !== undefined)
-            {
-                actor += this.writeString(currentActor.levelName, false);
-            }
-            else
-            {
-                actor += this.writeString('Persistent_Level', false);
-            }
-
-            actor += this.writeString(currentActor.pathName, false);
+            actor += this.writeObjectProperty(currentActor, false);
 
             if(currentActor.needTransform !== undefined)
             {
@@ -410,7 +390,15 @@ export default class SaveParser_Write
 
         if(currentObject.type === 1)
         {
-            entity += this.writeString(currentObject.entityLevelName);
+            if(currentObject.entityLevelName !== undefined)
+            {
+                entity += this.writeString(currentObject.entityLevelName);
+            }
+            else
+            {
+                entity += this.writeString('Persistent_Level');
+            }
+
             entity += this.writeString(currentObject.entityPathName);
 
             if(currentObject.children !== undefined)
@@ -419,8 +407,7 @@ export default class SaveParser_Write
                     entity += this.writeInt(countChild);
                     for(let i = 0; i < countChild; i++)
                     {
-                        entity += this.writeString(currentObject.children[i].levelName);
-                        entity += this.writeString(currentObject.children[i].pathName);
+                        entity += this.writeObjectProperty(currentObject.children[i]);
                     }
             }
             else
@@ -458,8 +445,7 @@ export default class SaveParser_Write
                 {
                     entity += this.writeInt(currentObject.extra.items[i].length);
                     entity += this.writeString(currentObject.extra.items[i].name);
-                    entity += this.writeString(currentObject.extra.items[i].levelName);
-                    entity += this.writeString(currentObject.extra.items[i].pathName);
+                    entity += this.writeObjectProperty(currentObject.extra.items[i]);
                     entity += this.writeFloat(currentObject.extra.items[i].position);
                 }
         }
@@ -474,8 +460,7 @@ export default class SaveParser_Write
 
                     for(let i = 0; i < currentObject.extra.game.length; i++)
                     {
-                        entity += this.writeString(currentObject.extra.game[i].levelName);
-                        entity += this.writeString(currentObject.extra.game[i].pathName);
+                        entity += this.writeObjectProperty(currentObject.extra.game[i]);
                     }
 
                     break;
@@ -496,8 +481,7 @@ export default class SaveParser_Write
                     for(let i = 0; i < currentObject.extra.circuits.length; i++)
                     {
                         entity += this.writeInt(currentObject.extra.circuits[i].circuitId);
-                        entity += this.writeString(currentObject.extra.circuits[i].levelName);
-                        entity += this.writeString(currentObject.extra.circuits[i].pathName);
+                        entity += this.writeObjectProperty(currentObject.extra.circuits[i]);
                     }
 
                     break;
@@ -651,8 +635,7 @@ export default class SaveParser_Write
             case 'ObjectProperty':
             case 'InterfaceProperty':
                 property += this.writeByte(0, false);
-                property += this.writeString(currentProperty.value.levelName);
-                property += this.writeString(currentProperty.value.pathName);
+                property += this.writeObjectProperty(currentProperty.value);
                 break;
 
             case 'EnumProperty':
@@ -736,8 +719,7 @@ export default class SaveParser_Write
                         break;
 
                     case 'RailroadTrackPosition':
-                        property += this.writeString(currentProperty.value.levelName);
-                        property += this.writeString(currentProperty.value.pathName);
+                        property += this.writeObjectProperty(currentProperty.value);
                         property += this.writeFloat(currentProperty.value.offset);
                         property += this.writeFloat(currentProperty.value.forward);
 
@@ -755,8 +737,7 @@ export default class SaveParser_Write
                     case 'InventoryItem':
                         property += this.writeInt(currentProperty.value.unk1, false);
                         property += this.writeString(currentProperty.value.itemName);
-                        property += this.writeString(currentProperty.value.levelName);
-                        property += this.writeString(currentProperty.value.pathName);
+                        property += this.writeObjectProperty(currentProperty.value);
 
                         let oldLength   = this.currentBufferLength;
 
@@ -821,8 +802,7 @@ export default class SaveParser_Write
                     switch(currentProperty.value.type)
                     {
                         case 'ObjectProperty': // MOD: Efficiency Checker
-                            property += this.writeString(currentProperty.value.values[iSetProperty].levelName);
-                            property += this.writeString(currentProperty.value.values[iSetProperty].pathName);
+                            property += this.writeObjectProperty(currentProperty.value.values[iSetProperty]);
                             break;
                         case 'StructProperty': // MOD: FicsIt-Networks
                             property += this.writeFINNetworkTrace(currentProperty.value.values[iSetProperty]);
@@ -893,8 +873,7 @@ export default class SaveParser_Write
                     case 'InterfaceProperty':
                         for(let i = 0; i < currentArrayPropertyCount; i++)
                         {
-                            property += this.writeString(currentProperty.value.values[i].levelName);
-                            property += this.writeString(currentProperty.value.values[i].pathName);
+                            property += this.writeObjectProperty(currentProperty.value.values[i]);
                         }
                         break;
 
@@ -924,8 +903,7 @@ export default class SaveParser_Write
                                 case 'InventoryItem': // MOD: FicsItNetworks
                                     structure += this.writeInt(currentProperty.value.values[i].unk1);
                                     structure += this.writeString(currentProperty.value.values[i].itemName);
-                                    structure += this.writeString(currentProperty.value.values[i].levelName);
-                                    structure += this.writeString(currentProperty.value.values[i].pathName);
+                                    structure += this.writeObjectProperty(currentProperty.value.values[i]);
                                     break;
 
                                 case 'Guid':
@@ -1002,8 +980,7 @@ export default class SaveParser_Write
                             property += this.writeString(currentProperty.value.values[iMapProperty].key);
                             break;
                         case 'ObjectProperty':
-                            property += this.writeString(currentProperty.value.values[iMapProperty].key.levelName);
-                            property += this.writeString(currentProperty.value.values[iMapProperty].key.pathName);
+                            property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].key);
                             break;
                         case 'EnumProperty':
                              property += this.writeString(currentProperty.value.values[iMapProperty].key.name);
@@ -1035,8 +1012,7 @@ export default class SaveParser_Write
                             property += this.writeString(currentProperty.value.values[iMapProperty].value);
                             break;
                         case 'ObjectProperty':
-                            property += this.writeString(currentProperty.value.values[iMapProperty].value.levelName);
-                            property += this.writeString(currentProperty.value.values[iMapProperty].value.pathName);
+                            property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].value);
                             break;
                         case 'StructProperty':
                             let currentBufferStartingLength     = this.currentBufferLength;
@@ -1112,6 +1088,22 @@ export default class SaveParser_Write
                 }
                 break;
         }
+
+        return property;
+    }
+    writeObjectProperty(value, count = true)
+    {
+        let property = '';
+            if(value.levelName !== undefined)
+            {
+                property += this.writeString(value.levelName, count);
+            }
+            else
+            {
+                property += this.writeString('Persistent_Level', count);
+            }
+
+            property += this.writeString(value.pathName, count);
 
         return property;
     }
@@ -1318,8 +1310,7 @@ export default class SaveParser_Write
     writeFINNetworkTrace(value)
     {
         let saveBinary  = '';
-            saveBinary += this.writeString(value.levelName);
-            saveBinary += this.writeString(value.pathName);
+            saveBinary += this.writeObjectProperty(value);
 
             if(value.prev !== undefined)
             {

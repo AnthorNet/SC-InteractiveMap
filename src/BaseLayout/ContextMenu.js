@@ -17,6 +17,7 @@ import Building_TrainStation                    from '../Building/TrainStation.j
 import Building_Vehicle                         from '../Building/Vehicle.js';
 
 import Modal_Debug                              from '../Modal/Debug.js';
+import Modal_Node_Foundation                    from '../Modal/Node/Foundation.js';
 import Modal_Object_ColorSlot                   from '../Modal/Object/ColorSlot.js';
 import Modal_Object_CustomColor                 from '../Modal/Object/CustomColor.js';
 import Modal_Object_Pattern                     from '../Modal/Object/Pattern.js';
@@ -150,6 +151,18 @@ export default class BaseLayout_ContextMenu
                             text    : 'Teleport player',
                             callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
                         });
+
+                        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C')
+                        {
+                            if(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
+                            {
+                                console.log(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName])
+                                contextMenu.push({
+                                    text    : 'Spawn a foundation on top',
+                                    callback: Modal_Node_Foundation.getHTML
+                                });
+                            }
+                        }
 
                         if(currentObject.className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                         {

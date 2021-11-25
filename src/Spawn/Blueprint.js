@@ -604,7 +604,7 @@ export default class Spawn_Blueprint
                                         }
                                     }
 
-                                    mFluidIntegrantScriptInterfaces.value.values.push({levelName: "Persistent_Level", pathName: newPipeNetworkPathName});
+                                    mFluidIntegrantScriptInterfaces.value.values.push({pathName: newPipeNetworkPathName});
                                     pipesConversion[newPipeNetworkPathName] = newPipeNetworkID;
                             }
 

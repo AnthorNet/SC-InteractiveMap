@@ -196,7 +196,6 @@ export default class Building_Conveyor
                                                                     if(inputConnectedComponent !== null)
                                                                     {
                                                                         baseLayout.setObjectProperty(inputConnectedComponent, 'mConnectedComponent', {
-                                                                            levelName   : 'Persistent_Level',
                                                                             pathName    : middleConveyorAny1.pathName
                                                                         });
                                                                     }
