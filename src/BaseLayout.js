@@ -798,6 +798,14 @@ export default class BaseLayout
                     }
             }
 
+            // Convert Right Door Wall to Side Wall ;)
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_02.Build_Wall_Door_8x4_02_C')
+            {
+                currentObject.className             = '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_03.Build_Wall_Door_8x4_03_C';
+                currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 180);
+                this.updateBuiltWithRecipe(currentObject);
+            }
+
             promises.push(new Promise(function(resolve){
                 this.parseObject(currentObject, resolve);
             }.bind(this)));
