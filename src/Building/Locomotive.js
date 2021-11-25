@@ -5,17 +5,22 @@ import Modal_Train_Timetable                    from '../Modal/Train/Timetable.j
 
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
-import Building_TrainStation                    from '../Building/TrainStation.js';
+import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
 
 export default class Building_Locomotive
 {
     static getTrainName(baseLayout, currentObject, defaultName = null)
     {
-        let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
-        let mTrainName      = baseLayout.getObjectProperty(information, 'mTrainName');
-            if(mTrainName !== null)
+
+        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
+        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+            if(trainIdentifier !== null)
             {
-                return mTrainName;
+                let mTrainName      = baseLayout.getObjectProperty(trainIdentifier, 'mTrainName');
+                    if(mTrainName !== null)
+                    {
+                        return mTrainName;
+                    }
             }
 
             if(defaultName !== null)
@@ -90,11 +95,15 @@ export default class Building_Locomotive
 
     static isAutoPilotOn(baseLayout, currentObject)
     {
-        let information             = Building_TrainStation.getInformation(baseLayout, currentObject);
-        let mIsSelfDrivingEnabled   = baseLayout.getObjectProperty(information, 'mIsSelfDrivingEnabled');
-            if(mIsSelfDrivingEnabled !== null && mIsSelfDrivingEnabled === 1)
+        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
+        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+            if(trainIdentifier !== null)
             {
-                return true;
+                let mIsSelfDrivingEnabled   = baseLayout.getObjectProperty(trainIdentifier, 'mIsSelfDrivingEnabled');
+                    if(mIsSelfDrivingEnabled !== null && mIsSelfDrivingEnabled === 1)
+                    {
+                        return true;
+                    }
             }
 
         return false;
@@ -102,17 +111,21 @@ export default class Building_Locomotive
 
     static getVelocity(baseLayout, currentObject)
     {
-        let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
-        let mSimulationData = baseLayout.getObjectProperty(information, 'mSimulationData');
-            if(mSimulationData !== null)
+        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
+        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+            if(trainIdentifier !== null)
             {
-                for(let i = 0; i < mSimulationData.values.length; i++)
-                {
-                    if(mSimulationData.values[i].name === 'Velocity')
+                let mSimulationData = baseLayout.getObjectProperty(trainIdentifier, 'mSimulationData');
+                    if(mSimulationData !== null)
                     {
-                        return mSimulationData.values[i].value / 27.778;
+                        for(let i = 0; i < mSimulationData.values.length; i++)
+                        {
+                            if(mSimulationData.values[i].name === 'Velocity')
+                            {
+                                return mSimulationData.values[i].value / 27.778;
+                            }
+                        }
                     }
-                }
             }
 
         return null;
@@ -120,11 +133,15 @@ export default class Building_Locomotive
 
     static getTimeTable(baseLayout, currentObject)
     {
-        let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
-        let TimeTable       = baseLayout.getObjectProperty(information, 'TimeTable');
-            if(TimeTable !== null)
+        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
+        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+            if(trainIdentifier !== null)
             {
-                return baseLayout.saveGameParser.getTargetObject(TimeTable.pathName);
+                let TimeTable       = baseLayout.getObjectProperty(trainIdentifier, 'TimeTable');
+                    if(TimeTable !== null)
+                    {
+                        return baseLayout.saveGameParser.getTargetObject(TimeTable.pathName);
+                    }
             }
 
         return null;
@@ -211,62 +228,69 @@ export default class Building_Locomotive
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-        let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
-        let mTrainName      = baseLayout.getObjectProperty(information, 'mTrainName');
+        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
+        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+            if(trainIdentifier !== null)
+            {
+                let mTrainName      = baseLayout.getObjectProperty(trainIdentifier, 'mTrainName');
 
-            Modal.form({
-                title       : 'Update "<strong>' + buildingData.name + '</strong>" sign',
-                container   : '#leafletMap',
-                inputs      : [{
-                    name        : 'mTrainName',
-                    inputType   : 'text',
-                    value       : mTrainName
-                }],
-                callback    : function(values)
-                {
-                    if(values !== null)
-                    {
-                        if(values.mTrainName !== '')
+                    Modal.form({
+                        title       : 'Update "<strong>' + buildingData.name + '</strong>" sign',
+                        container   : '#leafletMap',
+                        inputs      : [{
+                            name        : 'mTrainName',
+                            inputType   : 'text',
+                            value       : mTrainName
+                        }],
+                        callback    : function(values)
                         {
-                            if(mTrainName !== null)
+                            if(values !== null)
                             {
-                                this.setObjectProperty(information, 'mTrainName', values.mTrainName);
+                                if(values.mTrainName !== '')
+                                {
+                                    if(mTrainName !== null)
+                                    {
+                                        this.setObjectProperty(trainIdentifier, 'mTrainName', values.mTrainName);
+                                    }
+                                    else
+                                    {
+                                        trainIdentifier.properties.push({
+                                            flags                       : 18,
+                                            hasCultureInvariantString   : 1,
+                                            historyType                 : 255,
+                                            name                        : "mTrainName",
+                                            type                        : "TextProperty",
+                                            value                       : values.mTrainName
+                                        });
+                                    }
+                                }
+                                else
+                                {
+                                    this.deleteObjectProperty(trainIdentifier, 'mTrainName');
+                                }
                             }
-                            else
-                            {
-                                information.properties.push({
-                                    flags                       : 18,
-                                    hasCultureInvariantString   : 1,
-                                    historyType                 : 255,
-                                    name                        : "mTrainName",
-                                    type                        : "TextProperty",
-                                    value                       : values.mTrainName
-                                });
-                            }
-                        }
-                        else
-                        {
-                            this.deleteObjectProperty(information, 'mTrainName');
-                        }
-                    }
-                }.bind(baseLayout)
-            });
+                        }.bind(baseLayout)
+                    });
+            }
     }
 
     static updateAutoPilot(marker)
     {
-        let baseLayout      = marker.baseLayout;
-        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
-        let isAutoPilotOn   = Building_Locomotive.isAutoPilotOn(baseLayout, currentObject);
-
-            if(isAutoPilotOn === true)
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
+        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+            if(trainIdentifier !== null)
             {
-                baseLayout.deleteObjectProperty(information, 'mIsSelfDrivingEnabled');
-            }
-            else
-            {
-                baseLayout.setObjectProperty(information, 'mIsSelfDrivingEnabled', 1, 'BoolProperty');
+                let isAutoPilotOn   = Building_Locomotive.isAutoPilotOn(baseLayout, currentObject);
+                    if(isAutoPilotOn === true)
+                    {
+                        baseLayout.deleteObjectProperty(trainIdentifier, 'mIsSelfDrivingEnabled');
+                    }
+                    else
+                    {
+                        baseLayout.setObjectProperty(trainIdentifier, 'mIsSelfDrivingEnabled', 1, 'BoolProperty');
+                    }
             }
     }
 

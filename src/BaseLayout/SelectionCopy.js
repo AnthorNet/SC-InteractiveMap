@@ -1,5 +1,5 @@
 /* global gtag */
-import Building_TrainStation                    from '../Building/TrainStation.js';
+import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
 
 export default class BaseLayout_Selection_Copy
 {
@@ -105,21 +105,6 @@ export default class BaseLayout_Selection_Copy
                         }
                     }
 
-                    // Grab train/station name?
-                    if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C')
-                    {
-                        let trainIdentifier = Building_TrainStation.getInformation(this.baseLayout, currentObject);
-                            if(trainIdentifier !== null)
-                            {
-                                let trainIdentifierNewObject          = {};
-                                    trainIdentifierNewObject.parent   = JSON.parse(JSON.stringify(trainIdentifier));
-                                    this.baseLayout.deleteObjectProperty(trainIdentifierNewObject.parent, 'TimeTable'); //TODO: Handle timetable copy!
-
-                                    this.clipboard.data.push(trainIdentifierNewObject);
-                                    availablePathName.push(trainIdentifierNewObject.parent.pathName);
-                            }
-                    }
-
                     // Need some extra linked properties?
                     //TODO: Check mPairedStation?
                     let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone'];
@@ -214,6 +199,37 @@ export default class BaseLayout_Selection_Copy
                                 }
                         }
 
+                    // Handle train/station
+                    if([
+                        '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C',
+                        '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C',
+                        '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C',
+                        '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'
+                    ].includes(newDataObject.parent.className))
+                    {
+                        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this.baseLayout});
+                        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(newDataObject.parent);
+                            if(trainIdentifier !== null)
+                            {
+                                let trainIdentifierNewObject            = {};
+                                    trainIdentifierNewObject.parent     = JSON.parse(JSON.stringify(trainIdentifier));
+                                    this.baseLayout.deleteObjectProperty(trainIdentifierNewObject.parent, 'TimeTable'); //TODO: Handle timetable copy!
+
+                                    // Add (Copy) to name
+                                    for(let j = 0; j < trainIdentifierNewObject.parent.properties.length; j++)
+                                    {
+                                        if(['mTrainName', 'mStationName'].includes(trainIdentifierNewObject.parent.properties[j].name))
+                                        {
+                                            trainIdentifierNewObject.parent.properties[j].value += ' (Copy)'
+                                        }
+                                    }
+
+                                    this.clipboard.data.push(trainIdentifierNewObject);
+                                    availablePathName.push(trainIdentifierNewObject.parent.pathName);
+                            }
+                    }
+
+                    // Add object
                     this.clipboard.data.push(newDataObject);
                     availablePathName.push(newDataObject.parent.pathName);
                 }

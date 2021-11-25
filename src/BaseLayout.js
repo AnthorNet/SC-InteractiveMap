@@ -14,6 +14,7 @@ import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 import SubSystem_Foliage                        from './SubSystem/Foliage.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
+import SubSystem_Railroad                       from './SubSystem/Railroad.js';
 
 import Modal                                    from './Modal.js';
 
@@ -39,7 +40,6 @@ import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_Light                           from './Building/Light.js';
 import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
-import Building_TrainStation                    from './Building/TrainStation.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
 
 import Spawn_Fill                               from './Spawn/Fill.js';
@@ -1027,19 +1027,12 @@ export default class BaseLayout
                 }
                 else
                 {
-                    // Used when pasting a new blueprint!
-                    if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(currentObject.className) && this.saveGameParser.trainIdentifiers.includes(currentObject.pathName) === false)
-                    {
-                        this.saveGameParser.trainIdentifiers.push(currentObject.pathName);
-
-                        if(resolve !== false)
-                        {
-                            return resolve();
-                        }
-                        return;
-                    }
-
-                    if(this.useDebug === true && currentObject.className.startsWith('/Game/FactoryGame/Equipment/') === false && currentObject.className.startsWith('/Script/FactoryGame.') === false)
+                    if(
+                           this.useDebug === true
+                        && currentObject.className.startsWith('/Game/FactoryGame/Equipment/') === false
+                        && currentObject.className.startsWith('/Script/FactoryGame.') === false
+                        && ['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(currentObject.className) === false
+                    )
                     {
                         console.log('Unknown?', currentObject);
                     }
@@ -2057,12 +2050,12 @@ export default class BaseLayout
             // Switch to freight wagons when locomotive was selected
             if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
             {
-                storageObjects      = Building_Locomotive.getFreightWagons(this, currentObject);
+                storageObjects = Building_Locomotive.getFreightWagons(this, currentObject);
             }
 
         if(fillWith !== null)
         {
-            let currentItem     = this.getItemDataFromClassName(fillWith);
+            let currentItem = this.getItemDataFromClassName(fillWith);
                 if(currentItem !== null && currentItem.stack !== undefined)
                 {
                     stack = currentItem.stack;
@@ -3153,17 +3146,8 @@ export default class BaseLayout
                         }
                 }
 
-            let information     = Building_TrainStation.getInformation(baseLayout, currentObject);
-                if(information !== null)
-                {
-                    let timeTable = baseLayout.getObjectProperty(information, 'TimeTable');
-                        if(timeTable !== null)
-                        {
-                            baseLayout.saveGameParser.deleteObject(timeTable.pathName);
-                        }
-
-                    baseLayout.saveGameParser.deleteObject(information.pathName);
-                }
+            let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
+                railroadSubSystem.deleteObjectIdentifier(currentObject);
         }
 
         // Release space elevator!

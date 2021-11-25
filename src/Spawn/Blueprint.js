@@ -2,6 +2,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
+import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
 
 import Modal                                    from '../Modal.js';
 
@@ -276,6 +277,7 @@ export default class Spawn_Blueprint
                         }
                     }
 
+                    // Properties
                     if(this.clipboard.data[i].parent.properties !== undefined && this.clipboard.data[i].parent.properties.length > 0)
                     {
                         for(let j = 0; j < this.clipboard.data[i].parent.properties.length; j++)
@@ -327,6 +329,7 @@ export default class Spawn_Blueprint
                         }
                     }
 
+                    // Children
                     if(this.clipboard.data[i].children !== undefined && this.clipboard.data[i].children.length > 0)
                     {
                         for(let j = 0; j < this.clipboard.data[i].children.length; j++)
@@ -421,59 +424,6 @@ export default class Spawn_Blueprint
                         }
                         this.clipboard.data[i] = JSON.parse(this.clipboard.data[i]);
                     }
-
-                    /*
-                    if(this.clipboard.data[i].children.length > 0 || this.clipboard.data[i].linkedList !== undefined)
-                    {
-                        this.clipboard.data[i].parent = JSON.stringify(this.clipboard.data[i].parent);
-                        for(let oldPathName in pathNameConversion)
-                        {
-                            if(this.clipboard.data[i].parent.indexOf(oldPathName) !== -1)
-                            {
-                                if(this.baseLayout.useDebug === true)
-                                {
-                                    let debug                  = JSON.parse(this.clipboard.data[i].parent);
-                                        if(JSON.stringify(debug).indexOf('"' + oldPathName + '.') !== -1)
-                                        {
-                                            console.log('PARENT.', oldPathName, pathNameConversion[oldPathName], debug);
-                                        }
-                                        if(JSON.stringify(debug).indexOf('"' + oldPathName + '"') !== -1)
-                                        {
-                                            console.log('PARENT', oldPathName, pathNameConversion[oldPathName], debug);
-                                        }
-                                }
-
-                                this.clipboard.data[i].parent     = this.clipboard.data[i].parent.split('"' + oldPathName + '.').join('"' + pathNameConversion[oldPathName] + '.');
-                                this.clipboard.data[i].parent     = this.clipboard.data[i].parent.split('"' + oldPathName + '"').join('"' + pathNameConversion[oldPathName] + '"');
-                            }
-                        }
-                        this.clipboard.data[i].parent = JSON.parse(this.clipboard.data[i].parent);
-
-                        this.clipboard.data[i].children = JSON.stringify(this.clipboard.data[i].children);
-                        for(let oldPathName in pathNameConversion)
-                        {
-                            if(this.clipboard.data[i].children.indexOf(oldPathName) !== -1)
-                            {
-                                if(this.baseLayout.useDebug === true)
-                                {
-                                    let debug                  = JSON.parse(this.clipboard.data[i].children);
-                                        if(JSON.stringify(debug).indexOf('"' + oldPathName + '.') !== -1)
-                                        {
-                                            console.log('CHILDREN.', oldPathName, pathNameConversion[oldPathName], debug);
-                                        }
-                                        if(JSON.stringify(debug).indexOf('"' + oldPathName + '"') !== -1)
-                                        {
-                                            console.log('CHILDREN', oldPathName, pathNameConversion[oldPathName], debug);
-                                        }
-                                }
-
-                                this.clipboard.data[i].children     = this.clipboard.data[i].children.split('"' + oldPathName + '.').join('"' + pathNameConversion[oldPathName] + '.');
-                                this.clipboard.data[i].children     = this.clipboard.data[i].children.split('"' + oldPathName + '"').join('"' + pathNameConversion[oldPathName] + '"');
-                            }
-                        }
-                        this.clipboard.data[i].children = JSON.parse(this.clipboard.data[i].children);
-                    }
-                    /**/
                 }
 
             setTimeout(resolve, 5);
@@ -793,6 +743,13 @@ export default class Spawn_Blueprint
                         }
                 }
 
+            // Push identifier for train station or trains
+            if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(newObject.className))
+            {
+                let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this.baseLayout});
+                    railroadSubSystem.addObjectIdentifier(newObject);
+            }
+
             // Update save/map
                 this.baseLayout.saveGameParser.addObject(newObject);
             let result = this.baseLayout.parseObject(newObject);
@@ -851,12 +808,6 @@ export default class Spawn_Blueprint
 
                     this.baseLayout.saveGameParser.addObject(newChildren);
                 }
-            }
-
-            // Push identifier for train station or trains
-            if(currentClipboard.parent.className === '/Script/FactoryGame.FGTrainStationIdentifier' || currentClipboard.parent.className === '/Script/FactoryGame.FGTrain')
-            {
-                this.baseLayout.saveGameParser.trainIdentifiers.push(currentClipboard.parent.pathName);
             }
 
             if(i % 250 === 0 || (i + 1) === clipboardLength)

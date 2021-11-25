@@ -1,17 +1,19 @@
 /* global Intl */
 
+import SubSystem_Railroad                       from '../../SubSystem/Railroad.js';
+
 import Building_Locomotive                      from '../../Building/Locomotive.js';
-import Building_TrainStation                    from '../../Building/TrainStation.js';
 
 export default class Modal_Train_Timetable
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
-        this.locomotive         = options.locomotive;
+        this.baseLayout             = options.baseLayout;
+        this.locomotive             = options.locomotive;
 
-        this.information        = Building_TrainStation.getInformation(this.baseLayout, this.locomotive);
-        this.timeTable          = this.baseLayout.getObjectProperty(this.information, 'TimeTable');
+        let railroadSubSystem       = new SubSystem_Railroad({baseLayout: this.baseLayout});
+            this.trainIdentifier    = railroadSubSystem.getObjectIdentifier(this.locomotive);
+            this.timeTable          = this.baseLayout.getObjectProperty(this.trainIdentifier, 'TimeTable');
 
         if(this.timeTable !== null)
         {
@@ -23,7 +25,7 @@ export default class Modal_Train_Timetable
     {
         if(this.timeTable !== null)
         {
-            $('#genericModal .modal-title').empty().html('Timetable - ' + Building_Locomotive.getTrainName(this.baseLayout, this.locomotive, this.information.pathName));
+            $('#genericModal .modal-title').empty().html('Timetable - ' + Building_Locomotive.getTrainName(this.baseLayout, this.locomotive, this.trainIdentifier.pathName));
             let html = [];
                 html.push('<div class="row">');
                     html.push('<div class="col-6" style="max-height: 512px;overflow-y: scroll;">');

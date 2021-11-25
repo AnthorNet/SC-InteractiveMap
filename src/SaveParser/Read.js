@@ -199,10 +199,6 @@ export default class SaveParser_Read
                                     {
                                         this.saveParser.gameStatePathName   = actor.pathName;
                                     }
-                                    if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(actor.className))
-                                    {
-                                        this.saveParser.trainIdentifiers.push(actor.pathName);
-                                    }
                                 break;
                             default:
                                 console.log('Unknown object type', objectType);

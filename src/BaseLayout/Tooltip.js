@@ -2,6 +2,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
+import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
 
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
@@ -1685,12 +1686,16 @@ export default class BaseLayout_Tooltip
         switch(currentObject.className)
         {
             case '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C':
-                let information     = Building_TrainStation.getInformation(this.baseLayout, currentObject);
-                let mStationName    = this.baseLayout.getObjectProperty(information, 'mStationName');
-                    if(mStationName !== null)
+                let railroadSubSystem       = new SubSystem_Railroad({baseLayout: this.baseLayout});
+                let trainStationIdentifier  = railroadSubSystem.getObjectIdentifier(currentObject);
+                    if(trainStationIdentifier !== null)
                     {
-                        content.push('<div><strong>' + direction + inverted + mStationName + ' <em class="small">(' + buildingData.name + ')</em></strong></div>');
-                        break;
+                        let mStationName    = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
+                            if(mStationName !== null)
+                            {
+                                content.push('<div><strong>' + direction + inverted + mStationName + ' <em class="small">(' + buildingData.name + ')</em></strong></div>');
+                                break;
+                            }
                     }
             default:
                 content.push('<div><strong>' + direction + inverted +  buildingData.name + '</strong></div>');

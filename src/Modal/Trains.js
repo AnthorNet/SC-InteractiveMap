@@ -1,5 +1,7 @@
 /* global gtag, Intl */
 
+import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
+
 import Building_Locomotive                      from '../Building/Locomotive.js';
 
 export default class Modal_Trains
@@ -38,10 +40,12 @@ export default class Modal_Trains
     parse()
     {
         let html = [];
+        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this.baseLayout});
+        let trains              = railroadSubSystem.getTrains();
 
-        for(let i = 0; i < this.baseLayout.saveGameParser.trainIdentifiers.length; i++)
+        for(let i = 0; i < trains.length; i++)
         {
-            let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGameParser.trainIdentifiers[i]);
+            let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(trains[i].pathName);
                 if(currentIdentifier !== null)
                 {
                     if(['/Script/FactoryGame.FGTrain', '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C'].includes(currentIdentifier.className))
@@ -103,8 +107,16 @@ export default class Modal_Trains
                 let haveName        = this.baseLayout.getObjectProperty(currentIdentifier, 'mTrainName');
                     if(haveName === null)
                     {
-                        haveName = currentIdentifier.pathName.split('.');
-                        haveName = haveName.pop();
+                        let buildingData = this.baseLayout.getBuildingDataFromClassName(currentTrain.className);
+                            if(buildingData !== null)
+                            {
+                                haveName = buildingData.name;
+                            }
+                            else
+                            {
+                                haveName = currentIdentifier.pathName.split('.');
+                                haveName = haveName.pop();
+                            }
                     }
 
                 html.push('<div class="card">');
