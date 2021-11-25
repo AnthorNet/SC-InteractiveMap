@@ -161,16 +161,13 @@ export default class SubSystem_Buildable
                 {
                     if(mCustomizationData.values[i].name === 'SwatchDesc')
                     {
-                        switch(slotIndex)
+                        switch(parseInt(slotIndex))
                         {
                             case 255:
                                 mCustomizationData.values[i].value.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C';
                                 break;
                             case 18:
                                 mCustomizationData.values[i].value.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C';
-                                break;
-                            case 16:
-                                mCustomizationData.values[i].value.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C';
                                 break;
                             default:
                                 mCustomizationData.values[i].value.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot' + slotIndex + '.SwatchDesc_Slot' + slotIndex + '_C';
@@ -691,6 +688,26 @@ export default class SubSystem_Buildable
                     baseLayout.updateBuiltWithRecipe(currentObject);
 
                     // Do we need to update the color slot?
+                    let SwatchDesc  = baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject, 'SwatchDesc');
+                        if(SwatchDesc !== null)
+                        {
+                            let currentSwatchDesc = SwatchDesc.value.pathName;
+                                switch(currentSwatchDesc)
+                                {
+                                    case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C':
+                                        if(['Ficsit', 'GripMetal'].includes(material))
+                                        {
+                                            SwatchDesc.value.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot16.SwatchDesc_Slot16_C';
+                                        }
+                                        break
+                                    case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C':
+                                    case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot16.SwatchDesc_Slot16_C':
+                                        if(['Concrete', 'ConcretePolished'].includes(material))
+                                        {
+                                            SwatchDesc.value.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C';
+                                        }
+                                }
+                        }
 
                     // Redraw!
                     let result = baseLayout.parseObject(currentObject);
