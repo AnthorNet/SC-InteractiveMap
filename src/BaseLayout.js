@@ -805,6 +805,12 @@ export default class BaseLayout
                 currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 180);
                 this.updateBuiltWithRecipe(currentObject);
             }
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_02_Steel.Build_Wall_Door_8x4_02_Steel_C')
+            {
+                currentObject.className             = '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_03_Steel.Build_Wall_Door_8x4_03_Steel_C';
+                currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 180);
+                this.updateBuiltWithRecipe(currentObject);
+            }
 
             promises.push(new Promise(function(resolve){
                 this.parseObject(currentObject, resolve);
