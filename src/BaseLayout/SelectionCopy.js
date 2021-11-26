@@ -47,12 +47,11 @@ export default class BaseLayout_Selection_Copy
 
                 if(currentObjectData !== null)
                 {
-                    if(currentObjectData.className === '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
-                    {
-                        this.markersSelected.splice(i, 1);
-                        continue;
-                    }
-                    if(currentObjectData.className === '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C')
+                    if([
+                        '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C',
+                        '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C',
+                        '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C' // Skip them and grab them from the drone station...
+                    ].includes(currentObjectData.className))
                     {
                         this.markersSelected.splice(i, 1);
                         continue;
@@ -70,7 +69,8 @@ export default class BaseLayout_Selection_Copy
                          && currentObject.className !== '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
                          && currentObject.className !== '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C'
                          && currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'
-                         //&& currentObject.className !== '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C' //TODO: Check if working?
+                         && currentObject.className !== '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C'
+                         && currentObject.className.startsWith('/Game/FactoryGame/Character/Creature/Wildlife/') === false
                     )
                     {
                         this.markersSelected.splice(i, 1);
@@ -80,165 +80,153 @@ export default class BaseLayout_Selection_Copy
 
             for(let i = 0; i < this.markersSelected.length; i++)
             {
-                let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.markersSelected[i].options.pathName);
-                let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
+                let currentObject           = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.markersSelected[i].options.pathName);
+                let newDataObject           = {};
+                    newDataObject.parent    = JSON.parse(JSON.stringify(currentObject));
+                    newDataObject.children  = [];
 
-                if(
-                        currentObjectData !== null
-                     || currentObject.className === '/Script/FactoryGame.FGItemPickup_Spawnable'
-                     || currentObject.className === '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
-                     || currentObject.className === '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C'
-                     || currentObject.className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'
-                     || currentObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C' // Skip them and grab them from the port...
-                )
+                // Get object children
+                if(currentObject.children !== undefined)
                 {
-                    let newDataObject           = {};
-                        newDataObject.parent    = JSON.parse(JSON.stringify(currentObject));
-                        newDataObject.children  = [];
-
-                    // Get object children
-                    if(currentObject.children !== undefined)
+                    for(let j = 0; j < currentObject.children.length; j++)
                     {
-                        for(let j = 0; j < currentObject.children.length; j++)
-                        {
-                            let newObjectChildren = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName)));
-                                newDataObject.children.push(newObjectChildren);
-                        }
+                        let newObjectChildren = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName)));
+                            newDataObject.children.push(newObjectChildren);
                     }
+                }
 
-                    // Need some extra linked properties?
-                    //TODO: Check mPairedStation?
-                    let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone'];
-                        for(let j = 0; j < extraProperties.length; j++)
-                        {
-                            let extraProperty   = this.baseLayout.getObjectProperty(currentObject, extraProperties[j]);
-                                if(extraProperty !== null)
-                                {
-                                    let extraPropertyObject = this.baseLayout.saveGameParser.getTargetObject(extraProperty.pathName);
-                                        if(extraPropertyObject !== null)
-                                        {
-                                            let extraPropertyNewObject          = {};
-                                                extraPropertyNewObject.parent   = JSON.parse(JSON.stringify(extraPropertyObject));
-                                                extraPropertyNewObject.children = [];
-
-                                                if(extraPropertyObject.children !== undefined)
-                                                {
-                                                    for(let k = 0; k < extraPropertyObject.children.length; k++)
-                                                    {
-                                                        extraPropertyNewObject.children.push(
-                                                            JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(extraPropertyObject.children[k].pathName)))
-                                                        );
-                                                    }
-                                                }
-
-                                                // Removes drone action to reset it
-                                                if(extraPropertyNewObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
-                                                {
-                                                    this.baseLayout.setObjectProperty(extraPropertyNewObject.parent, 'mCurrentDockingState', {
-                                                        type    : "DroneDockingStateInfo",
-                                                        values  : [
-                                                            {
-                                                                name    : "State",
-                                                                type    : "EnumProperty",
-                                                                value   : {
-                                                                    name    : "EDroneDockingState",
-                                                                    value   : "EDroneDockingState::DS_DOCKED"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }, 'StructProperty');
-                                                    this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mCurrentAction');
-                                                    this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mActionsToExecute');
-                                                }
-
-                                            this.clipboard.data.push(extraPropertyNewObject);
-                                            availablePathName.push(extraPropertyNewObject.parent.pathName);
-                                        }
-                                }
-                        }
-
-                    // Does vehicle have a list of waypoints?
-                    let mTargetList = this.baseLayout.getObjectProperty(currentObject, 'mTargetList'); // Update 5
-                        if(mTargetList === null) //TODO:OLD
-                        {
-                            mTargetList = this.baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
-                        }
-                        if(mTargetList !== null)
-                        {
-                            let linkedList = this.baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
-
-                                if(linkedList !== null)
-                                {
-                                    let mFirst                      = this.baseLayout.getObjectProperty(linkedList, 'mFirst');
-                                    let mLast                       = this.baseLayout.getObjectProperty(linkedList, 'mLast');
-                                        newDataObject.linkedList    = linkedList;
-
-                                        if(mFirst !== null && mLast !== null)
-                                        {
-                                            let firstNode   = this.baseLayout.saveGameParser.getTargetObject(mFirst.pathName);
-                                            let lastNode    = this.baseLayout.saveGameParser.getTargetObject(mLast.pathName);
-                                                if(firstNode !== null && lastNode !== null)
-                                                {
-                                                    let checkCurrentNode            = firstNode;
-                                                        newDataObject.targetPoints  = [];
-
-                                                        while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
-                                                        {
-                                                            newDataObject.targetPoints.push(checkCurrentNode);
-
-                                                            let mNext               = this.baseLayout.getObjectProperty(checkCurrentNode, 'mNext');
-                                                                checkCurrentNode    = null;
-                                                                if(mNext !== null)
-                                                                {
-                                                                    checkCurrentNode = this.baseLayout.saveGameParser.getTargetObject(mNext.pathName);
-                                                                }
-                                                        }
-
-                                                    newDataObject.targetPoints.push(lastNode);
-                                                }
-                                        }
-                                }
-                        }
-
-                    // Handle train/station
-                    if([
-                        '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C',
-                        '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C',
-                        '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C',
-                        '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'
-                    ].includes(newDataObject.parent.className))
+                // Need some extra linked properties?
+                //TODO: Check mPairedStation?
+                let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone'];
+                    for(let j = 0; j < extraProperties.length; j++)
                     {
-                        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this.baseLayout});
-                        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(newDataObject.parent);
-                            if(trainIdentifier !== null)
+                        let extraProperty   = this.baseLayout.getObjectProperty(currentObject, extraProperties[j]);
+                            if(extraProperty !== null)
                             {
-                                let trainIdentifierNewObject            = {};
-                                    trainIdentifierNewObject.parent     = JSON.parse(JSON.stringify(trainIdentifier));
-
-                                    let haveTimeTable                   = this.baseLayout.getObjectProperty(trainIdentifierNewObject.parent, 'TimeTable');
-                                        if(haveTimeTable)
-                                        {
-                                            trainTimeTables.push(haveTimeTable)
-                                        }
-
-                                    // Add (Copy) to name
-                                    for(let j = 0; j < trainIdentifierNewObject.parent.properties.length; j++)
+                                let extraPropertyObject = this.baseLayout.saveGameParser.getTargetObject(extraProperty.pathName);
+                                    if(extraPropertyObject !== null)
                                     {
-                                        if(['mTrainName', 'mStationName'].includes(trainIdentifierNewObject.parent.properties[j].name))
-                                        {
-                                            trainIdentifierNewObject.parent.properties[j].value += ' (Copy)'
-                                        }
-                                    }
+                                        let extraPropertyNewObject          = {};
+                                            extraPropertyNewObject.parent   = JSON.parse(JSON.stringify(extraPropertyObject));
+                                            extraPropertyNewObject.children = [];
 
-                                    this.clipboard.data.push(trainIdentifierNewObject);
-                                    availablePathName.push(trainIdentifierNewObject.parent.pathName);
+                                            if(extraPropertyObject.children !== undefined)
+                                            {
+                                                for(let k = 0; k < extraPropertyObject.children.length; k++)
+                                                {
+                                                    extraPropertyNewObject.children.push(
+                                                        JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(extraPropertyObject.children[k].pathName)))
+                                                    );
+                                                }
+                                            }
+
+                                            // Removes drone action to reset it
+                                            if(extraPropertyNewObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
+                                            {
+                                                this.baseLayout.setObjectProperty(extraPropertyNewObject.parent, 'mCurrentDockingState', {
+                                                    type    : "DroneDockingStateInfo",
+                                                    values  : [
+                                                        {
+                                                            name    : "State",
+                                                            type    : "EnumProperty",
+                                                            value   : {
+                                                                name    : "EDroneDockingState",
+                                                                value   : "EDroneDockingState::DS_DOCKED"
+                                                            }
+                                                        }
+                                                    ]
+                                                }, 'StructProperty');
+                                                this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mCurrentAction');
+                                                this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mActionsToExecute');
+                                            }
+
+                                        this.clipboard.data.push(extraPropertyNewObject);
+                                        availablePathName.push(extraPropertyNewObject.parent.pathName);
+                                    }
                             }
                     }
 
-                    // Add object
-                    this.clipboard.data.push(newDataObject);
-                    availablePathName.push(newDataObject.parent.pathName);
+                // Does vehicle have a list of waypoints?
+                let mTargetList = this.baseLayout.getObjectProperty(currentObject, 'mTargetList'); // Update 5
+                    if(mTargetList === null) //TODO:OLD
+                    {
+                        mTargetList = this.baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
+                    }
+                    if(mTargetList !== null)
+                    {
+                        let linkedList = this.baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
+
+                            if(linkedList !== null)
+                            {
+                                let mFirst                      = this.baseLayout.getObjectProperty(linkedList, 'mFirst');
+                                let mLast                       = this.baseLayout.getObjectProperty(linkedList, 'mLast');
+                                    newDataObject.linkedList    = linkedList;
+
+                                    if(mFirst !== null && mLast !== null)
+                                    {
+                                        let firstNode   = this.baseLayout.saveGameParser.getTargetObject(mFirst.pathName);
+                                        let lastNode    = this.baseLayout.saveGameParser.getTargetObject(mLast.pathName);
+                                            if(firstNode !== null && lastNode !== null)
+                                            {
+                                                let checkCurrentNode            = firstNode;
+                                                    newDataObject.targetPoints  = [];
+
+                                                    while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
+                                                    {
+                                                        newDataObject.targetPoints.push(checkCurrentNode);
+
+                                                        let mNext               = this.baseLayout.getObjectProperty(checkCurrentNode, 'mNext');
+                                                            checkCurrentNode    = null;
+                                                            if(mNext !== null)
+                                                            {
+                                                                checkCurrentNode = this.baseLayout.saveGameParser.getTargetObject(mNext.pathName);
+                                                            }
+                                                    }
+
+                                                newDataObject.targetPoints.push(lastNode);
+                                            }
+                                    }
+                            }
+                    }
+
+                // Handle train/station
+                if([
+                    '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C',
+                    '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C',
+                    '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C',
+                    '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'
+                ].includes(newDataObject.parent.className))
+                {
+                    let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this.baseLayout});
+                    let trainIdentifier     = railroadSubSystem.getObjectIdentifier(newDataObject.parent);
+                        if(trainIdentifier !== null)
+                        {
+                            let trainIdentifierNewObject            = {};
+                                trainIdentifierNewObject.parent     = JSON.parse(JSON.stringify(trainIdentifier));
+
+                                let haveTimeTable                   = this.baseLayout.getObjectProperty(trainIdentifierNewObject.parent, 'TimeTable');
+                                    if(haveTimeTable)
+                                    {
+                                        trainTimeTables.push(haveTimeTable)
+                                    }
+
+                                // Add (Copy) to name
+                                for(let j = 0; j < trainIdentifierNewObject.parent.properties.length; j++)
+                                {
+                                    if(['mTrainName', 'mStationName'].includes(trainIdentifierNewObject.parent.properties[j].name))
+                                    {
+                                        trainIdentifierNewObject.parent.properties[j].value += ' (Copy)'
+                                    }
+                                }
+
+                                this.clipboard.data.push(trainIdentifierNewObject);
+                                availablePathName.push(trainIdentifierNewObject.parent.pathName);
+                        }
                 }
+
+                // Add object
+                this.clipboard.data.push(newDataObject);
+                availablePathName.push(newDataObject.parent.pathName);
             }
 
             for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
