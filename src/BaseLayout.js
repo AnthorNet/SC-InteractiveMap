@@ -761,6 +761,30 @@ export default class BaseLayout
                 continue;
             }
 
+            // Fix ghost identifiers...
+            if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrain'].includes(currentObject.className))
+            {
+                let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this});
+                let trains              = railroadSubSystem.getTrains();
+                    if(trains.includes(currentObject.pathName) === false)
+                    {
+                        console.log('Removing ghost identifier', currentObject.pathName);
+                        this.saveGameParser.deleteObject(currentObject.pathName);
+                        continue;
+                    }
+            }
+            if(currentObject.className === '/Script/FactoryGame.FGTrainStationIdentifier')
+            {
+                let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this});
+                let trainStation        = railroadSubSystem.getTrainStations();
+                    if(trainStation.includes(currentObject.pathName) === false)
+                    {
+                        console.log('Removing ghost identifier', currentObject.pathName);
+                        this.saveGameParser.deleteObject(currentObject.pathName);
+                        continue;
+                    }
+            }
+
             /*
             '/Script/FactoryGame.FGDroneStationInfo',
             '/Script/FactoryGame.FGDroneAction_TakeoffSequence',
