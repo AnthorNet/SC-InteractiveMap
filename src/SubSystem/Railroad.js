@@ -37,9 +37,9 @@ export default class SubSystem_Railroad
     getObjectIdentifier(currentObject)
     {
         let trainStations = this.getTrainStations();
-            for(let i = (trainStations.length - 1); i >= 0; i--)
+            for(let i = 0; i < trainStations.length; i ++)
             {
-                let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(trainStations[i].pathName)
+                let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(trainStations[i].pathName);
                     if(currentIdentifier !== null)
                     {
                         let mStation = this.baseLayout.getObjectProperty(currentIdentifier, 'mStation')
@@ -51,16 +51,11 @@ export default class SubSystem_Railroad
                                 }
                             }
                     }
-                    else
-                    {
-                        console.log('Remove ghost identifier', trainStations[i].pathName);
-                        trainStations.splice(i, 1);
-                    }
             }
 
         //TODO: Improve locomotive detection if in middle
         let trains = this.getTrains();
-            for(let i = (trains.length - 1); i >= 0; i--)
+            for(let i = 0; i < trains.length; i ++)
             {
                 let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(trains[i].pathName)
                     if(currentIdentifier !== null)
@@ -81,11 +76,6 @@ export default class SubSystem_Railroad
                                     return currentIdentifier;
                                 }
                             }
-                    }
-                    else
-                    {
-                        console.log('Remove ghost identifier', trains[i].pathName);
-                        trains.splice(i, 1);
                     }
             }
 

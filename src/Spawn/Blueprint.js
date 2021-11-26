@@ -280,53 +280,7 @@ export default class Spawn_Blueprint
                     // Properties
                     if(this.clipboard.data[i].parent.properties !== undefined && this.clipboard.data[i].parent.properties.length > 0)
                     {
-                        for(let j = 0; j < this.clipboard.data[i].parent.properties.length; j++)
-                        {
-                            let currentProperty = this.clipboard.data[i].parent.properties[j];
-
-                                if(currentProperty.type === 'ArrayProperty' && currentProperty.value.values !== undefined)
-                                {
-                                    for(let k = 0; k < currentProperty.value.values.length; k++)
-                                    {
-                                        if(currentProperty.value.values[k].pathName !== undefined && currentProperty.value.values[k].pathName !== '')
-                                        {
-                                            if(pathNameConversion[currentProperty.value.values[k].pathName] !== undefined)
-                                            {
-                                                currentProperty.value.values[k].pathName = pathNameConversion[currentProperty.value.values[k].pathName];
-                                            }
-                                            else
-                                            {
-                                                let testPathName    = currentProperty.value.values[k].pathName.split('.');
-                                                let extraPart       = testPathName.pop();
-                                                    testPathName    = testPathName.join('.');
-
-                                                if(pathNameConversion[testPathName] !== undefined)
-                                                {
-                                                    currentProperty.value.values[k].pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                if(currentProperty.value !== undefined && currentProperty.value.pathName !== undefined)
-                                {
-                                    if(pathNameConversion[currentProperty.value.pathName] !== undefined)
-                                    {
-                                        currentProperty.value.pathName = pathNameConversion[currentProperty.value.pathName];
-                                    }
-                                    else
-                                    {
-                                        let testPathName    = currentProperty.value.pathName.split('.');
-                                        let extraPart       = testPathName.pop();
-                                            testPathName    = testPathName.join('.');
-
-                                        if(pathNameConversion[testPathName] !== undefined)
-                                        {
-                                            currentProperty.value.pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                                        }
-                                    }
-                                }
-                        }
+                        this.clipboard.data[i].parent.properties = this.transformPropertiesPathName(this.clipboard.data[i].parent.properties, pathNameConversion);
                     }
 
                     // Children
@@ -359,53 +313,7 @@ export default class Spawn_Blueprint
 
                             if(this.clipboard.data[i].children[j].properties !== undefined && this.clipboard.data[i].children[j].properties.length > 0)
                             {
-                                for(let k = 0; k < this.clipboard.data[i].children[j].properties.length; k++)
-                                {
-                                    let currentProperty = this.clipboard.data[i].children[j].properties[k];
-                                        if(currentProperty.value !== undefined && currentProperty.value.pathName !== undefined)
-                                        {
-                                            if(pathNameConversion[currentProperty.value.pathName] !== undefined)
-                                            {
-                                                currentProperty.value.pathName = pathNameConversion[currentProperty.value.pathName];
-                                            }
-                                            else
-                                            {
-                                                let testPathName    = currentProperty.value.pathName.split('.');
-                                                let extraPart       = testPathName.pop();
-                                                    testPathName    = testPathName.join('.');
-
-                                                if(pathNameConversion[testPathName] !== undefined)
-                                                {
-                                                    currentProperty.value.pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                                                }
-                                            }
-                                        }
-
-                                        if(currentProperty.type === 'ArrayProperty' && currentProperty.value !== undefined && currentProperty.value.values !== undefined)
-                                        {
-                                            for(let m = 0; m < currentProperty.value.values.length; m++)
-                                            {
-                                                if(currentProperty.value.values[m].pathName !== undefined)
-                                                {
-                                                    if(pathNameConversion[currentProperty.value.values[m].pathName] !== undefined)
-                                                    {
-                                                        currentProperty.value.values[m].pathName = pathNameConversion[currentProperty.value.values[m].pathName];
-                                                    }
-                                                    else
-                                                    {
-                                                        let testPathName    = currentProperty.value.values[m].pathName.split('.');
-                                                        let extraPart       = testPathName.pop();
-                                                            testPathName    = testPathName.join('.');
-
-                                                        if(pathNameConversion[testPathName] !== undefined)
-                                                        {
-                                                            currentProperty.value.values[m].pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                }
+                                this.clipboard.data[i].children[j].properties = this.transformPropertiesPathName(this.clipboard.data[i].children[j].properties, pathNameConversion);
                             }
                         }
                     }
@@ -431,6 +339,84 @@ export default class Spawn_Blueprint
             $('#liveLoader .progress-bar').css('width', '3%');
             return this.handleHiddenConnections(pathNameConversion);
         }.bind(this));
+    }
+
+    transformPropertiesPathName(properties, pathNameConversion)
+    {
+        for(let j = 0; j < properties.length; j++)
+        {
+            let currentProperty = properties[j];
+
+                if(currentProperty.type === 'ArrayProperty' && currentProperty.value.values !== undefined)
+                {
+                    for(let k = 0; k < currentProperty.value.values.length; k++)
+                    {
+                        if(currentProperty.value.values[k].pathName !== undefined && currentProperty.value.values[k].pathName !== '')
+                        {
+                            if(pathNameConversion[currentProperty.value.values[k].pathName] !== undefined)
+                            {
+                                currentProperty.value.values[k].pathName = pathNameConversion[currentProperty.value.values[k].pathName];
+                            }
+                            else
+                            {
+                                let testPathName    = currentProperty.value.values[k].pathName.split('.');
+                                let extraPart       = testPathName.pop();
+                                    testPathName    = testPathName.join('.');
+
+                                if(pathNameConversion[testPathName] !== undefined)
+                                {
+                                    currentProperty.value.values[k].pathName = pathNameConversion[testPathName] + '.' + extraPart;
+                                }
+                            }
+                        }
+
+                        if(Array.isArray(currentProperty.value.values[k]))
+                        {
+                            for(let i = 0; i < currentProperty.value.values[k].length; i++)
+                            {
+                                if(currentProperty.value.values[k][i].value !== undefined && currentProperty.value.values[k][i].value.pathName !== undefined && currentProperty.value.values[k][i].value.pathName !== '')
+                                {
+                                    if(pathNameConversion[currentProperty.value.values[k][i].value.pathName] !== undefined)
+                                    {
+                                        currentProperty.value.values[k][i].value.pathName = pathNameConversion[currentProperty.value.values[k][i].value.pathName];
+                                    }
+                                    else
+                                    {
+                                        let testPathName    = currentProperty.value.values[k][i].value.pathName.split('.');
+                                        let extraPart       = testPathName.pop();
+                                            testPathName    = testPathName.join('.');
+
+                                        if(pathNameConversion[testPathName] !== undefined)
+                                        {
+                                            currentProperty.value.values[k][i].value.pathName = pathNameConversion[testPathName] + '.' + extraPart;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(currentProperty.value !== undefined && currentProperty.value.pathName !== undefined)
+                {
+                    if(pathNameConversion[currentProperty.value.pathName] !== undefined)
+                    {
+                        currentProperty.value.pathName = pathNameConversion[currentProperty.value.pathName];
+                    }
+                    else
+                    {
+                        let testPathName    = currentProperty.value.pathName.split('.');
+                        let extraPart       = testPathName.pop();
+                            testPathName    = testPathName.join('.');
+
+                        if(pathNameConversion[testPathName] !== undefined)
+                        {
+                            currentProperty.value.pathName = pathNameConversion[testPathName] + '.' + extraPart;
+                        }
+                    }
+                }
+        }
+
+        return properties;
     }
 
     handleHiddenConnections(pathNameConversion)

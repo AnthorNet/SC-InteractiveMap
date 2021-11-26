@@ -31,6 +31,7 @@ export default class BaseLayout_Selection_Copy
         if(this.markersSelected)
         {
             let availablePathName   = [];
+            let trainTimeTables     = [];
 
             // Filter not wanted
             for(let i = (this.markersSelected.length - 1); i >= 0; i--)
@@ -213,7 +214,12 @@ export default class BaseLayout_Selection_Copy
                             {
                                 let trainIdentifierNewObject            = {};
                                     trainIdentifierNewObject.parent     = JSON.parse(JSON.stringify(trainIdentifier));
-                                    this.baseLayout.deleteObjectProperty(trainIdentifierNewObject.parent, 'TimeTable'); //TODO: Handle timetable copy!
+
+                                    let haveTimeTable                   = this.baseLayout.getObjectProperty(trainIdentifierNewObject.parent, 'TimeTable');
+                                        if(haveTimeTable)
+                                        {
+                                            trainTimeTables.push(haveTimeTable)
+                                        }
 
                                     // Add (Copy) to name
                                     for(let j = 0; j < trainIdentifierNewObject.parent.properties.length; j++)
@@ -465,6 +471,36 @@ export default class BaseLayout_Selection_Copy
                         }
                     }
                 }
+            }
+
+            // Handle timetable and remove not copied from them!
+            for(let i = 0; i < trainTimeTables.length; i++)
+            {
+                let timeTable = this.baseLayout.saveGameParser.getTargetObject(trainTimeTables[i].pathName);;
+                    if(timeTable !== null)
+                    {
+                        let newTimeTable    = JSON.parse(JSON.stringify(timeTable));
+                        let mStops          = this.baseLayout.getObjectProperty(newTimeTable, 'mStops');
+                            if(mStops !== null)
+                            {
+                                for(let j = (mStops.values.length - 1); j >= 0; j--)
+                                {
+                                    for(let k = 0; k < mStops.values[j].length; k++)
+                                    {
+                                        if(mStops.values[j][k].name === 'Station')
+                                        {
+                                            if(availablePathName.includes(mStops.values[j][k].value.pathName) === false)
+                                            {
+                                                mStops.values.splice(j, 1);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            this.clipboard.data.push({parent: newTimeTable, children: []});
+                            availablePathName.push(newTimeTable.pathName);
+                    }
             }
 
             if(this.baseLayout.useDebug === true)
