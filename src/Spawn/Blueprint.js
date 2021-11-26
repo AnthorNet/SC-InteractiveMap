@@ -98,6 +98,7 @@ export default class Spawn_Blueprint
                     minZ -= this.zOffset; // Inverse as it's removed from the object translation
                 }
 
+                // Apply transformation
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
                     if(this.clipboard.data[i].parent.transform !== undefined && this.clipboard.data[i].parent.transform.translation !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
@@ -231,9 +232,66 @@ export default class Spawn_Blueprint
                         this.clipboard.data[i].parent.outerPathName = pathNameConversion[this.clipboard.data[i].parent.outerPathName];
                     }
 
+                    // Convert from old format...
+                    if(this.clipboard.data[i].parent.entityPathName !== undefined)
+                    {
+                        this.clipboard.data[i].parent.entity                        = {};
+                        this.clipboard.data[i].parent.entity.pathName               = this.clipboard.data[i].parent.entityPathName;
+
+                        if(this.clipboard.data[i].parent.entityLevelName !== undefined)
+                        {
+                            this.clipboard.data[i].parent.entity.levelName          = this.clipboard.data[i].parent.entityLevelName;
+                        }
+                    }
+                    // Convert from old format...
+                    if(this.clipboard.data[i].parent.extra !== undefined)
+                    {
+                        if(this.clipboard.data[i].parent.extra.sourcePathName !== undefined)
+                        {
+                            this.clipboard.data[i].parent.extra.source                  = {};
+                            this.clipboard.data[i].parent.extra.source.pathName         = this.clipboard.data[i].parent.extra.sourcePathName;
+
+                            if(this.clipboard.data[i].parent.extra.sourceLevelName !== undefined)
+                            {
+                                this.clipboard.data[i].parent.extra.source.levelName    = this.clipboard.data[i].parent.extra.sourceLevelName;
+                            }
+                        }
+                        if(this.clipboard.data[i].parent.extra.targetPathName !== undefined)
+                        {
+                            this.clipboard.data[i].parent.extra.target                  = {};
+                            this.clipboard.data[i].parent.extra.target.pathName         = this.clipboard.data[i].parent.extra.targetPathName;
+
+                            if(this.clipboard.data[i].parent.extra.targetLevelName !== undefined)
+                            {
+                                this.clipboard.data[i].parent.extra.target.levelName    = this.clipboard.data[i].parent.extra.targetLevelName;
+                            }
+                        }
+                        if(this.clipboard.data[i].parent.extra.previousPathName !== undefined)
+                        {
+                            this.clipboard.data[i].parent.extra.previous                = {};
+                            this.clipboard.data[i].parent.extra.previous.pathName       = this.clipboard.data[i].parent.extra.previousPathName;
+
+                            if(this.clipboard.data[i].parent.extra.previousLevelName !== undefined)
+                            {
+                                this.clipboard.data[i].parent.extra.previous.levelName  = this.clipboard.data[i].parent.extra.previousLevelName;
+                            }
+                        }
+                        if(this.clipboard.data[i].parent.extra.nextPathName !== undefined)
+                        {
+                            this.clipboard.data[i].parent.extra.next                    = {};
+                            this.clipboard.data[i].parent.extra.next.pathName           = this.clipboard.data[i].parent.extra.nextPathName;
+
+                            if(this.clipboard.data[i].parent.extra.nextLevelName !== undefined)
+                            {
+                                this.clipboard.data[i].parent.extra.next.levelName      = this.clipboard.data[i].parent.extra.nextLevelName;
+                            }
+                        }
+                    }
+
                     // Power lines connections
                     if(this.powerLineClassName.includes(this.clipboard.data[i].parent.className) && this.clipboard.data[i].parent.extra !== undefined)
                     {
+                        // Convert source
                         if(this.clipboard.data[i].parent.extra.source !== undefined && this.clipboard.data[i].parent.extra.source.pathName !== undefined)
                         {
                             let sourcePathName  = this.clipboard.data[i].parent.extra.source.pathName.split('.');
@@ -245,6 +303,7 @@ export default class Spawn_Blueprint
                                 this.clipboard.data[i].parent.extra.source.pathName = pathNameConversion[sourcePathName] + '.' + extraPart;
                             }
                         }
+                        // Convert target
                         if(this.clipboard.data[i].parent.extra.target !== undefined && this.clipboard.data[i].parent.extra.target.pathName !== undefined)
                         {
                             let targetPathName  = this.clipboard.data[i].parent.extra.target.pathName.split('.');
