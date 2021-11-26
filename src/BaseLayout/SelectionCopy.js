@@ -383,7 +383,7 @@ export default class BaseLayout_Selection_Copy
 
                                                 if(currentPowerline !== null && currentPowerline.extra !== undefined)
                                                 {
-                                                    let testSourcePathName  = currentPowerline.extra.sourcePathName.split('.');
+                                                    let testSourcePathName  = currentPowerline.extra.source.pathName.split('.');
                                                         testSourcePathName.pop();
                                                         testSourcePathName  = testSourcePathName.join('.');
 
@@ -392,7 +392,7 @@ export default class BaseLayout_Selection_Copy
                                                         keepPowerLine = false;
                                                     }
 
-                                                    let testTargetPathName  = currentPowerline.extra.targetPathName.split('.');
+                                                    let testTargetPathName  = currentPowerline.extra.target.pathName.split('.');
                                                         testTargetPathName.pop();
                                                         testTargetPathName  = testTargetPathName.join('.');
 

@@ -128,43 +128,43 @@ export default class Building_Light
                             {
                                 if(currentObject.extra !== undefined)
                                 {
-                                    if(currentObject.extra.sourcePathName !== undefined)
+                                    if(currentObject.extra.source !== undefined && currentObject.extra.source.pathName !== undefined)
                                     {
-                                        if(followedPowerConnections.includes(currentObject.extra.sourcePathName) === false)
+                                        if(followedPowerConnections.includes(currentObject.extra.source.pathName) === false)
                                         {
                                             let usePowerConnection = true
-                                                if(stopAtSwitches === true && Building_Light.isSwitch(currentObject.extra.sourcePathName) === true)
+                                                if(stopAtSwitches === true && Building_Light.isSwitch(currentObject.extra.source.pathName) === true)
                                                 {
                                                     usePowerConnection = false;
                                                 }
 
                                             if(usePowerConnection === true)
                                             {
-                                                let sourcePowerConnection = baseLayout.saveGameParser.getTargetObject(currentObject.extra.sourcePathName);
+                                                let sourcePowerConnection = baseLayout.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
                                                     if(sourcePowerConnection !== null)
                                                     {
-                                                        followedPowerConnections.push(currentObject.extra.sourcePathName);
+                                                        followedPowerConnections.push(currentObject.extra.source.pathName);
                                                         followedPowerConnections = Building_Light.followPowerConnections(baseLayout, sourcePowerConnection, followedPowerConnections, stopAtSwitches);
                                                     }
                                             }
                                         }
                                     }
-                                    if(currentObject.extra.targetPathName !== undefined)
+                                    if(currentObject.extra.target !== undefined && currentObject.extra.target.pathName !== undefined)
                                     {
-                                        if(followedPowerConnections.includes(currentObject.extra.targetPathName) === false)
+                                        if(followedPowerConnections.includes(currentObject.extra.target.pathName) === false)
                                         {
                                             let usePowerConnection = true
-                                                if(stopAtSwitches === true && Building_Light.isSwitch(currentObject.extra.targetPathName) === true)
+                                                if(stopAtSwitches === true && Building_Light.isSwitch(currentObject.extra.target.pathName) === true)
                                                 {
                                                     usePowerConnection = false;
                                                 }
 
                                             if(usePowerConnection === true)
                                             {
-                                                let targetPowerConnection = baseLayout.saveGameParser.getTargetObject(currentObject.extra.targetPathName);
+                                                let targetPowerConnection = baseLayout.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
                                                     if(targetPowerConnection !== null)
                                                     {
-                                                        followedPowerConnections.push(currentObject.extra.targetPathName);
+                                                        followedPowerConnections.push(currentObject.extra.target.pathName);
                                                         followedPowerConnections = Building_Light.followPowerConnections(baseLayout, targetPowerConnection, followedPowerConnections, stopAtSwitches);
                                                     }
                                             }

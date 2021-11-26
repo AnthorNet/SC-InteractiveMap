@@ -48,7 +48,7 @@ export default class Spawn_Fill
                 rotation        : this.baseLayout.saveGameParser.defaultValues.rotation,
                 translation     : this.center
             },
-            entityPathName  : "Persistent_Level:PersistentLevel.BuildableSubsystem",
+            entity          : {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"},
             properties      : [
                 {
                     name        : "mPrimaryColor",

@@ -234,26 +234,26 @@ export default class Spawn_Blueprint
                     // Power lines connections
                     if(this.powerLineClassName.includes(this.clipboard.data[i].parent.className) && this.clipboard.data[i].parent.extra !== undefined)
                     {
-                        if(this.clipboard.data[i].parent.extra.sourcePathName !== undefined)
+                        if(this.clipboard.data[i].parent.extra.source !== undefined && this.clipboard.data[i].parent.extra.source.pathName !== undefined)
                         {
-                            let sourcePathName  = this.clipboard.data[i].parent.extra.sourcePathName.split('.');
+                            let sourcePathName  = this.clipboard.data[i].parent.extra.source.pathName.split('.');
                             let extraPart       = sourcePathName.pop();
                                 sourcePathName  = sourcePathName.join('.');
 
                             if(pathNameConversion[sourcePathName] !== undefined)
                             {
-                                this.clipboard.data[i].parent.extra.sourcePathName = pathNameConversion[sourcePathName] + '.' + extraPart;
+                                this.clipboard.data[i].parent.extra.source.pathName = pathNameConversion[sourcePathName] + '.' + extraPart;
                             }
                         }
-                        if(this.clipboard.data[i].parent.extra.targetPathName !== undefined)
+                        if(this.clipboard.data[i].parent.extra.target !== undefined && this.clipboard.data[i].parent.extra.target.pathName !== undefined)
                         {
-                            let targetPathName  = this.clipboard.data[i].parent.extra.targetPathName.split('.');
+                            let targetPathName  = this.clipboard.data[i].parent.extra.target.pathName.split('.');
                             let extraPart       = targetPathName.pop();
                                 targetPathName  = targetPathName.join('.');
 
                             if(pathNameConversion[targetPathName] !== undefined)
                             {
-                                this.clipboard.data[i].parent.extra.targetPathName = pathNameConversion[targetPathName] + '.' + extraPart;
+                                this.clipboard.data[i].parent.extra.target.pathName = pathNameConversion[targetPathName] + '.' + extraPart;
                             }
                         }
                     }
@@ -261,18 +261,18 @@ export default class Spawn_Blueprint
                     // Wagons connections
                     if(this.clipboard.data[i].parent.extra !== undefined)
                     {
-                        if(this.clipboard.data[i].parent.extra.previousPathName !== undefined && this.clipboard.data[i].parent.extra.previousPathName !== '')
+                        if(this.clipboard.data[i].parent.extra.previous !== undefined && this.clipboard.data[i].parent.extra.previous.pathName !== undefined && this.clipboard.data[i].parent.extra.previous.pathName !== '')
                         {
-                            if(pathNameConversion[this.clipboard.data[i].parent.extra.previousPathName] !== undefined)
+                            if(pathNameConversion[this.clipboard.data[i].parent.extra.previous.pathName] !== undefined)
                             {
-                                this.clipboard.data[i].parent.extra.previousPathName = pathNameConversion[this.clipboard.data[i].parent.extra.previousPathName];
+                                this.clipboard.data[i].parent.extra.previous.pathName = pathNameConversion[this.clipboard.data[i].parent.extra.previous.pathName];
                             }
                         }
-                        if(this.clipboard.data[i].parent.extra.nextPathName !== undefined && this.clipboard.data[i].parent.extra.nextPathName !== '')
+                        if(this.clipboard.data[i].parent.extra.next !== undefined && this.clipboard.data[i].parent.extra.next.pathName !== undefined && this.clipboard.data[i].parent.extra.next.pathName !== '')
                         {
-                            if(pathNameConversion[this.clipboard.data[i].parent.extra.nextPathName] !== undefined)
+                            if(pathNameConversion[this.clipboard.data[i].parent.extra.next.pathName] !== undefined)
                             {
-                                this.clipboard.data[i].parent.extra.nextPathName = pathNameConversion[this.clipboard.data[i].parent.extra.nextPathName];
+                                this.clipboard.data[i].parent.extra.next.pathName = pathNameConversion[this.clipboard.data[i].parent.extra.next.pathName];
                             }
                         }
                     }
@@ -501,8 +501,7 @@ export default class Spawn_Blueprint
                         transform               : {rotation: [0, 0, 0, 1], translation: [0, 0, 0]},
                         children                : [],
                         properties              : [{name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}],
-                        entityLevelName         : "",
-                        entityPathName          : ""
+                        entity                  : {levelName: '', pathName: ''}
                     };
 
                     if(this.clipboard.pipes[pipeNetworkID].fluid !== null)

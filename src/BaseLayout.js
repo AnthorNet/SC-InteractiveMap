@@ -1360,8 +1360,7 @@ export default class BaseLayout
             children            : [{pathName: pathName + '.HealthComponent'}],
             className           : className,
             pathName            : pathName,
-            entityLevelName     : '',
-            entityPathName      : '',
+            entity              : {levelName: '', pathName: ''},
             properties          : [{name: 'mHealthComponent', type: 'ObjectProperty', value: {pathName: pathName + '.HealthComponent'}}],
             transform           : {
                 rotation            : [0, -0, currentObject.transform.rotation[2], currentObject.transform.rotation[3]],
@@ -1739,8 +1738,7 @@ export default class BaseLayout
                 type                    : "ObjectProperty",
                 value                   : {pathName: cratePathName + ".inventory"}
             }],
-            entityLevelName         : "",
-            entityPathName          : ""
+            entity                  : {levelName: '', pathName: ''}
         };
         this.saveGameParser.addObject(newLootCrate);
 
@@ -3471,51 +3469,51 @@ export default class BaseLayout
             let previousTrain   = null;
             let nextTrain       = null;
 
-            if(currentObject.extra !== undefined && currentObject.extra.previousPathName !== '')
+            if(currentObject.extra !== undefined && currentObject.extra.previous !== undefined && currentObject.extra.previous.pathName !== '')
             {
-                let previousObject = this.saveGameParser.getTargetObject(currentObject.extra.previousPathName);
+                let previousObject = this.saveGameParser.getTargetObject(currentObject.extra.previous.pathName);
 
                 if(previousObject !== null)
                 {
-                    if(previousObject.extra.previousPathName === currentObject.pathName)
+                    if(previousObject.extra.previous.pathName === currentObject.pathName)
                     {
-                        previousObject.extra.previousLevelName  = '';
-                        previousObject.extra.previousPathName   = '';
+                        previousObject.extra.previous.levelName = '';
+                        previousObject.extra.previous.pathName  = '';
                     }
-                    if(previousObject.extra.nextPathName === currentObject.pathName)
+                    if(previousObject.extra.next.pathName === currentObject.pathName)
                     {
-                        previousObject.extra.nextLevelName      = '';
-                        previousObject.extra.nextPathName       = '';
+                        previousObject.extra.next.levelName     = '';
+                        previousObject.extra.next.pathName      = '';
                     }
 
-                    previousTrain                           = this.getMarkerFromPathName(currentObject.extra.previousPathName, 'playerTrainsLayer');
+                    previousTrain = this.getMarkerFromPathName(currentObject.extra.previous.pathName, 'playerTrainsLayer');
                 }
 
-                currentObject.extra.previousLevelName   = '';
-                currentObject.extra.previousPathName    = '';
+                currentObject.extra.previous.levelName          = '';
+                currentObject.extra.previous.pathName           = '';
             }
-            if(currentObject.extra !== undefined && currentObject.extra.nextPathName !== '')
+            if(currentObject.extra !== undefined && currentObject.extra.next !== undefined && currentObject.extra.next.pathName !== '')
             {
-                let nextObject = this.saveGameParser.getTargetObject(currentObject.extra.nextPathName);
+                let nextObject = this.saveGameParser.getTargetObject(currentObject.extra.next.pathName);
 
                 if(nextObject !== null)
                 {
-                    if(nextObject.extra.previousPathName === currentObject.pathName)
+                    if(nextObject.extra.previous.pathName === currentObject.pathName)
                     {
-                        nextObject.extra.previousLevelName      = '';
-                        nextObject.extra.previousPathName       = '';
+                        nextObject.extra.previous.levelName     = '';
+                        nextObject.extra.previous.pathName      = '';
                     }
-                    if(nextObject.extra.nextPathName === currentObject.pathName)
+                    if(nextObject.extra.next.pathName === currentObject.pathName)
                     {
-                        nextObject.extra.nextLevelName          = '';
-                        nextObject.extra.nextPathName           = '';
+                        nextObject.extra.next.levelName         = '';
+                        nextObject.extra.next.pathName          = '';
                     }
 
-                    nextTrain = this.getMarkerFromPathName(currentObject.extra.nextPathName, 'playerTrainsLayer');
+                    nextTrain = this.getMarkerFromPathName(currentObject.extra.next.pathName, 'playerTrainsLayer');
                 }
 
-                currentObject.extra.nextLevelName       = '';
-                currentObject.extra.nextPathName        = '';
+                currentObject.extra.next.levelName              = '';
+                currentObject.extra.next.pathName               = '';
             }
 
             if(previousTrain !== null)
@@ -3593,15 +3591,15 @@ export default class BaseLayout
         this.setupSubLayer('playerPowerGridLayer');
 
         // Orphaned power lines (Most likely when mods are removed)
-        if(currentObject.extra.sourcePathName === '' || currentObject.extra.targetPathName === '')
+        if(currentObject.extra.source.pathName === '' || currentObject.extra.target.pathName === '')
         {
             console.log('Deleting orphaned power line...');
             this.deletePlayerPowerLine({options: {pathName: currentObject.pathName}});
             return false;
         }
 
-        let currentObjectSource = this.saveGameParser.getTargetObject(currentObject.extra.sourcePathName);
-        let currentObjectTarget = this.saveGameParser.getTargetObject(currentObject.extra.targetPathName);
+        let currentObjectSource = this.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
+        let currentObjectTarget = this.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
 
             if(currentObjectSource !== null && currentObjectTarget !== null)
             {
@@ -3738,7 +3736,7 @@ export default class BaseLayout
     deletePlayerPowerLine(marker)
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.options.pathName);
-        let currentObjectSource = this.saveGameParser.getTargetObject(currentObject.extra.sourcePathName);
+        let currentObjectSource = this.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
 
         // Unlink source power connection
         if(currentObjectSource !== null)
@@ -3747,7 +3745,7 @@ export default class BaseLayout
         }
 
         // Unlink target power connection
-        let currentObjectTarget = this.saveGameParser.getTargetObject(currentObject.extra.targetPathName);
+        let currentObjectTarget = this.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
         if(currentObjectTarget !== null)
         {
             this.unlinkPowerConnection(currentObjectTarget, currentObject);
@@ -6854,7 +6852,7 @@ export default class BaseLayout
                         { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
                         { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
                     ],
-                    entityPathName  : "Persistent_Level:PersistentLevel.BuildableSubsystem"
+                    entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
                 };
                 fakeFoundation.pathName = this.generateFastPathName(fakeFoundation);
 

@@ -17,7 +17,7 @@ export default class Modal_Node_Foundation
                         { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
                         { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
                     ],
-                    entityPathName  : "Persistent_Level:PersistentLevel.BuildableSubsystem"
+                    entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
                 };
                 fakeFoundation.pathName = baseLayout.generateFastPathName(fakeFoundation);
 

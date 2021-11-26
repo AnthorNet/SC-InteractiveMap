@@ -18,6 +18,22 @@ export default class Modal_Debug
             for(let i = 0; i < currentObject.children.length; i++)
             {
                 childrenPathName.push(currentObject.children[i].pathName);
+
+                let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                    if(currentChildren !== null)
+                    {
+                        let mWires = baseLayout.getObjectProperty(currentChildren, 'mWires');
+                            if(mWires !== null)
+                            {
+                                for(let j = 0; j < mWires.values.length; j++)
+                                {
+                                    if(extraPathName.includes(mWires.values[j].pathName) === false)
+                                    {
+                                        extraPathName.push(mWires.values[j].pathName);
+                                    }
+                                }
+                            }
+                    }
             }
         }
 

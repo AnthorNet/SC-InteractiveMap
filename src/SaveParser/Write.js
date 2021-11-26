@@ -390,16 +390,7 @@ export default class SaveParser_Write
 
         if(currentObject.type === 1)
         {
-            if(currentObject.entityLevelName !== undefined)
-            {
-                entity += this.writeString(currentObject.entityLevelName);
-            }
-            else
-            {
-                entity += this.writeString('Persistent_Level');
-            }
-
-            entity += this.writeString(currentObject.entityPathName);
+            entity += this.writeObjectProperty(currentObject.entity);
 
             if(currentObject.children !== undefined)
             {
@@ -443,9 +434,22 @@ export default class SaveParser_Write
 
                 for(let i = 0; i < itemsLength; i++)
                 {
-                    entity += this.writeInt(currentObject.extra.items[i].length);
+                    //TODO: Proper langth handle?
+                    if(currentObject.extra.items[i].length !== undefined)
+                    {
+                        entity += this.writeInt(currentObject.extra.items[i].length);
+                    }
+                    else
+                    {
+                        entity += this.writeInt(0);
+                    }
+
                     entity += this.writeString(currentObject.extra.items[i].name);
-                    entity += this.writeObjectProperty(currentObject.extra.items[i]);
+                    // Always empty
+                    //entity += this.writeObjectProperty(currentObject.extra.items[i]);
+                    entity += this.writeString('');
+                    entity += this.writeString('');
+
                     entity += this.writeFloat(currentObject.extra.items[i].position);
                 }
         }
@@ -468,10 +472,8 @@ export default class SaveParser_Write
                 case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
                 case '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C':
                     entity += this.writeInt(currentObject.extra.count);
-                    entity += this.writeString(currentObject.extra.sourceLevelName);
-                    entity += this.writeString(currentObject.extra.sourcePathName);
-                    entity += this.writeString(currentObject.extra.targetLevelName);
-                    entity += this.writeString(currentObject.extra.targetPathName);
+                    entity += this.writeObjectProperty(currentObject.extra.source);
+                    entity += this.writeObjectProperty(currentObject.extra.target);
 
                     break;
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
@@ -504,10 +506,8 @@ export default class SaveParser_Write
                         entity += this.writeInt(0);
                     }
 
-                    entity += this.writeString(currentObject.extra.previousLevelName);
-                    entity += this.writeString(currentObject.extra.previousPathName);
-                    entity += this.writeString(currentObject.extra.nextLevelName);
-                    entity += this.writeString(currentObject.extra.nextPathName);
+                    entity += this.writeObjectProperty(currentObject.extra.previous);
+                    entity += this.writeObjectProperty(currentObject.extra.next);
 
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':

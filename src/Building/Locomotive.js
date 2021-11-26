@@ -40,9 +40,9 @@ export default class Building_Locomotive
         {
             if(currentObject.extra !== undefined)
             {
-                if(currentObject.extra.previousPathName !== undefined && currentObject.extra.previousPathName !== '')
+                if(currentObject.extra.previous !== undefined && currentObject.extra.previous.pathName !== undefined && currentObject.extra.previous.pathName !== '')
                 {
-                    let adjacentPreviousWagon   = baseLayout.saveGameParser.getTargetObject(currentObject.extra.previousPathName);
+                    let adjacentPreviousWagon   = baseLayout.saveGameParser.getTargetObject(currentObject.extra.previous.pathName);
                         while(adjacentPreviousWagon !== null)
                         {
                             includedPathName.push(adjacentPreviousWagon.pathName);
@@ -55,9 +55,9 @@ export default class Building_Locomotive
                             adjacentPreviousWagon = Building_Locomotive.getAdjacentWagon(baseLayout, adjacentPreviousWagon, includedPathName);
                         }
                 }
-                if(currentObject.extra.nextPathName !== undefined && currentObject.extra.nextPathName !== '')
+                if(currentObject.extra.next !== undefined && currentObject.extra.next.pathName !== undefined && currentObject.extra.next.pathName !== '')
                 {
-                    let adjacentNextWagon       = baseLayout.saveGameParser.getTargetObject(currentObject.extra.nextPathName);
+                    let adjacentNextWagon       = baseLayout.saveGameParser.getTargetObject(currentObject.extra.next.pathName);
                         while(adjacentNextWagon !== null)
                         {
                             includedPathName.push(adjacentNextWagon.pathName);
@@ -80,13 +80,13 @@ export default class Building_Locomotive
     {
         if(currentObject.extra !== undefined)
         {
-            if(currentObject.extra.previousPathName !== undefined && currentObject.extra.previousPathName !== '' && includedPathName.includes(currentObject.extra.previousPathName) === false)
+            if(currentObject.extra.previous !== undefined && currentObject.extra.previous.pathName !== undefined && currentObject.extra.previous.pathName !== '' && includedPathName.includes(currentObject.extra.previous.pathName) === false)
             {
-                return baseLayout.saveGameParser.getTargetObject(currentObject.extra.previousPathName);
+                return baseLayout.saveGameParser.getTargetObject(currentObject.extra.previous.pathName);
             }
-            if(currentObject.extra.nextPathName !== undefined && currentObject.extra.nextPathName !== '' && includedPathName.includes(currentObject.extra.nextPathName) === false)
+            if(currentObject.extra.next !== undefined && currentObject.extra.next.pathName !== undefined && currentObject.extra.next.pathName !== '' && includedPathName.includes(currentObject.extra.next.pathName) === false)
             {
-                return baseLayout.saveGameParser.getTargetObject(currentObject.extra.nextPathName);
+                return baseLayout.saveGameParser.getTargetObject(currentObject.extra.next.pathName);
             }
         }
 

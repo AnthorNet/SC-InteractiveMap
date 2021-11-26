@@ -346,13 +346,7 @@ export default class SaveParser_Read
 
         if(this.saveParser.objects[objectKey].type === 1)
         {
-            let entityLevelName = this.readString();
-                if(entityLevelName !== 'Persistent_Level')
-                {
-                    this.saveParser.objects[objectKey].entityLevelName  = entityLevelName;
-                }
-
-            this.saveParser.objects[objectKey].entityPathName   = this.readString();
+            this.saveParser.objects[objectKey].entity = this.readObjectProperty({});
 
             let countChild  = this.readInt();
                 if(countChild > 0)
@@ -402,13 +396,18 @@ export default class SaveParser_Read
             let itemsLength                             = this.readInt();
                 for(let i = 0; i < itemsLength; i++)
                 {
-                    this.saveParser.objects[objectKey].extra.items.push({
-                        length      : this.readInt(),
-                        name        : this.readString(),
-                        levelName   : this.readString(),
-                        pathName    : this.readString(),
-                        position    : this.readFloat()
-                    });
+                    let currentItem             = {};
+                    let currentItemLength       = this.readInt();
+                        if(currentItemLength !== 0)
+                        {
+                            currentItem.length  = currentItemLength;
+                        }
+                        currentItem.name        = this.readString();
+                        this.readString(); //currentItem.levelName   = this.readString();
+                        this.readString(); //currentItem.pathName    = this.readString();
+                        currentItem.position    = this.readFloat();
+
+                    this.saveParser.objects[objectKey].extra.items.push(currentItem);
                 }
         }
         else
@@ -476,11 +475,9 @@ export default class SaveParser_Read
                 case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
                 case '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C':
                     this.saveParser.objects[objectKey].extra        = {
-                        count               : this.readInt(),
-                        sourceLevelName     : this.readString(),
-                        sourcePathName      : this.readString(),
-                        targetLevelName     : this.readString(),
-                        targetPathName      : this.readString()
+                        count   : this.readInt(),
+                        source  : this.readObjectProperty({}),
+                        target  : this.readObjectProperty({})
                     };
 
                     break;
@@ -496,10 +493,8 @@ export default class SaveParser_Read
                             });
                         }
 
-                    this.saveParser.objects[objectKey].extra.previousLevelName  = this.readString();
-                    this.saveParser.objects[objectKey].extra.previousPathName   = this.readString();
-                    this.saveParser.objects[objectKey].extra.nextLevelName      = this.readString();
-                    this.saveParser.objects[objectKey].extra.nextPathName       = this.readString();
+                    this.saveParser.objects[objectKey].extra.previous   = this.readObjectProperty({});
+                    this.saveParser.objects[objectKey].extra.next       = this.readObjectProperty({});
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
