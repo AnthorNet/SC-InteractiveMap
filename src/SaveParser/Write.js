@@ -702,6 +702,7 @@ export default class SaveParser_Write
                         break;
 
                     case 'Quat':
+                    case 'Vector4':
                         property += this.writeFloat(currentProperty.value.values.a);
                         property += this.writeFloat(currentProperty.value.values.b);
                         property += this.writeFloat(currentProperty.value.values.c);

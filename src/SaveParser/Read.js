@@ -815,6 +815,9 @@ export default class SaveParser_Read
                                 case 'BRN_Base_FrackingSatelliteInfo':
                                 case 'FINCommandLabelReferences':
                                 case 'FINCommandLabelData':
+                                case 'DumbPrintBuildSave':
+                                case 'DumbPrintBuildMapEntry':
+                                case 'RssElement':
                                     let subStructProperties = [];
                                         while(true)
                                         {
@@ -1011,6 +1014,7 @@ export default class SaveParser_Read
                         break;
 
                     case 'Quat':
+                    case 'Vector4':
                         currentProperty.value.values = {
                             a           : this.readFloat(),
                             b           : this.readFloat(),
@@ -1111,6 +1115,12 @@ export default class SaveParser_Read
                     case 'RPHeaterItemData': // MOD: Refined Power
                     case 'RPBoilerItemData': // MOD: Refined Power
                     case 'RPTurbineItemData': // MOD: Refined Power
+                    case 'DumbPrintBuildMapEntryBonusInfo':
+                    case 'RssSignData':
+                    case 'RssElementTextData':
+                    case 'RssElementImageData':
+                    case 'RssElementEffectData':
+                    case 'RssElementSharedData':
                         currentProperty.value.values = [];
                         while(true)
                         {
