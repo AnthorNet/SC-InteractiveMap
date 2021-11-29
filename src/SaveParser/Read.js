@@ -1096,6 +1096,7 @@ export default class SaveParser_Read
                     case 'FactoryCustomizationData':
                     case 'FactoryCustomizationColorSlot':
                     case 'RuntimeFloatCurve':
+                    // MODS
                     case 'EnabledCheats': // MOD: Satisfactory Helper
                     case 'FICFloatAttribute': // MOD: ???
                     case 'FFCompostingTask': // MOD: ???
@@ -1121,6 +1122,8 @@ export default class SaveParser_Read
                     case 'RssElementImageData':
                     case 'RssElementEffectData':
                     case 'RssElementSharedData':
+                    case 'RssSignMaterialData':
+                    case 'RssHologramData':
                         currentProperty.value.values = [];
                         while(true)
                         {
@@ -1131,15 +1134,11 @@ export default class SaveParser_Read
                                 }
 
                             currentProperty.value.values.push(subStructProperty);
-                            if(subStructProperty.value.properties !== undefined && subStructProperty.value.properties.length === 1 && subStructProperty.value.properties[0] === null)
+
+                            if(subStructProperty.value !== undefined && subStructProperty.value.properties !== undefined && subStructProperty.value.properties.length === 1 && subStructProperty.value.properties[0] === null)
                             {
                                 break;
                             }
-                        }
-
-                        if(currentProperty.value.type === 'FactoryCustomizationData') //TODO:UPDATE5
-                        {
-                            //console.log(currentProperty.value.type, currentProperty);
                         }
                         break;
 
