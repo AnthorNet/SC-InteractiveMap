@@ -19,6 +19,90 @@ export default class SaveParser_Read
         this.bufferView         = new DataView(this.arrayBuffer); // Still used for header...
         this.currentByte        = 0;
 
+        this.structureTypes     = [
+            'CompletedResearch',
+            'DroneDockingStateInfo',
+            'DroneTripInformation',
+            'FactoryCustomizationColorSlot',
+            'FactoryCustomizationData',
+            'FeetOffset',
+            'GlobalColorPreset',
+            'Hotbar',
+            'InventoryStack',
+            'ItemAmount',
+            'ItemFoundData',
+            'LightSourceControlData',
+            'MessageData',
+            'PhaseCost',
+            'PrefabIconElementSaveData',
+            'PrefabTextElementSaveData',
+            'PresetHotbar',
+            'ProjectileData',
+            'RecipeAmountStruct',
+            'RemovedInstance',
+            'RemovedInstanceArray',
+            'ResearchCost',
+            'ResearchData',
+            'ResearchTime',
+            'RuntimeFloatCurve',
+            'ScannableResourcePair',
+            'SchematicCost',
+            'SpawnData',
+            'SplinePointData',
+            'SplitterSortRule',
+            'SubCategoryMaterialDefault',
+            'SwatchGroupData',
+            'TimeTableStop',
+            'TrainDockingRuleSet',
+            'TrainSimulationData',
+            'Transform',
+
+            // MODS
+            'LampGroup',
+            'EnabledCheats', // MOD: Satisfactory Helper
+            'FICFloatAttribute', // MOD: ???
+            'FFCompostingTask', // MOD: ???
+            'FFSeedExtrationTask', // MOD: ???
+            'FFSlugBreedTask', // MOD: ???
+            'FFSlimeProcessingTask', // MOD: ???
+            'FFPlotTask', // MOD: ???
+            'SInventory', // MOD: ???
+            'MFGBuildableAutoSplitterReplicatedProperties', // MOD: AutoSplitters
+            'Loot', // MOD: ???
+            'ProductionHandle', // MOD: ???
+            'ContentLib_Recipe', // MOD: ???
+            'STRUCT_ProgElevator_Floor',
+            'InserterBuildingProfile',
+            'BRN_Base_FrackingSatelliteInfo',
+
+            // MOD: FicsItNetworks
+            'FINCommandLabelReferences',
+            'FINCommandLabelData',
+            'FINGPUT1Buffer',
+
+            // MOD: Really Basic Blueprints
+            'DumbPrintBuildSave',
+            'DumbPrintBuildMapEntry',
+            'DumbPrintBuildMapEntryBonusInfo',
+
+            // MOD: Refined Power
+            'RPHeaterTask',
+            'RPProductionTask',
+            'RPHeaterItemData',
+            'RPBoilerItemData',
+            'RPTurbineItemData',
+
+            // MOD: Really Simple Signs
+            'RssSignData',
+            'RssSignMaterialData',
+            'RssElement',
+            'RssElementTextData',
+            'RssElementImageData',
+            'RssElementEffectData',
+            'RssElementSharedData',
+            'RssHologramData'
+        ];
+
         this.parseHeader();
     }
 
@@ -777,45 +861,10 @@ export default class SaveParser_Read
                                     currentProperty.value.values.push(this.readFINGPUT1BufferPixel());
                                     break;
 
-                                case 'SpawnData':
-                                case 'Transform':
-                                case 'PhaseCost':
-                                case 'ItemAmount':
-                                case 'TimeTableStop':
-                                case 'RemovedInstance':
-                                case 'SplinePointData':
-                                case 'InventoryStack':
-                                case 'ResearchData':
-                                case 'SchematicCost':
-                                case 'ItemFoundData':
-                                case 'ScannableResourcePair':
-                                case 'Hotbar':
-                                case 'PresetHotbar':
-                                case 'MessageData':
-                                case 'SplitterSortRule':
-                                case 'FeetOffset':
-                                case 'RecipeAmountStruct':
-                                case 'DroneTripInformation':
-                                case 'ResearchTime':
-                                case 'ResearchCost':
-                                case 'CompletedResearch':
-                                case 'SubCategoryMaterialDefault':
-                                case 'FactoryCustomizationColorSlot':
-                                case 'PrefabTextElementSaveData':
-                                case 'PrefabIconElementSaveData':
-                                case 'GlobalColorPreset':
-                                case 'SwatchGroupData':
-                                // MODS
-                                case 'LampGroup':
-                                case 'STRUCT_ProgElevator_Floor':
-                                case 'InserterBuildingProfile':
-                                case 'BRN_Base_FrackingSatelliteInfo':
-                                case 'FINCommandLabelReferences':
-                                case 'FINCommandLabelData':
-                                case 'DumbPrintBuildSave':
-                                case 'DumbPrintBuildMapEntry':
-                                case 'RssElement':
-                                    let subStructProperties = [];
+                                default:
+                                    if(this.structureTypes.includes(currentProperty.structureSubType))
+                                    {
+                                        let subStructProperties = [];
                                         while(true)
                                         {
                                             let subStructProperty = this.readPropertyV5();
@@ -828,15 +877,16 @@ export default class SaveParser_Read
                                             subStructProperties.push(subStructProperty);
                                         }
                                         currentProperty.value.values.push(subStructProperties);
-                                    break;
-                                default:
-                                    BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
-                                    if(typeof Sentry !== 'undefined')
-                                    {
-                                        Sentry.setContext('currentProperty', currentProperty);
                                     }
-                                    throw new Error('Unimplemented key structureSubType `' + currentProperty.structureSubType + '` in ArrayProperty `' + currentProperty.name + '`');
-                                    break;
+                                    else
+                                    {
+                                        BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                        if(typeof Sentry !== 'undefined')
+                                        {
+                                            Sentry.setContext('currentProperty', currentProperty);
+                                        }
+                                        throw new Error('Unimplemented key structureSubType `' + currentProperty.structureSubType + '` in ArrayProperty `' + currentProperty.name + '`');
+                                    }
                             }
                         }
 
@@ -1079,73 +1129,35 @@ export default class SaveParser_Read
                         currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
                         break;
 
-                    case 'Transform':
-                    case 'RemovedInstanceArray':
-                    case 'InventoryStack':
-                    case 'ProjectileData':
-                    case 'TrainSimulationData':
-                    case 'TrainDockingRuleSet':
-                    case 'DroneDockingStateInfo':
-                    case 'DroneTripInformation':
-                    case 'ResearchData':
-                    case 'Hotbar':
-                    case 'LightSourceControlData':
-                    case 'FactoryCustomizationData':
-                    case 'FactoryCustomizationColorSlot':
-                    case 'RuntimeFloatCurve':
-                    // MODS
-                    case 'EnabledCheats': // MOD: Satisfactory Helper
-                    case 'FICFloatAttribute': // MOD: ???
-                    case 'FFCompostingTask': // MOD: ???
-                    case 'FFSeedExtrationTask': // MOD: ???
-                    case 'FFSlugBreedTask': // MOD: ???
-                    case 'FFSlimeProcessingTask': // MOD: ???
-                    case 'FFPlotTask': // MOD: ???
-                    case 'SInventory': // MOD: ???
-                    case 'MFGBuildableAutoSplitterReplicatedProperties': // MOD: AutoSplitters
-                    case 'ItemAmount': // MOD: NogInserter?
-                    case 'FINGPUT1Buffer':
-                    case 'Loot': // MOD: ???
-                    case 'ProductionHandle': // MOD: ???
-                    case 'ContentLib_Recipe': // MOD: ???
-                    case 'RPHeaterTask': // MOD: Refined Power
-                    case 'RPProductionTask': // MOD: Refined Power
-                    case 'RPHeaterItemData': // MOD: Refined Power
-                    case 'RPBoilerItemData': // MOD: Refined Power
-                    case 'RPTurbineItemData': // MOD: Refined Power
-                    case 'DumbPrintBuildMapEntryBonusInfo':
-                    case 'RssSignData':
-                    case 'RssElementTextData':
-                    case 'RssElementImageData':
-                    case 'RssElementEffectData':
-                    case 'RssElementSharedData':
-                    case 'RssSignMaterialData':
-                    case 'RssHologramData':
-                        currentProperty.value.values = [];
-                        while(true)
+                    default:
+                        if(this.structureTypes.includes(currentProperty.value.type))
                         {
-                            let subStructProperty = this.readPropertyV5();
-                                if(subStructProperty === null)
+                            currentProperty.value.values = [];
+                            while(true)
+                            {
+                                let subStructProperty = this.readPropertyV5();
+                                    if(subStructProperty === null)
+                                    {
+                                        break;
+                                    }
+
+                                currentProperty.value.values.push(subStructProperty);
+
+                                if(subStructProperty.value !== undefined && subStructProperty.value.properties !== undefined && subStructProperty.value.properties.length === 1 && subStructProperty.value.properties[0] === null)
                                 {
                                     break;
                                 }
-
-                            currentProperty.value.values.push(subStructProperty);
-
-                            if(subStructProperty.value !== undefined && subStructProperty.value.properties !== undefined && subStructProperty.value.properties.length === 1 && subStructProperty.value.properties[0] === null)
-                            {
-                                break;
                             }
                         }
-                        break;
-
-                    default:
-                        BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
-                        if(typeof Sentry !== 'undefined')
+                        else
                         {
-                            Sentry.setContext('currentProperty', currentProperty);
+                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                            if(typeof Sentry !== 'undefined')
+                            {
+                                Sentry.setContext('currentProperty', currentProperty);
+                            }
+                            throw new Error('Unimplemented type `' + currentProperty.value.type + '` in StructProperty `' + currentProperty.name + '`');
                         }
-                        throw new Error('Unimplemented type `' + currentProperty.value.type + '` in StructProperty `' + currentProperty.name + '`');
                 }
 
                 break;

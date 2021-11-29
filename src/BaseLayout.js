@@ -1709,9 +1709,9 @@ export default class BaseLayout
             transform           : {
                 rotation            : playerRotation,
                 translation         : [
-                    playerPosition[0] + (Math.floor(Math.random() * (1600 + 1)) - 400),
-                    playerPosition[1] + (Math.floor(Math.random() * (1600 + 1)) - 400),
-                    playerPosition[2] + Math.floor(Math.random() * (800 + 1))
+                    playerPosition[0] + (Math.floor(Math.random() * (800 + 1)) - 400),
+                    playerPosition[1] + (Math.floor(Math.random() * (800 + 1)) - 400),
+                    playerPosition[2] + Math.floor(Math.random() * (400 + 1))
                 ]
             },
             children                : [{pathName: cratePathName + ".inventory"}],
