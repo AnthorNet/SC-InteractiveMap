@@ -93,14 +93,17 @@ export default class SaveParser_Read
             'RPTurbineItemData',
 
             // MOD: Really Simple Signs
-            'RssSignData',
-            'RssSignMaterialData',
             'RssElement',
             'RssElementTextData',
             'RssElementImageData',
             'RssElementEffectData',
             'RssElementSharedData',
-            'RssHologramData'
+            'RssFlatData',
+            'RssHologramData',
+            'RssRoundedData',
+            'RssSignData',
+            'RssSignMaterialData',
+            'RssTemplateData'
         ];
 
         this.parseHeader();
