@@ -1,4 +1,4 @@
-import Modal                                    from '../../Modal.js';
+import BaseLayout_Modal                         from '../../BaseLayout/Modal.js';
 
 export default class Modal_Object_CustomColor
 {
@@ -11,7 +11,7 @@ export default class Modal_Object_CustomColor
         let objectPrimaryColor      = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
         let objectSecondaryColor    = baseLayout.buildableSubSystem.getObjectSecondaryColor(currentObject);
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : 'Update "<strong>' + buildingData.name + '</strong>" custom color',
             container   : '#leafletMap',
             inputs      : [{

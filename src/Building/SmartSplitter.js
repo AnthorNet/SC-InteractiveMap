@@ -1,4 +1,4 @@
-import Modal                                    from '../Modal.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 // 0 => front
 // 1 => right
@@ -128,7 +128,7 @@ export default class Building_SmartSplitter
                 text: '*'
             });
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" rules',
                 container   : '#leafletMap',
                 inputs      : [{

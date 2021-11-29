@@ -1,37 +1,30 @@
 /* global L, Promise, Infinity, Intl, Sentry, parseFloat */
 
-import BaseLayout_Selection_Offset              from './BaseLayout/SelectionOffset.js';
-import BaseLayout_Selection_Rotate              from './BaseLayout/SelectionRotate.js';
-import BaseLayout_Selection_Delete              from './BaseLayout/SelectionDelete.js';
-import BaseLayout_Selection_Copy                from './BaseLayout/SelectionCopy.js';
-
 import BaseLayout_ContextMenu                   from './BaseLayout/ContextMenu.js';
-import BaseLayout_Tooltip                       from './BaseLayout/Tooltip.js';
 import BaseLayout_History                       from './BaseLayout/History.js';
 import BaseLayout_Math                          from './BaseLayout/Math.js';
+import BaseLayout_Modal                         from './BaseLayout/Modal.js';
+import BaseLayout_Tooltip                       from './BaseLayout/Tooltip.js';
 
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
-import SubSystem_Foliage                        from './SubSystem/Foliage.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
 import SubSystem_Railroad                       from './SubSystem/Railroad.js';
-
-import Modal                                    from './Modal.js';
 
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
 import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
 import Modal_Map_Players                        from './Modal/Map/Players.js';
 import Modal_Map_Options                        from './Modal/Map/Options.js';
 
-import Modal_ColorSlots                         from './Modal/ColorSlots.js';
-import Modal_LightColorSlots                    from './Modal/LightColorSlots.js';
-
 import Modal_Statistics_Production              from './Modal/Statistics/Production.js';
 import Modal_Statistics_Storage                 from './Modal/Statistics/Storage.js';
 
 import Modal_Buildings                          from './Modal/Buildings.js';
+import Modal_ColorSlots                         from './Modal/ColorSlots.js';
+import Modal_LightColorSlots                    from './Modal/LightColorSlots.js';
 import Modal_PowerCircuits                      from './Modal/PowerCircuits.js';
 import Modal_Schematics                         from './Modal/Schematics.js';
+import Modal_Selection                          from './Modal/Selection.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
 import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
@@ -41,8 +34,6 @@ import Building_Light                           from './Building/Light.js';
 import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
-
-import Spawn_Fill                               from './Spawn/Fill.js';
 
 export default class BaseLayout
 {
@@ -70,7 +61,7 @@ export default class BaseLayout
 
         this.updateAltitudeLayersIsRunning      = false;
         this.altitudeSliderControl              = null;
-        this.lassoControl                       = null;
+        this.selectionControl                   = null;
         this.clipboard                          = null;
         this.clipboardControl                   = null;
         this.history                            = null;
@@ -261,8 +252,8 @@ export default class BaseLayout
         this.satisfactoryMap.leafletMap.removeControl(this.altitudeSliderControl);
         this.altitudeSliderControl  = null;
 
-        this.satisfactoryMap.leafletMap.removeControl(this.lassoControl);
-        this.lassoControl           = null;
+        this.satisfactoryMap.leafletMap.removeControl(this.selectionControl);
+        this.selectionControl       = null;
 
         this.satisfactoryMap.leafletMap.removeControl(this.clipboardControl);
         this.clipboardControl       = null;
@@ -1112,11 +1103,6 @@ export default class BaseLayout
             this.satisfactoryMap.leafletMap.addControl(this.altitudeSliderControl);
             this.altitudeSliderControl.startSlider();
 
-            // Canvas event forwarder
-            //TODO: Fix the forwarding...
-            this.canvasEventForwarder = new L.eventForwarder({map: this.satisfactoryMap.leafletMap});
-            this.canvasEventForwarder.enable();
-
             // Collectables
             let statisticsCollectables = new Modal_Map_Collectables({baseLayout: this});
                 statisticsCollectables.get();
@@ -1262,9 +1248,9 @@ export default class BaseLayout
             this.clipboardControl = new L.Control.ClipboardControl({baseLayout: this});
             this.satisfactoryMap.leafletMap.addControl(this.clipboardControl);
 
-            // Lasso control
-            this.lassoControl = new L.Control.SelectAreaFeature({baseLayout: this});
-            this.satisfactoryMap.leafletMap.addControl(this.lassoControl);
+            // Selection control
+            this.selectionControl = new L.Control.Selection({baseLayout: this});
+            this.satisfactoryMap.leafletMap.addControl(this.selectionControl);
         });
     }
 
@@ -1803,7 +1789,7 @@ export default class BaseLayout
         let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : 'Pivot "' + buildingData.name + '" from the top-left corner',
             container   : '#leafletMap',
             inputs      : [
@@ -1928,7 +1914,7 @@ export default class BaseLayout
                 return this.players[selectOptions[0].value].teleportTo(newTranslation);
             }
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : "Teleport player",
             container   : '#leafletMap',
             inputs      : [
@@ -1985,7 +1971,7 @@ export default class BaseLayout
             inventoryOptions.push(newInventorySlot);
         }
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : '"<strong>' + buildingData.name + '</strong>" Inventory',
             container   : '#leafletMap',
             inputs      : inventoryOptions,
@@ -2030,23 +2016,19 @@ export default class BaseLayout
         });
     }
 
-    fillPlayerStorageBuildingInventoryModal(marker, inventoryProperty = 'mStorageInventory')
+    fillPlayerStorageBuildingInventoryModal(marker)
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
             if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
             {
-                // Buffer only have the dfluidBox, the fluid is handled with the pipe network ;)
+                // Buffer only have the fluidBox, the fluid is handled with the pipe network ;)
                 return this.fillPlayerStorageBuildingInventory(currentObject, null);
-            }
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
-            {
-                inventoryProperty   = 'mInventory';
             }
 
         let selectOptions       = this.generateInventoryOptions(currentObject, false);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : 'Fill "<strong>' + buildingData.name + '</strong>" Inventory',
             container   : '#leafletMap',
             inputs      : [{
@@ -2058,7 +2040,7 @@ export default class BaseLayout
             {
                 if(values !== null)
                 {
-                    this.fillPlayerStorageBuildingInventory(currentObject, values.fillWith, inventoryProperty);
+                    this.fillPlayerStorageBuildingInventory(currentObject, values.fillWith);
                     this.updateRadioactivityLayer();
                 }
             }.bind(this)
@@ -2073,6 +2055,10 @@ export default class BaseLayout
             if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
             {
                 storageObjects = Building_Locomotive.getFreightWagons(this, currentObject);
+            }
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
+            {
+                inventoryProperty   = 'mInventory';
             }
 
         if(fillWith !== null)
@@ -2157,6 +2143,10 @@ export default class BaseLayout
             {
                 storageObjects      = Building_Locomotive.getFreightWagons(this, currentObject);
             }
+            if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
+            {
+                inventoryProperty   = 'mInventory';
+            }
 
         for(let i = 0; i < storageObjects.length; i++)
         {
@@ -2164,11 +2154,6 @@ export default class BaseLayout
             {
                 this.setObjectProperty(storageObjects[i], 'mFluidBox', {type: "FluidBox", value: 0}, 'StructProperty');
                 continue;
-            }
-
-            if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
-            {
-                inventoryProperty   = 'mInventory';
             }
 
             let oldInventory    = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
@@ -2204,7 +2189,7 @@ export default class BaseLayout
             {
                 let currentFluidDescriptor = this.getObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
 
-                Modal.form({
+                BaseLayout_Modal.form({
                     title       : 'Update pipe network fluid',
                     container   : '#leafletMap',
                     inputs      : [{
@@ -2840,7 +2825,7 @@ export default class BaseLayout
 
         selectOptions.unshift({text: 'None', value: 'NULL'});
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : 'Update "' + buildingData.name + '" recipe',
             container   : '#leafletMap',
             inputs      : [
@@ -5104,7 +5089,7 @@ export default class BaseLayout
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : 'Update "<strong>' + buildingData.name + '</strong>" clock speed',
             container   : '#leafletMap',
             inputs      : [
@@ -5180,74 +5165,6 @@ export default class BaseLayout
                 }
             }.bind(this)
         });
-    }
-    updateMultipleObjectClockSpeed(offset, useOwnPowershards)
-    {
-        if(this.markersSelected)
-        {
-            console.time('updateMultipleObjectClockSpeed');
-
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                let contextMenu = this.getContextMenu(this.markersSelected[i]);
-
-                if(contextMenu !== false)
-                {
-                    for(let j = 0; j < contextMenu.length; j++)
-                    {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.includes('updateObjectClockSpeed'))
-                        {
-                            let currentObject       = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
-                            let currentClockSpeed   = this.getClockSpeed(currentObject) * 100;
-                            let newClockSpeed       = currentClockSpeed + parseFloat(offset);
-                            let clockSpeed          = Math.max(1, Math.min(Math.round(newClockSpeed), 250));
-
-                            if(currentClockSpeed !== clockSpeed)
-                            {
-                                let totalPowerShards    = Math.ceil((clockSpeed - 100) / 50);
-
-                                    if(totalPowerShards > 0 && clockSpeed > currentClockSpeed)
-                                    {
-                                        let potentialInventory = this.getObjectInventory(currentObject, 'mInventoryPotential', true);
-                                            if(potentialInventory !== null)
-                                            {
-                                                for(let k = 0; k < potentialInventory.properties.length; k++)
-                                                {
-                                                    if(potentialInventory.properties[k].name === 'mInventoryStacks')
-                                                    {
-                                                        for(let m = 0; m < totalPowerShards; m++)
-                                                        {
-                                                            if(useOwnPowershards === 1)
-                                                            {
-                                                                let result = this.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
-
-                                                                if(result === false)
-                                                                {
-                                                                    clockSpeed = Math.min(clockSpeed, 100 + (m * 50)); // Downgrade...
-                                                                    break;
-                                                                }
-                                                            }
-
-                                                            potentialInventory.properties[k].value.values[m][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                                            this.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, 'NumItems', 1, 'IntProperty');
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                    }
-
-                                this.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
-                                this.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
-                            }
-                        }
-                    }
-                }
-            }
-
-            console.timeEnd('updateMultipleObjectClockSpeed');
-        }
-
-        this.cancelSelectMultipleMarkers();
     }
 
     getObjectProperty(currentObject, propertyName, defaultPropertyValue = null)
@@ -6020,1154 +5937,4 @@ export default class BaseLayout
         // Apparently we couldn't find all the current recipe...
         return false;
     }
-
-    selectMultipleMarkers(markers)
-    {
-        let message                 = '';
-        let selectedMarkersLength   = 0;
-
-        if(markers !== null)
-        {
-            let buildings               = {};
-                selectedMarkersLength   = markers.length;
-                this.markersSelected    = [];
-
-            for(let i = 0; i < selectedMarkersLength; i++)
-            {
-                if(markers[i].options.pathName !== undefined)
-                {
-                    let currentObject       = this.saveGameParser.getTargetObject(markers[i].options.pathName);
-
-                    if(currentObject !== null)
-                    {
-                        this.markersSelected.push(markers[i]);
-
-                        if(buildings[currentObject.className] === undefined)
-                        {
-                            if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
-                            {
-                                buildings[currentObject.className] = {name: 'Loot Crate', total: 1};
-                            }
-                            else
-                            {
-                                let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
-
-                                if(buildingData !== null)
-                                {
-                                    buildings[currentObject.className] = {name: buildingData.name, total: 1};
-                                }
-                            }
-                        }
-                        else
-                        {
-                            buildings[currentObject.className].total++;
-                        }
-                    }
-                    else
-                    {
-                        if(markers[i].options.pathName.includes('_vehicleTrackData') === false)
-                        {
-                            console.log('MARKER FOR DELETE DO NOT EXISTS', markers[i]);
-                        }
-                    }
-                }
-            }
-
-            message += '<ul style="flex-wrap: wrap;display: flex;">';
-
-            let buildingsList   = [];
-                for(let className in buildings)
-                {
-                    buildingsList.push(buildings[className]);
-                }
-                buildingsList.sort((a, b) => (a.total > b.total) ? -1 : 1);
-            for(let i = 0; i < buildingsList.length; i++)
-            {
-                message += '<li style="flex: 1 0 50%;">' + buildingsList[i].total + ' ' + buildingsList[i].name + '</li>';
-            }
-            message += '</ul>';
-        }
-
-        let inputOptions = [];
-            if(markers !== null)
-            {
-                inputOptions.push({text: 'Delete selected items', value: 'delete'});
-                inputOptions.push({text: 'Update selected items color slot', value: 'colorSlot'});
-                inputOptions.push({text: 'Update selected items custom color', value: 'customColor'});
-
-                inputOptions.push({group: 'Positioning', text: 'Offset selected items position', value: 'offset'});
-                inputOptions.push({group: 'Positioning', text: 'Rotate selected items position', value: 'rotate'});
-
-                inputOptions.push({group: 'Blueprints', text: 'Add "Foundation 8m x 2m" helpers on selection boundaries', value: 'helpers'});
-                inputOptions.push({group: 'Blueprints', text: 'Copy selected items', value: 'copy'});
-
-                inputOptions.push({group: 'Overclocking', text: 'Offset selected items clock speed', value: 'updateClockSpeed'});
-
-                inputOptions.push({group: 'Materials', text: 'Switch to "FICSIT Foundation"', value: 'switchMaterial_foundation_Ficsit'});
-                inputOptions.push({group: 'Materials', text: 'Switch to "Concrete Foundation"', value: 'switchMaterial_foundation_Concrete'});
-                inputOptions.push({group: 'Materials', text: 'Switch to "Grip Metal Foundation"', value: 'switchMaterial_foundation_GripMetal'});
-                inputOptions.push({group: 'Materials', text: 'Switch to "Coated Concrete Foundation"', value: 'switchMaterial_foundation_ConcretePolished'});
-                inputOptions.push({group: 'Materials', text: 'Switch to "Asphalt Foundation"', value: 'switchMaterial_foundation_Asphalt'});
-
-                inputOptions.push({group: 'Materials', text: 'Switch to "FICSIT Wall"', value: 'switchMaterial_wall_Ficsit'});
-                inputOptions.push({group: 'Materials', text: 'Switch to "Concrete Wall"', value: 'switchMaterial_wall_Concrete'});
-                inputOptions.push({group: 'Materials', text: 'Switch to "Steel Wall"', value: 'switchMaterial_wall_Steel'});
-
-                inputOptions.push({group: 'Materials', text: 'Switch to "FICSIT Roof"', value: 'switchMaterial_roof_Ficsit'});
-                inputOptions.push({group: 'Materials', text: 'Switch to "Tar Roof"', value: 'switchMaterial_roof_Tar'});
-                inputOptions.push({group: 'Materials', text: 'Switch to "Metal Roof"', value: 'switchMaterial_roof_Metal'});
-                inputOptions.push({group: 'Materials', text: 'Switch to "Glass Roof"', value: 'switchMaterial_roof_Glass'});
-
-                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected belts/lifts', value: 'downgradeConveyor'});
-                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected power poles', value: 'downgradePowerPole'});
-                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected pipelines/pumps', value: 'downgradePipeline'});
-                inputOptions.push({group: 'Downgrade', text: 'Downgrade selected miners', value: 'downgradeMiners'});
-
-                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected belts/lifts', value: 'upgradeConveyor'});
-                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected power poles', value: 'upgradePowerPole'});
-                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'upgradePipeline'});
-                inputOptions.push({group: 'Upgrade', text: 'Upgrade selected miners', value: 'upgradeMiners'});
-            }
-
-            inputOptions.push({group: 'Foundations', text: 'Fill selection with...', value: 'fillSelection'});
-
-            if(markers !== null)
-            {
-                inputOptions.push({group: 'Foundations', text: 'Convert "Glass Foundation 8m x 1m" to "Foundation 8m x 1m"', value: 'upgradeGlass8x1ToFoundation8x1'});
-
-                inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorageInventories'});
-                inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorageInventories'});
-
-                inputOptions.push({group: 'Statistics', text: 'Show selected items production statistics', value: 'productionStatistics'});
-                inputOptions.push({group: 'Statistics', text: 'Show selected items storage statistics', value: 'storageStatistics'});
-                inputOptions.push({group: 'Statistics', text: 'Show selected power circuits statistics', value: 'powerCircuitsStatistics'});
-            }
-
-            // Not working?
-            //inputOptions.push({group: 'Flora', text: 'Respawn selection flora', value: 'respawnFlora'});
-            //inputOptions.push({group: 'Flora', text: 'Clear selection flora', value: 'clearFlora'});
-
-        Modal.form({
-            title       : 'You have selected ' + selectedMarkersLength + ' items',
-            message     : message,
-            onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-            container   : '#leafletMap',
-            inputs      : [{
-                name            : 'form',
-                inputType       : 'select',
-                inputOptions    : inputOptions
-            }],
-            callback    : function(form)
-            {
-                if(form === null || form.form === null)
-                {
-                    this.cancelSelectMultipleMarkers();
-                    return;
-                }
-
-                switch(form.form)
-                {
-                    case 'delete':
-                        Modal.confirm({
-                            title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            message     : 'Do you want a doggy bag with your mass-dismantling?<br /><em>(You\'ll just get a nice loot crate next to you)</em>',
-                            container   : '#leafletMap',
-                            buttons     : { confirm: {label: 'Yes'}, cancel: {label: 'No'} },
-                            callback    : function(result){
-                                return new BaseLayout_Selection_Delete({
-                                    baseLayout      : this,
-                                    markersSelected : this.markersSelected,
-                                    keepDeleted     : result
-                                });
-                            }.bind(this)
-                        });
-                        return;
-
-                    case 'offset':
-                        Modal.form({
-                            title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
-                            onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container   : '#leafletMap',
-                            inputs      : [{
-                                label       : 'X',
-                                name        : 'offsetX',
-                                inputType   : 'coordinate',
-                                value       : 0
-                            },
-                            {
-                                label       : 'Y',
-                                name        : 'offsetY',
-                                inputType   : 'coordinate',
-                                value       : 0
-                            },
-                            {
-                                label       : 'Z',
-                                name        : 'offsetZ',
-                                inputType   : 'coordinate',
-                                value       : 0
-                            }],
-                            callback: function(form)
-                            {
-                                if(form === null || form.offsetX === null || form.offsetY === null || form.offsetZ === null)
-                                {
-                                    this.cancelSelectMultipleMarkers();
-                                    return;
-                                }
-
-                                return new BaseLayout_Selection_Offset({
-                                    baseLayout      : this,
-                                    markersSelected : this.markersSelected,
-                                    offsetX         : form.offsetX,
-                                    offsetY         : form.offsetY,
-                                    offsetZ         : form.offsetZ
-                                });
-                            }.bind(this)
-                        });
-                        return;
-
-                    case 'rotate':
-                        Modal.form({
-                            title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container   : '#leafletMap',
-                            inputs      : [{
-                                label       : 'Rotation (Angle between 0 and 360 degrees)',
-                                name        : 'angle',
-                                inputType   : 'number',
-                                value       : 0,
-                                min         : 0,
-                                max         : 360
-                            }],
-                            callback    : function(form)
-                            {
-                                if(form === null || form.angle === null)
-                                {
-                                    this.cancelSelectMultipleMarkers();
-                                    return;
-                                }
-
-                                return new BaseLayout_Selection_Rotate({
-                                    baseLayout      : this,
-                                    markersSelected : this.markersSelected,
-                                    angle           : form.angle
-                                });
-                            }.bind(this)
-                        });
-                        return;
-
-                    case 'colorSlot':
-                        let playerColors        = this.buildableSubSystem.getPlayerColorSlots();
-                        let selectOptionsColors = [];
-                            for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
-                            {
-                                selectOptionsColors.push({
-                                    fullWidth       : ((slotIndex === 0) ? true : false),
-                                    primaryColor    : 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
-                                    secondaryColor  : 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
-                                    value           : slotIndex,
-                                    text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
-                                });
-                            }
-                            selectOptionsColors.push({
-                                fullWidth       : true,
-                                primaryColor    : 'rgb(' + playerColors[16].primaryColor.r + ', ' + playerColors[16].primaryColor.g + ', ' + playerColors[16].primaryColor.b + ')',
-                                secondaryColor  : 'rgb(' + playerColors[16].secondaryColor.r + ', ' + playerColors[16].secondaryColor.g + ', ' + playerColors[16].secondaryColor.b + ')',
-                                value           : 16,
-                                text            : 'FICSIT Foundation'
-                            });
-                            selectOptionsColors.push({
-                                fullWidth       : true,
-                                primaryColor    : 'rgb(' + playerColors[18].primaryColor.r + ', ' + playerColors[18].primaryColor.g + ', ' + playerColors[18].primaryColor.b + ')',
-                                secondaryColor  : 'rgb(' + playerColors[18].secondaryColor.r + ', ' + playerColors[18].secondaryColor.g + ', ' + playerColors[18].secondaryColor.b + ')',
-                                value           : 18,
-                                text            : 'Concrete Structure'
-                            });
-
-                        let playerCustomColor       = this.buildableSubSystem.getPlayerCustomColor();
-                            selectOptionsColors.push({
-                                fullWidth       : true,
-                                primaryColor    : 'rgb(' + playerCustomColor.primaryColor.r + ', ' + playerCustomColor.primaryColor.g + ', ' + playerCustomColor.primaryColor.b + ')',
-                                secondaryColor  : 'rgb(' + playerCustomColor.secondaryColor.r + ', ' + playerCustomColor.secondaryColor.g + ', ' + playerCustomColor.secondaryColor.b + ')',
-                                value           : 255,
-                                text            : 'Custom Swatch'
-                            });
-
-                        Modal.form({
-                            title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            container   : '#leafletMap',
-                            inputs      : [{
-                                name            : 'slotIndex',
-                                inputType       : 'colorSlots',
-                                inputOptions    : selectOptionsColors
-                            }],
-                            callback    : function(form)
-                            {
-                                if(form === null || form.slotIndex === null)
-                                {
-                                    this.cancelSelectMultipleMarkers();
-                                    return;
-                                }
-
-                                return this.updateMultipleObjectColorSlot(form.slotIndex);
-                            }.bind(this)
-                        });
-                        return;
-
-                    case 'customColor':
-                        let customColor = this.buildableSubSystem.getPlayerCustomColor();
-
-                        Modal.form({
-                            title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            container   : '#leafletMap',
-                            inputs      : [{
-                                name            : 'primaryColor',
-                                inputType       : 'colorPicker',
-                                value           : customColor.primaryColor
-                            },
-                            {
-                                name            : 'secondaryColor',
-                                inputType       : 'colorPicker',
-                                value           : customColor.secondaryColor
-                            }],
-                            callback    : function(form)
-                            {
-                                if(form === null || form.primaryColor === null || form.secondaryColor === null)
-                                {
-                                    this.cancelSelectMultipleMarkers();
-                                    return;
-                                }
-
-                                return this.updateMultipleObjectCustomColor(form.primaryColor, form.secondaryColor);
-                            }.bind(this)
-                        });
-                        return;
-
-                    case 'switchMaterial_foundation_Ficsit':
-                        return this.updateMultipleObjectMaterial('foundation', 'Ficsit');
-                    case 'switchMaterial_foundation_Concrete':
-                        return this.updateMultipleObjectMaterial('foundation', 'Concrete');
-                    case 'switchMaterial_foundation_GripMetal':
-                        return this.updateMultipleObjectMaterial('foundation', 'GripMetal');
-                    case 'switchMaterial_foundation_ConcretePolished':
-                        return this.updateMultipleObjectMaterial('foundation', 'ConcretePolished');
-                    case 'switchMaterial_foundation_Asphalt':
-                        return this.updateMultipleObjectMaterial('foundation', 'Asphalt');
-
-                    case 'switchMaterial_wall_Ficsit':
-                        return this.updateMultipleObjectMaterial('wall', 'Ficsit');
-                    case 'switchMaterial_wall_Concrete':
-                        return this.updateMultipleObjectMaterial('wall', 'Concrete');
-                    case 'switchMaterial_wall_Steel':
-                        return this.updateMultipleObjectMaterial('wall', 'Steel');
-
-                    case 'switchMaterial_roof_Ficsit':
-                        return this.updateMultipleObjectMaterial('roof', 'Ficsit');
-                    case 'switchMaterial_roof_Tar':
-                        return this.updateMultipleObjectMaterial('roof', 'Tar');
-                    case 'switchMaterial_roof_Metal':
-                        return this.updateMultipleObjectMaterial('roof', 'Metal');
-                    case 'switchMaterial_roof_Glass':
-                        return this.updateMultipleObjectMaterial('roof', 'Glass');
-
-                    case 'helpers':
-                        let playerColorsHelpers = this.buildableSubSystem.getPlayerColorSlots();
-                        let selectOptions       = [];
-
-                            for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
-                            {
-                                selectOptions.push({
-                                    fullWidth       : ((slotIndex === 0) ? true : false),
-                                    primaryColor    : 'rgb(' + playerColorsHelpers[slotIndex].primaryColor.r + ', ' + playerColorsHelpers[slotIndex].primaryColor.g + ', ' + playerColorsHelpers[slotIndex].primaryColor.b + ')',
-                                    secondaryColor  : 'rgb(' + playerColorsHelpers[slotIndex].secondaryColor.r + ', ' + playerColorsHelpers[slotIndex].secondaryColor.g + ', ' + playerColorsHelpers[slotIndex].secondaryColor.b + ')',
-                                    value           : slotIndex,
-                                    text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
-                                });
-                            }
-
-                        Modal.form({
-                            title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            container   : '#leafletMap',
-                            inputs      : [{
-                                name            : 'slotIndex',
-                                inputType       : 'colorSlots',
-                                inputOptions    : selectOptions
-                            }],
-                            callback    : function(form)
-                            {
-                                if(form === null || form.slotIndex === null)
-                                {
-                                    this.cancelSelectMultipleMarkers();
-                                    return;
-                                }
-
-                                return this.helpersSelection(form.slotIndex);
-                            }.bind(this)
-                        });
-                        return;
-                    case 'copy':
-                        return new BaseLayout_Selection_Copy({
-                                baseLayout      : this,
-                                markersSelected : this.markersSelected
-                            });
-
-                    case 'downgradeConveyor':
-                    case 'downgradePowerPole':
-                    case 'downgradePipeline':
-                    case 'downgradeMiners':
-                        return this.downgradeSelection(form.form);
-
-                    case 'upgradeConveyor':
-                    case 'upgradePowerPole':
-                    case 'upgradePipeline':
-                    case 'upgradeMiners':
-                        return this.upgradeSelection(form.form);
-
-                    case 'updateClockSpeed':
-                        Modal.form({
-                            title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container   : '#leafletMap',
-                            inputs      : [
-                                {
-                                    label       : 'Offset clock speed (Percentage)',
-                                    name        : 'offset',
-                                    inputType   : 'number',
-                                    value       : 0,
-                                    min         : 0,
-                                    max         : 250
-                                },
-                                {
-                                    label       : 'Use power shards from your containers?',
-                                    name        : 'useOwnPowershards',
-                                    inputType   : 'toggle'
-                                }
-                            ],
-                            callback: function(form)
-                            {
-                                if(form === null || form.offset === null || form.useOwnPowershards === null)
-                                {
-                                    this.cancelSelectMultipleMarkers();
-                                    return;
-                                }
-
-                                return this.updateMultipleObjectClockSpeed(form.offset, parseInt(form.useOwnPowershards));
-                            }.bind(this)
-                        });
-                        return;
-
-                    case 'fillSelection':
-                        return this.fillSelection();
-                    case 'upgradeGlass8x1ToFoundation8x1':
-                        return this.selectionGlass8x1ToFoundation8x1();
-
-                    case 'fillStorageInventories':
-                        Modal.form({
-                            title       : 'You have selected ' + selectedMarkersLength + ' items',
-                            onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                            container   : '#leafletMap',
-                            inputs      : [{
-                                name            : 'fillWith',
-                                inputType       : 'selectPicker',
-                                inputOptions    : this.generateInventoryOptions(null, false)
-                            }],
-                            callback: function(form)
-                            {
-                                if(form === null || form.fillWith === null)
-                                {
-                                    this.cancelSelectMultipleMarkers();
-                                    return;
-                                }
-
-                               return this.fillStorageInventoriesSelection(form.fillWith);
-                            }.bind(this)
-                        });
-                        return;
-                    case 'clearStorageInventories':
-                        return this.clearStorageInventoriesSelection();
-
-                    case 'respawnFlora':
-                        return SubSystem_Foliage.respawn(this);
-                    case 'clearFlora':
-                        return SubSystem_Foliage.clear(this);
-
-                    case 'productionStatistics':
-                        return this.showSelectionProductionStatistics();
-                    case 'storageStatistics':
-                        return this.showSelectionStorageStatistics();
-                    case 'powerCircuitsStatistics':
-                        return this.showModalPowerCircuitsStatistics();
-                }
-            }.bind(this)
-        });
-    }
-
-    fillSelection()
-    {
-        if(this.satisfactoryMap.leafletMap.selectAreaFeature._areaSelected !== null)
-        {
-            let inputOptions = [];
-                for(let i in this.buildingsData)
-                {
-                    if(this.buildingsData[i].category === 'foundation')
-                    {
-                        inputOptions.push({
-                            dataContent: '<img src="' + this.buildingsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.buildingsData[i].name,
-                            value: this.buildingsData[i].className,
-                            text: this.buildingsData[i].name
-                        });
-                    }
-                }
-
-            Modal.form({
-                title       : 'Fill selection with...',
-                onEscape    : this.cancelSelectMultipleMarkers.bind(this),
-                container   : '#leafletMap',
-                inputs      : [{
-                    name            : 'fillWith',
-                    inputType       : 'selectPicker',
-                    inputOptions    : inputOptions
-                },{
-                    name            : 'z',
-                    label           : 'Altitude (In centimeters)',
-                    inputType       : 'coordinate',
-                    value           : 0,
-                },
-                {
-                    label           : 'Use materials from your containers?',
-                    name            : 'useOwnMaterials',
-                    inputType       : 'toggle'
-                }],
-                callback: function(form)
-                {
-                    if(form === null || form.fillWith === null || form.z === null || form.useOwnMaterials === null)
-                    {
-                        this.cancelSelectMultipleMarkers();
-                        return;
-                    }
-
-                    return new Spawn_Fill({
-                        selection       : this.satisfactoryMap.leafletMap.selectAreaFeature._areaSelected,
-                        z               : form.z,
-                        fillWith        : form.fillWith,
-                        useOwnMaterials : parseInt(form.useOwnMaterials),
-
-                        baseLayout      : this
-                    });
-                }.bind(this)
-            });
-        }
-
-        return;
-    }
-
-    fillStorageInventoriesSelection(fillWith, inventoryProperty = 'mStorageInventory')
-    {
-        if(this.markersSelected)
-        {
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                let currentObject = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
-                    if(currentObject !== null)
-                    {
-                        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
-                        {
-                            inventoryProperty   = 'mInventory';
-                        }
-
-                        // Skip locomotive to avoid double freight wagons...
-                        if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
-                        {
-                            continue;
-                        }
-
-                        this.fillPlayerStorageBuildingInventory(currentObject, fillWith, inventoryProperty);
-                    }
-            }
-        }
-
-        this.updateRadioactivityLayer();
-        this.cancelSelectMultipleMarkers();
-    }
-
-    clearStorageInventoriesSelection(inventoryProperty = 'mStorageInventory')
-    {
-        if(this.markersSelected)
-        {
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                this.clearPlayerStorageBuildingInventory({relatedTarget: this.markersSelected[i]}, inventoryProperty);
-            }
-        }
-
-        this.updateRadioactivityLayer();
-        this.cancelSelectMultipleMarkers();
-    }
-
-    downgradeSelection(callbackName)
-    {
-        if(this.markersSelected)
-        {
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                let contextMenu = this.getContextMenu(this.markersSelected[i]);
-                    if(contextMenu !== false)
-                    {
-                        // Search for a downgrade callback in contextmenu...
-                        for(let j = 0; j < contextMenu.length; j++)
-                        {
-                            if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name === callbackName)
-                            {
-                                contextMenu[j].callback({relatedTarget: this.markersSelected[i], baseLayout: this});
-                            }
-                        }
-                    }
-            }
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    upgradeSelection(callbackName)
-    {
-        if(this.markersSelected)
-        {
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                let contextMenu = this.getContextMenu(this.markersSelected[i]);
-                    if(contextMenu !== false)
-                    {
-                        // Search for a downgrade callback in contextmenu...
-                        for(let j = 0; j < contextMenu.length; j++)
-                        {
-                            if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name === callbackName)
-                            {
-                                contextMenu[j].callback({relatedTarget: this.markersSelected[i], baseLayout: this});
-                            }
-                        }
-                    }
-            }
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    selectionGlass8x1ToFoundation8x1()
-    {
-        if(this.markersSelected)
-        {
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                let currentObject = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
-                    if(currentObject !== null)
-                    {
-                        if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Foundation/Build_FoundationGlass_01.Build_FoundationGlass_01_C')
-                        {
-                            currentObject.className = '/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x1_01.Build_Foundation_8x1_01_C';
-
-                            let result = this.parseObject(currentObject);
-                                this.deleteMarkerFromElements(result.layer, this.markersSelected[i], true);
-                                this.addElementToLayer(result.layer, result.marker);
-                        }
-                    }
-            }
-
-            this.updateDelayedBadgeCount();
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    showSelectionProductionStatistics()
-    {
-        if(this.markersSelected)
-        {
-            let statisticsProduction = new Modal_Statistics_Production({
-                    baseLayout      : this,
-                    markersSelected : this.markersSelected
-                });
-
-            $('#genericModal .modal-title').empty().html(this.translate._('MAP\\MODAL\\Statistics - Production'));
-            $('#genericModal .modal-body').empty().html(statisticsProduction.parse());
-            setTimeout(function(){
-                $('#genericModal').modal('show').modal('handleUpdate');
-            }, 250);
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    showSelectionStorageStatistics()
-    {
-        if(this.markersSelected)
-        {
-            let statisticsStorage = new Modal_Statistics_Storage({
-                    baseLayout      : this,
-                    markersSelected : this.markersSelected
-                });
-
-            $('#genericModal .modal-title').empty().html(this.translate._('MAP\\MODAL\\Statistics - Storage'));
-            $('#genericModal .modal-body').empty().html(statisticsStorage.parse());
-            setTimeout(function(){
-                $('#genericModal').modal('show').modal('handleUpdate');
-            }, 250);
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    showModalPowerCircuitsStatistics()
-    {
-        if(this.markersSelected)
-        {
-            let modalPowerCircuits = new Modal_PowerCircuits({
-                    baseLayout      : this,
-                    markersSelected : this.markersSelected
-                });
-                modalPowerCircuits.parse();
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    updateMultipleObjectColorSlot(slotIndex)
-    {
-        slotIndex           = parseInt(slotIndex);
-
-        if(this.markersSelected)
-        {
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                let contextMenu = this.getContextMenu(this.markersSelected[i]);
-                    if(contextMenu !== false)
-                    {
-                        // Search for a callback in contextmenu...
-                        for(let j = 0; j < contextMenu.length; j++)
-                        {
-                            if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_ColorSlot')
-                            {
-                                let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
-                                    this.buildableSubSystem.setObjectColorSlot(currentObject, slotIndex);
-                                    this.markersSelected[i].fire('mouseout'); // Trigger a redraw
-                            }
-                        }
-                    }
-            }
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    updateMultipleObjectCustomColor(primaryColor, secondaryColor)
-    {
-        if(this.markersSelected)
-        {
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                let contextMenu = this.getContextMenu(this.markersSelected[i]);
-                    if(contextMenu !== false)
-                    {
-                        // Search for a callback in contextmenu...
-                        for(let j = 0; j < contextMenu.length; j++)
-                        {
-                            if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_CustomColor')
-                            {
-                                let currentObject   = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
-                                    this.buildableSubSystem.setObjectCustomColor(currentObject, primaryColor, secondaryColor);
-                                    this.markersSelected[i].fire('mouseout'); // Trigger a redraw
-                            }
-                        }
-                    }
-            }
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    updateMultipleObjectMaterial(category, material)
-    {
-        if(this.markersSelected)
-        {
-            for(let i = 0; i < this.markersSelected.length; i++)
-            {
-                let contextMenu = this.getContextMenu(this.markersSelected[i]);
-                    if(contextMenu !== false)
-                    {
-                        // Search for a callback in contextmenu...
-                        for(let j = 0; j < contextMenu.length; j++)
-                        {
-                            if(contextMenu[j].className !== undefined && contextMenu[j].className === 'buildableSubSystem_switchObjectMaterial')
-                            {
-                                if(contextMenu[j].argument !== undefined && contextMenu[j].argument[0] === category && contextMenu[j].argument[1] === material)
-                                {
-                                    this.buildableSubSystem.switchObjectMaterial({relatedTarget: this.markersSelected[i], baseLayout: this}, [category, material]);
-                                }
-                            }
-                        }
-                    }
-            }
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    helpersSelection(colorSlotHelper)
-    {
-        if(this.markersSelected)
-        {
-            let selectionBoundaries = this.getSelectionBoundaries(this.markersSelected);
-            let centerX             = ((selectionBoundaries.minX + selectionBoundaries.maxX) / 2);
-            let centerY             = ((selectionBoundaries.minY + selectionBoundaries.maxY) / 2);
-            let minZ                = Infinity;
-
-                // Try to find the minZ
-                for(let i = 0; i < this.markersSelected.length; i++)
-                {
-                    let currentObject       = this.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
-                    let currentObjectData   = this.getBuildingDataFromClassName(currentObject.className);
-
-                        if(currentObjectData !== null && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && currentObject.className !== '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
-                        {
-                            if(currentObjectData.category === 'frame' || currentObjectData.category === 'foundation' || currentObjectData.category === 'roof')
-                            {
-                                minZ = Math.min(minZ, currentObject.transform.translation[2] - (currentObjectData.height * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
-                            }
-                            else
-                            {
-                                minZ = Math.min(minZ, currentObject.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
-                            }
-                        }
-                }
-
-
-            let fakeFoundation  = {
-                    type            : 1,
-                    className       : "/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x2_01.Build_Foundation_8x2_01_C",
-                    pathName        : "Persistent_Level:PersistentLevel.Build_Foundation_8x2_01_C_XXX",
-                    transform       : {
-                        rotation        : [0, 0, 0, 1],
-                        translation     : [centerX, centerY, minZ + 100]
-                    },
-                    properties      : [
-                        { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
-                        { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
-                    ],
-                    entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
-                };
-                fakeFoundation.pathName = this.generateFastPathName(fakeFoundation);
-
-            this.buildableSubSystem.setObjectColorSlot(fakeFoundation, parseInt(colorSlotHelper));
-
-            this.saveGameParser.addObject(fakeFoundation);
-            let resultCenter = this.parseObject(fakeFoundation);
-                this.addElementToLayer(resultCenter.layer, resultCenter.marker);
-
-            let newFoundationTopLeft                    = JSON.parse(JSON.stringify(fakeFoundation));
-                newFoundationTopLeft.pathName           = this.generateFastPathName(fakeFoundation);
-            let translationRotationTopLeft              = BaseLayout_Math.getPointRotation(
-                    [
-                        (fakeFoundation.transform.translation[0] - (centerX - selectionBoundaries.minX) - 800),
-                        (fakeFoundation.transform.translation[1] - (centerY - selectionBoundaries.minY) - 800)
-                    ], fakeFoundation.transform.translation, fakeFoundation.transform.rotation
-                );
-                newFoundationTopLeft.transform.translation[0]  = translationRotationTopLeft[0];
-                newFoundationTopLeft.transform.translation[1]  = translationRotationTopLeft[1];
-
-                this.saveGameParser.addObject(newFoundationTopLeft);
-
-                let resultTopLeft = this.parseObject(newFoundationTopLeft);
-                    this.addElementToLayer(resultTopLeft.layer, resultTopLeft.marker);
-
-            let newFoundationTopRight                   = JSON.parse(JSON.stringify(fakeFoundation));
-                newFoundationTopRight.pathName          = this.generateFastPathName(fakeFoundation);
-            let translationRotationTopRight             = BaseLayout_Math.getPointRotation(
-                    [
-                        (fakeFoundation.transform.translation[0] + (selectionBoundaries.maxX - centerX) + 800),
-                        (fakeFoundation.transform.translation[1] - (centerY - selectionBoundaries.minY) - 800)
-                    ], fakeFoundation.transform.translation, fakeFoundation.transform.rotation
-                );
-                newFoundationTopRight.transform.translation[0] = translationRotationTopRight[0];
-                newFoundationTopRight.transform.translation[1] = translationRotationTopRight[1];
-
-                this.saveGameParser.addObject(newFoundationTopRight);
-
-                let resultTopRight = this.parseObject(newFoundationTopRight);
-                    this.addElementToLayer(resultTopRight.layer, resultTopRight.marker);
-
-            let newFoundationBottomLeft                 = JSON.parse(JSON.stringify(fakeFoundation));
-                newFoundationBottomLeft.pathName        = this.generateFastPathName(fakeFoundation);
-            let translationRotationBottomLeft           = BaseLayout_Math.getPointRotation(
-                    [
-                        (fakeFoundation.transform.translation[0] - (centerX - selectionBoundaries.minX) - 800),
-                        (fakeFoundation.transform.translation[1] + (selectionBoundaries.maxY - centerY) + 800)
-                    ], fakeFoundation.transform.translation, fakeFoundation.transform.rotation
-                );
-                newFoundationBottomLeft.transform.translation[0]    = translationRotationBottomLeft[0];
-                newFoundationBottomLeft.transform.translation[1]    = translationRotationBottomLeft[1];
-
-                this.saveGameParser.addObject(newFoundationBottomLeft);
-
-                let resultBottomLeft = this.parseObject(newFoundationBottomLeft);
-                    this.addElementToLayer(resultBottomLeft.layer, resultBottomLeft.marker);
-
-
-            let newFoundationBottomRight                = JSON.parse(JSON.stringify(fakeFoundation));
-                newFoundationBottomRight.pathName       = this.generateFastPathName(fakeFoundation);
-            let translationRotationBottomRight          = BaseLayout_Math.getPointRotation(
-                    [
-                        (fakeFoundation.transform.translation[0] + (selectionBoundaries.maxX - centerX) + 800),
-                        (fakeFoundation.transform.translation[1] + (selectionBoundaries.maxY - centerY) + 800)
-                    ], fakeFoundation.transform.translation, fakeFoundation.transform.rotation
-                );
-                newFoundationBottomRight.transform.translation[0]   = translationRotationBottomRight[0];
-                newFoundationBottomRight.transform.translation[1]   = translationRotationBottomRight[1];
-
-                this.saveGameParser.addObject(newFoundationBottomRight);
-
-                let resultBottomRight = this.parseObject(newFoundationBottomRight);
-                    this.addElementToLayer(resultBottomRight.layer, resultBottomRight.marker);
-        }
-
-        this.cancelSelectMultipleMarkers();
-    }
-
-    cancelSelectMultipleMarkers()
-    {
-        this.markersSelected = undefined;
-        this.satisfactoryMap.leafletMap.selectAreaFeature.removeSelectedArea();
-        this.satisfactoryMap.unpauseMap();
-    }
-
-    getSelectionBoundaries(markersSelected)
-    {
-        let maxObjectOffset = 0;
-        let minX            = Infinity;
-        let maxX            = -Infinity;
-        let minY            = Infinity;
-        let maxY            = -Infinity;
-            for(let i = 0; i < markersSelected.length; i++)
-            {
-                let currentObject   = this.saveGameParser.getTargetObject(markersSelected[i].options.pathName);
-                    if(['/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C', '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C', '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'].includes(currentObject.className))
-                    {
-                        continue;
-                    }
-
-                let mSplineData     = this.getObjectProperty(currentObject, 'mSplineData');
-                    if(mSplineData !== null)
-                    {
-                        let splineMinX = Infinity;
-                        let splineMaxX = -Infinity;
-                        let splineMinY = Infinity;
-                        let splineMaxY = -Infinity;
-
-                        for(let j = 0; j < mSplineData.values.length; j++)
-                        {
-                            for(let k = 0; k < mSplineData.values[j].length; k++)
-                            {
-                                let currentValue    = mSplineData.values[j][k];
-
-                                    if(currentValue.name === 'Location')
-                                    {
-                                        splineMinX  = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMaxX  = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMinY  = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                        splineMaxY  = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                    }
-                            }
-                        }
-
-                        minX    = Math.min(minX, ((splineMinX + splineMaxX) / 2));
-                        maxX    = Math.max(maxX, ((splineMinX + splineMaxX) / 2));
-                        minY    = Math.min(minY, ((splineMinY + splineMaxY) / 2));
-                        maxY    = Math.max(maxY, ((splineMinY + splineMaxY) / 2));
-
-                        continue;
-                    }
-
-                let objectOffset    = 0;
-                let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
-                    if(buildingData !== null && (buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof'))
-                    {
-                        objectOffset = 400;
-                    }
-
-                    minX            = Math.min(minX, currentObject.transform.translation[0] - objectOffset);
-                    maxX            = Math.max(maxX, currentObject.transform.translation[0] + objectOffset);
-                    minY            = Math.min(minY, currentObject.transform.translation[1] - objectOffset);
-                    maxY            = Math.max(maxY, currentObject.transform.translation[1] + objectOffset);
-                    maxObjectOffset = Math.max(objectOffset, maxObjectOffset);
-            }
-
-        return {
-            minX    : minX + maxObjectOffset,
-            maxX    : maxX - maxObjectOffset,
-            minY    : minY + maxObjectOffset,
-            maxY    : maxY - maxObjectOffset,
-            centerX : (minX + maxX) / 2,
-            centerY : (minY + maxY) / 2
-        };
-    }
 }
-
-let _options;
-
-L.Map.EventForwarder = L.Class.extend({
-        _prevTarget: null,
-
-	initialize: function (options) {
-            _options                    = options;
-            _options.throttleMs         = 100;
-            _options.throttleOptions    = {
-                leading: true,
-                trailing: false
-            };
-	},
-
-	enable: function() {
-            //L.DomEvent.on(_options.map, 'click', this._handleClick, this);
-            L.DomEvent.on(_options.map, 'contextmenu', this._handleClick, this);
-            //L.DomEvent.on(_options.map, 'mousemove', this._throttle(this._handleMouseMove, _options.throttleMs, _options.throttleOptions), this);
-	},
-
-	disable: function() {
-            //L.DomEvent.off(_options.map, 'click', this._handleClick, this);
-            L.DomEvent.off(_options.map, 'contextmenu', this._handleClick, this);
-            //L.DomEvent.off(_options.map, 'mousemove', this._throttle(this._handleMouseMove, _options.throttleMs, _options.throttleOptions), this);
-	},
-
-	/**
-	 * Handle `mousemove` event from map, i.e. forwards unhandled events
-	 * @param event
-	 * @private
-	 */
-	_handleMouseMove: function(event) {
-            // we use the maps mousemove event to avoid registering listeners
-            // for each individual layer, however this means we don't receive
-            // the layers mouseover/out events so we need to fudge it a little
-            if(event.originalEvent._stopped) { return; }
-
-		// get the target pane
-		var currentTarget = event.originalEvent.target;
-		var stopped;
-		var removed;
-
-		// hide the target node
-		removed = { node: currentTarget, pointerEvents: currentTarget.style.pointerEvents };
-		currentTarget.style.pointerEvents = 'none';
-
-		// attempt to grab the next layer below
-		const nextTarget = document.elementFromPoint(event.originalEvent.clientX, event.originalEvent.clientY);
-		const isCanvas = nextTarget.nodeName.toLowerCase() === 'canvas';
-
-		// target has changed so trigger mouseout previous
-		if (L.Map.EventForwarder._prevTarget && L.Map.EventForwarder._prevTarget !== nextTarget) {
-			L.Map.EventForwarder._prevTarget.dispatchEvent(new MouseEvent('mouseout', event.originalEvent));
-		}
-		L.Map.EventForwarder._prevTarget = nextTarget;
-
-		// we keep drilling down until we get stopped,
-		// or we reach the map container itself
-		if (
-			nextTarget &&
-			nextTarget.nodeName.toLowerCase() !== 'body' &&
-			nextTarget.classList.value.indexOf('leaflet-container') === -1
-		) {
-			let eventType = isCanvas ? 'mousemove' : 'mouseover';
-			var ev = new MouseEvent(eventType, event.originalEvent);
-			stopped = !nextTarget.dispatchEvent(ev);
-			if (stopped || ev._stopped) {
-				L.DomEvent.stop(event);
-			}
-		}
-
-		// restore pointerEvents
-		removed.node.style.pointerEvents = removed.pointerEvents;
-	},
-
-	/**
-	 * Handle `click` event from map, i.e. forwards unhandled events
-	 * @param event
-	 * @private
-	 */
-	_handleClick: function(event)
-        {
-            if (event.originalEvent._stopped) { return; }
-
-            // get the target pane
-            var currentTarget = event.originalEvent.target;
-            var stopped;
-            var removed;
-
-            // hide the target node
-            removed = { node: currentTarget, pointerEvents: currentTarget.style.pointerEvents };
-            currentTarget.style.pointerEvents = 'none';
-
-            // attempt to grab the next layer below
-            let nextTarget = document.elementFromPoint(event.originalEvent.clientX, event.originalEvent.clientY);
-
-            // we keep drilling down until we get stopped,
-            // or we reach the map container itself
-            if (
-                    nextTarget &&
-                    nextTarget.nodeName.toLowerCase() !== 'body' &&
-                    nextTarget.classList.value.indexOf('leaflet-container') === -1
-            ) {
-                    var ev = new MouseEvent(event.originalEvent.type, event.originalEvent);
-                    stopped = !nextTarget.dispatchEvent(ev);
-                    if (stopped || ev._stopped) {
-                            L.DomEvent.stop(event);
-                    }
-            }
-
-            // restore pointerEvents
-            removed.node.style.pointerEvents = removed.pointerEvents;
-	},
-
-	/**
-	 * Pinched from underscore
-	 * @param func
-	 * @param wait
-	 * @param options
-	 * @returns {Function}
-	 * @private
-	 */
-	_throttle: function (func, wait, options) {
-		var context, args, result;
-		var timeout = null;
-		var previous = 0;
-		if (!options) options = {};
-		var later = function() {
-			previous = options.leading === false ? 0 : Date.now();
-			timeout = null;
-			result = func.apply(context, args);
-			if (!timeout) context = args = null;
-		};
-		return function() {
-			var now = Date.now();
-			if (!previous && options.leading === false) previous = now;
-			var remaining = wait - (now - previous);
-			context = this;
-			args = arguments;
-			if (remaining <= 0 || remaining > wait) {
-				if (timeout) {
-					clearTimeout(timeout);
-					timeout = null;
-				}
-				previous = now;
-				result = func.apply(context, args);
-				if (!timeout) context = args = null;
-			} else if (!timeout && options.trailing !== false) {
-				timeout = setTimeout(later, remaining);
-			}
-			return result;
-		};
-	}
-
-
-});
-
-L.eventForwarder = function(options)
-{
-    return new L.Map.EventForwarder(options);
-};

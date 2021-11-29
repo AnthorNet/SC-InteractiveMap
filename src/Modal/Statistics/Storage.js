@@ -5,7 +5,7 @@ export default class Modal_Statistics_Storage
     {
         this.baseLayout         = options.baseLayout;
 
-        if(options.markersSelected === undefined)
+        if(options.markers === undefined)
         {
             this.markers = [];
             for(let layerId in this.baseLayout.playerLayers)
@@ -32,7 +32,7 @@ export default class Modal_Statistics_Storage
         }
         else
         {
-            this.markers =  options.markersSelected;
+            this.markers =  options.markers;
         }
 
         if(typeof gtag === 'function')

@@ -1,10 +1,12 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import Modal_Selection                          from '../Modal/Selection.js';
+
 export default class SubSystem_Foliage
 {
     static getSelectionFoliage(baseLayout)
     {
-        let selection   = baseLayout.satisfactoryMap.leafletMap.selectAreaFeature._areaSelected;
+        let selection   = baseLayout.satisfactoryMap.leafletMap.selection._areaSelected;
         let objects     = baseLayout.saveGameParser.getObjects();
         let foliage     = [];
 
@@ -19,7 +21,7 @@ export default class SubSystem_Foliage
                 }
             }
 
-        baseLayout.cancelSelectMultipleMarkers();
+        Modal_Selection.cancel(baseLayout);
 
         return foliage;
     }

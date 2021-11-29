@@ -1,4 +1,4 @@
-import Modal                                    from '../../Modal.js';
+import BaseLayout_Modal                         from '../../BaseLayout/Modal.js';
 
 export default class Modal_Object_Pattern
 {
@@ -32,7 +32,7 @@ export default class Modal_Object_Pattern
             }
 
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : 'Update "<strong>' + buildingData.name + '</strong>" pattern',
             container   : '#leafletMap',
             inputs      : [{

@@ -1,4 +1,4 @@
-import Modal                                    from '../Modal.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class SubSystem_Player
 {
@@ -96,7 +96,7 @@ export default class SubSystem_Player
                 return currentPlayerMarker;
             }
 
-        Modal.alert('Cannot teleport that player!');
+        BaseLayout_Modal.alert('Cannot teleport that player!');
     }
 
 

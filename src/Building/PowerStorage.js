@@ -1,4 +1,4 @@
-import Modal                                    from '../Modal.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 
@@ -79,7 +79,7 @@ export default class Building_PowerStorage
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let storedCharge    = Building_PowerStorage.storedCharge(baseLayout, currentObject);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" stored power',
                 container   : '#leafletMap',
                 inputs      : [{

@@ -1,4 +1,4 @@
-import Modal                                    from '../Modal.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class Building_Door
 {
@@ -29,7 +29,7 @@ export default class Building_Door
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let mDoorConfiguration  = baseLayout.getObjectProperty(currentObject, 'mDoorConfiguration');
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" status',
                 container   : '#leafletMap',
                 inputs      : [{

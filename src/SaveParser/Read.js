@@ -1,5 +1,6 @@
 /* global Sentry, Intl */
-import Modal                                    from '../Modal.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
+
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class SaveParser_Read
@@ -58,7 +59,7 @@ export default class SaveParser_Read
         }
         else
         {
-            Modal.alert('That save version isn\'t supported anymore... Please save it again in the game.');
+            BaseLayout_Modal.alert('That save version isn\'t supported anymore... Please save it again in the game.');
         }
     }
 
@@ -121,7 +122,7 @@ export default class SaveParser_Read
             catch(err)
             {
                 console.log('INFLATE ERROR', err);
-                Modal.alert('Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.')
+                BaseLayout_Modal.alert('Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.')
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('pako', pako);
@@ -833,7 +834,7 @@ export default class SaveParser_Read
                                         currentProperty.value.values.push(subStructProperties);
                                     break;
                                 default:
-                                    Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                    BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                                     if(typeof Sentry !== 'undefined')
                                     {
                                         Sentry.setContext('currentProperty', currentProperty);
@@ -846,7 +847,7 @@ export default class SaveParser_Read
                         break;
 
                     default:
-                        Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                        BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                         if(typeof Sentry !== 'undefined')
                         {
                             Sentry.setContext('currentProperty', currentProperty);
@@ -892,7 +893,7 @@ export default class SaveParser_Read
                             };
                             break;
                         default:
-                            Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
@@ -939,7 +940,7 @@ export default class SaveParser_Read
                             }
                             break;
                         default:
-                            Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
@@ -1143,7 +1144,7 @@ export default class SaveParser_Read
                         break;
 
                     default:
-                        Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                        BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                         if(typeof Sentry !== 'undefined')
                         {
                             Sentry.setContext('currentProperty', currentProperty);
@@ -1178,7 +1179,7 @@ export default class SaveParser_Read
                             let rewind = this.lastStrRead + 128;
                                 this.currentByte -= rewind;
                             console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                            Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
@@ -1193,7 +1194,7 @@ export default class SaveParser_Read
                 let rewind = this.lastStrRead + 128;
                     this.currentByte -= rewind;
                 console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
@@ -1234,7 +1235,7 @@ export default class SaveParser_Read
                                 currentArgumentsData.argumentValue    = this.readTextProperty({});
                                 break;
                             default:
-                                Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                                 if(typeof Sentry !== 'undefined')
                                 {
                                     Sentry.setContext('currentProperty', currentProperty);
@@ -1264,7 +1265,7 @@ export default class SaveParser_Read
                 }
                 break;
             default:
-                Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
@@ -1407,7 +1408,7 @@ export default class SaveParser_Read
 
             let errorMessage = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
                 console.log(errorMessage);
-                Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                 throw new Error(errorMessage);
         }
 
@@ -1522,7 +1523,7 @@ export default class SaveParser_Read
                             structure.unk3      = this.readHex(45); //TODO: Not sure at all!
                             break;
                         default:
-                            Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentData', data);

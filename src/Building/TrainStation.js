@@ -1,6 +1,5 @@
 /* global Intl, parseFloat */
-import Modal                                    from '../Modal.js';
-
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
@@ -37,7 +36,7 @@ export default class Building_TrainStation
             {
                 let mStationName    = baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
 
-                    Modal.form({
+                    BaseLayout_Modal.form({
                         title       : 'Update "<strong>' + buildingData.name + '</strong>" sign',
                         container   : '#leafletMap',
                         inputs      : [{

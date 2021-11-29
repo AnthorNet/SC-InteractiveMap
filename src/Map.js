@@ -426,7 +426,7 @@ export default class Map
                                     }
 
                                     let currentMarkerOptions    = { icon: this.availableIcons[option.layerId], riseOnHover: true };
-                                    let tooltip                 = new Array();
+                                    let tooltip                 = [];
 
                                     if(option.layerId === 'hardDrives')
                                     {

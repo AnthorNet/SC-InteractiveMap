@@ -1,6 +1,6 @@
 /* global iro */
 
-export default class Modal
+export default class BaseLayout_Modal
 {
     static get defaultOptions()
     {
@@ -68,8 +68,8 @@ export default class Modal
 
     static modal(options)
     {
-            options         = Object.assign({}, Modal.defaultOptions, options);
-        let modalContent    = $(Modal.templates.modal);
+            options         = Object.assign({}, BaseLayout_Modal.defaultOptions, options);
+        let modalContent    = $(BaseLayout_Modal.templates.modal);
 
         let modalBody       = modalContent.find('.modal-body');
             modalBody.html(options.message);
@@ -77,12 +77,12 @@ export default class Modal
             // Buttons?
             if(Object.keys(options.buttons).length > 0)
             {
-                let modalFooter = $(Modal.templates.modalFooter);
+                let modalFooter = $(BaseLayout_Modal.templates.modalFooter);
                     for(let buttonKey in options.buttons)
                     {
                         if(options.buttons[buttonKey].element === undefined)
                         {
-                            options.buttons[buttonKey].element = Modal.prepareButton(buttonKey, options.buttons[buttonKey]);
+                            options.buttons[buttonKey].element = BaseLayout_Modal.prepareButton(buttonKey, options.buttons[buttonKey]);
                         }
 
                         modalFooter.append(options.buttons[buttonKey].element);
@@ -94,14 +94,14 @@ export default class Modal
             // Title?
             if(options.title)
             {
-                modalBody.before(Modal.templates.modalHeader);
+                modalBody.before(BaseLayout_Modal.templates.modalHeader);
                 modalContent.find('.modal-title').html(options.title);
             }
 
             // Close button?
             if(options.closeButton === true)
             {
-                let closeButton = $(Modal.templates.closeButton);
+                let closeButton = $(BaseLayout_Modal.templates.closeButton);
                     if(options.title)
                     {
                         modalContent.find('.modal-header').append(closeButton);
@@ -149,7 +149,7 @@ export default class Modal
             modalContent.on('escape.close.modal', function(e){
                 if(options.onEscape)
                 {
-                    Modal.processCallback(e, modalContent, options.onEscape);
+                    BaseLayout_Modal.processCallback(e, modalContent, options.onEscape);
                 }
             });
 
@@ -158,12 +158,12 @@ export default class Modal
                 let callbackKey = $(this).data('modal-handler');
                     if(callbackKey !== undefined)
                     {
-                        Modal.processCallback(e, modalContent, options.buttons[callbackKey].callback);
+                        BaseLayout_Modal.processCallback(e, modalContent, options.buttons[callbackKey].callback);
                     }
             });
 
             modalContent.on('click', '.close-button', function (e) {
-                Modal.processCallback(e, modalContent, options.onEscape);
+                BaseLayout_Modal.processCallback(e, modalContent, options.onEscape);
             });
 
             // Add it to the content!
@@ -184,14 +184,14 @@ export default class Modal
     {
         if($.fn.toast)
         {
-            let toastContent    = $(Modal.templates.toast);
+            let toastContent    = $(BaseLayout_Modal.templates.toast);
             let toastBody       = toastContent.find('.toast-body');
                 toastBody.html(options.message);
 
                 // Title?
                 if(options.title || options.image)
                 {
-                    toastBody.before(Modal.templates.toastHeader);
+                    toastBody.before(BaseLayout_Modal.templates.toastHeader);
 
                     if(options.title)
                     {
@@ -227,7 +227,7 @@ export default class Modal
                 options.buttons                 = {ok: {label: 'Ok'}};
                 options.buttons.ok.callback     = options.onEscape = function(){ return true; };
 
-                return Modal.modal(options);
+                return BaseLayout_Modal.modal(options);
         }
         else
         {
@@ -257,7 +257,7 @@ export default class Modal
             return options.callback.call(this, true);
         };
 
-        return Modal.modal(options);
+        return BaseLayout_Modal.modal(options);
     }
 
     static form(options)
@@ -323,7 +323,7 @@ export default class Modal
         };
 
         // Create form
-        let form    = $(Modal.templates.form);
+        let form    = $(BaseLayout_Modal.templates.form);
             form.on('submit', function(e)
             {
                 e.preventDefault();
@@ -338,7 +338,7 @@ export default class Modal
         // Create inputs
         for(let i = 0; i < options.inputs.length; i++)
         {
-            options.inputs[i].element = Modal.prepareInput(options.inputs[i]);
+            options.inputs[i].element = BaseLayout_Modal.prepareInput(options.inputs[i]);
             form.append(options.inputs[i].element);
         }
 
@@ -365,12 +365,12 @@ export default class Modal
             }
 
         options.message = form;
-        return Modal.modal(options);
+        return BaseLayout_Modal.modal(options);
     }
 
     static prepareInput(options)
     {
-        let input = $( ((Modal.templates.input[options.inputType] !== undefined) ? Modal.templates.input[options.inputType] : Modal.templates.input['text']) );
+        let input = $( ((BaseLayout_Modal.templates.input[options.inputType] !== undefined) ? BaseLayout_Modal.templates.input[options.inputType] : BaseLayout_Modal.templates.input['text']) );
             input.attr('name', options.name);
 
             if(options.multiple !== undefined && options.multiple === true)
@@ -391,7 +391,7 @@ export default class Modal
                     let optionGroups = {};
                         $.each(options.inputOptions, function(_, option){
                             let element     = input;
-                            let optionEl    = $(Modal.templates.input.option);
+                            let optionEl    = $(BaseLayout_Modal.templates.input.option);
 
                                 if(option.group)
                                 {
@@ -501,7 +501,7 @@ export default class Modal
             }
 
         // Add form group and label
-        let group = $(Modal.templates.formGroup);
+        let group = $(BaseLayout_Modal.templates.formGroup);
             if(options.label !== undefined && ['inventoryItem', 'toggle'].includes(options.inputType) === false)
             {
                 group.prepend('<label>' + options.label + '</label>');
@@ -558,7 +558,7 @@ export default class Modal
 
         if(options.inputType === 'colorSlots')
         {
-            let html            = new Array();
+            let html            = [];
             let totalColorSlot  = options.inputOptions.length;
             let column          = 0;
 
@@ -628,7 +628,7 @@ export default class Modal
 
             if(options.qty !== undefined)
             {
-                let qty = $(Modal.templates.input.text);
+                let qty = $(BaseLayout_Modal.templates.input.text);
                     qty.attr('name', 'QTY_' + options.name);
                     qty.val(options.qty);
                     qty.css('min-width', '80px').css('width', '80px').css('flex-grow', '0');
@@ -642,7 +642,7 @@ export default class Modal
 
     static prepareButton(buttonKey, options)
     {
-        let button = $(Modal.templates.button);
+        let button = $(BaseLayout_Modal.templates.button);
             button.data('modal-handler', buttonKey);
             button.addClass( ((options.className !== undefined) ? options.className : 'btn-primary') );
             button.html(options.label);

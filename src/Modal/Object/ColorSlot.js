@@ -1,6 +1,5 @@
-import Modal                                    from '../../Modal.js';
-
 import BaseLayout_Math                          from '../../BaseLayout/Math.js';
+import BaseLayout_Modal                         from '../../BaseLayout/Modal.js';
 
 import SubSystem_Buildable                      from '../../SubSystem/Buildable.js';
 
@@ -82,7 +81,7 @@ export default class Modal_Object_ColorSlot
                 text            : 'Custom Swatch'
             });
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : 'Update "<strong>' + buildingData.name + '</strong>" color swatch',
             container   : '#leafletMap',
             inputs      : [{

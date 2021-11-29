@@ -1,6 +1,5 @@
-import Modal                                    from '../Modal.js';
-
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class Building_Conveyor
 {
@@ -261,7 +260,7 @@ export default class Building_Conveyor
                     // Merge next belt
                     Building_Conveyor.mergeNextConveyor(marker);
 
-                Modal.notification({
+                BaseLayout_Modal.notification({
                     image   : buildingData.image,
                     title   : 'Merge adjacent conveyor belts',
                     message : 'Are you nuts?!'

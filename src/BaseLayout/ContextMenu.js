@@ -22,7 +22,7 @@ import Modal_Object_ColorSlot                   from '../Modal/Object/ColorSlot.
 import Modal_Object_CustomColor                 from '../Modal/Object/CustomColor.js';
 import Modal_Object_Pattern                     from '../Modal/Object/Pattern.js';
 import Modal_Object_Position                    from '../Modal/Object/Position.js';
-import Modal_SpawnAround                        from '../Modal/SpawnAround.js';
+import Modal_Object_SpawnAround                 from '../Modal/Object/SpawnAround.js';
 
 import SubSystem_Player                         from '../SubSystem/Player.js';
 
@@ -198,7 +198,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             icon        : 'fa-building',
                             text        : 'Spawn around "' + buildingData.name + '"',
-                            callback    : Modal_SpawnAround.getHTML
+                            callback    : Modal_Object_SpawnAround.getHTML
                         });
                     }
 

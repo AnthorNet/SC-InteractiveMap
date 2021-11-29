@@ -1,6 +1,5 @@
 /* global Intl */
-import Modal                                    from '../Modal.js';
-
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 export default class Building_SpaceElevator
@@ -174,7 +173,7 @@ export default class Building_SpaceElevator
                 })
             }
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" phase',
                 container   : '#leafletMap',
                 inputs      : [{

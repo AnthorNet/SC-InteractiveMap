@@ -1,6 +1,6 @@
 /* global gtag */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
-import Modal                                    from '../Modal.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class Spawn_Road
 {
@@ -187,7 +187,7 @@ export default class Spawn_Road
             let result = this.baseLayout.removeFromStorage(this.centerObject);
                 if(result === false)
                 {
-                    Modal.alert("We could not find enough materials and stopped your construction!");
+                    BaseLayout_Modal.alert("We could not find enough materials and stopped your construction!");
                     return this.release(); // Don't have materials, stop it...
                 }
         }

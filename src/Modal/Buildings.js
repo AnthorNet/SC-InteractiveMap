@@ -7,7 +7,7 @@ export default class Modal_Buildings
     {
         this.baseLayout         = options.baseLayout;
 
-        if(options.markersSelected === undefined)
+        if(options.markers === undefined)
         {
             this.markers = [];
             for(let layerId in this.baseLayout.playerLayers)
@@ -36,7 +36,7 @@ export default class Modal_Buildings
         }
         else
         {
-            this.markers =  options.markersSelected;
+            this.markers =  options.markers;
         }
 
         if(typeof gtag === 'function')

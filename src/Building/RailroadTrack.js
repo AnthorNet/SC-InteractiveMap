@@ -1,4 +1,5 @@
 /* global L */
+import Modal_Selection                          from '../Modal/Selection.js';
 
 export default class Building_RailroadTrack
 {
@@ -44,7 +45,7 @@ export default class Building_RailroadTrack
         let connectedComponents = Building_RailroadTrack.getConnectedComponents(baseLayout, currentObject);
             if(connectedComponents !== null)
             {
-                let markersSelected = [];
+                let markers = [];
                     for(let i = 0; i < connectedComponents.length; i++)
                     {
                         if(connectedComponents[i].outerPathName !== undefined)
@@ -55,16 +56,16 @@ export default class Building_RailroadTrack
                                     let marker = baseLayout.getMarkerFromPathName(connectedComponents[i].outerPathName, 'playerTracksLayer');
                                         if(marker !== null)
                                         {
-                                            markersSelected.push(marker);
+                                            markers.push(marker);
                                             marker.setStyle({color: '#00FF00'});
                                         }
                                 }
                         }
                     }
 
-                    if(markersSelected.length > 0)
+                    if(markers.length > 0)
                     {
-                        let boundaries  = baseLayout.getSelectionBoundaries(markersSelected);
+                        let boundaries  = Modal_Selection.getBoundaries(baseLayout, markers);
                         let offset      = boundaries.maxX - boundaries.centerX;
                         let distanceY   = baseLayout.satisfactoryMap.leafletMap
                                                     .latLngToLayerPoint(baseLayout.satisfactoryMap.unproject(currentObject.transform.translation))

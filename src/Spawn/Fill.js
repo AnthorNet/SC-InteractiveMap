@@ -1,6 +1,8 @@
 /* global gtag, L */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
-import Modal                                    from '../Modal.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
+
+import Modal_Selection                          from '../Modal/Selection.js';
 
 export default class Spawn_Fill
 {
@@ -17,15 +19,28 @@ export default class Spawn_Fill
         this.minHeight          = -1600;
         this.maxHeight          = 1600;
 
+        let ne                  = 0;
+        let sw                  = 0;
+
         // Detect selection boundaries
-        let bounds  = this.selection.getBounds(),
-            ne      = this.baseLayout.satisfactoryMap.project([bounds._northEast.lat, bounds._northEast.lng], this.baseLayout.satisfactoryMap.zoom),
-            sw      = this.baseLayout.satisfactoryMap.project([bounds._southWest.lat, bounds._southWest.lng], this.baseLayout.satisfactoryMap.zoom);
+        if(this.selection instanceof L.Circle)
+        {
+            let radius  = this.selection.getRadius();
+            let center  = this.selection._latlng;
+                ne      = this.baseLayout.satisfactoryMap.project([center.lat + radius, center.lng + radius], this.baseLayout.satisfactoryMap.zoom);
+                sw      = this.baseLayout.satisfactoryMap.project([center.lat - radius, center.lng - radius], this.baseLayout.satisfactoryMap.zoom);
+        }
+        else
+        {
+            let bounds  = this.selection.getBounds();
+                ne      = this.baseLayout.satisfactoryMap.project([bounds._northEast.lat, bounds._northEast.lng], this.baseLayout.satisfactoryMap.zoom);
+                sw      = this.baseLayout.satisfactoryMap.project([bounds._southWest.lat, bounds._southWest.lng], this.baseLayout.satisfactoryMap.zoom);
+        }
 
-            ne      = this.baseLayout.satisfactoryMap.convertToGameCoordinates([ne.x, ne.y]);
-            sw      = this.baseLayout.satisfactoryMap.convertToGameCoordinates([sw.x, sw.y]);
+        ne          = this.baseLayout.satisfactoryMap.convertToGameCoordinates([ne.x, ne.y]);
+        sw          = this.baseLayout.satisfactoryMap.convertToGameCoordinates([sw.x, sw.y]);
 
-        this.center             = [
+        this.center = [
             ((sw[0] + ne[0]) / 2),  // X
             ((ne[1] + sw[1]) / 2),  // Y
             parseFloat(options.z)   // Z
@@ -51,32 +66,6 @@ export default class Spawn_Fill
             entity          : {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"},
             properties      : [
                 {
-                    name        : "mPrimaryColor",
-                    type        : "StructProperty",
-                    value       : {
-                        type        : "LinearColor",
-                        values      : {
-                            r           : 0.10946200042963028,
-                            g           : 0.10946200042963028,
-                            b           : 0.10946200042963028,
-                            a           : 1
-                        }
-                    }
-                },
-                {
-                    name        : "mSecondaryColor",
-                    type        : "StructProperty",
-                    value       : {
-                        type        : "LinearColor",
-                        values      : {
-                            r           : 0.10946200042963028,
-                            g           : 0.10946200042963028,
-                            b           : 0.10946200042963028,
-                            a           : 1
-                        }
-                    }
-                },
-                {
                     name        : "mBuiltWithRecipe",
                     type        : "ObjectProperty",
                     value       : {
@@ -91,7 +80,7 @@ export default class Spawn_Fill
                 }
             ]
         };
-
+        this.baseLayout.buildableSubSystem.setObjectColorSlot(this.centerObject, 16);
         this.baseLayout.updateBuiltWithRecipe(this.centerObject);
 
         return this.spawn();
@@ -127,7 +116,7 @@ export default class Spawn_Fill
                     let result = this.baseLayout.removeFromStorage(this.centerObject);
                         if(result === false)
                         {
-                            Modal.alert("We could not find enough materials and stopped your construction!");
+                            BaseLayout_Modal.alert("We could not find enough materials and stopped your construction!");
                             return this.release(); // Don't have materials, stop it...
                         }
                 }
@@ -177,7 +166,7 @@ export default class Spawn_Fill
             });
         }
 
-        this.baseLayout.cancelSelectMultipleMarkers();
+        Modal_Selection.cancel(this.baseLayout);
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
         this.baseLayout.setBadgeLayerCount('playerFoundationsLayer');
     }

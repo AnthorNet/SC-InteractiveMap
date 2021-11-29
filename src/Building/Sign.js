@@ -1,7 +1,6 @@
 /* global Sentry */
-import Modal                                    from '../Modal.js';
-
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class Building_Sign
 {
@@ -971,7 +970,7 @@ export default class Building_Sign
             }
 
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" layout',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1004,7 +1003,7 @@ export default class Building_Sign
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" background color',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1037,7 +1036,7 @@ export default class Building_Sign
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" auxilary color',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1070,7 +1069,7 @@ export default class Building_Sign
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" foreground color',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1107,7 +1106,7 @@ export default class Building_Sign
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let text            = Building_Sign.getText(baseLayout, currentObject);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1132,7 +1131,7 @@ export default class Building_Sign
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let text            = Building_Sign.getLabel(baseLayout, currentObject);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1157,7 +1156,7 @@ export default class Building_Sign
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let text            = Building_Sign.getOther0(baseLayout, currentObject);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1182,7 +1181,7 @@ export default class Building_Sign
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let text            = Building_Sign.getOther1(baseLayout, currentObject);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" text',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1207,7 +1206,7 @@ export default class Building_Sign
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let mEmissive       = baseLayout.getObjectProperty(currentObject, 'mEmissive');
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" emission strength',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1242,7 +1241,7 @@ export default class Building_Sign
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let mGlossiness     = baseLayout.getObjectProperty(currentObject, 'mGlossiness');
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" surface finish',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1361,7 +1360,7 @@ export default class Building_Sign
         let options         = Building_Sign.generateIconOptions(baseLayout);
             options.push({value: 31, text: 'TEST ICON ID'});
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" icon',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1386,7 +1385,7 @@ export default class Building_Sign
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" other icon',
                 container   : '#leafletMap',
                 inputs      : [{
@@ -1411,7 +1410,7 @@ export default class Building_Sign
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" background',
                 container   : '#leafletMap',
                 inputs      : [{

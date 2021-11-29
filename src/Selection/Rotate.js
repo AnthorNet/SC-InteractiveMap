@@ -1,12 +1,14 @@
 /* global gtag */
-import BaseLayout_Math from '../BaseLayout/Math.js';
+import Modal_Selection                          from '../Modal/Selection.js';
 
-export default class BaseLayout_Selection_Rotate
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
+
+export default class Selection_Rotate
 {
     constructor(options)
     {
         this.baseLayout             = options.baseLayout;
-        this.markersSelected        = options.markersSelected;
+        this.markers                = options.markers;
 
         this.angle                  = parseFloat(Math.max(0, Math.min(360, options.angle)));
 
@@ -23,23 +25,23 @@ export default class BaseLayout_Selection_Rotate
 
     rotate()
     {
-        if(this.markersSelected && isNaN(this.angle) === false)
+        if(this.markers && isNaN(this.angle) === false)
         {
             console.time('rotateMultipleMarkers');
 
             if(this.selectionBoundaries === null)
             {
-                this.selectionBoundaries = this.baseLayout.getSelectionBoundaries(this.markersSelected);
+                this.selectionBoundaries = Modal_Selection.getBoundaries(this.baseLayout, this.markers);
             }
 
             let wires           = [];
             let historyPathName = [];
 
-            for(let i = 0; i < this.markersSelected.length; i++)
+            for(let i = 0; i < this.markers.length; i++)
             {
-                if(this.markersSelected[i].options.pathName !== undefined)
+                if(this.markers[i].options.pathName !== undefined)
                 {
-                    let currentObject                       = this.baseLayout.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
+                    let currentObject                       = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
 
                     if(currentObject !== null)
                     {
@@ -48,11 +50,11 @@ export default class BaseLayout_Selection_Rotate
                             let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
                                 if(currentObjectData !== null && currentObjectData.mapLayer !== undefined)
                                 {
-                                    historyPathName.push([this.markersSelected[i].options.pathName, currentObjectData.mapLayer]);
+                                    historyPathName.push([this.markers[i].options.pathName, currentObjectData.mapLayer]);
                                 }
                                 else
                                 {
-                                    historyPathName.push(this.markersSelected[i].options.pathName);
+                                    historyPathName.push(this.markers[i].options.pathName);
                                 }
                         }
 
@@ -180,7 +182,7 @@ export default class BaseLayout_Selection_Rotate
 
                         // Delete and add again!
                         let result = this.baseLayout.parseObject(currentObject);
-                            this.baseLayout.deleteMarkerFromElements(result.layer, this.markersSelected[i], true);
+                            this.baseLayout.deleteMarkerFromElements(result.layer, this.markers[i], true);
                             this.baseLayout.addElementToLayer(result.layer, result.marker);
                     }
                 }
@@ -198,11 +200,11 @@ export default class BaseLayout_Selection_Rotate
             if(this.useHistory === true && this.baseLayout.history !== null)
             {
                 this.baseLayout.history.add({
-                    name: 'Undo: Rotate selection by ' + this.angle + '°',
-                    values: [{
-                        pathNameArray: historyPathName,
-                        callback: 'BaseLayout_Selection_Rotate',
-                        properties: {angle: (360 - this.angle), selectionBoundaries: this.selectionBoundaries}
+                    name    : 'Undo: Rotate selection by ' + this.angle + '°',
+                    values  : [{
+                        pathNameArray   : historyPathName,
+                        callback        : 'Selection_Rotate',
+                        properties      : {angle: (360 - this.angle), selectionBoundaries: this.selectionBoundaries}
                     }]
                 });
             }
@@ -211,6 +213,6 @@ export default class BaseLayout_Selection_Rotate
             this.baseLayout.updateRadioactivityLayer();
         }
 
-        this.baseLayout.cancelSelectMultipleMarkers();
+        Modal_Selection.cancel(this.baseLayout);
     }
 }

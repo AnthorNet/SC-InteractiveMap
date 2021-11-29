@@ -1,12 +1,14 @@
 /* global gtag */
+import Modal_Selection                          from '../Modal/Selection.js';
+
 import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
 
-export default class BaseLayout_Selection_Copy
+export default class Selection_Copy
 {
     constructor(options)
     {
         this.baseLayout         = options.baseLayout;
-        this.markersSelected    = options.markersSelected;
+        this.markers            = options.markers;
 
         let header              = this.baseLayout.saveGameParser.getHeader();
             this.clipboard      = {
@@ -28,15 +30,15 @@ export default class BaseLayout_Selection_Copy
 
     copy()
     {
-        if(this.markersSelected)
+        if(this.markers)
         {
             let availablePathName   = [];
             let trainTimeTables     = [];
 
             // Filter not wanted
-            for(let i = (this.markersSelected.length - 1); i >= 0; i--)
+            for(let i = (this.markers.length - 1); i >= 0; i--)
             {
-                let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
+                let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
                 let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
 
                 // We use that to actually map the caves
@@ -53,12 +55,12 @@ export default class BaseLayout_Selection_Copy
                         '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C' // Skip them and grab them from the drone station...
                     ].includes(currentObjectData.className))
                     {
-                        this.markersSelected.splice(i, 1);
+                        this.markers.splice(i, 1);
                         continue;
                     }
                     if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C' && currentObject.className.includes('Integrated'))
                     {
-                        this.markersSelected.splice(i, 1);
+                        this.markers.splice(i, 1);
                         continue;
                     }
                 }
@@ -73,14 +75,14 @@ export default class BaseLayout_Selection_Copy
                          && currentObject.className.startsWith('/Game/FactoryGame/Character/Creature/Wildlife/') === false
                     )
                     {
-                        this.markersSelected.splice(i, 1);
+                        this.markers.splice(i, 1);
                     }
                 }
             }
 
-            for(let i = 0; i < this.markersSelected.length; i++)
+            for(let i = 0; i < this.markers.length; i++)
             {
-                let currentObject           = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.markersSelected[i].options.pathName);
+                let currentObject           = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.markers[i].options.pathName);
                 let newDataObject           = {};
                     newDataObject.parent    = JSON.parse(JSON.stringify(currentObject));
                     newDataObject.children  = [];
@@ -473,9 +475,9 @@ export default class BaseLayout_Selection_Copy
                             {
                                 for(let j = (mStops.values.length - 1); j >= 0; j--)
                                 {
-                                    for(let k = 0; k < mStops.values[j].length; k++)
+                                    for(let k = (mStops.values[j].length - 1); k >= 0; k--)
                                     {
-                                        if(mStops.values[j][k].name === 'Station')
+                                        if(mStops.values[j] !== undefined && mStops.values[j][k].name === 'Station')
                                         {
                                             if(availablePathName.includes(mStops.values[j][k].value.pathName) === false)
                                             {
@@ -497,15 +499,15 @@ export default class BaseLayout_Selection_Copy
             }
 
             // Store boundaries
-            let selectionBoundaries = this.baseLayout.getSelectionBoundaries(this.markersSelected);
-                this.clipboard.minX      = selectionBoundaries.minX;
-                this.clipboard.maxX      = selectionBoundaries.maxX;
-                this.clipboard.minY      = selectionBoundaries.minY;
-                this.clipboard.maxY      = selectionBoundaries.maxY;
+            let boundaries              = Modal_Selection.getBoundaries(this.baseLayout, this.markers);
+                this.clipboard.minX     = boundaries.minX;
+                this.clipboard.maxX     = boundaries.maxX;
+                this.clipboard.minY     = boundaries.minY;
+                this.clipboard.maxY     = boundaries.maxY;
 
-            this.baseLayout.clipboard  = JSON.parse(JSON.stringify(this.clipboard));
+            this.baseLayout.clipboard   = JSON.parse(JSON.stringify(this.clipboard));
         }
 
-        this.baseLayout.cancelSelectMultipleMarkers();
+        Modal_Selection.cancel(this.baseLayout);
     }
 }

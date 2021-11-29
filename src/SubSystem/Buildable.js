@@ -192,7 +192,7 @@ export default class SubSystem_Buildable
         currentObject.properties.push({
             name    : 'mColorSlot',
             type    : 'ByteProperty',
-            value   : {enumName: 'None', value: slotIndex}
+            value   : {enumName: 'None', value: parseInt(slotIndex)}
         });
     }
 

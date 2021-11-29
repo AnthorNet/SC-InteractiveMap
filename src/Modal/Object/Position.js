@@ -1,6 +1,5 @@
-import Modal                                    from '../../Modal.js';
-
 import BaseLayout_Math                          from '../../BaseLayout/Math.js';
+import BaseLayout_Modal                         from '../../BaseLayout/Modal.js';
 
 export default class Modal_Object_Position
 {
@@ -18,7 +17,7 @@ export default class Modal_Object_Position
                 currentRotationYaw  = BaseLayout_Math.clampEulerAxis(currentRotationYaw);
             }
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : "Position",
             message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
             container   : '#leafletMap',

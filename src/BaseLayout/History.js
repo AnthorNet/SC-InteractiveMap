@@ -1,7 +1,7 @@
 /* global L, gtag */
-import BaseLayout_Selection_Offset              from '../BaseLayout/SelectionOffset.js';
-import BaseLayout_Selection_Rotate              from '../BaseLayout/SelectionRotate.js';
-import BaseLayout_Selection_Delete              from '../BaseLayout/SelectionDelete.js';
+import Selection_Offset                         from '../Selection/Offset.js';
+import Selection_Rotate                         from '../Selection/Rotate.js';
+import Selection_Delete                         from '../Selection/Delete.js';
 
 export default class BaseLayout_History
 {
@@ -94,7 +94,7 @@ export default class BaseLayout_History
 
                 if(currentOperation.pathNameArray !== undefined)
                 {
-                    let markersSelected = [];
+                    let markers = [];
                         for(let j = 0; j < currentOperation.pathNameArray.length; j++)
                         {
                             let pathName    = currentOperation.pathNameArray[j];
@@ -109,26 +109,26 @@ export default class BaseLayout_History
                             let currentMarker = this.baseLayout.getMarkerFromPathName(pathName, layerId);
                                 if(currentMarker !== null)
                                 {
-                                    markersSelected.push(currentMarker);
+                                    markers.push(currentMarker);
                                 }
                         }
 
-                        if(markersSelected.length > 0)
+                        if(markers.length > 0)
                         {
-                            currentOperation.properties.baseLayout      = this.baseLayout;
-                            currentOperation.properties.markersSelected = markersSelected;
-                            currentOperation.properties.history         = false;
+                            currentOperation.properties.baseLayout  = this.baseLayout;
+                            currentOperation.properties.markers     = markers;
+                            currentOperation.properties.history     = false;
 
                             switch(currentOperation.callback)
                             {
-                                case 'BaseLayout_Selection_Delete':
-                                    new BaseLayout_Selection_Delete(currentOperation.properties);
+                                case 'Selection_Delete':
+                                    new Selection_Delete(currentOperation.properties);
                                     break;
-                                case 'BaseLayout_Selection_Offset':
-                                    new BaseLayout_Selection_Offset(currentOperation.properties);
+                                case 'Selection_Offset':
+                                    new Selection_Offset(currentOperation.properties);
                                     break;
-                                case 'BaseLayout_Selection_Rotate':
-                                    new BaseLayout_Selection_Rotate(currentOperation.properties);
+                                case 'Selection_Rotate':
+                                    new Selection_Rotate(currentOperation.properties);
                                     break;
                             }
                         }

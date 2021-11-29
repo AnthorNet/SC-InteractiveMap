@@ -1,10 +1,9 @@
 /* global Infinity, gtag, L */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
 import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
-
-import Modal                                    from '../Modal.js';
 
 import pako                                     from '../Lib/pako.esm.mjs';
 
@@ -912,7 +911,7 @@ export default class Spawn_Blueprint
                 name: 'Undo: Paste blueprint',
                 values: [{
                     pathNameArray: this.historyPathName,
-                    callback: 'BaseLayout_Selection_Delete'
+                    callback: 'Selection_Delete'
                 }]
             });
         }
@@ -936,73 +935,42 @@ export default class Spawn_Blueprint
             this.baseLayout.deleteMarkerFromElements(resultCenter.layer, this.marker);
             this.baseLayout.addElementToLayer(resultCenter.layer, resultCenter.marker);
 
-        // TOP LEFT
-        let newFoundationTopLeft                    = JSON.parse(JSON.stringify(this.centerObject));
-            newFoundationTopLeft.pathName           = this.baseLayout.generateFastPathName(this.centerObject);
-        let translationRotationTopLeft              = BaseLayout_Math.getPointRotation(
-                [
-                    (this.centerObject.transform.translation[0] - (centerX - this.clipboard.minX) - 800),
-                    (this.centerObject.transform.translation[1] - (centerY - this.clipboard.minY) - 800)
-                ], this.centerObject.transform.translation, this.centerObject.transform.rotation
-            );
-            newFoundationTopLeft.transform.translation[0]  = translationRotationTopLeft[0];
-            newFoundationTopLeft.transform.translation[1]  = translationRotationTopLeft[1];
+        let corners = [
+            // TOP LEFT
+            [
+                (this.centerObject.transform.translation[0] - (centerX - this.clipboard.minX) - 800),
+                (this.centerObject.transform.translation[1] - (centerY - this.clipboard.minY) - 800)
+            ],
+            // TOP RIGHT
+            [
+                (this.centerObject.transform.translation[0] + (this.clipboard.maxX - centerX) + 800),
+                (this.centerObject.transform.translation[1] - (centerY - this.clipboard.minY) - 800)
+            ],
+            // BOTTOM LEFT
+            [
+                (this.centerObject.transform.translation[0] - (centerX - this.clipboard.minX) - 800),
+                (this.centerObject.transform.translation[1] + (this.clipboard.maxY - centerY) + 800)
+            ],
+            // BOTTOM RIGHT
+            [
+                (this.centerObject.transform.translation[0] + (this.clipboard.maxX - centerX) + 800),
+                (this.centerObject.transform.translation[1] + (this.clipboard.maxY - centerY) + 800)
+            ]
+        ];
 
-            this.baseLayout.saveGameParser.addObject(newFoundationTopLeft);
+        for(let i = 0; i < corners.length; i++)
+        {
+            let newFoundation                           = JSON.parse(JSON.stringify(this.centerObject));
+                newFoundation.pathName                  = this.baseLayout.generateFastPathName(this.centerObject);
+            let translationRotation                     = BaseLayout_Math.getPointRotation(corners[i], this.centerObject.transform.translation, this.centerObject.transform.rotation);
+                newFoundation.transform.translation[0]  = translationRotation[0];
+                newFoundation.transform.translation[1]  = translationRotation[1];
 
-            let resultTopLeft = this.baseLayout.parseObject(newFoundationTopLeft);
-                this.baseLayout.addElementToLayer(resultTopLeft.layer, resultTopLeft.marker);
+                this.baseLayout.saveGameParser.addObject(newFoundation);
 
-        // TOP RIGHT
-        let newFoundationTopRight                   = JSON.parse(JSON.stringify(this.centerObject));
-            newFoundationTopRight.pathName          = this.baseLayout.generateFastPathName(this.centerObject);
-        let translationRotationTopRight             = BaseLayout_Math.getPointRotation(
-                [
-                    (this.centerObject.transform.translation[0] + (this.clipboard.maxX - centerX) + 800),
-                    (this.centerObject.transform.translation[1] - (centerY - this.clipboard.minY) - 800)
-                ], this.centerObject.transform.translation, this.centerObject.transform.rotation
-            );
-            newFoundationTopRight.transform.translation[0] = translationRotationTopRight[0];
-            newFoundationTopRight.transform.translation[1] = translationRotationTopRight[1];
-
-            this.baseLayout.saveGameParser.addObject(newFoundationTopRight);
-
-            let resultTopRight = this.baseLayout.parseObject(newFoundationTopRight);
-                this.baseLayout.addElementToLayer(resultTopRight.layer, resultTopRight.marker);
-
-        // BOTTOM LEFT
-        let newFoundationBottomLeft                 = JSON.parse(JSON.stringify(this.centerObject));
-            newFoundationBottomLeft.pathName        = this.baseLayout.generateFastPathName(this.centerObject);
-        let translationRotationBottomLeft           = BaseLayout_Math.getPointRotation(
-                [
-                    (this.centerObject.transform.translation[0] - (centerX - this.clipboard.minX) - 800),
-                    (this.centerObject.transform.translation[1] + (this.clipboard.maxY - centerY) + 800)
-                ], this.centerObject.transform.translation, this.centerObject.transform.rotation
-            );
-            newFoundationBottomLeft.transform.translation[0]    = translationRotationBottomLeft[0];
-            newFoundationBottomLeft.transform.translation[1]    = translationRotationBottomLeft[1];
-
-            this.baseLayout.saveGameParser.addObject(newFoundationBottomLeft);
-
-            let resultBottomLeft = this.baseLayout.parseObject(newFoundationBottomLeft);
-                this.baseLayout.addElementToLayer(resultBottomLeft.layer, resultBottomLeft.marker);
-
-        // BOTTOM RIGHT
-        let newFoundationBottomRight                = JSON.parse(JSON.stringify(this.centerObject));
-            newFoundationBottomRight.pathName       = this.baseLayout.generateFastPathName(this.centerObject);
-        let translationRotationBottomRight          = BaseLayout_Math.getPointRotation(
-                [
-                    (this.centerObject.transform.translation[0] + (this.clipboard.maxX - centerX) + 800),
-                    (this.centerObject.transform.translation[1] + (this.clipboard.maxY - centerY) + 800)
-                ], this.centerObject.transform.translation, this.centerObject.transform.rotation
-            );
-            newFoundationBottomRight.transform.translation[0]   = translationRotationBottomRight[0];
-            newFoundationBottomRight.transform.translation[1]   = translationRotationBottomRight[1];
-
-            this.baseLayout.saveGameParser.addObject(newFoundationBottomRight);
-
-            let resultBottomRight = this.baseLayout.parseObject(newFoundationBottomRight);
-                this.baseLayout.addElementToLayer(resultBottomRight.layer, resultBottomRight.marker);
+                let result = this.baseLayout.parseObject(newFoundation);
+                    this.baseLayout.addElementToLayer(result.layer, result.marker);
+        }
     }
 }
 
@@ -1053,7 +1021,7 @@ L.Control.ClipboardControl = L.Control.extend({
             .on(link2, 'click', this._pasteInPlace, this)
             .on(link2, 'dbclick', L.DomEvent.stopPropagation);
 
-        let modal = new Array();
+        let modal = [];
             modal.push('<div class="modal fade" tabindex="-1" id="clipboardControlModal"><div class="modal-dialog modal-lg"><div class="modal-content">');
             modal.push('<div class="modal-header"><h5 class="modal-title">Blueprint</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>');
             modal.push('<div class="modal-body"><p>You can copy a selection of items using the <strong>Lasso tool</strong>, then export them into a file.</p><div id="dropBlueprint"><input name="bluePrintFile" type="file" id="blueprintFileInput" accept=".cbp"><label for="blueprintFileInput" class="m-0"><i class="fas fa-upload"></i> Click/Drop a blueprint file</label></div></div>');
@@ -1102,7 +1070,7 @@ L.Control.ClipboardControl = L.Control.extend({
                                 this.options.baseLayout.clipboard = restored;
 
                                 $(this.options.pasteInPlaceButton).show();
-                                Modal.alert('Imported ' + restored.data.length + ' items from the blueprint!<br />Don\'t forget to paste it on original location or by right clicking any foundation!');
+                                BaseLayout_Modal.alert('Imported ' + restored.data.length + ' items from the blueprint!<br />Don\'t forget to paste it on original location or by right clicking any foundation!');
                             }
 
                             $('#clipboardControlModal').modal('hide');

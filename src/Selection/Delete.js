@@ -1,12 +1,14 @@
 /* global gtag */
-import BaseLayout_Math from '../BaseLayout/Math.js';
+import Modal_Selection                          from '../Modal/Selection.js';
 
-export default class BaseLayout_Selection_Delete
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
+
+export default class Selection_Delete
 {
     constructor(options)
     {
         this.baseLayout             = options.baseLayout;
-        this.markersSelected        = options.markersSelected;
+        this.markers                = options.markers;
 
         this.keepDeleted            = (options.keepDeleted !== undefined) ? options.keepDeleted : false;
 
@@ -24,13 +26,13 @@ export default class BaseLayout_Selection_Delete
     {
         let putInCrate                                          = {};
 
-        if(this.markersSelected)
+        if(this.markers)
         {
             console.time('deleteMultipleMarkers');
 
-            for(let i = 0; i < this.markersSelected.length; i++)
+            for(let i = 0; i < this.markers.length; i++)
             {
-                let contextMenu = this.baseLayout.getContextMenu(this.markersSelected[i]);
+                let contextMenu = this.baseLayout.getContextMenu(this.markers[i]);
 
                 if(contextMenu !== false)
                 {
@@ -41,7 +43,7 @@ export default class BaseLayout_Selection_Delete
                         {
                             if(this.keepDeleted === true)
                             {
-                                let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
+                                let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
                                 let mBuiltWithRecipe    = this.baseLayout.getObjectProperty(currentObject, 'mBuiltWithRecipe');
                                     if(mBuiltWithRecipe !== null)
                                     {
@@ -86,7 +88,7 @@ export default class BaseLayout_Selection_Delete
                                     }
                             }
 
-                            contextMenu[j].callback({baseLayout: this.baseLayout, relatedTarget: this.markersSelected[i]}, false, true);
+                            contextMenu[j].callback({baseLayout: this.baseLayout, relatedTarget: this.markers[i]}, false, true);
                         }
                     }
                 }
@@ -158,6 +160,6 @@ export default class BaseLayout_Selection_Delete
             this.baseLayout.updateDelayedBadgeCount();
         }
 
-        this.baseLayout.cancelSelectMultipleMarkers();
+        Modal_Selection.cancel(this.baseLayout);
     }
 }

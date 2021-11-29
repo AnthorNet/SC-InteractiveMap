@@ -1,12 +1,14 @@
 /* global gtag */
-import BaseLayout_Math from '../BaseLayout/Math.js';
+import Modal_Selection                          from '../Modal/Selection.js';
 
-export default class BaseLayout_Selection_Offset
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
+
+export default class Selection_Offset
 {
     constructor(options)
     {
         this.baseLayout             = options.baseLayout;
-        this.markersSelected        = options.markersSelected;
+        this.markers                = options.markers;
 
         this.offsetX                = parseFloat(options.offsetX);
         this.offsetY                = parseFloat(options.offsetY);
@@ -25,17 +27,17 @@ export default class BaseLayout_Selection_Offset
 
     offset()
     {
-        if(this.markersSelected)
+        if(this.markers)
         {
             console.time('offsetMultipleMarkers');
             let wires           = [];
             let historyPathName = [];
 
-            for(let i = 0; i < this.markersSelected.length; i++)
+            for(let i = 0; i < this.markers.length; i++)
             {
-                if(this.markersSelected[i].options.pathName !== undefined)
+                if(this.markers[i].options.pathName !== undefined)
                 {
-                    let currentObject                       = this.baseLayout.saveGameParser.getTargetObject(this.markersSelected[i].options.pathName);
+                    let currentObject                       = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
 
                     if(currentObject !== null)
                     {
@@ -44,11 +46,11 @@ export default class BaseLayout_Selection_Offset
                             let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
                                 if(currentObjectData !== null && currentObjectData.mapLayer !== undefined)
                                 {
-                                    historyPathName.push([this.markersSelected[i].options.pathName, currentObjectData.mapLayer]);
+                                    historyPathName.push([this.markers[i].options.pathName, currentObjectData.mapLayer]);
                                 }
                                 else
                                 {
-                                    historyPathName.push(this.markersSelected[i].options.pathName);
+                                    historyPathName.push(this.markers[i].options.pathName);
                                 }
                         }
 
@@ -170,7 +172,7 @@ export default class BaseLayout_Selection_Offset
 
                         // Delete and add again!
                         let result = this.baseLayout.parseObject(currentObject);
-                            this.baseLayout.deleteMarkerFromElements(result.layer, this.markersSelected[i], true);
+                            this.baseLayout.deleteMarkerFromElements(result.layer, this.markers[i], true);
                             this.baseLayout.addElementToLayer(result.layer, result.marker);
                     }
                 }
@@ -191,7 +193,7 @@ export default class BaseLayout_Selection_Offset
                     name: 'Undo: Offset selection',
                     values: [{
                         pathNameArray: historyPathName,
-                        callback: 'BaseLayout_Selection_Offset',
+                        callback: 'Selection_Offset',
                         properties: {offsetX: -this.offsetX, offsetY: -this.offsetY, offsetZ: -this.offsetZ}
                     }]
                 });
@@ -201,6 +203,6 @@ export default class BaseLayout_Selection_Offset
             this.baseLayout.updateRadioactivityLayer();
         }
 
-        this.baseLayout.cancelSelectMultipleMarkers();
+        Modal_Selection.cancel(this.baseLayout);
     }
 }

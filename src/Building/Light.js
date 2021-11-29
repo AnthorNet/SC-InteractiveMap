@@ -1,7 +1,7 @@
 /* global L */
 
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
-import Modal                                    from '../Modal.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import SubSystem_GameState                      from '../SubSystem/GameState.js';
 
@@ -328,7 +328,7 @@ export default class Building_Light
             });
         }
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : 'Update "<strong>' + buildingData.name + '</strong>" light color slot',
             container   : '#leafletMap',
             inputs      : [{
@@ -401,7 +401,7 @@ export default class Building_Light
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let intensity       = Building_Light.getIntensity(baseLayout, currentObject);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" intensity',
                 container   : '#leafletMap',
                 inputs      : [{

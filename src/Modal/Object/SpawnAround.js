@@ -1,14 +1,14 @@
-import Modal                                    from '../Modal.js';
+import BaseLayout_Modal                         from '../../BaseLayout/Modal.js';
 
-import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
+import SubSystem_Buildable                      from '../../SubSystem/Buildable.js';
 
-import Spawn_Blueprint                          from '../Spawn/Blueprint.js';
-import Spawn_Circle                             from '../Spawn/Circle.js';
-import Spawn_Polygon                            from '../Spawn/Polygon.js';
-import Spawn_Rectangle                          from '../Spawn/Rectangle.js';
-import Spawn_Road                               from '../Spawn/Road.js';
+import Spawn_Blueprint                          from '../../Spawn/Blueprint.js';
+import Spawn_Circle                             from '../../Spawn/Circle.js';
+import Spawn_Polygon                            from '../../Spawn/Polygon.js';
+import Spawn_Rectangle                          from '../../Spawn/Rectangle.js';
+import Spawn_Road                               from '../../Spawn/Road.js';
 
-export default class Modal_SpawnAround
+export default class Modal_Object_SpawnAround
 {
     static getHTML(marker)
     {
@@ -47,7 +47,7 @@ export default class Modal_SpawnAround
                 }
             }
 
-        Modal.form({
+        BaseLayout_Modal.form({
             title       : 'Spawn around "' + buildingData.name + '"',
             container   : '#leafletMap',
             inputs      : [
@@ -84,7 +84,7 @@ export default class Modal_SpawnAround
                                         colorSlotOptions.push({text: 'Swatch #' + (slotIndex + 1), value: slotIndex});
                                     }
 
-                                Modal.form({
+                                BaseLayout_Modal.form({
                                     title       : "Offset clipboard center",
                                     message     : "Most of the time, the clipboard calculate the center of your selection correctly. If not you can use the offset to move it.",
                                     container   : '#leafletMap',
@@ -177,7 +177,7 @@ export default class Modal_SpawnAround
                                     });
                                 }
 
-                                Modal.form({
+                                BaseLayout_Modal.form({
                                     title: "Circle options",
                                     container: '#leafletMap',
                                     inputs: circleOptions,
@@ -264,7 +264,7 @@ export default class Modal_SpawnAround
                                     });
                                 }
 
-                                Modal.form({
+                                BaseLayout_Modal.form({
                                     title: "Rectangle options",
                                     container: '#leafletMap',
                                     inputs: rectangleOptions,
@@ -362,7 +362,7 @@ export default class Modal_SpawnAround
                                         value           : 1
                                     });
 
-                                Modal.form({
+                                BaseLayout_Modal.form({
                                     title       : "Polygon options",
                                     container   : '#leafletMap',
                                     inputs      : polygonOptions,
@@ -435,7 +435,7 @@ export default class Modal_SpawnAround
                                         max         : 360
                                     });
 
-                                Modal.form({
+                                BaseLayout_Modal.form({
                                     title       : "Road options",
                                     container   : '#leafletMap',
                                     inputs      : roadOptions,

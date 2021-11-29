@@ -1,8 +1,9 @@
 import BaseLayout                               from './BaseLayout.js';
 import Map                                      from './Map.js';
-import Modal                                    from './Modal.js';
 import SaveParser                               from './SaveParser.js';
 import Translate                                from './Translate.js';
+
+import BaseLayout_Modal                         from './BaseLayout/Modal.js';
 
 export default class SCIM
 {
@@ -189,7 +190,7 @@ export default class SCIM
         {
             if(currentVersion > this.scriptsVERSION)
             {
-                Modal.alert(alertMessage);
+                BaseLayout_Modal.alert(alertMessage);
                 return false;
             }
         }
@@ -200,7 +201,7 @@ export default class SCIM
                 $.get(this.urlScriptsVERSION, function(data){
                     if(data > this.scriptsVERSION)
                     {
-                        Modal.alert(alertMessage);
+                        BaseLayout_Modal.alert(alertMessage);
                         clearInterval(this.intervalScriptsVERSION);
                         return false;
                     }

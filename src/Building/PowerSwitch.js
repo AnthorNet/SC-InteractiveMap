@@ -1,4 +1,4 @@
-import Modal                                    from '../Modal.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class Building_PowerSwitch
 {
@@ -55,7 +55,7 @@ export default class Building_PowerSwitch
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let currentSign     = Building_PowerSwitch.getSign(baseLayout, currentObject);
 
-            Modal.form({
+            BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" sign',
                 container   : '#leafletMap',
                 inputs      : [{

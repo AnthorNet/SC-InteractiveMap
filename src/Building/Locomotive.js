@@ -1,9 +1,9 @@
 /* global Intl */
 
-import Modal                                    from '../Modal.js';
-import Modal_Train_Timetable                    from '../Modal/Train/Timetable.js';
-
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
+
+import Modal_Train_Timetable                    from '../Modal/Train/Timetable.js';
 
 import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
 
@@ -234,7 +234,7 @@ export default class Building_Locomotive
             {
                 let mTrainName      = baseLayout.getObjectProperty(trainIdentifier, 'mTrainName');
 
-                    Modal.form({
+                    BaseLayout_Modal.form({
                         title       : 'Update "<strong>' + buildingData.name + '</strong>" sign',
                         container   : '#leafletMap',
                         inputs      : [{
