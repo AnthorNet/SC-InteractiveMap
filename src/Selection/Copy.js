@@ -82,7 +82,7 @@ export default class Selection_Copy
 
             for(let i = 0; i < this.markers.length; i++)
             {
-                let currentObject           = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.markers[i].options.pathName);
+                let currentObject           = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
                 let newDataObject           = {};
                     newDataObject.parent    = JSON.parse(JSON.stringify(currentObject));
                     newDataObject.children  = [];
