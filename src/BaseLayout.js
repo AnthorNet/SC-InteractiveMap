@@ -1587,22 +1587,18 @@ export default class BaseLayout
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
 
-            // User dropped items...
-            if(currentObject.className === '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C')
+            // Game dropped items...
+            if(currentObject.className === '/Script/FactoryGame.FGItemPickup_Spawnable')
             {
-                baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
-            }
-            // Game droppped items...
-            else
-            {
-                let mPickupItems    = baseLayout.getObjectProperty(currentObject, 'mPickupItems');
-
-                    if(mPickupItems !== null && mPickupItems.values[0].value.properties[0].value > 0)
+                let collectable = {pathName: currentObject.pathName};
+                    if(currentObject.levelName !== undefined)
                     {
-                        mPickupItems.values[0].value.properties[0].value = 0;
+                        collectable.levelName = currentObject.levelName;
                     }
+                baseLayout.saveGameParser.collectables.push(collectable);
             }
 
+        baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
         baseLayout.deleteMarkerFromElements('playerItemsPickupLayer', marker.relatedTarget);
         baseLayout.setBadgeLayerCount('playerItemsPickupLayer');
     }
@@ -2143,7 +2139,7 @@ export default class BaseLayout
             {
                 storageObjects      = Building_Locomotive.getFreightWagons(this, currentObject);
             }
-            if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
             {
                 inventoryProperty   = 'mInventory';
             }

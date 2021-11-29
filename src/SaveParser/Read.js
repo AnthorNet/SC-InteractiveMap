@@ -225,11 +225,7 @@ export default class SaveParser_Read
                     setTimeout(() => {
                             for(let i = 0; i < countCollected; i++)
                             {
-                                let currentCollectable = {
-                                    levelName: this.readString(),
-                                    pathName: this.readString()
-                                };
-                                this.saveParser.collectables.push(currentCollectable);
+                                this.saveParser.collectables.push(this.readObjectProperty({}));
                             }
 
                         this.arrayBuffer        = undefined;

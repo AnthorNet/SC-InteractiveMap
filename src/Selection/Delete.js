@@ -86,6 +86,21 @@ export default class Selection_Delete
                                             }
                                         }
                                     }
+
+                                if([
+                                    '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C',
+                                    '/Script/FactoryGame.FGItemPickup_Spawnable',
+                                    '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
+                                ].includes(currentObject.className))
+                                {
+                                    let itemClassName = this.baseLayout.itemsData[this.markers[i].options.itemId].className;
+                                        if(putInCrate[itemClassName] === undefined)
+                                        {
+                                            putInCrate[itemClassName] = 0;
+                                        }
+
+                                    putInCrate[itemClassName] += this.markers[i].options.itemQty;
+                                }
                             }
 
                             contextMenu[j].callback({baseLayout: this.baseLayout, relatedTarget: this.markers[i]}, false, true);

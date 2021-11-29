@@ -130,8 +130,7 @@ export default class SaveParser_Write
 
         for(i = 0; i < countCollectables; i++)
         {
-            this.saveBinary += this.writeString(this.saveParser.collectables[i].levelName, false);
-            this.saveBinary += this.writeString(this.saveParser.collectables[i].pathName, false);
+            this.saveBinary += this.writeObjectProperty(this.saveParser.collectables[i], false);
 
             if(this.saveBinary.length >= this.saveParser.maxChunkSize)
             {

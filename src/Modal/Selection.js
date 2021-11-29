@@ -124,57 +124,77 @@ export default class Modal_Selection
                             let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
                                 if(currentObject !== null)
                                 {
-                                    if(buildings[currentObject.className] === undefined)
+                                    if([
+                                        '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C',
+                                        '/Script/FactoryGame.FGItemPickup_Spawnable',
+                                        '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
+                                    ].includes(currentObject.className))
                                     {
-                                        if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
-                                        {
-                                            buildings[currentObject.className] = {name: 'Loot Crate', total: 1};
-                                        }
-                                        else
-                                        {
-                                            let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-                                                if(buildingData !== null)
-                                                {
-                                                    buildings[currentObject.className] = {name: buildingData.name, total: 1};
+                                        let itemClassName = baseLayout.itemsData[markers[i].options.itemId].className;
+                                            if(buildings[currentObject.className + '_' + itemClassName] === undefined)
+                                            {
+                                                buildings[currentObject.className + '_' + itemClassName] = {
+                                                    name    : baseLayout.itemsData[markers[i].options.itemId].name,
+                                                    total   : 0
+                                                };
+                                            }
 
-                                                    if(buildingData.category === 'foundation')
-                                                    {
-                                                        haveFoundationsMaterialsCategory = true;
-                                                    }
-                                                    if(buildingData.category === 'wall')
-                                                    {
-                                                        haveWallsMaterialsCategory = true;
-                                                    }
-                                                    if(buildingData.category === 'roof')
-                                                    {
-                                                        haveRoofsMaterialsCategory = true;
-                                                    }
-                                                    if(buildingData.category === 'extraction')
-                                                    {
-                                                        haveExtractionCategory = true;
-                                                    }
-                                                    if(buildingData.category === 'logistic')
-                                                    {
-                                                        haveLogisticCategory = true;
-                                                    }
-                                                    if(buildingData.category === 'powerPole')
-                                                    {
-                                                        havePowerPoleCategory = true;
-                                                    }
-                                                    if(buildingData.category === 'pipe')
-                                                    {
-                                                        havePipelineCategory = true;
-                                                    }
-                                                    if(buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
-                                                    {
-                                                        haveStorageCategory = true;
-                                                    }
-                                                }
-                                        }
+                                        buildings[currentObject.className + '_' + itemClassName].total += markers[i].options.itemQty;
                                     }
                                     else
                                     {
-                                        buildings[currentObject.className].total++;
+                                        if(buildings[currentObject.className] === undefined)
+                                        {
+                                            if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
+                                            {
+                                                buildings[currentObject.className] = {name: 'Loot Crate', total: 1};
+                                            }
+                                            else
+                                            {
+                                                let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+                                                    if(buildingData !== null)
+                                                    {
+                                                        buildings[currentObject.className] = {name: buildingData.name, total: 1};
+
+                                                        if(buildingData.category === 'foundation')
+                                                        {
+                                                            haveFoundationsMaterialsCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'wall')
+                                                        {
+                                                            haveWallsMaterialsCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'roof')
+                                                        {
+                                                            haveRoofsMaterialsCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'extraction')
+                                                        {
+                                                            haveExtractionCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'logistic')
+                                                        {
+                                                            haveLogisticCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'powerPole')
+                                                        {
+                                                            havePowerPoleCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'pipe')
+                                                        {
+                                                            havePipelineCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
+                                                        {
+                                                            haveStorageCategory = true;
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            buildings[currentObject.className].total++;
+                                        }
                                     }
                                 }
                                 else
