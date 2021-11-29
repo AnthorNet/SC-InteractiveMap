@@ -327,9 +327,13 @@ export default class BaseLayout_ContextMenu
                     contextMenu.push('-');
                 }
 
-                if((buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')) //TODO: Handle fluid storage...
+                if((buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')) //TODO: Handle fluid storage...
                 {
                     let inventoryType = 'solid';
+                        if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                        {
+                            inventoryType = 'multiple';
+                        }
                         if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
                         {
                             let storage           = this.baseLayout.getObjectProperty(currentObject, 'mStorageInventory');
@@ -348,16 +352,22 @@ export default class BaseLayout_ContextMenu
                                 }
                         }
 
+                        if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
+                        {
+                            inventoryType = 'liquid';
+                        }
+
                         if(inventoryType === 'solid')
                         {
-                            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className) === false)
-                            {
-                                contextMenu.push({
-                                    icon    : 'fa-box',
-                                    text    : 'Edit inventory',
-                                    callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
-                                });
-                            }
+                            contextMenu.push({
+                                icon    : 'fa-box',
+                                text    : 'Edit inventory',
+                                callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
+                            });
+                        }
+
+                        if(inventoryType === 'solid' || inventoryType === 'multiple')
+                        {
                             contextMenu.push({
                                 icon    : 'fa-box-full',
                                 text    : 'Fill inventory',
