@@ -50,6 +50,29 @@ export default class Spawn_Blueprint
             $('#liveLoader').show()
                             .find('.progress-bar').css('width', '0%');
 
+            // Offset double ramps before U5
+            if(this.clipboard.buildVersion < 170147)
+            {
+                for(let i = 0; i < this.clipboard.data.length; i++)
+                {
+                    if(this.clipboard.data[i].parent.transform !== undefined && this.clipboard.data[i].parent.transform.translation !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
+                    {
+                        if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble_8x1.Build_RampDouble_8x1_C')
+                        {
+                            this.clipboard.data[i].parent.transform.translation[2] += 100;
+                        }
+                        if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble.Build_RampDouble_C')
+                        {
+                            this.clipboard.data[i].parent.transform.translation[2] += 200;
+                        }
+                        if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x8x8.Build_Ramp_8x8x8_C')
+                        {
+                            this.clipboard.data[i].parent.transform.translation[2] += 400;
+                        }
+                    }
+                }
+            }
+
             if(this.marker === null)
             {
                 this.centerObject       = {
@@ -105,6 +128,23 @@ export default class Spawn_Blueprint
                         this.clipboard.data[i].parent.transform.translation[0] -= centerX;
                         this.clipboard.data[i].parent.transform.translation[1] -= centerY;
                         this.clipboard.data[i].parent.transform.translation[2] -= minZ;
+
+                        // Offset double ramps before U5
+                        if(this.clipboard.buildVersion < 170147)
+                        {
+                            if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble_8x1.Build_RampDouble_8x1_C')
+                            {
+                                this.clipboard.data[i].parent.transform.translation[2] += 100;
+                            }
+                            if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble.Build_RampDouble_C')
+                            {
+                                this.clipboard.data[i].parent.transform.translation[2] += 150;
+                            }
+                            if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x8x8.Build_Ramp_8x8x8_C')
+                            {
+                                this.clipboard.data[i].parent.transform.translation[2] += 200;
+                            }
+                        }
 
                         if(this.clipboard.data[i].targetPoints !== undefined)
                         {
