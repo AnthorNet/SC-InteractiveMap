@@ -3,6 +3,7 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
+import SubSystem_Unlock                         from '../SubSystem/Unlock.js';
 
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
@@ -1802,46 +1803,42 @@ export default class BaseLayout_Tooltip
     getOverclockingPanel(currentObject, top = 312, left = 89)
     {
         let content                         = [];
-        let unlockSubSystem                 = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
-            if(unlockSubSystem !== null)
+        let unlockSubSystem                 = new SubSystem_Unlock({baseLayout: this.baseLayout});
+            if(unlockSubSystem.haveOverclocking() === true)
             {
-                let mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0);
-                    if(mIsBuildingOverclockUnlocked === 1)
+                let clockSpeed              = this.baseLayout.getClockSpeed(currentObject);
+                let potentialInventory      = this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential');
+
+                    content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + (parseInt(left) + 2) + 'px; width: 318px;height: 97px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/ManufacutringMenu_OverclockBackground.png?v=' + this.baseLayout.scriptVersion + ')">');
+                    content.push('<table style="margin: 10px;width: 298px;"><tr>');
+                    content.push('<td><span class="text-small">Clockspeed:</span><br /><strong class="lead text-warning">' + +(Math.round(clockSpeed * 10000) / 100) + ' %</strong></td>');
+
+                    if(potentialInventory !== null)
                     {
-                        let clockSpeed                      = this.baseLayout.getClockSpeed(currentObject);
-                        let potentialInventory              = this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential');
-
-                            content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + (parseInt(left) + 2) + 'px; width: 318px;height: 97px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/ManufacutringMenu_OverclockBackground.png?v=' + this.baseLayout.scriptVersion + ')">');
-                            content.push('<table style="margin: 10px;width: 298px;"><tr>');
-                            content.push('<td><span class="text-small">Clockspeed:</span><br /><strong class="lead text-warning">' + +(Math.round(clockSpeed * 10000) / 100) + ' %</strong></td>');
-
-                            if(potentialInventory !== null)
-                            {
-                                for(let i = 0; i < potentialInventory.length; i++)
-                                {
-                                    content.push('<td width="62">');
-                                    content.push('<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + this.baseLayout.setInventoryTableSlot([potentialInventory[i]], null, 56, '', this.baseLayout.itemsData.Desc_CrystalShard_C.image) + '</td></tr></table></div>');
-                                    content.push('</td>');
-                                }
-                            }
-
-                            content.push('</tr><tr>');
-                            content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + Math.min(100, (clockSpeed * 10000) / 100) + '%"></div></div></td>');
-
-                            if(potentialInventory !== null)
-                            {
-                                for(let i = 0; i < potentialInventory.length; i++)
-                                {
-                                    let potentialProgress = Math.min(100, ((clockSpeed * 10000) / 100 - (100 + (i * 50))) * 2);
-                                        content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + potentialProgress + '%"></div></div></td>');
-                                }
-                            }
-
-                            content.push('</tr></table>');
-                            content.push('</div>');
-
-                        return content.join('');
+                        for(let i = 0; i < potentialInventory.length; i++)
+                        {
+                            content.push('<td width="62">');
+                            content.push('<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + this.baseLayout.setInventoryTableSlot([potentialInventory[i]], null, 56, '', this.baseLayout.itemsData.Desc_CrystalShard_C.image) + '</td></tr></table></div>');
+                            content.push('</td>');
+                        }
                     }
+
+                    content.push('</tr><tr>');
+                    content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + Math.min(100, (clockSpeed * 10000) / 100) + '%"></div></div></td>');
+
+                    if(potentialInventory !== null)
+                    {
+                        for(let i = 0; i < potentialInventory.length; i++)
+                        {
+                            let potentialProgress = Math.min(100, ((clockSpeed * 10000) / 100 - (100 + (i * 50))) * 2);
+                                content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + potentialProgress + '%"></div></div></td>');
+                        }
+                    }
+
+                    content.push('</tr></table>');
+                    content.push('</div>');
+
+                return content.join('');
             }
 
         return '<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px; width: 322px;height: 105px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/OverclockPanelLocked.png?v=' + this.baseLayout.scriptVersion + ');"></div>';

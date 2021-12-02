@@ -43,6 +43,7 @@ export default class BaseLayout
         this.useBuild                           = (options.build !== undefined) ? options.build : 'EarlyAccess';
         this.scriptVersion                      = (options.version !== undefined) ? options.version : Math.floor(Math.random() * Math.floor(9999999999));
         this.staticUrl                          = options.staticUrl;
+        this.tetrominoUrl                       = options.tetrominoUrl;
 
         this.satisfactoryMap                    = options.satisfactoryMap;
         this.saveGameParser                     = options.saveGameParser;
@@ -605,7 +606,7 @@ export default class BaseLayout
                             riseOnHover: true,
                             zIndexOffset: 1000
                         };
-                    let tooltip                 = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
+                    let tooltip                 = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(' + this.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
                                                     <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
                                                         ' + ((button.attr('data-original-title') !== undefined) ? button.attr('data-original-title') : button.attr('title')) + '\
                                                     </div>\
@@ -662,9 +663,11 @@ export default class BaseLayout
                 '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C',
                 '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C',
 
+                // HUB PARTS
                 '/Game/FactoryGame/Buildable/Factory/WorkBench/Build_WorkBenchIntegrated.Build_WorkBenchIntegrated_C',
                 '/Game/FactoryGame/Buildable/Factory/Mam/Build_MamIntegrated.Build_MamIntegrated_C',
                 '/Game/FactoryGame/Buildable/Factory/HubTerminal/Build_HubTerminal.Build_HubTerminal_C',
+                '/Game/FactoryGame/Prototype/TetrominoRecipeDesigner/Build_TetrominoGame_Computer.Build_TetrominoGame_Computer_C',
 
                 '/Game/FactoryGame/Buildable/Vehicle/BP_VehicleTargetPoint.BP_VehicleTargetPoint_C',
 
@@ -740,6 +743,38 @@ export default class BaseLayout
             {
                 this.players[currentObject.pathName] = new SubSystem_Player({baseLayout: this, player: currentObject});
                 continue;
+            }
+            if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+            {
+                let mTetrominoLeaderBoard = this.getObjectProperty(currentObject, 'mTetrominoLeaderBoard');
+                    if(mTetrominoLeaderBoard !== null)
+                    {
+                        for(let j = 0; j < mTetrominoLeaderBoard.values.length; j++)
+                        {
+                            let playerName  = null;
+                            let level       = null;
+                            let score       = null;
+                                for(let k = 0; k < mTetrominoLeaderBoard.values[j].length; k++)
+                                {
+                                    switch(mTetrominoLeaderBoard.values[j][k].name)
+                                    {
+                                        case 'PlayerName':
+                                            playerName = mTetrominoLeaderBoard.values[j][k].value;
+                                            break;
+                                        case 'LevelName':
+                                            level = mTetrominoLeaderBoard.values[j][k].value.replace('LVL', '');
+                                            break;
+                                        case 'Points':
+                                            score = mTetrominoLeaderBoard.values[j][k].value;
+                                            break;
+                                    }
+                                }
+                                if(playerName !== null && level !== null && score !== null)
+                                {
+                                    $.post(this.tetrominoUrl, {playerName: playerName, level: level, score: score});
+                                }
+                        }
+                    }
             }
 
             if(currentObject.className === '/Script/FactoryGame.FGMapManager')
@@ -2240,7 +2275,7 @@ export default class BaseLayout
         let isFluidInventory        = true;
         let itemsCategories         = JSON.parse(JSON.stringify(this.itemsCategories));
             itemsCategories.statue  = 'Statues';
-            itemsCategories.ficsmas = 'FICSMAS Holiday Event';
+            itemsCategories.ficsmas = 'FICS*MAS Holiday Event';
             itemsCategories.mods    = 'Modded items';
 
         if(currentObject !== null)

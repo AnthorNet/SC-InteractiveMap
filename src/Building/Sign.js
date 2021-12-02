@@ -6,7 +6,7 @@ export default class Building_Sign
 {
     static getConversionIcons(){
         return {
-            17: 386,    39: 384,    40: 385,    127: 408,
+            16: 514,    17: 386,    39: 384,    40: 385,    127: 408,
             128: 409,   129: 410,   130: 411,   131: 412,
             132: 413,   143: 433,   144: 434,   145: 435,
             146: 441,   150: 448,   151: 449,   152: 450,
@@ -26,8 +26,14 @@ export default class Building_Sign
             605: ['Emote Scissors', '/img/patternIcons/IconDesc_EmoteScissors_256.png'],
             606: ['Emote Point', '/img/patternIcons/IconDesc_EmotePoint_256.png'],
             607: ['Emote Wave', '/img/patternIcons/IconDesc_EmoteWave_256.png'],
+
             608: ['Checkit', '/img/patternIcons/TXUI_Checkit_256.png'],
-            609: ['Lizard Doggo', '/img/patternIcons/TXUI_LizardDoggo_256.png']
+            609: ['Lizard Doggo', '/img/patternIcons/TXUI_LizardDoggo_256.png'],
+
+            614: ['FICMAS Berries', '/img/patternIcons/TXUI_Ficsmas_Berries.png'],
+            615: ['FICMAS Check', '/img/patternIcons/TXUI_Ficsmas_Check.png'],
+            616: ['FICMAS Checkit', '/img/patternIcons/TXUI_Ficsmas_Checkit.png'],
+            617: ['FICMAS Gift', '/img/patternIcons/TXUI_FicsMas_Present.png']
         };
     }
 
@@ -91,7 +97,13 @@ export default class Building_Sign
             373: ['Horizontal Gradient', '/img/patternIcons/horizontalGradient.png'],
 
             374: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png'],
-            375: ['FICSIT', '/img/patternIcons/Ficsit_Monochrome_Logo.png']
+            375: ['FICSIT', '/img/patternIcons/Ficsit_Monochrome_Logo.png'],
+
+            610: ['FICMAS Logo', '/img/patternIcons/TXUI_Ficsmas_Logo.png'],
+            611: ['FICMAS Snowflake', '/img/patternIcons/TXUI_Ficsmas_Snowflake.png'],
+            612: ['FICSIT Check Snowflake', '/img/patternIcons/TXUI_Ficsmas_Snowflakes.png'],
+            613: ['FICMAS Wraping Paper', '/img/patternIcons/TXUI_Ficsmas_WrappingPaper.png'],
+            618: ['FICMAS Ugly Sweater', '/img/patternIcons/TXUI_Ficsmas_UglySweater.png'],
         };
     }
 
@@ -1358,7 +1370,11 @@ export default class Building_Sign
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let options         = Building_Sign.generateIconOptions(baseLayout);
-            options.push({value: 31, text: 'TEST ICON ID'});
+
+            if(baseLayout.useDebug === true)
+            {
+                options.push({value: 184, text: 'TEST ICON ID'});
+            }
 
             BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" icon',

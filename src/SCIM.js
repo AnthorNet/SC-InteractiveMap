@@ -20,6 +20,7 @@ export default class SCIM
         this.gameDataUrl                = "https://satisfactory-calculator.com/" + this.language + "/api/game";
         this.modsDataUrl                = "https://satisfactory-calculator.com/" + this.language + "/mods/index/json";
         this.translationDataUrl         = "https://satisfactory-calculator.com/" + this.language + "/api/map/translation";
+        this.tetrominoUrl               = "https://satisfactory-calculator.com/" + this.language + "/api/tetromino";
 
         this.collectedOpacity           = 0.3;
 
@@ -128,6 +129,7 @@ export default class SCIM
             options.staticUrl           = this.staticAssetsUrl;
             options.dataUrl             = this.gameDataUrl;
             options.modsUrl             = this.modsDataUrl;
+            options.tetrominoUrl        = this.tetrominoUrl;
 
             options.language            = this.language;
             options.translate           = this.translate;

@@ -33,6 +33,7 @@ export default class SaveParser_Read
             'ItemFoundData',
             'LightSourceControlData',
             'MessageData',
+            'MiniGameResult',
             'PhaseCost',
             'PrefabIconElementSaveData',
             'PrefabTextElementSaveData',

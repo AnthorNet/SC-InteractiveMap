@@ -13,6 +13,7 @@ import Building_RailroadSwitchControl           from '../Building/RailroadSwitch
 import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
+import Building_TradingPost                     from '../Building/TradingPost.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
 import Building_Vehicle                         from '../Building/Vehicle.js';
 
@@ -175,7 +176,7 @@ export default class BaseLayout_ContextMenu
                         break;
                 }
 
-            if(buildingData !== null && buildingData.className !== '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
+            if(buildingData !== null)
             {
                 contextMenu.push({text: buildingData.name, icon: buildingData.image});
 
@@ -219,6 +220,7 @@ export default class BaseLayout_ContextMenu
                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/CeilingLight/Build_CeilingLight.Build_CeilingLight_C'
                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightWall.Build_FloodlightWall_C'
                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C'
+                    && currentObject.className !== '/Game/FactoryGame/Events/Christmas/Buildings/SnowDispenser/Build_SnowDispenser.Build_SnowDispenser_C'
                 )
                 {
                     contextMenu.push({
@@ -227,7 +229,7 @@ export default class BaseLayout_ContextMenu
                         callback    : this.baseLayout.updateObjectProductionPausedStatus.bind(this.baseLayout)
                     });
 
-                    if(buildingData.category !== 'light'&& currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
+                    if(buildingData.category !== 'light' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
                     {
                         contextMenu.push({
                             icon        : 'fa-tachometer-alt-slow',
@@ -316,6 +318,10 @@ export default class BaseLayout_ContextMenu
                 {
                     contextMenu = Building_AwesomeSink.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
+                {
+                    contextMenu = Building_TradingPost.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                }
 
                 if(buildingData.category === 'production')
                 {
@@ -395,7 +401,7 @@ export default class BaseLayout_ContextMenu
 
 
 
-                if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C')
+                if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
                 {
                     contextMenu.push({
                         icon        : 'fa-arrows-alt',
@@ -586,7 +592,7 @@ export default class BaseLayout_ContextMenu
                 }
 
 
-                if(['/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C', '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C'].includes(currentObject.className) === false)
+                if(['/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C', '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C', '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C'].includes(currentObject.className) === false)
                 {
                     contextMenu.push('-');
                     contextMenu.push({

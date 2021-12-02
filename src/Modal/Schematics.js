@@ -18,8 +18,6 @@ export default class Modal_Schematics
             //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.recipeManager"));
             //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager"));
             //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.ResearchManager"));
-            //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.StorySubsystem"));
-            //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem"));
         }
     }
 
@@ -543,15 +541,31 @@ export default class Modal_Schematics
                          && currentSchematic.schematics[k] !== '/Game/FactoryGame/Schematics/Progression/CustomizerUnlock_PipelineSwatch.CustomizerUnlock_PipelineSwatch_C'
                     )
                     {
-                        let schematicId = currentSchematic.schematics[k].split('.');
-                            schematicId = schematicId.pop();
-                        if(this.baseLayout.schematicsData[schematicId] !== undefined)
+                        switch(currentSchematic.schematics[k])
                         {
-                            unlocks.push(this.baseLayout.schematicsData[schematicId].name);
-                        }
-                        else
-                        {
-                            unlocks.push(currentSchematic.schematics[k]);
+                            case '/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/Schematic_XMassTree_T1.Schematic_XMassTree_T1_C':
+                                unlocks.push('Giant Tree Upgrade: Candy Canes');
+                                break;
+                            case '/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/Schematic_XMassTree_T2.Schematic_XMassTree_T2_C':
+                                unlocks.push('Giant Tree Upgrade: FICSMAS Light, Red, Blue and Copper Ornaments');
+                                break;
+                            case '/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/Schematic_XMassTree_T3.Schematic_XMassTree_T3_C':
+                                unlocks.push('Giant Tree Upgrade: Iron Ornaments, Colored Gifts');
+                                break;
+                            case '/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/Schematic_XMassTree_T4.Schematic_XMassTree_T4_C':
+                                unlocks.push('Giant Tree Upgrade: A Star as a tree-topper');
+                                break;
+                            default:
+                                let schematicId = currentSchematic.schematics[k].split('.');
+                                    schematicId = schematicId.pop();
+                                if(this.baseLayout.schematicsData[schematicId] !== undefined)
+                                {
+                                    unlocks.push(this.baseLayout.schematicsData[schematicId].name);
+                                }
+                                else
+                                {
+                                    unlocks.push(currentSchematic.schematics[k]);
+                                }
                         }
                     }
                 }
@@ -590,7 +604,7 @@ export default class Modal_Schematics
 
             if(unlocks.length > 0)
             {
-                return '<br />Unlocks: <em>' + unlocks.join(', ') + '</em>';
+                return '<br /><u>Unlocks:</u> <em>' + unlocks.join(', ') + '</em>';
             }
 
         return '';
@@ -631,9 +645,12 @@ export default class Modal_Schematics
                                             && schematicId !== 'Research_HardDrive_0_C'
                                             && schematicId !== 'ResourceSink_CyberWagon_Unlock_C'
                                             && schematicId !== 'ResourceSink_GoldenCup_C'
+                                            && schematicId !== 'ResourceSink_GoldenCart_Unlock_C'
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Customizer_Background/') === false
+                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/') === false
+                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Events/Christmas/Calendar_Schematics/Ficsmas_Schematic_SkinBundle_') === false
                                             && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/Progression/CustomizerUnlock_PipelineSwatch.CustomizerUnlock_PipelineSwatch_C'
                                             && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/ResourceSink/Patterns/CBG_PatternRemoval.CBG_PatternRemoval_C'
                                         )
@@ -805,34 +822,30 @@ export default class Modal_Schematics
                             break;
                     }
 
-                    let unlockSubSystem     = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
-                        if(unlockSubSystem !== null)
+                    let mapPlayers = new Modal_Map_Players({baseLayout: this.baseLayout});
+                        switch(currentStatus)
                         {
-                            let mapPlayers = new Modal_Map_Players({baseLayout: this.baseLayout});
-                                switch(currentStatus)
+                            case 'none': // Go to available state
+                            case 'purchased': // Go to none state
+                                if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
                                 {
-                                    case 'none': // Go to available state
-                                    case 'purchased': // Go to none state
-                                        if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
-                                        {
-                                            mapPlayers.removeEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
-                                        }
-                                        if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].slots !== undefined)
-                                        {
-                                            mapPlayers.removeInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
-                                        }
-                                        break;
-                                    case 'available': // Go to purchased state
-                                        if(this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
-                                        {
-                                            mapPlayers.addEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
-                                        }
-                                        if(this.baseLayout.schematicsData[schematicId].slots !== undefined)
-                                        {
-                                            mapPlayers.addInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
-                                        }
-                                        break;
+                                    mapPlayers.removeEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
                                 }
+                                if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].slots !== undefined)
+                                {
+                                    mapPlayers.removeInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
+                                }
+                                break;
+                            case 'available': // Go to purchased state
+                                if(this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
+                                {
+                                    mapPlayers.addEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
+                                }
+                                if(this.baseLayout.schematicsData[schematicId].slots !== undefined)
+                                {
+                                    mapPlayers.addInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
+                                }
+                                break;
                         }
 
                     let researchManager = Building_MAM.getManager(this.baseLayout);
