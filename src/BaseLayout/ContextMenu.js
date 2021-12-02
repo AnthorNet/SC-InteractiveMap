@@ -45,7 +45,7 @@ export default class BaseLayout_ContextMenu
                 if(faunaData !== null)
                 {
                     contextMenu.push({
-                        icon        : faunaData.iconImage,
+                        icon        : faunaData.image,
                         text        : faunaData.name
                     });
                     contextMenu.push({

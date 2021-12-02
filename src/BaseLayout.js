@@ -16,6 +16,7 @@ import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
 import Modal_Map_Players                        from './Modal/Map/Players.js';
 import Modal_Map_Options                        from './Modal/Map/Options.js';
 
+import Modal_Statistics_Game                    from './Modal/Statistics/Game.js';
 import Modal_Statistics_Production              from './Modal/Statistics/Production.js';
 import Modal_Statistics_Storage                 from './Modal/Statistics/Storage.js';
 
@@ -74,6 +75,8 @@ export default class BaseLayout
         this.itemsCategories                    = {};
         this.toolsData                          = null;
         this.toolsCategories                    = {};
+        this.faunaData                          = null;
+        this.faunaCategories                    = {};
         this.recipesData                        = null;
         this.schematicsData                     = null;
 
@@ -166,7 +169,7 @@ export default class BaseLayout
             playerItemsPickupLayer                  : {layerGroup: null, subLayer: null, elements: [], useAltitude: true},
             playerPositionLayer                     : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer'},
             playerSpaceRabbitLayer                  : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer', count: 0, useAltitude: true},
-            playerFaunaLayer                        : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer', useAltitude: true},
+            playerFaunaLayer                        : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer', useAltitude: true, filters: []},
             playerFogOfWar                          : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer'}
         };
 
@@ -329,6 +332,8 @@ export default class BaseLayout
                         this.itemsCategories        = data.itemsCategories;
                         this.toolsData              = data.toolsData;
                         this.toolsCategories        = data.toolsCategories;
+                        this.faunaData              = data.faunaData;
+                        this.faunaCategories        = data.faunaCategories;
 
                         this.recipesData            = data.recipesData;
                         this.schematicsData         = data.schematicsData;
@@ -1175,6 +1180,34 @@ export default class BaseLayout
                                     $('#statisticsModalStorage').html(statisticsStorage.parse());
                             }
                             break;
+                        case '#statisticsModalConsumables':
+                            if($('#statisticsModalConsumables').html() === '')
+                            {
+                                let statisticsGame = new Modal_Statistics_Game({baseLayout: this});
+                                    $('#statisticsModalConsumables').html(statisticsGame.parseConsumables());
+                            }
+                            break;
+                        case '#statisticsModalCreatures':
+                            if($('#statisticsModalCreatures').html() === '')
+                            {
+                                let statisticsGame = new Modal_Statistics_Game({baseLayout: this});
+                                    $('#statisticsModalCreatures').html(statisticsGame.parseCreatures());
+                            }
+                            break;
+                        case '#statisticsModalCrafting':
+                            if($('#statisticsModalCrafting').html() === '')
+                            {
+                                let statisticsGame = new Modal_Statistics_Game({baseLayout: this});
+                                    $('#statisticsModalCrafting').html(statisticsGame.parseCrafting());
+                            }
+                            break;
+                        case '#statisticsModalBuilt':
+                            if($('#statisticsModalBuilt').html() === '')
+                            {
+                                let statisticsGame = new Modal_Statistics_Game({baseLayout: this});
+                                    $('#statisticsModalBuilt').html(statisticsGame.parseBuilt());
+                            }
+                            break;
                     }
             }.bind(this));
             $('#researchModal').on('show.bs.modal', () => {
@@ -1328,32 +1361,30 @@ export default class BaseLayout
 
     addPlayerFauna(currentObject)
     {
-        let layerId     = (currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C') ? 'playerSpaceRabbitLayer' : 'playerFaunaLayer';
+        let layerId     = 'playerFaunaLayer';
         let iconColor   = '#b34848';
         let iconImage   = this.staticUrl + '/img/mapMonstersIcon.png';
 
-        this.setupSubLayer(layerId);
-
-        let faunaData = this.getFaunaDataFromClassName(currentObject.className);
+        let faunaData   = this.getFaunaDataFromClassName(currentObject.className);
             if(faunaData !== null)
             {
-                iconColor = faunaData.iconColor;
-                iconImage = faunaData.iconImage;
+                iconColor   = faunaData.mapColor;
+                iconImage   = faunaData.image;
+                layerId     = faunaData.mapLayer;
+
+                if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
+                {
+                    let isSpaceRabbitPersistent = this.getObjectProperty(currentObject, 'mIsPersistent');
+                        if(isSpaceRabbitPersistent !== null)
+                        {
+                            iconColor = '#b3ffb3';
+                            this.playerLayers[layerId].count++;
+                        }
+                }
             }
 
-        if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
-        {
-            let isSpaceRabbitPersistent = this.getObjectProperty(currentObject, 'mIsPersistent');
-                if(isSpaceRabbitPersistent !== null)
-                {
-                    iconColor = '#b3ffb3';
-                    this.playerLayers[layerId].count++;
-                }
-        }
-
-        let position    = this.satisfactoryMap.unproject(currentObject.transform.translation);
-        let spaceRabbit = L.marker(
-                position,
+        let faunaMarker = L.marker(
+                this.satisfactoryMap.unproject(currentObject.transform.translation),
                 {
                     pathName: currentObject.pathName,
                     icon: this.getMarkerIcon('#FFFFFF', iconColor, iconImage),
@@ -1362,97 +1393,105 @@ export default class BaseLayout
                 }
             );
 
-        this.autoBindTooltip(spaceRabbit);
-        spaceRabbit.bindContextMenu(this);
-        this.playerLayers[layerId].elements.push(spaceRabbit);
-        return spaceRabbit;
+        this.setupSubLayer(layerId);
+        this.autoBindTooltip(faunaMarker);
+        faunaMarker.bindContextMenu(this);
+        this.playerLayers[layerId].elements.push(faunaMarker);
+
+        if(this.playerLayers[layerId].filtersCount[currentObject.className] === undefined)
+        {
+            this.playerLayers[layerId].filtersCount[currentObject.className] = 0;
+        }
+        this.playerLayers[layerId].filtersCount[currentObject.className]++;
+
+        return faunaMarker;
     }
 
-    spawnFauna(marker, className)
+    spawnFauna(marker, faunaId)
     {
         let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let layerId         = 'playerFaunaLayer';
-        let faunaData       = this.getFaunaDataFromClassName(className);
+        let faunaData       = this.getFaunaDataFromClassName(faunaId);
 
-        let pathName        = this.generateFastPathName({pathName: faunaData.pathName + 'XXX'});
+            if(faunaData !== null)
+            {
+                let pathName        = this.generateFastPathName({pathName: faunaData.pathName});
+                let newFauna        = {
+                    type                : 1,
+                    children            : [{pathName: pathName + '.HealthComponent'}],
+                    className           : faunaData.className,
+                    pathName            : pathName,
+                    entity              : {levelName: '', pathName: ''},
+                    properties          : [{name: 'mHealthComponent', type: 'ObjectProperty', value: {pathName: pathName + '.HealthComponent'}}],
+                    transform           : {
+                        rotation            : [0, -0, currentObject.transform.rotation[2], currentObject.transform.rotation[3]],
+                        translation         : [
+                            currentObject.transform.translation[0] + (Math.floor(Math.random() * (800 + 1)) - 400),
+                            currentObject.transform.translation[1] + (Math.floor(Math.random() * (800 + 1)) - 400),
+                            currentObject.transform.translation[2] + 450 + ( (faunaData.zOffset !== undefined) ? faunaData.zOffset : 0 )
+                        ]
+                    }
+                };
 
-        let newFauna        = {
-            type                : 1,
-            children            : [{pathName: pathName + '.HealthComponent'}],
-            className           : className,
-            pathName            : pathName,
-            entity              : {levelName: '', pathName: ''},
-            properties          : [{name: 'mHealthComponent', type: 'ObjectProperty', value: {pathName: pathName + '.HealthComponent'}}],
-            transform           : {
-                rotation            : [0, -0, currentObject.transform.rotation[2], currentObject.transform.rotation[3]],
-                translation         : [
-                    currentObject.transform.translation[0] + (Math.floor(Math.random() * (800 + 1)) - 400),
-                    currentObject.transform.translation[1] + (Math.floor(Math.random() * (800 + 1)) - 400),
-                    currentObject.transform.translation[2] + 450 + ( (faunaData.zOffset !== undefined) ? faunaData.zOffset : 0 )
-                ]
-            }
-        };
+                if(faunaData.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
+                {
+                    newFauna.children.unshift({pathName: pathName + '.mInventory'});
 
-        if(className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
-        {
-            layerId = 'playerSpaceRabbitLayer';
+                    let currentPlayerObject = this.saveGameParser.getTargetObject(this.saveGameParser.playerHostPathName);
+                    let mOwnedPawn          = this.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
 
-            newFauna.children.unshift({pathName: pathName + '.mInventory'});
+                    newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {pathName: mOwnedPawn.pathName}});
+                    newFauna.properties.push({name: 'mLootTableIndex', type: 'IntProperty', value: 0});
+                    newFauna.properties.push({name: 'mLootTimerHandle', type: 'StructProperty', value: {handle: 'None', type: 'TimerHandle'}});
+                    newFauna.properties.push({name: 'mIsPersistent', type: 'BoolProperty', value: 1});
 
-            let currentPlayerObject = this.saveGameParser.getTargetObject(this.saveGameParser.playerHostPathName);
-            let mOwnedPawn          = this.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
-
-            newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {pathName: mOwnedPawn.pathName}});
-            newFauna.properties.push({name: 'mLootTableIndex', type: 'IntProperty', value: 0});
-            newFauna.properties.push({name: 'mLootTimerHandle', type: 'StructProperty', value: {handle: 'None', type: 'TimerHandle'}});
-            newFauna.properties.push({name: 'mIsPersistent', type: 'BoolProperty', value: 1});
-
-            let newSpaceRabbitInventory     = {
-                type            : 0,
-                children        : [],
-                className       : '/Script/FactoryGame.FGInventoryComponent',
-                outerPathName   : pathName, pathName: pathName + '.mInventory',
-                properties      : [
-                    {
-                        name: "mInventoryStacks",
-                        structureName: "mInventoryStacks",
-                        structureSubType: "InventoryStack",
-                        structureType: "StructProperty",
-                        type: "ArrayProperty",
-                        value: {
-                            type: "StructProperty",
-                            values: [[{
-                                name: "Item",
-                                type: "StructProperty",
+                    let newSpaceRabbitInventory     = {
+                        type            : 0,
+                        children        : [],
+                        className       : '/Script/FactoryGame.FGInventoryComponent',
+                        outerPathName   : pathName, pathName: pathName + '.mInventory',
+                        properties      : [
+                            {
+                                name: "mInventoryStacks",
+                                structureName: "mInventoryStacks",
+                                structureSubType: "InventoryStack",
+                                structureType: "StructProperty",
+                                type: "ArrayProperty",
                                 value: {
-                                    itemName: "", levelName: "", pathName: "",
-                                    type: "InventoryItem",
-                                    unk1: 0,
-                                    properties: [{name: "NumItems", type: "IntProperty", value: 0}]
+                                    type: "StructProperty",
+                                    values: [[{
+                                        name: "Item",
+                                        type: "StructProperty",
+                                        value: {
+                                            itemName: "", levelName: "", pathName: "",
+                                            type: "InventoryItem",
+                                            unk1: 0,
+                                            properties: [{name: "NumItems", type: "IntProperty", value: 0}]
+                                        }
+                                    }]]
                                 }
-                            }]]
-                        }
-                    },
-                    { name: '"mArbitrarySlotSizes', type: 'ArrayProperty', value: {type: 'IntProperty', values: [0]} },
-                    { name: 'mAllowedItemDescriptors', type: 'ArrayProperty', value: {type: 'ObjectProperty', values: [{levelName: '', pathName: ''}]} }
-                ]
-            };
+                            },
+                            { name: '"mArbitrarySlotSizes', type: 'ArrayProperty', value: {type: 'IntProperty', values: [0]} },
+                            { name: 'mAllowedItemDescriptors', type: 'ArrayProperty', value: {type: 'ObjectProperty', values: [{levelName: '', pathName: ''}]} }
+                        ]
+                    };
 
-            this.saveGameParser.addObject(newSpaceRabbitInventory);
-        }
+                    this.saveGameParser.addObject(newSpaceRabbitInventory);
+                }
 
-        this.saveGameParser.addObject({
-            className: '/Script/FactoryGame.FGHealthComponent',
-            outerPathName: pathName, pathName: pathName + '.HealthComponent',
-            properties: [], type: 0
-        });
+                this.saveGameParser.addObject({
+                    className: '/Script/FactoryGame.FGHealthComponent',
+                    outerPathName: pathName, pathName: pathName + '.HealthComponent',
+                    properties: [], type: 0
+                });
 
-        let newCreatureSpawnerId = "Persistent_Exploration_2:PersistentLevel.BP_CreatureSpawner432";
-        newFauna.properties.push({name: "mOwningSpawner", type: "ObjectProperty", value: {levelName: "Persistent_Exploration_2", pathName: newCreatureSpawnerId}});
+                // Ensure the creature spawner still exists in the save!
+                let newCreatureSpawnerId = "Persistent_Exploration_2:PersistentLevel.BP_CreatureSpawner432";
+                    newFauna.properties.push({name: "mOwningSpawner", type: "ObjectProperty", value: {levelName: "Persistent_Exploration_2", pathName: newCreatureSpawnerId}});
 
-        this.saveGameParser.addObject(newFauna);
-        this.addElementToLayer(layerId, this.addPlayerFauna(newFauna));
-        this.setBadgeLayerCount(layerId);
+                this.saveGameParser.addObject(newFauna);
+                this.addElementToLayer(faunaData.mapLayer, this.addPlayerFauna(newFauna));
+                this.setBadgeLayerCount(faunaData.mapLayer);
+            }
     }
 
     deleteFauna(marker)
@@ -1461,16 +1500,20 @@ export default class BaseLayout
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let layerId         = 'playerFaunaLayer';
 
-        if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
-        {
-                layerId                 = 'playerSpaceRabbitLayer';
-            let isSpaceRabbitPersistent = baseLayout.getObjectProperty(currentObject, 'mIsPersistent');
-
-            if(isSpaceRabbitPersistent !== null)
+        let faunaData       = this.getFaunaDataFromClassName(currentObject.className);
+            if(faunaData !== null)
             {
-                baseLayout.playerLayers.playerCratesLayer.count--;
+                layerId = faunaData.mapLayer;
+
+                if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
+                {
+                    let isSpaceRabbitPersistent = baseLayout.getObjectProperty(currentObject, 'mIsPersistent');
+                        if(isSpaceRabbitPersistent !== null)
+                        {
+                            baseLayout.playerLayers.playerCratesLayer.count--;
+                        }
+                }
             }
-        }
 
         baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
         baseLayout.deleteMarkerFromElements(layerId, marker.relatedTarget);
@@ -4069,22 +4112,6 @@ export default class BaseLayout
                 this.satisfactoryMap.leafletMap.getPane(layerId).style.pointerEvents = 'none';
                 this.playerLayers[layerId].renderer = L.canvas({ pane: layerId });
             }
-            /* TRY NEW RENDERING...
-            if(['playerFoundationsLayer', 'playerRoofsLayer', 'playerPillarsLayer', 'playerWallsLayer', 'playerWalkwaysLayer', 'playerStatuesLayer'].includes(layerId))
-            {
-                let decorativePane = this.satisfactoryMap.leafletMap.getPane('decorative-pane');
-                    if(decorativePane === undefined)
-                    {
-                        this.satisfactoryMap.leafletMap.createPane('decorative-pane');
-                        decorativePane = this.satisfactoryMap.leafletMap.getPane('decorative-pane');
-                        decorativePane.style.zIndex = 390;
-
-                        this.satisfactoryMap.decorativeRenderer = L.canvas({ pane: 'decorative-pane' });
-                    }
-
-                    this.playerLayers[layerId].renderer = this.satisfactoryMap.decorativeRenderer;
-            }
-            /**/
         }
 
         if(this.playerLayers[layerId].subLayer === null)
@@ -4130,7 +4157,12 @@ export default class BaseLayout
                 $('.updatePlayerLayerState[data-id=' + layerId + ']').addClass(window.SCIM.outlineClass);
             }
 
-            $('.updatePlayerLayerState[data-id=' + layerId + ']').show();
+            let layerIcon = $('.updatePlayerLayerState[data-id=' + layerId + ']');
+                layerIcon.children('img[data-src]').each(function(){
+                    $(this).attr('src', $(this).attr('data-src')).removeAttr('data-src');
+                });
+                layerIcon.show();
+
             $(this.playerLayers[layerId].mainDivId).show()
                                                    .parent().show();
 
@@ -4911,7 +4943,13 @@ export default class BaseLayout
         {
             for(let className in this.playerLayers[layerId].filtersCount)
             {
-                $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : className) + '"]').show();
+                // Show filter icons
+                let filterIcon  = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : className) + '"]');
+                    filterIcon.find('img[data-src]').each(function(){
+                        $(this).attr('src', $(this).attr('data-src')).removeAttr('data-src');
+                    });
+                    filterIcon.show();
+
 
                 if(this.playerLayers[layerId].filtersCount[className].distance !== undefined)
                 {
@@ -5471,6 +5509,38 @@ export default class BaseLayout
     }
 
 
+
+    getFaunaDataFromClassName(className)
+    {
+        if(this.faunaData[className] !== undefined)
+        {
+            return this.faunaData[className];
+        }
+
+        for(let i in this.faunaData)
+        {
+            if(this.faunaData[i].className !== undefined && this.faunaData[i].className === className)
+            {
+                this.faunaData[i].id = i;
+                return this.faunaData[i];
+            }
+        }
+
+        if(className.includes('/Game/FactoryGame/Character/Creature/Wildlife/') || className.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
+        {
+            console.log('Missing fauna className: ' + className);
+
+            if(typeof Sentry !== 'undefined')
+            {
+                Sentry.setContext('className', {className: className});
+                Sentry.captureMessage('Missing fauna className: ' + className);
+            }
+        }
+
+        return null;
+    }
+
+
     getIconSrcFromId(iconId)
     {
         for(let i in this.itemsData)
@@ -5554,131 +5624,6 @@ export default class BaseLayout
         }
 
         return false;
-    }
-
-    getFaunaDataFromClassName(className = null)
-    {
-        let defaultIconColor    = '#b34848';
-        let availableFauna      = {
-            '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C': {
-                name        : 'Lizard Doggo',
-                iconColor   :'#b3b3b3',
-                iconImage   : this.staticUrl + '/img/mapLizardDoggoIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_SpaceRabbit_C_'
-            },
-            '/Game/FactoryGame/Character/Creature/Wildlife/SpaceGiraffe/Char_SpaceGiraffe.Char_SpaceGiraffe_C': {
-                name        : 'Space Giraffe-Tick-Penguin-Whale Thing',
-                iconColor   : '#b3b3b3',
-                iconImage   : this.staticUrl + '/img/mapSpaceGiraffeIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_SpaceGiraffe_C_'
-            },
-            '/Game/FactoryGame/Character/Creature/Wildlife/NonFlyingBird/Char_NonFlyingBird.Char_NonFlyingBird_C': {
-                name        : 'Non Flying Bird',
-                iconColor   : '#b3b3b3',
-                iconImage   : this.staticUrl + '/img/mapNonFlyingBirdIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_NonFlyingBird_C_'
-            },
-
-            '/Game/FactoryGame/Character/Creature/Enemy/Spitter/SmallSpitter/Char_Spitter_Small.Char_Spitter_Small_C': {
-                name        : 'Spitter',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapSpitterIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_Spitter_Small_C_'
-            },
-            '/Game/FactoryGame/Character/Creature/Enemy/Spitter/Char_Spitter.Char_Spitter_C': {
-                name        : 'Alpha Spitter (Red)',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapSpitterIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_Spitter_C_'
-            },
-            '/Game/FactoryGame/Character/Creature/Enemy/Spitter/AlternativeSpitter/Char_Spitter_Alternative.Char_Spitter_Alternative_C': {
-                name        : 'Alpha Spitter (Green)',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapSpitterIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_Spitter_Alternative_C_'
-            },
-
-            '/Game/FactoryGame/Character/Creature/Enemy/Stinger/SmallStinger/Char_Stinger_Child.Char_Stinger_Child_C': {
-                name        : 'Small Stinger',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_Stinger_Child_C_'
-            },
-            '/Game/FactoryGame/Character/Creature/Enemy/Stinger/SmallStinger/Char_CaveStinger_Child.Char_CaveStinger_Child_C': {
-                name        : 'Small Cave Stinger',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_CaveStinger_Child_C_'
-            },
-
-            '/Game/FactoryGame/Character/Creature/Enemy/Stinger/Char_Stinger.Char_Stinger_C': {
-                name        : 'Big Stinger',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_Stinger_C_'
-            },
-            '/Game/FactoryGame/Character/Creature/Enemy/Stinger/Char_CaveStinger.Char_CaveStinger_C': {
-                name        : 'Large Stinger',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_CaveStinger_C_'
-            },
-            '/Game/FactoryGame/Character/Creature/Enemy/Stinger/BigStinger/Char_EliteCaveStinger.Char_EliteCaveStinger_C': {
-                name        : 'Elite Stinger',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapStingerIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_EliteCaveStinger_C_'
-            },
-
-            '/Game/FactoryGame/Character/Creature/Enemy/Hog/Char_Hog.Char_Hog_C': {
-                name        : 'Fluffy-tailed Hog',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapHogIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_Hog_C_'
-            },
-            '/Game/FactoryGame/Character/Creature/Enemy/Hog/AlphaHog/Char_AlphaHog.Char_AlphaHog_C': {
-                name        : 'Alpha Hog',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapHogIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_AlphaHog_C_'
-            },
-
-            '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C': {
-                name        : 'Flying Crab Hatcher',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapCrabHatcherIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_CrabHatcher_C_',
-                zOffset     : -400
-            },
-            '/Game/FactoryGame/Character/Creature/Enemy/Crab/BabyCrab/Char_BabyCrab.Char_BabyCrab_C': {
-                name        : 'Flying Crab',
-                iconColor   : defaultIconColor,
-                iconImage   : this.staticUrl + '/img/mapCrabIcon.png',
-                pathName    : 'Persistent_Level:PersistentLevel.Char_BabyCrab_C_'
-            }
-        };
-
-        if(className === null)
-        {
-            return availableFauna;
-        }
-        else
-        {
-            if(availableFauna[className] !== undefined)
-            {
-                return availableFauna[className];
-            }
-            if(className.includes('/Game/FactoryGame/Character/Creature/Wildlife/') || className.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
-            {
-                if(typeof Sentry !== 'undefined')
-                {
-                    Sentry.setContext('className', {className: className});
-                    Sentry.captureMessage('Missing fauna className: ' + className);
-                }
-            }
-        }
-
-        return null;
     }
 
     generateFastPathName(currentObject)

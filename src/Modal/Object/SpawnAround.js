@@ -15,7 +15,6 @@ export default class Modal_Object_SpawnAround
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let allFauna        = baseLayout.getFaunaDataFromClassName();
 
         let inputOptions    = [];
             if(baseLayout.clipboard !== null && baseLayout.clipboard.originalLocationOnly === undefined)
@@ -31,20 +30,9 @@ export default class Modal_Object_SpawnAround
             inputOptions.push({group: 'Geometric form', text: 'Hollow regular polygon', value: 'hollowPolygon'});
             inputOptions.push({group: 'Geometric form', text: 'Road', value: 'road'});
 
-            for(let faunaClassName in allFauna)
+            for(let faunaId in baseLayout.faunaData)
             {
-                if(faunaClassName.includes('/Game/FactoryGame/Character/Creature/Wildlife/'))
-                {
-                    inputOptions.push({group: 'Fauna', text: allFauna[faunaClassName].name, value: faunaClassName});
-                }
-            }
-
-            for(let faunaClassName in allFauna)
-            {
-                if(faunaClassName.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
-                {
-                    inputOptions.push({group: 'Offensive Fauna', text: allFauna[faunaClassName].name, value: faunaClassName});
-                }
+                inputOptions.push({group: 'Fauna - ' + baseLayout.faunaCategories[baseLayout.faunaData[faunaId].category], text: baseLayout.faunaData[faunaId].name, value: faunaId});
             }
 
         BaseLayout_Modal.form({
@@ -68,7 +56,7 @@ export default class Modal_Object_SpawnAround
                 {
                     form.useOwnMaterials = parseInt(form.useOwnMaterials);
 
-                    if(allFauna[form.form] !== undefined)
+                    if(baseLayout.faunaData[form.form] !== undefined)
                     {
                         return baseLayout.spawnFauna(marker, form.form);
                     }

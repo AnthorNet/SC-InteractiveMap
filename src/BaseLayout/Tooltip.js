@@ -44,11 +44,11 @@ export default class BaseLayout_Tooltip
 
     getTooltip(currentObject)
     {
-        let isFauna = this.baseLayout.getFaunaDataFromClassName(currentObject.className);
+        let faunaData = this.baseLayout.getFaunaDataFromClassName(currentObject.className);
 
-            if(isFauna !== null)
+            if(faunaData !== null)
             {
-                return this.setBuildingTooltipContent(currentObject, {name: isFauna.name});
+                return this.setBuildingTooltipContent(currentObject, faunaData);
             }
             else
             {
