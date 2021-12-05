@@ -73,7 +73,7 @@ export default class Spawn_Blueprint
                 }
             }
 
-            if(this.marker === null)
+            if(this.marker === null) // Paste on original location
             {
                 this.centerObject       = {
                     transform: {
@@ -129,23 +129,6 @@ export default class Spawn_Blueprint
                         this.clipboard.data[i].parent.transform.translation[1] -= centerY;
                         this.clipboard.data[i].parent.transform.translation[2] -= minZ;
 
-                        // Offset double ramps before U5
-                        if(this.clipboard.buildVersion < 170147)
-                        {
-                            if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble_8x1.Build_RampDouble_8x1_C')
-                            {
-                                this.clipboard.data[i].parent.transform.translation[2] += 100;
-                            }
-                            if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble.Build_RampDouble_C')
-                            {
-                                this.clipboard.data[i].parent.transform.translation[2] += 150;
-                            }
-                            if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_8x8x8.Build_Ramp_8x8x8_C')
-                            {
-                                this.clipboard.data[i].parent.transform.translation[2] += 200;
-                            }
-                        }
-
                         if(this.clipboard.data[i].targetPoints !== undefined)
                         {
                             for(let j = 0; j < this.clipboard.data[i].targetPoints.length; j++)
@@ -187,16 +170,26 @@ export default class Spawn_Blueprint
 
         return new Promise(function(resolve){
             // Generate proper path name...
-            for(let i = 0; i < this.clipboard.data.length; i++)
+            for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
             {
-                pathNameToConvert.push(this.clipboard.data[i].parent.pathName);
+                if(pathNameToConvert.includes(this.clipboard.data[i].parent.pathName) === false)
+                {
+                    pathNameToConvert.push(this.clipboard.data[i].parent.pathName);
+                }
+                else // Try to remove duplicates...
+                {
+                    this.clipboard.data.splice(i, 1);
+                }
             }
 
             if(this.clipboard.hiddenConnections !== undefined)
             {
                 for(let pathName in this.clipboard.hiddenConnections)
                 {
-                    pathNameToConvert.push(pathName);
+                    if(pathNameToConvert.includes(pathName) === false)
+                    {
+                        pathNameToConvert.push(pathName);
+                    }
                 }
             }
 
