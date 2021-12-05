@@ -853,6 +853,15 @@ export default class BaseLayout
                     }
             }
 
+            // Convert pillar top to pillar support
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Foundation/Build_PillarTop.Build_PillarTop_C')
+            {
+                currentObject.className             = '/Game/FactoryGame/Buildable/Building/Foundation/Build_PillarBase.Build_PillarBase_C';
+                let eulerAngle                      = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
+                    eulerAngle.roll                 = BaseLayout_Math.clampEulerAxis(eulerAngle.roll + 180);
+                currentObject.transform.rotation    = BaseLayout_Math.getEulerToQuaternion(eulerAngle);
+                this.updateBuiltWithRecipe(currentObject);
+            }
             // Convert Right Door Wall to Side Wall ;)
             if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_02.Build_Wall_Door_8x4_02_C')
             {
@@ -1398,11 +1407,14 @@ export default class BaseLayout
         faunaMarker.bindContextMenu(this);
         this.playerLayers[layerId].elements.push(faunaMarker);
 
-        if(this.playerLayers[layerId].filtersCount[currentObject.className] === undefined)
+        if(this.playerLayers[layerId].filtersCount !== undefined)
         {
-            this.playerLayers[layerId].filtersCount[currentObject.className] = 0;
+            if(this.playerLayers[layerId].filtersCount[currentObject.className] === undefined)
+            {
+                this.playerLayers[layerId].filtersCount[currentObject.className] = 0;
+            }
+            this.playerLayers[layerId].filtersCount[currentObject.className]++;
         }
-        this.playerLayers[layerId].filtersCount[currentObject.className]++;
 
         return faunaMarker;
     }
@@ -1500,7 +1512,7 @@ export default class BaseLayout
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let layerId         = 'playerFaunaLayer';
 
-        let faunaData       = this.getFaunaDataFromClassName(currentObject.className);
+        let faunaData       = baseLayout.getFaunaDataFromClassName(currentObject.className);
             if(faunaData !== null)
             {
                 layerId = faunaData.mapLayer;
