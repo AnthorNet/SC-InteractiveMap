@@ -92,6 +92,7 @@ export default class SaveParser_Read
             'RPHeaterItemData',
             'RPBoilerItemData',
             'RPTurbineItemData',
+            'RPPatreon',
 
             // MOD: Really Simple Signs
             'RssElement',
