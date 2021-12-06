@@ -991,7 +991,17 @@ export default class BaseLayout
             this.saveGameRailSwitches[currentObject.pathName] = currentObject;
         }
 
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' || currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
+        if([
+            '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C',
+            '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C',
+            // MODS
+            '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C',
+            '/AB_CableMod/Visuals1/Build_AB-PLCopper.Build_AB-PLCopper_C',
+            '/AB_CableMod/Visuals1/Build_AB-PLCaterium.Build_AB-PLCaterium_C',
+            '/AB_CableMod/Visuals3/Build_AB-PLHeavy.Build_AB-PLHeavy_C',
+            '/AB_CableMod/Visuals4/Build_AB-SPLight.Build_AB-SPLight_C',
+            '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C'
+        ].includes(currentObject.className))
         {
             let building = this.addPlayerPowerLine(currentObject);
                 if(resolve === false)

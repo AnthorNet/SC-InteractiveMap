@@ -559,6 +559,11 @@ export default class SaveParser_Read
                 case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
                 case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
                 case '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C':
+                case '/AB_CableMod/Visuals1/Build_AB-PLCopper.Build_AB-PLCopper_C':
+                case '/AB_CableMod/Visuals1/Build_AB-PLCaterium.Build_AB-PLCaterium_C':
+                case '/AB_CableMod/Visuals3/Build_AB-PLHeavy.Build_AB-PLHeavy_C':
+                case '/AB_CableMod/Visuals4/Build_AB-SPLight.Build_AB-SPLight_C':
+                case '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C':
                     this.saveParser.objects[objectKey].extra        = {
                         count   : this.readInt(),
                         source  : this.readObjectProperty({}),
