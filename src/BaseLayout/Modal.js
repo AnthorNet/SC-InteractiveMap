@@ -205,7 +205,7 @@ export default class BaseLayout_Modal
                 }
 
                 $('body').append(toastContent);
-                toastContent.toast({delay: 1000}).toast('show');
+                toastContent.toast({delay: 4000}).toast('show');
                 toastContent.on('hidden.bs.toast', function(){
                     toastContent.remove();
                 });

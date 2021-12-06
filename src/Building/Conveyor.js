@@ -257,14 +257,14 @@ export default class Building_Conveyor
                             }
                     }
 
-                    // Merge next belt
-                    Building_Conveyor.mergeNextConveyor(marker);
+                // Merge next belt
+                Building_Conveyor.mergeNextConveyor(marker);
 
                 BaseLayout_Modal.notification({
                     image   : buildingData.image,
                     title   : 'Merge adjacent conveyor belts',
                     message : 'Are you nuts?!'
-                })
+                });
             }
     }
 }

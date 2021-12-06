@@ -303,16 +303,18 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Statistics', text: 'Show selected power circuits statistics', value: 'modalPowerCircuitsStatistics'});
             }
 
-            // Not working?
-            //inputOptions.push({group: 'Flora', text: 'Respawn selection flora', value: 'respawnFlora'});
-            //inputOptions.push({group: 'Flora', text: 'Clear selection flora', value: 'clearFlora'});
+            // Foliage
+            inputOptions.push({group: 'Flora', text: 'Respawn flora', value: 'respawnFlora'});
+            //inputOptions.push({group: 'Flora', text: 'Clear flora', value: 'clearFlora'});
 
         if(markers !== null && markers.length > 0)
         {
             BaseLayout_Modal.form({
                 title       : 'You have selected ' + markers.length + ' items',
                 message     : message,
-                onEscape    : Modal_Selection.cancel.call(null, baseLayout),
+                onEscape    : function(){
+                    Modal_Selection.cancel.call(null, baseLayout);
+                },
                 container   : '#leafletMap',
                 inputs      : [{
                     name            : 'form',
@@ -326,14 +328,14 @@ export default class Modal_Selection
                         Modal_Selection.cancel(baseLayout);
                         return;
                     }
+                    if(['fillArea', 'respawnFlora'].includes(form.form) === false) // Those callback needs access to the selection!
+                    {
+                        console.log('CANCEL?');
+                        Modal_Selection.cancel(baseLayout);
+                    }
 
                     if(typeof Modal_Selection['callback' + form.form[0].toUpperCase() + form.form.slice(1)] === "function")
                     {
-                        if(form.form !== 'fillArea')
-                        {
-                            Modal_Selection.cancel(baseLayout);
-                        }
-
                         return Modal_Selection['callback' + form.form[0].toUpperCase() + form.form.slice(1)](baseLayout, markers);
                     }
 
@@ -365,11 +367,6 @@ export default class Modal_Selection
                         case 'upgradePipeline':
                         case 'upgradeMiners':
                             return Modal_Selection.callbackUpgrade(baseLayout, markers, form.form);
-
-                        case 'respawnFlora':
-                            return SubSystem_Foliage.respawn(baseLayout);
-                        case 'clearFlora':
-                            return SubSystem_Foliage.clear(baseLayout);
                     }
                 }
             });
@@ -388,7 +385,9 @@ export default class Modal_Selection
         BaseLayout_Modal.confirm({
             title       : 'You have selected ' + markers.length + ' items',
             message     : 'Do you want a doggy bag with your mass-dismantling?<br /><em>(You\'ll just get a nice loot crate next to you)</em>',
-            onEscape    : Modal_Selection.cancel.call(null, baseLayout),
+            onEscape    : function(){
+                Modal_Selection.cancel.call(null, baseLayout);
+            },
             container   : '#leafletMap',
             buttons     : { confirm: {label: 'Yes'}, cancel: {label: 'No'} },
             callback    : function(result){
@@ -408,7 +407,9 @@ export default class Modal_Selection
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
             message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
-            onEscape    : Modal_Selection.cancel.call(null, baseLayout),
+            onEscape    : function(){
+                Modal_Selection.cancel.call(null, baseLayout);
+            },
             container   : '#leafletMap',
             inputs      : [{
                 label       : 'X',
@@ -450,7 +451,9 @@ export default class Modal_Selection
     {
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
-            onEscape    : Modal_Selection.cancel.call(null, baseLayout),
+            onEscape    : function(){
+                Modal_Selection.cancel.call(null, baseLayout);
+            },
             container   : '#leafletMap',
             inputs      : [{
                 label       : 'Rotation (Angle between 0 and 360 degrees)',
@@ -747,6 +750,24 @@ export default class Modal_Selection
 
 
 
+    static callbackRespawnFlora(baseLayout)
+    {
+        if(baseLayout.satisfactoryMap.leafletMap.selection._areaSelected !== null)
+        {
+            return SubSystem_Foliage.respawn(baseLayout);
+        }
+    }
+
+    static callbackClearFlora(baseLayout)
+    {
+        if(baseLayout.satisfactoryMap.leafletMap.selection._areaSelected !== null)
+        {
+            return SubSystem_Foliage.clear(baseLayout);
+        }
+    }
+
+
+
     static callbackFillArea(baseLayout)
     {
         if(baseLayout.satisfactoryMap.leafletMap.selection._areaSelected !== null)
@@ -767,7 +788,9 @@ export default class Modal_Selection
 
             BaseLayout_Modal.form({
                 title       : 'Fill selection with...',
-                onEscape    : Modal_Selection.cancel.call(null, baseLayout),
+                onEscape    : function(){
+                    Modal_Selection.cancel.call(null, baseLayout);
+                },
                 container   : '#leafletMap',
                 inputs      : [{
                     name            : 'fillWith',
@@ -811,7 +834,9 @@ export default class Modal_Selection
     {
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
-            onEscape    : Modal_Selection.cancel.call(null, baseLayout),
+            onEscape    : function(){
+                Modal_Selection.cancel.call(null, baseLayout);
+            },
             container   : '#leafletMap',
             inputs      : [
                 {
@@ -899,7 +924,9 @@ export default class Modal_Selection
     {
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
-            onEscape    : Modal_Selection.cancel.call(null, baseLayout),
+            onEscape    : function(){
+                Modal_Selection.cancel.call(null, baseLayout);
+            },
             container   : '#leafletMap',
             inputs      : [{
                 name            : 'fillWith',

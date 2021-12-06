@@ -157,7 +157,6 @@ export default class BaseLayout_ContextMenu
                         {
                             if(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
                             {
-                                console.log(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName])
                                 contextMenu.push({
                                     text    : 'Spawn a foundation on top',
                                     callback: Modal_Node_Foundation.getHTML
