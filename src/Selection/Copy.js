@@ -217,15 +217,6 @@ export default class Selection_Copy
                                         trainTimeTables.push(haveTimeTable)
                                     }
 
-                                // Add (Copy) to name
-                                for(let j = 0; j < trainIdentifierNewObject.parent.properties.length; j++)
-                                {
-                                    if(['mTrainName', 'mStationName'].includes(trainIdentifierNewObject.parent.properties[j].name))
-                                    {
-                                        trainIdentifierNewObject.parent.properties[j].value += ' (Copy)'
-                                    }
-                                }
-
                                 this.clipboard.data.push(trainIdentifierNewObject);
                                 availablePathName.push(trainIdentifierNewObject.parent.pathName);
                         }
