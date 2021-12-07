@@ -249,7 +249,7 @@ export default class BaseLayout
                 this.playerLayers[layerId].filters      = [];
                 this.playerLayers[layerId].filtersCount = {};
 
-                $('.updatePlayerLayerFilter[data-id=' + layerId + ']').hide();
+                $('.updatePlayerLayerFilter[data-id=' + layerId + ']').hide().addClass('btn-warning');
             }
         }
 
