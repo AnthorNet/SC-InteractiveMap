@@ -108,6 +108,7 @@ export default class Modal_Selection
         let haveFoundationsMaterialsCategory    = false;
         let haveWallsMaterialsCategory          = false;
         let haveRoofsMaterialsCategory          = false;
+        let haveSkinsCategory                   = false;
         let haveExtractionCategory              = false;
         let haveLogisticCategory                = false;
         let havePowerPoleCategory               = false;
@@ -188,6 +189,10 @@ export default class Modal_Selection
                                                         {
                                                             haveStorageCategory = true;
                                                         }
+                                                        if(buildingData.switchSkin !== undefined)
+                                                        {
+                                                            haveSkinsCategory = true;
+                                                        }
                                                     }
                                             }
                                         }
@@ -262,6 +267,12 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Roof Materials', text: 'Switch to "Tar Roof"', value: 'switchMaterial_roof_Tar'});
                 inputOptions.push({group: 'Roof Materials', text: 'Switch to "Metal Roof"', value: 'switchMaterial_roof_Metal'});
                 inputOptions.push({group: 'Roof Materials', text: 'Switch to "Glass Roof"', value: 'switchMaterial_roof_Glass'});
+            }
+
+            if(haveSkinsCategory === true)
+            {
+                inputOptions.push({group: 'Skins', text: 'Switch to "Default" skin', value: 'switchSkin_Default'});
+                inputOptions.push({group: 'Skins', text: 'Switch to "FICS*MAS" skin', value: 'switchSkin_Ficsmas'});
             }
 
             if(haveLogisticCategory === true)
@@ -352,20 +363,24 @@ export default class Modal_Selection
                         case 'switchMaterial_roof_Tar':
                         case 'switchMaterial_roof_Metal':
                         case 'switchMaterial_roof_Glass':
-                            let formArguments = form.form.split('_');
-                                return Modal_Selection.callbackMaterial(baseLayout, markers, formArguments[1], formArguments[2]);
+                            let switchMaterialArguments = form.form.split('_');
+                                return Modal_Selection.callbackMaterials(baseLayout, markers, switchMaterialArguments[1], switchMaterialArguments[2]);
+                        case 'switchSkin_Default':
+                        case 'switchSkin_Ficsmas':
+                            let switchSkinArguments = form.form.split('_');
+                                return Modal_Selection.callbackSkins(baseLayout, markers, switchSkinArguments[1]);
 
                         case 'downgradeConveyor':
                         case 'downgradePowerPole':
                         case 'downgradePipeline':
                         case 'downgradeMiners':
-                            return Modal_Selection.callbackDowngrade(baseLayout, markers, form.form);
+                            return Modal_Selection.callbackDowngrades(baseLayout, markers, form.form);
 
                         case 'upgradeConveyor':
                         case 'upgradePowerPole':
                         case 'upgradePipeline':
                         case 'upgradeMiners':
-                            return Modal_Selection.callbackUpgrade(baseLayout, markers, form.form);
+                            return Modal_Selection.callbackUpgrades(baseLayout, markers, form.form);
                     }
                 }
             });
@@ -725,7 +740,7 @@ export default class Modal_Selection
         });
     }
 
-    static callbackMaterial(baseLayout, markers, category, material)
+    static callbackMaterials(baseLayout, markers, category, material)
     {
         for(let i = 0; i < markers.length; i++)
         {
@@ -740,6 +755,28 @@ export default class Modal_Selection
                             if(contextMenu[j].argument !== undefined && contextMenu[j].argument[0] === category && contextMenu[j].argument[1] === material)
                             {
                                 baseLayout.buildableSubSystem.switchObjectMaterial({relatedTarget: markers[i], baseLayout: baseLayout}, [category, material]);
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
+    static callbackSkins(baseLayout, markers, skin)
+    {
+        for(let i = 0; i < markers.length; i++)
+        {
+            let contextMenu = baseLayout.getContextMenu(markers[i]);
+                if(contextMenu !== false)
+                {
+                    // Search for a callback in contextmenu...
+                    for(let j = 0; j < contextMenu.length; j++)
+                    {
+                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'buildableSubSystem_switchObjectSkin')
+                        {
+                            if(contextMenu[j].argument !== undefined && contextMenu[j].argument === skin)
+                            {
+                                baseLayout.buildableSubSystem.switchObjectSkin({relatedTarget: markers[i], baseLayout: baseLayout}, skin);
                             }
                         }
                     }
@@ -970,7 +1007,7 @@ export default class Modal_Selection
 
 
 
-    static callbackDowngrade(baseLayout, markers, callbackName)
+    static callbackDowngrades(baseLayout, markers, callbackName)
     {
         for(let i = 0; i < markers.length; i++)
         {
@@ -989,7 +1026,7 @@ export default class Modal_Selection
         }
     }
 
-    static callbackUpgrade(baseLayout, markers, callbackName)
+    static callbackUpgrades(baseLayout, markers, callbackName)
     {
         for(let i = 0; i < markers.length; i++)
         {

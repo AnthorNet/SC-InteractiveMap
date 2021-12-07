@@ -208,6 +208,7 @@ export default class BaseLayout
         console.time('resetBaseLayout');
 
         $('#downloadSaveGame').off('click');
+        $('.updateTitleLayerState').off('click');
         $('.updatePlayerLayerState').off('click');
         $('.updatePlayerLayerFilter').off('click');
         $('#playerModsLayer .col-12').empty();
@@ -1325,6 +1326,11 @@ export default class BaseLayout
             // End...
             window.SCIM.hideLoader();
 
+            $('.updateTitleLayerState').css('cursor', 'pointer').on('click', function(e){
+                $(e.currentTarget).closest('div[id]').find('.updatePlayerLayerState').each(function(index, element){
+                    this.updatePlayerLayerState($(element), $(element).attr('data-id'));
+                }.bind(this));
+            }.bind(this));
             $('.updatePlayerLayerState').on('click', function(e){
                 this.updatePlayerLayerState($(e.currentTarget), $(e.currentTarget).attr('data-id'));
             }.bind(this));
@@ -4355,6 +4361,10 @@ export default class BaseLayout
                                             {
                                                 currentSubLayer.removeLayer(currentMarker);
 
+                                                if(currentMarker.options.extraPattern !== undefined)
+                                                {
+                                                    currentSubLayer.removeLayer(currentMarker.options.extraPattern);
+                                                }
                                                 if(currentMarker.options.extraMarker !== undefined)
                                                 {
                                                     currentSubLayer.removeLayer(currentMarker.options.extraMarker);
@@ -4380,6 +4390,10 @@ export default class BaseLayout
                                                         {
                                                             currentSubLayer.addLayer(currentMarker);
 
+                                                            if(currentMarker.options.extraPattern !== undefined)
+                                                            {
+                                                                currentSubLayer.addLayer(currentMarker.options.extraPattern);
+                                                            }
                                                             if(currentMarker.options.extraMarker !== undefined)
                                                             {
                                                                 currentSubLayer.addLayer(currentMarker.options.extraMarker);

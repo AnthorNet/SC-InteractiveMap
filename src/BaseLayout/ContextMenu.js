@@ -453,7 +453,7 @@ export default class BaseLayout_ContextMenu
                         }
                 }
 
-                if(buildingData.switchMaterial !== undefined)
+                if(buildingData.switchMaterial !== undefined || buildingData.switchSkin !== undefined)
                 {
                     contextMenu.push('-');
 
@@ -587,6 +587,34 @@ export default class BaseLayout_ContextMenu
                                 className   : 'buildableSubSystem_switchObjectMaterial',
                             });
                         }
+                    }
+
+                    if(buildingData.switchSkin !== undefined)
+                    {
+                        let SkinDesc  = this.baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject, 'SkinDesc');
+                            if(SkinDesc !== null)
+                            {
+                                contextMenu.push({
+                                    icon        : 'fa-magic',
+                                    text        : 'Switch to "Default" skin',
+                                    callback    : this.baseLayout.buildableSubSystem.switchObjectSkin,
+                                    argument    : 'Default',
+                                    className   : 'buildableSubSystem_switchObjectSkin',
+                                });
+                            }
+                            else
+                            {
+                                if(buildingData.switchSkin.Ficsmas !== undefined)
+                                {
+                                    contextMenu.push({
+                                        icon        : 'fa-magic',
+                                        text        : 'Switch to "FICS*MAS" skin',
+                                        callback    : this.baseLayout.buildableSubSystem.switchObjectSkin,
+                                        argument    : 'Ficsmas',
+                                        className   : 'buildableSubSystem_switchObjectSkin',
+                                    });
+                                }
+                            }
                     }
                 }
 

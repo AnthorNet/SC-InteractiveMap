@@ -717,6 +717,49 @@ export default class SubSystem_Buildable
         }
     }
 
+    switchObjectSkin(marker, skin)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+        if(buildingData !== null && buildingData.switchSkin !== undefined)
+        {
+            let mCustomizationData  = baseLayout.getObjectProperty(currentObject, 'mCustomizationData');
+                if(mCustomizationData !== null)
+                {
+                    let SkinDesc            = baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject, 'SkinDesc');
+                        if(SkinDesc !== null)
+                        {
+                            for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
+                            {
+                                if(mCustomizationData.values[i].name === 'SkinDesc')
+                                {
+                                    mCustomizationData.values.splice(i, 1);
+                                }
+                            }
+                        }
+
+                    if(buildingData.switchSkin[skin] !== undefined)
+                    {
+                        mCustomizationData.values.push({
+                            name    : 'SkinDesc',
+                            type    : 'ObjectProperty',
+                            value   : {
+                                levelName   : '',
+                                pathName    : buildingData.switchSkin[skin]
+                            }
+                        });
+                    }
+                }
+
+            // Redraw! (In case at some point we add different models ^^
+            let result = baseLayout.parseObject(currentObject);
+                baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                baseLayout.addElementToLayer(result.layer, result.marker);
+        }
+    }
+
     rotateObjectPattern(marker)
     {
         let baseLayout              = marker.baseLayout;

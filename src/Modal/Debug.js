@@ -201,6 +201,11 @@ export default class Modal_Debug
 
     static jsonToHTML(json)
     {
+        if(json === null)
+        {
+            return '<span class="json-literal" style="user-select: text;">Null</span>';
+        }
+
         switch(typeof json)
         {
             case 'string':
@@ -295,7 +300,7 @@ export default class Modal_Debug
 
             return '{}';
         }
-
+        
         return '';
     }
 }
