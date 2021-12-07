@@ -573,9 +573,15 @@ export default class BaseLayout
                 '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C',
                 '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C',
                 '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C',
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C'
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C',
+                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C',
+                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C',
+                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C',
+                '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C',
+                '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C',
             ].includes(currentObject.className))
             {
+                //console.log(this.satisfactoryMap.collectableMarkers);
                 if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
                 {
                     this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName = currentObject.pathName;

@@ -148,6 +148,11 @@ export default class BaseLayout_ContextMenu
                     case '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C':
                     case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
                     case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
+                    case '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C':
+                    case '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C':
+                    case '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C':
+                    case '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C':
+                    case '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C':
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
                             text        : 'Teleport player',
