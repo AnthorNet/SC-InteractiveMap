@@ -564,6 +564,20 @@ export default class Spawn_Blueprint
                         }
 
                     this.baseLayout.saveGameParser.addObject(currentHiddenConnections);
+
+                    // Push railroadSubSystem power connection
+                    if(currentHiddenConnections.className === '/Script/FactoryGame.FGPowerConnectionComponent')
+                    {
+                        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this.baseLayout});
+                            if(railroadSubSystem.railroadSubSystem.children === undefined)
+                            {
+                                railroadSubSystem.railroadSubSystem.children = [];
+                            }
+                            if(railroadSubSystem.railroadSubSystem.children.includes(currentHiddenConnections.pathName) === false)
+                            {
+                                railroadSubSystem.railroadSubSystem.children.push({pathName: currentHiddenConnections.pathName});
+                            }
+                    }
                 }
             }
 

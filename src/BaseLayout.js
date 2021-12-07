@@ -562,6 +562,10 @@ export default class BaseLayout
         for(i; i < countObjects; i++)
         {
             let currentObject = this.saveGameParser.getTargetObject(objectsKeys[i]);
+                if(currentObject === null)
+                {
+                    continue;
+                }
 
             // Add menu to nodes...
             if([
@@ -815,24 +819,35 @@ export default class BaseLayout
                         continue;
                     }
             }
+            // Fix empty railroadSubsystem children
+            if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_RailroadSubsystem.BP_RailroadSubsystem_C')
+            {
+                if(currentObject.children !== undefined)
+                {
+                    for(let j = (currentObject.children.length - 1); j >= 0; j--)
+                    {
+                        let currentChildren = this.saveGameParser.getTargetObject(currentObject.children[j].pathName);
+                            if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGPowerConnectionComponent')
+                            {
+                                if(currentChildren.properties.length === 0)
+                                {
+                                    console.log('Removing ghost "/Script/FactoryGame.FGPowerConnectionComponent"', currentChildren.pathName);
+                                    this.saveGameParser.deleteObject(currentChildren.pathName);
+                                    currentObject.children.splice(j, 1);
+                                }
+                            }
+                    }
+                }
+                continue;
+            }
 
             /*
-            '/Script/FactoryGame.FGDroneStationInfo',
-            '/Script/FactoryGame.FGDroneAction_TakeoffSequence',
-            '/Script/FactoryGame.FGDroneAction_DockingSequence',
-            '/Script/FactoryGame.FGDroneAction_RequestDocking',
-            '/Script/FactoryGame.FGDroneAction_TraversePath',
-
             '/Script/FactoryGame.FGInventoryComponent',
             '/Script/FactoryGame.FGInventoryComponentEquipment',
             '/Script/FactoryGame.FGInventoryComponentTrash',
             '/Script/FactoryGame.FGPowerInfoComponent',
             '/Script/FactoryGame.FGRecipeShortcut',
             '/Script/FactoryGame.FGHealthComponent',
-
-            '/Script/FactoryGame.FGRailroadTimeTable',
-            '/Script/FactoryGame.FGRailroadTrackConnectionComponent',
-            '/Script/FactoryGame.FGTrainPlatformConnection',
              */
             if(
                     currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C'

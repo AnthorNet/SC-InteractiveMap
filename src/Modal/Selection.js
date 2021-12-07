@@ -330,7 +330,6 @@ export default class Modal_Selection
                     }
                     if(['fillArea', 'respawnFlora'].includes(form.form) === false) // Those callback needs access to the selection!
                     {
-                        console.log('CANCEL?');
                         Modal_Selection.cancel(baseLayout);
                     }
 

@@ -2,6 +2,14 @@
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
+/*
+    /Script/FactoryGame.FGDroneStationInfo
+    /Script/FactoryGame.FGDroneAction_TakeoffSequence
+    /Script/FactoryGame.FGDroneAction_DockingSequence
+    /Script/FactoryGame.FGDroneAction_RequestDocking
+    /Script/FactoryGame.FGDroneAction_TraversePath
+*/
+
 export default class Building_DroneStation
 {
     static get getMinBatteryUsage(){ return 4; }
