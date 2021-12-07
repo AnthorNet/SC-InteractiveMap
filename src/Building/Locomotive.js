@@ -250,7 +250,7 @@ export default class Building_Locomotive
                                 {
                                     if(mTrainName !== null)
                                     {
-                                        this.setObjectProperty(trainIdentifier, 'mTrainName', values.mTrainName);
+                                        baseLayout.setObjectProperty(trainIdentifier, 'mTrainName', values.mTrainName);
                                     }
                                     else
                                     {
@@ -266,10 +266,10 @@ export default class Building_Locomotive
                                 }
                                 else
                                 {
-                                    this.deleteObjectProperty(trainIdentifier, 'mTrainName');
+                                    baseLayout.deleteObjectProperty(trainIdentifier, 'mTrainName');
                                 }
                             }
-                        }.bind(baseLayout)
+                        }
                     });
             }
     }

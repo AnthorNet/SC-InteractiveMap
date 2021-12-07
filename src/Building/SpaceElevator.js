@@ -203,7 +203,7 @@ export default class Building_SpaceElevator
                                 mGamePhase.valueName    = values.mGamePhase;
                             }
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 

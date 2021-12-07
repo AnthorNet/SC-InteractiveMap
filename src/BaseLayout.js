@@ -5699,7 +5699,7 @@ export default class BaseLayout
         let mBuiltWithRecipe    = this.getObjectProperty(currentObject, 'mBuiltWithRecipe');
             if(mBuiltWithRecipe !== null)
             {
-                let className           = currentObject.className.replace('Build_', 'Desc_').replace('Build_', 'Desc_');
+                let className = currentObject.className.replace('Build_', 'Desc_').replace('Build_', 'Desc_');
                     for(let recipeId in this.recipesData)
                     {
                        if(this.recipesData[recipeId].produce !== undefined && this.recipesData[recipeId].produce[className] !== undefined)

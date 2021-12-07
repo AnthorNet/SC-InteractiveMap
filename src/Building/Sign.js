@@ -1002,7 +1002,7 @@ export default class Building_Sign
                                 mActivePrefabLayout.pathName = values.mActivePrefabLayout;
                             }
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1038,7 +1038,7 @@ export default class Building_Sign
                                 };
                             }
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1071,7 +1071,7 @@ export default class Building_Sign
                                 };
                             }
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1104,7 +1104,7 @@ export default class Building_Sign
                                 };
                             }
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1132,7 +1132,7 @@ export default class Building_Sign
                     {
                         return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Name', values.mPrefabTextElementSaveData);
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1157,7 +1157,7 @@ export default class Building_Sign
                     {
                         return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Label', values.mPrefabTextElementSaveData);
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1182,7 +1182,7 @@ export default class Building_Sign
                     {
                         return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_0', values.mPrefabTextElementSaveData);
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1207,7 +1207,7 @@ export default class Building_Sign
                     {
                         return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_1', values.mPrefabTextElementSaveData);
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1239,10 +1239,10 @@ export default class Building_Sign
                         baseLayout.deleteObjectProperty(currentObject, 'mEmissive');
                         if(parseInt(values.mEmissive) !== 0)
                         {
-                            this.setObjectProperty(currentObject, 'mEmissive', parseInt(values.mEmissive), 'FloatProperty');
+                            baseLayout.setObjectProperty(currentObject, 'mEmissive', parseInt(values.mEmissive), 'FloatProperty');
                         }
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1272,10 +1272,10 @@ export default class Building_Sign
                         baseLayout.deleteObjectProperty(currentObject, 'mGlossiness');
                         if(parseInt(values.mGlossiness) !== 0)
                         {
-                            this.setObjectProperty(currentObject, 'mGlossiness', 1, 'FloatProperty');
+                            baseLayout.setObjectProperty(currentObject, 'mGlossiness', 1, 'FloatProperty');
                         }
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1391,7 +1391,7 @@ export default class Building_Sign
                     {
                         return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabIconElementSaveData', 'IconID', 'Icon', parseInt(values.mPrefabIconElementSaveData));
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1416,7 +1416,7 @@ export default class Building_Sign
                     {
                         return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabIconElementSaveData', 'IconID', 'Other_Icon', parseInt(values.mPrefabIconElementSaveData));
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 
@@ -1441,7 +1441,7 @@ export default class Building_Sign
                     {
                         return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabIconElementSaveData', 'IconID', '{BG}Background', parseInt(values.mPrefabIconElementSaveData));
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 }

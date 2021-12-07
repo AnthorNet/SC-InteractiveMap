@@ -181,7 +181,7 @@ export default class Building_SmartSplitter
 
                             currentObject.properties.push(mSortRules);
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 }

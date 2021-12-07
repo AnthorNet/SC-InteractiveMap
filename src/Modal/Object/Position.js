@@ -117,6 +117,5 @@ export default class Modal_Object_Position
                 }
             }
         });
-
     }
 }

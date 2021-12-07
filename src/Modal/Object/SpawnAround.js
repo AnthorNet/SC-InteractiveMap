@@ -116,7 +116,7 @@ export default class Modal_Object_SpawnAround
                                                 colorSlotHelper     : values.colorSlotHelper
                                             });
                                         }
-                                    }.bind(baseLayout)
+                                    }
                                 });
                                 break;
                             case 'plainCircle':
@@ -196,7 +196,7 @@ export default class Modal_Object_SpawnAround
                                                 useOwnMaterials : form.useOwnMaterials
                                             });
                                         }
-                                    }.bind(baseLayout)
+                                    }
                                 });
                                 break;
                             case 'plainRectangle':
@@ -285,7 +285,7 @@ export default class Modal_Object_SpawnAround
                                                 useOwnMaterials : form.useOwnMaterials
                                             });
                                         }
-                                    }.bind(baseLayout)
+                                    }
                                 });
                                 break;
                             case 'plainPolygon':
@@ -375,7 +375,7 @@ export default class Modal_Object_SpawnAround
                                                 useOwnMaterials : form.useOwnMaterials
                                             });
                                         }
-                                    }.bind(baseLayout)
+                                    }
                                 });
                                 break;
                             case 'road':
@@ -441,7 +441,7 @@ export default class Modal_Object_SpawnAround
                                                 useOwnMaterials : form.useOwnMaterials
                                             });
                                         }
-                                    }.bind(baseLayout)
+                                    }
                                 });
                                 break;
                             default:
@@ -449,7 +449,7 @@ export default class Modal_Object_SpawnAround
                         }
                     }
                 }
-            }.bind(baseLayout)
+            }
         });
     }
 }

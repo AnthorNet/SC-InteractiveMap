@@ -355,7 +355,7 @@ export default class Building_Light
                         {
                             let currentLight        = connectedLights[i];
                             let currentLightMarker  = baseLayout.getMarkerFromPathName(currentLight.pathName, 'playerLightsLayer');
-                            let mLightControlData   = Building_Light.getControlData(this, currentLight);
+                            let mLightControlData   = Building_Light.getControlData(baseLayout, currentLight);
                                 if(mLightControlData !== null)
                                 {
                                     let newSlotIndex = parseInt(values.slotIndex);
@@ -384,13 +384,13 @@ export default class Building_Light
 
                                     if(currentLightMarker.options.haloMarker !== undefined)
                                     {
-                                        this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(currentLightMarker.options.haloMarker);
+                                        baseLayout.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(currentLightMarker.options.haloMarker);
                                     }
-                                    this.refreshMarkerPosition({marker: currentLightMarker, transform: currentLight.transform, object: currentLight});
+                                    baseLayout.refreshMarkerPosition({marker: currentLightMarker, transform: currentLight.transform, object: currentLight});
                                 }
                         }
                 }
-            }.bind(baseLayout)
+            }
         });
     }
 
@@ -429,7 +429,7 @@ export default class Building_Light
                             {
                                 let currentLight        = connectedLights[i];
                                 let currentLightMarker  = baseLayout.getMarkerFromPathName(currentLight.pathName, 'playerLightsLayer');
-                                let mLightControlData   = Building_Light.getControlData(this, currentLight);
+                                let mLightControlData   = Building_Light.getControlData(baseLayout, currentLight);
                                     if(mLightControlData !== null)
                                     {
                                         let newIntensity = parseFloat(values.intensity);
@@ -458,13 +458,13 @@ export default class Building_Light
 
                                         if(currentLightMarker.options.haloMarker !== undefined)
                                         {
-                                            this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(currentLightMarker.options.haloMarker);
+                                            baseLayout.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(currentLightMarker.options.haloMarker);
                                         }
-                                        this.refreshMarkerPosition({marker: currentLightMarker, transform: currentLight.transform, object: currentLight});
+                                        baseLayout.refreshMarkerPosition({marker: currentLightMarker, transform: currentLight.transform, object: currentLight});
                                     }
                             }
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 

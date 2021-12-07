@@ -52,7 +52,7 @@ export default class Building_TrainStation
                                 {
                                     if(mStationName !== null)
                                     {
-                                        this.setObjectProperty(trainStationIdentifier, 'mStationName', values.mStationName);
+                                        baseLayout.setObjectProperty(trainStationIdentifier, 'mStationName', values.mStationName);
                                     }
                                     else
                                     {
@@ -67,7 +67,7 @@ export default class Building_TrainStation
                                     }
                                 }
                             }
-                        }.bind(baseLayout)
+                        }
                     });
             }
     }

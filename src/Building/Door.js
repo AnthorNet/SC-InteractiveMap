@@ -46,7 +46,7 @@ export default class Building_Door
                 {
                     if(values !== null)
                     {
-                        this.deleteObjectProperty(currentObject, 'mDoorConfiguration');
+                        baseLayout.deleteObjectProperty(currentObject, 'mDoorConfiguration');
 
                         if(values.mDoorConfiguration !== 'Automatic')
                         {
@@ -56,7 +56,7 @@ export default class Building_Door
                             });
                         }
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 }

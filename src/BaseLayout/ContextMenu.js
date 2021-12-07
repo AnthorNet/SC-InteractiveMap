@@ -18,7 +18,7 @@ import Building_TrainStation                    from '../Building/TrainStation.j
 import Building_Vehicle                         from '../Building/Vehicle.js';
 
 import Modal_Debug                              from '../Modal/Debug.js';
-import Modal_Node_Foundation                    from '../Modal/Node/Foundation.js';
+import Modal_Node_SpawnAround                   from '../Modal/Node/SpawnAround.js';
 import Modal_Object_ColorSlot                   from '../Modal/Object/ColorSlot.js';
 import Modal_Object_CustomColor                 from '../Modal/Object/CustomColor.js';
 import Modal_Object_Pattern                     from '../Modal/Object/Pattern.js';
@@ -149,18 +149,22 @@ export default class BaseLayout_ContextMenu
                     case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
                     case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
                         contextMenu.push({
-                            text    : 'Teleport player',
-                            callback: this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                            icon        : 'fa-portal-exit',
+                            text        : 'Teleport player',
+                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
                         });
 
                         if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C')
                         {
                             if(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
                             {
-                                contextMenu.push({
-                                    text    : 'Spawn a foundation on top',
-                                    callback: Modal_Node_Foundation.getHTML
-                                });
+                                if(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type !== 'Desc_LiquidOil_C')
+                                {
+                                    contextMenu.push({
+                                        text    : 'Spawn a miner',
+                                        callback: Modal_Node_SpawnAround.getHTML
+                                    });
+                                }
                             }
                         }
 

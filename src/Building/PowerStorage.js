@@ -93,9 +93,9 @@ export default class Building_PowerStorage
                 {
                     if(values !== null)
                     {
-                        this.setObjectProperty(currentObject, 'mPowerStore', parseFloat(values.mPowerStore), 'FloatProperty');
+                        baseLayout.setObjectProperty(currentObject, 'mPowerStore', parseFloat(values.mPowerStore), 'FloatProperty');
                     }
-                }.bind(baseLayout)
+                }
             });
     }
 }
