@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/Train/Signal/Build_RailroadPathSignal.Build_RailroadPathSignal_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-150, -400], [150, -400], [150, 600], [-150, 600]
+                ]
+            }
+        ]
+    }
+}

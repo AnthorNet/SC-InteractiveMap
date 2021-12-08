@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-150, -400], [150, -400], [150, 600], [-150, 600]
+                ]
+            }
+        ]
+    }
+}
