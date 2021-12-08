@@ -51,7 +51,6 @@ export default class BaseLayout
 
         this.saveGamePipeNetworks               = {};
 
-        this.saveGameRailSwitches               = {};
         this.saveGameRailVehicles               = [];
         this.frackingSmasherCores               = {};
 
@@ -317,6 +316,7 @@ export default class BaseLayout
         this.saveGameParser.load(() => {
             // Hold sub system to get performance better
             this.buildableSubSystem = new SubSystem_Buildable({baseLayout: this});
+            this.railroadSubSystem  = new SubSystem_Railroad({baseLayout: this});
 
             if(this.buildingsData === null)
             {
@@ -806,8 +806,7 @@ export default class BaseLayout
             // Fix ghost identifiers...
             if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrain'].includes(currentObject.className))
             {
-                let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this});
-                let trains              = railroadSubSystem.getTrains();
+                let trains = this.railroadSubSystem.getTrains();
                     if(trains.includes(currentObject.pathName) === false)
                     {
                         console.log('Removing ghost identifier', currentObject.pathName);
@@ -817,8 +816,7 @@ export default class BaseLayout
             }
             if(currentObject.className === '/Script/FactoryGame.FGTrainStationIdentifier')
             {
-                let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this});
-                let trainStation        = railroadSubSystem.getTrainStations();
+                let trainStation = this.railroadSubSystem.getTrainStations();
                     if(trainStation.includes(currentObject.pathName) === false)
                     {
                         console.log('Removing ghost identifier', currentObject.pathName);
@@ -1010,7 +1008,7 @@ export default class BaseLayout
 
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
         {
-            this.saveGameRailSwitches[currentObject.pathName] = currentObject;
+            this.railroadSubSystem.railroadSwitchControls.push(currentObject.pathName);
         }
 
         if([
@@ -3276,8 +3274,7 @@ export default class BaseLayout
                         }
                 }
 
-            let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
-                railroadSubSystem.deleteObjectIdentifier(currentObject);
+            baseLayout.railroadSubSystem.deleteObjectIdentifier(currentObject);
         }
 
         // Release space elevator!
@@ -3501,71 +3498,14 @@ export default class BaseLayout
                         // Railway connection
                         if(connectedComponent.className === '/Script/FactoryGame.FGRailroadTrackConnectionComponent')
                         {
-                            let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedComponents');
-                                if(targetConnectedComponent !== null)
-                                {
-                                    for(let j = 0; j < targetConnectedComponent.values.length; j++)
-                                    {
-                                        let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.values[j].pathName);
-                                            if(currentConnectedComponent !== null)
-                                            {
-                                                for(let k = 0; k < currentConnectedComponent.properties.length; k++)
-                                                {
-                                                    if(currentConnectedComponent.properties[k].name === 'mConnectedComponents')
-                                                    {
-                                                        for(let m = 0; m < currentConnectedComponent.properties[k].value.values.length; m++)
-                                                        {
-                                                            if(currentConnectedComponent.properties[k].value.values[m].pathName === connectedComponent.pathName)
-                                                            {
-                                                                currentConnectedComponent.properties[k].value.values.splice(m, 1);
-                                                            }
-                                                        }
+                            this.railroadSubSystem.unlinkRailroadTrackConnections(connectedComponent);
 
-                                                        if(currentConnectedComponent.properties[k].value.values.length === 0)
-                                                        {
-                                                            currentConnectedComponent.properties = [];
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                    }
-                                }
-
-                            // Remove rails connected switches!
-                            for(let switchPathName in this.saveGameRailSwitches)
-                            {
-                                let mControlledConnection = this.getObjectProperty(this.saveGameRailSwitches[switchPathName], 'mControlledConnection');
-                                    if(mControlledConnection !== null)
-                                    {
-                                        if(mControlledConnection.pathName === connectedComponent.pathName)
-                                        {
-                                            this.saveGameParser.deleteObject(switchPathName);
-                                            this.deleteMarkerFromElements('playerTracksLayer', this.getMarkerFromPathName(switchPathName, 'playerTracksLayer'));
-                                            delete this.saveGameRailSwitches[switchPathName];
-                                        }
-                                    }
-                            }
                         }
 
                         // Platform connection
                         if(connectedComponent.className === '/Script/FactoryGame.FGTrainPlatformConnection')
                         {
-                            let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedTo');
-                                if(targetConnectedComponent !== null)
-                                {
-                                    let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
-                                        if(currentConnectedComponent !== null)
-                                        {
-                                            for(let j = 0; j < currentConnectedComponent.properties.length; j++)
-                                            {
-                                                if(currentConnectedComponent.properties[j].name === 'mConnectedTo' && currentConnectedComponent.properties[j].value.pathName === connectedComponent.pathName)
-                                                {
-                                                    currentConnectedComponent.properties.splice(j, 1);
-                                                }
-                                            }
-                                        }
-                                }
+                            this.railroadSubSystem.unlinkTrainPlatformConnections(connectedComponent);
                         }
                 }
             }

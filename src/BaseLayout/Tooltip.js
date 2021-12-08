@@ -2,7 +2,6 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
-import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
 import SubSystem_Unlock                         from '../SubSystem/Unlock.js';
 
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
@@ -1687,8 +1686,7 @@ export default class BaseLayout_Tooltip
         switch(currentObject.className)
         {
             case '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C':
-                let railroadSubSystem       = new SubSystem_Railroad({baseLayout: this.baseLayout});
-                let trainStationIdentifier  = railroadSubSystem.getObjectIdentifier(currentObject);
+                let trainStationIdentifier  = this.baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
                     if(trainStationIdentifier !== null)
                     {
                         let mStationName    = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');

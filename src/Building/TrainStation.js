@@ -2,8 +2,6 @@
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
-import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
-
 export default class Building_TrainStation
 {
     /**
@@ -30,8 +28,7 @@ export default class Building_TrainStation
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-        let railroadSubSystem       = new SubSystem_Railroad({baseLayout: baseLayout});
-        let trainStationIdentifier  = railroadSubSystem.getObjectIdentifier(currentObject);
+        let trainStationIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainStationIdentifier !== null)
             {
                 let mStationName    = baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');

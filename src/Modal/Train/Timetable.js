@@ -1,19 +1,15 @@
 /* global Intl */
-
-import SubSystem_Railroad                       from '../../SubSystem/Railroad.js';
-
 import Building_Locomotive                      from '../../Building/Locomotive.js';
 
 export default class Modal_Train_Timetable
 {
     constructor(options)
     {
-        this.baseLayout             = options.baseLayout;
-        this.locomotive             = options.locomotive;
+        this.baseLayout         = options.baseLayout;
+        this.locomotive         = options.locomotive;
 
-        let railroadSubSystem       = new SubSystem_Railroad({baseLayout: this.baseLayout});
-            this.trainIdentifier    = railroadSubSystem.getObjectIdentifier(this.locomotive);
-            this.timeTable          = this.baseLayout.getObjectProperty(this.trainIdentifier, 'TimeTable');
+        this.trainIdentifier    = this.baseLayout.railroadSubSystem.getObjectIdentifier(this.locomotive);
+        this.timeTable          = this.baseLayout.getObjectProperty(this.trainIdentifier, 'TimeTable');
 
         if(this.timeTable !== null)
         {

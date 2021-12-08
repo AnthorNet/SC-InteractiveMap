@@ -1,8 +1,6 @@
 /* global gtag */
 import Modal_Selection                          from '../Modal/Selection.js';
 
-import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
-
 export default class Selection_Copy
 {
     constructor(options)
@@ -204,8 +202,7 @@ export default class Selection_Copy
                     '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'
                 ].includes(newDataObject.parent.className))
                 {
-                    let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this.baseLayout});
-                    let trainIdentifier     = railroadSubSystem.getObjectIdentifier(newDataObject.parent);
+                    let trainIdentifier = this.baseLayout.railroadSubSystem.getObjectIdentifier(newDataObject.parent);
                         if(trainIdentifier !== null)
                         {
                             let trainIdentifierNewObject            = {};

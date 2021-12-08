@@ -1,7 +1,4 @@
 /* global gtag, Intl */
-
-import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
-
 import Building_Locomotive                      from '../Building/Locomotive.js';
 
 export default class Modal_Trains
@@ -39,9 +36,8 @@ export default class Modal_Trains
 
     parse()
     {
-        let html = [];
-        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this.baseLayout});
-        let trains              = railroadSubSystem.getTrains();
+        let html    = [];
+        let trains  = this.baseLayout.railroadSubSystem.getTrains();
 
         for(let i = 0; i < trains.length; i++)
         {

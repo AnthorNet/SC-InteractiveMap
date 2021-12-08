@@ -4,6 +4,9 @@ export default class SubSystem_Railroad
     {
         this.baseLayout             = options.baseLayout;
         this.railroadSubSystem      = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.RailroadSubsystem');
+
+        // Hold some objects to speed linking
+        this.railroadSwitchControls = [];
     }
 
     getTrainStations()
@@ -193,5 +196,80 @@ export default class SubSystem_Railroad
                     );
                 }
         }
+    }
+
+
+
+
+    unlinkRailroadTrackConnections(currentObject)
+    {
+        let mConnectedComponents    = this.baseLayout.getObjectProperty(currentObject, 'mConnectedComponents');
+        let connectedSwitchPool     = [currentObject.pathName];
+            if(mConnectedComponents !== null)
+            {
+                for(let j = 0; j < mConnectedComponents.values.length; j++)
+                {
+                    let currentConnectedComponent = this.baseLayout.saveGameParser.getTargetObject(mConnectedComponents.values[j].pathName);
+                        if(currentConnectedComponent !== null)
+                        {
+                                connectedSwitchPool.push(currentConnectedComponent.pathName);
+                            let mConnectedComponents = this.baseLayout.getObjectProperty(currentConnectedComponent, 'mConnectedComponents');
+                                if(mConnectedComponents !== null)
+                                {
+                                    for(let m = (mConnectedComponents.values.length - 1); m >= 0; m--)
+                                    {
+                                        if(mConnectedComponents.values[m].pathName === currentObject.pathName)
+                                        {
+                                            mConnectedComponents.values.splice(m, 1);
+                                        }
+                                    }
+
+                                    if(mConnectedComponents.values.length === 0)
+                                    {
+                                        this.baseLayout.deleteObjectProperty(currentConnectedComponent, 'mConnectedComponents');
+                                    }
+                                }
+                        }
+                }
+            }
+
+        // Remove rails connected switches!
+        for(let i = (this.railroadSwitchControls.length - 1); i >= 0; i--)
+        {
+            let currentSwitch = this.baseLayout.saveGameParser.getTargetObject(this.railroadSwitchControls[i]);
+                if(currentSwitch !== null)
+                {
+                    let mControlledConnection = this.baseLayout.getObjectProperty(currentSwitch, 'mControlledConnection');
+                        if(mControlledConnection !== null)
+                        {
+                            if(connectedSwitchPool.includes(mControlledConnection.pathName))
+                            {
+                                this.baseLayout.saveGameParser.deleteObject(this.railroadSwitchControls[i]);
+                                this.baseLayout.deleteMarkerFromElements('playerTracksLayer', this.baseLayout.getMarkerFromPathName(this.railroadSwitchControls[i], 'playerTracksLayer'));
+                                this.railroadSwitchControls.splice(i, 1);
+                            }
+                        }
+                }
+        }
+    }
+
+    unlinkTrainPlatformConnections(currentObject)
+    {
+        let mConnectedTo = this.baseLayout.getObjectProperty(currentObject, 'mConnectedTo');
+            if(mConnectedTo !== null)
+            {
+                let currentConnectedComponent = this.baseLayout.saveGameParser.getTargetObject(mConnectedTo.pathName);
+                    if(currentConnectedComponent !== null)
+                    {
+                        let mConnectedTo = this.baseLayout.getObjectProperty(currentConnectedComponent, 'mConnectedTo');
+                            if(mConnectedTo !== null)
+                            {
+                                if(mConnectedTo.pathName === currentObject.pathName)
+                                {
+                                    this.baseLayout.deleteObjectProperty(currentConnectedComponent, 'mConnectedTo');
+                                }
+                            }
+                    }
+            }
     }
 }

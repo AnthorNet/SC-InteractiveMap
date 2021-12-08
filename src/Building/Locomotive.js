@@ -5,15 +5,12 @@ import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 import Modal_Train_Timetable                    from '../Modal/Train/Timetable.js';
 
-import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
-
 export default class Building_Locomotive
 {
     static getTrainName(baseLayout, currentObject, defaultName = null)
     {
 
-        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
-        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+        let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
                 let mTrainName      = baseLayout.getObjectProperty(trainIdentifier, 'mTrainName');
@@ -95,8 +92,7 @@ export default class Building_Locomotive
 
     static isAutoPilotOn(baseLayout, currentObject)
     {
-        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
-        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+        let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
                 let mIsSelfDrivingEnabled   = baseLayout.getObjectProperty(trainIdentifier, 'mIsSelfDrivingEnabled');
@@ -111,8 +107,7 @@ export default class Building_Locomotive
 
     static getVelocity(baseLayout, currentObject)
     {
-        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
-        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+        let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
                 let mSimulationData = baseLayout.getObjectProperty(trainIdentifier, 'mSimulationData');
@@ -133,8 +128,7 @@ export default class Building_Locomotive
 
     static getTimeTable(baseLayout, currentObject)
     {
-        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
-        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+        let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
                 let TimeTable       = baseLayout.getObjectProperty(trainIdentifier, 'TimeTable');
@@ -228,8 +222,7 @@ export default class Building_Locomotive
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
-        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+        let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
                 let mTrainName      = baseLayout.getObjectProperty(trainIdentifier, 'mTrainName');
@@ -278,8 +271,7 @@ export default class Building_Locomotive
     {
         let baseLayout          = marker.baseLayout;
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: baseLayout});
-        let trainIdentifier     = railroadSubSystem.getObjectIdentifier(currentObject);
+        let trainIdentifier     = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
                 let isAutoPilotOn   = Building_Locomotive.isAutoPilotOn(baseLayout, currentObject);

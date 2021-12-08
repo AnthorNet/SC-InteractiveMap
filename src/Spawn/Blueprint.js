@@ -2,9 +2,6 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
-import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
-import SubSystem_Railroad                       from '../SubSystem/Railroad.js';
-
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class Spawn_Blueprint
@@ -568,15 +565,14 @@ export default class Spawn_Blueprint
                     // Push railroadSubSystem power connection
                     if(currentHiddenConnections.className === '/Script/FactoryGame.FGPowerConnectionComponent')
                     {
-                        let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this.baseLayout});
-                            if(railroadSubSystem.railroadSubSystem.children === undefined)
-                            {
-                                railroadSubSystem.railroadSubSystem.children = [];
-                            }
-                            if(railroadSubSystem.railroadSubSystem.children.includes(currentHiddenConnections.pathName) === false)
-                            {
-                                railroadSubSystem.railroadSubSystem.children.push({pathName: currentHiddenConnections.pathName});
-                            }
+                        if(this.baseLayout.railroadSubSystem.railroadSubSystem.children === undefined)
+                        {
+                            this.baseLayout.railroadSubSystem.railroadSubSystem.children = [];
+                        }
+                        if(this.baseLayout.railroadSubSystem.railroadSubSystem.children.includes(currentHiddenConnections.pathName) === false)
+                        {
+                            this.baseLayout.railroadSubSystem.railroadSubSystem.children.push({pathName: currentHiddenConnections.pathName});
+                        }
                     }
                 }
             }
@@ -836,8 +832,7 @@ export default class Spawn_Blueprint
             // Push identifier for train station or trains
             if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(newObject.className))
             {
-                let railroadSubSystem   = new SubSystem_Railroad({baseLayout: this.baseLayout});
-                    railroadSubSystem.addObjectIdentifier(newObject);
+                this.baseLayout.railroadSubSystem.addObjectIdentifier(newObject);
             }
 
             // Update save/map
@@ -974,8 +969,7 @@ export default class Spawn_Blueprint
         let centerX             = ((this.clipboard.minX + this.clipboard.maxX) / 2) + this.xOffset;
         let centerY             = ((this.clipboard.minY + this.clipboard.maxY) / 2) + this.yOffset;
 
-        let buildableSubSystem  = new SubSystem_Buildable({baseLayout: this.baseLayout});
-            buildableSubSystem.setObjectColorSlot(this.centerObject, parseInt(colorSlotHelper));
+        this.baseLayout.buildableSubSystem.setObjectColorSlot(this.centerObject, parseInt(colorSlotHelper));
 
         // Delete and add again!
         let resultCenter = this.baseLayout.parseObject(this.centerObject);
