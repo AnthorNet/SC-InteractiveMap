@@ -104,8 +104,13 @@ export default class Modal_Schematics
 
             html.push('<div class="tab-pane fade ' + ( (selectedTier === i) ? 'show active' : '' ) + '" id="playerUnlockedSchematics-' + i + '">');
             html.push('<table class="table mb-0"><tr>');
-            html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
-            html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + i + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            html.push('<td class="align-middle" height="60">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
+
+            if(unlocked < total)
+            {
+                html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + i + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            }
+
             html.push('</tr></table>');
             html.push('<table class="table mb-0">');
             html.push(htmlData.join(''));
@@ -246,8 +251,13 @@ export default class Modal_Schematics
         let html = [];
             html.push('<div class="card-body text-center">You can click on the status of the recipe to update its current state.</div>');
             html.push('<table class="table mb-0"><tr>');
-            html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> alternative recipes unlocked.</td>');
-            html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            html.push('<td class="align-middle" height="60">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> alternative recipes unlocked.</td>');
+
+            if(unlocked < total)
+            {
+                html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            }
+
             html.push('</tr></table>');
 
             html.push('<table class="table mb-0">');
@@ -361,8 +371,13 @@ export default class Modal_Schematics
 
             html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedMAM-' + i + '">');
             html.push('<table class="table mb-0"><tr>');
-            html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
-            html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            html.push('<td class="align-middle" height="60">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
+
+            if(unlocked < total)
+            {
+                html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            }
+
             html.push('</tr></table>');
             html.push('<table class="table mb-0">');
             html.push(htmlData.join(''));
@@ -478,8 +493,13 @@ export default class Modal_Schematics
 
             html.push('<div class="tab-pane fade ' + ( (selectedCategory === categories[i]) ? 'show active' : '' ) + '" id="playerUnlockedAwesomeSink-' + i + '">');
             html.push('<table class="table mb-0"><tr>');
-            html.push('<td class="align-middle">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
-            html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            html.push('<td class="align-middle" height="60">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
+
+            if(unlocked < total)
+            {
+                html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available" data-tier="' + categories[i] + '"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            }
+
             html.push('</tr></table>');
             html.push('<table class="table mb-0">');
             html.push(htmlData.join(''));
