@@ -1,11 +1,13 @@
 /* global L, Intl */
+import BaseLayout_Modal                         from './BaseLayout/Modal.js';
+
 export default class Map
 {
     constructor(options)
     {
         this.build                      = options.build;
         this.version                    = options.version;
-        this.startCallback              = (options.startCallback !== undefined) ? options.startCallback : null;
+        this.remoteUrl                  = (options.remoteUrl !== undefined) ? options.remoteUrl : null;
 
         this.svgIconMarker              = '<svg viewBox="0 0 50 80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><line x1="25" y1="40" x2="47" y2="77" stroke="{outsideColor}" stroke-width="2" /><circle cx="47" cy="77" r="3" fill="{outsideColor}" /><circle cx="25" cy="25" r="24" fill="{insideColor}" stroke="{outsideColor}" stroke-width="2" /><image x="7" y="7" width="36" height="36" xlink:href="{iconImage}" /></g></svg>';
         this.svgExtraIconMarker         = '<svg viewBox="0 0 50 80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><line x1="25" y1="40" x2="47" y2="77" stroke="{outsideColor}" stroke-width="2" /><circle cx="47" cy="77" r="3" fill="{outsideColor}" /><circle cx="25" cy="25" r="24" fill="{insideColor}" stroke="{outsideColor}" stroke-width="2" /><image x="7" y="7" width="36" height="36" xlink:href="{iconImage}" /><image x="30" y="30" width="24" height="24" xlink:href="{extraImage}" /></g></svg>';
@@ -596,9 +598,35 @@ export default class Map
                     $('.updateLayerState[data-id="' + layerId + '"]').addClass(window.SCIM.outlineClass);
             }
 
-            if(this.startCallback !== null)
+            if(this.remoteUrl !== null && this.remoteUrl !== '')
             {
-                this.startCallback();
+                $('.loader h6').html('Downloading remote save game...');
+                $.ajax({
+                    url     : this.remoteUrl,
+                    method  : 'GET',
+                    headers : {
+                        "accept": "application/satisfactory",
+                        "Access-Control-Allow-Origin":"*"
+                    },
+                    xhrFields:{responseType: 'blob'},
+                    error: function(request, status, error){
+                        $('.loader').hide();
+                        console.log('ERROR REMOTE LOAD', request);
+
+                        switch(request.status)
+                        {
+                            case 404:
+                                BaseLayout_Modal.alert('We could not load your remote save, are you sure the file exists on the server?');
+                                break;
+                            default:
+                                BaseLayout_Modal.alert('We could not load your remote save, have you enabled "Access-Control-Allow-Origin" on your server?');
+                        }
+                    }
+                }).then(function(response)
+                {
+                    response.name = 'RemoteSave.sav';
+                    window.SCIM.processSaveGameFile(response);
+                });
             }
             else
             {

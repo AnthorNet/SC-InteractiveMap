@@ -35,7 +35,7 @@ export default class SCIM
         this.translate                  = null;
     }
 
-    start(startCallback)
+    start(remoteUrl)
     {
         if(this.urlScriptsVERSION !== null)
         {
@@ -60,7 +60,7 @@ export default class SCIM
                     dataUrl             : this.mapDataUrl,
 
                     language            : this.language,
-                    startCallback       : startCallback
+                    remoteUrl           : remoteUrl
                 });
 
                 if(window.File && window.FileReader && window.FileList && window.Blob)
