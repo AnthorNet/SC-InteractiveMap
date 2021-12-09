@@ -42,6 +42,12 @@ export default class Building_RailroadTrack
         tooltipOptions.direction    = 'bottom';
         tooltipOptions.opacity      = 0.7;
 
+        let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, 'playerTracksLayer');
+            if(marker !== null)
+            {
+                marker.setStyle({color: '#0000FF'});
+            }
+
         let connectedComponents = Building_RailroadTrack.getConnectedComponents(baseLayout, currentObject);
             if(connectedComponents !== null)
             {

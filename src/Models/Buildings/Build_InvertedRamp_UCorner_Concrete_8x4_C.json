@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Building/Foundation/ConcreteSet/Build_InvertedRamp_UCorner_Concrete_8x4.Build_InvertedRamp_UCorner_Concrete_8x4_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-400, -400], [400, -400], [-400, 400]
+                ]
+            }
+        ]
+    }
+}

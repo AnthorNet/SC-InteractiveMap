@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/ResourceSinkShop/Build_ResourceSinkShop.Build_ResourceSinkShop_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-130,-225],[-150,-205],[-150,205],[-130,225],[130,225],[150,205],[150,-205],[130,-225]
+                ]
+            }
+        ]
+    }
+}

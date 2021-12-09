@@ -1,10 +1,10 @@
 {
-    "/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_01.": {
+    "/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_01.Build_Ramp_Diagonal_8x2_01_C": {
         "scale": 1,
         "forms": [
             {
                 "points": [
-                    [-398, -398], [-398, 398], [398, 398], [398, -398]
+                    [-400, -400], [-400, 400], [400, 400], [400, -400]
                 ],
                 "holes":
                 [
