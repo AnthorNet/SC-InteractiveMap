@@ -66,7 +66,7 @@ export default class SaveParser_FicsIt
             if(trainStation.includes(currentObject.pathName) === false)
             {
                 console.log('Removing ghost "' + currentObject.className + '"', currentObject.pathName);
-                this.saveGameParser.deleteObject(currentObject.pathName);
+                baseLayout.saveGameParser.deleteObject(currentObject.pathName);
             }
 
         return currentObject;
