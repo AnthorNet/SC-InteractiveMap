@@ -108,6 +108,7 @@ export default class Modal_Selection
         let haveFoundationsMaterialsCategory    = false;
         let haveWallsMaterialsCategory          = false;
         let haveRoofsMaterialsCategory          = false;
+        let havePillarsMaterialsCategory        = false;
         let haveSkinsCategory                   = false;
         let haveExtractionCategory              = false;
         let haveLogisticCategory                = false;
@@ -168,6 +169,10 @@ export default class Modal_Selection
                                                         if(buildingData.category === 'roof')
                                                         {
                                                             haveRoofsMaterialsCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'pillar')
+                                                        {
+                                                            havePillarsMaterialsCategory = true;
                                                         }
                                                         if(buildingData.category === 'extraction')
                                                         {
@@ -269,6 +274,13 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Roof Materials', text: 'Switch to "Glass Roof"', value: 'switchMaterial_roof_Glass'});
             }
 
+            if(havePillarsMaterialsCategory === true)
+            {
+                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Metal Pillar"', value: 'switchMaterial_pillar_Metal'});
+                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Concrete Pillar"', value: 'switchMaterial_pillar_Concrete'});
+                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Frame Pillar"', value: 'switchMaterial_pillar_Frame'});
+            }
+
             if(haveSkinsCategory === true)
             {
                 inputOptions.push({group: 'Skins', text: 'Switch to "Default" skin', value: 'switchSkin_Default'});
@@ -277,26 +289,26 @@ export default class Modal_Selection
 
             if(haveLogisticCategory === true)
             {
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected belts/lifts', value: 'downgradeConveyor'});
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected belts/lifts', value: 'upgradeConveyor'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected belts/lifts', value: 'downgrade_Conveyor'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected belts/lifts', value: 'upgrade_Conveyor'});
             }
 
             if(havePowerPoleCategory === true)
             {
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected power poles', value: 'downgradePowerPole'});
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected power poles', value: 'upgradePowerPole'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected power poles', value: 'downgrade_PowerPole'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected power poles', value: 'upgrade_PowerPole'});
             }
 
             if(havePipelineCategory === true)
             {
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected pipelines/pumps', value: 'downgradePipeline'});
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'upgradePipeline'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected pipelines/pumps', value: 'downgrade_Pipeline'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'upgrade_Pipeline'});
             }
 
             if(haveExtractionCategory === true)
             {
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected miners', value: 'downgradeMiners'});
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected miners', value: 'upgradeMiners'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected miners', value: 'downgrade_Miners'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected miners', value: 'upgrade_Miners'});
             }
 
             inputOptions.push({group: 'Foundations', text: 'Fill selection with...', value: 'fillArea'});
@@ -339,48 +351,22 @@ export default class Modal_Selection
                         Modal_Selection.cancel(baseLayout);
                         return;
                     }
-                    if(['fillArea', 'respawnFlora'].includes(form.form) === false) // Those callback needs access to the selection!
+
+                    let callbackArguments   = form.form.split('_');
+                    let callbackName        = callbackArguments.shift();
+                        callbackName        = 'callback' + callbackName[0].toUpperCase() + callbackName.slice(1);
+                        callbackArguments.unshift(markers);
+                        callbackArguments.unshift(baseLayout);
+
+                    // Those callback needs access to the selection!
+                    if(['fillArea', 'respawnFlora'].includes(form.form) === false)
                     {
                         Modal_Selection.cancel(baseLayout);
                     }
-
-                    if(typeof Modal_Selection['callback' + form.form[0].toUpperCase() + form.form.slice(1)] === "function")
+                    // Let's go!
+                    if(typeof Modal_Selection[callbackName] === "function")
                     {
-                        return Modal_Selection['callback' + form.form[0].toUpperCase() + form.form.slice(1)](baseLayout, markers);
-                    }
-
-                    switch(form.form)
-                    {
-                        case 'switchMaterial_foundation_Ficsit':
-                        case 'switchMaterial_foundation_Concrete':
-                        case 'switchMaterial_foundation_GripMetal':
-                        case 'switchMaterial_foundation_ConcretePolished':
-                        case 'switchMaterial_foundation_Asphalt':
-                        case 'switchMaterial_wall_Ficsit':
-                        case 'switchMaterial_wall_Concrete':
-                        case 'switchMaterial_wall_Steel':
-                        case 'switchMaterial_roof_Ficsit':
-                        case 'switchMaterial_roof_Tar':
-                        case 'switchMaterial_roof_Metal':
-                        case 'switchMaterial_roof_Glass':
-                            let switchMaterialArguments = form.form.split('_');
-                                return Modal_Selection.callbackMaterials(baseLayout, markers, switchMaterialArguments[1], switchMaterialArguments[2]);
-                        case 'switchSkin_Default':
-                        case 'switchSkin_Ficsmas':
-                            let switchSkinArguments = form.form.split('_');
-                                return Modal_Selection.callbackSkins(baseLayout, markers, switchSkinArguments[1]);
-
-                        case 'downgradeConveyor':
-                        case 'downgradePowerPole':
-                        case 'downgradePipeline':
-                        case 'downgradeMiners':
-                            return Modal_Selection.callbackDowngrades(baseLayout, markers, form.form);
-
-                        case 'upgradeConveyor':
-                        case 'upgradePowerPole':
-                        case 'upgradePipeline':
-                        case 'upgradeMiners':
-                            return Modal_Selection.callbackUpgrades(baseLayout, markers, form.form);
+                        return Modal_Selection[callbackName].apply(null, callbackArguments);
                     }
                 }
             });
@@ -740,7 +726,7 @@ export default class Modal_Selection
         });
     }
 
-    static callbackMaterials(baseLayout, markers, category, material)
+    static callbackSwitchMaterial(baseLayout, markers, category, material)
     {
         for(let i = 0; i < markers.length; i++)
         {
@@ -762,7 +748,7 @@ export default class Modal_Selection
         }
     }
 
-    static callbackSkins(baseLayout, markers, skin)
+    static callbackSwitchSkin(baseLayout, markers, skin)
     {
         for(let i = 0; i < markers.length; i++)
         {
@@ -1007,7 +993,7 @@ export default class Modal_Selection
 
 
 
-    static callbackDowngrades(baseLayout, markers, callbackName)
+    static callbackDowngrade(baseLayout, markers, type)
     {
         for(let i = 0; i < markers.length; i++)
         {
@@ -1017,7 +1003,7 @@ export default class Modal_Selection
                     // Search for a downgrade callback in contextmenu...
                     for(let j = 0; j < contextMenu.length; j++)
                     {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name === callbackName)
+                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name === 'downgrade' + type)
                         {
                             contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout});
                         }
@@ -1026,7 +1012,7 @@ export default class Modal_Selection
         }
     }
 
-    static callbackUpgrades(baseLayout, markers, callbackName)
+    static callbackUpgrade(baseLayout, markers, type)
     {
         for(let i = 0; i < markers.length; i++)
         {
@@ -1036,7 +1022,7 @@ export default class Modal_Selection
                     // Search for a downgrade callback in contextmenu...
                     for(let j = 0; j < contextMenu.length; j++)
                     {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name === callbackName)
+                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name === 'upgrade' + type)
                         {
                             contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout});
                         }
