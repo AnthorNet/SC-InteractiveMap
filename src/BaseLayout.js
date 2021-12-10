@@ -1,4 +1,5 @@
 /* global L, Promise, Infinity, Intl, Sentry, parseFloat */
+import SaveParser_FicsIt                        from './SaveParser/FicsIt.js';
 
 import BaseLayout_ContextMenu                   from './BaseLayout/ContextMenu.js';
 import BaseLayout_History                       from './BaseLayout/History.js';
@@ -754,48 +755,8 @@ export default class BaseLayout
                     }
             }
 
-            // Fix ghost identifiers...
-            if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrain'].includes(currentObject.className))
-            {
-                let trains = this.railroadSubSystem.getTrains();
-                    if(trains.includes(currentObject.pathName) === false)
-                    {
-                        console.log('Removing ghost identifier', currentObject.pathName);
-                        this.saveGameParser.deleteObject(currentObject.pathName);
-                        continue;
-                    }
-            }
-            if(currentObject.className === '/Script/FactoryGame.FGTrainStationIdentifier')
-            {
-                let trainStation = this.railroadSubSystem.getTrainStations();
-                    if(trainStation.includes(currentObject.pathName) === false)
-                    {
-                        console.log('Removing ghost identifier', currentObject.pathName);
-                        this.saveGameParser.deleteObject(currentObject.pathName);
-                        continue;
-                    }
-            }
-            // Fix empty railroadSubsystem children
-            if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_RailroadSubsystem.BP_RailroadSubsystem_C')
-            {
-                if(currentObject.children !== undefined)
-                {
-                    for(let j = (currentObject.children.length - 1); j >= 0; j--)
-                    {
-                        let currentChildren = this.saveGameParser.getTargetObject(currentObject.children[j].pathName);
-                            if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGPowerConnectionComponent')
-                            {
-                                if(currentChildren.properties.length === 0)
-                                {
-                                    console.log('Removing ghost "/Script/FactoryGame.FGPowerConnectionComponent"', currentChildren.pathName);
-                                    this.saveGameParser.deleteObject(currentChildren.pathName);
-                                    currentObject.children.splice(j, 1);
-                                }
-                            }
-                    }
-                }
-                continue;
-            }
+            // Fix some save/games bugs and/or old object conversion
+            currentObject = SaveParser_FicsIt.callADA(this, currentObject);
 
             /*
             '/Script/FactoryGame.FGInventoryComponent',
@@ -821,56 +782,6 @@ export default class BaseLayout
                     if(mExtractableResource !== null)
                     {
                         this.frackingSmasherCores[mExtractableResource.pathName] = currentObject.pathName;
-                    }
-            }
-
-            // Convert pillar top to pillar support
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Foundation/Build_PillarTop.Build_PillarTop_C')
-            {
-                currentObject.className             = '/Game/FactoryGame/Buildable/Building/Foundation/Build_PillarBase.Build_PillarBase_C';
-                let eulerAngle                      = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
-                    eulerAngle.roll                 = BaseLayout_Math.clampEulerAxis(eulerAngle.roll + 180);
-                currentObject.transform.rotation    = BaseLayout_Math.getEulerToQuaternion(eulerAngle);
-                this.updateBuiltWithRecipe(currentObject);
-            }
-            // Convert Right Door Wall to Side Wall ;)
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_02.Build_Wall_Door_8x4_02_C')
-            {
-                currentObject.className             = '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_03.Build_Wall_Door_8x4_03_C';
-                currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 180);
-                this.updateBuiltWithRecipe(currentObject);
-            }
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_02_Steel.Build_Wall_Door_8x4_02_Steel_C')
-            {
-                currentObject.className             = '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_03_Steel.Build_Wall_Door_8x4_03_Steel_C';
-                currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 180);
-                this.updateBuiltWithRecipe(currentObject);
-            }
-            // Fix corner ramps angle
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x1_02.Build_Ramp_Diagonal_8x1_02_C')
-            {
-                let mBuiltWithRecipe    = this.getObjectProperty(currentObject, 'mBuiltWithRecipe');
-                    if(mBuiltWithRecipe === null)
-                    {
-                        currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 90);
-                        currentObject.properties.push({
-                            name    : 'mBuiltWithRecipe',
-                            type    : 'ObjectProperty',
-                            value   : {levelName: '', pathName: '/Game/FactoryGame/Recipes/Buildings/Ramps/Recipe_Ramp_Diagonal_8x1_02.Recipe_Ramp_Diagonal_8x1_02_C'}
-                        });
-                    }
-            }
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_02.Build_Ramp_Diagonal_8x2_02_C')
-            {
-                let mBuiltWithRecipe    = this.getObjectProperty(currentObject, 'mBuiltWithRecipe');
-                    if(mBuiltWithRecipe === null)
-                    {
-                        currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 90);
-                        currentObject.properties.push({
-                            name    : 'mBuiltWithRecipe',
-                            type    : 'ObjectProperty',
-                            value   : {levelName: '', pathName: '/Game/FactoryGame/Recipes/Buildings/Ramps/Recipe_Ramp_Diagonal_8x2_02.Recipe_Ramp_Diagonal_8x2_02_C'}
-                        });
                     }
             }
 
