@@ -598,6 +598,40 @@ export default class BaseLayout_ContextMenu
                         }
                     }
 
+                    if(buildingData.category === 'pillar')
+                    {
+                        if(buildingData.switchMaterial.Metal !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Metal Pillar"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['pillar', 'Metal'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.Concrete !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Concrete Pillar"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['pillar', 'Concrete'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                        if(buildingData.switchMaterial.Frame !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Frame Pillar"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['pillar', 'Frame'],
+                                className   : 'buildableSubSystem_switchObjectMaterial',
+                            });
+                        }
+                    }
+
                     if(buildingData.switchSkin !== undefined)
                     {
                         let SkinDesc  = this.baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject, 'SkinDesc');
