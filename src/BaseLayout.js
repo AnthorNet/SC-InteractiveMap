@@ -10,6 +10,7 @@ import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
 import SubSystem_Railroad                       from './SubSystem/Railroad.js';
+import SubSystem_Map                            from './SubSystem/Map.js';
 
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
 import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
@@ -314,9 +315,10 @@ export default class BaseLayout
         this.collectedSchematics.resetCollected();
 
         this.saveGameParser.load(() => {
-            // Hold sub system to get performance better
+            // Hold sub system to get better performance
             this.buildableSubSystem = new SubSystem_Buildable({baseLayout: this});
             this.railroadSubSystem  = new SubSystem_Railroad({baseLayout: this});
+            this.mapSubSystem       = new SubSystem_Map({baseLayout: this});
 
             if(this.buildingsData === null)
             {
@@ -506,18 +508,18 @@ export default class BaseLayout
         {
             let objects             = this.saveGameParser.getObjects();
                 objectsKeys         = Object.keys(objects);
+
+                // Performance warning!!!
+                if(objectsKeys.length > 500000)
+                {
+                    this.useDetailedModels  = false;
+                    this.showPatterns       = false;
+                }
         }
 
         let countObjects            = objectsKeys.length;
         let parseObjectsProgress    = Math.round(i / countObjects * 100);
         let promises                = [];
-
-        // Performance warning!!!
-        if(countObjects > 500000)
-        {
-            this.useDetailedModels  = false;
-            this.showPatterns       = false;
-        }
 
         for(i; i < countObjects; i++)
         {
@@ -750,16 +752,6 @@ export default class BaseLayout
                                 }
                         }
                     }
-            }
-
-            if(currentObject.className === '/Script/FactoryGame.FGMapManager')
-            {
-                if(this.useFogOfWar === true)
-                {
-                    this.addFogOfWar(currentObject);
-                }
-
-                continue;
             }
 
             // Fix ghost identifiers...
@@ -4536,160 +4528,6 @@ export default class BaseLayout
 
                     this.playerLayers.playerRadioactivityLayer.subLayer.setData({data: radioActiveElements});
                 }
-            }
-        }
-    }
-
-    addFogOfWar(currentObject)
-    {
-        this.setupSubLayer('playerFogOfWar');
-        let rawData = this.getObjectProperty(currentObject, 'mFogOfWarRawData');
-
-        if(rawData !== null && rawData.values !== undefined)
-        {
-            console.time('fogOfWar');
-            $.getJSON(this.staticUrl + '/img/depthMap' + this.useBuild + '.json', function(depthMapData){
-                let polygonPositions    = [];
-                let rawDataIndex        = 0;
-                let depthMapIndex       = 0;
-                    rawData             = rawData.values;
-
-                let maxRow              = 512;
-                let maxColumn           = 512;
-                let fogSize             = 750000 / 512;
-
-                let topLeft             = null;
-                let bottomLeft          = null;
-                let rowCenter           = 0;
-                let columnCenter        = 0;
-
-                for(let row = 0; row < maxRow; row++)
-                {
-                    if(topLeft !== null && bottomLeft !== null)
-                    {
-                        polygonPositions.push([
-                            topLeft,
-                            this.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter - (fogSize / 2)]),
-                            this.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter + (fogSize / 2)]),
-                            bottomLeft
-                        ]);
-
-                        topLeft     = null;
-                        bottomLeft  = null;
-                    }
-
-                    rowCenter   = (row * fogSize) + (fogSize / 2) + this.satisfactoryMap.mappingBoundNorth + this.satisfactoryMap.northOffset;
-
-                    for(let column = 0; column < maxColumn; column++)
-                    {
-                        columnCenter    = (column * fogSize) + (fogSize / 2) + this.satisfactoryMap.mappingBoundWest + this.satisfactoryMap.westOffset;
-
-                        //alpha = mSavedData[pixel].b >= mDepthMap[pixel] ? 255 : 0;
-                        if(rawData[rawDataIndex + 2] < depthMapData[depthMapIndex])
-                        {
-                            if(topLeft === null)
-                            {
-                                topLeft = this.satisfactoryMap.unproject([columnCenter - (fogSize / 2), rowCenter - (fogSize / 2)]);
-                            }
-                            if(bottomLeft === null)
-                            {
-                                bottomLeft = this.satisfactoryMap.unproject([columnCenter - (fogSize / 2), rowCenter + (fogSize / 2)]);
-                            }
-                        }
-                        else
-                        {
-                            if(topLeft !== null && bottomLeft !== null)
-                            {
-                                polygonPositions.push([
-                                    topLeft,
-                                    this.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter - (fogSize / 2)]),
-                                    this.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter + (fogSize / 2)]),
-                                    bottomLeft
-                                ]);
-
-                                topLeft         = null;
-                                bottomLeft      = null;
-                            }
-                        }
-
-                        rawDataIndex += 4;
-                        depthMapIndex++;
-                    }
-                }
-
-                let fogOfWarPolygon = L.polygon(polygonPositions, {
-                        smoothFactor: 0,
-                        fillColor: '#000000',
-                        fillOpacity: 1,
-                        weight: 0,
-                        interactive: false,
-                        renderer: this.playerLayers.playerFogOfWar.renderer
-                    });
-
-                this.playerLayers.playerFogOfWar.elements.push(fogOfWarPolygon);
-                fogOfWarPolygon.addTo(this.playerLayers.playerFogOfWar.subLayer);
-
-                console.timeEnd('fogOfWar');
-            }.bind(this));
-        }
-    }
-
-    resetFogOfWar()
-    {
-        if(this.useFogOfWar === true)
-        {
-            let currentObject   = this.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.MapManager');
-            let rawData         = this.getObjectProperty(currentObject, 'mFogOfWarRawData');
-
-            if(rawData !== null && rawData.values !== undefined)
-            {
-                let rawDataLength = rawData.values.length;
-
-                // Update fog
-                for(let i = 2; i < rawDataLength; i += 4)
-                {
-                    rawData.values[i] = 0;
-                }
-
-                // Delete old polygons
-                for(let i = 0; i < this.playerLayers.playerFogOfWar.elements.length; i++)
-                {
-                    this.playerLayers.playerFogOfWar.subLayer.removeLayer(this.playerLayers.playerFogOfWar.elements[i]);
-                }
-                this.playerLayers.playerFogOfWar.elements = [];
-
-                // Refresh
-                this.addFogOfWar(currentObject);
-            }
-        }
-    }
-
-    clearFogOfWar()
-    {
-        if(this.useFogOfWar === true)
-        {
-            let currentObject   = this.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.MapManager');
-            let rawData         = this.getObjectProperty(currentObject, 'mFogOfWarRawData');
-
-            if(rawData !== null && rawData.values !== undefined)
-            {
-                let rawDataLength = rawData.values.length;
-
-                // Update fog
-                for(let i = 2; i < rawDataLength; i += 4)
-                {
-                    rawData.values[i] = 255;
-                }
-
-                // Delete old polygons
-                for(let i = 0; i < this.playerLayers.playerFogOfWar.elements.length; i++)
-                {
-                    this.playerLayers.playerFogOfWar.subLayer.removeLayer(this.playerLayers.playerFogOfWar.elements[i]);
-                }
-                this.playerLayers.playerFogOfWar.elements = [];
-
-                // Refresh
-                this.addFogOfWar(currentObject);
             }
         }
     }

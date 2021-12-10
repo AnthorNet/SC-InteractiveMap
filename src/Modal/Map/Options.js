@@ -401,11 +401,11 @@ export default class Modal_Map_Options
         });
 
         $('#resetFogOfWar').on('click', () => {
-            this.baseLayout.resetFogOfWar();
+            this.baseLayout.mapSubSystem.resetFogOfWar();
         });
 
         $('#clearFogOfWar').on('click', () => {
-            this.baseLayout.clearFogOfWar();
+            this.baseLayout.mapSubSystem.clearFogOfWar();
         });
 
         $('#resetAllGameProgression').on('click', () => {

@@ -828,6 +828,10 @@ export default class SaveParser_Write
 
             case 'ArrayProperty':
                 let currentArrayPropertyCount    = currentProperty.value.values.length;
+                    if(currentProperty.name === 'mFogOfWarRawData')
+                    {
+                        currentArrayPropertyCount *= 4;
+                    }
 
                 property += this.writeString(currentProperty.value.type, false);
                 property += this.writeByte(0, false);
@@ -836,7 +840,20 @@ export default class SaveParser_Write
                 switch(currentProperty.value.type)
                 {
                     case 'ByteProperty':
-                        property += this.writeBytesArray(currentProperty.value.values);
+                        switch(currentProperty.name)
+                        {
+                            case 'mFogOfWarRawData':
+                                for(let i = 0; i < (currentArrayPropertyCount / 4); i++)
+                                {
+                                    property += this.writeByte(0);
+                                    property += this.writeByte(0);
+                                    property += this.writeByte(currentProperty.value.values[i]);
+                                    property += this.writeByte(255);
+                                }
+                                break;
+                            default:
+                                property += this.writeBytesArray(currentProperty.value.values);
+                        }
                         break;
 
                     case 'IntProperty':

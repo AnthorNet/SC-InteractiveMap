@@ -748,9 +748,22 @@ export default class SaveParser_Read
                 switch(currentProperty.value.type)
                 {
                     case 'ByteProperty':
-                        for(let i = 0; i < currentArrayPropertyCount; i++)
+                        switch(currentProperty.name)
                         {
-                            currentProperty.value.values.push(this.readByte());
+                            case 'mFogOfWarRawData':
+                                for(let i = 0; i < (currentArrayPropertyCount / 4); i++)
+                                {
+                                    this.readByte(); // 0
+                                    this.readByte(); // 0
+                                    currentProperty.value.values.push(this.readByte());
+                                    this.readByte(); // 255
+                                }
+                                break;
+                            default:
+                                for(let i = 0; i < currentArrayPropertyCount; i++)
+                                {
+                                    currentProperty.value.values.push(this.readByte());
+                                }
                         }
                         break;
 
