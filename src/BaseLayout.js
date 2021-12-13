@@ -4920,7 +4920,7 @@ export default class BaseLayout
             {
                 if(form !== null && form.clockSpeed !== null && form.useOwnPowershards !== null)
                 {
-                    let clockSpeed          = Math.max(1, Math.min(Math.round(form.clockSpeed), 250));
+                    let clockSpeed          = Math.max(1, Math.min(Math.round(form.clockSpeed * 1000000) / 1000000, 250));
                     let totalPowerShards    = Math.ceil((clockSpeed - 100) / 50);
 
                     if(totalPowerShards > 0)
