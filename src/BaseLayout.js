@@ -84,7 +84,7 @@ export default class BaseLayout
         this.modsData                           = null;
         this.modsUrl                            = options.modsUrl;
 
-        this.language                           = options.language;
+        this.language                           = options.language.split('_').unshift(); // Handle pt_BR locales
         this.translate                          = options.translate;
 
         this.collectedHardDrives                = new HardDrives({language: options.language});
