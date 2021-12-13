@@ -67,6 +67,17 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             text        : this.baseLayout.players[currentObject.pathName].getDisplayName()
                         });
+                        contextMenu.push({
+                            icon        : 'fa-arrows-alt',
+                            text        : 'Update position',
+                            callback    : Modal_Object_Position.getHTML
+                        });
+                        contextMenu.push('-');
+                        contextMenu.push({
+                            icon    : 'fa-box',
+                            text    : 'Edit inventory',
+                            callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
+                        });
                         break;
                     case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
                         let mDecorationDescriptor           = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');

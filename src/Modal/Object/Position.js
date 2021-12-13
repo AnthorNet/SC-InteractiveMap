@@ -8,6 +8,18 @@ export default class Modal_Object_Position
         let baseLayout          = marker.baseLayout;
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let teleportPlayer      = false;
+
+        // Switch player object
+        if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
+        {
+            let mOwnedPawn = baseLayout.players[marker.relatedTarget.options.pathName].getOwnedPawn();
+                if(mOwnedPawn !== null)
+                {
+                    teleportPlayer  = true;
+                    currentObject   = mOwnedPawn;
+                }
+        }
 
         let currentRotation     = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
         let currentRotationYaw  = Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.yaw) * 1000) / 1000
@@ -112,8 +124,15 @@ export default class Modal_Object_Position
                                 newTransform.rotation = BaseLayout_Math.getEulerToQuaternion({roll: form.roll, pitch: form.pitch, yaw: form.yaw});
                             }
 
-                    baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: JSON.parse(JSON.stringify(newTransform)), object: currentObject});
-                    baseLayout.updateRadioactivityLayer();
+                    if(teleportPlayer !== false)
+                    {
+                        baseLayout.players[marker.relatedTarget.options.pathName].teleportTo(newTransform, 0);
+                    }
+                    else
+                    {
+                        baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: JSON.parse(JSON.stringify(newTransform)), object: currentObject});
+                        baseLayout.updateRadioactivityLayer();
+                    }
                 }
             }
         });

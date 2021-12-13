@@ -1908,7 +1908,7 @@ export default class BaseLayout
     teleportPlayer(marker)
     {
         let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let newTranslation  = JSON.parse(JSON.stringify(currentObject.transform.translation));
+        let newTransform    = JSON.parse(JSON.stringify(currentObject.transform));
 
         let selectOptions   = [];
             for(let pathName in this.players)
@@ -1921,7 +1921,7 @@ export default class BaseLayout
 
             if(selectOptions.length === 1) // Don't ask if there is only one player on the map...
             {
-                return this.players[selectOptions[0].value].teleportTo(newTranslation);
+                return this.players[selectOptions[0].value].teleportTo(newTransform);
             }
 
         BaseLayout_Modal.form({
@@ -1938,7 +1938,7 @@ export default class BaseLayout
             {
                 if(form !== null && form.playerPathName !== null)
                 {
-                    return this.players[form.playerPathName].teleportTo(newTranslation);
+                    return this.players[form.playerPathName].teleportTo(newTransform);
                 }
             }.bind(this)
         });
@@ -1947,16 +1947,34 @@ export default class BaseLayout
     editPlayerStorageBuildingInventory(marker, inventoryProperty = 'mStorageInventory')
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
-        {
-            inventoryProperty   = 'mInventory';
-        }
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
+            {
+                inventoryProperty   = 'mInventory';
+            }
+            if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
+            {
+                let mOwnedPawn = this.players[marker.relatedTarget.options.pathName].getOwnedPawn();
+                    if(mOwnedPawn !== null)
+                    {
+                        inventoryProperty   = 'mInventory';
+                        currentObject       = mOwnedPawn;
+                    }
+            }
 
         let inventory           = this.getObjectInventory(currentObject, inventoryProperty);
         let inventoryOptions    = [];
         let selectOptions       = this.generateInventoryOptions(currentObject);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
+            if(buildingData === null)
+            {
+                buildingData            = {};
+                buildingData.maxSlot    = inventory.length;
+
+                if(currentObject.className === '/Game/FactoryGame/Character/Player/Char_Player.Char_Player_C')
+                {
+                    buildingData.name = this.players[marker.relatedTarget.options.pathName].getDisplayName();
+                }
+            }
 
         for(let i = 0; i < buildingData.maxSlot; i++)
         {
@@ -4480,22 +4498,22 @@ export default class BaseLayout
                     let inventoryObject = this.saveGameParser.getTargetObject(inventoryPathName.pathName);
                         if(inventoryObject !== null)
                         {
-                            let currentInventory = this.getObjectProperty(inventoryObject, 'mInventoryStacks');
-                                if(currentInventory !== null)
+                            let mInventoryStacks = this.getObjectProperty(inventoryObject, 'mInventoryStacks');
+                                if(mInventoryStacks !== null)
                                 {
                                     let radioactivityItems  = [];
-                                        for(let k = 0; k < currentInventory.values.length; k++)
+                                        for(let k = 0; k < mInventoryStacks.values.length; k++)
                                         {
-                                            if(currentInventory.values[k][0].value.itemName !== '')
+                                            if(mInventoryStacks.values[k][0].value.itemName !== '')
                                             {
                                                 // Rename item
-                                                let currentItemData = this.getItemDataFromClassName(currentInventory.values[k][0].value.itemName, false);
+                                                let currentItemData = this.getItemDataFromClassName(mInventoryStacks.values[k][0].value.itemName, false);
                                                     if(currentItemData !== null)
                                                     {
                                                         if(currentItemData.radioactiveDecay !== undefined)
                                                         {
                                                             radioactivityItems.push({
-                                                                qty                 : currentInventory.values[k][0].value.properties[0].value,
+                                                                qty                 : mInventoryStacks.values[k][0].value.properties[0].value,
                                                                 radioactiveDecay    : currentItemData.radioactiveDecay
                                                             });
                                                         }
@@ -4516,58 +4534,50 @@ export default class BaseLayout
 
         return;
     }
-    getObjectTargetInventory(inventoryObject)
+    getObjectTargetInventory(currentObject)
     {
-        let inventoryArray      = [];
-
-        if(inventoryObject.properties !== undefined)
-        {
-            for(let j = 0; j < inventoryObject.properties.length; j++)
+        let inventory               = [];
+        let mInventoryStacks        = this.getObjectProperty(currentObject, 'mInventoryStacks');
+            if(mInventoryStacks !== null)
             {
-                if(inventoryObject.properties[j].name === 'mInventoryStacks')
+                let mActiveEquipmentIndex   = this.getObjectProperty(currentObject, 'mActiveEquipmentIndex');
+
+                for(let k = 0; k < mInventoryStacks.values.length; k++)
                 {
-                    let currentInventory = inventoryObject.properties[j].value.values;
-
-                    for(let k = 0; k < currentInventory.length; k++)
+                    if(mInventoryStacks.values[k][0].value.itemName !== '')
                     {
-                        if(currentInventory[k][0].value.itemName !== '')
-                        {
-                            // Rename item
-                            let currentItemData = this.getItemDataFromClassName(currentInventory[k][0].value.itemName);
-                                if(currentItemData !== null)
-                                {
-                                    inventoryArray.push({
-                                        rawClassName    : currentInventory[k][0].value.itemName,
-                                        className       : currentItemData.className,
-                                        category        : currentItemData.category,
-                                        name            : currentItemData.name,
-                                        image           : currentItemData.image,
-                                        qty             : currentInventory[k][0].value.properties[0].value
-                                    });
-                                }
-                        }
-                        else
-                        {
-                            inventoryArray.push(null);
-                        }
+                        // Rename item
+                        let currentItemData = this.getItemDataFromClassName(mInventoryStacks.values[k][0].value.itemName);
+                            if(currentItemData !== null)
+                            {
+                                inventory.push({
+                                    rawClassName    : mInventoryStacks.values[k][0].value.itemName,
+                                    className       : currentItemData.className,
+                                    category        : currentItemData.category,
+                                    name            : currentItemData.name,
+                                    image           : currentItemData.image,
+                                    qty             : mInventoryStacks.values[k][0].value.properties[0].value,
+                                    isActive        : ((mActiveEquipmentIndex !== null && mActiveEquipmentIndex === k) ? true : false)
+                                });
+                            }
                     }
-
-                    return inventoryArray;
+                    else
+                    {
+                        inventory.push(null);
+                    }
                 }
             }
-        }
 
-        return inventoryArray;
+        return inventory;
     }
 
     setInventoryTableSlot(inventory, maxSlot = null, cellWidth = 48, extraClass = '', nullItemImage = null, maxInLine = 8)
     {
         let html        = '';
-
-        if(maxSlot === null)
-        {
-            maxSlot = inventory.length;
-        }
+            if(maxSlot === null)
+            {
+                maxSlot = inventory.length;
+            }
 
         for(let i = 0; i < maxSlot; i++)
         {
@@ -4622,19 +4632,25 @@ export default class BaseLayout
             return '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background-color: #FFFFFF;"></div>';
         }
 
-        let itemQty     = (inventory.qty !== undefined) ? inventory.qty : null;
-        let itemUnits   = '';
-        let itemStyle   = 'border-radius: 5px;';
+        let itemQty         = (inventory.qty !== undefined) ? inventory.qty : null;
+        let itemUnits       = '';
+        let itemStyle       = 'border-radius: 5px;';
+            if(itemQty !== null && inventory.category !== undefined && (inventory.category === 'liquid' || inventory.category === 'gas'))
+            {
+                itemQty     = Math.round(Math.round(itemQty) / 1000);
+                itemUnits   = 'm³';
+                itemStyle   = 'border-radius: 50%;';
+            }
 
-        if(itemQty !== null && inventory.category !== undefined && (inventory.category === 'liquid' || inventory.category === 'gas'))
-        {
-            itemQty     = Math.round(Math.round(itemQty) / 1000);
-            itemUnits   = 'm³';
-            itemStyle   = 'border-radius: 50%;';
-        }
+
+        let isActiveStyle   = 'border: 1px solid #000000;padding: 5px;';
+            if(inventory.isActive !== undefined && inventory.isActive === true)
+            {
+                isActiveStyle   = 'border: 3px solid #F39C12;padding: 3px;';
+            }
 
         let html = '';
-            html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;' + itemStyle + 'padding: 5px;background-color: #FFFFFF;"';
+            html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;' + isActiveStyle + itemStyle + 'background-color: #FFFFFF;"';
 
             if(inventory.name !== undefined)
             {

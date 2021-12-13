@@ -80,13 +80,13 @@ export default class SubSystem_Player
         return null;
     }
 
-    teleportTo(translation, zOffset = 400)
+    teleportTo(transform, zOffset = 400)
     {
         let mOwnedPawn = this.getOwnedPawn();
             if(mOwnedPawn !== null)
             {
-                mOwnedPawn.transform.translation       = translation;
-                mOwnedPawn.transform.translation[2]   += zOffset;
+                mOwnedPawn.transform                    = transform;
+                mOwnedPawn.transform.translation[2]    += zOffset;
 
                 this.baseLayout.deleteObjectProperty(this.player, 'mSavedDrivenVehicle');
 

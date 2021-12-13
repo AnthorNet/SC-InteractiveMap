@@ -62,6 +62,21 @@ export default class Modal_Debug
                         else
                         {
                             extraPathName.push(extraProperty.pathName);
+
+                            if(extraProperties[i] === 'mOwnedPawn')
+                            {
+                                let mOwnedPawn = baseLayout.saveGameParser.getTargetObject(extraProperty.pathName);
+                                    if(mOwnedPawn !== null)
+                                    {
+                                        if(mOwnedPawn.children !== undefined)
+                                        {
+                                            for(let j = 0; j < mOwnedPawn.children.length; j++)
+                                            {
+                                                extraPathName.push(mOwnedPawn.children[j].pathName);
+                                            }
+                                        }
+                                    }
+                            }
                         }
                     }
             }
@@ -300,7 +315,7 @@ export default class Modal_Debug
 
             return '{}';
         }
-        
+
         return '';
     }
 }

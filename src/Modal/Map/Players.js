@@ -51,11 +51,12 @@ export default class Modal_Map_Players
                                 inventoryHtml.push('<div class="col-6">');
                                     inventoryHtml.push('<div style="position: relative;padding-top: 100%;background: url(' + this.baseLayout.staticUrl + '/img/charSilhouette.png) center no-repeat #666;background-size: contain;border: 1px solid #000; border-radius: 5px;">');
 
-                                    let backSlot    = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.BackSlot');
-                                    let armSlot     = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.ArmSlot');
 
-                                    inventoryHtml.push('<div style="position: absolute;margin-top: -100%;padding-top: 25%;padding-left: 5%;">' + this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(backSlot), null, 64) + '</div>');
-                                    inventoryHtml.push('<div style="position: absolute;margin-top: -100%;padding-top: 50%;padding-left: 5%;">' + this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(armSlot), null, 64, '', null, 4) + '</div>');
+                                    let armSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.ArmSlot');
+                                        inventoryHtml.push('<div style="position: absolute;margin-top: -100%;padding-top: 50%;padding-left: 5%;">' + this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(armSlot), null, 64, '', null, 4) + '</div>');
+
+                                    let backSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.BackSlot');
+                                        inventoryHtml.push('<div style="position: absolute;margin-top: -100%;padding-top: 25%;padding-left: 5%;">' + this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(backSlot), null, 64) + '</div>');
 
                                     inventoryHtml.push('</div>');
 
