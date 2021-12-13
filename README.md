@@ -51,5 +51,9 @@ server {
     ssl_dhparam             /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
     add_header              Access-Control-Allow-Origin *; # Make the save loadable by the map
+
+    if($request_method = OPTIONS){
+        return 200;
+    }
  }
 ```

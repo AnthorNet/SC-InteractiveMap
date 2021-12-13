@@ -1,3 +1,5 @@
+/* global Intl, Infinity */
+
 export default class SubSystem_Map
 {
     constructor(options)
@@ -165,5 +167,122 @@ export default class SubSystem_Map
                     this.baseLayout.playerLayers.playerFogOfWar.elements = [];
                 }
         }
+    }
+
+
+
+    getMinimap(data)
+    {
+        let html                = [];
+        let containerSize       = 512;
+        let minimapSize         = 2048;
+        let minimapRatio        = 1;
+
+        let westEastLength      = Math.abs(this.baseLayout.satisfactoryMap.mappingBoundEast - this.baseLayout.satisfactoryMap.mappingBoundWest) - (this.baseLayout.satisfactoryMap.westOffset * 2);
+        let northSouthLength    = Math.abs(this.baseLayout.satisfactoryMap.mappingBoundSouth - this.baseLayout.satisfactoryMap.mappingBoundNorth) - (this.baseLayout.satisfactoryMap.northOffset * 2);
+
+            // Calculate minimap boundaries
+            let boundaries = {
+                    xMin: this.baseLayout.satisfactoryMap.mappingBoundWest,
+                    xMax: this.baseLayout.satisfactoryMap.mappingBoundEast,
+
+                    yMin: this.baseLayout.satisfactoryMap.mappingBoundNorth,
+                    yMax: this.baseLayout.satisfactoryMap.mappingBoundSouth
+                };
+
+            if(data !== null)
+            {
+                boundaries = {xMin: Infinity, xMax: -Infinity, yMin: Infinity, yMax: -Infinity};
+                for(let i = 0; i < (data.length - 1); i++)
+                {
+                    boundaries.xMin = Math.min(boundaries.xMin, data[i][0]);
+                    boundaries.xMax = Math.max(boundaries.xMax, data[i][0]);
+                    boundaries.yMin = Math.min(boundaries.yMin, data[i][1]);
+                    boundaries.yMax = Math.max(boundaries.yMax, data[i][1]);
+                }
+
+                // Add padding to boundaries
+                let xPadding            = (boundaries.xMax - boundaries.xMin) * 0.2;
+                let yPadding            = (boundaries.yMax - boundaries.yMin) * 0.2;
+                    boundaries.xMin    -= xPadding;
+                    boundaries.xMax    += xPadding;
+                    boundaries.yMin    -= yPadding;
+                    boundaries.yMax    += yPadding;
+
+                // Ensure a square boundaries map
+                let xLength     = (boundaries.xMax - boundaries.xMin);
+                let yLength     = (boundaries.yMax - boundaries.yMin);
+                let maxLength   = Math.max(xLength, yLength);
+                    if(xLength < maxLength)
+                    {
+                        boundaries.xMin    -= (maxLength - xLength) / 2;
+                        boundaries.xMax    += (maxLength - xLength) / 2;
+                    }
+                    if(yLength < maxLength)
+                    {
+                        boundaries.yMin    -= (maxLength - yLength) / 2;
+                        boundaries.yMax    += (maxLength - yLength) / 2;
+                    }
+
+                // Calculate lowest ratio
+                let xRatio          = Math.abs(maxLength) / westEastLength;
+                let yRatio          = Math.abs(maxLength) / northSouthLength;
+                    minimapRatio    = Math.min(minimapRatio, xRatio, yRatio) * (minimapSize / containerSize);
+            }
+
+            let backgroundSize      = (minimapSize * (1 / minimapRatio));
+            let xBoundariesOffset   = Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + boundaries.xMin;
+            let yBoundariesOffset   = Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + boundaries.yMin;
+
+            let xMiniMapOffset      = (xBoundariesOffset / westEastLength * backgroundSize);
+            let yMiniMapOffset      = (yBoundariesOffset / northSouthLength * backgroundSize);
+
+            let backgroundProperties = [];
+                backgroundProperties.push('position: relative;');
+                backgroundProperties.push('width: ' + containerSize + 'px;');
+                backgroundProperties.push('height: ' + containerSize + 'px;');
+                backgroundProperties.push('background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/backgroundGame_2048.jpg?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;');
+                backgroundProperties.push('background-size: ' + backgroundSize + 'px;');
+                backgroundProperties.push('background-origin: border-box;');
+                backgroundProperties.push('background-position-x: -' + xMiniMapOffset + 'px;');
+                backgroundProperties.push('background-position-y: -' + yMiniMapOffset + 'px;');
+
+            html.push('<div class="img-minimap border border-secondary rounded" style="' + backgroundProperties.join('') + '">');
+
+            // Generate lines SVG
+            if(data !== null)
+            {
+                let points = [];
+                    for(let i = 0; i < data.length; i++)
+                    {
+                        let x               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + data[i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
+                        let y               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + data[i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
+                            points.push(x + ',' + y);
+                    }
+
+                html.push('<svg viewBox="0 0 ' + containerSize + ' ' + containerSize + '" xmlns="http://www.w3.org/2000/svg" style="position: absolute;"><polyline points="' + points.join(' ') + '" stroke="#FFC0CB" stroke-width="2" fill="none" /></svg>');
+            }
+
+            // Generate icons
+            if(data !== null)
+            {
+                for(let i = 0; i < (data.length - 1); i++)
+                {
+                    let x           = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + data[i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
+                    let y           = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + data[i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
+
+                    let iconSize    = 20;
+                    let style       = 'text-align: center;border: 2px solid #777777;line-height:' + (iconSize - 4) + 'px;border-radius: 4px;font-size: 12px;z-index: 1;';
+
+                    html.push('<span data-stop="' + i + '" style="position: absolute;margin-top: ' + (y - (iconSize / 2)) + 'px;margin-left: ' + (x - (iconSize / 2)) + 'px;width: ' + iconSize + 'px;height:' + iconSize + 'px;' + style + '" class="bg-warning">');
+                    html.push(new Intl.NumberFormat(this.baseLayout.language).format(i + 1));
+                    html.push('</span>');
+                }
+            }
+
+            html.push('</div>');
+
+
+        return html.join('');
     }
 }

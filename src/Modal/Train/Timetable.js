@@ -28,9 +28,7 @@ export default class Modal_Train_Timetable
                         html.push(this.getTimeTableList());
                     html.push('</div>');
                     html.push('<div class="col-6">');
-                        html.push('<div class="img-thumbnail" style="width: 512px;height: 512px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/backgroundGame_512.jpg?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;">');
-                        html.push(this.getTimeTableIcons());
-                        html.push('</div>');
+                        html.push(this.baseLayout.mapSubSystem.getMinimap(this.getTimeTablePoints()));
                     html.push('</div>');
                 html.push('</div>');
 
@@ -112,54 +110,37 @@ export default class Modal_Train_Timetable
         return html.join('');
     }
 
-    getTimeTableIcons()
+    getTimeTablePoints()
     {
-        let html = [];
-        let mStops = this.baseLayout.getObjectProperty(this.timeTable, 'mStops');
+        let points  = [];
+        let mStops  = this.baseLayout.getObjectProperty(this.timeTable, 'mStops');
             if(mStops !== null)
             {
-                let mCurrentStop    = this.baseLayout.getObjectProperty(this.timeTable, 'mCurrentStop', 0);
-
-                    for(let j = 0; j < mStops.values.length; j++)
+                for(let j = 0; j < mStops.values.length; j++)
+                {
+                    for(let k = 0; k < mStops.values[j].length; k++)
                     {
-                        for(let k = 0; k < mStops.values[j].length; k++)
+                        if(mStops.values[j][k].name === 'Station' && mStops.values[j][k].value.pathName !== undefined)
                         {
-                            if(mStops.values[j][k].name === 'Station' && mStops.values[j][k].value.pathName !== undefined)
-                            {
-                                let trainStationIdentifier = this.baseLayout.saveGameParser.getTargetObject(mStops.values[j][k].value.pathName);
-                                    if(trainStationIdentifier !== null)
-                                    {
-                                        let mStation = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStation');
-                                            if(mStation !== null)
-                                            {
-                                                let currentStation = this.baseLayout.saveGameParser.getTargetObject(mStation.pathName);
-                                                    if(currentStation !== null)
-                                                    {
-                                                        let iconSize        = 20;
-                                                        let xMax            = Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest) + Math.abs(this.baseLayout.satisfactoryMap.mappingBoundEast);
-                                                        let yMax            = Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth) + Math.abs(this.baseLayout.satisfactoryMap.mappingBoundSouth);
-
-                                                        let x               = ((xMax - this.baseLayout.satisfactoryMap.mappingBoundEast) + currentStation.transform.translation[0]) * (512 / xMax);
-                                                        let y               = (((yMax - this.baseLayout.satisfactoryMap.mappingBoundNorth) + currentStation.transform.translation[1]) * (512 / yMax)) - 512;
-
-                                                        let style           = 'text-align: center;border: 2px solid #777777;line-height:' + (iconSize - 4) + 'px;border-radius: 4px;font-size: 12px;z-index: 1;';
-
-                                                            if(j === mCurrentStop)
-                                                            {
-
-                                                            }
-
-                                                        html.push('<span data-stop="' + j + '" style="position: absolute;margin-top: ' + (y - (iconSize / 2)) + 'px;margin-left: ' + (x - (iconSize / 2)) + 'px;width: ' + iconSize + 'px;height:' + iconSize + 'px;' + style + '" class="bg-warning">');
-                                                        html.push(new Intl.NumberFormat(this.baseLayout.language).format(j + 1));
-                                                        html.push('</span>');
-                                                    }
-                                            }
-                                    }
-                            }
+                            let trainStationIdentifier = this.baseLayout.saveGameParser.getTargetObject(mStops.values[j][k].value.pathName);
+                                if(trainStationIdentifier !== null)
+                                {
+                                    let mStation = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStation');
+                                        if(mStation !== null)
+                                        {
+                                            let currentStation = this.baseLayout.saveGameParser.getTargetObject(mStation.pathName);
+                                                if(currentStation !== null)
+                                                {
+                                                    points.push(currentStation.transform.translation);
+                                                }
+                                        }
+                                }
                         }
                     }
+                }
             }
 
-        return html.join('');
+        points.push(points[0]); // Close loop
+        return points;
     }
 }
