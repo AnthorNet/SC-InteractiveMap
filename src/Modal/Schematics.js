@@ -427,7 +427,7 @@ export default class Modal_Schematics
             html.push('<ul class="nav nav-tabs nav-fill">');
             for(let i = 0; i < categories.length; i++)
             {
-                html.push('<li class="nav-item"><span class="nav-link ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedAwesomeSink-' + i + '" style="cursor:pointer;">' + categories[i] + '</span></li>');
+                html.push('<li class="nav-item"><span class="nav-link px-3 ' + ( (selectedCategory === categories[i]) ? 'active' : '' ) + '" data-toggle="tab" href="#playerUnlockedAwesomeSink-' + i + '" style="cursor:pointer;">' + categories[i] + '</span></li>');
             }
             html.push('</ul>');
 
@@ -663,16 +663,14 @@ export default class Modal_Schematics
                                         if(
                                                this.baseLayout.schematicsData[schematicId] === undefined
                                             && schematicId !== 'Research_HardDrive_0_C'
-                                            && schematicId !== 'ResourceSink_CyberWagon_Unlock_C'
-                                            && schematicId !== 'ResourceSink_GoldenCup_C'
-                                            && schematicId !== 'ResourceSink_GoldenCart_Unlock_C'
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Customizer_Background/') === false
-                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/') === false
-                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Events/Christmas/Calendar_Schematics/Ficsmas_Schematic_SkinBundle_') === false
                                             && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/Progression/CustomizerUnlock_PipelineSwatch.CustomizerUnlock_PipelineSwatch_C'
                                             && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/ResourceSink/Patterns/CBG_PatternRemoval.CBG_PatternRemoval_C'
+                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/') === false
+                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Events/Christmas/Calendar_Schematics/Ficsmas_Schematic_SkinBundle_') === false
+                                            && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Events/Christmas/Calendar_Schematics/Ficsmas_Schematic_FingerGun_Emote.Ficsmas_Schematic_FingerGun_Emote_C'
                                         )
                                         {
                                             if(typeof Sentry !== 'undefined' && this.baseLayout.useDebug === true)
