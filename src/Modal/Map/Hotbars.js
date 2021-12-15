@@ -114,7 +114,7 @@ export default class Modal_Map_Hotbars
                                     let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[parseInt(hotbarSlot)][0].value.values[j].pathName);
                                         if(currentShortcut !== null)
                                         {
-                                            currentShortcut.properties = JSON.parse(JSON.stringify(this.clipboard[0].values[j]));s
+                                            currentShortcut.properties = JSON.parse(JSON.stringify(this.clipboard[0].values[j]));
                                         }
                                 }
 
@@ -143,6 +143,7 @@ export default class Modal_Map_Hotbars
                                         }
                                 }
 
+                                $(e.currentTarget).tooltip('dispose');
                                 this.parse(options);
                             }
                     }

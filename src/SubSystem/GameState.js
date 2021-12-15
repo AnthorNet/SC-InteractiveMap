@@ -13,6 +13,113 @@ export default class SubSystem_GameState
     }
 
     /**
+     * COLOR PRESETS
+     */
+    getPlayerColorPresets()
+    {
+        let presets                     = [];
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+            if(mPlayerGlobalColorPresets !== null)
+            {
+                for(let i = 0; i < mPlayerGlobalColorPresets.values.length; i++)
+                {
+                    let currentPresetName   = null;
+                    let currentPresetColor  = null;
+
+                        for(let j = 0; j < mPlayerGlobalColorPresets.values[i].length; j++)
+                        {
+                            if(mPlayerGlobalColorPresets.values[i][j].name === 'PresetName')
+                            {
+                                currentPresetName = mPlayerGlobalColorPresets.values[i][j].value;
+                            }
+                            if(mPlayerGlobalColorPresets.values[i][j].name === 'Color')
+                            {
+                                currentPresetColor = mPlayerGlobalColorPresets.values[i][j].value.values;
+                            }
+                        }
+
+                    if(currentPresetName !== null && currentPresetColor !== null)
+                    {
+                        presets.push({
+                            name            : currentPresetName,
+                            primaryColor    : {
+                                r : BaseLayout_Math.linearColorToRGB(currentPresetColor.r),
+                                g : BaseLayout_Math.linearColorToRGB(currentPresetColor.g),
+                                b : BaseLayout_Math.linearColorToRGB(currentPresetColor.b),
+                                a : BaseLayout_Math.linearColorToRGB(currentPresetColor.a)
+                            }
+                        });
+                    }
+                }
+            }
+
+        return presets;
+    }
+    setPlayerColorPreset(presetIndex, name, primaryColor)
+    {
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+            if(mPlayerGlobalColorPresets !== null)
+            {
+                if(mPlayerGlobalColorPresets.values[presetIndex] !== undefined)
+                {
+                    for(let j = 0; j < mPlayerGlobalColorPresets.values[presetIndex].length; j++)
+                    {
+                        if(mPlayerGlobalColorPresets.values[presetIndex][j].name === 'PresetName')
+                        {
+                            mPlayerGlobalColorPresets.values[presetIndex][j].value = name;
+                        }
+                        if(mPlayerGlobalColorPresets.values[presetIndex][j].name === 'Color')
+                        {
+                            mPlayerGlobalColorPresets.values[presetIndex][j].value.values.r   = primaryColor.r;
+                            mPlayerGlobalColorPresets.values[presetIndex][j].value.values.g   = primaryColor.g;
+                            mPlayerGlobalColorPresets.values[presetIndex][j].value.values.b   = primaryColor.b;
+                        }
+                    }
+                }
+            }
+    }
+    addPlayerColorPreset(name, primaryColor)
+    {
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+            if(mPlayerGlobalColorPresets !== null)
+            {
+                mPlayerGlobalColorPresets.values.push([
+                    {
+                        flags                       : 18,
+                        hasCultureInvariantString   : 1,
+                        historyType                 : 255,
+                        name                        : "PresetName",
+                        type                        : "TextProperty",
+                        value                       : name
+                    },
+                    {
+                        name                        : "Color",
+                        type                        : "StructProperty",
+                        value                       : {
+                            type                        : "LinearColor",
+                            values                      : primaryColor
+                        }
+                    }
+                ]);
+            }
+    }
+    deletePlayerColorPreset(presetIndex)
+    {
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+            if(mPlayerGlobalColorPresets !== null)
+            {
+                if(mPlayerGlobalColorPresets.values[presetIndex] !== undefined)
+                {
+                    mPlayerGlobalColorPresets.values.splice(presetIndex, 1);
+                }
+                if(mPlayerGlobalColorPresets.values.length === 0)
+                {
+                    this.baseLayout.deleteObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+                }
+            }
+    }
+
+    /**
      * LIGHTS COLOR
      */
     getObjectLightColor(currentObject)
