@@ -9,6 +9,7 @@ import BaseLayout_Tooltip                       from './BaseLayout/Tooltip.js';
 
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
+import SubSystem_GameState                      from './SubSystem/GameState.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
 import SubSystem_Railroad                       from './SubSystem/Railroad.js';
 import SubSystem_Map                            from './SubSystem/Map.js';
@@ -16,6 +17,7 @@ import SubSystem_Map                            from './SubSystem/Map.js';
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
 import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
 import Modal_Map_Players                        from './Modal/Map/Players.js';
+import Modal_Map_Presets                        from './Modal/Map/Presets.js';
 import Modal_Map_Options                        from './Modal/Map/Options.js';
 
 import Modal_Statistics_Game                    from './Modal/Statistics/Game.js';
@@ -318,6 +320,7 @@ export default class BaseLayout
         this.saveGameParser.load(() => {
             // Hold sub system to get better performance
             this.buildableSubSystem = new SubSystem_Buildable({baseLayout: this});
+            this.gameStateSubSystem = new SubSystem_GameState({baseLayout: this});
             this.railroadSubSystem  = new SubSystem_Railroad({baseLayout: this});
             this.mapSubSystem       = new SubSystem_Map({baseLayout: this});
 
@@ -1177,6 +1180,10 @@ export default class BaseLayout
                         case '#statisticsModalCollectables':
                             let statisticsCollectables = new Modal_Map_Collectables({baseLayout: this});
                                 statisticsCollectables.parse();
+                            break;
+                        case '#statisticsPlayerPresets':
+                            let statisticsPresets = new Modal_Map_Presets({baseLayout: this});
+                                statisticsPresets.parse();
                             break;
                         case '#statisticsModalOptions':
                             let mapOptions = new Modal_Map_Options({baseLayout: this});

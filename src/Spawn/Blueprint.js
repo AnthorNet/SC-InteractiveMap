@@ -1095,16 +1095,15 @@ L.Control.ClipboardControl = L.Control.extend({
 
                         reader.onload = function(){
                             let restored = null;
-
-                            try
-                            {
-                                restored = JSON.parse(pako.inflate(reader.result, { to: 'string' }));
-                            }
-                            catch(error)
-                            {
-                                restored = null;
-                                console.error(error);
-                            }
+                                try
+                                {
+                                    restored = JSON.parse(pako.inflate(reader.result, { to: 'string' }));
+                                }
+                                catch(error)
+                                {
+                                    restored = null;
+                                    console.error(error);
+                                }
 
                             if(restored !== null)
                             {

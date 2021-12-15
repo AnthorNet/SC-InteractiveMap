@@ -258,19 +258,15 @@ export default class Building_Light
 
     static getHaloGradient(baseLayout, currentObject)
     {
-        let gradientStops                   = {};
-        let intensity                       = Building_Light.getIntensity(baseLayout, currentObject);
+        let gradientStops       = {};
+        let intensity           = Building_Light.getIntensity(baseLayout, currentObject);
+        let color               = baseLayout.gameStateSubSystem.getObjectLightColor(currentObject);
 
-        let gameStateSubSystem              = new SubSystem_GameState({baseLayout: baseLayout});
-        let color                           = gameStateSubSystem.getObjectLightColor(currentObject);
-
-            gradientStops[0]              = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 1)';
-
+            gradientStops[0]    = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 1)';
             if(intensity < 100)
             {
                 gradientStops[intensity / 100]  = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 0.2)';
             }
-
             gradientStops[1]            = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 0)';
 
         return gradientStops;
@@ -314,9 +310,8 @@ export default class Building_Light
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-        let gameStateSubSystem  = new SubSystem_GameState({baseLayout: baseLayout});
         let slotIndex           = Building_Light.getColorSlotIndex(baseLayout, currentObject);
-        let playerColors        = gameStateSubSystem.getPlayerLightColorSlots();
+        let playerColors        = baseLayout.gameStateSubSystem.getPlayerLightColorSlots();
         let selectOptions       = [];
 
         for(let slotIndex = 0; slotIndex < SubSystem_GameState.totalLightColorSlots; slotIndex++)

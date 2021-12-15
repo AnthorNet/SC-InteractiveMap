@@ -27,47 +27,69 @@ export default class SubSystem_GameState
         return this.getDefaultLightColorSlot(colorSlot);
     }
 
+
+
     getPlayerLightColorSlots()
     {
-        let totalColorSlot                  = SubSystem_GameState.totalLightColorSlots;
-        let playerColors                    = [];
-        let mBuildableLightColorSlots       = this.getLightColorSlots();
+        if(this.playerLightColorSlots === undefined || this.playerLightColorSlots === null)
+        {
+            let totalColorSlot                  = SubSystem_GameState.totalLightColorSlots;
+            let playerColors                    = [];
+            let mBuildableLightColorSlots       = this.getLightColorSlots();
 
-            if(mBuildableLightColorSlots === null)
-            {
-                mBuildableLightColorSlots = {
-                    name                : "mBuildableLightColorSlots",
-                    structureName       : "mBuildableLightColorSlots",
-                    structureSubType    : "LinearColor",
-                    structureType       : "StructProperty",
-                    type                : "ArrayProperty",
-                    value: {type: "StructProperty", values: []}
-                };
+                if(mBuildableLightColorSlots === null)
+                {
+                    mBuildableLightColorSlots = {
+                        name                : "mBuildableLightColorSlots",
+                        structureName       : "mBuildableLightColorSlots",
+                        structureSubType    : "LinearColor",
+                        structureType       : "StructProperty",
+                        type                : "ArrayProperty",
+                        value: {type: "StructProperty", values: []}
+                    };
+                    for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
+                    {
+                        mBuildableLightColorSlots.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultLightColorSlot(slotIndex, true)));
+                    }
+
+                    this.gameState.properties.push(mBuildableLightColorSlots);
+                    return this.getPlayerLightColorSlots();
+                }
+
                 for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
                 {
-                    mBuildableLightColorSlots.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultLightColorSlot(slotIndex, true)));
+                    playerColors.push(this.getDefaultLightColorSlot(slotIndex));
+
+                    if(mBuildableLightColorSlots !== null)
+                    {
+                        playerColors[slotIndex] = {
+                            r : BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[slotIndex].r),
+                            g : BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[slotIndex].g),
+                            b : BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[slotIndex].b),
+                            a : BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[slotIndex].a)
+                        };
+                    }
                 }
 
-                this.gameState.properties.push(mBuildableLightColorSlots);
-                mBuildableLightColorSlots = this.getLightColorSlots();
-            }
+                this.playerLightColorSlots = playerColors;
+        }
 
-            for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
+        return this.playerLightColorSlots;
+    }
+
+    setPlayerLightColorSlot(slotIndex, primaryColor)
+    {
+        let mBuildableLightColorSlots   = this.getLightColorSlots();
+            if(mBuildableLightColorSlots !== null)
             {
-                playerColors.push(this.getDefaultLightColorSlot(slotIndex));
+                mBuildableLightColorSlots.values[slotIndex].r   = primaryColor.r;
+                mBuildableLightColorSlots.values[slotIndex].g   = primaryColor.g;
+                mBuildableLightColorSlots.values[slotIndex].b   = primaryColor.b;
 
-                if(mBuildableLightColorSlots !== null)
-                {
-                    playerColors[slotIndex] = {
-                        r : BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[slotIndex].r),
-                        g : BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[slotIndex].g),
-                        b : BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[slotIndex].b),
-                        a : BaseLayout_Math.linearColorToRGB(mBuildableLightColorSlots.values[slotIndex].a)
-                    };
-                }
+
             }
 
-        return playerColors;
+        this.playerLightColorSlots = null;
     }
 
     getLightColorSlots()

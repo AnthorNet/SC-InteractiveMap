@@ -8,14 +8,13 @@ export default class Modal_LightColorSlots
     constructor(options)
     {
         this.baseLayout         = options.baseLayout;
-        this.gameStateSubSystem = new SubSystem_GameState({baseLayout: this.baseLayout});
     }
 
     parse()
     {
         $('#genericModal .modal-title').empty().html(this.baseLayout.translate._('GLOBAL\\Light color slots'));
         let html            = [];
-        let playerColors    = this.gameStateSubSystem.getPlayerLightColorSlots();
+        let playerColors    = this.baseLayout.gameStateSubSystem.getPlayerLightColorSlots();
             for(let slotIndex = 0; slotIndex < SubSystem_GameState.totalLightColorSlots; slotIndex++)
             {
                 if(slotIndex % 3 === 0)
@@ -96,17 +95,15 @@ export default class Modal_LightColorSlots
             let style                       = 'rgb(' + lightColorR + ', ' + lightColorG + ', ' + lightColorB + ')';
                 $('#genericModal .selectColorSlot.active').css('background', style);
 
-            let slotIndex                   = parseInt($('#genericModal .selectColorSlot.active').attr('data-slot'));
-
-            let mBuildableLightColorSlots   = this.gameStateSubSystem.getLightColorSlots();
-                if(mBuildableLightColorSlots !== null)
+            this.baseLayout.gameStateSubSystem.setPlayerLightColorSlot(
+                parseInt($('#genericModal .selectColorSlot.active').attr('data-slot')),
                 {
-                    mBuildableLightColorSlots.values[slotIndex].r   = BaseLayout_Math.RGBToLinearColor(lightColorR);
-                    mBuildableLightColorSlots.values[slotIndex].g   = BaseLayout_Math.RGBToLinearColor(lightColorG);
-                    mBuildableLightColorSlots.values[slotIndex].b   = BaseLayout_Math.RGBToLinearColor(lightColorB);
-
-                    playerColors    = this.gameStateSubSystem.getPlayerLightColorSlots(); // Refresh!
+                    r : BaseLayout_Math.RGBToLinearColor(lightColorR),
+                    g : BaseLayout_Math.RGBToLinearColor(lightColorG),
+                    b : BaseLayout_Math.RGBToLinearColor(lightColorB),
                 }
+            );
+            playerColors = this.baseLayout.gameStateSubSystem.getPlayerLightColorSlots(); // Refresh!
         });
         $('#lightColorInputHex').on('change keyup input', function(){
             let hexColor                        = $(this).val();
@@ -150,7 +147,7 @@ export default class Modal_LightColorSlots
         });
         $('#resetLightColorSlot').on('click', () => {
             let slotIndex                 = parseInt($('#genericModal .selectColorSlot.active').attr('data-slot'));
-            let lightColor                = this.gameStateSubSystem.getDefaultLightColorSlot(slotIndex);
+            let lightColor                = this.baseLayout.gameStateSubSystem.getDefaultLightColorSlot(slotIndex);
 
             lightColorPicker.color.rgb    = {r: lightColor.r, g: lightColor.g, b: lightColor.b};
 
