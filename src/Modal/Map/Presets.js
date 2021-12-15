@@ -13,42 +13,44 @@ export default class Modal_Map_Presets
     {
         $('#statisticsPlayerPresets').empty();
 
-        let html    = [];
+        let addButtonHtml = [];
+            addButtonHtml.push('<div class="row mt-3">');
+                addButtonHtml.push('<div class="col-12">');
+                    addButtonHtml.push('<div class="btn btn-success w-100 text-center btn-add"><i class="fas fa-plus mr-1"></i> Add a new color preset</div>');
+                addButtonHtml.push('</div>');
+            addButtonHtml.push('</div>');
+
         let presets = this.baseLayout.gameStateSubSystem.getPlayerColorPresets();
-
-            if(presets !== null)
+            if(presets.length > 0)
             {
-                for(let i = 0; i < presets.length; i++)
-                {
-                    if(i > 0)
+                let html    = [];
+                    for(let i = 0; i < presets.length; i++)
                     {
-                        html.push('<hr class="border-secondary">');
-                    }
+                        if(i > 0)
+                        {
+                            html.push('<hr class="border-secondary">');
+                        }
 
-                    let style = [];
-                        style.push('background: rgb(' + presets[i].primaryColor.r + ', ' + presets[i].primaryColor.g + ', ' + presets[i].primaryColor.b + ');');
-                        style.push('position: relative;height: 32px;border-radius: 5px;margin: 2px;');
-                        style.push(((i === activePreset) ? 'border: 3px solid #FFF;' : 'border: 1px solid #000;'));
-                        style.push('cursor: pointer;');
+                        let style = [];
+                            style.push('background: rgb(' + presets[i].primaryColor.r + ', ' + presets[i].primaryColor.g + ', ' + presets[i].primaryColor.b + ');');
+                            style.push('position: relative;height: 32px;border-radius: 5px;margin: 2px;');
+                            style.push(((i === activePreset) ? 'border: 3px solid #FFF;' : 'border: 1px solid #000;'));
+                            style.push('cursor: pointer;');
 
-                    html.push('<div class="row align-items-center">');
-                        html.push('<div class="col-7"><h5 class="mb-0">' + presets[i].name + '</h5></div>');
-                        html.push('<div class="col-3">');
-                            html.push('<div class="d-flex flex-row selectColorPreset ' + ((i === activePreset) ? 'active ' : '') + 'align-items-center" style="' + style.join('') + '" data-preset="' + i + '">');
+                        html.push('<div class="row align-items-center">');
+                            html.push('<div class="col-7"><h5 class="mb-0">' + presets[i].name + '</h5></div>');
+                            html.push('<div class="col-3">');
+                                html.push('<div class="d-flex flex-row selectColorPreset ' + ((i === activePreset) ? 'active ' : '') + 'align-items-center" style="' + style.join('') + '" data-preset="' + i + '">');
+                                html.push('</div>');
+                            html.push('</div>');
+                            html.push('<div class="col-2 text-center">');
+                                //html.push('<span class="btn btn-secondary mr-1 btn-copy" data-hover="tooltip" title="Copy preset"><i class="fas fa-copy"></i></span>');
+                                html.push('<span class="btn btn-danger ml-1 btn-delete" data-hover="tooltip" title="Delete preset"><i class="fas fa-trash"></i></span>');
                             html.push('</div>');
                         html.push('</div>');
-                        html.push('<div class="col-2 text-center">');
-                            //html.push('<span class="btn btn-secondary mr-1 btn-copy" data-hover="tooltip" title="Copy preset"><i class="fas fa-copy"></i></span>');
-                            html.push('<span class="btn btn-danger ml-1 btn-delete" data-hover="tooltip" title="Delete preset"><i class="fas fa-trash"></i></span>');
-                        html.push('</div>');
-                    html.push('</div>');
-                }
+                    }
 
-                html.push('<div class="row mt-3">');
-                    html.push('<div class="col-12">');
-                        html.push('<div class="btn btn-success w-100 text-center btn-add"><i class="fas fa-plus mr-1"></i> Add a new color preset</div>');
-                    html.push('</div>');
-                html.push('</div>');
+                html.push(addButtonHtml.join(''));
 
                 $('#statisticsPlayerPresets').html('<div class="row">'
                     + '  <div class="col-7 align-self-center">' + html.join('') + '</div>'
@@ -168,20 +170,28 @@ export default class Modal_Map_Presets
                     this.baseLayout.gameStateSubSystem.deletePlayerColorPreset(
                         parseInt($(e.target).closest('.row').find('[data-preset]').attr('data-preset'))
                     );
-                    this.parse();
-                }.bind(this));
 
-                $('#statisticsPlayerPresets .btn-add').on('click', function(e){
-                    this.baseLayout.gameStateSubSystem.addPlayerColorPreset(
-                        'New color preset',
-                        {
-                            r : BaseLayout_Math.RGBToLinearColor(250),
-                            g : BaseLayout_Math.RGBToLinearColor(149),
-                            b : BaseLayout_Math.RGBToLinearColor(73),
-                        }
-                    );
+                    $(e.currentTarget).tooltip('dispose');
                     this.parse();
                 }.bind(this));
             }
+            else
+            {
+                $('#statisticsPlayerPresets').html('<div class="row" style="height: 492px;"><div class="col-7 align-self-center">' + addButtonHtml.join('') + '</div></div>');
+            }
+
+        $('#statisticsPlayerPresets .btn-add').on('click', function(e){
+            this.baseLayout.gameStateSubSystem.addPlayerColorPreset(
+                'New color preset',
+                {
+                    r : BaseLayout_Math.RGBToLinearColor(250),
+                    g : BaseLayout_Math.RGBToLinearColor(149),
+                    b : BaseLayout_Math.RGBToLinearColor(73),
+                }
+            );
+
+            let presets = this.baseLayout.gameStateSubSystem.getPlayerColorPresets();
+                this.parse(presets.length - 1);
+        }.bind(this));
     }
 }

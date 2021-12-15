@@ -81,27 +81,38 @@ export default class SubSystem_GameState
     addPlayerColorPreset(name, primaryColor)
     {
         let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
-            if(mPlayerGlobalColorPresets !== null)
+            if(mPlayerGlobalColorPresets === null)
             {
-                mPlayerGlobalColorPresets.values.push([
-                    {
-                        flags                       : 18,
-                        hasCultureInvariantString   : 1,
-                        historyType                 : 255,
-                        name                        : "PresetName",
-                        type                        : "TextProperty",
-                        value                       : name
-                    },
-                    {
-                        name                        : "Color",
-                        type                        : "StructProperty",
-                        value                       : {
-                            type                        : "LinearColor",
-                            values                      : primaryColor
-                        }
-                    }
-                ]);
+                this.gameState.properties.push({
+                    name                : "mPlayerGlobalColorPresets",
+                    structureName       : "mPlayerGlobalColorPresets",
+                    structureSubType    : "GlobalColorPreset",
+                    structureType       : "StructProperty",
+                    type                : "ArrayProperty",
+                    value               : {type: 'StructProperty', values: []}
+                });
+
+                return this.addPlayerColorPreset(name, primaryColor);
             }
+
+            mPlayerGlobalColorPresets.values.push([
+                {
+                    flags                       : 18,
+                    hasCultureInvariantString   : 1,
+                    historyType                 : 255,
+                    name                        : "PresetName",
+                    type                        : "TextProperty",
+                    value                       : name
+                },
+                {
+                    name                        : "Color",
+                    type                        : "StructProperty",
+                    value                       : {
+                        type                        : "LinearColor",
+                        values                      : primaryColor
+                    }
+                }
+            ]);
     }
     deletePlayerColorPreset(presetIndex)
     {
