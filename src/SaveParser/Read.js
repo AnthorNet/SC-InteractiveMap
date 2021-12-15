@@ -105,7 +105,10 @@ export default class SaveParser_Read
             'RssRoundedData',
             'RssSignData',
             'RssSignMaterialData',
-            'RssTemplateData'
+            'RssTemplateData',
+
+            // MOD: Microwave Power
+            'MWProductionTask'
         ];
 
         this.parseHeader();
