@@ -11,7 +11,7 @@ export default class Building_Sign
             132: 413,   143: 433,   144: 434,   145: 435,
             146: 441,   150: 448,   151: 449,   152: 450,
             153: 451,   154: 452,   155: 453,   156: 454,
-            157: 455,   158: 456
+            157: 455,   158: 456,   377: 619,
         }
     }
 
@@ -76,7 +76,10 @@ export default class Building_Sign
 
             362: ['Warning', '/img/patternIcons/TXUI_MIcon_Warning.png'],
 
-            598: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png']
+            598: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png'],
+
+            644: ['Recycle', '/img/patternIcons/TXUI_MIcon_Recycle.png'],
+            645: ['Trash', '/img/patternIcons/TXUI_MIcon_Trash.png']
         };
     }
 
@@ -1373,7 +1376,7 @@ export default class Building_Sign
 
             if(baseLayout.useDebug === true)
             {
-                options.push({value: 184, text: 'TEST ICON ID'});
+                options.push({value: 642, text: 'TEST ICON ID'});
             }
 
             BaseLayout_Modal.form({
