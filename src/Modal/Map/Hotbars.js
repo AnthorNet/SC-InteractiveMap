@@ -4,23 +4,8 @@ export default class Modal_Map_Hotbars
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
-        this.copiedHotbar       = null;
-
-        navigator.clipboard.readText().then(function(clipboard){
-            let clipboardJson = null;
-                try
-                {
-                    clipboardJson = JSON.parse('' + clipboard);
-                }
-                catch(error){ clipboardJson = null; }
-
-                if(clipboardJson !== null && typeof clipboardJson === 'object' && clipboardJson.type !== undefined && clipboardJson.type === 'hotbarCopySCIM')
-                {
-                    this.copiedHotbar = clipboardJson;
-                    $('#statisticsPlayerHotBars .btn-paste').show();
-                }
-        }.bind(this));
+        this.baseLayout = options.baseLayout;
+        this.clipboard  = (this.baseLayout.localStorage !== null && this.baseLayout.localStorage.getItem('hotbarsClipboard') !== null) ? JSON.parse(this.baseLayout.localStorage.getItem('hotbarsClipboard')) : [];
     }
 
     parse(options = {})
@@ -95,29 +80,23 @@ export default class Modal_Map_Hotbars
                     let mHotbars            = this.baseLayout.getObjectProperty(playerState, 'mHotbars');
                         if(mHotbars !== null)
                         {
-                            let hotbarJson = {
-                                    type    : 'hotbarCopySCIM',
-                                    values  : []
-                                };
+                            let hotbarJson = [{values: []}];
 
                                 for(let j = 0; j < mHotbars.values[parseInt(hotbarSlot)][0].value.values.length; j++)
                                 {
                                     let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[parseInt(hotbarSlot)][0].value.values[j].pathName);
-                                        hotbarJson.values.push(currentShortcut.properties);
+                                        hotbarJson[0].values.push(currentShortcut.properties);
                                 }
 
-                                navigator.clipboard.writeText(JSON.stringify(hotbarJson)).then(
-                                    function(){
-                                        this.copiedHotbar = hotbarJson;
-                                        $('#statisticsPlayerHotBars .btn-paste').show();
-                                    }.bind(this),
-                                    function(){ BaseLayout_Modal.alert('We coult not write the hotbar to your clipboard!'); }
-                                );
+                                this.baseLayout.localStorage.setItem('hotbarsClipboard', JSON.stringify(hotbarJson));
+                                this.clipboard = hotbarJson;
+                                $('#statisticsPlayerHotBars .btn-paste').show();
+                                $('#statisticsPlayerHotBars .btn-pasteAll').hide();
                         }
                 }
         }.bind(this));
         $('#statisticsPlayerHotBars .btn-paste').click(function(e){
-            if(this.copiedHotbar !== null)
+            if(this.clipboard.length > 0)
             {
                 let playerStatePathName = $(e.target).closest('[data-hotbar]').attr('data-pathName');
                 let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
@@ -130,7 +109,7 @@ export default class Modal_Map_Hotbars
                                 for(let j = 0; j < mHotbars.values[parseInt(hotbarSlot)][0].value.values.length; j++)
                                 {
                                     let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[parseInt(hotbarSlot)][0].value.values[j].pathName);
-                                        currentShortcut.properties = JSON.parse(JSON.stringify(this.copiedHotbar.values[j]));
+                                        currentShortcut.properties = JSON.parse(JSON.stringify(this.clipboard[0].values[j]));
                                 }
 
                                 this.parse(options);
@@ -139,9 +118,66 @@ export default class Modal_Map_Hotbars
             }
         }.bind(this));
 
-        if(this.copiedHotbar !== null)
+        $('#statisticsPlayerHotBars .btn-copyAll').click(function(e){
+            let playerStatePathName = $(e.target).closest('[data-pathName]').attr('data-pathName');
+            let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
+                if(playerState !== null)
+                {
+                    let mHotbars = this.baseLayout.getObjectProperty(playerState, 'mHotbars');
+                        if(mHotbars !== null)
+                        {
+                            let hotbarJson = [];
+
+                                for(let i = 0; i < mHotbars.values.length; i++)
+                                {
+                                    hotbarJson.push({values: []});
+
+                                    for(let j = 0; j < mHotbars.values[i][0].value.values.length; j++)
+                                    {
+                                        let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[i][0].value.values[j].pathName);
+                                            hotbarJson[i].values.push(currentShortcut.properties);
+                                    }
+                                }
+
+                                this.baseLayout.localStorage.setItem('hotbarsClipboard', JSON.stringify(hotbarJson));
+                                this.clipboard = hotbarJson;
+                                $('#statisticsPlayerHotBars .btn-paste').show();
+                                $('#statisticsPlayerHotBars .btn-pasteAll').show();
+                        }
+                }
+        }.bind(this));
+        $('#statisticsPlayerHotBars .btn-pasteAll').click(function(e){
+            if(this.clipboard.length > 0)
+            {
+                let playerStatePathName = $(e.target).closest('[data-pathName]').attr('data-pathName');
+                let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
+                    if(playerState !== null)
+                    {
+                        let mHotbars = this.baseLayout.getObjectProperty(playerState, 'mHotbars');
+                            if(mHotbars !== null)
+                            {
+                                for(let i = 0; i < mHotbars.values.length; i++)
+                                {
+                                    for(let j = 0; j < mHotbars.values[i][0].value.values.length; j++)
+                                    {
+                                        let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[i][0].value.values[j].pathName);
+                                            currentShortcut.properties = JSON.parse(JSON.stringify(this.clipboard[i].values[j]));
+                                    }
+                                }
+
+                                this.parse(options);
+                            }
+                    }
+            }
+        }.bind(this));
+
+        if(this.clipboard.length > 0)
         {
             $('#statisticsPlayerHotBars .btn-paste').show();
+        }
+        if(this.clipboard.length > 1)
+        {
+            $('#statisticsPlayerHotBars .btn-pasteAll').show();
         }
     }
 
@@ -182,6 +218,15 @@ export default class Modal_Map_Hotbars
 
             if(mHotbars !== null)
             {
+                mHotbarsHtml.push('<div class="row mb-3" data-pathName="' + player.pathName + '">');
+                    mHotbarsHtml.push('<div class="col-6">');
+                        mHotbarsHtml.push('<div class="btn btn-info w-100 text-center btn-copyAll"><i class="fas fa-copy mr-1"></i> Copy all hotbars</div>');
+                    mHotbarsHtml.push('</div>');
+                    mHotbarsHtml.push('<div class="col-6">');
+                        mHotbarsHtml.push('<div class="btn btn-info w-100 text-center btn-pasteAll" style="display: none;"><i class="fas fa-paste mr-1"></i> Paste all hotbars</div>');
+                    mHotbarsHtml.push('</div>');
+                mHotbarsHtml.push('</div>');
+
                 mHotbarsHtml.push('<div class="row">');
                 for(let i = 0; i < mHotbars.values.length; i++)
                 {
