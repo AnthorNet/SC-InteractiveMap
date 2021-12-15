@@ -259,12 +259,23 @@ export default class SubSystem_Buildable
                         {
                             if(OverrideColorData.value.values[j].name === 'PrimaryColor')
                             {
-                                return {
-                                    r : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.r),
-                                    g : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.g),
-                                    b : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.b),
-                                    a : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.a)
-                                };
+                                let PrimaryColor        = OverrideColorData.value.values[j].value.values;
+                                let PrimaryColorKey     = PrimaryColor.r + '-' + PrimaryColor.g + '-' + PrimaryColor.b + '-' + PrimaryColor.a;
+                                    if(this.playerCustomColors === undefined)
+                                    {
+                                        this.playerCustomColors = {};
+                                    }
+                                    if(this.playerCustomColors[PrimaryColorKey] === undefined)
+                                    {
+                                        this.playerCustomColors[PrimaryColorKey] = {
+                                            r : BaseLayout_Math.linearColorToRGB(PrimaryColor.r),
+                                            g : BaseLayout_Math.linearColorToRGB(PrimaryColor.g),
+                                            b : BaseLayout_Math.linearColorToRGB(PrimaryColor.b),
+                                            a : BaseLayout_Math.linearColorToRGB(PrimaryColor.a)
+                                        };
+                                    }
+
+                                return this.playerCustomColors[PrimaryColorKey];
                             }
                         }
                     }
@@ -294,12 +305,23 @@ export default class SubSystem_Buildable
                         {
                             if(OverrideColorData.value.values[j].name === 'SecondaryColor')
                             {
-                                return {
-                                    r : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.r),
-                                    g : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.g),
-                                    b : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.b),
-                                    a : BaseLayout_Math.linearColorToRGB(OverrideColorData.value.values[j].value.values.a)
-                                };
+                                let SecondaryColor      = OverrideColorData.value.values[j].value.values;
+                                let SecondaryColorKey   = SecondaryColor.r + '-' + SecondaryColor.g + '-' + SecondaryColor.b + '-' + SecondaryColor.a;
+                                    if(this.playerCustomColors === undefined)
+                                    {
+                                        this.playerCustomColors = {};
+                                    }
+                                    if(this.playerCustomColors[SecondaryColorKey] === undefined)
+                                    {
+                                        this.playerCustomColors[SecondaryColorKey] = {
+                                            r : BaseLayout_Math.linearColorToRGB(SecondaryColor.r),
+                                            g : BaseLayout_Math.linearColorToRGB(SecondaryColor.g),
+                                            b : BaseLayout_Math.linearColorToRGB(SecondaryColor.b),
+                                            a : BaseLayout_Math.linearColorToRGB(SecondaryColor.a)
+                                        };
+                                    }
+
+                                return this.playerCustomColors[SecondaryColorKey];
                             }
                         }
                     }
