@@ -114,6 +114,7 @@ export default class Modal_Selection
         let haveLogisticCategory                = false;
         let havePowerPoleCategory               = false;
         let havePipelineCategory                = false;
+        let haveProductionCategory              = false;
         let haveStorageCategory                 = false;
 
             if(markers !== null && markers.length > 0)
@@ -185,6 +186,10 @@ export default class Modal_Selection
                                                         if(buildingData.category === 'powerPole')
                                                         {
                                                             havePowerPoleCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'production')
+                                                        {
+                                                            haveProductionCategory = true;
                                                         }
                                                         if(buildingData.category === 'pipe')
                                                         {
@@ -313,6 +318,11 @@ export default class Modal_Selection
 
             inputOptions.push({group: 'Foundations', text: 'Fill selection with...', value: 'fillArea'});
 
+            if(haveProductionCategory === true)
+            {
+                inputOptions.push({group: 'Inventory', text: 'Fill selected machine inventories', value: 'fillMachineInventories'});
+                inputOptions.push({group: 'Inventory', text: 'Clear selected machine inventories', value: 'clearMachineInventories'});
+            }
             if(haveStorageCategory === true)
             {
                 inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorage'});
@@ -1029,6 +1039,48 @@ export default class Modal_Selection
                     }
                 }
         }
+    }
+
+    static callbackFillMachineInventories(baseLayout, markers)
+    {
+        for(let i = 0; i < markers.length; i++)
+        {
+            let contextMenu = baseLayout.getContextMenu(markers[i]);
+                if(contextMenu !== false)
+                {
+                    // Search for a downgrade callback in contextmenu...
+                    for(let j = 0; j < contextMenu.length; j++)
+                    {
+                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Building_Production_fillInventory')
+                        {
+                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout}, false);
+                        }
+                    }
+                }
+        }
+
+        baseLayout.updateRadioactivityLayer();
+    }
+
+    static callbackClearMachineInventories(baseLayout, markers)
+    {
+        for(let i = 0; i < markers.length; i++)
+        {
+            let contextMenu = baseLayout.getContextMenu(markers[i]);
+                if(contextMenu !== false)
+                {
+                    // Search for a downgrade callback in contextmenu...
+                    for(let j = 0; j < contextMenu.length; j++)
+                    {
+                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Building_Production_clearInventory')
+                        {
+                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout}, false);
+                        }
+                    }
+                }
+        }
+
+        baseLayout.updateRadioactivityLayer();
     }
 
 

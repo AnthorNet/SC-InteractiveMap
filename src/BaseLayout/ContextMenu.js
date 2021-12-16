@@ -9,6 +9,7 @@ import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
+import Building_Production                      from '../Building/Production.js';
 import Building_RailroadSwitchControl           from '../Building/RailroadSwitchControl.js';
 import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
@@ -341,15 +342,9 @@ export default class BaseLayout_ContextMenu
                 {
                     contextMenu = Building_TradingPost.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
-
                 if(buildingData.category === 'production')
                 {
-                    contextMenu.push({
-                        icon        : 'fa-exchange',
-                        text        : 'Update recipe',
-                        callback    : this.baseLayout.editPlayerProductionBuildingRecipe.bind(this.baseLayout)
-                    });
-                    contextMenu.push('-');
+                    contextMenu = Building_Production.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
 
                 if((buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')) //TODO: Handle fluid storage...
@@ -437,7 +432,7 @@ export default class BaseLayout_ContextMenu
                         icon        : 'fa-palette',
                         text        : 'Update color swatch',
                         callback    : Modal_Object_ColorSlot.getHTML,
-                        className   : 'Modal_Object_ColorSlot',
+                        className   : 'Modal_Object_ColorSlot'
                     });
 
                     let slotIndex = this.baseLayout.buildableSubSystem.getObjectColorSlot(currentObject);
@@ -447,7 +442,7 @@ export default class BaseLayout_ContextMenu
                                 icon        : 'fa-paint-brush',
                                 text        : 'Update custom color',
                                 callback    : Modal_Object_CustomColor.getHTML,
-                                className   : 'Modal_Object_CustomColor',
+                                className   : 'Modal_Object_CustomColor'
                             });
                         }
                 }
@@ -459,7 +454,7 @@ export default class BaseLayout_ContextMenu
                         icon        : 'fa-shapes',
                         text        : 'Update pattern',
                         callback    : Modal_Object_Pattern.getHTML,
-                        className   : 'Modal_Object_Pattern',
+                        className   : 'Modal_Object_Pattern'
                     });
 
                     let PatternDesc = this.baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject, 'PatternDesc');
@@ -486,7 +481,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "FICSIT Foundation"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'Ficsit'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.Concrete !== undefined)
@@ -496,7 +491,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Concrete Foundation"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'Concrete'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.GripMetal !== undefined)
@@ -506,7 +501,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Grip Metal Foundation"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'GripMetal'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.ConcretePolished !== undefined)
@@ -516,7 +511,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Coated Concrete Foundation"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'ConcretePolished'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.Asphalt !== undefined)
@@ -526,7 +521,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Asphalt Foundation"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'Asphalt'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                     }
@@ -540,7 +535,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "FICSIT Wall"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['wall', 'Ficsit'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.Concrete !== undefined)
@@ -550,7 +545,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Concrete Wall"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['wall', 'Concrete'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.Steel !== undefined)
@@ -560,7 +555,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Steel Wall"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['wall', 'Steel'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                     }
@@ -574,7 +569,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "FICSIT Roof"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['roof', 'Ficsit'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.Tar !== undefined)
@@ -584,7 +579,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Tar Roof"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['roof', 'Tar'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.Metal !== undefined)
@@ -594,7 +589,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Metal Roof"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['roof', 'Metal'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.Glass !== undefined)
@@ -604,7 +599,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Glass Roof"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['roof', 'Glass'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                     }
@@ -618,7 +613,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Metal Pillar"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['pillar', 'Metal'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.Concrete !== undefined)
@@ -628,7 +623,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Concrete Pillar"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['pillar', 'Concrete'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                         if(buildingData.switchMaterial.Frame !== undefined)
@@ -638,7 +633,7 @@ export default class BaseLayout_ContextMenu
                                 text        : 'Switch to "Frame Pillar"',
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['pillar', 'Frame'],
-                                className   : 'buildableSubSystem_switchObjectMaterial',
+                                className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
                     }
@@ -653,7 +648,7 @@ export default class BaseLayout_ContextMenu
                                     text        : 'Switch to "Default" skin',
                                     callback    : this.baseLayout.buildableSubSystem.switchObjectSkin,
                                     argument    : 'Default',
-                                    className   : 'buildableSubSystem_switchObjectSkin',
+                                    className   : 'buildableSubSystem_switchObjectSkin'
                                 });
                             }
                             else
@@ -665,7 +660,7 @@ export default class BaseLayout_ContextMenu
                                         text        : 'Switch to "FICS*MAS" skin',
                                         callback    : this.baseLayout.buildableSubSystem.switchObjectSkin,
                                         argument    : 'Ficsmas',
-                                        className   : 'buildableSubSystem_switchObjectSkin',
+                                        className   : 'buildableSubSystem_switchObjectSkin'
                                     });
                                 }
                             }
