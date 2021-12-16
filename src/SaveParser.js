@@ -66,6 +66,8 @@ export default class SaveParser
             language    : this.language,
             translate   : this.translate
         });
+
+        delete this.arrayBuffer;
     }
 
     save(callback = null)

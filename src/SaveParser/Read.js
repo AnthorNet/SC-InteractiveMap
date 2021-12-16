@@ -320,8 +320,8 @@ export default class SaveParser_Read
                                 this.saveParser.collectables.push(this.readObjectProperty({}));
                             }
 
-                        this.arrayBuffer        = undefined;
-                        this.bufferView         = undefined;
+                        delete this.arrayBuffer;
+                        delete this.bufferView;
 
                         console.timeEnd('loadSave');
 
