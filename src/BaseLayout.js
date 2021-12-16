@@ -2434,10 +2434,10 @@ export default class BaseLayout
                 {
                     if(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
                     {
-                        let layerId         = this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.layerId;
+                        let nodeLayerId     = this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.layerId;
 
-                        let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected')) + 1;
-                        let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
+                        let dataCollected   = parseInt($('.updateLayerState[data-id="' + nodeLayerId + '"]').attr('data-collected')) + 1;
+                        let dataTotal       = parseInt($('.updateLayerState[data-id="' + nodeLayerId + '"]').attr('data-total'));
 
                         // Two nodes...
                         //TODO: Check coordinates...
@@ -2448,17 +2448,17 @@ export default class BaseLayout
 
                         if(this.showNodesOnMiners === true)
                         {
-                            this.satisfactoryMap.availableLayers[layerId].removeLayer(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName]);
+                            this.satisfactoryMap.availableLayers[nodeLayerId].removeLayer(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName]);
 
                             // Two nodes...
                             //TODO: Check coordinates...
                             if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625')
                             {
-                                this.satisfactoryMap.availableLayers[layerId].removeLayer(this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614']);
+                                this.satisfactoryMap.availableLayers[nodeLayerId].removeLayer(this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614']);
                             }
                             if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614')
                             {
-                                this.satisfactoryMap.availableLayers[layerId].removeLayer(this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625']);
+                                this.satisfactoryMap.availableLayers[nodeLayerId].removeLayer(this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625']);
                             }
                         }
                         else
@@ -2479,8 +2479,8 @@ export default class BaseLayout
 
                         this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.extractorPathName = currentObject.pathName;
 
-                        $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
-                        $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
+                        $('.updateLayerState[data-id="' + nodeLayerId + '"]').attr('data-collected', dataCollected);
+                        $('.updateLayerState[data-id="' + nodeLayerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
                     }
                 }
         }
@@ -2816,94 +2816,6 @@ export default class BaseLayout
                     vehicleTrackDataMarker.setStyle({color: '#FFC0CB'});
                 }
         }
-    }
-
-    editPlayerProductionBuildingRecipe(marker)
-    {
-        let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
-        let mCurrentRecipe      = this.getObjectProperty(currentObject, 'mCurrentRecipe');
-        let selectedRecipes     = [];
-        let selectOptions       = [];
-
-        let statisticsSchematics = new Modal_Schematics({
-                baseLayout      : this
-            });
-        let purchasedSchematics = statisticsSchematics.getPurchasedSchematics();
-
-        for(let recipeId in this.recipesData)
-        {
-            if(this.recipesData[recipeId].mProducedIn !== undefined && this.recipesData[recipeId].mProducedIn.includes(currentObject.className))
-            {
-                selectedRecipes.push(recipeId);
-            }
-        }
-
-        selectedRecipes.sort(function(a, b){
-            return this.recipesData[a].name.localeCompare(this.recipesData[b].name);
-        }.bind(this));
-
-        for(let i = 0; i < selectedRecipes.length; i++)
-        {
-            if(this.recipesData[selectedRecipes[i]].className !== undefined)
-            {
-                let isUnlocked = false;
-
-                    for(let schematicId in this.schematicsData)
-                    {
-                        if(this.schematicsData[schematicId].className !== undefined && purchasedSchematics.includes(this.schematicsData[schematicId].className))
-                        {
-                            if(this.schematicsData[schematicId].recipes !== undefined && this.schematicsData[schematicId].recipes.includes(this.recipesData[selectedRecipes[i]].className))
-                            {
-                                isUnlocked = true;
-                            }
-                        }
-                    }
-
-                    if(isUnlocked === true)
-                    {
-                        selectOptions.push({text: this.recipesData[selectedRecipes[i]].name, value: this.recipesData[selectedRecipes[i]].className});
-                    }
-            }
-        }
-
-        selectOptions.unshift({text: 'None', value: 'NULL'});
-
-        BaseLayout_Modal.form({
-            title       : 'Update "' + buildingData.name + '" recipe',
-            container   : '#leafletMap',
-            inputs      : [
-                {
-                    name            : 'recipe',
-                    inputType       : 'select',
-                    inputOptions    : selectOptions,
-                    value           : ((mCurrentRecipe !== null) ? mCurrentRecipe.pathName : 'NULL')
-                }
-            ],
-            callback    : function(form)
-            {
-                if(form !== null && form.recipe !== null)
-                {
-                    if(form.recipe === 'NULL')
-                    {
-                        this.deleteObjectProperty(currentObject, 'mCurrentRecipe');
-                    }
-                    else
-                    {
-                        if(mCurrentRecipe === null)
-                        {
-                             currentObject.properties.push({name: "mCurrentRecipe", type: "ObjectProperty", value: {levelName: "", pathName: form.recipe}});
-                        }
-                        else
-                        {
-                            mCurrentRecipe.pathName = form.recipe;
-                        }
-                    }
-
-                    //TODO: Clean output inventories...
-                }
-            }.bind(this)
-        });
     }
 
     deleteGenericBuilding(marker, updateRadioactivity = true, fast = false)
