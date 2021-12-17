@@ -139,6 +139,7 @@ export default class BaseLayout
             playerStatuesLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true},
 
             playerHUBTerminalLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], useAltitude: true},
+            playerFicsmasLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], useAltitude: true},
             playerUnknownLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], useAltitude: true},
             playerOrientationLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], count: 0, useAltitude: true},
 
@@ -282,6 +283,7 @@ export default class BaseLayout
         $('#statisticsModalAlternateRecipes').empty();
         $('#statisticsModalMAM').empty();
         $('#statisticsModalAwesomeSink').empty();
+        $('#statisticsModalSpecial').empty();
 
         $('#statisticsPlayerInventory').empty();
         $('#statisticsPlayerHotBars').empty();
@@ -1149,6 +1151,7 @@ export default class BaseLayout
                     statisticsSchematics.parseAlternateRecipes();
                     statisticsSchematics.parseMAM();
                     statisticsSchematics.parseAwesomeSink();
+                    statisticsSchematics.parseSpecial();
             });
             $('#colorSlotsModal').on('click', () => {
                 let colorSlots = new Modal_ColorSlots({baseLayout: this});
@@ -5150,17 +5153,56 @@ export default class BaseLayout
             this.buildingsData.Build_SM_RailingRamp_8x1_01_C.length     = 8;
         }
 
-        if(this.buildingsData.Desc_GolfCart_C === undefined && className === '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C' && this.toolsData.Desc_GolfCart_C !== undefined)
+        // Add equipment vehicles
+        if(this.buildingsData.Desc_GolfCart_C === undefined && this.toolsData.Desc_GolfCart_C !== undefined)
         {
             this.buildingsData.Desc_GolfCart_C                  = JSON.parse(JSON.stringify(this.toolsData.Desc_GolfCart_C));
-            this.buildingsData.Desc_GolfCart_C.className        = className;
+            this.buildingsData.Desc_GolfCart_C.className        = '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C';
             this.buildingsData.Desc_GolfCart_C.category         = 'vehicle';
         }
-        if(this.buildingsData.Desc_GolfcartGold_C === undefined && className === '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C' && this.toolsData.Desc_GolfCartGold_C !== undefined)
+        if(this.buildingsData.Desc_GolfcartGold_C === undefined && this.toolsData.Desc_GolfCartGold_C !== undefined)
         {
             this.buildingsData.Desc_GolfcartGold_C              = JSON.parse(JSON.stringify(this.toolsData.Desc_GolfCartGold_C));
-            this.buildingsData.Desc_GolfcartGold_C.className    = className;
+            this.buildingsData.Desc_GolfcartGold_C.className    = '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C';
             this.buildingsData.Desc_GolfcartGold_C.category     = 'vehicle';
+        }
+
+        // Add projectiles
+        if(this.buildingsData.BP_FireWorksProjectile_01_C === undefined)
+        {
+            if(this.itemsData.Desc_Fireworks_Projectile_01_C !== undefined)
+            {
+                this.buildingsData.BP_FireWorksProjectile_01_C                  = JSON.parse(JSON.stringify(this.itemsData.Desc_Fireworks_Projectile_01_C));
+                this.buildingsData.BP_FireWorksProjectile_01_C.className        = '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_01.BP_FireWorksProjectile_01_C';
+                this.buildingsData.BP_FireWorksProjectile_01_C.mapUseSlotColor  = false;
+                this.buildingsData.BP_FireWorksProjectile_01_C.mapLayer         = 'playerFicsmasLayer';
+                this.buildingsData.BP_FireWorksProjectile_01_C.mapColor         = '#00FF00';
+                this.buildingsData.BP_FireWorksProjectile_01_C.width            = 0.25;
+                this.buildingsData.BP_FireWorksProjectile_01_C.length           = 0.25;
+                this.buildingsData.BP_FireWorksProjectile_01_C.height           = 2;
+            }
+            if(this.itemsData.Desc_Fireworks_Projectile_02_C !== undefined)
+            {
+                this.buildingsData.BP_FireWorksProjectile_02_C                  = JSON.parse(JSON.stringify(this.itemsData.Desc_Fireworks_Projectile_02_C));
+                this.buildingsData.BP_FireWorksProjectile_02_C.className        = '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_02.BP_FireWorksProjectile_02_C';
+                this.buildingsData.BP_FireWorksProjectile_02_C.mapUseSlotColor  = false;
+                this.buildingsData.BP_FireWorksProjectile_02_C.mapLayer         = 'playerFicsmasLayer';
+                this.buildingsData.BP_FireWorksProjectile_02_C.mapColor         = '#00FF00';
+                this.buildingsData.BP_FireWorksProjectile_02_C.width            = 0.25;
+                this.buildingsData.BP_FireWorksProjectile_02_C.length           = 0.25;
+                this.buildingsData.BP_FireWorksProjectile_02_C.height           = 2;
+            }
+            if(this.itemsData.Desc_Fireworks_Projectile_03_C !== undefined)
+            {
+                this.buildingsData.BP_FireWorksProjectile_03_C                  = JSON.parse(JSON.stringify(this.itemsData.Desc_Fireworks_Projectile_03_C));
+                this.buildingsData.BP_FireWorksProjectile_03_C.className        = '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireworksProjectile_03.BP_FireworksProjectile_03_C';
+                this.buildingsData.BP_FireWorksProjectile_03_C.mapUseSlotColor  = false;
+                this.buildingsData.BP_FireWorksProjectile_03_C.mapLayer         = 'playerFicsmasLayer';
+                this.buildingsData.BP_FireWorksProjectile_03_C.mapColor         = '#00FF00';
+                this.buildingsData.BP_FireWorksProjectile_03_C.width            = 0.25;
+                this.buildingsData.BP_FireWorksProjectile_03_C.length           = 0.25;
+                this.buildingsData.BP_FireWorksProjectile_03_C.height           = 2;
+            }
         }
 
         // Mods

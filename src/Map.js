@@ -21,9 +21,11 @@ export default class Map
         this.lastHash                   = null;
         this.movingMap                  = false;
 
-        this.backgroundSize             = 16384;
-        this.extraBackgroundSize        = 2048; //20480 (#dddddd)
+        this.backgroundSize             = 32768; //16384;
+        this.extraBackgroundSize        = 4096; // 40960 //2048; //20480 (#dddddd)
         this.tileSize                   = 256;
+        this.minTileZoom                = 2;
+        this.maxTileZoom                = 8;
 
         // The generating actor is located at (X=50301.832031,Y=0.000000,Z=47479.000000)
         this.mappingBoundWest           = -324698.832031;
@@ -184,8 +186,8 @@ export default class Map
 
         this.leafletMap                 = L.map('leafletMap', {
             crs                             : L.CRS.Simple,
-            minZoom                         : 2,
-            maxZoom                         : 10,
+            minZoom                         : this.minTileZoom,
+            maxZoom                         : (this.maxTileZoom + 4),
             zoomDelta                       : 0.25,
             zoomSnap                        : 0.25,
             attributionControl              : false,
@@ -222,20 +224,20 @@ export default class Map
             this.mappingBoundNorth     -= this.northOffset;
             this.mappingBoundSouth     += this.northOffset;
             this.backgroundSize        += this.extraBackgroundSize * 2;
-            this.zoom                   = this.zoomLevel(); //TODO: Rename to zoomRatio, not related at all to zoom...
+            this.zoomRatio              = this.zoomRatio();
 
         // Add the base layers
         let baseLayersOptions = {
             crs                 : L.CRS.Simple,
             noWrap              : true,
             bounds              : this.getBounds(),
-            maxZoom             : 10,
-            maxNativeZoom       : 7
+            maxZoom             : (this.maxTileZoom + 4),
+            maxNativeZoom       : this.maxTileZoom
         };
 
         this.baseLayer                  = 'gameLayer';
-        this.baseLayers.gameLayer       = L.tileLayer(this.staticUrl + '/imgMap/gameLayer/' + ( (this.build === '') ? 'Stable' : 'Experimental' ) + '/{z}/{x}/{y}.png?v=' + this.version, baseLayersOptions);
-        this.baseLayers.realisticLayer  = L.tileLayer(this.staticUrl + '/imgMap/realisticLayer/{z}/{x}/{y}.png?v=' + this.version, baseLayersOptions);
+        this.baseLayers.gameLayer       = L.tileLayer(this.staticUrl + '/imgMap/gameLayer/' + this.build + '/{z}/{x}/{y}.png?v=' + this.version, baseLayersOptions);
+        this.baseLayers.realisticLayer  = L.tileLayer(this.staticUrl + '/imgMap/realisticLayer/' + this.build + '/{z}/{x}/{y}.png?v=' + this.version, baseLayersOptions);
 
         // Constrain map
         this.leafletMap.setMaxBounds(this.getBounds());
@@ -648,7 +650,7 @@ export default class Map
 
         // Dynamic coordinates
         this.leafletMap.on('mousemove', this._throttle(function(e){
-            let coordinates = this.project([e.latlng.lat, e.latlng.lng], this.zoom);
+            let coordinates = this.project([e.latlng.lat, e.latlng.lng], this.zoomRatio);
                 coordinates = this.convertToGameCoordinates([coordinates.x, coordinates.y]);
 
             $('.mouseMoveCoordinates').html(new Intl.NumberFormat(this.language).format(Math.round(coordinates[0])) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(coordinates[1])));
@@ -1039,32 +1041,32 @@ export default class Map
     /*
      * MAP PROJECTIONS
      */
-    zoomLevel()
+    zoomRatio()
     {
         return Math.ceil(Math.log(Math.max(this.backgroundSize, this.backgroundSize) / this.tileSize) / Math.log(2));
     }
 
     unproject(coordinates)
     {
-        return this.leafletMap.unproject(this.convertToRasterCoordinates(coordinates), this.zoom);
+        return this.leafletMap.unproject(this.convertToRasterCoordinates(coordinates), this.zoomRatio);
     }
 
     project(coordinates)
     {
-        return this.leafletMap.project(coordinates, this.zoom);
+        return this.leafletMap.project(coordinates, this.zoomRatio);
     }
 
     getBounds()
     {
-        let southWest = this.leafletMap.unproject([0, this.backgroundSize], this.zoom);
-        let northEast = this.leafletMap.unproject([this.backgroundSize, 0], this.zoom);
+        let southWest = this.leafletMap.unproject([0, this.backgroundSize], this.zoomRatio);
+        let northEast = this.leafletMap.unproject([this.backgroundSize, 0], this.zoomRatio);
 
         return new L.LatLngBounds(southWest, northEast);
     }
 
     getCenter()
     {
-        return this.leafletMap.unproject([this.backgroundSize / 2, this.backgroundSize / 2], this.zoom);
+        return this.leafletMap.unproject([this.backgroundSize / 2, this.backgroundSize / 2], this.zoomRatio);
     }
 
     /*

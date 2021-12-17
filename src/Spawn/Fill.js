@@ -27,14 +27,14 @@ export default class Spawn_Fill
         {
             let radius  = this.selection.getRadius();
             let center  = this.selection._latlng;
-                ne      = this.baseLayout.satisfactoryMap.project([center.lat + radius, center.lng + radius], this.baseLayout.satisfactoryMap.zoom);
-                sw      = this.baseLayout.satisfactoryMap.project([center.lat - radius, center.lng - radius], this.baseLayout.satisfactoryMap.zoom);
+                ne      = this.baseLayout.satisfactoryMap.project([center.lat + radius, center.lng + radius], this.baseLayout.satisfactoryMap.zoomRatio);
+                sw      = this.baseLayout.satisfactoryMap.project([center.lat - radius, center.lng - radius], this.baseLayout.satisfactoryMap.zoomRatio);
         }
         else
         {
             let bounds  = this.selection.getBounds();
-                ne      = this.baseLayout.satisfactoryMap.project([bounds._northEast.lat, bounds._northEast.lng], this.baseLayout.satisfactoryMap.zoom);
-                sw      = this.baseLayout.satisfactoryMap.project([bounds._southWest.lat, bounds._southWest.lng], this.baseLayout.satisfactoryMap.zoom);
+                ne      = this.baseLayout.satisfactoryMap.project([bounds._northEast.lat, bounds._northEast.lng], this.baseLayout.satisfactoryMap.zoomRatio);
+                sw      = this.baseLayout.satisfactoryMap.project([bounds._southWest.lat, bounds._southWest.lng], this.baseLayout.satisfactoryMap.zoomRatio);
         }
 
         ne          = this.baseLayout.satisfactoryMap.convertToGameCoordinates([ne.x, ne.y]);
