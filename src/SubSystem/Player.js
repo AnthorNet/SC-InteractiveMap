@@ -87,6 +87,7 @@ export default class SubSystem_Player
             {
                 mOwnedPawn.transform                    = transform;
                 mOwnedPawn.transform.translation[2]    += zOffset;
+                mOwnedPawn.transform.scale3d            = [1, 1, 1];
 
                 this.baseLayout.deleteObjectProperty(this.player, 'mSavedDrivenVehicle');
 
