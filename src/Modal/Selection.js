@@ -11,6 +11,7 @@ import Selection_Offset                         from '../Selection/Offset.js';
 import Selection_Rotate                         from '../Selection/Rotate.js';
 import Selection_Delete                         from '../Selection/Delete.js';
 import Selection_Copy                           from '../Selection/Copy.js';
+import Selection_RoundTranslation               from '../Selection/RoundTranslation';
 
 import Spawn_Fill                               from '../Spawn/Fill.js';
 
@@ -261,6 +262,7 @@ export default class Modal_Selection
 
                 inputOptions.push({group: 'Positioning', text: 'Offset selected items position', value: 'offset'});
                 inputOptions.push({group: 'Positioning', text: 'Rotate selected items position', value: 'rotate'});
+                inputOptions.push({group: 'Positioning', text: 'Round selected items\' positions to nearest N meters', value: 'roundtranslation'});
 
                 inputOptions.push({group: 'Blueprints', text: 'Add "Foundation 8m x 2m" helpers on selection boundaries', value: 'helpers'});
                 inputOptions.push({group: 'Blueprints', text: 'Copy selected items', value: 'copy'});
@@ -504,6 +506,67 @@ export default class Modal_Selection
                     baseLayout  : baseLayout,
                     markers     : markers,
                     angle       : form.angle
+                });
+            }
+        });
+    }
+
+    static callbackRoundtranslation(baseLayout, markers)
+    {
+        BaseLayout_Modal.form({
+            title       : 'You have selected ' + markers.length + ' items',
+            message     : 'Step Size is the number to round to. The offset will be applied after the rounding.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
+            onEscape    : function(){
+                Modal_Selection.cancel.call(null, baseLayout);
+            },
+            container   : '#leafletMap',
+            inputs      : [{
+                label       : 'Step Size',
+                name        : 'step',
+                inputType   : 'number',
+                value       : 25,
+                min         : Number.EPSILON // must be greater than 0
+            },
+            {
+                label       : 'Offset',
+                name        : 'offset',
+                inputType   : 'number',
+                value       : 0,
+                min         : 0
+            },
+            {
+                label       : 'Apply to X axis',
+                name        : 'roundX',
+                inputType   : 'toggle',
+                value       : 1
+            },
+            {
+                label       : 'Apply to Y axis',
+                name        : 'roundY',
+                inputType   : 'toggle',
+                value       : 1
+            },
+            {
+                label       : 'Apply to Z axis',
+                name        : 'roundZ',
+                inputType   : 'toggle',
+                value       : 1
+            }],
+            callback: function(form)
+            {
+                if(form === null || form.offsetX === null || form.offsetY === null || form.offsetZ === null)
+                {
+                    return;
+                }
+
+                return new Selection_RoundTranslation({
+                    baseLayout  : baseLayout,
+                    markers     : markers,
+                    step        : form.step,
+                    offset      : form.offset,
+                    roundX      : form.roundX,
+                    roundY      : form.roundY,
+                    roundZ      : form.roundZ,
                 });
             }
         });
