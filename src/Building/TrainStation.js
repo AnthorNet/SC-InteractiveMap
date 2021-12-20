@@ -4,6 +4,57 @@ import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 export default class Building_TrainStation
 {
+    static getCompleteTrainStation(baseLayout, currentObject)
+    {
+        let includedPathName    = [currentObject.pathName];
+        let trainStations       = [currentObject];
+        let platforms           = Building_TrainStation.getConnectedToStation(baseLayout, currentObject, includedPathName);
+            while(platforms.length > 0)
+            {
+                let newPlatforms = [];
+                    for(let i = 0; i < platforms.length; i++)
+                    {
+                        if(includedPathName.includes(platforms[i].pathName) === false)
+                        {
+                            includedPathName.push(platforms[i].pathName);
+                            trainStations.push(platforms[i]);
+                        }
+
+                        newPlatforms = newPlatforms.concat(Building_TrainStation.getConnectedToStation(baseLayout, platforms[i], includedPathName));
+                    }
+
+                platforms = newPlatforms;
+            }
+            
+        return trainStations;
+    }
+
+    static getConnectedToStation(baseLayout, currentObject, includedPathName)
+    {
+        let platforms = [];
+            if(currentObject.children !== undefined)
+            {
+                for(let i = 0; i < currentObject.children.length; i++)
+                {
+                    let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                        if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGTrainPlatformConnection')
+                        {
+                            let mConnectedTo = baseLayout.getObjectProperty(currentChildren, 'mConnectedTo');
+                                if(mConnectedTo !== null)
+                                {
+                                    let mConnectedToObject = baseLayout.saveGameParser.getTargetObject(mConnectedTo.pathName);
+                                        if(mConnectedToObject !== null && includedPathName.includes(mConnectedToObject.outerPathName) === false)
+                                        {
+                                            platforms.push(baseLayout.saveGameParser.getTargetObject(mConnectedToObject.outerPathName));
+                                        }
+                                }
+                        }
+                }
+            }
+
+        return platforms;
+    }
+
     /**
      * CONTEXT MENU
      */

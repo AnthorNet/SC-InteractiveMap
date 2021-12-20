@@ -1,5 +1,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import Building_TrainStation                    from '../Building/TrainStation.js';
+
 export default class SaveParser_FicsIt
 {
     static callADA(baseLayout, currentObject)
@@ -13,6 +15,8 @@ export default class SaveParser_FicsIt
             case '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C':
             case '/Script/FactoryGame.FGTrain':
                 return SaveParser_FicsIt.fixTrainIdentifier(baseLayout, currentObject);
+            case '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C':
+                return SaveParser_FicsIt.fixRailroadTrackIntegrated(baseLayout, currentObject);
 
             case '/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x1_02.Build_Ramp_Diagonal_8x1_02_C':
                 return SaveParser_FicsIt.fixRampsRotation(baseLayout, currentObject, '/Game/FactoryGame/Recipes/Buildings/Ramps/Recipe_Ramp_Diagonal_8x1_02.Recipe_Ramp_Diagonal_8x1_02_C');
@@ -67,6 +71,7 @@ export default class SaveParser_FicsIt
             {
                 console.log('Removing ghost "' + currentObject.className + '"', currentObject.pathName);
                 baseLayout.saveGameParser.deleteObject(currentObject.pathName);
+                return null; // Trigger continue;
             }
 
         return currentObject;
@@ -82,9 +87,50 @@ export default class SaveParser_FicsIt
             {
                 console.log('Removing ghost "' + currentObject.className + '"', currentObject.pathName);
                 baseLayout.saveGameParser.deleteObject(currentObject.pathName);
+                return null; // Trigger continue;
             }
 
         return currentObject;
+    }
+
+    /*
+     * Some integrated railway track were left behind
+     * DO NOT WORK, IT REMOVES PLATFORM INTEGRATED...
+     */
+    static fixRailroadTrackIntegrated(baseLayout, currentObject)
+    {
+        //return currentObject; // Skip until a better solution is found...
+
+
+        let trainStation = baseLayout.railroadSubSystem.getTrainStations();
+            for(let i = 0; i < trainStation.length; i++)
+            {
+                let currentTrainStationIdentifier = baseLayout.saveGameParser.getTargetObject(trainStation[i]);
+                    if(currentTrainStationIdentifier !== null)
+                    {
+                        let mStation = baseLayout.getObjectProperty(currentTrainStationIdentifier, 'mStation');
+                            if(mStation !== null)
+                            {
+                                let currentTrainStation = baseLayout.saveGameParser.getTargetObject(mStation.pathName);
+                                    if(currentTrainStation !== null)
+                                    {
+                                        let completeTrainStation = Building_TrainStation.getCompleteTrainStation(baseLayout, currentTrainStation);
+                                            for(let j = 0; j < completeTrainStation.length; j++)
+                                            {
+                                                let mRailroadTrack = baseLayout.getObjectProperty(completeTrainStation[j], 'mRailroadTrack');
+                                                    if(mRailroadTrack !== null && mRailroadTrack.pathName === currentObject.pathName)
+                                                    {
+                                                        return currentObject;
+                                                    }
+                                            }
+                                    }
+                            }
+                    }
+            }
+
+        console.log('Removing ghost "' + currentObject.className + '"', currentObject.pathName);
+        baseLayout.saveGameParser.deleteObject(currentObject.pathName);
+        return null; // Trigger continue;
     }
 
     /*

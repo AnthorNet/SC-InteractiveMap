@@ -762,6 +762,10 @@ export default class BaseLayout
 
             // Fix some save/games bugs and/or old object conversion
             currentObject = SaveParser_FicsIt.callADA(this, currentObject);
+            if(currentObject === null)
+            {
+                continue;
+            }
 
             /*
             '/Script/FactoryGame.FGInventoryComponent',
