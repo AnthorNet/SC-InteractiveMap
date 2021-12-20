@@ -129,6 +129,12 @@ export default class BaseLayout_ContextMenu
                             text        : 'Beacon'
                         });
                         contextMenu.push({
+                            icon        : 'fa-portal-exit',
+                            text        : 'Teleport player',
+                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                        });
+                        contextMenu.push('-');
+                        contextMenu.push({
                             icon        : 'fa-trash-alt',
                             text        : 'Delete',
                             callback    : this.baseLayout.deletePlayerBeacon
@@ -138,6 +144,12 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             text        : 'Resource Deposit'
                         });
+                        contextMenu.push({
+                            icon        : 'fa-portal-exit',
+                            text        : 'Teleport player',
+                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                        });
+                        contextMenu.push('-');
                         contextMenu.push({
                             icon        : 'fa-trash-alt',
                             text        : 'Delete',
@@ -149,6 +161,12 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             text        : 'Dropped Items'
                         });
+                        contextMenu.push({
+                            icon        : 'fa-portal-exit',
+                            text        : 'Teleport player',
+                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                        });
+                        contextMenu.push('-');
                         contextMenu.push({
                             icon        : 'fa-trash-alt',
                             text        : 'Delete',
@@ -177,6 +195,7 @@ export default class BaseLayout_ContextMenu
                             {
                                 if(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type !== 'Desc_LiquidOil_C')
                                 {
+                                    contextMenu.push('-');
                                     contextMenu.push({
                                         text    : 'Spawn a miner',
                                         callback: Modal_Node_SpawnAround.getHTML
