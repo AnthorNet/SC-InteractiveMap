@@ -340,51 +340,44 @@ export default class Modal_Selection
             inputOptions.push({group: 'Flora', text: 'Respawn flora', value: 'respawnFlora'});
             //inputOptions.push({group: 'Flora', text: 'Clear flora', value: 'clearFlora'});
 
-        if(markers !== null && markers.length > 0)
-        {
-            BaseLayout_Modal.form({
-                title       : 'You have selected ' + markers.length + ' items',
-                message     : message,
-                onEscape    : function(){
-                    Modal_Selection.cancel.call(null, baseLayout);
-                },
-                container   : '#leafletMap',
-                inputs      : [{
-                    name            : 'form',
-                    inputType       : 'select',
-                    inputOptions    : inputOptions
-                }],
-                callback    : function(form)
+        BaseLayout_Modal.form({
+            title       : 'You have selected ' + ((markers !== null) ? markers.length : 0) + ' items',
+            message     : message,
+            onEscape    : function(){
+                Modal_Selection.cancel.call(null, baseLayout);
+            },
+            container   : '#leafletMap',
+            inputs      : [{
+                name            : 'form',
+                inputType       : 'select',
+                inputOptions    : inputOptions
+            }],
+            callback    : function(form)
+            {
+                if(form === null || form.form === null)
                 {
-                    if(form === null || form.form === null)
-                    {
-                        Modal_Selection.cancel(baseLayout);
-                        return;
-                    }
-
-                    let callbackArguments   = form.form.split('_');
-                    let callbackName        = callbackArguments.shift();
-                        callbackName        = 'callback' + callbackName[0].toUpperCase() + callbackName.slice(1);
-                        callbackArguments.unshift(markers);
-                        callbackArguments.unshift(baseLayout);
-
-                    // Those callback needs access to the selection!
-                    if(['fillArea', 'respawnFlora'].includes(form.form) === false)
-                    {
-                        Modal_Selection.cancel(baseLayout);
-                    }
-                    // Let's go!
-                    if(typeof Modal_Selection[callbackName] === "function")
-                    {
-                        return Modal_Selection[callbackName].apply(null, callbackArguments);
-                    }
+                    Modal_Selection.cancel(baseLayout);
+                    return;
                 }
-            });
-        }
-        else
-        {
-            return Modal_Selection.callbackFillArea(baseLayout);
-        }
+
+                let callbackArguments   = form.form.split('_');
+                let callbackName        = callbackArguments.shift();
+                    callbackName        = 'callback' + callbackName[0].toUpperCase() + callbackName.slice(1);
+                    callbackArguments.unshift(markers);
+                    callbackArguments.unshift(baseLayout);
+
+                // Those callback needs access to the selection!
+                if(['fillArea', 'respawnFlora'].includes(form.form) === false)
+                {
+                    Modal_Selection.cancel(baseLayout);
+                }
+                // Let's go!
+                if(typeof Modal_Selection[callbackName] === "function")
+                {
+                    return Modal_Selection[callbackName].apply(null, callbackArguments);
+                }
+            }
+        });
     }
 
     /*
