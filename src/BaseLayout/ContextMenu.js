@@ -19,6 +19,7 @@ import Building_TrainStation                    from '../Building/TrainStation.j
 import Building_Vehicle                         from '../Building/Vehicle.js';
 
 import Modal_Debug                              from '../Modal/Debug.js';
+import Modal_Map_Paste                          from '../Modal/Map/Paste.js';
 import Modal_Node_SpawnAround                   from '../Modal/Node/SpawnAround.js';
 import Modal_Object_ColorSlot                   from '../Modal/Object/ColorSlot.js';
 import Modal_Object_CustomColor                 from '../Modal/Object/CustomColor.js';
@@ -235,12 +236,25 @@ export default class BaseLayout_ContextMenu
 
                     if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal') === false && currentObject.className.includes('_Corner_') === false)
                     {
+                        contextMenu.push('-');
+
                         contextMenu.push({
                             icon        : 'fa-building',
                             text        : 'Spawn around "' + buildingData.name + '"',
                             callback    : Modal_Object_SpawnAround.getHTML
                         });
+
+                        if(this.baseLayout.clipboard !== null && this.baseLayout.clipboard.originalLocationOnly === undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-paste',
+                                text        : 'Paste ' + this.baseLayout.clipboard.data.length + ' items',
+                                callback    : Modal_Map_Paste.getHTML
+                            });
+                        }
                     }
+
+                    contextMenu.push('-');
 
                     contextMenu.push({
                         icon        : 'fa-portal-exit',

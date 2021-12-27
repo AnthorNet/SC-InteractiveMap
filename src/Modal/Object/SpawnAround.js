@@ -2,7 +2,6 @@ import BaseLayout_Modal                         from '../../BaseLayout/Modal.js'
 
 import SubSystem_Buildable                      from '../../SubSystem/Buildable.js';
 
-import Spawn_Blueprint                          from '../../Spawn/Blueprint.js';
 import Spawn_Circle                             from '../../Spawn/Circle.js';
 import Spawn_Polygon                            from '../../Spawn/Polygon.js';
 import Spawn_Rectangle                          from '../../Spawn/Rectangle.js';
@@ -17,11 +16,6 @@ export default class Modal_Object_SpawnAround
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
         let inputOptions    = [];
-            if(baseLayout.clipboard !== null && baseLayout.clipboard.originalLocationOnly === undefined)
-            {
-                inputOptions.push({group: 'Clipboard', text: 'Paste ' + baseLayout.clipboard.data.length + ' items', value: 'paste'});
-            }
-
             inputOptions.push({group: 'Geometric form', text: 'Plain circle', value: 'plainCircle'});
             inputOptions.push({group: 'Geometric form', text: 'Hollow circle', value: 'hollowCirle'});
             inputOptions.push({group: 'Geometric form', text: 'Plain rectangle', value: 'plainRectangle'});
@@ -65,60 +59,7 @@ export default class Modal_Object_SpawnAround
                         switch(form.form)
                         {
                             case 'paste':
-                                let colorSlotOptions = [];
-                                    colorSlotOptions.push({text: 'No foundation helper', value: 'NONE'});
-                                    for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
-                                    {
-                                        colorSlotOptions.push({text: 'Swatch #' + (slotIndex + 1), value: slotIndex});
-                                    }
-
-                                BaseLayout_Modal.form({
-                                    title       : "Offset clipboard center",
-                                    message     : "Most of the time, the clipboard calculate the center of your selection correctly. If not you can use the offset to move it.",
-                                    container   : '#leafletMap',
-                                    inputs      : [
-                                        {
-                                            label           : 'X offset',
-                                            name            : 'xOffset',
-                                            inputType       : 'coordinate',
-                                            value           : 0
-                                        },
-                                        {
-                                            label           : 'Y offset',
-                                            name            : 'yOffset',
-                                            inputType       : 'coordinate',
-                                            value           : 0
-                                        },
-                                        {
-                                            label           : 'Z offset',
-                                            name            : 'zOffset',
-                                            inputType       : 'coordinate',
-                                            value           : 0
-                                        },
-                                        {
-                                            label           : 'Colored foundation helper',
-                                            name            : 'colorSlotHelper',
-                                            inputType       : 'select',
-                                            inputOptions    : colorSlotOptions
-                                        }
-                                    ],
-                                    callback    : function(values)
-                                    {
-                                        if(values !== null && values.xOffset !== null && values.yOffset !== null && values.colorSlotHelper !== null)
-                                        {
-                                            return new Spawn_Blueprint({
-                                                baseLayout          : baseLayout,
-                                                marker              : marker,
-                                                clipboard           : baseLayout.clipboard,
-                                                xOffset             : parseFloat(values.xOffset),
-                                                yOffset             : parseFloat(values.yOffset),
-                                                zOffset             : parseFloat(values.zOffset),
-                                                colorSlotHelper     : values.colorSlotHelper
-                                            });
-                                        }
-                                    }
-                                });
-                                break;
+                                return Modal_Map_Paste.getHTML(baseLayout, marker);
                             case 'plainCircle':
                             case 'hollowCirle':
                                 let circleOptions = [];
