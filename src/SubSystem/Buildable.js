@@ -198,7 +198,9 @@ export default class SubSystem_Buildable
 
     setObjectCustomColor(currentObject, primaryColor, secondaryColor)
     {
-        let mCustomizationData = this.getObjectCustomizationData(currentObject);
+            primaryColor        = JSON.parse(JSON.stringify(primaryColor));
+            secondaryColor      = JSON.parse(JSON.stringify(secondaryColor));
+        let mCustomizationData  = this.getObjectCustomizationData(currentObject);
             if(mCustomizationData !== null)
             {
                 for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
