@@ -12,13 +12,6 @@ export default class Modal_Schematics
         // Cache
         this.availableSchematics    = null;
         this.purchasedSchematics    = null;
-
-        if(this.baseLayout.useDebug === true)
-        {
-            //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.recipeManager"));
-            //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager"));
-            //console.log(this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.ResearchManager"));
-        }
     }
 
     parseSchematics(selectedTier = 0)
@@ -528,6 +521,103 @@ export default class Modal_Schematics
         }.bind(this)).css('cursor', 'pointer');
     }
 
+    parseSpecial()
+    {
+        $('#statisticsModalSpecial').empty();
+
+        let purchased   = this.getPurchasedSchematics();
+        let unlocked    = 0;
+        let total       = 0;
+
+        let html        = [];
+            html.push('<div class="card-body text-center">You can click on the status of the schematic to update its current state.</div>');
+
+        html.push('<div class="tab-content p-0 border border-top-0">');
+            let htmlData    = [];
+            let currentData = {};
+                for(let schematicId in this.baseLayout.schematicsData)
+                {
+                    if(schematicId.startsWith('Ficsmas_Schematic_'))
+                    {
+                        currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
+                    }
+                }
+
+            let schematicsDataKey = Object.keys(currentData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
+
+            for(let j = 0; j < schematicsDataKey.length; j++)
+            {
+                let className        = schematicsDataKey[j];
+                let currentSchematic = this.baseLayout.schematicsData[className];
+                    total++;
+
+                if(currentSchematic.category !== undefined)
+                {
+                    htmlData.push('<tr>');
+                    htmlData.push('<td class="align-middle" width="88">');
+                        htmlData.push('<img src="' + currentSchematic.image + '" class="img-fluid" style="width: 64px;">');
+                    htmlData.push('</td>');
+                    htmlData.push('<td class="align-middle">');
+                        htmlData.push('<strong style="font-size: 120%;">' + currentSchematic.name + '</strong>');
+                        htmlData.push(this.getSchematicsUnlocks(currentSchematic));
+                    htmlData.push('</td>');
+                    htmlData.push('<td class="align-middle text-right">' + this.parseSchematicCost(currentSchematic) + '</td>');
+
+                    if(currentSchematic.className !== undefined && purchased.includes(currentSchematic.className))
+                    {
+                        htmlData.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
+                        unlocked++;
+                    }
+                    else
+                    {
+                        if(currentSchematic.className !== undefined)
+                        {
+                            htmlData.push('<td class="align-middle text-center text-info updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="available"><i class="fas fa-times" data-hover="tooltip" title="Not available yet"></i></td>');
+                        }
+                        else
+                        {
+                            htmlData.push('<td></td>');
+                        }
+                    }
+
+                    htmlData.push('</tr>');
+                }
+            }
+
+            html.push('<table class="table mb-0"><tr>');
+            html.push('<td class="align-middle" height="60">You have <strong>' + new Intl.NumberFormat(this.language).format(unlocked) + '/' + new Intl.NumberFormat(this.language).format(total) + '</strong> schematics unlocked.</td>');
+
+            if(unlocked < total)
+            {
+                html.push('<td class="text-right"><button class="btn btn-sm btn-success updateAllAlternativeStatus" data-status="available"><i class="fas fa-lock-open-alt"></i> Unlock all</button></td>');
+            }
+
+            html.push('</tr></table>');
+            html.push('<table class="table mb-0">');
+            html.push(htmlData.join(''));
+            html.push('</table>');
+        html.push('</div>');
+
+        $('#statisticsModalSpecial').html(html.join(''));
+
+        $('#statisticsModalSpecial .updateAllAlternativeStatus').on('click', function(e){
+            $('#statisticsModalSpecial .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + ']').each(function(index, el){
+                this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+            }.bind(this));
+
+            // Reset status
+            this.parseAlternateRecipes();
+        }.bind(this)).css('cursor', 'pointer');
+
+        $('#statisticsModalSpecial .updateAlternativeStatus').on('click', function(e){
+            this.switchSchematic($(e.currentTarget).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+
+            // Reset status
+            $(e.currentTarget).find('i').tooltip('dispose');
+            this.parseSpecial();
+        }.bind(this)).css('cursor', 'pointer');
+    }
+
     getSchematicsUnlocks(currentSchematic)
     {
         let unlocks = [];
@@ -561,31 +651,15 @@ export default class Modal_Schematics
                          && currentSchematic.schematics[k] !== '/Game/FactoryGame/Schematics/Progression/CustomizerUnlock_PipelineSwatch.CustomizerUnlock_PipelineSwatch_C'
                     )
                     {
-                        switch(currentSchematic.schematics[k])
+                        let schematicId = currentSchematic.schematics[k].split('.');
+                            schematicId = schematicId.pop();
+                        if(this.baseLayout.schematicsData[schematicId] !== undefined)
                         {
-                            case '/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/Schematic_XMassTree_T1.Schematic_XMassTree_T1_C':
-                                unlocks.push('Giant Tree Upgrade: Candy Canes');
-                                break;
-                            case '/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/Schematic_XMassTree_T2.Schematic_XMassTree_T2_C':
-                                unlocks.push('Giant Tree Upgrade: FICSMAS Light, Red, Blue and Copper Ornaments');
-                                break;
-                            case '/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/Schematic_XMassTree_T3.Schematic_XMassTree_T3_C':
-                                unlocks.push('Giant Tree Upgrade: Iron Ornaments, Colored Gifts');
-                                break;
-                            case '/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/Schematic_XMassTree_T4.Schematic_XMassTree_T4_C':
-                                unlocks.push('Giant Tree Upgrade: A Star as a tree-topper');
-                                break;
-                            default:
-                                let schematicId = currentSchematic.schematics[k].split('.');
-                                    schematicId = schematicId.pop();
-                                if(this.baseLayout.schematicsData[schematicId] !== undefined)
-                                {
-                                    unlocks.push(this.baseLayout.schematicsData[schematicId].name);
-                                }
-                                else
-                                {
-                                    unlocks.push(currentSchematic.schematics[k]);
-                                }
+                            unlocks.push(this.baseLayout.schematicsData[schematicId].name);
+                        }
+                        else
+                        {
+                            unlocks.push(currentSchematic.schematics[k]);
                         }
                     }
                 }
