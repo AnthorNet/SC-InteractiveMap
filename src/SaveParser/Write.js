@@ -1075,6 +1075,7 @@ export default class SaveParser_Write
                 property += this.writeString(currentProperty.key);
                 property += this.writeString(currentProperty.value);
                 break;
+            case 1:
             case 3:
                 property += this.writeTextProperty(currentProperty.sourceFmt);
                 property += this.writeInt(currentProperty.argumentsCount);
