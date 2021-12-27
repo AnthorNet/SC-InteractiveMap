@@ -75,6 +75,7 @@ export default class SaveParser_Read
             'STRUCT_ProgElevator_Floor',
             'InserterBuildingProfile',
             'BRN_Base_FrackingSatelliteInfo',
+            'RRDLPatreo',
 
             // MOD: FicsItNetworks
             'FINCommandLabelReferences',
