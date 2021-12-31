@@ -50,7 +50,8 @@ server {
     include                 /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam             /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
-    add_header              Access-Control-Allow-Origin *; # Make the save loadable by the map
+    # Make the save loadable by the map
+    add_header              Access-Control-Allow-Headers "Access-Control-Allow-Origin";
 
     if($request_method = OPTIONS){
         return 200;
