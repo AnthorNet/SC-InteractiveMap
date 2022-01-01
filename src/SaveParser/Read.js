@@ -1571,6 +1571,7 @@ export default class SaveParser_Read
                             structure.unk6  = this.readInt();
                             structure.unk7  = this.readInt();
                             break;
+                        case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture': // Skip!
                         case '/Script/FactoryGame.InventoryItem': // Skip!
                             break;
                         case '/Script/FicsItNetworks.FINGPUT1Buffer':
