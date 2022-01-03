@@ -389,7 +389,7 @@ export default class BaseLayout_ContextMenu
                         }
                         if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
                         {
-                            let storage           = this.baseLayout.getObjectProperty(currentObject, 'mStorageInventory');
+                            let storage = this.baseLayout.getObjectProperty(currentObject, 'mStorageInventory');
                                 if(storage !== null)
                                 {
                                     let storageObject = this.baseLayout.saveGameParser.getTargetObject(storage.pathName);
@@ -419,27 +419,24 @@ export default class BaseLayout_ContextMenu
                             });
                         }
 
-                        if(inventoryType === 'solid' || inventoryType === 'multiple')
-                        {
-                            contextMenu.push({
-                                icon    : 'fa-box-full',
-                                text    : 'Fill inventory',
-                                callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal.bind(this.baseLayout)
-                            });
-                            contextMenu.push({
-                                icon    : 'fa-box-open',
-                                text    : 'Clear inventory',
-                                callback: this.baseLayout.clearPlayerStorageBuildingInventory.bind(this.baseLayout)
-                            });
-                            contextMenu.push('-');
-                        }
+                        contextMenu.push({
+                            icon    : ((inventoryType === 'liquid') ? 'fa-water-rise' : 'fa-box-full'),
+                            text    : 'Fill inventory',
+                            callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal.bind(this.baseLayout)
+                        });
+                        contextMenu.push({
+                            icon    : ((inventoryType === 'liquid') ? 'fa-water-lower' : 'fa-box-open'),
+                            text    : 'Clear inventory',
+                            callback: this.baseLayout.clearPlayerStorageBuildingInventory.bind(this.baseLayout)
+                        });
+                        contextMenu.push('-');
                 }
 
                 let currentObjectPipeNetwork = this.baseLayout.getObjectPipeNetwork(currentObject);
                     if(currentObjectPipeNetwork !== null)
                     {
                         contextMenu.push({
-                            icon        : 'fa-potion',
+                            icon        : 'fa-water',
                             text        : 'Update pipe network fluid',
                             callback    : this.baseLayout.updatePipeNetworkFluid.bind(this.baseLayout)
                         });

@@ -2301,6 +2301,11 @@ export default class BaseLayout
 
         for(let category in itemsCategories)
         {
+            if(isFluidInventory === true && category !== 'liquid' && category !== 'gas')
+            {
+                continue;
+            }
+
             let categoryOptions = [];
                 for(let i in this.itemsData)
                 {
