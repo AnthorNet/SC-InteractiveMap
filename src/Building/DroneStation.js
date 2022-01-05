@@ -346,7 +346,7 @@ export default class Building_DroneStation
 
                     if(mPairedStationDistance !== null && mPairedStationDistance > 0)
                     {
-                        batteryPerTrip += Building_DroneStation.getBatteryUsagePerKilometer * mPairedStationDistance / 1000;
+                        batteryPerTrip += (Building_DroneStation.getBatteryUsagePerKilometer * mPairedStationDistance / 1000) * 2; // Round trip!
                     }
                     if(tripDuration > 0)
                     {
