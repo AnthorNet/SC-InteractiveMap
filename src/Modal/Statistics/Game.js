@@ -140,4 +140,57 @@ export default class Modal_Statistics_Game
 
         return html.join('');
     }
+
+    parsePartsUsed()
+    {
+        let html        = [];
+        let built       = this.statisticsSubSystem.getActorsBuiltCount();
+            if(built !== null)
+            {
+                // Loop built and create a new parts consumed from the recipes...
+                let used = {};
+                    for(let className in built)
+                    {
+                        let currentRecipe = this.baseLayout.getRecipeDataFromProducedClassName(className);
+                            if(currentRecipe !== null)
+                            {
+                                if(currentRecipe.ingredients !== undefined)
+                                {
+                                    for(let ingredientClassName in currentRecipe.ingredients)
+                                    {
+                                        if(used[ingredientClassName] === undefined)
+                                        {
+                                            used[ingredientClassName] = 0;
+                                        }
+
+                                        used[ingredientClassName] += currentRecipe.ingredients[ingredientClassName];
+                                    }
+                                }
+                            }
+                    }
+
+                let sorted = Object.keys(used).sort(function(a,b){ return used[b] - used[a]; });
+
+                    html.push('<div class="row">');
+                    for(let i = 0; i < sorted.length; i++)
+                    {
+                        let currentItem = this.baseLayout.getItemDataFromClassName(sorted[i]);
+                            if(currentItem !== null)
+                            {
+                                html.push('<div class="col-6 col-sm-4 col-md-3 col-lg-2 flex-column d-flex text-center mb-3">');
+                                    html.push('<span class="badge badge-warning" style="position: absolute;right: 0.4em;font-size: 16px;">' + new Intl.NumberFormat(this.baseLayout.language).format(used[sorted[i]]) + '</span>');
+                                    html.push('<img src="' + currentItem.image + '" class="img-fluid m-3">');
+                                    html.push('<h6><strong>' + currentItem.name + '</strong></h6>');
+                                html.push('</div>');
+                            }
+                    }
+                    html.push('</div>');
+            }
+            else
+            {
+                html.push('<div class="text-center">No statistics found...</div>');
+            }
+
+        return html.join('');
+    }
 }

@@ -86,7 +86,7 @@ export default class BaseLayout
         this.modsData                           = null;
         this.modsUrl                            = options.modsUrl;
 
-        this.language                           = options.language.split('_').unshift(); // Handle pt_BR locales
+        this.language                           = options.language.split('_')[0]; // Handle pt_BR locales
         this.translate                          = options.translate;
 
         this.collectedHardDrives                = new HardDrives({language: options.language});
@@ -1143,6 +1143,13 @@ export default class BaseLayout
                             {
                                 let statisticsGame = new Modal_Statistics_Game({baseLayout: this});
                                     $('#statisticsModalBuilt').html(statisticsGame.parseBuilt());
+                            }
+                            break;
+                        case '#statisticsModalPartsUsed':
+                            if($('#statisticsModalPartsUsed').html() === '')
+                            {
+                                let statisticsGame = new Modal_Statistics_Game({baseLayout: this});
+                                    $('#statisticsModalPartsUsed').html(statisticsGame.parsePartsUsed());
                             }
                             break;
                     }
@@ -5008,6 +5015,22 @@ export default class BaseLayout
 
         return null;
     }
+
+    getRecipeDataFromProducedClassName(className)
+    {
+        className = className.replace('Build_', 'Desc_').replace('Build_', 'Desc_');
+
+        for(let recipeId in this.recipesData)
+        {
+            if(this.recipesData[recipeId].produce !== undefined && this.recipesData[recipeId].produce[className] !== undefined)
+            {
+                return this.recipesData[recipeId];
+            }
+        }
+
+        return null;
+    }
+
     getItemDataFromRecipeClassName(className)
     {
         for(let recipeId in this.recipesData)

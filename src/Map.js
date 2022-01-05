@@ -21,10 +21,10 @@ export default class Map
         this.lastHash                   = null;
         this.movingMap                  = false;
 
-        this.backgroundSize             = 32768; //16384;
-        this.extraBackgroundSize        = 4096; // 40960 //2048; //20480 (#dddddd)
+        this.backgroundSize             = 32768;
+        this.extraBackgroundSize        = 4096; // #dddddd
         this.tileSize                   = 256;
-        this.minTileZoom                = 2;
+        this.minTileZoom                = 3;
         this.maxTileZoom                = 8;
 
         // The generating actor is located at (X=50301.832031,Y=0.000000,Z=47479.000000)
