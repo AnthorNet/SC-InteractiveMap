@@ -1046,6 +1046,36 @@ export default class Modal_Schematics
                                     }
                             }
                     }
+
+                    // Handle emotes
+                    if(currentSchematic.emotes !== undefined)
+                    {
+                        let unlockSubSystem = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.UnlockSubsystem');
+                            if(unlockSubSystem !== null)
+                            {
+                                let mUnlockedEmotes  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mUnlockedEmotes');
+
+                                    switch(currentStatus)
+                                    {
+                                        case 'purchased': // Go to none state
+                                        case 'none': // Go to available state
+                                            if(mUnlockedEmotes !== null)
+                                            {
+                                                for(let j = (mUnlockedEmotes.values.length - 1); j >= 0; j--)
+                                                {
+                                                    if(currentSchematic.emotes.includes(mUnlockedEmotes.values[j].pathName))
+                                                    {
+                                                        mUnlockedEmotes.values.splice(j, 1);
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case 'available': // Go to purchased state
+                                            // Let the game fills the proper recipes...
+                                            break;
+                                    }
+                            }
+                    }
                 }
         }
     }
