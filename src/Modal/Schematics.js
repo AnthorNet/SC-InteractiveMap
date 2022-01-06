@@ -146,7 +146,6 @@ export default class Modal_Schematics
                 return this.baseLayout.schematicsData[a].name.localeCompare(this.baseLayout.schematicsData[b].name);
             }.bind(this));
 
-
         for(let i = 0; i < schematicsDataKey.length; i++)
         {
             if(schematicsDataKey[i].includes('Schematic_Alternate_'))
@@ -537,7 +536,7 @@ export default class Modal_Schematics
             let currentData = {};
                 for(let schematicId in this.baseLayout.schematicsData)
                 {
-                    if(schematicId.startsWith('Ficsmas_Schematic_'))
+                    if(schematicId.startsWith('Ficsmas_Schematic_') || schematicId.startsWith('Schematic_XMassTree_'))
                     {
                         currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
                     }
@@ -807,9 +806,8 @@ export default class Modal_Schematics
 
         if(this.baseLayout.schematicsData[schematicId] !== undefined && this.baseLayout.schematicsData[schematicId].className !== undefined)
         {
-            let currentSchematic    = this.baseLayout.schematicsData[schematicId].className;
+            let currentSchematic    = this.baseLayout.schematicsData[schematicId];
             let schematicManager    = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
-
                 if(schematicManager !== null)
                 {
                     switch(currentStatus)
@@ -822,7 +820,7 @@ export default class Modal_Schematics
                                     let mAvailableSchematics = schematicManager.properties[i].value.values;
                                         for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
                                         {
-                                            if(mAvailableSchematics[j].pathName === currentSchematic)
+                                            if(mAvailableSchematics[j].pathName === currentSchematic.className)
                                             {
                                                 mAvailableSchematics.splice(j, 1);
                                             }
@@ -834,7 +832,7 @@ export default class Modal_Schematics
                                     let mPurchasedSchematics = schematicManager.properties[i].value.values;
                                         for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
                                         {
-                                            if(mPurchasedSchematics[j].pathName === currentSchematic)
+                                            if(mPurchasedSchematics[j].pathName === currentSchematic.className)
                                             {
                                                 mPurchasedSchematics.splice(j, 1);
                                             }
@@ -850,7 +848,7 @@ export default class Modal_Schematics
                                     let mAvailableSchematics = schematicManager.properties[i].value.values;
                                         for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
                                         {
-                                            if(mAvailableSchematics[j].pathName === currentSchematic)
+                                            if(mAvailableSchematics[j].pathName === currentSchematic.className)
                                             {
                                                 mAvailableSchematics.splice(j, 1);
                                             }
@@ -863,7 +861,7 @@ export default class Modal_Schematics
                                     let mPurchasedSchematics    = schematicManager.properties[i].value.values;
                                         for(let j = 0; j < mPurchasedSchematics.length; j++)
                                         {
-                                            if(mPurchasedSchematics[j].pathName === currentSchematic)
+                                            if(mPurchasedSchematics[j].pathName === currentSchematic.className)
                                             {
                                                 preventDuplicate = true;
                                                 break;
@@ -872,7 +870,7 @@ export default class Modal_Schematics
 
                                         if(preventDuplicate === false)
                                         {
-                                            mPurchasedSchematics.push({levelName: "", pathName: currentSchematic});
+                                            mPurchasedSchematics.push({levelName: "", pathName: currentSchematic.className});
                                         }
                                 }
                             }
@@ -886,7 +884,7 @@ export default class Modal_Schematics
                                     let mAvailableSchematics    = schematicManager.properties[i].value.values;
                                         for(let j = 0; j < mAvailableSchematics.length; j++)
                                         {
-                                            if(mAvailableSchematics[j].pathName === currentSchematic)
+                                            if(mAvailableSchematics[j].pathName === currentSchematic.className)
                                             {
                                                 preventDuplicate = true;
                                                 break;
@@ -895,7 +893,7 @@ export default class Modal_Schematics
 
                                         if(preventDuplicate === false)
                                         {
-                                            mAvailableSchematics.push({levelName: "", pathName: currentSchematic});
+                                            mAvailableSchematics.push({levelName: "", pathName: currentSchematic.className});
                                         }
                                 }
 
@@ -904,7 +902,7 @@ export default class Modal_Schematics
                                     let mPurchasedSchematics = schematicManager.properties[i].value.values;
                                         for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
                                         {
-                                            if(mPurchasedSchematics[j].pathName === currentSchematic)
+                                            if(mPurchasedSchematics[j].pathName === currentSchematic.className)
                                             {
                                                 mPurchasedSchematics.splice(j, 1);
                                             }
@@ -914,36 +912,38 @@ export default class Modal_Schematics
                             break;
                     }
 
+                    // Handle player slots
                     let mapPlayers = new Modal_Map_Players({baseLayout: this.baseLayout});
                         switch(currentStatus)
                         {
                             case 'none': // Go to available state
                             case 'purchased': // Go to none state
-                                if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
+                                if(currentStatus !== 'none' && currentSchematic.equipmentSlots !== undefined)
                                 {
-                                    mapPlayers.removeEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
+                                    mapPlayers.removeEquipmentSlot(currentSchematic.equipmentSlots);
                                 }
-                                if(currentStatus !== 'none' && this.baseLayout.schematicsData[schematicId].slots !== undefined)
+                                if(currentStatus !== 'none' && currentSchematic.slots !== undefined)
                                 {
-                                    mapPlayers.removeInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
+                                    mapPlayers.removeInventorySlot(currentSchematic.slots);
                                 }
                                 break;
                             case 'available': // Go to purchased state
-                                if(this.baseLayout.schematicsData[schematicId].equipmentSlots !== undefined)
+                                if(currentSchematic.equipmentSlots !== undefined)
                                 {
-                                    mapPlayers.addEquipmentSlot(this.baseLayout.schematicsData[schematicId].equipmentSlots);
+                                    mapPlayers.addEquipmentSlot(currentSchematic.equipmentSlots);
                                 }
-                                if(this.baseLayout.schematicsData[schematicId].slots !== undefined)
+                                if(currentSchematic.slots !== undefined)
                                 {
-                                    mapPlayers.addInventorySlot(this.baseLayout.schematicsData[schematicId].slots);
+                                    mapPlayers.addInventorySlot(currentSchematic.slots);
                                 }
                                 break;
                         }
 
+                    // Handle MAM tree unlocks
                     let researchManager = Building_MAM.getManager(this.baseLayout);
                         if(researchManager !== null)
                         {
-                            let currentResearch = currentSchematic.split('.');
+                            let currentResearch = currentSchematic.className.split('.');
                                 currentResearch = currentResearch.pop();
                                 currentResearch = currentResearch.split('_');
 
@@ -1005,6 +1005,47 @@ export default class Modal_Schematics
                                     }
                                 }
                         }
+
+                    // Handle unlocked recipes
+                    if(currentSchematic.recipes !== undefined)
+                    {
+                        let recipeManager = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.recipeManager');
+                            if(recipeManager !== null)
+                            {
+                                let mAvailableRecipes               = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableRecipes');
+                                let mAvailableCustomizationRecipes  = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableCustomizationRecipes');
+
+                                    switch(currentStatus)
+                                    {
+                                        case 'purchased': // Go to none state
+                                        case 'none': // Go to available state
+                                            if(mAvailableRecipes !== null)
+                                            {
+                                                for(let j = (mAvailableRecipes.values.length - 1); j >= 0; j--)
+                                                {
+                                                    if(currentSchematic.recipes.includes(mAvailableRecipes.values[j].pathName))
+                                                    {
+                                                        mAvailableRecipes.values.splice(j, 1);
+                                                    }
+                                                }
+                                            }
+                                            if(mAvailableCustomizationRecipes !== null)
+                                            {
+                                                for(let j = (mAvailableCustomizationRecipes.values.length - 1); j >= 0; j--)
+                                                {
+                                                    if(currentSchematic.recipes.includes(mAvailableCustomizationRecipes.values[j].pathName))
+                                                    {
+                                                        mAvailableCustomizationRecipes.values.splice(j, 1);
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case 'available': // Go to purchased state
+                                            // Let the game fills the proper recipes...
+                                            break;
+                                    }
+                            }
+                    }
                 }
         }
     }
