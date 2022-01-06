@@ -163,7 +163,7 @@ export default class Modal_Statistics_Game
                                             used[ingredientClassName] = 0;
                                         }
 
-                                        used[ingredientClassName] += currentRecipe.ingredients[ingredientClassName];
+                                        used[ingredientClassName] += currentRecipe.ingredients[ingredientClassName] * built[className].Total;
                                     }
                                 }
                             }
