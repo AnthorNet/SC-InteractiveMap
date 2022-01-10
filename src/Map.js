@@ -269,8 +269,11 @@ export default class Map
 
                             for(let k = 0; k < options.options.length; k++)
                             {
-                                let option                                  = options.options[k];
-                                    this.availableLayers[option.layerId]    = L.layerGroup();
+                                let option = options.options[k];
+                                    if(this.availableLayers[option.layerId] === undefined)
+                                    {
+                                        this.availableLayers[option.layerId] = L.layerGroup();
+                                    }
 
                                 if(mainCategory.button === undefined || mainCategory.button === false)
                                 {
@@ -411,11 +414,18 @@ export default class Map
                                         continue;
                                     }
 
-                                    if(option.layerId === 'spore')
+                                    if(option.type === 'pillars')
+                                    {
+                                        L.circle(this.unproject([marker.x, marker.y]), {radius: 0.6, color: '#bee597'})
+                                         .addTo(this.availableLayers[option.layerId]);
+                                        continue;
+                                    }
+
+                                    if(option.type === 'sporeFlowers')
                                     {
                                         L.circle(
                                             this.unproject([marker.x, marker.y]),
-                                            {radius: 0.6, color: ((option.type === 'pillars') ? '#bee597' : '#9cbc7d')}
+                                            {radius: 0.6, color: '#9cbc7d', pathName: marker.pathName}
                                         ).addTo(this.availableLayers[option.layerId]);
                                         continue;
                                     }
