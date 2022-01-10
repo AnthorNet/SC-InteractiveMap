@@ -58,8 +58,6 @@ export default class Modal_Object_SpawnAround
                     {
                         switch(form.form)
                         {
-                            case 'paste':
-                                return Modal_Map_Paste.getHTML(baseLayout, marker);
                             case 'plainCircle':
                             case 'hollowCirle':
                                 let circleOptions = [];

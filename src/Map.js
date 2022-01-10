@@ -414,15 +414,6 @@ export default class Map
                                         continue;
                                     }
 
-                                    if(option.layerId === 'rock')
-                                    {
-                                        L.circle(
-                                            this.unproject([marker.x, marker.y]),
-                                            {radius: ((option.type === 'largeRocks') ? 0.3 : 0.1), color: '#555555'}
-                                        ).addTo(this.availableLayers[option.layerId]);
-                                        continue;
-                                    }
-
                                     let currentMarkerOptions    = { icon: this.availableIcons[option.layerId], riseOnHover: true };
                                     let tooltip                 = [];
 
@@ -556,10 +547,21 @@ export default class Map
                                                 </div>';
 
                                     let currentMarker = L.marker(this.unproject([marker.x, marker.y]), currentMarkerOptions);
-                                        if(option.layerId === 'spore')
+                                        if(option.layerId === 'sporeFlowers' || option.layerId === 'pillars' || option.layerId === 'smallRocks' || option.layerId === 'largeRocks')
                                         {
                                             currentMarkerOptions.radius = 0.6;
                                             currentMarkerOptions.color  = '#9cbc7d';
+
+                                            if(option.layerId === 'smallRocks')
+                                            {
+                                                currentMarkerOptions.radius = 0.1;
+                                                currentMarkerOptions.color  = '#555555';
+                                            }
+                                            if(option.layerId === 'largeRocks')
+                                            {
+                                                currentMarkerOptions.radius = 0.3;
+                                                currentMarkerOptions.color  = '#555555';
+                                            }
 
                                             if(option.type === 'pillars')
                                             {

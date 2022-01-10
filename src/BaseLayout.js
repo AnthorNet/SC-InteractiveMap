@@ -228,7 +228,23 @@ export default class BaseLayout
 
         for(let pathName in this.satisfactoryMap.collectableMarkers)
         {
-            this.satisfactoryMap.collectableMarkers[pathName].setOpacity(1);
+            if(['sporeFlowers', 'smallRocks', 'largeRocks'].includes(this.satisfactoryMap.collectableMarkers[pathName].options.layerId))
+            {
+                if(this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[pathName].options.layerId].hasLayer(this.satisfactoryMap.collectableMarkers[pathName]) === false)
+                {
+                    this.satisfactoryMap.collectableMarkers[pathName].addTo(
+                        this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[pathName].options.layerId]
+                    );
+                }
+            }
+            else
+            {
+                if(this.satisfactoryMap.collectableMarkers[pathName] instanceof L.Circle === false)
+                {
+                    this.satisfactoryMap.collectableMarkers[pathName].setOpacity(1);
+                }
+            }
+
             delete this.satisfactoryMap.collectableMarkers[pathName].options.extractorPathName;
         }
         $('.updateLayerState[data-collected]').each(function(i, el){
@@ -489,6 +505,17 @@ export default class BaseLayout
 
     renderObjects()
     {
+        // Switch some collectables to 0 opacity
+        for(let pathName in this.satisfactoryMap.collectableMarkers)
+        {
+            if(['sporeFlowers', 'smallRocks', 'largeRocks'].includes(this.satisfactoryMap.collectableMarkers[pathName].options.layerId))
+            {
+                this.satisfactoryMap.collectableMarkers[pathName].removeFrom(
+                    this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[pathName].options.layerId]
+                );
+            }
+        }
+
         return new Promise(function(resolve){
             let header                  = this.saveGameParser.getHeader();
             let pad                     = function(num, size) { return ('000' + num).slice(size * -1); },
@@ -535,7 +562,7 @@ export default class BaseLayout
                     continue;
                 }
 
-            // Add menu to nodes...
+            // Add menu to nodes and collectables...
             if([
                 '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C',
                 '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C',
@@ -560,6 +587,17 @@ export default class BaseLayout
                 {
                     this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName = currentObject.pathName;
                     this.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(this);
+
+                    if(['sporeFlowers', 'smallRocks', 'largeRocks'].includes(this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId))
+                    {
+                        let mHasBeenFractured = this.getObjectProperty(currentObject, 'mHasBeenFractured');
+                            if(mHasBeenFractured === null || this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId === 'sporeFlowers')
+                            {
+                                this.satisfactoryMap.collectableMarkers[currentObject.pathName].addTo(
+                                    this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId]
+                                );
+                            }
+                    }
                 }
 
                 if(currentObject.className !== '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
@@ -1392,7 +1430,7 @@ export default class BaseLayout
                         translation         : [
                             currentObject.transform.translation[0] + (Math.floor(Math.random() * (800 + 1)) - 400),
                             currentObject.transform.translation[1] + (Math.floor(Math.random() * (800 + 1)) - 400),
-                            currentObject.transform.translation[2] + 450 + ( (faunaData.zOffset !== undefined) ? faunaData.zOffset : 0 )
+                            currentObject.transform.translation[2] + 450 //TODO: Use building height
                         ]
                     }
                 };
@@ -1559,16 +1597,10 @@ export default class BaseLayout
     addAnimalParts(currentObject)
     {
         this.setupSubLayer('playerItemsPickupLayer', false);
-        /*
-        '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_CrabEggParts.BP_CrabEggParts_C',
-        '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C',
-        '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C',
-        '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_EliteStingerParts.BP_EliteStingerParts_C',
-         */
-        let itemId      = 'Desc_HogParts_C';
-            if(currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C' || currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C')
+        let itemId      = 'Desc_SpitterParts_C';
+            if(currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_HogParts.BP_HogParts_C' || currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaHogParts.BP_AlphaHogParts_C')
             {
-                itemId = 'Desc_SpitterParts_C';
+                itemId = 'Desc_HogParts_C';
             }
         let iconType    = 'playerItemsPickupLayer' + itemId;
 
