@@ -80,8 +80,24 @@ export default class BaseLayout_Tooltip
                         case '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C':
                         case '/Script/FactoryGame.FGItemPickup_Spawnable':
                         case '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C':
-                            let currentItemData = JSON.parse(JSON.stringify(this.baseLayout.itemsData[this.target.options.itemId]));
-                                if(currentItemData !== undefined)
+                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_SpitterParts.BP_SpitterParts_C':
+                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C':
+                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_HogParts.BP_HogParts_C':
+                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_CrabEggParts.BP_CrabEggParts_C':
+                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaHogParts.BP_AlphaHogParts_C':
+                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C':
+                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C':
+                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_EliteStingerParts.BP_EliteStingerParts_C':
+                            let currentItemData = null;
+                                if(this.baseLayout.itemsData[this.target.options.itemId] !== undefined)
+                                {
+                                    currentItemData = JSON.parse(JSON.stringify(this.baseLayout.itemsData[this.target.options.itemId]));
+                                }
+                                if(this.baseLayout.toolsData[this.target.options.itemId] !== undefined)
+                                {
+                                    currentItemData = JSON.parse(JSON.stringify(this.baseLayout.toolsData[this.target.options.itemId]));
+                                }
+                                if(currentItemData !== null && currentItemData !== undefined)
                                 {
                                     let currentContent  = '';
                                         currentContent += new Intl.NumberFormat(this.baseLayout.language).format(this.target.options.itemQty) + 'x ' + currentItemData.name + '<br />';

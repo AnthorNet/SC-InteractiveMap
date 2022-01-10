@@ -414,22 +414,6 @@ export default class Map
                                         continue;
                                     }
 
-                                    if(option.type === 'pillars')
-                                    {
-                                        L.circle(this.unproject([marker.x, marker.y]), {radius: 0.6, color: '#bee597'})
-                                         .addTo(this.availableLayers[option.layerId]);
-                                        continue;
-                                    }
-
-                                    if(option.type === 'sporeFlowers')
-                                    {
-                                        L.circle(
-                                            this.unproject([marker.x, marker.y]),
-                                            {radius: 0.6, color: '#9cbc7d', pathName: marker.pathName}
-                                        ).addTo(this.availableLayers[option.layerId]);
-                                        continue;
-                                    }
-
                                     if(option.layerId === 'rock')
                                     {
                                         L.circle(
@@ -480,7 +464,17 @@ export default class Map
                                     }
                                     else
                                     {
-                                        tooltip.push('<strong>' + option.name + '</strong><br />');
+                                        if(option.name !== undefined)
+                                        {
+                                            tooltip.push('<strong>' + option.name + '</strong><br />');
+                                        }
+                                        else
+                                        {
+                                            if(marker.pathName !== undefined)
+                                            {
+                                                tooltip.push('<strong>' + marker.pathName + '</strong><br />');
+                                            }
+                                        }
                                     }
 
                                     tooltip.push('<br />');
@@ -561,9 +555,22 @@ export default class Map
                                                     </div>\
                                                 </div>';
 
-                                    let currentMarker = L.marker(this.unproject([marker.x, marker.y]), currentMarkerOptions)
-                                                         .bindTooltip(tooltip)
-                                                         .addTo(this.availableLayers[option.layerId]);
+                                    let currentMarker = L.marker(this.unproject([marker.x, marker.y]), currentMarkerOptions);
+                                        if(option.layerId === 'spore')
+                                        {
+                                            currentMarkerOptions.radius = 0.6;
+                                            currentMarkerOptions.color  = '#9cbc7d';
+
+                                            if(option.type === 'pillars')
+                                            {
+                                                currentMarkerOptions.color = '#bee597';
+                                            }
+
+                                            currentMarker = L.circle(this.unproject([marker.x, marker.y]), currentMarkerOptions);
+                                        }
+
+                                        currentMarker.bindTooltip(tooltip)
+                                                     .addTo(this.availableLayers[option.layerId]);
 
                                     if(marker.pathName !== undefined)
                                     {

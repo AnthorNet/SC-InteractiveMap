@@ -540,12 +540,19 @@ export default class BaseLayout
                 '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C',
                 '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C',
                 '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C',
+
                 '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C',
+
                 '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C',
                 '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C',
                 '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C',
+
                 '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C',
                 '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C',
+
+                '/Game/FactoryGame/World/Hazard/SporeCloudPlant/BP_SporeFlower.BP_SporeFlower_C',
+                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleSmallRock.BP_DestructibleSmallRock_C',
+                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleLargeRock.BP_DestructibleLargeRock_C'
             ].includes(currentObject.className))
             {
                 //console.log(this.satisfactoryMap.collectableMarkers);
@@ -607,59 +614,8 @@ export default class BaseLayout
 
                 continue;
             }
-            if([
-                '/RefinedPower/World/ResourceNodes/WaterTurbine/BP_WaterTurbineNode_Medium.BP_WaterTurbineNode_Medium_C',
-                '/RefinedPower/World/ResourceNodes/WaterTurbine/BP_WaterTurbineNode_Fast.BP_WaterTurbineNode_Fast_C',
-            ].includes(currentObject.className))
-            {
-                continue; // Too much so skip...
-            }
 
-            // Skip
-            if([
-                '/Game/FactoryGame/Buildable/Factory/TradingPost/BP_StartingPod.BP_StartingPod_C',
-                '/Game/FactoryGame/Character/Player/Char_Player.Char_Player_C',
-                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C',
 
-                '/Game/FactoryGame/Schematics/Progression/BP_SchematicManager.BP_SchematicManager_C',
-                '/Game/FactoryGame/Recipes/Research/BP_ResearchManager.BP_ResearchManager_C',
-                '/Game/FactoryGame/Unlocks/BP_UnlockSubsystem.BP_UnlockSubsystem_C',
-                '/Game/FactoryGame/Events/BP_EventSubsystem.BP_EventSubsystem_C',
-
-                '/Game/FactoryGame/Schematics/Progression/BP_GamePhaseManager.BP_GamePhaseManager_C',
-
-                '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C',
-
-                '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C',
-                '/Game/FactoryGame/World/Hazard/SporeCloudPlant/BP_SporeFlower.BP_SporeFlower_C',
-
-                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleSmallRock.BP_DestructibleSmallRock_C',
-                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleLargeRock.BP_DestructibleLargeRock_C',
-
-                '/Game/FactoryGame/Character/Creature/BP_CreatureSpawner.BP_CreatureSpawner_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_SpitterParts.BP_SpitterParts_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_EliteStingerParts.BP_EliteStingerParts_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_HogParts.BP_HogParts_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_CrabEggParts.BP_CrabEggParts_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaHogParts.BP_AlphaHogParts_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C',
-
-                // HUB PARTS
-                '/Game/FactoryGame/Buildable/Factory/WorkBench/Build_WorkBenchIntegrated.Build_WorkBenchIntegrated_C',
-                '/Game/FactoryGame/Buildable/Factory/Mam/Build_MamIntegrated.Build_MamIntegrated_C',
-                '/Game/FactoryGame/Buildable/Factory/HubTerminal/Build_HubTerminal.Build_HubTerminal_C',
-                '/Game/FactoryGame/Prototype/TetrominoRecipeDesigner/Build_TetrominoGame_Computer.Build_TetrominoGame_Computer_C',
-
-                '/Game/FactoryGame/Buildable/Vehicle/BP_VehicleTargetPoint.BP_VehicleTargetPoint_C',
-
-                // MODS
-                '/Game/EfficiencyCheckerMod/Buildings/EfficiencyChecker/Build_Pipeline_Stub.Build_Pipeline_Stub_C'
-            ].includes(currentObject.className))
-            {
-                continue;
-            }
 
             if(currentObject.className === '/Script/FactoryGame.FGPipeNetwork')
             {
@@ -695,28 +651,6 @@ export default class BaseLayout
                 continue;
             }
 
-            // Store collectables total
-            if([
-                '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C',
-                '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C',
-                '/Game/FactoryGame/World/Benefit/Mushroom/BP_Shroom_01.BP_Shroom_01_C',
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C',
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C',
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C',
-                '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C',
-                '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C',
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C'
-            ].includes(currentObject.className))
-            {
-                this.playerStatistics.collectables[currentObject.className].items.push(currentObject.pathName);
-                continue;
-            }
-
-            if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C')
-            {
-                this.addResourceDeposit(currentObject);
-                continue;
-            }
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C')
             {
                 this.gameMode.push(currentObject);
@@ -758,6 +692,80 @@ export default class BaseLayout
                                 }
                         }
                     }
+            }
+
+            if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C')
+            {
+                this.addResourceDeposit(currentObject);
+                continue;
+            }
+            if(currentObject.className.startsWith('/Game/FactoryGame/Resource/Environment/AnimalParts/BP_'))
+            {
+                this.addAnimalParts(currentObject);
+                continue;
+            }
+
+            // Store collectables total
+            if([
+                '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C',
+                '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C',
+                '/Game/FactoryGame/World/Benefit/Mushroom/BP_Shroom_01.BP_Shroom_01_C',
+                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C',
+                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C',
+                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C',
+                '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C',
+                '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C',
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C'
+            ].includes(currentObject.className))
+            {
+                this.playerStatistics.collectables[currentObject.className].items.push(currentObject.pathName);
+                continue;
+            }
+
+            if([
+                '/RefinedPower/World/ResourceNodes/WaterTurbine/BP_WaterTurbineNode_Medium.BP_WaterTurbineNode_Medium_C',
+                '/RefinedPower/World/ResourceNodes/WaterTurbine/BP_WaterTurbineNode_Fast.BP_WaterTurbineNode_Fast_C'
+            ].includes(currentObject.className))
+            {
+                continue; // Too much so skip...
+            }
+
+            // Skip
+            if([
+                '/Game/FactoryGame/Buildable/Factory/TradingPost/BP_StartingPod.BP_StartingPod_C',
+                '/Game/FactoryGame/Character/Player/Char_Player.Char_Player_C',
+                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C',
+
+                '/Game/FactoryGame/Schematics/Progression/BP_SchematicManager.BP_SchematicManager_C',
+                '/Game/FactoryGame/Recipes/Research/BP_ResearchManager.BP_ResearchManager_C',
+                '/Game/FactoryGame/Unlocks/BP_UnlockSubsystem.BP_UnlockSubsystem_C',
+                '/Game/FactoryGame/Events/BP_EventSubsystem.BP_EventSubsystem_C',
+
+                '/Game/FactoryGame/Schematics/Progression/BP_GamePhaseManager.BP_GamePhaseManager_C',
+
+                '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C',
+
+                '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C',
+                '/Game/FactoryGame/World/Hazard/SporeCloudPlant/BP_SporeFlower.BP_SporeFlower_C',
+
+                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleSmallRock.BP_DestructibleSmallRock_C',
+                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleLargeRock.BP_DestructibleLargeRock_C',
+
+                '/Game/FactoryGame/Character/Creature/BP_CreatureSpawner.BP_CreatureSpawner_C',
+
+                // HUB PARTS
+                '/Game/FactoryGame/Buildable/Factory/WorkBench/Build_WorkBenchIntegrated.Build_WorkBenchIntegrated_C',
+                '/Game/FactoryGame/Buildable/Factory/Mam/Build_MamIntegrated.Build_MamIntegrated_C',
+                '/Game/FactoryGame/Buildable/Factory/HubTerminal/Build_HubTerminal.Build_HubTerminal_C',
+                '/Game/FactoryGame/Prototype/TetrominoRecipeDesigner/Build_TetrominoGame_Computer.Build_TetrominoGame_Computer_C',
+
+                '/Game/FactoryGame/Buildable/Vehicle/BP_VehicleTargetPoint.BP_VehicleTargetPoint_C',
+
+                // MODS
+                '/Game/EfficiencyCheckerMod/Buildings/EfficiencyChecker/Build_Pipeline_Stub.Build_Pipeline_Stub_C'
+            ].includes(currentObject.className))
+            {
+                continue;
             }
 
             // Fix some save/games bugs and/or old object conversion
@@ -1548,10 +1556,57 @@ export default class BaseLayout
         baseLayout.setBadgeLayerCount('playerResourceDepositsLayer');
     }
 
+    addAnimalParts(currentObject)
+    {
+        this.setupSubLayer('playerItemsPickupLayer', false);
+        /*
+        '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_CrabEggParts.BP_CrabEggParts_C',
+        '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C',
+        '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C',
+        '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_EliteStingerParts.BP_EliteStingerParts_C',
+         */
+        let itemId      = 'Desc_HogParts_C';
+            if(currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C' || currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C')
+            {
+                itemId = 'Desc_SpitterParts_C';
+            }
+        let iconType    = 'playerItemsPickupLayer' + itemId;
+
+        if(this.satisfactoryMap.availableIcons[iconType] === undefined)
+        {
+            if(this.toolsData[itemId] !== undefined)
+            {
+                this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
+                    className   : "leaflet-data-marker",
+                    html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, this.toolsData[itemId].image),
+                    iconAnchor  : [48, 78],
+                    iconSize    : [50, 80]
+                });
+            }
+        }
+
+        let position    = this.satisfactoryMap.unproject(currentObject.transform.translation);
+        let itemMarker  = L.marker(
+                position,
+                {
+                    pathName: currentObject.pathName,
+                    itemId: itemId,
+                    itemQty: 1,
+                    icon: this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
+                }
+            );
+            itemMarker.bindContextMenu(this);
+            this.autoBindTooltip(itemMarker);
+
+        this.playerLayers.playerItemsPickupLayer.elements.push(itemMarker);
+        itemMarker.addTo(this.playerLayers.playerItemsPickupLayer.subLayer);
+
+        return itemMarker;
+    }
+
     addItemPickup(currentObject)
     {
         let mPickupItems = this.getObjectProperty(currentObject, 'mPickupItems');
-
             if(mPickupItems !== null && mPickupItems.values[0].value.properties[0] !== null && mPickupItems.values[0].value.properties[0].value > 0)
             {
                 let itemId = this.getItemDataFromClassName(mPickupItems.values[0].value.itemName);
