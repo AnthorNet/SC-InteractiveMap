@@ -597,6 +597,15 @@ export default class BaseLayout
                                     this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId]
                                 );
                             }
+                            else
+                            {
+                                let layerId         = this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId;
+                                let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected')) + 1;
+                                let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
+
+                                $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
+                                $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
+                            }
                     }
                 }
 
@@ -784,11 +793,6 @@ export default class BaseLayout
                 '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C',
 
                 '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C',
-                '/Game/FactoryGame/World/Hazard/SporeCloudPlant/BP_SporeFlower.BP_SporeFlower_C',
-
-                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleSmallRock.BP_DestructibleSmallRock_C',
-                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleLargeRock.BP_DestructibleLargeRock_C',
-
                 '/Game/FactoryGame/Character/Creature/BP_CreatureSpawner.BP_CreatureSpawner_C',
 
                 // HUB PARTS
