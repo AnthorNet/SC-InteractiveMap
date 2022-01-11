@@ -431,7 +431,7 @@ export default class Spawn_Road
         }
 
         // Apply new altitude
-        if(this.centerObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_') === true || this.centerObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble') === true)
+        if(this.centerObject.className.includes('Build_Ramp_') === true || this.centerObject.className.includes('Build_RampDouble') === true)
         {
             newFoundation.transform.translation[2] -= height * this.centerObjectHeight;
         }
