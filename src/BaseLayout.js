@@ -2500,11 +2500,12 @@ export default class BaseLayout
         // Check building options
         let weight          = (buildingData.mapWeight !== undefined) ? buildingData.mapWeight : 1;
         let polygonOptions  = {
-            width       : (buildingData.width !== undefined) ? (buildingData.width * 100) : 800,
-            length      : (buildingData.length !== undefined) ? (buildingData.length * 100) : 800,
-            offset      : (buildingData.mapOffset !== undefined) ? buildingData.mapOffset : 0,
-            xShift      : (buildingData.mapShiftX !== undefined) ? buildingData.mapShiftX : 0,
-            useOnly2D   : false
+            width               : (buildingData.width !== undefined) ? (buildingData.width * 100) : 800,
+            length              : (buildingData.length !== undefined) ? (buildingData.length * 100) : 800,
+            offset              : (buildingData.mapOffset !== undefined) ? buildingData.mapOffset : 0,
+            xShift              : (buildingData.mapShiftX !== undefined) ? buildingData.mapShiftX : 0,
+            useOnly2D           : false,
+            skipDetailedModel   : false
         };
 
             if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C')
@@ -2519,6 +2520,12 @@ export default class BaseLayout
                 {
                     polygonOptions.width     = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
                     polygonOptions.useOnly2D = true;
+
+                    if(currentObject.className.includes('Build_PowerPoleWall_') || currentObject.className.includes('Build_PowerPoleWall_'))
+                    {
+                        polygonOptions.width                = polygonOptions.length = 60; // Make it square
+                        polygonOptions.skipDetailedModel    = true;
+                    }
                 }
                 else
                 {
@@ -3910,7 +3917,7 @@ export default class BaseLayout
             this.detailedModels[model]  = {forms: [{points: options.customPolygon}]};
         }
 
-        if(((this.useDetailedModels === true && this.detailedModels !== null) || options.customPolygon !== undefined) && this.detailedModels[model] !== undefined)
+        if(((this.useDetailedModels === true && this.detailedModels !== null) || options.customPolygon !== undefined) && this.detailedModels[model] !== undefined && options.skipDetailedModel === false)
         {
             let currentModel        = this.detailedModels[model];
             let currentModelScale   = (currentModel.scale !== undefined) ? currentModel.scale : 1;

@@ -10,9 +10,13 @@ export default class Modal_Map_Collectables
     {
         let playerCollectables  = this.baseLayout.playerStatistics.collectables;
             $('.updateLayerState[data-collected]').each(function(i, el){
-                let total = $(el).attr('data-total');
-                    $(el).attr('data-collected', 0);
-                    $(el).find('.badge').html(new Intl.NumberFormat(this.language).format(total));
+                let layerId = $(el).attr('data-id');
+                    if(['sporeFlowers', 'smallRocks', 'largeRocks'].includes(layerId) === false)
+                    {
+                        let total = $(el).attr('data-total');
+                            $(el).attr('data-collected', 0);
+                            $(el).find('.badge').html(new Intl.NumberFormat(this.language).format(total));
+                    }
             }.bind(this));
 
             for(let className in playerCollectables)
