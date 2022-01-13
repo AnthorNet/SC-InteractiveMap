@@ -167,7 +167,10 @@ export default class BaseLayout_Modal
             });
 
             // Add it to the content!
-            window.SCIM.map.pauseMap();
+            setTimeout(function(){
+                window.SCIM.map.pauseMap();
+            }, 150); // Give it some time when a new modal is psanw to avoid the map not being paused
+
             $(options.container).append(modalContent);
             modalContent.modal({
                 backdrop: options.backdrop,
