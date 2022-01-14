@@ -2563,7 +2563,7 @@ export default class BaseLayout
                             dataCollected++;
                         }
 
-                        if(this.showNodesOnMiners === true)
+                        if(this.showNodesOnMiners === false)
                         {
                             this.satisfactoryMap.availableLayers[nodeLayerId].removeLayer(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName]);
 
@@ -3085,7 +3085,7 @@ export default class BaseLayout
                                 $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(baseLayout.language).format(dataTotal));
                             }
 
-                            if(baseLayout.showNodesOnMiners === true)
+                            if(baseLayout.showNodesOnMiners === false)
                             {
                                 baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].addTo(baseLayout.satisfactoryMap.availableLayers[layerId]);
                             }
