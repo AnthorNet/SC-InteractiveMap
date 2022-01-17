@@ -19,99 +19,6 @@ export default class SaveParser_Read
         this.bufferView         = new DataView(this.arrayBuffer); // Still used for header...
         this.currentByte        = 0;
 
-        this.structureTypes     = [
-            'CompletedResearch',
-            'DroneDockingStateInfo',
-            'DroneTripInformation',
-            'FactoryCustomizationColorSlot',
-            'FactoryCustomizationData',
-            'FeetOffset',
-            'GlobalColorPreset',
-            'Hotbar',
-            'InventoryStack',
-            'ItemAmount',
-            'ItemFoundData',
-            'LightSourceControlData',
-            'MessageData',
-            'MiniGameResult',
-            'PhaseCost',
-            'PrefabIconElementSaveData',
-            'PrefabTextElementSaveData',
-            'PresetHotbar',
-            'ProjectileData',
-            'RecipeAmountStruct',
-            'RemovedInstance',
-            'RemovedInstanceArray',
-            'ResearchCost',
-            'ResearchData',
-            'ResearchTime',
-            'RuntimeFloatCurve',
-            'ScannableResourcePair',
-            'SchematicCost',
-            'SpawnData',
-            'SplinePointData',
-            'SplitterSortRule',
-            'SubCategoryMaterialDefault',
-            'SwatchGroupData',
-            'TimeTableStop',
-            'TrainDockingRuleSet',
-            'TrainSimulationData',
-            'Transform',
-
-            // MODS
-            'LampGroup',
-            'EnabledCheats', // MOD: Satisfactory Helper
-            'FICFloatAttribute', // MOD: ???
-            'FFCompostingTask', // MOD: ???
-            'FFSeedExtrationTask', // MOD: ???
-            'FFSlugBreedTask', // MOD: ???
-            'FFSlimeProcessingTask', // MOD: ???
-            'FFPlotTask', // MOD: ???
-            'SInventory', // MOD: ???
-            'MFGBuildableAutoSplitterReplicatedProperties', // MOD: AutoSplitters
-            'Loot', // MOD: ???
-            'ProductionHandle', // MOD: ???
-            'ContentLib_Recipe', // MOD: ???
-            'STRUCT_ProgElevator_Floor',
-            'InserterBuildingProfile',
-            'BRN_Base_FrackingSatelliteInfo',
-            'RRDLPatreo',
-
-            // MOD: FicsItNetworks
-            'FINCommandLabelReferences',
-            'FINCommandLabelData',
-            'FINGPUT1Buffer',
-
-            // MOD: Really Basic Blueprints
-            'DumbPrintBuildSave',
-            'DumbPrintBuildMapEntry',
-            'DumbPrintBuildMapEntryBonusInfo',
-
-            // MOD: Refined Power
-            'RPHeaterTask',
-            'RPProductionTask',
-            'RPHeaterItemData',
-            'RPBoilerItemData',
-            'RPTurbineItemData',
-            'RPPatreon',
-
-            // MOD: Really Simple Signs
-            'RssElement',
-            'RssElementTextData',
-            'RssElementImageData',
-            'RssElementEffectData',
-            'RssElementSharedData',
-            'RssFlatData',
-            'RssHologramData',
-            'RssRoundedData',
-            'RssSignData',
-            'RssSignMaterialData',
-            'RssTemplateData',
-
-            // MOD: Microwave Power
-            'MWProductionTask'
-        ];
-
         this.parseHeader();
     }
 
@@ -888,24 +795,24 @@ export default class SaveParser_Read
                                     currentProperty.value.values.push(this.readFINGPUT1BufferPixel());
                                     break;
 
-                                default:
-                                    if(this.structureTypes.includes(currentProperty.structureSubType))
+                                default: // Try normalised structure, then throw Error if not working...
+                                    try
                                     {
                                         let subStructProperties = [];
-                                        while(true)
-                                        {
-                                            let subStructProperty = this.readPropertyV5();
+                                            while(true)
+                                            {
+                                                let subStructProperty = this.readPropertyV5();
 
-                                                if(subStructProperty === null)
-                                                {
-                                                    break;
-                                                }
+                                                    if(subStructProperty === null)
+                                                    {
+                                                        break;
+                                                    }
 
-                                            subStructProperties.push(subStructProperty);
-                                        }
+                                                subStructProperties.push(subStructProperty);
+                                            }
                                         currentProperty.value.values.push(subStructProperties);
                                     }
-                                    else
+                                    catch(error)
                                     {
                                         BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                                         if(typeof Sentry !== 'undefined')
@@ -1156,8 +1063,8 @@ export default class SaveParser_Read
                         currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
                         break;
 
-                    default:
-                        if(this.structureTypes.includes(currentProperty.value.type))
+                    default: // Try normalised structure, then throw Error if not working...
+                        try
                         {
                             currentProperty.value.values = [];
                             while(true)
@@ -1176,7 +1083,7 @@ export default class SaveParser_Read
                                 }
                             }
                         }
-                        else
+                        catch(error)
                         {
                             BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                             if(typeof Sentry !== 'undefined')
