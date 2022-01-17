@@ -1404,6 +1404,10 @@ export default class SaveParser_Write
                         saveBinary += this.writeInt(value.structs[i].unk6);
                         saveBinary += this.writeInt(value.structs[i].unk7);
                         break;
+                    case '/Script/FicsItNetworks.FINTrackGraph':
+                        saveBinary += this.writeFINNetworkTrace(value.structs[i].trace);
+                        saveBinary += this.writeInt(value.structs[i].trackId);
+                        break;
                     case '/Script/FicsItNetworks.FINGPUT1Buffer':
                         saveBinary += this.writeInt(value.structs[i].x);
                         saveBinary += this.writeInt(value.structs[i].y);

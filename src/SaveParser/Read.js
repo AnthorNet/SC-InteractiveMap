@@ -1461,22 +1461,26 @@ export default class SaveParser_Read
                     switch(structure.unk2)
                     {
                         case '/Script/CoreUObject.Vector':
-                            structure.x  = this.readFloat();
-                            structure.y  = this.readFloat();
-                            structure.z  = this.readFloat();
+                            structure.x         = this.readFloat();
+                            structure.y         = this.readFloat();
+                            structure.z         = this.readFloat();
                             break;
                         case '/Script/CoreUObject.LinearColor':
-                            structure.r  = this.readFloat();
-                            structure.g  = this.readFloat();
-                            structure.b  = this.readFloat();
-                            structure.a  = this.readFloat();
+                            structure.r         = this.readFloat();
+                            structure.g         = this.readFloat();
+                            structure.b         = this.readFloat();
+                            structure.a         = this.readFloat();
                             break;
                         case '/Script/FactoryGame.InventoryStack':
-                            structure.unk3  = this.readInt();
-                            structure.unk4  = this.readString();
-                            structure.unk5  = this.readInt();
-                            structure.unk6  = this.readInt();
-                            structure.unk7  = this.readInt();
+                            structure.unk3      = this.readInt();
+                            structure.unk4      = this.readString();
+                            structure.unk5      = this.readInt();
+                            structure.unk6      = this.readInt();
+                            structure.unk7      = this.readInt();
+                            break;
+                        case '/Script/FicsItNetworks.FINTrackGraph':
+                            structure.trace     = this.readFINNetworkTrace();
+                            structure.trackId   = this.readInt();
                             break;
                         case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture': // Skip!
                         case '/Script/FactoryGame.InventoryItem': // Skip!
