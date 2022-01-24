@@ -377,6 +377,8 @@ export default class BaseLayout
 
     loadMod(modId, resolve)
     {
+        if(modId === 'KLib'){ modId = 'SatisfactoryPlus'; }
+
         // Check if the modId exists...
         if(this.modsData[modId] !== undefined)
         {
@@ -879,7 +881,7 @@ export default class BaseLayout
         {
             for(let modId in this.modsData)
             {
-                if(currentObject.className.startsWith('/' + modId + '/') === true || currentObject.className.startsWith('/Game/' + modId + '/') === true)
+                if(currentObject.className.startsWith('/' + modId + '/') === true || currentObject.className.startsWith('/Game/' + modId + '/') === true || (currentObject.className.startsWith('/KLib/') === true) && modId === 'SatisfactoryPlus') //TODO: Add mods multiple references...
                 {
                     if(this.modsData[modId].queuedPathName === undefined)
                     {
@@ -1144,10 +1146,12 @@ export default class BaseLayout
             $('#statisticsModal').on('show.bs.modal', () => {
                 $('#statisticsModal a.nav-link[href="#statisticsModalProduction"]').removeClass('active').click();
             });
+
+            // Reset all statistics tabs on close...
             $('#statisticsModal').on('hide.bs.modal', () => {
-                $('#statisticsModalProduction').html('');
-                $('#statisticsModalStorage').html('');
+                $('#statisticsModal .tab-content .tab-pane').html('');
             });
+            // Swicth statistics tabs
             $('#statisticsModal a[data-toggle="tab"]').on('shown.bs.tab', function(e){
                 let newTab = $(e.target).attr('href');
 
