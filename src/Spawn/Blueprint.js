@@ -12,6 +12,7 @@ export default class Spawn_Blueprint
 
         this.clipboard          = JSON.parse(JSON.stringify(options.clipboard));
         this.marker             = options.marker;
+        this.pasteOn            = (options.pasteOn !== undefined) ? options.pasteOn : 'bottom';
 
         this.xOffset            = (options.xOffset !== undefined) ? parseFloat(options.xOffset) : 0;
         this.yOffset            = (options.yOffset !== undefined) ? parseFloat(options.yOffset) : 0;
@@ -112,9 +113,10 @@ export default class Spawn_Blueprint
                     }
                 }
 
+                // Inverse as it's removed from the object translation
                 if(this.zOffset !== 0)
                 {
-                    minZ -= this.zOffset; // Inverse as it's removed from the object translation
+                    minZ -= this.zOffset;
                 }
 
                 // Apply transformation
@@ -736,6 +738,12 @@ export default class Spawn_Blueprint
                                     currentTargetPoint.transform.translation[0]  = translationRotation[0];
                                     currentTargetPoint.transform.translation[1]  = translationRotation[1];
                                     currentTargetPoint.transform.translation[2]  = currentTargetPoint.transform.translation[2] + this.centerObject.transform.translation[2] + (this.centerObjectData.height * 100 / 2);
+
+                                    // Switch to the bottom of center object
+                                    if(this.pasteOn === 'bottom')
+                                    {
+                                        currentTargetPoint.transform.translation[2] -= this.centerObjectData.height * 100;
+                                    }
                             }
 
                             if(currentTargetPoint.properties !== undefined)
@@ -785,6 +793,12 @@ export default class Spawn_Blueprint
                             newObject.transform.translation[1]  = translationRotation[1];
                             newObject.transform.translation[2]  = newObject.transform.translation[2] + this.centerObject.transform.translation[2] + (this.centerObjectData.height * 100 / 2);
 
+                            // Switch to the bottom of center object
+                            if(this.pasteOn === 'bottom')
+                            {
+                                newObject.transform.translation[2] -= this.centerObjectData.height * 100;
+                            }
+
                         // Rotate all spline data and tangeant!
                         let mSplineData                      = this.baseLayout.getObjectProperty(newObject, 'mSplineData');
                             if(mSplineData !== null)
@@ -826,6 +840,12 @@ export default class Spawn_Blueprint
                                 mCurrentDestination.values.x  = translationRotation[0];
                                 mCurrentDestination.values.y  = translationRotation[1];
                                 mCurrentDestination.values.z  = mCurrentDestination.values.z + this.centerObject.transform.translation[2] + (this.centerObjectData.height * 100 / 2);
+
+                                // Switch to the bottom of center object
+                                if(this.pasteOn === 'bottom')
+                                {
+                                    mCurrentDestination.values.z -= this.centerObjectData.height * 100;
+                                }
                         }
                 }
 
@@ -925,6 +945,12 @@ export default class Spawn_Blueprint
 
     release()
     {
+        // Delete center object!
+        if(this.pasteOn === 'bottom')
+        {
+            this.baseLayout.deleteGenericBuilding(this.marker);
+        }
+
         // Rearrange layer orders!
         for(let layerId in this.baseLayout.playerLayers)
         {

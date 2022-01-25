@@ -43,6 +43,15 @@ export default class Modal_Map_Paste
                     value           : 0
                 },
                 {
+                    label           : 'Paste position',
+                    name            : 'pasteOn',
+                    inputType       : 'select',
+                    inputOptions    : [
+                        {text: 'Bottom of pasting object, then delete center object', value: 'bottom'},
+                        {text: 'Top of pasting object', value: 'top'}
+                    ]
+                },
+                {
                     label           : 'Colored foundation helper',
                     name            : 'colorSlotHelper',
                     inputType       : 'select',
@@ -60,6 +69,7 @@ export default class Modal_Map_Paste
                         xOffset             : parseFloat(values.xOffset),
                         yOffset             : parseFloat(values.yOffset),
                         zOffset             : parseFloat(values.zOffset),
+                        pasteOn             : values.pasteOn,
                         colorSlotHelper     : values.colorSlotHelper
                     });
                 }
