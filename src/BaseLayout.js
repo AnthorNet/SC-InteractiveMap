@@ -814,10 +814,10 @@ export default class BaseLayout
 
             // Fix some save/games bugs and/or old object conversion
             currentObject = SaveParser_FicsIt.callADA(this, currentObject);
-            if(currentObject === null)
-            {
-                continue;
-            }
+                if(currentObject === null)
+                {
+                    continue;
+                }
 
             /*
             '/Script/FactoryGame.FGInventoryComponent',
@@ -1317,7 +1317,7 @@ export default class BaseLayout
                     circuitSubSystem.cleanCircuits();
 
                 // Save...
-                this.saveGameParser.save();
+                this.saveGameParser.save(this);
             });
 
             // Clipboard control

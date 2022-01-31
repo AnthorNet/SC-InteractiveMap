@@ -946,7 +946,7 @@ export default class Spawn_Blueprint
     release()
     {
         // Delete center object!
-        if(this.pasteOn === 'bottom')
+        if(this.pasteOn === 'bottom' && this.marker !== null)
         {
             this.baseLayout.deleteGenericBuilding(this.marker);
         }

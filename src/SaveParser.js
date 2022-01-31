@@ -70,10 +70,11 @@ export default class SaveParser
         delete this.arrayBuffer;
     }
 
-    save(callback = null)
+    save(baseLayout, callback = null)
     {
         let writer = new SaveParser_Write({
             saveParser  : this,
+            baseLayout  : baseLayout,
             callback    : callback,
             language    : this.language,
             translate   : this.translate

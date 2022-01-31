@@ -30,6 +30,13 @@ export default class SaveParser_FicsIt
                 return SaveParser_FicsIt.convertRightDoorWall(baseLayout, currentObject, '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_03.Build_Wall_Door_8x4_03_C');
             case '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_02_Steel.Build_Wall_Door_8x4_02_Steel_C':
                 return SaveParser_FicsIt.convertRightDoorWall(baseLayout, currentObject, '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_03_Steel.Build_Wall_Door_8x4_03_Steel_C');
+
+            case '/Script/FactoryGame.FGDroneStationInfo':
+                return SaveParser_FicsIt.checkPairedStation(baseLayout, currentObject);
+            case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
+                return SaveParser_FicsIt.checkDroneStation(baseLayout, currentObject);
+            case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
+                return SaveParser_FicsIt.checkDroneTransport(baseLayout, currentObject);
         }
 
         return currentObject;
@@ -175,6 +182,102 @@ export default class SaveParser_FicsIt
         currentObject.className             = newClassName;
         currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 180);
         baseLayout.updateBuiltWithRecipe(currentObject);
+
+        return currentObject;
+    }
+
+    /**
+     * Some old blueprint were keeping the paired station when is was not existing in the pasted save
+     */
+    static checkPairedStation(baseLayout, currentObject)
+    {
+        let mPairedStation = baseLayout.getObjectProperty(currentObject, 'mPairedStation');
+            if(mPairedStation !== null)
+            {
+                let currentPairedStation = baseLayout.saveGameParser.getTargetObject(mPairedStation.pathName);
+                    if(currentPairedStation === null)
+                    {
+                        console.log('Removing ghost mPairedStation "' + mPairedStation.pathName + '"', currentObject.pathName);
+                        baseLayout.deleteObjectProperty(currentObject, 'mPairedStation');
+                    }
+            }
+
+        return currentObject;
+    }
+
+    /**
+     * Remove not existing drones from old blueprints
+     */
+    static checkDroneStation(baseLayout, currentObject)
+    {
+        let mDockedDrone = baseLayout.getObjectProperty(currentObject, 'mDockedDrone');
+            if(mDockedDrone !== null)
+            {
+                let currentDockedDrone = baseLayout.saveGameParser.getTargetObject(mDockedDrone.pathName);
+                    if(currentDockedDrone === null)
+                    {
+                        console.log('Removing ghost mDockedDrone "' + mDockedDrone.pathName + '"', currentObject.pathName);
+                        baseLayout.deleteObjectProperty(currentObject, 'mDockedDrone');
+                    }
+            }
+
+        return currentObject;
+    }
+
+    /**
+     * Fix drone transport making the game crashing
+     */
+    static checkDroneTransport(baseLayout, currentObject)
+    {
+        let mCurrentTripDestinationStation = baseLayout.getObjectProperty(currentObject, 'mCurrentTripDestinationStation');
+            if(mCurrentTripDestinationStation !== null)
+            {
+                let currentTripDestinationStation = baseLayout.saveGameParser.getTargetObject(mCurrentTripDestinationStation.pathName);
+                    if(currentTripDestinationStation === null)
+                    {
+                        console.log('Removing ghost "' + currentObject.className + '"', currentObject.pathName);
+                        baseLayout.saveGameParser.deleteObject(currentObject.pathName);
+                        return null; // Trigger continue;
+                    }
+            }
+
+        let mHomeStation = baseLayout.getObjectProperty(currentObject, 'mHomeStation');
+            if(mHomeStation !== null)
+            {
+                let currentHomeStation = baseLayout.saveGameParser.getTargetObject(mHomeStation.pathName);
+                    if(currentHomeStation === null)
+                    {
+                        console.log('Removing ghost "' + currentObject.className + '"', currentObject.pathName);
+                        baseLayout.saveGameParser.deleteObject(currentObject.pathName);
+                        return null; // Trigger continue;
+                    }
+            }
+
+        let mCurrentAction = baseLayout.getObjectProperty(currentObject, 'mCurrentAction');
+            if(mCurrentAction !== null)
+            {
+                let currentAction = baseLayout.saveGameParser.getTargetObject(mCurrentAction.pathName);
+                    if(currentAction === null)
+                    {
+                        console.log('Removing ghost mCurrentAction "' + mCurrentAction.pathName + '"', currentObject.pathName);
+                        baseLayout.deleteObjectProperty(currentObject, 'mCurrentAction');
+                    }
+            }
+
+        let mActionsToExecute = baseLayout.getObjectProperty(currentObject, 'mActionsToExecute');
+            if(mActionsToExecute !== null)
+            {
+                for(let i = 0; i < mActionsToExecute.values.length; i++)
+                {
+                    let currentActionsToExecute = baseLayout.saveGameParser.getTargetObject(mActionsToExecute.values[i].pathName);
+                        if(currentActionsToExecute === null)
+                        {
+                            console.log('Removing ghost mActionsToExecute "' + mActionsToExecute.values[i].pathName + '"', currentObject.pathName);
+                            baseLayout.deleteObjectProperty(currentObject, 'mActionsToExecute');
+                            break;
+                        }
+                }
+            }
 
         return currentObject;
     }

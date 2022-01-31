@@ -1,5 +1,5 @@
 /* global Intl */
-
+import SaveParser_FicsIt                        from './FicsIt.js';
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class SaveParser_Write
@@ -7,6 +7,7 @@ export default class SaveParser_Write
     constructor(options)
     {
         this.saveParser             = options.saveParser;
+        this.baseLayout             = options.baseLayout;
         this.callback               = options.callback;
 
         this.language               = options.language;
@@ -40,15 +41,33 @@ export default class SaveParser_Write
         setTimeout(function(){
             $('#loaderProgressBar').css('display', 'flex');
             $('#loaderProgressBar .progress-bar').css('width', '0px');
-            this.generateChunks();
+            this.fixSave();
         }.bind(this), 5);
+    }
+
+    fixSave()
+    {
+        let objectsKeys     = Object.keys(this.saveParser.objects);
+        let countObjects    = objectsKeys.length;
+
+            for(let i = 0; i < countObjects; i++)
+            {
+                let currentObject = this.saveParser.getTargetObject(objectsKeys[i]);
+                    if(currentObject === null)
+                    {
+                        continue;
+                    }
+                    SaveParser_FicsIt.callADA(this.baseLayout, currentObject);
+            }
+
+        return this.generateChunks();
     }
 
     generateChunks()
     {
         this.generatedChunks = [];
 
-        let objectsKeys      = Object.keys(this.saveParser.objects);
+        let objectsKeys     = Object.keys(this.saveParser.objects);
         let countObjects     = objectsKeys.length;
             this.saveBinary += this.writeInt(countObjects, false); // This is a reservation for the inflated length ;)
             this.saveBinary += this.writeInt(countObjects, false);
