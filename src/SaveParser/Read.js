@@ -429,24 +429,39 @@ export default class SaveParser_Read
 
                     break;
                 case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                    /*
-                    this.saveParser.objects[objectKey].extra    = {count: this.readInt(), type: this.readByte()};
-                    if(this.saveParser.objects[objectKey].extra.type === 248) // EOS?
-                    {
-                        console.log(this.readString())
-                        console.log(this.readString())
-                    }
-                    else
-                    {
-                        console.log(this.saveParser.objects[objectKey].extra)
-                        //console.log(this.readInt())
-                        //console.log(this.readHex(25))
-                        //console.log(this.readString())
-                    }
-                    /**/
+                    let missingPlayerState                          = (startByte + entityLength) - this.currentByte;
+                        this.saveParser.objects[objectKey].missing  = this.readHex(missingPlayerState);
+                        this.currentByte                           -= missingPlayerState; // Reset back to grab the user ID if possible!
 
-                    let missingPlayerState                      = (startByte + entityLength) - this.currentByte;
-                    this.saveParser.objects[objectKey].missing  = this.readHex(missingPlayerState);
+                        this.readInt(); // Skip count
+                    let playerType = this.readByte();
+                        switch(playerType)
+                        {
+                            case 248: // EOS
+                                this.readString();
+                                let eosStr                                      = this.readString().split('|');
+                                    this.saveParser.objects[objectKey].epicId   = eosStr[0];
+                                break;
+                            case 25: // Steam
+                                let hexLength   = this.readByte();
+                                let steamHex    = '';
+                                    for(let i = 0; i < hexLength; i++)
+                                    {
+                                        steamHex += this.readByte().toString(16).padStart(2, '0');
+                                    }
+
+                                this.saveParser.objects[objectKey].steamId = steamHex.replace(/^0+/, '');
+                                break;
+                            case 3: // Offline
+                                break;
+                            default:
+                                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                if(typeof Sentry !== 'undefined')
+                                {
+                                    Sentry.setContext('missingPlayerState', this.saveParser.objects[objectKey].missing);
+                                }
+                                throw new Error('Unimplemented BP_PlayerState_C type');
+                        }
                     break;
                 //TODO: Not 0 here so bypass those special cases, but why? We mainly do not want to get warned here...
                 case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':

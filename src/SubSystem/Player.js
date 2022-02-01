@@ -73,9 +73,10 @@ export default class SubSystem_Player
                 return playerMarker;
             }
 
-        // Delete wonky player state...
+        /* Delete wonky player state...
         console.log('mOwnedPawn not found... Deleting wonky player state', this.player);
         this.delete();
+        */
 
         return null;
     }
