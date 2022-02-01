@@ -914,6 +914,12 @@ export default class BaseLayout
             return resolve();
         }
 
+        // Skip on pasting
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C')
+        {
+            return resolve();
+        }
+
         if(currentObject.className === '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C')
         {
             return this.addDecoration(currentObject, resolve, skipMod);

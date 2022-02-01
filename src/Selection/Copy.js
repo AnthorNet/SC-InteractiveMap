@@ -102,52 +102,60 @@ export default class Selection_Copy
 
                 // Need some extra linked properties?
                 //TODO: Check mPairedStation?
-                let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone'];
+                let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone', 'mSignPoles'];
                     for(let j = 0; j < extraProperties.length; j++)
                     {
                         let extraProperty   = this.baseLayout.getObjectProperty(currentObject, extraProperties[j]);
                             if(extraProperty !== null)
                             {
-                                let extraPropertyObject = this.baseLayout.saveGameParser.getTargetObject(extraProperty.pathName);
-                                    if(extraPropertyObject !== null)
-                                    {
-                                        let extraPropertyNewObject          = {};
-                                            extraPropertyNewObject.parent   = JSON.parse(JSON.stringify(extraPropertyObject));
-                                            extraPropertyNewObject.children = [];
+                                if(extraProperty.pathName !== undefined && extraProperty.values === undefined)
+                                {
+                                    extraProperty.values = [{pathName: extraProperty.pathName}];
+                                }
 
-                                            if(extraPropertyObject.children !== undefined)
-                                            {
-                                                for(let k = 0; k < extraPropertyObject.children.length; k++)
+                                for(let k = 0; k < extraProperty.values.length; k++)
+                                {
+                                    let extraPropertyObject = this.baseLayout.saveGameParser.getTargetObject(extraProperty.values[k].pathName);
+                                        if(extraPropertyObject !== null)
+                                        {
+                                            let extraPropertyNewObject          = {};
+                                                extraPropertyNewObject.parent   = JSON.parse(JSON.stringify(extraPropertyObject));
+                                                extraPropertyNewObject.children = [];
+
+                                                if(extraPropertyObject.children !== undefined)
                                                 {
-                                                    extraPropertyNewObject.children.push(
-                                                        JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(extraPropertyObject.children[k].pathName)))
-                                                    );
+                                                    for(let k = 0; k < extraPropertyObject.children.length; k++)
+                                                    {
+                                                        extraPropertyNewObject.children.push(
+                                                            JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(extraPropertyObject.children[k].pathName)))
+                                                        );
+                                                    }
                                                 }
-                                            }
 
-                                            // Removes drone action to reset it
-                                            if(extraPropertyNewObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
-                                            {
-                                                this.baseLayout.setObjectProperty(extraPropertyNewObject.parent, 'mCurrentDockingState', {
-                                                    type    : "DroneDockingStateInfo",
-                                                    values  : [
-                                                        {
-                                                            name    : "State",
-                                                            type    : "EnumProperty",
-                                                            value   : {
-                                                                name    : "EDroneDockingState",
-                                                                value   : "EDroneDockingState::DS_DOCKED"
+                                                // Removes drone action to reset it
+                                                if(extraPropertyNewObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
+                                                {
+                                                    this.baseLayout.setObjectProperty(extraPropertyNewObject.parent, 'mCurrentDockingState', {
+                                                        type    : "DroneDockingStateInfo",
+                                                        values  : [
+                                                            {
+                                                                name    : "State",
+                                                                type    : "EnumProperty",
+                                                                value   : {
+                                                                    name    : "EDroneDockingState",
+                                                                    value   : "EDroneDockingState::DS_DOCKED"
+                                                                }
                                                             }
-                                                        }
-                                                    ]
-                                                }, 'StructProperty');
-                                                this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mCurrentAction');
-                                                this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mActionsToExecute');
-                                            }
+                                                        ]
+                                                    }, 'StructProperty');
+                                                    this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mCurrentAction');
+                                                    this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mActionsToExecute');
+                                                }
 
-                                        this.clipboard.data.push(extraPropertyNewObject);
-                                        availablePathName.push(extraPropertyNewObject.parent.pathName);
-                                    }
+                                            this.clipboard.data.push(extraPropertyNewObject);
+                                            availablePathName.push(extraPropertyNewObject.parent.pathName);
+                                        }
+                                }
                             }
                     }
 
