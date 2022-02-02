@@ -9,6 +9,9 @@ export default class SubSystem_Player
 
         this.defaultInventorySize   = 16;
         this.defaultArmSlots        = 1;
+
+        this.displayName            = false;
+        this.doDisplayNameLookup();
     }
 
     isHost()
@@ -16,11 +19,50 @@ export default class SubSystem_Player
         return (this.baseLayout.saveGameParser.playerHostPathName === this.player.pathName);
     }
 
+    doDisplayNameLookup()
+    {
+        if(this.displayName === false)
+        {
+            this.displayName = null; // Do lookup only once per session
+
+            if(this.player.eosId !== undefined)
+            {
+                $.getJSON(this.baseLayout.usersUrl + '?eosId=' + this.player.eosId, function(data)
+                {
+                    if(data !== null)
+                    {
+                        this.displayName = data;
+                    }
+                }.bind(this));
+            }
+            if(this.player.steamId !== undefined)
+            {
+                $.getJSON(this.baseLayout.usersUrl + '?steamId=' + this.player.steamId, function(data)
+                {
+                    if(data !== null)
+                    {
+                        this.displayName = data;
+                    }
+                }.bind(this));
+            }
+        }
+    }
+
     getDisplayName()
     {
         if(this.isHost() === true)
         {
+            if(this.displayName !== null)
+            {
+                return this.displayName + ' <em>(Host)</em>';
+            }
+
             return 'Host';
+        }
+
+        if(this.displayName !== null)
+        {
+            return this.displayName + ' <em>(Guest #' + this.player.pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', '') + ')</em>';
         }
 
         return 'Guest #' + this.player.pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', '');
@@ -63,6 +105,7 @@ export default class SubSystem_Player
 
                 this.baseLayout.playerLayers.playerPositionLayer.elements.push(playerMarker);
                 playerMarker.bindContextMenu(this.baseLayout);
+                this.baseLayout.autoBindTooltip(playerMarker);
                 playerMarker.addTo(this.baseLayout.playerLayers.playerPositionLayer.subLayer);
 
                 if(this.isHost() === true)

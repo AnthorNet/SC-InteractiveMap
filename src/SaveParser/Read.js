@@ -442,7 +442,7 @@ export default class SaveParser_Read
                                     case 248: // EOS
                                         this.readString();
                                         let eosStr                                      = this.readString().split('|');
-                                            this.saveParser.objects[objectKey].epicId   = eosStr[0];
+                                            this.saveParser.objects[objectKey].eosId    = eosStr[0];
                                         break;
                                     case 25: // Steam
                                         let steamHexLength  = this.readByte();
@@ -462,7 +462,7 @@ export default class SaveParser_Read
                                                 epicHex += this.readByte().toString(16).padStart(2, '0');
                                             }
 
-                                        this.saveParser.objects[objectKey].epicId = epicHex.replace(/^0+/, '');
+                                        this.saveParser.objects[objectKey].eosId = epicHex.replace(/^0+/, '');
                                         break;
                                     case 8: // ???
                                         this.saveParser.objects[objectKey].platformId = this.readString();

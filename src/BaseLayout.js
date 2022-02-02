@@ -49,6 +49,7 @@ export default class BaseLayout
         this.scriptVersion                      = (options.version !== undefined) ? options.version : Math.floor(Math.random() * Math.floor(9999999999));
         this.staticUrl                          = options.staticUrl;
         this.tetrominoUrl                       = options.tetrominoUrl;
+        this.usersUrl                           = options.usersUrl;
 
         this.satisfactoryMap                    = options.satisfactoryMap;
         this.saveGameParser                     = options.saveGameParser;
@@ -877,6 +878,15 @@ export default class BaseLayout
 
     parseObject(currentObject, resolve = false, skipMod = false)
     {
+        if(currentObject === null)
+        {
+            if(resolve === false)
+            {
+                return;
+            }
+            return resolve();
+        }
+
         if(currentObject.className.startsWith('/Game/FactoryGame/') === false)
         {
             for(let modId in this.modsData)
@@ -917,6 +927,10 @@ export default class BaseLayout
         // Skip on pasting
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C')
         {
+            if(resolve === false)
+            {
+                return;
+            }
             return resolve();
         }
 
