@@ -79,6 +79,29 @@ export default class SubSystem_Player
         return null;
     }
 
+    getCurrentHealth()
+    {
+        let mOwnedPawn = this.getOwnedPawn();
+            if(mOwnedPawn !== null)
+            {
+                let mHealthComponent = this.baseLayout.getObjectProperty(mOwnedPawn, 'mHealthComponent');
+                    if(mHealthComponent !== null)
+                    {
+                        let currentHealthComponent = this.baseLayout.saveGameParser.getTargetObject(mHealthComponent.pathName);
+                            if(currentHealthComponent !== null)
+                            {
+                                let mCurrentHealth = this.baseLayout.getObjectProperty(currentHealthComponent, 'mCurrentHealth');
+                                    if(mCurrentHealth !== null)
+                                    {
+                                        return mCurrentHealth;
+                                    }
+                            }
+                    }
+            }
+
+        return 100;
+    }
+
 
 
     addMarker()

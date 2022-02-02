@@ -2,6 +2,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
+import SubSystem_Creature                       from '../SubSystem/Creature.js';
 import SubSystem_Unlock                         from '../SubSystem/Unlock.js';
 
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
@@ -47,6 +48,9 @@ export default class BaseLayout_Tooltip
 
             if(faunaData !== null)
             {
+                let creature            = new SubSystem_Creature({baseLayout: this.baseLayout, creature: currentObject});
+                    faunaData.health    = creature.getCurrentHealth();
+
                 return this.setBuildingTooltipContent(currentObject, faunaData);
             }
             else
@@ -76,7 +80,8 @@ export default class BaseLayout_Tooltip
                                     ];
                                     return this.setBuildingTooltipContent(currentObject, {
                                         name    : this.baseLayout.players[currentObject.pathName].getDisplayName(),
-                                        image   : emotes[Math.floor(Math.random() * emotes.length)]
+                                        image   : emotes[Math.floor(Math.random() * emotes.length)],
+                                        health  : this.baseLayout.players[currentObject.pathName].getCurrentHealth()
                                     });
                             }
                             break;
@@ -1819,6 +1824,17 @@ export default class BaseLayout_Tooltip
         if(buildingData.image !== undefined)
         {
             content.push('<div class="pt-3"><img src="' + buildingData.image + '" style="width: 128px;height: 128px;" /></div>');
+        }
+
+        if(buildingData.health !== undefined)
+        {
+            content.push('<div class="pt-3">');
+                content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/bar_health_empty_straight.png?v=' + this.baseLayout.scriptVersion + ') left no-repeat;height: 28px;width: 201px;">');
+                    content.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/bar_health_full_straight.png?v=' + this.baseLayout.scriptVersion + ') left no-repeat;height: 28px;width: ' + buildingData.health + '%;">');
+
+                    content.push('</div>');
+                content.push('</div>');
+            content.push('</div>');
         }
 
         return '<div class="d-flex" style="' + this.genericTooltipBackgroundStyle + '">\
