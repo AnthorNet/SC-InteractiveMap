@@ -433,34 +433,52 @@ export default class SaveParser_Read
                         this.saveParser.objects[objectKey].missing  = this.readHex(missingPlayerState);
                         this.currentByte                           -= missingPlayerState; // Reset back to grab the user ID if possible!
 
-                        this.readInt(); // Skip count
-                    let playerType = this.readByte();
-                        switch(playerType)
+                        if(missingPlayerState > 0)
                         {
-                            case 248: // EOS
-                                this.readString();
-                                let eosStr                                      = this.readString().split('|');
-                                    this.saveParser.objects[objectKey].epicId   = eosStr[0];
-                                break;
-                            case 25: // Steam
-                                let hexLength   = this.readByte();
-                                let steamHex    = '';
-                                    for(let i = 0; i < hexLength; i++)
-                                    {
-                                        steamHex += this.readByte().toString(16).padStart(2, '0');
-                                    }
-
-                                this.saveParser.objects[objectKey].steamId = steamHex.replace(/^0+/, '');
-                                break;
-                            case 3: // Offline
-                                break;
-                            default:
-                                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
-                                if(typeof Sentry !== 'undefined')
+                            this.readInt(); // Skip count
+                            let playerType = this.readByte();
+                                switch(playerType)
                                 {
-                                    Sentry.setContext('missingPlayerState', this.saveParser.objects[objectKey].missing);
+                                    case 248: // EOS
+                                        this.readString();
+                                        let eosStr                                      = this.readString().split('|');
+                                            this.saveParser.objects[objectKey].epicId   = eosStr[0];
+                                        break;
+                                    case 25: // Steam
+                                        let steamHexLength  = this.readByte();
+                                        let steamHex        = '';
+                                            for(let i = 0; i < steamHexLength; i++)
+                                            {
+                                                steamHex += this.readByte().toString(16).padStart(2, '0');
+                                            }
+
+                                        this.saveParser.objects[objectKey].steamId = steamHex.replace(/^0+/, '');
+                                        break;
+                                    case 17: // Old EOS
+                                        let epicHexLength   = this.readByte();
+                                        let epicHex         = '';
+                                            for(let i = 0; i < epicHexLength; i++)
+                                            {
+                                                epicHex += this.readByte().toString(16).padStart(2, '0');
+                                            }
+
+                                        this.saveParser.objects[objectKey].epicId = epicHex.replace(/^0+/, '');
+                                        break;
+                                    case 8: // ???
+                                        this.saveParser.objects[objectKey].platformId = this.readString();
+                                        break;
+                                    case 3: // Offline
+                                        break;
+                                    default:
+                                        BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                        if(typeof Sentry !== 'undefined')
+                                        {
+                                            Sentry.setContext('BP_PlayerState_C', this.saveParser.objects[objectKey]);
+                                            Sentry.setContext('playerType', playerType);
+                                        }
+                                        console.log(playerType, this.saveParser.objects[objectKey]);
+                                        throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
                                 }
-                                throw new Error('Unimplemented BP_PlayerState_C type');
                         }
                     break;
                 //TODO: Not 0 here so bypass those special cases, but why? We mainly do not want to get warned here...
