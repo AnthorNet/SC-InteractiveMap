@@ -52,6 +52,7 @@ server {
 
     # Make the save loadable by the map
     add_header              Access-Control-Allow-Headers "Access-Control-Allow-Origin";
+    add_header              Access-Control-Allow-Origin "https://satisfactory-calculator.com";
 
     if($request_method = OPTIONS){
         return 200;
