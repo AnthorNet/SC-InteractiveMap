@@ -278,6 +278,7 @@ export default class Modal_Map_Hotbars
                         let currentInventory    = null;
                             if(currentShortcut !== null)
                             {
+
                                 let mRecipeToActivate     = this.baseLayout.getItemDataFromRecipe(currentShortcut, 'mRecipeToActivate');
                                     if(mRecipeToActivate !== null && mRecipeToActivate.produce !== undefined)
                                     {
@@ -285,12 +286,68 @@ export default class Modal_Map_Hotbars
 
                                             if(buildingData !== null)
                                             {
-                                                currentInventory    = {image: buildingData.image, name: buildingData.name};
+                                                currentInventory = true;
+                                                mHotbarsHtml.push(this.baseLayout.getInventoryImage({image: buildingData.image, name: buildingData.name}, cellWidth));
+                                            }
+                                    }
+                                    else
+                                    {
+                                        let mCustomizationRecipeToActivate = this.baseLayout.getObjectProperty(currentShortcut, 'mCustomizationRecipeToActivate');
+                                            if(mCustomizationRecipeToActivate !== null)
+                                            {
+                                                if(mCustomizationRecipeToActivate.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/Recipe_'))
+                                                {
+                                                    let currentSwatch = mCustomizationRecipeToActivate.pathName.split('.').pop();
+                                                        switch(currentSwatch)
+                                                        {
+                                                            case 'Recipe_Swatch_Custom_C':
+                                                                let customColor = this.baseLayout.buildableSubSystem.getPlayerCustomColor();
+                                                                    currentInventory = true;
+                                                                    mHotbarsHtml.push('<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 50%;padding: 5px;background: linear-gradient(135deg, rgb('
+                                                                        + customColor.primaryColor.r + ', ' + customColor.primaryColor.g + ', ' + customColor.primaryColor.b + ') 0%,'
+                                                                        + 'rgb(' + customColor.primaryColor.r + ', ' + customColor.primaryColor.g + ', ' + customColor.primaryColor.b + ') 50%,'
+                                                                        + 'rgb(' + customColor.secondaryColor.r + ', ' + customColor.secondaryColor.g + ', ' + customColor.secondaryColor.b + ') 51%,'
+                                                                        + 'rgb(' + customColor.secondaryColor.r + ', ' + customColor.secondaryColor.g + ', ' + customColor.secondaryColor.b + ') 100%);" data-hover="tooltip" title="Custom Swatch"></div>');
+                                                                break;
+                                                            default:
+                                                                let currentSlot     = parseInt(currentSwatch.replace('Recipe_Swatch_Slot', '').replace('_C'));
+                                                                let playerColors    = this.baseLayout.buildableSubSystem.getPlayerColorSlots();
+                                                                    if(playerColors[currentSlot] !== undefined)
+                                                                    {
+                                                                            currentInventory    = true;
+                                                                        let swatchName          = 'Swatch ' + currentSlot;
+                                                                            if(currentSlot === 0){ swatchName = 'FICSIT Factory'; }
+                                                                            if(currentSlot === 16){ swatchName = 'FICSIT Foundation'; }
+                                                                            if(currentSlot === 17){ swatchName = 'FICSIT Pipe'; }
+                                                                            if(currentSlot === 18){ swatchName = 'Concrete Structure'; }
+
+                                                                        mHotbarsHtml.push('<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 50%;padding: 5px;background: linear-gradient(135deg, rgb('
+                                                                            + playerColors[currentSlot].primaryColor.r + ', ' + playerColors[currentSlot].primaryColor.g + ', ' + playerColors[currentSlot].primaryColor.b + ') 0%,'
+                                                                            + 'rgb(' + playerColors[currentSlot].primaryColor.r + ', ' + playerColors[currentSlot].primaryColor.g + ', ' + playerColors[currentSlot].primaryColor.b + ') 50%,'
+                                                                            + 'rgb(' + playerColors[currentSlot].secondaryColor.r + ', ' + playerColors[currentSlot].secondaryColor.g + ', ' + playerColors[currentSlot].secondaryColor.b + ') 51%,'
+                                                                            + 'rgb(' + playerColors[currentSlot].secondaryColor.r + ', ' + playerColors[currentSlot].secondaryColor.g + ', ' + playerColors[currentSlot].secondaryColor.b + ') 100%);" data-hover="tooltip" title="' + swatchName + '"></div>');
+                                                                    }
+                                                        }
+                                                }
+                                                else
+                                                {
+                                                    if(mCustomizationRecipeToActivate.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/'))
+                                                    {
+
+                                                    }
+                                                    else
+                                                    {
+                                                        //console.log('MISSING CASE', mCustomizationRecipeToActivate);
+                                                    }
+                                                }
                                             }
                                     }
                             }
 
-                        mHotbarsHtml.push(this.baseLayout.getInventoryImage(currentInventory, cellWidth));
+                            if(currentInventory === null)
+                            {
+                                mHotbarsHtml.push(this.baseLayout.getInventoryImage(null, cellWidth));
+                            }
                     }
 
                     mHotbarsHtml.push('<div class="d-flex flex-row" style="position:relative;margin: 1px;width: 140px;height: ' + cellWidth + 'px;padding: 6px;align-items: center;justify-content: center;">');
@@ -312,10 +369,10 @@ export default class Modal_Map_Hotbars
     {
         let mPresetHotbars      = this.baseLayout.getObjectProperty(player, 'mPresetHotbars');
         let mPresetHotbarsHtml  = [];
+        let cellWidth           = 50;
 
             if(mPresetHotbars !== null)
             {
-                cellWidth           = 50;
                 mPresetHotbarsHtml.push('<div class="row">');
 
                 for(let i = 0; i < mPresetHotbars.values.length; i++)
