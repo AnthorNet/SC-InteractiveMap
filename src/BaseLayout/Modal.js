@@ -42,6 +42,7 @@ export default class BaseLayout_Modal
                 colorSlots      : '<select class="form-control"></select>',
                 inventoryItem   : '<select class="form-control selectpicker"></select>',
                 option          : '<option></option>',
+                file            : '<div class="custom-file"><input type="file" class="custom-file-input" id="customFile"><label class="custom-file-label" for="customFile">Choose file</label></div>',
                 colorPicker     : '<div class="row">'
                                 + '    <div class="col-6">'
                                 + '        <div class="colorPicker"></div>'
@@ -309,6 +310,9 @@ export default class BaseLayout_Modal
                             case 'textArea':
                                 values[input.name] = input.element.find('textarea').val();
                                 break;
+                            case 'file':
+                                values[input.name] = input.element.find('input').prop('files')[0];
+                                break;
                             case 'colorPicker':
                                 values[input.name] = {
                                     r: parseInt(input.element.find('.inputR').val()) || 0,
@@ -498,6 +502,12 @@ export default class BaseLayout_Modal
                             }
                     });
 
+                    break;
+                case 'file':
+                    input.find('.custom-file-input').on('change',function(){
+                        let fileName = $(this).val().replace('C:\\fakepath\\', " ");
+                            $(this).next('.custom-file-label').html(fileName);
+                    });
                     break;
                 default:
                     input.val(options.value);

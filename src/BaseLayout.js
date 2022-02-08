@@ -708,6 +708,7 @@ export default class BaseLayout
             }
             if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
             {
+                //console.log('BP_PlayerState_C', currentObject);
                 this.players[currentObject.pathName] = new SubSystem_Player({baseLayout: this, player: currentObject});
                 continue;
             }

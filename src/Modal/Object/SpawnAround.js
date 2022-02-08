@@ -3,6 +3,7 @@ import BaseLayout_Modal                         from '../../BaseLayout/Modal.js'
 import SubSystem_Buildable                      from '../../SubSystem/Buildable.js';
 
 import Spawn_Circle                             from '../../Spawn/Circle.js';
+import Spawn_Image                              from '../../Spawn/Image.js';
 import Spawn_Polygon                            from '../../Spawn/Polygon.js';
 import Spawn_Rectangle                          from '../../Spawn/Rectangle.js';
 import Spawn_Road                               from '../../Spawn/Road.js';
@@ -23,6 +24,8 @@ export default class Modal_Object_SpawnAround
             inputOptions.push({group: 'Geometric form', text: 'Plain regular polygon', value: 'plainPolygon'});
             inputOptions.push({group: 'Geometric form', text: 'Hollow regular polygon', value: 'hollowPolygon'});
             inputOptions.push({group: 'Geometric form', text: 'Road', value: 'road'});
+
+            inputOptions.push({group: 'Pixel Art', text: 'Import an image', value: 'importImage'});
 
             for(let faunaId in baseLayout.faunaData)
             {
@@ -383,6 +386,47 @@ export default class Modal_Object_SpawnAround
                                     }
                                 });
                                 break;
+
+                            case 'importImage':
+                                let imageOptions = [];
+                                    imageOptions.push({
+                                        label       : 'Image <em class="small">(JPG/PNG)</em>',
+                                        name        : 'imageFile',
+                                        inputType   : 'file'
+                                    });
+                                    imageOptions.push({
+                                        label       : 'Support type',
+                                        name        : 'supportId',
+                                        inputType   : 'select',
+                                        inputOptions: [
+                                            {group: 'Best performance', text: baseLayout.buildingsData.Build_Beam_Painted_C.name, value: 'Build_Beam_Painted_C'},
+                                            {group: 'Slow performance (Limited to 64px)', text: baseLayout.buildingsData.Build_StandaloneWidgetSign_Square_Tiny_C.name, value: 'Build_StandaloneWidgetSign_Square_Tiny_C'},
+                                            {group: 'Slow performance (Limited to 64px)', text: baseLayout.buildingsData.Build_StandaloneWidgetSign_Square_Small_C.name, value: 'Build_StandaloneWidgetSign_Square_Small_C'},
+                                            {group: 'Slow performance (Limited to 64px)', text: baseLayout.buildingsData.Build_StandaloneWidgetSign_Square_C.name, value: 'Build_StandaloneWidgetSign_Square_C'}
+                                        ],
+                                        value       : 'Build_Beam_Painted_C'
+                                    });
+
+                                BaseLayout_Modal.form({
+                                    title       : "Import image options",
+                                    message     : '<div class="alert alert-warning">Signs can be very taxing on your GPU and get the game lags a lot. They also use a lot of uObject so be careful. Beams don\'t have that problem at all and performs very well.<br /><br />1px is equivalent to 1m.</div>',
+                                    container   : '#leafletMap',
+                                    inputs      : imageOptions,
+                                    callback    : function(values)
+                                    {
+                                        if(values !== null && values.imageFile !== null && values.imageFile !== undefined && values.supportId !== null)
+                                        {
+                                            return new Spawn_Image({
+                                                marker          : marker,
+                                                imageFile       : values.imageFile,
+                                                supportId       : values.supportId,
+                                                useOwnMaterials : form.useOwnMaterials
+                                            });
+                                        }
+                                    }
+                                });
+                                break;
+
                             default:
                                 return;
                         }
