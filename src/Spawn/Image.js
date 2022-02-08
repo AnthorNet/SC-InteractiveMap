@@ -6,16 +6,18 @@ export default class Spawn_Image
 {
     constructor(options)
     {
-        this.marker             = options.marker;
-        this.baseLayout         = options.marker.baseLayout;
-        this.layerId            = 'playerSignsLayer';
+        this.marker                 = options.marker;
+        this.baseLayout             = options.marker.baseLayout;
 
-        this.supportId          = options.supportId;
-        this.supportClassName   = this.baseLayout.buildingsData[options.supportId].className;
-        this.supportSize        = this.baseLayout.buildingsData[options.supportId].width * 100;
-        this.maxPixelSize       = 64;
+        let supportType             = options.supportId.split('|')
+            this.supportId          = supportType[0];
+            this.supportRotation    = parseInt(supportType[1]);
+            this.supportClassName   = this.baseLayout.buildingsData[this.supportId].className;
+            this.supportSize        = this.baseLayout.buildingsData[this.supportId].width * 100;
+            this.layerId            = this.baseLayout.buildingsData[this.supportId].mapLayer;
 
-        this.useOwnMaterials    = options.useOwnMaterials;
+        this.maxPixelSize           = 64;
+        this.useOwnMaterials        = options.useOwnMaterials;
 
         if(options.imageFile.type !== undefined && ['image/jpeg', 'image/png'].includes(options.imageFile.type))
         {
@@ -153,13 +155,19 @@ export default class Spawn_Image
                 }
             };
 
-        let newSupport             = {
+        let supportRotation     = this.correctedCenterYaw;
+            if(this.supportId === 'Build_Beam_Painted_C' && this.supportRotation !== 0)
+            {
+                supportRotation = BaseLayout_Math.clampEulerAxis(this.correctedCenterYaw + this.supportRotation);
+            }
+
+        let newSupport          = {
                 type                : 1,
                 className           : this.supportClassName,
                 pathName            : 'Persistent_Level:PersistentLevel.' + this.supportId + '_XXX',
                 needTransform       : 1,
                 transform           : {
-                    rotation            : BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, this.correctedCenterYaw),
+                    rotation            : BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, supportRotation),
                     translation         : [0, 0, 0]
                 },
                 entity              : {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'},
