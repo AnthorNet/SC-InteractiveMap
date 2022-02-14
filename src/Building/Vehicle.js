@@ -62,6 +62,62 @@ export default class Building_Vehicle
         return null;
     }
 
+    static removeTrackDataPoint(baseLayout, currentObject, dataPoint)
+    {
+        let mTargetList     = Building_Vehicle.getTargetList(baseLayout, currentObject);
+            if(mTargetList !== null)
+            {
+                let targetNode = baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
+                    if(targetNode !== null)
+                    {
+                        let mFirst  = baseLayout.getObjectProperty(targetNode, 'mFirst');
+                        let mLast   = baseLayout.getObjectProperty(targetNode, 'mLast');
+
+                            if(mFirst !== null && mLast !== null)
+                            {
+                                let firstNode   = baseLayout.saveGameParser.getTargetObject(mFirst.pathName);
+                                let lastNode    = baseLayout.saveGameParser.getTargetObject(mLast.pathName);
+
+                                    if(firstNode !== null && lastNode !== null)
+                                    {
+                                        let currentTrack        = [];
+                                        let previousNode        = null;
+                                        let checkCurrentNode    = firstNode;
+                                            while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
+                                            {
+                                                currentTrack.push(checkCurrentNode.transform.translation);
+
+                                                let mNext               = baseLayout.getObjectProperty(checkCurrentNode, 'mNext');
+                                                    if(mNext !== null)
+                                                    {
+                                                        if(currentTrack.length === (dataPoint + 1))
+                                                        {
+                                                            // Replace next on previsous node
+                                                            let mNextPreviousNode           = baseLayout.getObjectProperty(previousNode, 'mNext');
+                                                                mNextPreviousNode.pathName  = mNext.pathName;
+
+                                                            // Delete current node from the save
+                                                            baseLayout.saveGameParser.deleteObject(checkCurrentNode.pathName);
+
+                                                            return true;
+                                                        }
+
+                                                        previousNode        = checkCurrentNode;
+                                                        checkCurrentNode    = baseLayout.saveGameParser.getTargetObject(mNext.pathName);
+                                                    }
+                                                    else
+                                                    {
+                                                        checkCurrentNode    = null;
+                                                    }
+                                            }
+                                    }
+                            }
+                    }
+            }
+
+        return false;
+    }
+
     /**
      * CONTEXT MENU
      */

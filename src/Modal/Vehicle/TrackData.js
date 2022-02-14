@@ -42,6 +42,12 @@ export default class Modal_Vehicle_TrackData
                         .css('border-color', '#777777')
                         .css('z-index', 1)
             });
+            $('#genericModal .modal-body table tr[data-stop] .text-danger').click(function(e){
+                let stop = $(e.target).parent().parent().attr('data-stop');
+                    Building_Vehicle.removeTrackDataPoint(this.baseLayout, this.vehicle, parseInt(stop));
+
+                    return this.parse();
+            }.bind(this));
         }
     }
 
@@ -59,6 +65,12 @@ export default class Modal_Vehicle_TrackData
                         html.push('<td width="1" class="text-right">' + (i + 1) + '.</td>');
                         html.push('<td>');
                             html.push('[' + Math.round(trackData[i][0]) + ', ' + Math.round(trackData[i][1]) + ']');
+                        html.push('</td>');
+                        html.push('<td class="text-right">');
+                            if(i > 0 && i < (trackData.length - 2))
+                            {
+                                html.push('<i class="fas fa-trash-alt text-danger" style="cursor: pointer;"></i>');
+                            }
                         html.push('</td>');
                     html.push('</tr>');
                 }

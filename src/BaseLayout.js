@@ -3982,7 +3982,7 @@ export default class BaseLayout
                 // Only deals with form holes in high quality
                 if(currentModel.forms[i].holes !== undefined && this.mapModelsQuality === 'high')
                 {
-                    if(currentModel.forms[i].holesLength === undefined)
+                   if(currentModel.forms[i].holesLength === undefined)
                     {
                         currentModel.forms[i].holesLength = currentModel.forms[i].holes.length;
                     }
