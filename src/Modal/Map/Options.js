@@ -227,19 +227,11 @@ export default class Modal_Map_Options
         html.push('</div>');
         html.push('</div></div>');
 
-        html.push('<div class="row"><div class="col-6">');
-        html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputUseDetailedModels" id="inputUseDetailedModels" ' + ((this.baseLayout.useDetailedModels === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputUseDetailedModels">Use detailed models?</label></div>');
-        html.push('</div>');
-        html.push('</div><div class="col-6">');
-        html.push('<div class="form-group"><div class="input-group input-group-sm"><div class="input-group-prepend"><label class="input-group-text" for="inputUseSmoothFactor">Detailed models quality</label></div><select class="custom-select text-white" id="inputUseSmoothFactor" style="background: none;">');
-        html.push('<option value="0" class="text-secondary" ' + ((this.baseLayout.useSmoothFactor === 0) ? 'selected' : '') + '>0 (Best quality)</option>');
-        html.push('<option value="1" class="text-secondary" ' + ((this.baseLayout.useSmoothFactor === 1) ? 'selected' : '') + '>1 (Default)</option>');
-        for(let i = 2; i <= 8; i++)
-        {
-            html.push('<option value="' + i + '" class="text-secondary" ' + ((this.baseLayout.useSmoothFactor === i) ? 'selected' : '') + '>' + i + '</option>');
-        }
-        html.push('<option value="9" class="text-secondary" ' + ((this.baseLayout.useSmoothFactor === 9) ? 'selected' : '') + '>9 (Worst quality)</option>');
+        html.push('<div class="row"><div class="col-12">');
+        html.push('<div class="form-group"><div class="input-group input-group-sm"><div class="input-group-prepend"><label class="input-group-text" for="inputMapModelsQuality">Models Quality</label></div><select class="custom-select text-white" id="inputMapModelsQuality" style="background: none;">');
+        html.push('<option value="low" class="text-secondary" ' + ((this.baseLayout.mapModelsQuality === 'low') ? 'selected' : '') + '>Square (Low)</option>');
+        html.push('<option value="medium" class="text-secondary" ' + ((this.baseLayout.mapModelsQuality === 'medium') ? 'selected' : '') + '>Outline (Medium)</option>');
+        html.push('<option value="high" class="text-secondary" ' + ((this.baseLayout.mapModelsQuality === 'high') ? 'selected' : '') + '>Ouline + Details (High)</option>');
         html.push('</select></div></div>');
         html.push('</div></div>');
 
@@ -282,19 +274,19 @@ export default class Modal_Map_Options
                 this.baseLayout.showGeneratorsOnLoad        = (($('#inputShowGeneratorsOnLoad').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowGeneratorsOnLoad', this.baseLayout.showGeneratorsOnLoad);
 
-                this.baseLayout.showNodesOnMiners    = (($('#inputShowNodesOnMiners').is(':checked') === true) ? true : false);
+                this.baseLayout.showNodesOnMiners           = (($('#inputShowNodesOnMiners').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowNodesOnMiners', this.baseLayout.showNodesOnMiners);
 
-                this.baseLayout.showCollected       = (($('#inputShowCollected').is(':checked') === true) ? true : false);
+                this.baseLayout.showCollected               = (($('#inputShowCollected').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowCollected', this.baseLayout.showCollected);
 
                 this.baseLayout.showTransportationOnLoad    = (($('#inputShowTransportationOnLoad').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowTransportationOnLoad', this.baseLayout.showTransportationOnLoad);
 
-                this.baseLayout.showPatterns    = (($('#inputShowPatterns').is(':checked') === true) ? true : false);
+                this.baseLayout.showPatterns                = (($('#inputShowPatterns').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowPatterns', this.baseLayout.showPatterns);
 
-                this.baseLayout.showVehicleExtraMarker    = (($('#inputShowVehicleExtraMarker').is(':checked') === true) ? true : false);
+                this.baseLayout.showVehicleExtraMarker      = (($('#inputShowVehicleExtraMarker').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowVehicleExtraMarker', this.baseLayout.showVehicleExtraMarker);
 
                 this.baseLayout.useRadioactivity            = (($('#inputUseRadioactivity').is(':checked') === true) ? true : false);
@@ -303,11 +295,8 @@ export default class Modal_Map_Options
                 this.baseLayout.useFogOfWar                 = (($('#inputUseFogOfWar').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapUseFogOfWar', this.baseLayout.useFogOfWar);
 
-                this.baseLayout.useDetailedModels           = (($('#inputUseDetailedModels').is(':checked') === true) ? true : false);
-                this.baseLayout.localStorage.setItem('mapUseDetailedModels', this.baseLayout.useDetailedModels);
-
-                this.baseLayout.useSmoothFactor             = parseInt($('#inputUseSmoothFactor').val());
-                this.baseLayout.localStorage.setItem('mapUseSmoothFactor', this.baseLayout.useSmoothFactor);
+                this.baseLayout.mapModelsQuality            = $('#inputMapModelsQuality').val();
+                this.baseLayout.localStorage.setItem('mapModelsQuality', this.baseLayout.mapModelsQuality);
             }
 
             let header                  = this.baseLayout.saveGameParser.getHeader();

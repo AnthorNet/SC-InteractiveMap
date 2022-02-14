@@ -100,12 +100,12 @@ export default class SubSystem_Map
                     }
 
                     let fogOfWarPolygon = L.polygon(polygonPositions, {
-                            smoothFactor: 0,
-                            fillColor: '#000000',
-                            fillOpacity: 1,
-                            weight: 0,
-                            interactive: false,
-                            renderer: this.playerLayers.playerFogOfWar.renderer
+                            smoothFactor    : 0,
+                            fillColor       : '#000000',
+                            fillOpacity     : 1,
+                            weight          : 0,
+                            interactive     : false,
+                            renderer        : this.playerLayers.playerFogOfWar.renderer
                         });
 
                     this.playerLayers.playerFogOfWar.elements.push(fogOfWarPolygon);

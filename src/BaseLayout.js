@@ -106,8 +106,7 @@ export default class BaseLayout
 
         this.useRadioactivity                   = (this.localStorage !== null && this.localStorage.getItem('mapUseRadioactivity') !== null) ? (this.localStorage.getItem('mapUseRadioactivity') === 'true') : true;
         this.useFogOfWar                        = (this.localStorage !== null && this.localStorage.getItem('mapUseFogOfWar') !== null) ? (this.localStorage.getItem('mapUseFogOfWar') === 'true') : true;
-        this.useDetailedModels                  = (this.localStorage !== null && this.localStorage.getItem('mapUseDetailedModels') !== null) ? (this.localStorage.getItem('mapUseDetailedModels') === 'true') : true;
-        this.useSmoothFactor                    = (this.localStorage !== null && this.localStorage.getItem('mapUseSmoothFactor') !== null) ? parseInt(this.localStorage.getItem('mapUseSmoothFactor')) : 1;
+        this.mapModelsQuality                   = (this.localStorage !== null && this.localStorage.getItem('mapModelsQuality') !== null) ? this.localStorage.getItem('mapModelsQuality') : 'high';
 
         this.availablePowerConnection           = ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.FGPowerConnection1', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection'];
         this.availableBeltConnection            = ['.ConveyorAny0', '.ConveyorAny1', '.Input0', '.Input1', '.Input2', '.Input3', '.InPut3', '.Input4', '.Input5', '.Input6', '.Output0', '.Output1', '.Output2', '.Output3'];
@@ -546,11 +545,9 @@ export default class BaseLayout
                 objectsKeys         = Object.keys(objects);
 
                 // Performance warning!!!
-                if(objectsKeys.length > 500000)
-                {
-                    this.useDetailedModels  = false;
-                    this.showPatterns       = false;
-                }
+                if(objectsKeys.length > 500000)  { this.mapModelsQuality   = 'medium'; }
+                if(objectsKeys.length > 750000)  { this.showPatterns       = false; }
+                if(objectsKeys.length > 1000000) { this.mapModelsQuality   = 'low'; }
         }
 
         let countObjects            = objectsKeys.length;
@@ -2837,8 +2834,8 @@ export default class BaseLayout
             }
         }
 
-        // Activate detailedModel?
-        if(this.useDetailedModels === true && this.detailedModels !== null && buildingData.mapUseModel !== undefined && this.detailedModels[currentObject.className] === undefined)
+        // Activate detailedModel copy from another building?
+        if(this.detailedModels !== null && buildingData.mapUseModel !== undefined && this.detailedModels[currentObject.className] === undefined)
         {
             if(this.buildingsData[buildingData.mapUseModel] !== undefined && this.detailedModels[this.buildingsData[buildingData.mapUseModel].className] !== undefined)
             {
@@ -3639,7 +3636,7 @@ export default class BaseLayout
 
                         // Does source or target have a connection anchor?
                         let sourceTranslation = currentObjectSourceOuterPath.transform.translation;
-                            if(this.useDetailedModels === true && this.detailedModels !== null && this.detailedModels[currentObjectSourceOuterPath.className] !== undefined && this.detailedModels[currentObjectSourceOuterPath.className].powerConnection !== undefined)
+                            if(this.detailedModels !== null && this.detailedModels[currentObjectSourceOuterPath.className] !== undefined && this.detailedModels[currentObjectSourceOuterPath.className].powerConnection !== undefined)
                             {
                                 let currentModel = this.detailedModels[currentObjectSourceOuterPath.className];
                                     sourceTranslation= BaseLayout_Math.getPointRotation(
@@ -3652,7 +3649,7 @@ export default class BaseLayout
                                     );
                             }
                         let targetTranslation = currentObjectTargetOuterPath.transform.translation;
-                            if(this.useDetailedModels === true && this.detailedModels !== null && this.detailedModels[currentObjectTargetOuterPath.className] !== undefined && this.detailedModels[currentObjectTargetOuterPath.className].powerConnection !== undefined)
+                            if(this.detailedModels !== null && this.detailedModels[currentObjectTargetOuterPath.className] !== undefined && this.detailedModels[currentObjectTargetOuterPath.className].powerConnection !== undefined)
                             {
                                 let currentModel = this.detailedModels[currentObjectTargetOuterPath.className];
                                     targetTranslation= BaseLayout_Math.getPointRotation(
@@ -3912,13 +3909,9 @@ export default class BaseLayout
 
     createBuildingPolygon(currentObject, markerOptions, options)
     {
-        markerOptions.pathName  = currentObject.pathName;
-        markerOptions.altitude  = currentObject.transform.translation[2];
-
-        if(this.useDetailedModels === true && this.detailedModels !== null && this.detailedModels[currentObject.className] !== undefined)
-        {
-            markerOptions.smoothFactor  = this.useSmoothFactor;
-        }
+        markerOptions.pathName      = currentObject.pathName;
+        markerOptions.altitude      = currentObject.transform.translation[2];
+        markerOptions.smoothFactor  = 0;
 
         let polygon = L.polygon(
                 this.generatePolygonForms(currentObject.transform, currentObject.className, options),
@@ -3942,12 +3935,19 @@ export default class BaseLayout
             this.detailedModels[model]  = {forms: [{points: options.customPolygon}]};
         }
 
-        if(((this.useDetailedModels === true && this.detailedModels !== null) || options.customPolygon !== undefined) && this.detailedModels[model] !== undefined && options.skipDetailedModel === false)
+        // Prepare high quality model
+        if(((['medium', 'high'].includes(this.mapModelsQuality) && this.detailedModels !== null) || options.customPolygon !== undefined) && this.detailedModels[model] !== undefined && options.skipDetailedModel === false)
         {
             let currentModel        = this.detailedModels[model];
             let currentModelScale   = (currentModel.scale !== undefined) ? currentModel.scale : 1;
             let currentModelXOffset = (currentModel.xOffset !== undefined) ? currentModel.xOffset : 0;
             let currentModelYOffset = (currentModel.yOffset !== undefined) ? currentModel.yOffset : 0;
+
+            // Only keep the first model form which should always give the main object outline...
+            if(this.mapModelsQuality === 'medium')
+            {
+                currentModel.forms = [currentModel.forms[0]];
+            }
 
             if(currentModel.formsLength === undefined)
             {
@@ -3979,7 +3979,8 @@ export default class BaseLayout
 
                 currentForm.push(currentPoints);
 
-                if(currentModel.forms[i].holes !== undefined)
+                // Only deals with form holes in high quality
+                if(currentModel.forms[i].holes !== undefined && this.mapModelsQuality === 'high')
                 {
                     if(currentModel.forms[i].holesLength === undefined)
                     {
