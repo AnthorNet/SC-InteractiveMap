@@ -77,31 +77,136 @@ export default class Modal_Train_Timetable
                             }
 
                         html.push('<tr data-stop="'+ j + '">');
-                            html.push('<td width="1" class="text-right">' + (j + 1) + '.</td>');
+                            html.push('<td width="1" class="text-right"><h6>' + (j + 1) + '.</h6></td>');
                             html.push('<td>');
-                            if(trainStationIdentifier !== null)
-                            {
-                                let mStationName = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
-                                    if(mStationName !== null)
-                                    {
-                                        html.push(mStationName);
-                                    }
-                                    else
-                                    {
-                                        html.push(trainStationIdentifier.pathName);
-                                    }
+                                if(trainStationIdentifier !== null)
+                                {
+                                    let mStation        = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStation');
+                                    let mStationName    = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
+                                    let isDocked        = false;
 
-                                    if(j === mCurrentStop)
-                                    {
-                                        html.push(' <sup class="badge badge-warning">Next stop</sup>');
-                                    }
-                            }
+                                        if(mStation !== null)
+                                        {
+                                            let currentStation      = this.baseLayout.saveGameParser.getTargetObject(mStation.pathName);
+                                            let mDockingLocomotive  = this.baseLayout.getObjectProperty(currentStation, 'mDockingLocomotive');
+                                                if(mDockingLocomotive !== null)
+                                                {
+                                                    if(this.locomotive.pathName === mDockingLocomotive.pathName)
+                                                    {
+                                                        isDocked = true;
+                                                    }
+                                                }
+                                        }
+
+                                        html.push('<h6 class="mb-0">');
+                                            html.push(((mStationName !== null) ? mStationName : trainStationIdentifier.pathName));
+
+                                            if(isDocked === true)
+                                            {
+                                                html.push(' <sup class="badge badge-warning">Docked</sup>');
+                                            }
+                                            if(j === mCurrentStop)
+                                            {
+                                                html.push(' <sup class="badge badge-warning">Next stop</sup>');
+                                            }
+
+                                        html.push('</h3>');
+                                }
+                                if(trainStationRules !== null)
+                                {
+                                    trainStationRules = {properties: trainStationRules};
+
+                                    html.push('<em><small>');
+
+                                        let DockingDefinition = this.baseLayout.getObjectProperty(trainStationRules, 'DockingDefinition');
+                                            switch(DockingDefinition.value)
+                                            {
+                                                case 'ETrainDockingDefinition::TDD_LoadUnloadOnce':
+                                                    html.push('One load/unload has been completed');
+                                                    break;
+                                                case 'ETrainDockingDefinition::TDD_FullyLoadUnload':
+                                                    html.push('Freight Wagon is fully loaded/unloaded');
+                                                    break;
+                                                default:
+                                                    html.push(DockingDefinition.value);
+                                            }
+                                        let IsDurationAndRule = this.baseLayout.getObjectProperty(trainStationRules, 'IsDurationAndRule');
+                                            if(IsDurationAndRule === 1)
+                                            {
+                                                html.push(' <strong>AND</strong> ');
+                                            }
+                                            else
+                                            {
+                                                html.push(' <strong>OR</strong> ');
+                                            }
+                                        let DockForDuration = this.baseLayout.getObjectProperty(trainStationRules, 'DockForDuration');
+                                            html.push('wait for ' + new Intl.NumberFormat(this.baseLayout.language).format(DockForDuration) + ' seconds.');
+
+
+                                        let LoadFilterDescriptors = this.baseLayout.getObjectProperty(trainStationRules, 'LoadFilterDescriptors');
+                                            if(LoadFilterDescriptors.values.length > 0)
+                                            {
+                                                let loadFilter = [];
+                                                    for(let i = 0; i < LoadFilterDescriptors.values.length; i++)
+                                                    {
+                                                        let currentPathName = LoadFilterDescriptors.values[i].pathName;
+                                                            if(currentPathName === '')
+                                                            {
+                                                                loadFilter.push('None');
+                                                            }
+                                                            else
+                                                            {
+                                                                let currentItem = this.baseLayout.getItemDataFromClassName(currentPathName);
+                                                                    if(currentItem !== null)
+                                                                    {
+                                                                        loadFilter.push(currentItem.name);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        loadFilter.push(currentPathName.split('.').pop());
+                                                                    }
+                                                            }
+                                                    }
+
+                                                    if(loadFilter.length > 0)
+                                                    {
+                                                        html.push('<br /><strong>Load Only:</strong> ' + loadFilter.join(', '));
+                                                    }
+                                            }
+                                        let UnloadFilterDescriptors = this.baseLayout.getObjectProperty(trainStationRules, 'UnloadFilterDescriptors');
+                                            if(UnloadFilterDescriptors.values.length > 0)
+                                            {
+                                                let unloadFilter = [];
+                                                    for(let i = 0; i < UnloadFilterDescriptors.values.length; i++)
+                                                    {
+                                                        let currentPathName = UnloadFilterDescriptors.values[i].pathName;
+                                                            if(currentPathName === '')
+                                                            {
+                                                                unloadFilter.push('None');
+                                                            }
+                                                            else
+                                                            {
+                                                                let currentItem = this.baseLayout.getItemDataFromClassName(currentPathName);
+                                                                    if(currentItem !== null)
+                                                                    {
+                                                                        unloadFilter.push(currentItem.name);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        unloadFilter.push(currentPathName.split('.').pop());
+                                                                    }
+                                                            }
+                                                    }
+
+                                                    if(unloadFilter.length > 0)
+                                                    {
+                                                        html.push('<br /><strong>Unload Only:</strong> ' + unloadFilter.join(', '));
+                                                    }
+                                            }
+
+                                    html.push('</small></em>');
+                                }
                             html.push('</td>');
-
-                            if(trainStationRules !== null)
-                            {
-                                //console.log(trainStationRules);
-                            }
                         html.push('</tr>');
                     }
                 html.push('</table>');
