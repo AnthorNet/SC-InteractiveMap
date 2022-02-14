@@ -8,22 +8,19 @@ export default class Building_SpaceElevator
     {
         return {
             EGP_EarlyGame: {
-                name    : 'Establishing Phase',
                 display : 'Establishing Phase',
                 unlock  : 'Tier 1 & 2',
                 cost    : null
             },
             EGP_MidGame: {
-                name    : 'Development Phase',
-                display : 'Platform',
+                display : 'Project Assemby: Platform',
                 unlock  : 'Tier 3 & 4',
                 cost    : {
                     "/Game/FactoryGame/Resource/Parts/SpaceElevatorParts/Desc_SpaceElevatorPart_1.Desc_SpaceElevatorPart_1_C" : 50
                 }
             },
             EGP_LateGame: {
-                name    : 'Expansion Phase',
-                display : 'Framework',
+                display : 'Project Assemby: Framework',
                 unlock  : 'Tier 5 & 6',
                 cost    : {
                     "/Game/FactoryGame/Resource/Parts/SpaceElevatorParts/Desc_SpaceElevatorPart_1.Desc_SpaceElevatorPart_1_C" : 500,
@@ -32,8 +29,7 @@ export default class Building_SpaceElevator
                 }
             },
             EGP_EndGame: {
-                name    : 'Retention Phase',
-                display : 'Systems',
+                display : 'Project Assemby: Systems',
                 unlock  : 'Tier 7 & 8',
                 cost    : {
                     "/Game/FactoryGame/Resource/Parts/SpaceElevatorParts/Desc_SpaceElevatorPart_2.Desc_SpaceElevatorPart_2_C" : 2500,
@@ -42,9 +38,8 @@ export default class Building_SpaceElevator
                 }
             },
             EGP_FoodCourt: {
-                name    : 'Food Court',
-                display : 'Propulsion',
-                unlock  : "'Employee of the Planet' Cup",
+                display : 'Employee of the Planet',
+                unlock  : 'A small reward in the AWESOME Shop',
                 cost    : {
                     "/Game/FactoryGame/Resource/Parts/SpaceElevatorParts/Desc_SpaceElevatorPart_7.Desc_SpaceElevatorPart_7_C" : 4000,
                     "/Game/FactoryGame/Resource/Parts/SpaceElevatorParts/Desc_SpaceElevatorPart_6.Desc_SpaceElevatorPart_6_C" : 4000,
@@ -189,18 +184,26 @@ export default class Building_SpaceElevator
                         Building_SpaceElevator.initiate(baseLayout);
 
                         let phaseManager    = Building_SpaceElevator.getManager(baseLayout);
-                        let mGamePhase      = baseLayout.getObjectProperty(phaseManager, 'mGamePhase');
-                            if(mGamePhase === null)
+                            if(values.mGamePhase === 'EGP_EarlyGame')
                             {
-                                phaseManager.properties.push({
-                                    name: "mGamePhase",
-                                    type: "ByteProperty",
-                                    value: {enumName    : "EGamePhase", valueName: values.mGamePhase}
-                                });
+                                baseLayout.deleteObjectProperty(phaseManager, 'mGamePhase');
+                                baseLayout.deleteObjectProperty(phaseManager, 'mGamePhaseCosts');
                             }
                             else
                             {
-                                mGamePhase.valueName    = values.mGamePhase;
+                                let mGamePhase      = baseLayout.getObjectProperty(phaseManager, 'mGamePhase');
+                                    if(mGamePhase === null)
+                                    {
+                                        phaseManager.properties.push({
+                                            name: "mGamePhase",
+                                            type: "ByteProperty",
+                                            value: {enumName    : "EGamePhase", valueName: values.mGamePhase}
+                                        });
+                                    }
+                                    else
+                                    {
+                                        mGamePhase.valueName    = values.mGamePhase;
+                                    }
                             }
                     }
                 }
@@ -332,7 +335,7 @@ export default class Building_SpaceElevator
                             {
                                 content.push('<div style="font-size: 7px;">' + new Intl.NumberFormat(baseLayout.language).format(nextPhase.cost[itemClass] - itemsCost[itemClass]) + ' / ' + new Intl.NumberFormat(baseLayout.language).format(nextPhase.cost[itemClass]) + '</div>');
 
-                                if((nextPhase.cost[itemClass] - itemsCost[itemClass]) > 0)
+                                if(itemsCost[itemClass] > 0)
                                 {
                                     sealStatus  = false;
                                 }
@@ -344,10 +347,10 @@ export default class Building_SpaceElevator
 
                 // Header
                 content.push('<div style="position: absolute;margin-top: 12px;margin-left: 328px;width: 160px;height: 98px;display: flex;align-items: center;"><div style="width: 100%;display: block;text-align: center;color: #5b5b5b;font-size: 12px;line-height: 12px;">');
-                    content.push('<div><strong>' + buildingData.name + '</strong><br /><strong class="text-warning">Project Assemby: ' + nextPhase.display + '</strong></div>');
+                    //content.push('<div><strong>' + buildingData.name + '</strong></div>');
+                    content.push('<div><strong class="text-warning">' + nextPhase.display + '</strong></div>');
 
-                    content.push('<div style="padding-top: 5px;font-size: 9px;">Delivery will unlock:</div>');
-                    content.push('<div>' + nextPhase.unlock + '</div>');
+                    content.push('<div style="padding-top: 5px;font-size: 9px;">Delivery will unlock:<br /><strong>' + nextPhase.unlock + '</strong></div>');
 
                     content.push('<div style="padding-top: 5px;font-size: 9px;">Status:</div>');
                     content.push('<div class="text-warning"><strong>');

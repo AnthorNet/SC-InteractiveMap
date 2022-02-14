@@ -726,7 +726,7 @@ export default class Modal_Schematics
                         }
                         if(mPurchasedSchematics !== null)
                         {
-                            for(let i = 0; i < mPurchasedSchematics.values.length; i++)
+                            for(let i = (mPurchasedSchematics.values.length - 1); i >= 0; i--)
                             {
                                 if(purchasedAlternate.includes(mPurchasedSchematics.values[i].pathName) === false)
                                 {
@@ -753,6 +753,11 @@ export default class Modal_Schematics
                                             }
                                             console.log('Missing schematic className: ' + mPurchasedSchematics.values[i].pathName);
                                         }
+                                }
+                                else
+                                {
+                                    // Remove duplicates...
+                                    mPurchasedSchematics.values.splice(i, 1);
                                 }
                             }
                         }
