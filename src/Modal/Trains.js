@@ -41,7 +41,7 @@ export default class Modal_Trains
 
         for(let i = 0; i < trains.length; i++)
         {
-            let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(trains[i].pathName);
+            let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(trains[i]);
                 if(currentIdentifier !== null)
                 {
                     if(['/Script/FactoryGame.FGTrain', '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C'].includes(currentIdentifier.className))
