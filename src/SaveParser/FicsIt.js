@@ -17,6 +17,9 @@ export default class SaveParser_FicsIt
                 return SaveParser_FicsIt.fixTrainIdentifier(baseLayout, currentObject);
             case '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C':
                 return SaveParser_FicsIt.fixRailroadTrackIntegrated(baseLayout, currentObject);
+            case '/Script/FactoryGame.FGPipeConnectionFactory':
+            //case '/Script/FactoryGame.FGPipeConnectionComponent':
+                return SaveParser_FicsIt.fixPipeConnectionFactory(baseLayout, currentObject);
 
             case '/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x1_02.Build_Ramp_Diagonal_8x1_02_C':
                 return SaveParser_FicsIt.fixRampsRotation(baseLayout, currentObject, '/Game/FactoryGame/Recipes/Buildings/Ramps/Recipe_Ramp_Diagonal_8x1_02.Recipe_Ramp_Diagonal_8x1_02_C');
@@ -139,6 +142,25 @@ export default class SaveParser_FicsIt
         baseLayout.saveGameParser.deleteObject(currentObject.pathName);
         return null; // Trigger continue;
     }
+
+    /*
+     * Fix FGPipeConnectionFactory with a pipe network id but no pipe connected or no real network...
+     */
+    static fixPipeConnectionFactory(baseLayout, currentObject)
+    {
+        let mPipeNetworkID = baseLayout.getObjectProperty(currentObject, 'mPipeNetworkID');
+            if(mPipeNetworkID !== null)
+            {
+                if(currentObject.properties.length === 1)
+                {
+                    console.log('Removing ghost mPipeNetworkID "' + mPipeNetworkID + '"', currentObject.pathName);
+                    baseLayout.deleteObjectProperty(currentObject, 'mPipeNetworkID');
+                }
+            }
+
+        return currentObject;
+    }
+
 
     /*
      * Update 5 changed the old corner up ramps default angle,
