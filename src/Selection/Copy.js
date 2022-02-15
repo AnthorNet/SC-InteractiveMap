@@ -283,6 +283,11 @@ export default class Selection_Copy
                                         if(availablePathName.includes(testPathName) === false)
                                         {
                                             this.baseLayout.deleteObjectProperty(currentChildren, 'mConnectedComponent');
+
+                                            if(currentChildren.className === '/Script/FactoryGame.FGPipeConnectionFactory')
+                                            {
+                                                this.baseLayout.deleteObjectProperty(currentChildren, 'mPipeNetworkID');
+                                            }
                                         }
                                         else // mPipeNetworkID
                                         {
