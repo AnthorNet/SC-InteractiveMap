@@ -171,8 +171,13 @@ export default class SubSystem_Map
 
 
 
-    getMinimap(data)
+    getMinimap(splineData, iconsData = null)
     {
+        if(splineData !== null && iconsData === null)
+        {
+            iconsData = splineData;
+        }
+
         let html                = [];
         let containerSize       = 512;
         let minimapSize         = 2048;
@@ -190,15 +195,15 @@ export default class SubSystem_Map
                     yMax: this.baseLayout.satisfactoryMap.mappingBoundSouth
                 };
 
-            if(data !== null)
+            if(splineData !== null)
             {
                 boundaries = {xMin: Infinity, xMax: -Infinity, yMin: Infinity, yMax: -Infinity};
-                for(let i = 0; i < (data.length - 1); i++)
+                for(let i = 0; i < (splineData.length - 1); i++)
                 {
-                    boundaries.xMin = Math.min(boundaries.xMin, data[i][0]);
-                    boundaries.xMax = Math.max(boundaries.xMax, data[i][0]);
-                    boundaries.yMin = Math.min(boundaries.yMin, data[i][1]);
-                    boundaries.yMax = Math.max(boundaries.yMax, data[i][1]);
+                    boundaries.xMin = Math.min(boundaries.xMin, splineData[i][0]);
+                    boundaries.xMax = Math.max(boundaries.xMax, splineData[i][0]);
+                    boundaries.yMin = Math.min(boundaries.yMin, splineData[i][1]);
+                    boundaries.yMax = Math.max(boundaries.yMax, splineData[i][1]);
                 }
 
                 // Add padding to boundaries
@@ -250,13 +255,13 @@ export default class SubSystem_Map
             html.push('<div class="img-minimap border border-secondary rounded" style="' + backgroundProperties.join('') + '">');
 
             // Generate lines SVG
-            if(data !== null)
+            if(splineData !== null)
             {
                 let points = [];
-                    for(let i = 0; i < data.length; i++)
+                    for(let i = 0; i < splineData.length; i++)
                     {
-                        let x               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + data[i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
-                        let y               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + data[i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
+                        let x               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + splineData[i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
+                        let y               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + splineData[i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
                             points.push(x + ',' + y);
                     }
 
@@ -264,12 +269,12 @@ export default class SubSystem_Map
             }
 
             // Generate icons
-            if(data !== null)
+            if(iconsData !== null)
             {
-                for(let i = 0; i < (data.length - 1); i++)
+                for(let i = 0; i < (iconsData.length - 1); i++)
                 {
-                    let x           = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + data[i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
-                    let y           = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + data[i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
+                    let x           = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + iconsData[i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
+                    let y           = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + iconsData[i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
 
                     let iconSize    = 20;
                     let style       = 'text-align: center;border: 2px solid #777777;line-height:' + (iconSize - 4) + 'px;border-radius: 4px;font-size: 12px;z-index: 1;';

@@ -273,11 +273,12 @@ export default class BaseLayout_Math
 
     static extractSplineData(baseLayout, currentObject)
     {
-        let nbPoints        = 5;
-        let splineDistance  = 0;
-        let points          = [];
-        let center          = [currentObject.transform.translation[0], currentObject.transform.translation[1], currentObject.transform.translation[2]];
-        let mSplineData     = baseLayout.getObjectProperty(currentObject, 'mSplineData');
+        let nbPoints            = 5;
+        let splineDistance      = 0;
+        let pointsCoordinates   = [];
+        let points              = [];
+
+        let mSplineData         = baseLayout.getObjectProperty(currentObject, 'mSplineData');
             if(mSplineData !== null)
             {
                 if(currentObject.className.includes('Train/Track/Build_RailroadTrack'))
@@ -333,9 +334,14 @@ export default class BaseLayout_Math
                                         z: a * previousSplineLocation.z + b * (previousSplineLocation.z + previousSplineLeaveTangent.z / 3) + c * (currentSplineLocation.z - currentSplineArriveTangent.z / 3) + d * currentSplineLocation.z
                                     };
 
+                                    pointsCoordinates.push([
+                                        currentObject.transform.translation[0] + newPoint.x,
+                                        currentObject.transform.translation[1] + newPoint.y
+                                    ]);
+
                                     points.push(baseLayout.satisfactoryMap.unproject([
-                                        center[0] + newPoint.x,
-                                        center[1] + newPoint.y
+                                        currentObject.transform.translation[0] + newPoint.x,
+                                        currentObject.transform.translation[1] + newPoint.y
                                     ]));
 
                                     if(oldPoint !== null)
@@ -369,6 +375,7 @@ export default class BaseLayout_Math
                     distance            : splineDistance,
                     distanceStraight    : distanceStraight,
                     points              : points,
+                    pointsCoordinates   : pointsCoordinates,
                     originalData        : originalSplineData
                 };
             }
