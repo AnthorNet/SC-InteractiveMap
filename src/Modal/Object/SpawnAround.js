@@ -55,7 +55,40 @@ export default class Modal_Object_SpawnAround
 
                     if(baseLayout.faunaData[form.form] !== undefined)
                     {
-                        return baseLayout.spawnFauna(marker, form.form);
+                        BaseLayout_Modal.form({
+                            title: "Fauna options",
+                            container: '#leafletMap',
+                            inputs: [
+                                {
+                                    label       : 'Spawn quantity <em class="small">(Between 1 and 256)</em>',
+                                    name        : 'qty',
+                                    inputType   : 'number',
+                                    value       : 1,
+                                    min         : 1,
+                                    max         : 256
+                                },
+                                {
+                                    label       : 'Spawn radius <em class="small">(Between 400 and 3200)</em>',
+                                    name        : 'maxRadius',
+                                    inputType   : 'number',
+                                    value       : 800,
+                                    min         : 400,
+                                    max         : 3200
+                                }
+                            ],
+                            callback: function(values)
+                            {
+                                if(values !== null && values.maxRadius !== null && values.qty !== null)
+                                {
+                                    return baseLayout.spawnFauna({
+                                        marker          : marker,
+                                        faunaId         : form.form,
+                                        qty             : values.qty,
+                                        maxRadius       : values.maxRadius,
+                                    });
+                                }
+                            }
+                        });
                     }
                     else
                     {
