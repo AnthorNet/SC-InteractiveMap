@@ -1423,6 +1423,11 @@ export default class SaveParser_Write
                         saveBinary += this.writeInt(value.structs[i].unk6);
                         saveBinary += this.writeInt(value.structs[i].unk7);
                         break;
+                    case '/Script/FactoryGame.ItemAmount':
+                        saveBinary += this.writeInt(value.structs[i].unk3);
+                        saveBinary += this.writeString(value.structs[i].unk4);
+                        saveBinary += this.writeInt(value.structs[i].unk5);
+                        break;
                     case '/Script/FicsItNetworks.FINTrackGraph':
                         saveBinary += this.writeFINNetworkTrace(value.structs[i].trace);
                         saveBinary += this.writeInt(value.structs[i].trackId);

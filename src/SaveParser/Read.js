@@ -1511,6 +1511,11 @@ export default class SaveParser_Read
                             structure.unk6      = this.readInt();
                             structure.unk7      = this.readInt();
                             break;
+                        case '/Script/FactoryGame.ItemAmount':
+                            structure.unk3      = this.readInt();
+                            structure.unk4      = this.readString();
+                            structure.unk5      = this.readInt();
+                            break;
                         case '/Script/FicsItNetworks.FINTrackGraph':
                             structure.trace     = this.readFINNetworkTrace();
                             structure.trackId   = this.readInt();
