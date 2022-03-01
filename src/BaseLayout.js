@@ -1042,14 +1042,7 @@ export default class BaseLayout
             let building = this.addPlayerFauna(currentObject);
                 if(resolve === false)
                 {
-                    if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
-                    {
-                        return {layer: 'playerSpaceRabbitLayer', marker: building};
-                    }
-                    else
-                    {
-                        return {layer: 'playerFaunaLayer', marker: building};
-                    }
+                    return building;
                 }
 
             return resolve();
@@ -1433,102 +1426,7 @@ export default class BaseLayout
             this.playerLayers[layerId].filtersCount[currentObject.className]++;
         }
 
-        return faunaMarker;
-    }
-
-    spawnFauna(options)
-    {
-        let marker          = options.marker;
-        let faunaId         = options.faunaId;
-        let faunaQty        = Math.max(1, Math.min(256, parseInt(options.qty)));
-        let faunaRadius     = Math.max(400, Math.min(3200, parseInt(options.maxRadius)));
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let faunaData       = this.getFaunaDataFromClassName(faunaId);
-
-            if(faunaData !== null)
-            {
-                for(let i = 0; i < faunaQty; i++)
-                {
-                    let pathName        = this.generateFastPathName({pathName: faunaData.pathName});
-                    let newFauna        = {
-                        type                : 1,
-                        children            : [{pathName: pathName + '.HealthComponent'}],
-                        className           : faunaData.className,
-                        pathName            : pathName,
-                        entity              : {levelName: '', pathName: ''},
-                        properties          : [{name: 'mHealthComponent', type: 'ObjectProperty', value: {pathName: pathName + '.HealthComponent'}}],
-                        transform           : {
-                            rotation            : [0, -0, currentObject.transform.rotation[2], currentObject.transform.rotation[3]],
-                            translation         : [
-                                currentObject.transform.translation[0] + (Math.floor(Math.random() * (faunaRadius + 1)) - 400),
-                                currentObject.transform.translation[1] + (Math.floor(Math.random() * (faunaRadius + 1)) - 400),
-                                currentObject.transform.translation[2] + 450 //TODO: Use building height
-                            ]
-                        }
-                    };
-
-                    if(faunaData.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
-                    {
-                        newFauna.children.unshift({pathName: pathName + '.mInventory'});
-
-                        let currentPlayerObject = this.saveGameParser.getTargetObject(this.saveGameParser.playerHostPathName);
-                        let mOwnedPawn          = this.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
-
-                        newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {pathName: mOwnedPawn.pathName}});
-                        newFauna.properties.push({name: 'mLootTableIndex', type: 'IntProperty', value: 0});
-                        newFauna.properties.push({name: 'mLootTimerHandle', type: 'StructProperty', value: {handle: 'None', type: 'TimerHandle'}});
-                        newFauna.properties.push({name: 'mIsPersistent', type: 'BoolProperty', value: 1});
-
-                        let newSpaceRabbitInventory     = {
-                            type            : 0,
-                            children        : [],
-                            className       : '/Script/FactoryGame.FGInventoryComponent',
-                            outerPathName   : pathName, pathName: pathName + '.mInventory',
-                            properties      : [
-                                {
-                                    name: "mInventoryStacks",
-                                    structureName: "mInventoryStacks",
-                                    structureSubType: "InventoryStack",
-                                    structureType: "StructProperty",
-                                    type: "ArrayProperty",
-                                    value: {
-                                        type: "StructProperty",
-                                        values: [[{
-                                            name: "Item",
-                                            type: "StructProperty",
-                                            value: {
-                                                itemName: "", levelName: "", pathName: "",
-                                                type: "InventoryItem",
-                                                unk1: 0,
-                                                properties: [{name: "NumItems", type: "IntProperty", value: 0}]
-                                            }
-                                        }]]
-                                    }
-                                },
-                                { name: '"mArbitrarySlotSizes', type: 'ArrayProperty', value: {type: 'IntProperty', values: [0]} },
-                                { name: 'mAllowedItemDescriptors', type: 'ArrayProperty', value: {type: 'ObjectProperty', values: [{levelName: '', pathName: ''}]} }
-                            ]
-                        };
-
-                        this.saveGameParser.addObject(newSpaceRabbitInventory);
-                    }
-
-                    this.saveGameParser.addObject({
-                        className: '/Script/FactoryGame.FGHealthComponent',
-                        outerPathName: pathName, pathName: pathName + '.HealthComponent',
-                        properties: [], type: 0
-                    });
-
-                    // Ensure the creature spawner still exists in the save!
-                    let newCreatureSpawnerId = "Persistent_Exploration_2:PersistentLevel.BP_CreatureSpawner432";
-                        newFauna.properties.push({name: "mOwningSpawner", type: "ObjectProperty", value: {levelName: "Persistent_Exploration_2", pathName: newCreatureSpawnerId}});
-
-                    this.saveGameParser.addObject(newFauna);
-                    this.addElementToLayer(faunaData.mapLayer, this.addPlayerFauna(newFauna));
-                }
-
-                this.setBadgeLayerCount(faunaData.mapLayer);
-            }
+        return {layer: layerId, marker: faunaMarker};
     }
 
     deleteFauna(marker)

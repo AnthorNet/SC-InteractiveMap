@@ -8,7 +8,7 @@ export default class Spawn_Circle
     {
         this.marker             = options.marker;
         this.baseLayout         = options.marker.baseLayout;
-        this.layerId            = null;
+        this.layerId            = 'playerFoundationsLayer';
 
         this.minRadius          = options.minRadius;
         this.maxRadius          = options.maxRadius;
@@ -149,6 +149,6 @@ export default class Spawn_Circle
         }
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
-        this.baseLayout.setBadgeLayerCount('playerFoundationsLayer');
+        this.baseLayout.setBadgeLayerCount(this.layerId);
     }
 }

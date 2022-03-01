@@ -81,6 +81,9 @@ export default class BaseLayout_History
                                         this.baseLayout.deleteGenericBuilding({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker}, false);
                                     }
                                     break;
+                                case 'deleteFauna':
+                                    this.baseLayout.deleteFauna({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker});
+                                    break;
                                 case 'restoreState':
 
                                     break;
