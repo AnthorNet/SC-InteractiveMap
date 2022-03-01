@@ -117,6 +117,7 @@ export default class Modal_Map_Presets
                             r : BaseLayout_Math.RGBToLinearColor(presetColorR),
                             g : BaseLayout_Math.RGBToLinearColor(presetColorG),
                             b : BaseLayout_Math.RGBToLinearColor(presetColorB),
+                            a : BaseLayout_Math.RGBToLinearColor(255),
                         }
                     );
                 });
@@ -187,6 +188,7 @@ export default class Modal_Map_Presets
                     r : BaseLayout_Math.RGBToLinearColor(250),
                     g : BaseLayout_Math.RGBToLinearColor(149),
                     b : BaseLayout_Math.RGBToLinearColor(73),
+                    a : BaseLayout_Math.RGBToLinearColor(255),
                 }
             );
 

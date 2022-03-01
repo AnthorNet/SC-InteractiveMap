@@ -73,6 +73,7 @@ export default class SubSystem_GameState
                             mPlayerGlobalColorPresets.values[presetIndex][j].value.values.r   = primaryColor.r;
                             mPlayerGlobalColorPresets.values[presetIndex][j].value.values.g   = primaryColor.g;
                             mPlayerGlobalColorPresets.values[presetIndex][j].value.values.b   = primaryColor.b;
+                            mPlayerGlobalColorPresets.values[presetIndex][j].value.values.a   = primaryColor.a;
                         }
                     }
                 }
