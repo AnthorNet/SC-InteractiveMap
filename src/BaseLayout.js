@@ -2708,7 +2708,7 @@ export default class BaseLayout
                             }
 
                         markerOptions.extraPattern = L.polygon(
-                            this.generatePolygonForms(patternTransform, currentPattern.value.pathName, polygonOptions),
+                            this.generatePolygonForms(patternTransform, currentPattern.value.pathName, {isPattern: true, skipDetailedModel: false}),
                             {
                                 weight          : 0,
                                 originPathName  : currentObject.pathName,
@@ -3850,7 +3850,7 @@ export default class BaseLayout
             let currentModelYOffset = (currentModel.yOffset !== undefined) ? currentModel.yOffset : 0;
 
             // Only keep the first model form which should always give the main object outline...
-            if(this.mapModelsQuality === 'medium')
+            if(this.mapModelsQuality === 'medium' && options.isPattern === undefined)
             {
                 currentModel.forms = [currentModel.forms[0]];
             }
@@ -3886,7 +3886,7 @@ export default class BaseLayout
                 currentForm.push(currentPoints);
 
                 // Only deals with form holes in high quality
-                if(currentModel.forms[i].holes !== undefined && this.mapModelsQuality === 'high')
+                if(currentModel.forms[i].holes !== undefined && (this.mapModelsQuality === 'high' || options.isPattern !== undefined))
                 {
                    if(currentModel.forms[i].holesLength === undefined)
                     {
