@@ -406,7 +406,9 @@ export default class Modal_Train_Timetable
                                                     if(newRailroad !== null)
                                                     {
                                                         // Add new graph distance!
-                                                        currentGraph[graphKey] = 50; //TODO ^^
+                                                        let prevSplineData          = BaseLayout_Math.extractSplineData(this.baseLayout, currentRailroad);
+                                                        let nextSplineData          = BaseLayout_Math.extractSplineData(this.baseLayout, newRailroad);
+                                                            currentGraph[graphKey]  = (prevSplineData.distance / 2) + (nextSplineData.distance / 2);
 
                                                         // Follow the new track
                                                         currentGraph            = this.getRailroadGraphEdges(newRailroad, connectionType, currentGraph, alreadyChecked);
