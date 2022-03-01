@@ -665,7 +665,7 @@ export default class Map
         this.leafletMap.on('layeradd', this.updateHash, this);
         this.leafletMap.on('layerremove', this.updateHash, this);
 
-        L.DomEvent.addListener(window, "hashchange", this._throttle(function(e){this.onHashChange}, 100, {leading: true, trailing: true}));
+        L.DomEvent.addListener(window, "hashchange", this._throttle(function(e){return this.onHashChange()}.bind(this), 100, {leading: true, trailing: true}));
 
         // Dynamic coordinates
         this.leafletMap.on('mousemove', this._throttle(function(e){
