@@ -287,6 +287,7 @@ export default class BaseLayout_ContextMenu
                     contextMenu.push({
                         icon        : 'fa-power-off',
                         text        : 'Turn ' + ((this.baseLayout.getBuildingIsOn(currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
+                        className   : 'Building_PowerSwitch_turn' + ((this.baseLayout.getBuildingIsOn(currentObject) === false) ? 'On' : 'Off'),
                         callback    : this.baseLayout.updateObjectProductionPausedStatus.bind(this.baseLayout)
                     });
 

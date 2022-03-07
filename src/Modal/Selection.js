@@ -116,6 +116,7 @@ export default class Modal_Selection
         let havePipelineCategory                = false;
         let haveProductionCategory              = false;
         let haveStorageCategory                 = false;
+        let haveGeneratorCategory               = false;
 
             if(markers !== null && markers.length > 0)
             {
@@ -198,6 +199,10 @@ export default class Modal_Selection
                                                         if(buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
                                                         {
                                                             haveStorageCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'generator')
+                                                        {
+                                                            haveGeneratorCategory = true;
                                                         }
                                                         if(buildingData.switchSkin !== undefined)
                                                         {
@@ -327,6 +332,11 @@ export default class Modal_Selection
             {
                 inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorage'});
                 inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorage'});
+            }
+            if (haveProductionCategory === true || haveExtractionCategory === true || haveGeneratorCategory === true)
+            {
+                inputOptions.push({ group: 'Power', text: 'Turn on selected machines', value: 'turnOnMachines' });
+                inputOptions.push({ group: 'Power', text: 'Turn off selected machines', value: 'turnOffMachines' });
             }
 
             if(markers !== null && markers.length > 0)
@@ -1076,7 +1086,43 @@ export default class Modal_Selection
         baseLayout.updateRadioactivityLayer();
     }
 
+    static callbackTurnOnMachines(baseLayout, markers)
+    {
+        for(let i = 0; i < markers.length; i++)
+        {
+            let contextMenu = baseLayout.getContextMenu(markers[i]);
+                if(contextMenu !== false)
+                {
+                    for(let j = 0; j < contextMenu.length; j++)
+                    {
+                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Building_PowerSwitch_turnOn')
+                        {
+                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout});
+                            break;
+                        }
+                    }
+                }
+        }
+    }
 
+    static callbackTurnOffMachines(baseLayout, markers)
+    {
+        for(let i = 0; i < markers.length; i++)
+        {
+            let contextMenu = baseLayout.getContextMenu(markers[i]);
+                if(contextMenu !== false)
+                {
+                    for(let j = 0; j < contextMenu.length; j++)
+                    {
+                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Building_PowerSwitch_turnOff')
+                        {
+                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout});
+                            break;
+                        }
+                    }
+                }
+        }
+    }
 
     static callbackModalProductionStatistics(baseLayout, markers)
     {
