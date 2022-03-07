@@ -257,7 +257,13 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Blueprints', text: 'Add "Foundation 8m x 2m" helpers on selection boundaries', value: 'helpers'});
                 inputOptions.push({group: 'Blueprints', text: 'Copy selected items', value: 'copy'});
 
-                inputOptions.push({group: 'Overclocking', text: 'Offset selected items clock speed', value: 'clockSpeed'});
+                if (haveProductionCategory === true || haveExtractionCategory === true || haveGeneratorCategory === true)
+                {
+                    inputOptions.push({group: 'Power/Overclocking', text: 'Offset selected items clock speed', value: 'clockSpeed'});
+
+                    inputOptions.push({ group: 'Power/Overclocking', text: 'Turn on selected machines', value: 'turnOnMachines' });
+                    inputOptions.push({ group: 'Power/Overclocking', text: 'Turn off selected machines', value: 'turnOffMachines' });
+                }
             }
 
             if(haveFoundationsMaterialsCategory === true)
@@ -332,11 +338,6 @@ export default class Modal_Selection
             {
                 inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorage'});
                 inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorage'});
-            }
-            if (haveProductionCategory === true || haveExtractionCategory === true || haveGeneratorCategory === true)
-            {
-                inputOptions.push({ group: 'Power', text: 'Turn on selected machines', value: 'turnOnMachines' });
-                inputOptions.push({ group: 'Power', text: 'Turn off selected machines', value: 'turnOffMachines' });
             }
 
             if(markers !== null && markers.length > 0)
