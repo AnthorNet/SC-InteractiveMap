@@ -888,12 +888,16 @@ export default class BaseLayout_Tooltip
                     let maxFluid        = buildingData.maxFluid; // Use straight calculation
                     let inventory       = this.baseLayout.getObjectInventory(currentObject, inventoryKey);
 
+                    content.push('<div style="width: 230px;height: 240px;">');
                     if(inventory !== null && inventory.length > 0 && inventory[0] !== null)
                     {
-                        content.push('<div style="width: 230px;height: 240px;">');
-
                         let itemType        = this.baseLayout.getItemDataFromClassName(inventory[0].className);
                         let currentFluid    = inventory[0].qty;
+
+                        if(itemType !== null)
+                        {
+                            content.push('<div style="position: absolute;padding-top: 230px;width: 230px;text-align: center;"><strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentFluid / 100) / 10) + ' m³ of ' + itemType.name + '</strong></div>');
+                        }
 
                         if(itemType !== null && itemType.color !== undefined)
                         {
@@ -906,14 +910,12 @@ export default class BaseLayout_Tooltip
                                 content.push(this.setLiquidDome(230, currentFluid, maxFluid, itemType.color));
                             }
                         }
-
-                        if(itemType !== null)
-                        {
-                            content.push('<div style="padding-top: 225px;"><strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentFluid / 100) / 10) + ' m³ of ' + itemType.name + '</strong></div>');
-                        }
-
-                        content.push('</div>');
                     }
+                    else
+                    {
+                        content.push(this.setLiquidDome(230, 0, maxFluid, '#000'));
+                    }
+                    content.push('</div>');
                 }
             }
 

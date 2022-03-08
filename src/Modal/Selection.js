@@ -116,6 +116,7 @@ export default class Modal_Selection
         let havePipelineCategory                = false;
         let haveProductionCategory              = false;
         let haveStorageCategory                 = false;
+        let haveFluidStorageCategory            = false;
         let haveGeneratorCategory               = false;
 
             if(markers !== null && markers.length > 0)
@@ -198,7 +199,14 @@ export default class Modal_Selection
                                                         }
                                                         if(buildingData.category === 'storage' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
                                                         {
-                                                            haveStorageCategory = true;
+                                                            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'].includes(currentObject.className))
+                                                            {
+                                                                haveFluidStorageCategory = true;
+                                                            }
+                                                            else
+                                                            {
+                                                                haveStorageCategory = true;
+                                                            }
                                                         }
                                                         if(buildingData.category === 'generator')
                                                         {
@@ -334,9 +342,17 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Inventory', text: 'Fill selected machine inventories', value: 'fillMachineInventories'});
                 inputOptions.push({group: 'Inventory', text: 'Clear selected machine inventories', value: 'clearMachineInventories'});
             }
-            if(haveStorageCategory === true)
+            if(haveStorageCategory === true || haveFluidStorageCategory === true)
             {
-                inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorage'});
+                if(haveStorageCategory === true)
+                {
+                    inputOptions.push({group: 'Inventory', text: 'Fill selected storages inventories', value: 'fillStorage'});
+                }
+                if(haveFluidStorageCategory === true)
+                {
+                    inputOptions.push({group: 'Inventory', text: 'Fill selected fluid storages inventories', value: 'fillFluidStorage'});
+                }
+
                 inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorage'});
             }
 
@@ -967,7 +983,7 @@ export default class Modal_Selection
             inputs      : [{
                 name            : 'fillWith',
                 inputType       : 'selectPicker',
-                inputOptions    : baseLayout.generateInventoryOptions(null, false)
+                inputOptions    : baseLayout.generateInventoryOptions({className: '/Game/FactoryGame/Buildable/Factory/StorageContainerMk1/Build_StorageContainerMk1.Build_StorageContainerMk1_C'}, false)
             }],
             callback: function(form)
             {
@@ -987,13 +1003,38 @@ export default class Modal_Selection
                             {
                                 continue;
                             }
+                            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'].includes(currentObject.className))
+                            {
+                                continue;
+                            }
 
                             baseLayout.fillPlayerStorageBuildingInventory(currentObject, form.fillWith);
                         }
                 }
-               baseLayout.updateRadioactivityLayer();
+                baseLayout.updateRadioactivityLayer();
             }
         });
+    }
+    static callbackFillFluidStorage(baseLayout, markers)
+    {
+        for(let i = 0; i < markers.length; i++)
+        {
+            let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
+                if(currentObject !== null)
+                {
+                    // Skip locomotive to avoid double freight wagons...
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                    {
+                        continue;
+                    }
+                    if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'].includes(currentObject.className))
+                    {
+                        // Buffer only have the fluidBox, the fluid is handled with the pipe network ;)
+                        baseLayout.fillPlayerStorageBuildingInventory(currentObject, null);
+                    }
+                }
+        }
+        baseLayout.updateRadioactivityLayer();
     }
 
     static callbackClearStorage(baseLayout, markers)

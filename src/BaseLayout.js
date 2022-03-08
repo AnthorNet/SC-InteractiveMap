@@ -2087,7 +2087,7 @@ export default class BaseLayout
     fillPlayerStorageBuildingInventoryModal(marker)
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
+            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'].includes(currentObject.className))
             {
                 // Buffer only have the fluidBox, the fluid is handled with the pipe network ;)
                 return this.fillPlayerStorageBuildingInventory(currentObject, null);
@@ -2152,6 +2152,41 @@ export default class BaseLayout
                 continue;
             }
 
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
+            {
+                let storage           = this.getObjectProperty(storageObjects[i], 'mInventory');
+                    if(storage !== null)
+                    {
+                        let storageObject = this.saveGameParser.getTargetObject(storage.pathName);
+                            if(storageObject !== null)
+                            {
+                                let mInventoryStacks = this.getObjectProperty(storageObject, 'mInventoryStacks');
+                                    if(mInventoryStacks !== null)
+                                    {
+                                        let value = mInventoryStacks.values[0][0].value;
+                                            if(value.itemName === '')
+                                            {
+                                                let currentPipeNetwork = this.getObjectPipeNetwork(currentObject);
+                                                    if(currentPipeNetwork !== null)
+                                                    {
+                                                        let mFluidDescriptor = this.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
+                                                            if(mFluidDescriptor !== null)
+                                                            {
+                                                                value.itemName = mFluidDescriptor.pathName;
+                                                            }
+                                                    }
+                                            }
+                                            if(buildingData !== null && buildingData.maxFluid !== undefined)
+                                            {
+                                                value.properties = [{name: 'NumItems', type: 'IntProperty', value: buildingData.maxFluid}];
+                                            }
+                                    }
+                            }
+                    }
+
+                    continue;
+            }
+
             // Skip fluid Freight Wagon
             if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
             {
@@ -2164,7 +2199,17 @@ export default class BaseLayout
                                 let mAdjustedSizeDiff = this.getObjectProperty(storageObject, 'mAdjustedSizeDiff');
                                     if(mAdjustedSizeDiff !== null && mAdjustedSizeDiff === -31)
                                     {
-                                        continue;
+                                        let mInventoryStacks = this.getObjectProperty(storageObject, 'mInventoryStacks');
+                                            if(mInventoryStacks !== null)
+                                            {
+                                                let value = mInventoryStacks.values[0][0].value;
+                                                    if(buildingData !== null && buildingData.maxFluid !== undefined)
+                                                    {
+                                                        value.properties = [{name: 'NumItems', type: 'IntProperty', value: buildingData.maxFluid}];
+                                                    }
+                                            }
+
+                                            continue;
                                     }
                             }
 
@@ -2212,6 +2257,10 @@ export default class BaseLayout
                 storageObjects      = Building_Locomotive.getFreightWagons(this, currentObject);
             }
             if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
+            {
+                inventoryProperty   = 'mInventory';
+            }
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
             {
                 inventoryProperty   = 'mInventory';
             }
@@ -2317,7 +2366,7 @@ export default class BaseLayout
 
         if(currentObject !== null)
         {
-            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className) === false)
+            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'].includes(currentObject.className) === false)
             {
                 isFluidInventory = false;
                 delete itemsCategories.liquid;
