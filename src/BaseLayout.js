@@ -1025,7 +1025,7 @@ export default class BaseLayout
 
             return resolve();
         }
-        if(currentObject.className.includes('Train/Track/Build_RailroadTrack'))
+        if(currentObject.className.includes('Train/Track/Build_RailroadTrack') || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
         {
             let building = this.addPlayerTrack(currentObject);
                 if(resolve === false)
@@ -3116,8 +3116,9 @@ export default class BaseLayout
 
         // Delete trains on tracks!
         if(
-               currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'
-            || currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'
+               currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'
+            || currentObject.className === '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'
+            || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C'
         )
         {
             for(let n = (baseLayout.saveGameRailVehicles.length - 1); n >= 0; n--)
@@ -3499,9 +3500,9 @@ export default class BaseLayout
         if(this.playerLayers.playerTracksLayer.filtersCount !== undefined)
         {
             let trackClassName = currentObject.className;
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C')
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C' || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
                 {
-                    trackClassName = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'
+                    trackClassName = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C';
                 }
 
             if(this.playerLayers.playerTracksLayer.filtersCount[trackClassName] === undefined)
@@ -5198,6 +5199,8 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C'){ className = '/Game/FactoryGame/Buildable/Factory/DroneStation/Desc_DroneTransport.Desc_DroneTransport_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/Desc_Locomotive.Desc_Locomotive_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/Desc_FreightWagon.Desc_FreightWagon_C'; }
+
+        if(className === '/FlexSplines/Track/Build_Track.Build_Track_C'){ className = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'; }
 
         // Create fake angled railings with new width
         if(this.buildingsData.Build_SM_RailingRamp_8x4_01_C === undefined && this.buildingsData.Build_Railing_01_C !== undefined)
