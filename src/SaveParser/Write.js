@@ -1026,7 +1026,13 @@ export default class SaveParser_Write
                         case 'EnumProperty':
                              property += this.writeString(currentProperty.value.values[iMapProperty].key.name);
                             break;
-
+                        case 'StructProperty':
+                            for(let i = 0; i < currentProperty.value.values[iMapProperty].key.length; i++)
+                            {
+                                property += this.writeProperty(currentProperty.value.values[iMapProperty].key[i]);
+                            }
+                            property += this.writeString('None');
+                            break;
                         default:
                             console.log('Missing ' + currentProperty.value.type + ' in ' + currentProperty.name);
                     }
@@ -1059,7 +1065,7 @@ export default class SaveParser_Write
                             let currentBufferStartingLength     = this.currentBufferLength;
                             let structPropertyBufferLength      = this.currentEntityLength;
 
-                            for(let i =0; i < currentProperty.value.values[iMapProperty].value.length; i++)
+                            for(let i = 0; i < currentProperty.value.values[iMapProperty].value.length; i++)
                             {
                                 property += this.writeProperty(currentProperty.value.values[iMapProperty].value[i]);
                             }

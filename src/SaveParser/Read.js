@@ -905,6 +905,19 @@ export default class SaveParser_Read
                                 name        : this.readString()
                             };
                             break;
+                        case 'StructProperty':
+                            mapPropertyKey = [];
+                            while(true)
+                            {
+                                let subMapPropertyValue = this.readPropertyV5();
+                                    if(subMapPropertyValue === null)
+                                    {
+                                        break;
+                                    }
+
+                                mapPropertyKey.push(subMapPropertyValue);
+                            }
+                            break;
                         default:
                             BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                             if(typeof Sentry !== 'undefined')
