@@ -4,6 +4,7 @@ import SaveParser                               from './SaveParser.js';
 import Translate                                from './Translate.js';
 
 import BaseLayout_Modal                         from './BaseLayout/Modal.js';
+import Lib_LeafletPlugins                       from './Lib/LeafletPlugins.js';
 
 export default class SCIM
 {
