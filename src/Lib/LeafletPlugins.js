@@ -24,8 +24,6 @@ L.Control.SliderControl = L.Control.extend({
         this.options.map    = map;
         let sliderContainer = L.DomUtil.create('div', 'slider altitudeSlider', this._container);
             $(sliderContainer).append('<div id="leaflet-slider"><input id="altitudeSlider" type="text" /></div>');
-            $(sliderContainer).mousedown(function(){ map.dragging.disable(); });
-            $(sliderContainer).mouseup(function(){ map.dragging.enable(); });
 
         $('#altitudeSliderInputs input[name=minAltitude]').val(Math.round(this.options.minAltitude / 100));
         $('#altitudeSliderInputs input[name=maxAltitude]').val(Math.round(this.options.maxAltitude / 100));
@@ -80,6 +78,8 @@ L.Control.SliderControl = L.Control.extend({
         });
 
         this.options.leafletSlider.on('slide', function(slideEvt){
+            this.options.map.dragging.disable();
+
             if(this.options.updateAltitudeLayersIsRunning !== false)
             {
                 clearTimeout(this.options.updateAltitudeLayersIsRunning);
@@ -90,6 +90,8 @@ L.Control.SliderControl = L.Control.extend({
 
                 $('#altitudeSliderInputs input[name=minAltitude]').val(Math.round(slideEvt.value[0] / 100));
                 $('#altitudeSliderInputs input[name=maxAltitude]').val(Math.round(slideEvt.value[1] / 100));
+
+                this.options.map.dragging.enable();
             }.bind(this), 10);
         }.bind(this));
     },
