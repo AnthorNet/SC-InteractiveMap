@@ -433,7 +433,14 @@ export default class BaseLayout
                     {
                         for(let recipe in data.Recipes)
                         {
-                            this.recipesData[recipe] = data.Recipes[recipe];
+                            if(this.recipesData[recipe] !== undefined && this.recipesData[recipe].className !== data.Recipes[recipe].className)
+                            {
+                                this.recipesData[modId + '|#|' + recipe] = data.Recipes[recipe];
+                            }
+                            else
+                            {
+                                this.recipesData[recipe] = data.Recipes[recipe];
+                            }
                         }
                     }
                     if(data.Schematics !== undefined)
@@ -5077,7 +5084,7 @@ export default class BaseLayout
         {
             // Extract recipe name
             let recipeName = recipe.pathName.split('.')[1];
-                if(this.recipesData[recipeName] !== undefined)
+                if(this.recipesData[recipeName] !== undefined) //TODO: Bypass mod override?! ('|#|')
                 {
                     return this.recipesData[recipeName];
                 }
