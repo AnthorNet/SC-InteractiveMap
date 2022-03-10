@@ -735,7 +735,7 @@ export default class Modal_Schematics
                                     let schematicId = mPurchasedSchematics.values[i].pathName.split('.').pop();
                                         if(
                                                this.baseLayout.schematicsData[schematicId] === undefined
-                                            && schematicId !== 'Research_HardDrive_0_C'
+                                            && ['Research_HardDrive_0_C', 'Research_FlowerPetals_1_C', 'Research_FlowerPetals_2_C', 'Research_FlowerPetals_3_C'].includes(schematicId) === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Customizer_Background/') === false

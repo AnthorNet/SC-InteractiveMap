@@ -783,7 +783,11 @@ export default class BaseLayout_Tooltip
             let volumeHeight = Math.round(currentFluid / maxFluid * 104);
 
                 content.push('<div style="position: absolute;margin-top: 20px;margin-left: 355px;">');
-                content.push('<div style="position: relative;width: 104px;height: 104px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (104 - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + this.baseLayout.itemsData[itemType].color + ';"></div></div>');
+                    content.push('<div style="position: relative;width: 104px;height: 104px;border-radius: 50%;overflow: hidden;">');
+                        content.push('<div style="margin-top: ' + (104 - volumeHeight) + 'px;height: ' + volumeHeight + 'px;position: relative;">');
+                            content.push('<div class="liquidDome" style="background-color:' + this.baseLayout.itemsData[itemType].color + ';height: ' + (104 * 2) + 'px;top: -' + (104 / 2) + 'px"></div>');
+                        content.push('</div>');
+                    content.push('</div>');
                 content.push('</div>');
         }
         content.push('<div style="position: absolute;margin-top: 20px;margin-left: 355px;width: 104px;height: 104px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" style="width: 104px;height: 104px;" /></div>');
@@ -1948,7 +1952,14 @@ export default class BaseLayout_Tooltip
 
             content.push('<div style="height: ' + backgroundImageSize + 'px;width:' + backgroundImageSize + 'px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidBackground.png?v=' + this.baseLayout.scriptVersion + ');background-size: cover;" class="d-inline-block">');
                 content.push('<div style="position: absolute;margin-top: ' + 12 * imageRatio + 'px;margin-left: ' + 17 * imageRatio + 'px;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;border-radius: 50%;overflow: hidden;">');
-                    content.push('<div style="margin-top: ' + (domeImageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + color + ';"></div>');
+
+                    if(currentFluid > 0)
+                    {
+                        content.push('<div style="margin-top: ' + (domeImageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;position: relative;">');
+                            content.push('<div class="liquidDome" style="background-color:' + color + ';height: ' + (domeImageSize * 2) + 'px;top: -' + (domeImageSize / 2) + 'px"></div>');
+                        content.push('</div>');
+                    }
+
                 content.push('</div>');
                 content.push('<div style="position: absolute;margin-top: ' + 12 * imageRatio + 'px;margin-left: ' + 17 * imageRatio + 'px;">');
                     content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" width="' + domeImageSize + '" height="' + domeImageSize + '" />');
