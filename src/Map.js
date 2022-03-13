@@ -71,10 +71,10 @@ export default class Map
                 3: 'Dangle Spires',
                 4: 'Western Dune Forest',
                 5: 'Western Dune Forest',
-                6: 'Western Dune Forest',
-                7: 'Western Dune Forest',
-                8: 'Western Dune Forest',
-                9: 'Western Dune Forest',
+                6: 'Eastern Dune Forest',
+                7: 'Eastern Dune Forest',
+                8: 'Eastern Dune Forest',
+                9: 'Eastern Dune Forest',
                 10: 'Abyss Cliffs'
             },
             5: {
