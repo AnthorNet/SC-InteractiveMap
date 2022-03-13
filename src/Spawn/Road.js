@@ -21,7 +21,7 @@ export default class Spawn_Road
         this.step               = Math.max(1, Math.min(255, this.step));
 
         this.direction          = (options.direction !== undefined) ? options.direction : 'UP';
-        this.curvature          = Math.max(-360, Math.min(360, parseInt(options.curvature)));
+        this.curvature          = Math.max(-360, Math.min(360, parseFloat(options.curvature)));
 
         this.curvatureAngle     = Math.abs(this.curvature) / this.maxHeight;
 
