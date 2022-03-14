@@ -1,4 +1,5 @@
 import BaseLayout_Modal     from './BaseLayout/Modal.js';
+import SaveParser_Write     from './SaveParser/Write.js';
 
 export default class SaveParser
 {
