@@ -24,6 +24,9 @@ export default class SCIM
         this.tetrominoUrl               = "https://satisfactory-calculator.com/" + this.language + "/api/tetromino";
         this.usersUrl                   = "https://satisfactory-calculator.com/" + this.language + "/api/users";
 
+        this.saveParserReadWorker       = '/js/InteractiveMap/build/Worker/SaveParser/Read.js';
+        this.saveParserWriteWorker      = '/js/InteractiveMap/build/Worker/SaveParser/Write.js';
+
         this.collectedOpacity           = 0.3;
 
         // Updater notice
@@ -140,10 +143,13 @@ export default class SCIM
 
             options.satisfactoryMap     = this.map;
             options.saveGameParser      = new SaveParser({
-                arrayBuffer : options.droppedFileResult,
-                fileName    : options.droppedFileName,
-                language    : this.language,
-                translate   : this.translate
+                arrayBuffer                 : options.droppedFileResult,
+                fileName                    : options.droppedFileName,
+                language                    : this.language,
+                translate                   : this.translate,
+
+                saveParserReadWorker        : this.saveParserReadWorker,
+                saveParserWriteWorker       : this.saveParserWriteWorker
             });
 
             this.baseLayout = new BaseLayout(options);

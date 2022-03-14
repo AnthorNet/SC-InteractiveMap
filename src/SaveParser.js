@@ -9,6 +9,7 @@ export default class SaveParser
 
         this.language               = options.language;
         this.translate              = options.translate;
+        this.workers                = {SaveParserRead: options.saveParserReadWorker, SaveParserWrite: options.saveParserWriteWorker};
 
         this.header                 = null;
         this.PACKAGE_FILE_TAG       = null;
@@ -61,7 +62,7 @@ export default class SaveParser
         this.callback           = callback;
         this.header             = null;
         this.objects            = {};
-        this.worker             = new Worker('/js/InteractiveMap/src/SaveParser/Read.js', { type: "module" });
+        this.worker             = new Worker(this.workers.SaveParserRead, { type: "module" });
         this.worker.onmessage   = function(e){ this.onWorkerMessage(e.data); }.bind(this);
         this.worker.postMessage({
                 arrayBuffer     : this.arrayBuffer,
