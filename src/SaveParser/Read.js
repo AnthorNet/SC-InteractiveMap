@@ -477,7 +477,10 @@ export default class SaveParser_Read
                                             Sentry.setContext('playerType', playerType);
                                         }
                                         console.log(playerType, this.saveParser.objects[objectKey]);
-                                        throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
+                                        //throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
+
+                                        // By pass!
+                                        this.currentByte += missingPlayerState - 5;
                                 }
                         }
                     break;
