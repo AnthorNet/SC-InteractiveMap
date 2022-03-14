@@ -5,6 +5,8 @@
     "description": "Satisfactory Calculator",
     "author": "AnthorNet",
     "scripts": {
+        "build-dev": "NODE_ENV=development npm run build",
+        "build": "NODE_OPTIONS=--openssl-legacy-provider webpack",
         "Build: Interactive Map": "webpack"
     },
     "devDependencies": {
