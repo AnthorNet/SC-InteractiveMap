@@ -33,8 +33,8 @@ module.exports = env => {
         plugins: [
             // Merge all detailed models into a single JSON file...
             new MergeJsonPlugin({
-                group: [
-                    { files: './Models/*/*.json', to: './detailedModels.json' }
+                groups: [
+                    { pattern: './Models/*/*.json', to: './detailedModels.json' }
                 ]
             }),
 
