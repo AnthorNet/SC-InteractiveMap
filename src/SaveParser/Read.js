@@ -440,9 +440,21 @@ export default class SaveParser_Read
                                 switch(playerType)
                                 {
                                     case 248: // EOS
-                                        this.readString();
+                                            this.readString();
                                         let eosStr                                      = this.readString().split('|');
                                             this.saveParser.objects[objectKey].eosId    = eosStr[0];
+                                        break;
+                                    case 249: // EOS
+                                            this.readString(); // EOS, then follow 17
+                                    case 17: // Old EOS
+                                        let epicHexLength   = this.readByte();
+                                        let epicHex         = '';
+                                            for(let i = 0; i < epicHexLength; i++)
+                                            {
+                                                epicHex += this.readByte().toString(16).padStart(2, '0');
+                                            }
+
+                                        this.saveParser.objects[objectKey].eosId = epicHex.replace(/^0+/, '');
                                         break;
                                     case 25: // Steam
                                         let steamHexLength  = this.readByte();
@@ -453,16 +465,6 @@ export default class SaveParser_Read
                                             }
 
                                         this.saveParser.objects[objectKey].steamId = steamHex.replace(/^0+/, '');
-                                        break;
-                                    case 17: // Old EOS
-                                        let epicHexLength   = this.readByte();
-                                        let epicHex         = '';
-                                            for(let i = 0; i < epicHexLength; i++)
-                                            {
-                                                epicHex += this.readByte().toString(16).padStart(2, '0');
-                                            }
-
-                                        this.saveParser.objects[objectKey].eosId = epicHex.replace(/^0+/, '');
                                         break;
                                     case 8: // ???
                                         this.saveParser.objects[objectKey].platformId = this.readString();
@@ -479,7 +481,7 @@ export default class SaveParser_Read
                                         console.log(playerType, this.saveParser.objects[objectKey]);
                                         //throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
 
-                                        // By pass!
+                                        // By pass, and hope that the user will still continue to send us the save!
                                         this.currentByte += missingPlayerState - 5;
                                 }
                         }
