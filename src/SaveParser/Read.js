@@ -1,7 +1,7 @@
 /* global Sentry, Intl */
-import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
+import pako from 'pako';
 
-import pako                                     from '../Lib/pako.esm.mjs';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class SaveParser_Read
 {

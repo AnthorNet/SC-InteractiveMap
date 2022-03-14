@@ -7,6 +7,9 @@
     "scripts": {
         "Build: Interactive Map": "webpack"
     },
+    "dependencies": {
+        "pako": "^2.0.4"
+    },
     "devDependencies": {
         "@sentry/webpack-plugin": "^1.18.8",
         "json-minimizer-webpack-plugin": "^3.3.0",

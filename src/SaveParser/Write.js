@@ -1,6 +1,7 @@
 /* global Intl */
+import pako from 'pako';
+
 import SaveParser_FicsIt                        from './FicsIt.js';
-import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class SaveParser_Write
 {

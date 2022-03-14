@@ -1,8 +1,8 @@
 /* global Infinity, gtag, L */
+import pako from 'pako';
+
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
-
-import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class Spawn_Blueprint
 {
