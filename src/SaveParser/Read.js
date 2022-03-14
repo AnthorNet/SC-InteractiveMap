@@ -164,6 +164,7 @@ export default class SaveParser_Read
 
                 // Parse them as usual while skipping the firt 4 bytes!
                 this.currentByte        = 4;
+                this.maxByte            = tempChunk.buffer.byteLength;
                 this.bufferView         = new DataView(tempChunk.buffer);
 
                 return this.parseObjectsV5();
@@ -1389,6 +1390,17 @@ export default class SaveParser_Read
             return '';
         }
 
+        // Range error!
+        if(strLength > (this.maxByte - this.currentByte))
+        {
+            let debugSize       = 512;
+            this.currentByte    = Math.max(0, startBytes - (debugSize * 2));
+            let errorMessage    = 'Cannot readString (' + strLength + '): `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
+                console.log(errorMessage);
+                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                throw new Error(errorMessage);
+        }
+
         // UTF16
         if(strLength < 0)
         {
@@ -1426,10 +1438,9 @@ export default class SaveParser_Read
         }
         catch(error)
         {
-            let debugSize = 512;
-            this.currentByte = Math.max(0, startBytes - (debugSize * 2));
-
-            let errorMessage = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
+            let debugSize       = 512;
+            this.currentByte    = Math.max(0, startBytes - (debugSize * 2));
+            let errorMessage    = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
                 console.log(errorMessage);
                 BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
                 throw new Error(errorMessage);
