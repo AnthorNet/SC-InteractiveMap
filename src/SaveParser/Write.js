@@ -1003,7 +1003,15 @@ export default class SaveParser_Write
                 property += this.writeString(currentProperty.value.keyType, false);
                 property += this.writeString(currentProperty.value.valueType, false);
                 property += this.writeByte(0, false);
-                property += this.writeInt(0);
+                property += this.writeInt(currentProperty.value.modeType);
+
+                if(currentProperty.value.modeType === 3)
+                {
+                    property += this.writeHex(currentProperty.value.modeUnk1);
+                    property += this.writeString(currentProperty.value.modeUnk2);
+                    property += this.writeString(currentProperty.value.modeUnk3);
+                }
+
                 property += this.writeInt(currentMapPropertyCount);
 
                 for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)

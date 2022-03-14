@@ -883,109 +883,114 @@ export default class SaveParser_Read
                     values          : []
                 };
 
-                this.skipBytes(5); // skipByte(1) + 0
+                    this.skipBytes(1);
+                    currentProperty.value.modeType = this.readInt();
 
-                let currentMapPropertyCount    = this.readInt();
-
-                for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
-                {
-                    let mapPropertyKey;
-
-                    switch(currentProperty.value.keyType)
+                    if(currentProperty.value.modeType === 3)
                     {
-                        case 'IntProperty':
-                            mapPropertyKey = this.readInt();
-                            break;
-                        case 'Int64Property':
-                            mapPropertyKey = this.readLong();
-                            break;
-                        case 'NameProperty':
-                        case 'StrProperty':
-                            mapPropertyKey = this.readString();
-                            break;
-                        case 'ObjectProperty':
-                            mapPropertyKey = this.readObjectProperty({});
-                            break;
-                        case 'EnumProperty':
-                            mapPropertyKey = {
-                                name        : this.readString()
-                            };
-                            break;
-                        case 'StructProperty':
-                            mapPropertyKey = [];
-                            while(true)
-                            {
-                                let subMapPropertyValue = this.readPropertyV5();
-                                    if(subMapPropertyValue === null)
-                                    {
-                                        break;
-                                    }
-
-                                mapPropertyKey.push(subMapPropertyValue);
-                            }
-                            break;
-                        default:
-                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
-                            if(typeof Sentry !== 'undefined')
-                            {
-                                Sentry.setContext('currentProperty', currentProperty);
-                            }
-                            throw new Error('Unimplemented key type `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
+                        currentProperty.value.modeUnk1 = this.readHex(9);
+                        currentProperty.value.modeUnk2 = this.readString();
+                        currentProperty.value.modeUnk3 = this.readString();
                     }
 
-                    let mapPropertySubProperties                    = [];
-
-                    switch(currentProperty.value.valueType)
+                let currentMapPropertyCount = this.readInt();
+                    for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
                     {
-                        case 'ByteProperty':
-                            if(currentProperty.value.keyType === 'StrProperty')
+                        let mapPropertyKey;
+                        let mapPropertySubProperties    = [];
+
+                            switch(currentProperty.value.keyType)
                             {
-                                mapPropertySubProperties = this.readString();
-                            }
-                            else
-                            {
-                                mapPropertySubProperties = this.readByte();
-                            }
-                            break;
-                        case 'BoolProperty':
-                            mapPropertySubProperties = this.readByte();
-                            break;
-                        case 'IntProperty':
-                            mapPropertySubProperties = this.readInt();
-                            break;
-                        case 'StrProperty':
-                            mapPropertySubProperties = this.readString();
-                            break;
-                        case 'ObjectProperty':
-                            mapPropertySubProperties = this.readObjectProperty({});
-                            break;
-                        case 'StructProperty':
-                            while(true)
-                            {
-                                let subMapProperty = this.readPropertyV5();
-                                    if(subMapProperty === null)
+                                case 'IntProperty':
+                                    mapPropertyKey = this.readInt();
+                                    break;
+                                case 'Int64Property':
+                                    mapPropertyKey = this.readLong();
+                                    break;
+                                case 'NameProperty':
+                                case 'StrProperty':
+                                    mapPropertyKey = this.readString();
+                                    break;
+                                case 'ObjectProperty':
+                                    mapPropertyKey = this.readObjectProperty({});
+                                    break;
+                                case 'EnumProperty':
+                                    mapPropertyKey = {
+                                        name        : this.readString()
+                                    };
+                                    break;
+                                case 'StructProperty':
+                                    mapPropertyKey = [];
+                                    while(true)
                                     {
-                                        break;
+                                        let subMapPropertyValue = this.readPropertyV5();
+                                            if(subMapPropertyValue === null)
+                                            {
+                                                break;
+                                            }
+
+                                        mapPropertyKey.push(subMapPropertyValue);
                                     }
-
-                                mapPropertySubProperties.push(subMapProperty);
+                                    break;
+                                default:
+                                    BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                    if(typeof Sentry !== 'undefined')
+                                    {
+                                        Sentry.setContext('currentProperty', currentProperty);
+                                    }
+                                    throw new Error('Unimplemented key type `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
                             }
-                            break;
-                        default:
-                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
-                            if(typeof Sentry !== 'undefined')
+
+                            switch(currentProperty.value.valueType)
                             {
-                                Sentry.setContext('currentProperty', currentProperty);
+                                case 'ByteProperty':
+                                    if(currentProperty.value.keyType === 'StrProperty')
+                                    {
+                                        mapPropertySubProperties = this.readString();
+                                    }
+                                    else
+                                    {
+                                        mapPropertySubProperties = this.readByte();
+                                    }
+                                    break;
+                                case 'BoolProperty':
+                                    mapPropertySubProperties = this.readByte();
+                                    break;
+                                case 'IntProperty':
+                                    mapPropertySubProperties = this.readInt();
+                                    break;
+                                case 'StrProperty':
+                                    mapPropertySubProperties = this.readString();
+                                    break;
+                                case 'ObjectProperty':
+                                    mapPropertySubProperties = this.readObjectProperty({});
+                                    break;
+                                case 'StructProperty':
+                                    while(true)
+                                    {
+                                        let subMapProperty = this.readPropertyV5();
+                                            if(subMapProperty === null)
+                                            {
+                                                break;
+                                            }
+
+                                        mapPropertySubProperties.push(subMapProperty);
+                                    }
+                                    break;
+                                default:
+                                    BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                    if(typeof Sentry !== 'undefined')
+                                    {
+                                        Sentry.setContext('currentProperty', currentProperty);
+                                    }
+                                    throw new Error('Unimplemented value type `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
                             }
-                            throw new Error('Unimplemented value type `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
+
+                        currentProperty.value.values[iMapProperty]    = {
+                            key     : mapPropertyKey,
+                            value   : mapPropertySubProperties
+                        };
                     }
-
-                    currentProperty.value.values[iMapProperty]    = {
-                        key     : mapPropertyKey,
-                        value   : mapPropertySubProperties
-                    };
-                }
-
                 break;
 
             case 'StructProperty':
