@@ -9,8 +9,12 @@ const JsonMinimizerPlugin           = require("json-minimizer-webpack-plugin");
 const MergeJsonPlugin               = require("merge-json-webpack-plugin");
 
 module.exports = env => {
+    process.env.NODE_ENV ??= 'production';
+
+    const isProduction = process.env.NODE_ENV === 'production';
+
     return {
-        mode            : 'production',
+        mode            : process.env.NODE_ENV,
         devtool         : 'hidden-source-map',
         performance     : { hints: false },
         context         : path.resolve(__dirname, 'src'),
@@ -38,13 +42,17 @@ module.exports = env => {
                 }
             ]
         },
-        optimization    : {
-            minimize        : true,
-            minimizer       : [
-                new TerserPlugin({test: /\.js(\?.*)?$/i}),
-                new JsonMinimizerPlugin({test: /\.json(\?.*)?$/i})
-            ]
-        },
+
+        optimization:
+            isProduction
+                ? {
+                        minimize: true,
+                        minimizer: [
+                            new TerserPlugin({test: /\.js(\?.*)?$/i}),
+                            new JsonMinimizerPlugin({test: /\.json(\?.*)?$/i}),
+                        ],
+                    }
+                : {},
 
         plugins: [
             // Merge all detailed models into a single JSON file...
@@ -53,20 +61,23 @@ module.exports = env => {
                     { pattern: './Models/*/*.json', to: './detailedModels.json' }
                 ]
             }),
+            ...(isProduction
+                ? [
+                        // Send new release to Sentry
+                        new SentryWebpackPlugin({
+                            // sentry-cli configuration
+                            url: env.SENTRY_URL,
+                            authToken: env.SENTRY_AUTH_TOKEN,
+                            org: "sentry",
+                            project: "satisfactory-calculator",
 
-            // Send new release to Sentry
-            new SentryWebpackPlugin({
-                // sentry-cli configuration
-                url: env.SENTRY_URL,
-                authToken: env.SENTRY_AUTH_TOKEN,
-                org: "sentry",
-                project: "satisfactory-calculator",
-
-                // webpack specific configuration
-                validate: true,
-                include: path.resolve(__dirname, 'build'),
-                ignore: ['node_modules', 'webpack.config.js', '*Experimental.js', '*Experimental.js.map']
-            })
-        ]
+                            // webpack specific configuration
+                            validate: true,
+                            include: path.resolve(__dirname, 'build'),
+                            ignore: ['node_modules', 'webpack.config.js'],
+                        }),
+                    ]
+                : []),
+        ],
     };
 };
