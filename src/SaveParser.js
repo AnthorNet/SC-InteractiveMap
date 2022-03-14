@@ -1,5 +1,4 @@
-import SaveParser_Read      from './SaveParser/Read.js';
-import SaveParser_Write     from './SaveParser/Write.js';
+import BaseLayout_Modal     from './BaseLayout/Modal.js';
 
 export default class SaveParser
 {
@@ -57,15 +56,21 @@ export default class SaveParser
 
     load(callback = null)
     {
-        this.header             = null;
-        this.objects            = null;
+        console.time('loadSave');
 
-        new SaveParser_Read({
-            saveParser  : this,
-            callback    : callback,
-            language    : this.language,
-            translate   : this.translate
-        });
+        this.callback           = callback;
+        this.header             = null;
+        this.objects            = {};
+        this.worker             = new Worker('/js/InteractiveMap/src/SaveParser/Read.js', { type: "module" });
+        this.worker.onmessage   = function(e){ this.onWorkerMessage(e.data); }.bind(this);
+        this.worker.postMessage({
+                arrayBuffer     : this.arrayBuffer,
+                defaultValues   : this.defaultValues,
+                language        : this.language
+            });
+
+            $('#loaderProgressBar').css('display', 'flex');
+            this.onWorkerMessage({command: 'loaderProgress', percentage: 0});
 
         delete this.arrayBuffer;
     }
@@ -80,6 +85,44 @@ export default class SaveParser
             translate   : this.translate
         });
             writer.streamSave();
+    }
+
+    onWorkerMessage(data)
+    {
+        switch(data.command)
+        {
+            case 'alert':
+                return BaseLayout_Modal.alert(data.message);
+            case 'alertParsing':
+                return BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+            case 'loaderMessage':
+                return $('.loader h6').html(this.translate._(data.message, data.replace));
+            case 'loaderProgress':
+                return $('#loaderProgressBar .progress-bar').css('width', data.percentage + '%');
+
+            case 'saveResult':
+                for(const [key, value] of Object.entries(data.result))
+                {
+                    this[key] = value;
+                }
+                break;
+
+            case 'endSaveLoading':
+                console.timeEnd('loadSave');
+                this.onWorkerMessage({command: 'loaderProgress', percentage: 45});
+
+                if(this.callback !== null)
+                {
+                    this.callback();
+                    this.callback = null;
+                }
+                else
+                {
+                    this.onWorkerMessage({command: 'loaderProgress', percentage: 100});
+                }
+
+                return this.worker.terminate();
+        }
     }
 
     getHeader()
