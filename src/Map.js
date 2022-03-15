@@ -35,9 +35,9 @@ export default class Map
 
         this.biomes                     = {
             1: {
-                1: 'No Man\'s Land',
-                2: 'No Man\'s Land',
-                2: 'No Man\'s Land',
+                1: 'Paradise Island',
+                2: 'Paradise Island',
+                2: 'Paradise Island',
                 4: 'Grass Fields',
                 5: 'Grass Fields',
                 6: 'Grass Fields',
