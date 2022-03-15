@@ -1,21 +1,18 @@
-/* global Sentry, Intl */
-import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
-
+/* global Sentry, Intl, self */
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class SaveParser_Read
 {
-    constructor(options)
+    constructor(worker, options)
     {
-        console.time('loadSave');
+        this.worker             = worker;
+        this.saveResult         = {};
+        this.saveResult.objects = {};
 
-        this.saveParser         = options.saveParser;
-        this.callback           = options.callback;
-
+        this.defaultValues      = options.defaultValues;
         this.language           = options.language;
-        this.translate          = options.translate;
 
-        this.arrayBuffer        = this.saveParser.arrayBuffer;
+        this.arrayBuffer        = options.arrayBuffer;
         this.bufferView         = new DataView(this.arrayBuffer); // Still used for header...
         this.currentByte        = 0;
 
@@ -24,28 +21,30 @@ export default class SaveParser_Read
 
     parseHeader()
     {
-        this.saveParser.header                      = {};
-        this.saveParser.header.saveHeaderType       = this.readInt();
-        this.saveParser.header.saveVersion          = this.readInt();
-        this.saveParser.header.buildVersion         = this.readInt();
-        this.saveParser.header.mapName              = this.readString();
-        this.saveParser.header.mapOptions           = this.readString();
-        this.saveParser.header.sessionName          = this.readString();
-        this.saveParser.header.playDurationSeconds  = this.readInt();
-        this.saveParser.header.saveDateTime         = this.readLong();
-        this.saveParser.header.sessionVisibility    = this.readByte();
+        this.header                      = {};
+        this.header.saveHeaderType       = this.readInt();
+        this.header.saveVersion          = this.readInt();
+        this.header.buildVersion         = this.readInt();
+        this.header.mapName              = this.readString();
+        this.header.mapOptions           = this.readString();
+        this.header.sessionName          = this.readString();
+        this.header.playDurationSeconds  = this.readInt();
+        this.header.saveDateTime         = this.readLong();
+        this.header.sessionVisibility    = this.readByte();
 
-        if(this.saveParser.header.saveHeaderType >= 7)
+        if(this.header.saveHeaderType >= 7)
         {
-            this.saveParser.header.fEditorObjectVersion = this.readInt();
+            this.header.fEditorObjectVersion = this.readInt();
         }
-        if(this.saveParser.header.saveHeaderType >= 8)
+        if(this.header.saveHeaderType >= 8)
         {
-            this.saveParser.header.modMetadata      = this.readString();
-            this.saveParser.header.isModdedSave     = this.readInt();
+            this.header.modMetadata      = this.readString();
+            this.header.isModdedSave     = this.readInt();
         }
 
-        console.log(this.saveParser.header);
+        console.log(this.header);
+
+        this.worker.postMessage({command: 'saveResult', result: {header: this.header}});
 
         this.parseObjects();
     }
@@ -53,13 +52,13 @@ export default class SaveParser_Read
     parseObjects()
     {
         // We should now unzip the body!
-        if(this.saveParser.header.saveVersion >= 21)
+        if(this.header.saveVersion >= 21)
         {
             this.parseCompressedObjectsV21();
         }
         else
         {
-            BaseLayout_Modal.alert('That save version isn\'t supported anymore... Please save it again in the game.');
+            this.worker.postMessage({command: 'alert', message: 'That save version isn\'t supported anymore... Please save it again in the game.'});
         }
     }
 
@@ -73,34 +72,31 @@ export default class SaveParser_Read
         this.currentByte                    = 0;
         this.maxByte                        = this.arrayBuffer.byteLength;
 
-        this.saveParser.PACKAGE_FILE_TAG    = null;
-        this.saveParser.maxChunkSize        = null;
+        this.saveResult.PACKAGE_FILE_TAG    = null;
+        this.saveResult.maxChunkSize        = null;
         this.currentChunks                  = [];
-
-        $('#loaderProgressBar').css('display', 'flex');
-        $('#loaderProgressBar .progress-bar').css('width', '0px');
 
         return this.inflateChunks();
     }
 
     inflateChunks()
     {
-        if(this.handledByte < this.maxByte)
+        while(this.handledByte < this.maxByte)
         {
             // Read chunk info size...
             let chunkHeader         = new DataView(this.arrayBuffer.slice(0, 48));
                 this.currentByte    = 48;
                 this.handledByte   += 48;
 
-            if(this.saveParser.PACKAGE_FILE_TAG === null)
+            if(this.saveResult.PACKAGE_FILE_TAG === null)
             {
-                //this.saveParser.PACKAGE_FILE_TAG = chunkHeader.getBigInt64(0, true);
-                this.saveParser.PACKAGE_FILE_TAG = chunkHeader.getUint32(0, true);
+                //this.saveResult.PACKAGE_FILE_TAG = chunkHeader.getBigInt64(0, true);
+                this.saveResult.PACKAGE_FILE_TAG = chunkHeader.getUint32(0, true);
                 //console.log(chunkHeader.getBigInt64(0, true), chunkHeader.getUint32(0, true));
             }
-            if(this.saveParser.maxChunkSize === null)
+            if(this.saveResult.maxChunkSize === null)
             {
-                this.saveParser.maxChunkSize = chunkHeader.getUint32(8, true);
+                this.saveResult.maxChunkSize = chunkHeader.getUint32(8, true);
             }
 
             let currentChunkSize    = chunkHeader.getUint32(16, true);
@@ -121,8 +117,7 @@ export default class SaveParser_Read
             }
             catch(err)
             {
-                console.log('INFLATE ERROR', err);
-                BaseLayout_Modal.alert('Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.')
+                this.worker.postMessage({command: 'alert', message: 'Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('pako', pako);
@@ -134,41 +129,34 @@ export default class SaveParser_Read
             }
 
             let currentPercentage = Math.round(this.handledByte / this.maxByte * 100);
-                $('.loader h6').html('Inflating save game (' + currentPercentage + '%)...');
-                $('#loaderProgressBar .progress-bar').css('width', currentPercentage * 0.4 + '%');
-
-            setTimeout(() => {
-                return this.inflateChunks();
-            }, 5);
+                this.worker.postMessage({command: 'loaderMessage', message: 'Inflating save game (' + currentPercentage + '%)...'});
+                this.worker.postMessage({command: 'loaderProgress', percentage: (currentPercentage * 0.4)});
         }
-        else
-        {
-            console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
-            $('.loader h6').html('Merging inflated chunks...');
 
-            setTimeout(() => {
-                // Create the complete Uint8Array
-                let newChunkLength = 0;
-                    for(let i = 0; i < this.currentChunks.length; i++)
-                    {
-                        newChunkLength += this.currentChunks[i].length;
-                    }
+        console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
+        this.worker.postMessage({command: 'loaderMessage', message: 'Merging inflated chunks...'});
 
-                let tempChunk       = new Uint8Array(newChunkLength);
-                let currentLength   = 0;
-                    for(let i = 0; i < this.currentChunks.length; i++)
-                    {
-                        tempChunk.set(this.currentChunks[i], currentLength);
-                        currentLength += this.currentChunks[i].length;
-                    }
+        // Create the complete Uint8Array
+        let newChunkLength = 0;
+            for(let i = 0; i < this.currentChunks.length; i++)
+            {
+                newChunkLength += this.currentChunks[i].length;
+            }
 
-                // Parse them as usual while skipping the firt 4 bytes!
-                this.currentByte        = 4;
-                this.bufferView         = new DataView(tempChunk.buffer);
+        let tempChunk       = new Uint8Array(newChunkLength);
+        let currentLength   = 0;
+            for(let i = 0; i < this.currentChunks.length; i++)
+            {
+                tempChunk.set(this.currentChunks[i], currentLength);
+                currentLength += this.currentChunks[i].length;
+            }
 
-                return this.parseObjectsV5();
-            }, 50);
-        }
+        // Parse them as usual while skipping the firt 4 bytes!
+        this.currentByte        = 4;
+        this.maxByte            = tempChunk.buffer.byteLength;
+        this.bufferView         = new DataView(tempChunk.buffer);
+
+        return this.parseObjectsV5();
     }
 
     // V5 FUNCTIONS
@@ -176,74 +164,59 @@ export default class SaveParser_Read
     {
         let countObjects                = this.readInt();
         let entitiesToObjects           = [];
-            this.saveParser.objects     = {};
             console.log('Parsing: ' + countObjects + ' objects...');
-            $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Parsing %1$s objects...', new Intl.NumberFormat(this.language).format(countObjects)));
+            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects...', replace: new Intl.NumberFormat(this.language).format(countObjects)});
 
-            setTimeout(() => {
-                for(let i = 0; i < countObjects; i++)
-                {
-                    let objectType = this.readInt();
-                        switch(objectType)
-                        {
-                            case 0:
-                                let object                                      = this.readObjectV5();
-                                    this.saveParser.objects[object.pathName]    = object;
-                                    entitiesToObjects[i]                        = object.pathName;
-                                break;
-                            case 1:
-                                let actor                                       = this.readActorV5();
-                                    this.saveParser.objects[actor.pathName]     = actor;
-                                    entitiesToObjects[i]                        = actor.pathName;
-
-                                    if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
-                                    {
-                                        this.saveParser.gameStatePathName   = actor.pathName;
-                                    }
-                                break;
-                            default:
-                                console.log('Unknown object type', objectType);
-                                break;
-                        }
-                }
-
-                let countEntities   = this.readInt();
-                    console.log('Parsing: ' + countEntities + ' entities...');
-                    $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Parsing %1$s entities...', new Intl.NumberFormat(this.language).format(countEntities)));
-
-                setTimeout(() => {
-                    for(let i = 0; i < countEntities; i++)
+            for(let i = 0; i < countObjects; i++)
+            {
+                let objectType = this.readInt();
+                    switch(objectType)
                     {
-                        this.readEntityV5(entitiesToObjects[i]);
+                        case 0:
+                            let object                                      = this.readObjectV5();
+                                this.saveResult.objects[object.pathName]    = object;
+                                entitiesToObjects[i]                        = object.pathName;
+                            break;
+                        case 1:
+                            let actor                                       = this.readActorV5();
+                                this.saveResult.objects[actor.pathName]     = actor;
+                                entitiesToObjects[i]                        = actor.pathName;
+
+                                if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                                {
+                                    this.saveResult.gameStatePathName   = actor.pathName;
+                                }
+                            break;
+                        default:
+                            console.log('Unknown object type', objectType);
+                            break;
                     }
+            }
 
-                    this.saveParser.collectables   = [];
-                        let countCollected  = this.readInt();
-                            console.log('Parsing: ' + countCollected + ' collectables...');
-                            $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Parsing %1$s collectables...', new Intl.NumberFormat(this.language).format(countCollected)));
+            let countEntities   = this.readInt();
+                console.log('Parsing: ' + countEntities + ' entities...');
+                this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities...', replace: new Intl.NumberFormat(this.language).format(countEntities)});
 
-                    setTimeout(() => {
-                            for(let i = 0; i < countCollected; i++)
-                            {
-                                this.saveParser.collectables.push(this.readObjectProperty({}));
-                            }
+            for(let i = 0; i < countEntities; i++)
+            {
+                this.readEntityV5(entitiesToObjects[i]);
+            }
 
-                        delete this.arrayBuffer;
-                        delete this.bufferView;
+            this.saveResult.collectables   = [];
+                let countCollected  = this.readInt();
+                    console.log('Parsing: ' + countCollected + ' collectables...');
+                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(countCollected)});
 
-                        console.timeEnd('loadSave');
+            for(let i = 0; i < countCollected; i++)
+            {
+                this.saveResult.collectables.push(this.readObjectProperty({}));
+            }
 
-                        if(this.callback !== null)
-                        {
-                            $('#loaderProgressBar .progress-bar').css('width', '45%');
+            delete this.arrayBuffer;
+            delete this.bufferView;
 
-                            setTimeout(() => {
-                                return this.callback();
-                            }, 50);
-                        }
-                    }, 50);
-                }, 50);
-            }, 50);
+            this.worker.postMessage({command: 'saveResult', result: this.saveResult});
+            this.worker.postMessage({command: 'endSaveLoading'});
     }
 
     // V5 Functions
@@ -277,13 +250,13 @@ export default class SaveParser_Read
             actor.transform     = {};
 
             if(
-                    rotation[0] === this.saveParser.defaultValues.rotation[0]
-                 && rotation[1] === this.saveParser.defaultValues.rotation[1]
-                 && rotation[2] === this.saveParser.defaultValues.rotation[2]
-                 && rotation[3] === this.saveParser.defaultValues.rotation[3]
+                    rotation[0] === this.defaultValues.rotation[0]
+                 && rotation[1] === this.defaultValues.rotation[1]
+                 && rotation[2] === this.defaultValues.rotation[2]
+                 && rotation[3] === this.defaultValues.rotation[3]
             )
             {
-                actor.transform.rotation    = this.saveParser.defaultValues.rotation;
+                actor.transform.rotation    = this.defaultValues.rotation;
             }
             else
             {
@@ -291,12 +264,12 @@ export default class SaveParser_Read
             }
 
             if(
-                    translation[0] === this.saveParser.defaultValues.translation[0]
-                 && translation[1] === this.saveParser.defaultValues.translation[1]
-                 && translation[2] === this.saveParser.defaultValues.translation[2]
+                    translation[0] === this.defaultValues.translation[0]
+                 && translation[1] === this.defaultValues.translation[1]
+                 && translation[2] === this.defaultValues.translation[2]
             )
             {
-                actor.transform.translation = this.saveParser.defaultValues.translation;
+                actor.transform.translation = this.defaultValues.translation;
             }
             else
             {
@@ -341,30 +314,30 @@ export default class SaveParser_Read
         let entityLength                            = this.readInt();
         let startByte                               = this.currentByte;
 
-        if(this.saveParser.objects[objectKey].type === 1)
+        if(this.saveResult.objects[objectKey].type === 1)
         {
-            this.saveParser.objects[objectKey].entity = this.readObjectProperty({});
+            this.saveResult.objects[objectKey].entity = this.readObjectProperty({});
 
             let countChild  = this.readInt();
                 if(countChild > 0)
                 {
-                    this.saveParser.objects[objectKey].children = [];
+                    this.saveResult.objects[objectKey].children = [];
 
                     for(let i = 0; i < countChild; i++)
                     {
-                        this.saveParser.objects[objectKey].children.push(this.readObjectProperty({}));
+                        this.saveResult.objects[objectKey].children.push(this.readObjectProperty({}));
                     }
                 }
         }
 
         if((this.currentByte - startByte) === entityLength)
         {
-            this.saveParser.objects[objectKey].shouldBeNulled = true;
+            this.saveResult.objects[objectKey].shouldBeNulled = true;
             return;
         }
 
         // Read properties
-        this.saveParser.objects[objectKey].properties       = [];
+        this.saveResult.objects[objectKey].properties       = [];
         while(true)
         {
             let property = this.readPropertyV5();
@@ -373,23 +346,23 @@ export default class SaveParser_Read
                     break;
                 }
 
-                this.saveParser.objects[objectKey].properties.push(property);
+                this.saveResult.objects[objectKey].properties.push(property);
         }
 
         // Read Conveyor missing bytes
         if(
-                this.saveParser.objects[objectKey].className.includes('/Build_ConveyorBeltMk')
-             || this.saveParser.objects[objectKey].className.includes('/Build_ConveyorLiftMk')
+                this.saveResult.objects[objectKey].className.includes('/Build_ConveyorBeltMk')
+             || this.saveResult.objects[objectKey].className.includes('/Build_ConveyorLiftMk')
              // MODS
-             || this.saveParser.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_BeltMk')
-             || this.saveParser.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')
-             || this.saveParser.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
-             || this.saveParser.objects[objectKey].className.startsWith('/CoveredConveyor/')
-             || this.saveParser.objects[objectKey].className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || this.saveParser.objects[objectKey].className.startsWith('/FlexSplines/Conveyor/Build_Belt')
+             || this.saveResult.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_BeltMk')
+             || this.saveResult.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')
+             || this.saveResult.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
+             || this.saveResult.objects[objectKey].className.startsWith('/CoveredConveyor/')
+             || this.saveResult.objects[objectKey].className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
+             || this.saveResult.objects[objectKey].className.startsWith('/FlexSplines/Conveyor/Build_Belt')
         )
         {
-            this.saveParser.objects[objectKey].extra    = {count: this.readInt(), items: []};
+            this.saveResult.objects[objectKey].extra    = {count: this.readInt(), items: []};
             let itemsLength                             = this.readInt();
                 for(let i = 0; i < itemsLength; i++)
                 {
@@ -404,33 +377,33 @@ export default class SaveParser_Read
                         this.readString(); //currentItem.pathName    = this.readString();
                         currentItem.position    = this.readFloat();
 
-                    this.saveParser.objects[objectKey].extra.items.push(currentItem);
+                    this.saveResult.objects[objectKey].extra.items.push(currentItem);
                 }
         }
         else
         {
             // Extra processing
-            switch(this.saveParser.objects[objectKey].className)
+            switch(this.saveResult.objects[objectKey].className)
             {
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C':
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C':
-                    this.saveParser.objects[objectKey].extra    = {count: this.readInt(), game: []};
+                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), game: []};
                     let gameLength                              = this.readInt();
 
                     for(let i = 0; i < gameLength; i++)
                     {
-                        this.saveParser.objects[objectKey].extra.game.push(this.readObjectProperty({}));
+                        this.saveResult.objects[objectKey].extra.game.push(this.readObjectProperty({}));
 
-                        if(i === 0 && this.saveParser.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                        if(i === 0 && this.saveResult.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
                         {
-                            this.saveParser.playerHostPathName  = this.saveParser.objects[objectKey].extra.game[0].pathName;
+                            this.saveResult.playerHostPathName  = this.saveResult.objects[objectKey].extra.game[0].pathName;
                         }
                     }
 
                     break;
                 case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
                     let missingPlayerState                          = (startByte + entityLength) - this.currentByte;
-                        this.saveParser.objects[objectKey].missing  = this.readHex(missingPlayerState);
+                        this.saveResult.objects[objectKey].missing  = this.readHex(missingPlayerState);
                         this.currentByte                           -= missingPlayerState; // Reset back to grab the user ID if possible!
 
                         if(missingPlayerState > 0)
@@ -440,9 +413,21 @@ export default class SaveParser_Read
                                 switch(playerType)
                                 {
                                     case 248: // EOS
-                                        this.readString();
+                                            this.readString();
                                         let eosStr                                      = this.readString().split('|');
-                                            this.saveParser.objects[objectKey].eosId    = eosStr[0];
+                                            this.saveResult.objects[objectKey].eosId    = eosStr[0];
+                                        break;
+                                    case 249: // EOS
+                                            this.readString(); // EOS, then follow 17
+                                    case 17: // Old EOS
+                                        let epicHexLength   = this.readByte();
+                                        let epicHex         = '';
+                                            for(let i = 0; i < epicHexLength; i++)
+                                            {
+                                                epicHex += this.readByte().toString(16).padStart(2, '0');
+                                            }
+
+                                        this.saveResult.objects[objectKey].eosId = epicHex.replace(/^0+/, '');
                                         break;
                                     case 25: // Steam
                                         let steamHexLength  = this.readByte();
@@ -452,48 +437,41 @@ export default class SaveParser_Read
                                                 steamHex += this.readByte().toString(16).padStart(2, '0');
                                             }
 
-                                        this.saveParser.objects[objectKey].steamId = steamHex.replace(/^0+/, '');
-                                        break;
-                                    case 17: // Old EOS
-                                        let epicHexLength   = this.readByte();
-                                        let epicHex         = '';
-                                            for(let i = 0; i < epicHexLength; i++)
-                                            {
-                                                epicHex += this.readByte().toString(16).padStart(2, '0');
-                                            }
-
-                                        this.saveParser.objects[objectKey].eosId = epicHex.replace(/^0+/, '');
+                                        this.saveResult.objects[objectKey].steamId = steamHex.replace(/^0+/, '');
                                         break;
                                     case 8: // ???
-                                        this.saveParser.objects[objectKey].platformId = this.readString();
+                                        this.saveResult.objects[objectKey].platformId = this.readString();
                                         break;
                                     case 3: // Offline
                                         break;
                                     default:
-                                        BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                        this.worker.postMessage({command: 'alertParsing'});
                                         if(typeof Sentry !== 'undefined')
                                         {
-                                            Sentry.setContext('BP_PlayerState_C', this.saveParser.objects[objectKey]);
+                                            Sentry.setContext('BP_PlayerState_C', this.saveResult.objects[objectKey]);
                                             Sentry.setContext('playerType', playerType);
                                         }
-                                        console.log(playerType, this.saveParser.objects[objectKey]);
-                                        throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
+                                        console.log(playerType, this.saveResult.objects[objectKey]);
+                                        //throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
+
+                                        // By pass, and hope that the user will still continue to send us the save!
+                                        this.currentByte += missingPlayerState - 5;
                                 }
                         }
                     break;
                 //TODO: Not 0 here so bypass those special cases, but why? We mainly do not want to get warned here...
                 case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
                     let missingDrone                                = (startByte + entityLength) - this.currentByte;
-                        this.saveParser.objects[objectKey].missing  = this.readHex(missingDrone);
+                        this.saveResult.objects[objectKey].missing  = this.readHex(missingDrone);
 
                     break;
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
-                    this.saveParser.objects[objectKey].extra    = {count: this.readInt(), circuits: []};
+                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), circuits: []};
                     let circuitsLength                          = this.readInt();
 
                         for(let i = 0; i < circuitsLength; i++)
                         {
-                            this.saveParser.objects[objectKey].extra.circuits.push({
+                            this.saveResult.objects[objectKey].extra.circuits.push({
                                 circuitId   : this.readInt(),
                                 levelName   : this.readString(),
                                 pathName    : this.readString()
@@ -509,7 +487,7 @@ export default class SaveParser_Read
                 case '/AB_CableMod/Visuals3/Build_AB-PLHeavy.Build_AB-PLHeavy_C':
                 case '/AB_CableMod/Visuals4/Build_AB-SPLight.Build_AB-SPLight_C':
                 case '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C':
-                    this.saveParser.objects[objectKey].extra        = {
+                    this.saveResult.objects[objectKey].extra        = {
                         count   : this.readInt(),
                         source  : this.readObjectProperty({}),
                         target  : this.readObjectProperty({})
@@ -518,18 +496,18 @@ export default class SaveParser_Read
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
-                    this.saveParser.objects[objectKey].extra    = {count: this.readInt(), objects: []};
+                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), objects: []};
                     let trainLength                             = this.readInt();
                         for(let i = 0; i < trainLength; i++)
                         {
-                            this.saveParser.objects[objectKey].extra.objects.push({
+                            this.saveResult.objects[objectKey].extra.objects.push({
                                 name   : this.readString(),
                                 unk    : this.readHex(53)
                             });
                         }
 
-                    this.saveParser.objects[objectKey].extra.previous   = this.readObjectProperty({});
-                    this.saveParser.objects[objectKey].extra.next       = this.readObjectProperty({});
+                    this.saveResult.objects[objectKey].extra.previous   = this.readObjectProperty({});
+                    this.saveResult.objects[objectKey].extra.next       = this.readObjectProperty({});
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
@@ -537,11 +515,11 @@ export default class SaveParser_Read
                 case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
-                    this.saveParser.objects[objectKey].extra    = {count: this.readInt(), objects: []};
+                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), objects: []};
                     let vehicleLength                           = this.readInt();
                         for(let i = 0; i < vehicleLength; i++)
                         {
-                            this.saveParser.objects[objectKey].extra.objects.push({
+                            this.saveResult.objects[objectKey].extra.objects.push({
                                 name   : this.readString(),
                                 unk    : this.readHex(53)
                             });
@@ -551,8 +529,8 @@ export default class SaveParser_Read
                     let missingBytes = (startByte + entityLength) - this.currentByte;
                         if(missingBytes > 4)
                         {
-                            this.saveParser.objects[objectKey].missing = this.readHex(missingBytes); // TODO
-                            console.log('MISSING ' + missingBytes + '  BYTES', this.saveParser.objects[objectKey]);
+                            this.saveResult.objects[objectKey].missing = this.readHex(missingBytes); // TODO
+                            console.log('MISSING ' + missingBytes + '  BYTES', this.saveResult.objects[objectKey]);
                         }
                         else
                         {
@@ -847,7 +825,7 @@ export default class SaveParser_Read
                                     }
                                     catch(error)
                                     {
-                                        BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                        this.worker.postMessage({command: 'alertParsing'});
                                         if(typeof Sentry !== 'undefined')
                                         {
                                             Sentry.setContext('currentProperty', currentProperty);
@@ -860,7 +838,7 @@ export default class SaveParser_Read
                         break;
 
                     default:
-                        BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                        this.worker.postMessage({command: 'alertParsing'});
                         if(typeof Sentry !== 'undefined')
                         {
                             Sentry.setContext('currentProperty', currentProperty);
@@ -877,109 +855,114 @@ export default class SaveParser_Read
                     values          : []
                 };
 
-                this.skipBytes(5); // skipByte(1) + 0
+                    this.skipBytes(1);
+                    currentProperty.value.modeType = this.readInt();
 
-                let currentMapPropertyCount    = this.readInt();
-
-                for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
-                {
-                    let mapPropertyKey;
-
-                    switch(currentProperty.value.keyType)
+                    if(currentProperty.value.modeType === 3)
                     {
-                        case 'IntProperty':
-                            mapPropertyKey = this.readInt();
-                            break;
-                        case 'Int64Property':
-                            mapPropertyKey = this.readLong();
-                            break;
-                        case 'NameProperty':
-                        case 'StrProperty':
-                            mapPropertyKey = this.readString();
-                            break;
-                        case 'ObjectProperty':
-                            mapPropertyKey = this.readObjectProperty({});
-                            break;
-                        case 'EnumProperty':
-                            mapPropertyKey = {
-                                name        : this.readString()
-                            };
-                            break;
-                        case 'StructProperty':
-                            mapPropertyKey = [];
-                            while(true)
-                            {
-                                let subMapPropertyValue = this.readPropertyV5();
-                                    if(subMapPropertyValue === null)
-                                    {
-                                        break;
-                                    }
-
-                                mapPropertyKey.push(subMapPropertyValue);
-                            }
-                            break;
-                        default:
-                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
-                            if(typeof Sentry !== 'undefined')
-                            {
-                                Sentry.setContext('currentProperty', currentProperty);
-                            }
-                            throw new Error('Unimplemented key type `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
+                        currentProperty.value.modeUnk1 = this.readHex(9);
+                        currentProperty.value.modeUnk2 = this.readString();
+                        currentProperty.value.modeUnk3 = this.readString();
                     }
 
-                    let mapPropertySubProperties                    = [];
-
-                    switch(currentProperty.value.valueType)
+                let currentMapPropertyCount = this.readInt();
+                    for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
                     {
-                        case 'ByteProperty':
-                            if(currentProperty.value.keyType === 'StrProperty')
+                        let mapPropertyKey;
+                        let mapPropertySubProperties    = [];
+
+                            switch(currentProperty.value.keyType)
                             {
-                                mapPropertySubProperties = this.readString();
-                            }
-                            else
-                            {
-                                mapPropertySubProperties = this.readByte();
-                            }
-                            break;
-                        case 'BoolProperty':
-                            mapPropertySubProperties = this.readByte();
-                            break;
-                        case 'IntProperty':
-                            mapPropertySubProperties = this.readInt();
-                            break;
-                        case 'StrProperty':
-                            mapPropertySubProperties = this.readString();
-                            break;
-                        case 'ObjectProperty':
-                            mapPropertySubProperties = this.readObjectProperty({});
-                            break;
-                        case 'StructProperty':
-                            while(true)
-                            {
-                                let subMapProperty = this.readPropertyV5();
-                                    if(subMapProperty === null)
+                                case 'IntProperty':
+                                    mapPropertyKey = this.readInt();
+                                    break;
+                                case 'Int64Property':
+                                    mapPropertyKey = this.readLong();
+                                    break;
+                                case 'NameProperty':
+                                case 'StrProperty':
+                                    mapPropertyKey = this.readString();
+                                    break;
+                                case 'ObjectProperty':
+                                    mapPropertyKey = this.readObjectProperty({});
+                                    break;
+                                case 'EnumProperty':
+                                    mapPropertyKey = {
+                                        name        : this.readString()
+                                    };
+                                    break;
+                                case 'StructProperty':
+                                    mapPropertyKey = [];
+                                    while(true)
                                     {
-                                        break;
+                                        let subMapPropertyValue = this.readPropertyV5();
+                                            if(subMapPropertyValue === null)
+                                            {
+                                                break;
+                                            }
+
+                                        mapPropertyKey.push(subMapPropertyValue);
                                     }
-
-                                mapPropertySubProperties.push(subMapProperty);
+                                    break;
+                                default:
+                                    this.worker.postMessage({command: 'alertParsing'});
+                                    if(typeof Sentry !== 'undefined')
+                                    {
+                                        Sentry.setContext('currentProperty', currentProperty);
+                                    }
+                                    throw new Error('Unimplemented key type `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
                             }
-                            break;
-                        default:
-                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
-                            if(typeof Sentry !== 'undefined')
+
+                            switch(currentProperty.value.valueType)
                             {
-                                Sentry.setContext('currentProperty', currentProperty);
+                                case 'ByteProperty':
+                                    if(currentProperty.value.keyType === 'StrProperty')
+                                    {
+                                        mapPropertySubProperties = this.readString();
+                                    }
+                                    else
+                                    {
+                                        mapPropertySubProperties = this.readByte();
+                                    }
+                                    break;
+                                case 'BoolProperty':
+                                    mapPropertySubProperties = this.readByte();
+                                    break;
+                                case 'IntProperty':
+                                    mapPropertySubProperties = this.readInt();
+                                    break;
+                                case 'StrProperty':
+                                    mapPropertySubProperties = this.readString();
+                                    break;
+                                case 'ObjectProperty':
+                                    mapPropertySubProperties = this.readObjectProperty({});
+                                    break;
+                                case 'StructProperty':
+                                    while(true)
+                                    {
+                                        let subMapProperty = this.readPropertyV5();
+                                            if(subMapProperty === null)
+                                            {
+                                                break;
+                                            }
+
+                                        mapPropertySubProperties.push(subMapProperty);
+                                    }
+                                    break;
+                                default:
+                                    this.worker.postMessage({command: 'alertParsing'});
+                                    if(typeof Sentry !== 'undefined')
+                                    {
+                                        Sentry.setContext('currentProperty', currentProperty);
+                                    }
+                                    throw new Error('Unimplemented value type `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
                             }
-                            throw new Error('Unimplemented value type `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
+
+                        currentProperty.value.values[iMapProperty]    = {
+                            key     : mapPropertyKey,
+                            value   : mapPropertySubProperties
+                        };
                     }
-
-                    currentProperty.value.values[iMapProperty]    = {
-                        key     : mapPropertyKey,
-                        value   : mapPropertySubProperties
-                    };
-                }
-
                 break;
 
             case 'StructProperty':
@@ -1010,13 +993,13 @@ export default class SaveParser_Read
                         if(currentProperty.name === 'mPrimaryColor' || currentProperty.name === 'mSecondaryColor')
                         {
                             if(
-                                   currentProperty.value.values.r === this.saveParser.defaultValues[currentProperty.name].value.values.r
-                                && currentProperty.value.values.g === this.saveParser.defaultValues[currentProperty.name].value.values.g
-                                && currentProperty.value.values.b === this.saveParser.defaultValues[currentProperty.name].value.values.b
-                                && currentProperty.value.values.a === this.saveParser.defaultValues[currentProperty.name].value.values.a
+                                   currentProperty.value.values.r === this.defaultValues[currentProperty.name].value.values.r
+                                && currentProperty.value.values.g === this.defaultValues[currentProperty.name].value.values.g
+                                && currentProperty.value.values.b === this.defaultValues[currentProperty.name].value.values.b
+                                && currentProperty.value.values.a === this.defaultValues[currentProperty.name].value.values.a
                             )
                             {
-                                currentProperty = this.saveParser.defaultValues[currentProperty.name];
+                                currentProperty = this.defaultValues[currentProperty.name];
                             }
                         }
 
@@ -1131,7 +1114,7 @@ export default class SaveParser_Read
                         }
                         catch(error)
                         {
-                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                            this.worker.postMessage({command: 'alertParsing'});
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
@@ -1167,7 +1150,7 @@ export default class SaveParser_Read
                             let rewind = this.lastStrRead + 128;
                                 this.currentByte -= rewind;
                             console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                            this.worker.postMessage({command: 'alertParsing'});
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
@@ -1182,7 +1165,7 @@ export default class SaveParser_Read
                 let rewind = this.lastStrRead + 128;
                     this.currentByte -= rewind;
                 console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                this.worker.postMessage({command: 'alertParsing'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
@@ -1251,7 +1234,7 @@ export default class SaveParser_Read
                                 currentArgumentsData.argumentValue    = this.readTextProperty({});
                                 break;
                             default:
-                                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                                this.worker.postMessage({command: 'alertParsing'});
                                 if(typeof Sentry !== 'undefined')
                                 {
                                     Sentry.setContext('currentProperty', currentProperty);
@@ -1272,7 +1255,7 @@ export default class SaveParser_Read
             // HISTORYTYPE_NONE
             case 255:
                 // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
-                if(this.saveParser.header.buildVersion >= 140822)
+                if(this.header.buildVersion >= 140822)
                 {
                     currentProperty.hasCultureInvariantString   = this.readInt();
 
@@ -1283,7 +1266,7 @@ export default class SaveParser_Read
                 }
                 break;
             default:
-                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                this.worker.postMessage({command: 'alertParsing'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
@@ -1384,6 +1367,17 @@ export default class SaveParser_Read
             return '';
         }
 
+        // Range error!
+        if(strLength > (this.maxByte - this.currentByte))
+        {
+            let debugSize       = 512;
+            this.currentByte    = Math.max(0, startBytes - (debugSize * 2));
+            let errorMessage    = 'Cannot readString (' + strLength + '): `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
+                console.log(errorMessage);
+                this.worker.postMessage({command: 'alertParsing'});
+                throw new Error(errorMessage);
+        }
+
         // UTF16
         if(strLength < 0)
         {
@@ -1421,12 +1415,11 @@ export default class SaveParser_Read
         }
         catch(error)
         {
-            let debugSize = 512;
-            this.currentByte = Math.max(0, startBytes - (debugSize * 2));
-
-            let errorMessage = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
+            let debugSize       = 512;
+            this.currentByte    = Math.max(0, startBytes - (debugSize * 2));
+            let errorMessage    = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
                 console.log(errorMessage);
-                BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                this.worker.postMessage({command: 'alertParsing'});
                 throw new Error(errorMessage);
         }
 
@@ -1551,7 +1544,7 @@ export default class SaveParser_Read
                             structure.unk3      = this.readHex(45); //TODO: Not sure at all!
                             break;
                         default:
-                            BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                            this.worker.postMessage({command: 'alertParsing'});
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentData', data);
@@ -1565,4 +1558,8 @@ export default class SaveParser_Read
 
         return data;
     }
-}
+};
+
+self.onmessage = function(e){
+    return new SaveParser_Read(self, e.data);
+};

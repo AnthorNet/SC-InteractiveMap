@@ -1,33 +1,25 @@
-/* global Intl */
-import SaveParser_FicsIt                        from './FicsIt.js';
+/* global Intl, self */
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class SaveParser_Write
 {
-    constructor(options)
+    constructor(worker, options)
     {
-        this.saveParser             = options.saveParser;
-        this.baseLayout             = options.baseLayout;
-        this.callback               = options.callback;
+        this.worker                 = worker;
+
+        this.header                 = options.header;
+        this.objects                = options.objects;
+        this.collectables           = options.collectables;
+        this.maxChunkSize           = options.maxChunkSize;
+        this.PACKAGE_FILE_TAG       = options.PACKAGE_FILE_TAG;
+        this.gameStatePathName      = options.gameStatePathName;
+        this.playerHostPathName     = options.playerHostPathName;
 
         this.language               = options.language;
-        this.translate              = options.translate;
 
         this.currentBufferLength    = 0; // Used for writing...
-    }
 
-    streamSave()
-    {
-        console.time('writeFileSaveAs');
-
-        if(this.saveParser.header.saveVersion >= 21)
-        {
-            this.streamCompressedSave();
-        }
-        else
-        {
-            alert('How did you get there!!!! We should not support old save loading...');
-        }
+        return this.streamCompressedSave();
     }
 
     streamCompressedSave()
@@ -38,120 +30,89 @@ export default class SaveParser_Write
         this.writeHeader();
         this.saveBlobArray.push(this.flushToUint8Array());
 
-        setTimeout(function(){
-            $('#loaderProgressBar').css('display', 'flex');
-            $('#loaderProgressBar .progress-bar').css('width', '0px');
-            this.fixSave();
-        }.bind(this), 5);
-    }
-
-    fixSave()
-    {
-        let objectsKeys     = Object.keys(this.saveParser.objects);
-        let countObjects    = objectsKeys.length;
-
-            for(let i = 0; i < countObjects; i++)
-            {
-                let currentObject = this.saveParser.getTargetObject(objectsKeys[i]);
-                    if(currentObject === null)
-                    {
-                        continue;
-                    }
-                    SaveParser_FicsIt.callADA(this.baseLayout, currentObject);
-            }
-
         return this.generateChunks();
     }
 
     generateChunks()
     {
-        this.generatedChunks = [];
+            this.generatedChunks    = [];
+        let objectsKeys             = Object.keys(this.objects);
+        let countObjects            = objectsKeys.length;
 
-        let objectsKeys     = Object.keys(this.saveParser.objects);
-        let countObjects     = objectsKeys.length;
             this.saveBinary += this.writeInt(countObjects, false); // This is a reservation for the inflated length ;)
             this.saveBinary += this.writeInt(countObjects, false);
 
-        return this.generateObjectsChunks(0, objectsKeys);
+        return this.generateObjectsChunks(objectsKeys);
     }
 
-    generateObjectsChunks(i = 0, objectsKeys)
+    generateObjectsChunks(objectsKeys)
     {
         let countObjects = objectsKeys.length;
-            for(i; i < countObjects; i++)
+            for(let i = 0; i < countObjects; i++)
             {
-                if(this.saveParser.objects[objectsKeys[i]] !== undefined)
+                if(this.objects[objectsKeys[i]] !== undefined)
                 {
-                    if(this.saveParser.objects[objectsKeys[i]].type === 0)
+                    if(this.objects[objectsKeys[i]].type === 0)
                     {
-                        this.saveBinary += this.writeObject(this.saveParser.objects[objectsKeys[i]]);
+                        this.saveBinary += this.writeObject(this.objects[objectsKeys[i]]);
                     }
-                    if(this.saveParser.objects[objectsKeys[i]].type === 1)
+                    if(this.objects[objectsKeys[i]].type === 1)
                     {
-                        this.saveBinary += this.writeActor(this.saveParser.objects[objectsKeys[i]]);
+                        this.saveBinary += this.writeActor(this.objects[objectsKeys[i]]);
                     }
                 }
 
-                if(this.saveBinary.length >= this.saveParser.maxChunkSize)
+                if(this.saveBinary.length >= this.maxChunkSize)
                 {
-                    return new Promise(function(resolve){
-                        this.pushSaveToChunk();
+                    this.pushSaveToChunk();
 
-                        $('#loaderProgressBar .progress-bar').css('width', ((i / countObjects * 100) * 0.48) + '%');
-                        $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Compiling %1$s/%2$s objects...', [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]));
-                        setTimeout(resolve, 5);
-                    }.bind(this)).then(function(){
-                        this.generateObjectsChunks((i + 1), objectsKeys);
-                    }.bind(this));
+                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s/%2$s objects...', replace: [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]});
+                    this.worker.postMessage({command: 'loaderProgress', percentage: ((i / countObjects * 100) * 0.48)});
                 }
             }
 
         console.log('Saved ' + countObjects + ' objects...');
 
         this.saveBinary += this.writeInt(countObjects, false);
-        return this.generateEntitiesChunks(0, objectsKeys);
+        return this.generateEntitiesChunks(objectsKeys);
     }
 
-    generateEntitiesChunks(i = 0, objectsKeys)
+    generateEntitiesChunks(objectsKeys)
     {
         let countObjects = objectsKeys.length;
-            for(i; i < countObjects; i++)
+            for(let i = 0; i < countObjects; i++)
             {
-                if(this.saveParser.objects[objectsKeys[i]] !== undefined)
+                if(this.objects[objectsKeys[i]] !== undefined)
                 {
-                    this.saveBinary += this.writeEntity(this.saveParser.objects[objectsKeys[i]]);
+                    this.saveBinary += this.writeEntity(this.objects[objectsKeys[i]]);
                 }
 
-                if(this.saveBinary.length >= this.saveParser.maxChunkSize)
+                if(this.saveBinary.length >= this.maxChunkSize)
                 {
-                    return new Promise(function(resolve){
-                        this.pushSaveToChunk();
+                    this.pushSaveToChunk();
 
-                        $('#loaderProgressBar .progress-bar').css('width', (48 + (i / countObjects * 100) * 0.48) + '%');
-                        $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Compiling %1$s/%2$s entities...', [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]));
-                        setTimeout(resolve, 5);
-                    }.bind(this)).then(function(){
-                        this.generateEntitiesChunks((i + 1), objectsKeys);
-                    }.bind(this));
+                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s/%2$s entities...', replace: [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]});
+                    this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (i / countObjects * 100) * 0.48)});
                 }
             }
 
         console.log('Saved ' + countObjects + ' entities...');
 
-        let countCollectables = this.saveParser.collectables.length;
-            this.saveBinary  += this.writeInt(countCollectables, false);
-        return this.generateCollectablesChunks(0, countCollectables);
+        return this.generateCollectablesChunks();
     }
 
-    generateCollectablesChunks(i = 0, countCollectables)
+    generateCollectablesChunks()
     {
-        $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Compiling %1$s collectables...', new Intl.NumberFormat(this.language).format(countCollectables)));
+        let countCollectables = this.collectables.length;
+            this.saveBinary  += this.writeInt(countCollectables, false);
 
-        for(i = 0; i < countCollectables; i++)
+        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(countCollectables)});
+
+        for(let i = 0; i < countCollectables; i++)
         {
-            this.saveBinary += this.writeObjectProperty(this.saveParser.collectables[i], false);
+            this.saveBinary += this.writeObjectProperty(this.collectables[i], false);
 
-            if(this.saveBinary.length >= this.saveParser.maxChunkSize)
+            if(this.saveBinary.length >= this.maxChunkSize)
             {
                 this.pushSaveToChunk();
             }
@@ -164,12 +125,12 @@ export default class SaveParser_Write
 
     pushSaveToChunk()
     {
-        //$('.loader h6').html('Deflate chunk ' + this.generatedChunks.length + ' (' + this.saveBinary.length + ' / ' + this.saveParser.maxChunkSize + ')...');
-        while(this.saveBinary.length >= this.saveParser.maxChunkSize)
+        //$('.loader h6').html('Deflate chunk ' + this.generatedChunks.length + ' (' + this.saveBinary.length + ' / ' + this.maxChunkSize + ')...');
+        while(this.saveBinary.length >= this.maxChunkSize)
         {
             // Extract extra to be processed later...
-            let tempSaveBinary  = this.saveBinary.slice(this.saveParser.maxChunkSize);
-                this.saveBinary = this.saveBinary.slice(0, this.saveParser.maxChunkSize);
+            let tempSaveBinary  = this.saveBinary.slice(this.maxChunkSize);
+                this.saveBinary = this.saveBinary.slice(0, this.maxChunkSize);
 
             // Add a new chunk!
             if(this.generatedChunks.length > 0)
@@ -217,68 +178,49 @@ export default class SaveParser_Write
 
     streamChunks(chunks)
     {
-        let currentChunk = chunks.shift();
+        this.worker.postMessage({command: 'loaderMessage', message: 'Generating save file...'});
 
-            if(currentChunk.compressedLength === undefined)
-            {
-                // Update first chunk inflated size
-                let totalInflated = currentChunk.uncompressedLength - 4;
-                for(let i = 0; i < chunks.length; i++)
+        while(chunks.length > 0)
+        {
+            let currentChunk = chunks.shift();
+                if(currentChunk.compressedLength === undefined)
                 {
-                    totalInflated += chunks[i].uncompressedLength;
+                    // Update first chunk inflated size
+                    let totalInflated = currentChunk.uncompressedLength - 4;
+                        for(let i = 0; i < chunks.length; i++)
+                        {
+                            totalInflated += chunks[i].uncompressedLength;
+                        }
+
+                    currentChunk.output[3] = (totalInflated >>> 24);
+                    currentChunk.output[2] = (totalInflated >>> 16);
+                    currentChunk.output[1] = (totalInflated >>> 8);
+                    currentChunk.output[0] = (totalInflated & 0xff);
+
+                    currentChunk.output             = pako.deflate(currentChunk.output);
+                    currentChunk.compressedLength   = currentChunk.output.byteLength;
                 }
 
-                currentChunk.output[3] = (totalInflated >>> 24);
-                currentChunk.output[2] = (totalInflated >>> 16);
-                currentChunk.output[1] = (totalInflated >>> 8);
-                currentChunk.output[0] = (totalInflated & 0xff);
+            // Write chunk header
+            this.saveBinary = '';
+            this.saveBinary += this.writeInt(this.PACKAGE_FILE_TAG);
+            this.saveBinary += this.writeInt(0);
+            this.saveBinary += this.writeInt(this.maxChunkSize);
+            this.saveBinary += this.writeInt(0);
+            this.saveBinary += this.writeInt(currentChunk.compressedLength);
+            this.saveBinary += this.writeInt(0);
+            this.saveBinary += this.writeInt(currentChunk.uncompressedLength);
+            this.saveBinary += this.writeInt(0);
+            this.saveBinary += this.writeInt(currentChunk.compressedLength);
+            this.saveBinary += this.writeInt(0);
+            this.saveBinary += this.writeInt(currentChunk.uncompressedLength);
+            this.saveBinary += this.writeInt(0);
 
-                currentChunk.output             = pako.deflate(currentChunk.output);
-                currentChunk.compressedLength   = currentChunk.output.byteLength;
-            }
+            this.saveBlobArray.push(this.flushToUint8Array());
+            this.saveBlobArray.push(currentChunk.output);
+        }
 
-        // Write chunk header
-        this.saveBinary = '';
-        this.saveBinary += this.writeInt(this.saveParser.PACKAGE_FILE_TAG);
-        this.saveBinary += this.writeInt(0);
-        this.saveBinary += this.writeInt(this.saveParser.maxChunkSize);
-        this.saveBinary += this.writeInt(0);
-        this.saveBinary += this.writeInt(currentChunk.compressedLength);
-        this.saveBinary += this.writeInt(0);
-        this.saveBinary += this.writeInt(currentChunk.uncompressedLength);
-        this.saveBinary += this.writeInt(0);
-        this.saveBinary += this.writeInt(currentChunk.compressedLength);
-        this.saveBinary += this.writeInt(0);
-        this.saveBinary += this.writeInt(currentChunk.uncompressedLength);
-        this.saveBinary += this.writeInt(0);
-
-        this.saveBlobArray.push(this.flushToUint8Array());
-        this.saveBlobArray.push(currentChunk.output);
-
-        setTimeout(function(){
-            $('.loader h6').html(this.translate._('MAP\\SAVEPARSER\\Generating save file...'));
-
-            if(chunks.length > 0)
-            {
-                this.streamChunks(chunks);
-            }
-            else
-            {
-                saveAs(
-                    new Blob(
-                        this.saveBlobArray,
-                        {type: "application/octet-stream; charset=utf-8"}
-                    ), this.saveParser.fileName.replace('.sav', '') + '_CALCULATOR.sav'
-                );
-
-
-                window.SCIM.hideLoader();
-                console.timeEnd('writeFileSaveAs');
-
-                this.saveBlobArray  = [];
-                return;
-            }
-        }.bind(this), 5);
+        this.worker.postMessage({command: 'endSaveWriting', blobArray: this.saveBlobArray});
     }
 
     deflateChunk()
@@ -297,10 +239,10 @@ export default class SaveParser_Write
     {
         let slice       = this.saveBinary.length;
         let buffer      = new Uint8Array(slice);
-        for(let j = 0; j < slice; j++)
-        {
-            buffer[j]   = this.saveBinary.charCodeAt(j) & 0xFF;
-        }
+            for(let j = 0; j < slice; j++)
+            {
+                buffer[j]   = this.saveBinary.charCodeAt(j) & 0xFF;
+            }
 
         this.saveBinary     = '';
 
@@ -312,24 +254,24 @@ export default class SaveParser_Write
     writeHeader()
     {
         let header  = '';
-            header += this.writeInt(this.saveParser.header.saveHeaderType, false);
-            header += this.writeInt(this.saveParser.header.saveVersion, false);
-            header += this.writeInt(this.saveParser.header.buildVersion, false);
-            header += this.writeString(this.saveParser.header.mapName, false);
-            header += this.writeString(this.saveParser.header.mapOptions, false);
-            header += this.writeString(this.saveParser.header.sessionName, false);
-            header += this.writeInt(this.saveParser.header.playDurationSeconds, false);
-            header += this.writeLong(this.saveParser.header.saveDateTime, false);
-            header += this.writeByte(this.saveParser.header.sessionVisibility, false);
+            header += this.writeInt(this.header.saveHeaderType, false);
+            header += this.writeInt(this.header.saveVersion, false);
+            header += this.writeInt(this.header.buildVersion, false);
+            header += this.writeString(this.header.mapName, false);
+            header += this.writeString(this.header.mapOptions, false);
+            header += this.writeString(this.header.sessionName, false);
+            header += this.writeInt(this.header.playDurationSeconds, false);
+            header += this.writeLong(this.header.saveDateTime, false);
+            header += this.writeByte(this.header.sessionVisibility, false);
 
-            if(this.saveParser.header.saveHeaderType >= 7)
+            if(this.header.saveHeaderType >= 7)
             {
-                header += this.writeInt(this.saveParser.header.fEditorObjectVersion, false);
+                header += this.writeInt(this.header.fEditorObjectVersion, false);
             }
-            if(this.saveParser.header.saveHeaderType >= 8)
+            if(this.header.saveHeaderType >= 8)
             {
-                header += this.writeString(this.saveParser.header.modMetadata, false);
-                header += this.writeInt(this.saveParser.header.isModdedSave, false);
+                header += this.writeString(this.header.modMetadata, false);
+                header += this.writeInt(this.header.isModdedSave, false);
             }
 
         this.saveBinary += header;
@@ -1003,7 +945,15 @@ export default class SaveParser_Write
                 property += this.writeString(currentProperty.value.keyType, false);
                 property += this.writeString(currentProperty.value.valueType, false);
                 property += this.writeByte(0, false);
-                property += this.writeInt(0);
+                property += this.writeInt(currentProperty.value.modeType);
+
+                if(currentProperty.value.modeType === 3)
+                {
+                    property += this.writeHex(currentProperty.value.modeUnk1);
+                    property += this.writeString(currentProperty.value.modeUnk2);
+                    property += this.writeString(currentProperty.value.modeUnk3);
+                }
+
                 property += this.writeInt(currentMapPropertyCount);
 
                 for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
@@ -1125,7 +1075,7 @@ export default class SaveParser_Write
             case 255:
                 // Broke during engine upgrade?
                 // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
-                if(this.saveParser.header.buildVersion >= 140822)
+                if(this.header.buildVersion >= 140822)
                 {
                     property += this.writeInt(currentProperty.hasCultureInvariantString);
 
@@ -1458,4 +1408,8 @@ export default class SaveParser_Write
 
         return saveBinary;
     }
-}
+};
+
+self.onmessage = function(e){
+    return new SaveParser_Write(self, e.data);
+};

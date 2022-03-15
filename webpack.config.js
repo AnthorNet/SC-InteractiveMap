@@ -15,7 +15,9 @@ module.exports = env => {
         performance     : { hints: false },
         context         : path.resolve(__dirname, 'src'),
         entry           : {
-            SCIM            : './SCIM.js'
+            SCIM                        : './SCIM.js',
+            'Worker/SaveParser/Read'    : './SaveParser/Read.js',
+            'Worker/SaveParser/Write'   : './SaveParser/Write.js'
         },
 
         output          : {
@@ -33,8 +35,8 @@ module.exports = env => {
         plugins: [
             // Merge all detailed models into a single JSON file...
             new MergeJsonPlugin({
-                group: [
-                    { files: './Models/*/*.json', to: './detailedModels.json' }
+                groups: [
+                    { pattern: './Models/*/*.json', to: './detailedModels.json' }
                 ]
             }),
 
