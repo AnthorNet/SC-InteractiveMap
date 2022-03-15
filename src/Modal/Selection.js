@@ -256,8 +256,8 @@ export default class Modal_Selection
             if(markers !== null && markers.length > 0)
             {
                 inputOptions.push({text: 'Delete selected items', value: 'delete'});
-                inputOptions.push({text: 'Update selected items color slot', value: 'colorSlot'});
-                inputOptions.push({text: 'Update selected items custom color', value: 'customColor'});
+                inputOptions.push({text: 'Update selected buildings color slot', value: 'colorSlot'});
+                inputOptions.push({text: 'Update selected buildings custom color', value: 'customColor'});
 
                 inputOptions.push({group: 'Positioning', text: 'Offset selected items position', value: 'offset'});
                 inputOptions.push({group: 'Positioning', text: 'Rotate selected items position', value: 'rotate'});
@@ -267,7 +267,7 @@ export default class Modal_Selection
 
                 if (haveProductionCategory === true || haveExtractionCategory === true || haveGeneratorCategory === true)
                 {
-                    inputOptions.push({group: 'Power/Overclocking', text: 'Set selected items clock speed', value: 'clockSpeed'});
+                    inputOptions.push({group: 'Power/Overclocking', text: 'Set selected machines clock speed', value: 'clockSpeed'});
 
                     inputOptions.push({ group: 'Power/Overclocking', text: 'Turn on selected machines', value: 'turnOnMachines' });
                     inputOptions.push({ group: 'Power/Overclocking', text: 'Turn off selected machines', value: 'turnOffMachines' });
@@ -907,7 +907,7 @@ export default class Modal_Selection
             ],
             callback: function(form)
             {
-                if(form === null || form.offset === null || form.useOwnPowershards === null)
+                if(form === null || form.value === null || form.useOwnPowershards === null)
                 {
                     return;
                 }
@@ -923,7 +923,7 @@ export default class Modal_Selection
                                 {
                                     let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
                                     let currentClockSpeed   = baseLayout.getClockSpeed(currentObject) * 100;
-                                    let newClockSpeed       = Number.parseFloat(form.value);
+                                    let newClockSpeed       = parseFloat(form.value);
                                     let clockSpeed          = Math.max(1, Math.min(newClockSpeed, 250));
 
                                     if(currentClockSpeed !== clockSpeed)
