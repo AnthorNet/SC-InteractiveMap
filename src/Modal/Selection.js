@@ -267,7 +267,7 @@ export default class Modal_Selection
 
                 if (haveProductionCategory === true || haveExtractionCategory === true || haveGeneratorCategory === true)
                 {
-                    inputOptions.push({group: 'Power/Overclocking', text: 'Offset selected items clock speed', value: 'clockSpeed'});
+                    inputOptions.push({group: 'Power/Overclocking', text: 'Set selected items clock speed', value: 'clockSpeed'});
 
                     inputOptions.push({ group: 'Power/Overclocking', text: 'Turn on selected machines', value: 'turnOnMachines' });
                     inputOptions.push({ group: 'Power/Overclocking', text: 'Turn off selected machines', value: 'turnOffMachines' });
@@ -892,11 +892,11 @@ export default class Modal_Selection
             container   : '#leafletMap',
             inputs      : [
                 {
-                    label       : 'Offset clock speed (Percentage)',
-                    name        : 'offset',
+                    label       : 'Clock speed (Percentage)',
+                    name        : 'value',
                     inputType   : 'number',
-                    value       : 0,
-                    min         : 0,
+                    value       : 100,
+                    min         : 1,
                     max         : 250
                 },
                 {
@@ -923,8 +923,8 @@ export default class Modal_Selection
                                 {
                                     let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
                                     let currentClockSpeed   = baseLayout.getClockSpeed(currentObject) * 100;
-                                    let newClockSpeed       = currentClockSpeed + parseFloat(form.offset);
-                                    let clockSpeed          = Math.max(1, Math.min(Math.round(newClockSpeed), 250));
+                                    let newClockSpeed       = Number.parseFloat(form.value);
+                                    let clockSpeed          = Math.max(1, Math.min(newClockSpeed, 250));
 
                                     if(currentClockSpeed !== clockSpeed)
                                     {
