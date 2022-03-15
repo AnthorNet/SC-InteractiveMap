@@ -1,5 +1,5 @@
 /* global Sentry, Intl, self */
-import pako                 from '../Lib/pako.esm.mjs';
+import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class SaveParser_Read
 {
@@ -1560,6 +1560,6 @@ export default class SaveParser_Read
     }
 };
 
-self.onmessage   = function(e){
+self.onmessage = function(e){
     return new SaveParser_Read(self, e.data);
 };
