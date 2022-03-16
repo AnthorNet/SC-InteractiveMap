@@ -5,6 +5,7 @@ import BaseLayout_ContextMenu                   from './BaseLayout/ContextMenu.j
 import BaseLayout_History                       from './BaseLayout/History.js';
 import BaseLayout_Math                          from './BaseLayout/Math.js';
 import BaseLayout_Modal                         from './BaseLayout/Modal.js';
+import BaseLayout_Polygon                       from './BaseLayout/Polygon.js';
 import BaseLayout_Tooltip                       from './BaseLayout/Tooltip.js';
 
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
@@ -2764,7 +2765,7 @@ export default class BaseLayout
                             }
 
                         markerOptions.extraPattern = L.polygon(
-                            this.generatePolygonForms(patternTransform, currentPattern.value.pathName, {isPattern: true, skipDetailedModel: false}),
+                            BaseLayout_Polygon.generateForms(this, patternTransform, currentPattern.value.pathName, {isPattern: true, skipDetailedModel: false}),
                             {
                                 weight          : 0,
                                 originPathName  : currentObject.pathName,
@@ -2805,7 +2806,7 @@ export default class BaseLayout
             }
         }
 
-        let building = this.createBuildingPolygon(currentObject, markerOptions, polygonOptions);
+        let building = BaseLayout_Polygon.createBuilding(this, currentObject, markerOptions, polygonOptions);
             building.on('mouseover', function(marker){
                 this.setBuildingMouseOverStyle(marker.sourceTarget, buildingData);
             }.bind(this));
@@ -3870,158 +3871,6 @@ export default class BaseLayout
         });
     }
 
-    createBuildingPolygon(currentObject, markerOptions, options)
-    {
-        markerOptions.pathName      = currentObject.pathName;
-        markerOptions.altitude      = currentObject.transform.translation[2];
-        markerOptions.smoothFactor  = 0;
-
-        let polygon = L.polygon(
-                this.generatePolygonForms(currentObject.transform, currentObject.className, options),
-                markerOptions
-            );
-            this.autoBindTooltip(polygon);
-            polygon.bindContextMenu(this);
-
-        return polygon;
-    }
-
-    generatePolygonForms(transform, model, options)
-    {
-        let center  = [transform.translation[0], transform.translation[1]];
-        let forms   = [];
-
-        // Only used for convoyer lift orientation
-        if(options.customPolygon !== undefined && options.customModel !== undefined)
-        {
-            model                       = options.customModel;
-            this.detailedModels[model]  = {forms: [{points: options.customPolygon}]};
-        }
-
-        // Prepare high quality model
-        if(((['medium', 'high'].includes(this.mapModelsQuality) && this.detailedModels !== null) || options.customPolygon !== undefined) && this.detailedModels[model] !== undefined && options.skipDetailedModel === false)
-        {
-            let currentModel        = this.detailedModels[model];
-            let currentModelScale   = (currentModel.scale !== undefined) ? currentModel.scale : 1;
-            let currentModelXOffset = (currentModel.xOffset !== undefined) ? currentModel.xOffset : 0;
-            let currentModelYOffset = (currentModel.yOffset !== undefined) ? currentModel.yOffset : 0;
-
-            // Only keep the first model form which should always give the main object outline...
-            if(this.mapModelsQuality === 'medium' && options.isPattern === undefined)
-            {
-                currentModel.forms = [currentModel.forms[0]];
-            }
-
-            if(currentModel.formsLength === undefined)
-            {
-                currentModel.formsLength = currentModel.forms.length;
-            }
-
-            for(let i = 0; i < currentModel.formsLength; i++)
-            {
-                let currentForm         = [];
-                let currentPoints       = [];
-                    if(currentModel.forms[i].pointsLength === undefined)
-                    {
-                        currentModel.forms[i].pointsLength = currentModel.forms[i].points.length;
-                    }
-
-                for(let j = 0; j < currentModel.forms[i].pointsLength; j++)
-                {
-                    currentPoints.push(this.satisfactoryMap.unproject(
-                        BaseLayout_Math.getPointRotation(
-                            [
-                                center[0] + ((currentModel.forms[i].points[j][0] + currentModelXOffset) * currentModelScale),
-                                center[1] + ((currentModel.forms[i].points[j][1] + currentModelYOffset) * currentModelScale)
-                            ],
-                            center,
-                            transform.rotation
-                        )
-                    ));
-                }
-
-                currentForm.push(currentPoints);
-
-                // Only deals with form holes in high quality
-                if(currentModel.forms[i].holes !== undefined && (this.mapModelsQuality === 'high' || options.isPattern !== undefined))
-                {
-                   if(currentModel.forms[i].holesLength === undefined)
-                    {
-                        currentModel.forms[i].holesLength = currentModel.forms[i].holes.length;
-                    }
-
-                    for(let j = 0; j < currentModel.forms[i].holesLength; j++)
-                    {
-                        let currentHole = [];
-
-                        if(currentModel.forms[i].holes[j].holeLength === undefined)
-                        {
-                            currentModel.forms[i].holes[j].holeLength = currentModel.forms[i].holes[j].length;
-                        }
-
-                        for(let k = 0; k < currentModel.forms[i].holes[j].holeLength; k++)
-                        {
-                            currentHole.push(this.satisfactoryMap.unproject(
-                                BaseLayout_Math.getPointRotation(
-                                    [
-                                        center[0] + ((currentModel.forms[i].holes[j][k][0] + currentModelXOffset) * currentModelScale),
-                                        center[1] + ((currentModel.forms[i].holes[j][k][1] + currentModelYOffset) * currentModelScale)
-                                    ],
-                                    center,
-                                    transform.rotation
-                                )
-                            ));
-                        }
-
-                        currentForm.push(currentHole);
-                    }
-                }
-
-                forms.push(currentForm);
-            }
-        }
-        else
-        {
-            let currentPoints = [];
-                currentPoints.push(this.satisfactoryMap.unproject(
-                    BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) - ((options.width - options.offset) / 2), center[1] - ((options.length - options.offset) / 2)],
-                        center,
-                        transform.rotation,
-                        options.useOnly2D
-                    )
-                ));
-                currentPoints.push(this.satisfactoryMap.unproject(
-                    BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) + ((options.width - options.offset) / 2), center[1] - ((options.length - options.offset) / 2)],
-                        center,
-                        transform.rotation,
-                        options.useOnly2D
-                    )
-                ));
-                currentPoints.push(this.satisfactoryMap.unproject(
-                    BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) + ((options.width - options.offset) / 2), center[1] + ((options.length - options.offset) / 2)],
-                        center,
-                        transform.rotation,
-                        options.useOnly2D
-                    )
-                ));
-                currentPoints.push(this.satisfactoryMap.unproject(
-                    BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) - ((options.width - options.offset) / 2), center[1] + ((options.length - options.offset) / 2)],
-                        center,
-                        transform.rotation,
-                        options.useOnly2D
-                    )
-                ));
-
-            forms.push([currentPoints]);
-        }
-
-        return forms;
-    }
-
     // Layers
     setupSubLayer(layerId, show = true)
     {
@@ -4127,6 +3976,7 @@ export default class BaseLayout
             {
                 if(layerId === updateLayerId)
                 {
+                    // HIDE
                     if(this.playerLayers[layerId].layerGroup.hasLayer(this.playerLayers[layerId].subLayer))
                     {
                         this.playerLayers[layerId].layerGroup.removeLayer(this.playerLayers[layerId].subLayer);
@@ -4146,6 +3996,7 @@ export default class BaseLayout
                             $('.updatePlayerLayerState[data-id="playerLightsHaloLayer"] > i').removeClass('fa-light-switch-on').addClass('fa-light-switch-off');
                         }
                     }
+                    // SHOW
                     else
                     {
                         this.playerLayers[layerId].layerGroup.addLayer(this.playerLayers[layerId].subLayer);
