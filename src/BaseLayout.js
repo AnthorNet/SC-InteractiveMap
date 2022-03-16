@@ -118,6 +118,8 @@ export default class BaseLayout
 
         this.detailedModels                     = {};
 
+        this.playerLayersNotUsingAltitude       = ['playerRadioactivityLayer', 'playerLightsHaloLayer', 'playerPositionLayer', 'playerFogOfWar', 'playerResourceDepositsLayer', 'playerItemsPickupLayer'];
+
         this.setDefaultLayers();
     }
 
@@ -129,52 +131,52 @@ export default class BaseLayout
             playerRadioactivityLayer                : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: {}},
             playerLightsHaloLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: []},
 
-            playerFoundationsLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
-            playerRoofsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
-            playerLightsLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
-            playerPillarsLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
-            playerBeamsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
-            playerWallsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
-            playerWalkwaysLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
-            playerSignsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true, filters: []},
-            playerStatuesLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], useAltitude: true},
+            playerFoundationsLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], filters: []},
+            playerRoofsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], filters: []},
+            playerLightsLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], filters: []},
+            playerPillarsLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], filters: []},
+            playerBeamsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], filters: []},
+            playerWallsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], filters: []},
+            playerWalkwaysLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], filters: []},
+            playerSignsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: [], filters: []},
+            playerStatuesLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: []},
 
-            playerHUBTerminalLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], useAltitude: true},
-            playerFicsmasLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], useAltitude: true},
-            playerUnknownLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], useAltitude: true},
-            playerOrientationLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], count: 0, useAltitude: true},
+            playerHUBTerminalLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: []},
+            playerFicsmasLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: []},
+            playerUnknownLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: []},
+            playerOrientationLayer                  : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], count: 0},
 
-            playerCratesLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], count: 0, useAltitude: true},
-            playerMinersLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], useAltitude: true, filters: []},
-            playerProductorsLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], useAltitude: true, filters: []},
-            playerPadsLayer                         : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], useAltitude: true, filters: []},
+            playerCratesLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], count: 0},
+            playerMinersLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
+            playerProductorsLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
+            playerPadsLayer                         : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], filters: []},
 
-            playerBiomassGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], useAltitude: true},
-            playerCoalGeneratorsLayer               : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], useAltitude: true},
-            playerFuelGeneratorsLayer               : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], useAltitude: true},
-            playerNuclearGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], useAltitude: true},
-            playerGeoThermalGeneratorsLayer         : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], useAltitude: true},
-            playerStorageGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], useAltitude: true},
+            playerBiomassGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
+            playerCoalGeneratorsLayer               : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
+            playerFuelGeneratorsLayer               : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
+            playerNuclearGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
+            playerGeoThermalGeneratorsLayer         : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
+            playerStorageGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
 
-            playerStoragesLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], useAltitude: true, filters: []},
+            playerStoragesLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
 
-            playerVehiculesLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0, useAltitude: true, filters: []},
-            playerDronesLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0, useAltitude: true/*, filters: []*/},
-            playerBeltsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], distance: 0, useAltitude: true, filters: []},
-            playerPipesLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], distance: 0, useAltitude: true, filters: []},
-            playerPipesHyperLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], distance: 0, useAltitude: true, filters: []},
+            playerVehiculesLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0, filters: []},
+            playerDronesLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0/*, filters: []*/},
+            playerBeltsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], distance: 0, filters: []},
+            playerPipesLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], distance: 0, filters: []},
+            playerPipesHyperLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], distance: 0, filters: []},
 
-            playerTracksLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], distance: 0, useAltitude: true, filters: []},
-            playerTrainsLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], useAltitude: true},
+            playerTracksLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], distance: 0, filters: []},
+            playerTrainsLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: []},
 
-            playerPowerGridLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], count: 0, distance: 0, useAltitude: true},
+            playerPowerGridLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: [], count: 0, distance: 0},
 
             // Last...
-            playerResourceDepositsLayer             : {layerGroup: null, subLayer: null, elements: [], useAltitude: true, filters: []},
-            playerItemsPickupLayer                  : {layerGroup: null, subLayer: null, elements: [], useAltitude: true},
+            playerResourceDepositsLayer             : {layerGroup: null, subLayer: null, elements: [], filters: []},
+            playerItemsPickupLayer                  : {layerGroup: null, subLayer: null, elements: []},
             playerPositionLayer                     : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer'},
-            playerSpaceRabbitLayer                  : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer', count: 0, useAltitude: true},
-            playerFaunaLayer                        : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer', useAltitude: true, filters: []},
+            playerSpaceRabbitLayer                  : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer', count: 0},
+            playerFaunaLayer                        : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer', filters: []},
             playerFogOfWar                          : {layerGroup: null, subLayer: null, elements: [], mainDivId: '#playerInformationLayer'}
         };
 
@@ -1365,15 +1367,19 @@ export default class BaseLayout
     {
         element.addTo(this.playerLayers[layerId].subLayer);
 
-        if(this.playerLayers[layerId].useAltitude !== undefined && this.playerLayers[layerId].useAltitude === true && element.options.altitude !== undefined)
+        if(this.playerLayersNotUsingAltitude.includes(layerId) === false && element.options.pathName !== undefined)
         {
-            this.minAltitude = Math.min(this.minAltitude, Math.floor(element.options.altitude));
-            this.maxAltitude = Math.max(this.maxAltitude, Math.ceil(element.options.altitude));
+            let currentObject = this.saveGameParser.getTargetObject(element.options.pathName);
+                if(currentObject !== null)
+                {
+                    this.minAltitude = Math.min(this.minAltitude, Math.floor(currentObject.transform.translation[2]));
+                    this.maxAltitude = Math.max(this.maxAltitude, Math.ceil(currentObject.transform.translation[2]));
 
-            if(updateAltitudeSlider === true)
-            {
-                this.altitudeSliderControl.updateSliderAltitudes(this.minAltitude, this.maxAltitude);
-            }
+                    if(updateAltitudeSlider === true)
+                    {
+                        this.altitudeSliderControl.updateSliderAltitudes(this.minAltitude, this.maxAltitude);
+                    }
+                }
         }
 
         if(element.options.extraPattern !== undefined)
@@ -3877,7 +3883,7 @@ export default class BaseLayout
         if(this.playerLayers[layerId] === undefined)
         {
             throw new Error('Undefined layerId `' + layerId + '`');
-            //this.playerLayers[layerId] = {layerGroup: L.layerGroup().addTo(this.satisfactoryMap.leafletMap), subLayer: null, mainDivId: '#playerModsLayer', elements: [], useAltitude: true};
+            //this.playerLayers[layerId] = {layerGroup: L.layerGroup().addTo(this.satisfactoryMap.leafletMap), subLayer: null, mainDivId: '#playerModsLayer', elements: []};
         }
 
         if(this.playerLayers[layerId].layerGroup === null)
@@ -3962,7 +3968,7 @@ export default class BaseLayout
                                     + this.modsData[modId].name + '"><span class="badge badge-secondary badge-layer"></span><img src="'
                                     + this.modsData[modId].image + '" style="width: 40px;" /><div class="radial"><div class="btn bg-secondary btn-outline-warning active focus p-0"></div></div></div>');
 
-       this.playerLayers[layerId] = {layerGroup: L.layerGroup().addTo(this.satisfactoryMap.leafletMap), subLayer: null, mainDivId: '#playerModsLayer', elements: [], useAltitude: true, filters: []};
+       this.playerLayers[layerId] = {layerGroup: L.layerGroup().addTo(this.satisfactoryMap.leafletMap), subLayer: null, mainDivId: '#playerModsLayer', elements: [], filters: []};
        this.setupSubLayer(layerId);
     }
 
@@ -4106,16 +4112,19 @@ export default class BaseLayout
                                                 if(currentMarker.options.extraMarker !== undefined)
                                                 {
                                                     currentSubLayer.removeLayer(currentMarker.options.extraMarker);
-
-                                                    let vehicleTrackData = this.getMarkerFromPathName(currentMarker.options.pathName + '_vehicleTrackData', 'playerVehiculesLayer');
-                                                        if(vehicleTrackData !== null)
-                                                        {
-                                                            currentSubLayer.removeLayer(vehicleTrackData);
-                                                        }
                                                 }
                                                 if(currentMarker.options.haloMarker !== undefined)
                                                 {
                                                     this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(currentMarker.options.haloMarker);
+                                                }
+
+                                                if(layerId === 'playerVehiculesLayer')
+                                                {
+                                                    let vehicleTrackData = this.getMarkerFromPathName(currentMarker.options.pathName + '_vehicleTrackData', layerId);
+                                                        if(vehicleTrackData !== null)
+                                                        {
+                                                            currentSubLayer.removeLayer(vehicleTrackData);
+                                                        }
                                                 }
                                             }
                                             else
@@ -4123,9 +4132,9 @@ export default class BaseLayout
                                                 if(currentSubLayer.hasLayer(currentMarker) === false && this.playerLayers[layerId].filters.includes(currentClassName) === false)
                                                 {
                                                     let addToSubLayer = true;
-                                                        if(this.playerLayers[layerId].useAltitude !== undefined && this.playerLayers[layerId].useAltitude === true)
+                                                        if(this.playerLayersNotUsingAltitude.includes(layerId) === false)
                                                         {
-                                                            if(currentMarker.options.altitude < ($('#altitudeSliderInputs input[name=minAltitude]').val() * 100) || currentMarker.options.altitude > ($('#altitudeSliderInputs input[name=maxAltitude]').val() * 100))
+                                                            if(currentObject.transform.translation[2] < ($('#altitudeSliderInputs input[name=minAltitude]').val() * 100) || currentObject.transform.translation[2] > ($('#altitudeSliderInputs input[name=maxAltitude]').val() * 100))
                                                             {
                                                                 addToSubLayer = false;
                                                             }
@@ -4142,20 +4151,23 @@ export default class BaseLayout
                                                             if(currentMarker.options.extraMarker !== undefined)
                                                             {
                                                                 currentSubLayer.addLayer(currentMarker.options.extraMarker);
+                                                            }
+                                                            if(currentMarker.options.haloMarker !== undefined)
+                                                            {
+                                                                this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(currentMarker.options.haloMarker);
+                                                            }
 
+                                                            if(layerId === 'playerVehiculesLayer')
+                                                            {
                                                                 let trackDataFilterStatus = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="/Game/SCIM/Buildable/Vehicle/TrackData"]').hasClass("btn-warning");
                                                                     if(trackDataFilterStatus)
                                                                     {
-                                                                        let vehicleTrackData = this.getMarkerFromPathName(currentMarker.options.pathName + '_vehicleTrackData', 'playerVehiculesLayer');
+                                                                        let vehicleTrackData = this.getMarkerFromPathName(currentMarker.options.pathName + '_vehicleTrackData', layerId);
                                                                             if(vehicleTrackData !== null)
                                                                             {
                                                                                 currentSubLayer.addLayer(vehicleTrackData);
                                                                             }
                                                                     }
-                                                            }
-                                                            if(currentMarker.options.haloMarker !== undefined)
-                                                            {
-                                                                this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(currentMarker.options.haloMarker);
                                                             }
                                                         }
                                                 }
@@ -4183,18 +4195,19 @@ export default class BaseLayout
     {
         for(let layerId in this.playerLayers)
         {
-            if(this.playerLayers[layerId].subLayer !== null && this.playerLayers[layerId].useAltitude !== undefined && this.playerLayers[layerId].useAltitude === true)
+            if(this.playerLayers[layerId].subLayer !== null && this.playerLayersNotUsingAltitude.includes(layerId) === false)
             {
                 let currentSubLayer     = this.playerLayers[layerId].subLayer;
                 let currentLayerLength  = this.playerLayers[layerId].elements.length;
 
                 for(let i = 0; i < currentLayerLength; i++)
                 {
-                    let currentMarker = this.playerLayers[layerId].elements[i];
+                    let currentMarker   = this.playerLayers[layerId].elements[i];
+                    let currentObject   = this.saveGameParser.getTargetObject(currentMarker.options.pathName);
 
-                    if(currentMarker.options.altitude !== undefined)
+                    if(currentObject !== null)
                     {
-                        if(currentSubLayer.hasLayer(currentMarker) && (currentMarker.options.altitude < minAltitude || currentMarker.options.altitude > maxAltitude))
+                        if(currentSubLayer.hasLayer(currentMarker) && (currentObject.transform.translation[2] < minAltitude || currentObject.transform.translation[2] > maxAltitude))
                         {
                             currentSubLayer.removeLayer(currentMarker);
 
@@ -4210,10 +4223,19 @@ export default class BaseLayout
                             {
                                 this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(currentMarker.options.haloMarker);
                             }
+
+                            if(layerId === 'playerVehiculesLayer')
+                            {
+                                let vehicleTrackData = this.getMarkerFromPathName(currentMarker.options.pathName + '_vehicleTrackData', layerId);
+                                    if(vehicleTrackData !== null)
+                                    {
+                                        currentSubLayer.removeLayer(vehicleTrackData);
+                                    }
+                            }
                         }
                         else
                         {
-                            if(currentSubLayer.hasLayer(currentMarker) === false && currentMarker.options.altitude >= minAltitude && currentMarker.options.altitude <= maxAltitude)
+                            if(currentSubLayer.hasLayer(currentMarker) === false && currentObject.transform.translation[2] >= minAltitude && currentObject.transform.translation[2] <= maxAltitude)
                             {
                                 if(this.playerLayers[layerId].filtersCount !== undefined && currentMarker.options.pathName !== undefined)
                                 {
@@ -4232,20 +4254,23 @@ export default class BaseLayout
                                                     if(currentMarker.options.extraMarker !== undefined)
                                                     {
                                                         currentSubLayer.addLayer(currentMarker.options.extraMarker);
+                                                    }
+                                                    if(currentMarker.options.haloMarker !== undefined)
+                                                    {
+                                                        this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(currentMarker.options.haloMarker);
+                                                    }
 
+                                                    if(layerId === 'playerVehiculesLayer')
+                                                    {
                                                         let trackDataFilterStatus = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="/Game/SCIM/Buildable/Vehicle/TrackData"]').hasClass("btn-warning");
                                                             if(trackDataFilterStatus)
                                                             {
-                                                                let vehicleTrackData = this.getMarkerFromPathName(currentMarker.options.pathName + '_vehicleTrackData', 'playerVehiculesLayer');
+                                                                let vehicleTrackData = this.getMarkerFromPathName(currentMarker.options.pathName + '_vehicleTrackData', layerId);
                                                                     if(vehicleTrackData !== null)
                                                                     {
                                                                         currentSubLayer.addLayer(vehicleTrackData);
                                                                     }
                                                             }
-                                                    }
-                                                    if(currentMarker.options.haloMarker !== undefined)
-                                                    {
-                                                        this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(currentMarker.options.haloMarker);
                                                     }
                                                 }
                                         }

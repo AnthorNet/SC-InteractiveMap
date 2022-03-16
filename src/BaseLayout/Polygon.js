@@ -5,7 +5,6 @@ export default class BaseLayout_Polygon
     static createBuilding(baseLayout, currentObject, markerOptions, options)
     {
         markerOptions.pathName      = currentObject.pathName;
-        markerOptions.altitude      = currentObject.transform.translation[2];
         markerOptions.smoothFactor  = 0;
 
         let polygon = L.polygon(
