@@ -37,7 +37,8 @@ export default class Building_Conveyor
                 contextMenu.push({
                     icon        : 'fa-object-group',
                     text        : 'Merge adjacent conveyor belts (Performance test)',
-                    callback    : Building_Conveyor.mergeConveyors
+                    callback    : Building_Conveyor.mergeConveyors,
+                    className   : 'Building_Conveyor_merge'
                 });
             }
 
