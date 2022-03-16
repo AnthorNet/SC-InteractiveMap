@@ -4122,9 +4122,16 @@ export default class BaseLayout
                                             {
                                                 if(currentSubLayer.hasLayer(currentMarker) === false && this.playerLayers[layerId].filters.includes(currentClassName) === false)
                                                 {
-                                                    if(this.playerLayers[layerId].useAltitude !== undefined && this.playerLayers[layerId].useAltitude === true)
-                                                    {
-                                                        if(currentMarker.options.altitude >= $('#altitudeSliderInputs input[name=minAltitude]').val() * 100 && currentMarker.options.altitude <= $('#altitudeSliderInputs input[name=maxAltitude]').val() * 100)
+                                                    let addToSubLayer = true;
+                                                        if(this.playerLayers[layerId].useAltitude !== undefined && this.playerLayers[layerId].useAltitude === true)
+                                                        {
+                                                            if(currentMarker.options.altitude < ($('#altitudeSliderInputs input[name=minAltitude]').val() * 100) || currentMarker.options.altitude > ($('#altitudeSliderInputs input[name=maxAltitude]').val() * 100))
+                                                            {
+                                                                addToSubLayer = false;
+                                                            }
+                                                        }
+
+                                                        if(addToSubLayer === true)
                                                         {
                                                             currentSubLayer.addLayer(currentMarker);
 
@@ -4151,30 +4158,6 @@ export default class BaseLayout
                                                                 this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(currentMarker.options.haloMarker);
                                                             }
                                                         }
-                                                    }
-                                                    else
-                                                    {
-                                                        currentSubLayer.addLayer(currentMarker);
-
-                                                        if(currentMarker.options.extraMarker !== undefined)
-                                                        {
-                                                            currentSubLayer.addLayer(currentMarker.options.extraMarker);
-
-                                                            let trackDataFilterStatus = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="/Game/SCIM/Buildable/Vehicle/TrackData"]').hasClass("btn-warning");
-                                                                if(trackDataFilterStatus)
-                                                                {
-                                                                    let vehicleTrackData = this.getMarkerFromPathName(currentMarker.options.pathName + '_vehicleTrackData', 'playerVehiculesLayer');
-                                                                        if(vehicleTrackData !== null)
-                                                                        {
-                                                                            currentSubLayer.addLayer(vehicleTrackData);
-                                                                        }
-                                                                }
-                                                        }
-                                                        if(currentMarker.options.haloMarker !== undefined)
-                                                        {
-                                                            this.playerLayers.playerLightsHaloLayer.subLayer.addLayer(currentMarker.options.haloMarker);
-                                                        }
-                                                    }
                                                 }
                                             }
                                         }
