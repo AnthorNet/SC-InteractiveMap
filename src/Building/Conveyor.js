@@ -149,7 +149,7 @@ export default class Building_Conveyor
                                     if(nextConveyorAny0 !== null)
                                     {
                                         let nextConveyor = baseLayout.saveGameParser.getTargetObject(nextConveyorAny0.outerPathName)
-                                            if(nextConveyor !== null && nextConveyor.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true)
+                                            if(nextConveyor !== null && nextConveyor.className === currentObject.className)
                                             {
                                                 // Append spline data to middle
                                                 let middleSplineData    = baseLayout.getObjectProperty(currentObject, 'mSplineData');
@@ -239,7 +239,7 @@ export default class Building_Conveyor
                                     if(previousConveyorAny1 !== null)
                                     {
                                         let previousConveyor = baseLayout.saveGameParser.getTargetObject(previousConveyorAny1.outerPathName)
-                                            if(previousConveyor !== null && previousConveyor.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true)
+                                            if(previousConveyor !== null && previousConveyor.className === currentObject.className)
                                             {
                                                 // Find previous marker and pivot
                                                 let previousMarker = baseLayout.getMarkerFromPathName(previousConveyor.pathName, buildingData.layerId);
