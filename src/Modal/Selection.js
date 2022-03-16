@@ -135,16 +135,18 @@ export default class Modal_Selection
                                         '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
                                     ].includes(currentObject.className))
                                     {
-                                        let itemClassName = baseLayout.itemsData[markers[i].options.itemId].className;
-                                            if(buildings[currentObject.className + '_' + itemClassName] === undefined)
+                                        let itemData        = baseLayout.getItemDataFromClassName(markers[i].options.itemId);
+                                            if(itemData !== null)
                                             {
-                                                buildings[currentObject.className + '_' + itemClassName] = {
-                                                    name    : baseLayout.itemsData[markers[i].options.itemId].name,
-                                                    total   : 0
-                                                };
+                                                if(buildings[currentObject.className + '_' + itemData.className] === undefined)
+                                                {
+                                                    buildings[currentObject.className + '_' + itemData.className] = {
+                                                        name    : itemData.name,
+                                                        total   : 0
+                                                    };
+                                                }
+                                                buildings[currentObject.className + '_' + itemData.className].total += markers[i].options.itemQty;
                                             }
-
-                                        buildings[currentObject.className + '_' + itemClassName].total += markers[i].options.itemQty;
                                     }
                                     else
                                     {

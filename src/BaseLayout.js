@@ -5145,6 +5145,11 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'){ className = '/Game/FactoryGame/Resource/Equipment/PortableMiner/BP_ItemDescriptorPortableMiner.BP_ItemDescriptorPortableMiner_C'; }
         if(className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C'){ className = '/Game/FactoryGame/Resource/Parts/AnimalParts/Desc_SpitterParts.Desc_SpitterParts_C'; }
 
+        if(this.itemsData[className] !== undefined)
+        {
+            this.itemsData[className].id = className;
+            return this.itemsData[className];
+        }
         for(let i in this.itemsData)
         {
             if(this.itemsData[i].className !== undefined && this.itemsData[i].className === className)
@@ -5152,6 +5157,11 @@ export default class BaseLayout
                 this.itemsData[i].id = i;
                 return this.itemsData[i];
             }
+        }
+        if(this.toolsData[className] !== undefined)
+        {
+            this.toolsData[className].id = className;
+            return this.toolsData[className];
         }
         for(let i in this.toolsData)
         {
