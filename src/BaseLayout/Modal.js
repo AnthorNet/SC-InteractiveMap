@@ -26,7 +26,7 @@ export default class BaseLayout_Modal
             modalFooter : '<div class="modal-footer"></div>',
 
             toastWrapper    : '<div id="toastWrapper" style="position: fixed; top: 86px; right: 10px;"></div>',
-            toast           : '<div class="toast"><div class="toast-body"></div></div>',
+            toast           : '<div class="toast border-warning"><div class="toast-body"></div></div>',
             toastHeader     : '<div class="toast-header"><strong class="mr-auto"></strong></div>',
 
             button          : '<button type="button" class="btn"></button>',

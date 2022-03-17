@@ -277,78 +277,78 @@ export default class Modal_Selection
                 {
                     inputOptions.push({group: 'Power/Overclocking', text: 'Set selected machines clock speed', value: 'clockSpeed'});
 
-                    inputOptions.push({ group: 'Power/Overclocking', text: 'Turn on selected machines', value: 'turnOnMachines' });
-                    inputOptions.push({ group: 'Power/Overclocking', text: 'Turn off selected machines', value: 'turnOffMachines' });
+                    inputOptions.push({ group: 'Power/Overclocking', text: 'Turn on selected machines', value: 'Building_PowerSwitch_turnOn' });
+                    inputOptions.push({ group: 'Power/Overclocking', text: 'Turn off selected machines', value: 'Building_PowerSwitch_turnOff' });
                 }
             }
 
             if(haveFoundationsMaterialsCategory === true)
             {
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "FICSIT Foundation"', value: 'switchMaterial_foundation_Ficsit'});
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Concrete Foundation"', value: 'switchMaterial_foundation_Concrete'});
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Grip Metal Foundation"', value: 'switchMaterial_foundation_GripMetal'});
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Coated Concrete Foundation"', value: 'switchMaterial_foundation_ConcretePolished'});
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Asphalt Foundation"', value: 'switchMaterial_foundation_Asphalt'});
+                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "FICSIT Foundation"', value: 'switchMaterial|foundation|Ficsit'});
+                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Concrete Foundation"', value: 'switchMaterial|foundation|Concrete'});
+                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Grip Metal Foundation"', value: 'switchMaterial|foundation|GripMetal'});
+                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Coated Concrete Foundation"', value: 'switchMaterial|foundation|ConcretePolished'});
+                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Asphalt Foundation"', value: 'switchMaterial|foundation|Asphalt'});
             }
 
             if(haveWallsMaterialsCategory === true)
             {
-                inputOptions.push({group: 'Wall Materials', text: 'Switch to "FICSIT Wall"', value: 'switchMaterial_wall_Ficsit'});
-                inputOptions.push({group: 'Wall Materials', text: 'Switch to "Concrete Wall"', value: 'switchMaterial_wall_Concrete'});
-                inputOptions.push({group: 'Wall Materials', text: 'Switch to "Steel Wall"', value: 'switchMaterial_wall_Steel'});
+                inputOptions.push({group: 'Wall Materials', text: 'Switch to "FICSIT Wall"', value: 'switchMaterial|wall|Ficsit'});
+                inputOptions.push({group: 'Wall Materials', text: 'Switch to "Concrete Wall"', value: 'switchMaterial|wall|Concrete'});
+                inputOptions.push({group: 'Wall Materials', text: 'Switch to "Steel Wall"', value: 'switchMaterial|wall|Steel'});
             }
 
             if(haveRoofsMaterialsCategory === true)
             {
-                inputOptions.push({group: 'Roof Materials', text: 'Switch to "FICSIT Roof"', value: 'switchMaterial_roof_Ficsit'});
-                inputOptions.push({group: 'Roof Materials', text: 'Switch to "Tar Roof"', value: 'switchMaterial_roof_Tar'});
-                inputOptions.push({group: 'Roof Materials', text: 'Switch to "Metal Roof"', value: 'switchMaterial_roof_Metal'});
-                inputOptions.push({group: 'Roof Materials', text: 'Switch to "Glass Roof"', value: 'switchMaterial_roof_Glass'});
+                inputOptions.push({group: 'Roof Materials', text: 'Switch to "FICSIT Roof"', value: 'switchMaterial|roof|Ficsit'});
+                inputOptions.push({group: 'Roof Materials', text: 'Switch to "Tar Roof"', value: 'switchMaterial|roof|Tar'});
+                inputOptions.push({group: 'Roof Materials', text: 'Switch to "Metal Roof"', value: 'switchMaterial|roof|Metal'});
+                inputOptions.push({group: 'Roof Materials', text: 'Switch to "Glass Roof"', value: 'switchMaterial|roof|Glass'});
             }
 
             if(havePillarsMaterialsCategory === true)
             {
-                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Metal Pillar"', value: 'switchMaterial_pillar_Metal'});
-                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Concrete Pillar"', value: 'switchMaterial_pillar_Concrete'});
-                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Frame Pillar"', value: 'switchMaterial_pillar_Frame'});
+                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Metal Pillar"', value: 'switchMaterial|pillar|Metal'});
+                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Concrete Pillar"', value: 'switchMaterial|pillar|Concrete'});
+                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Frame Pillar"', value: 'switchMaterial|pillar|Frame'});
             }
 
             if(haveSkinsCategory === true)
             {
-                inputOptions.push({group: 'Skins', text: 'Switch to "Default" skin', value: 'switchSkin_Default'});
-                inputOptions.push({group: 'Skins', text: 'Switch to "FICS*MAS" skin', value: 'switchSkin_Ficsmas'});
+                inputOptions.push({group: 'Skins', text: 'Switch to "Default" skin', value: 'switchSkin|Default'});
+                inputOptions.push({group: 'Skins', text: 'Switch to "FICS*MAS" skin', value: 'switchSkin|Ficsmas'});
             }
 
             if(haveLogisticCategory === true)
             {
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected belts/lifts', value: 'downgrade_Conveyor'});
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected belts/lifts', value: 'upgrade_Conveyor'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected belts/lifts', value: 'Building_Conveyor_downgradeConveyor'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected belts/lifts', value: 'Building_Conveyor_upgradeConveyor'});
             }
 
             if(havePowerPoleCategory === true)
             {
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected power poles', value: 'downgrade_PowerPole'});
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected power poles', value: 'upgrade_PowerPole'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected power poles', value: 'Building_PowerPole_downgradePowerPole'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected power poles', value: 'Building_PowerPole_upgradePowerPole'});
             }
 
             if(havePipelineCategory === true)
             {
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected pipelines/pumps', value: 'downgrade_Pipeline'});
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'upgrade_Pipeline'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected pipelines/pumps', value: 'Building_Pipeline_downgradePipeline'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'Building_Pipeline_upgradePipeline'});
             }
 
             if(haveExtractionCategory === true)
             {
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected miners', value: 'downgrade_Miners'});
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected miners', value: 'upgrade_Miners'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected miners', value: 'Building_Miner_downgradeMiner'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected miners', value: 'Building_Miner_upgradeMiner'});
             }
 
             inputOptions.push({group: 'Foundations', text: 'Fill selection with...', value: 'fillArea'});
 
             if(haveProductionCategory === true)
             {
-                inputOptions.push({group: 'Inventory', text: 'Fill selected machine inventories', value: 'fillMachineInventories'});
-                inputOptions.push({group: 'Inventory', text: 'Clear selected machine inventories', value: 'clearMachineInventories'});
+                inputOptions.push({group: 'Inventory', text: 'Fill selected machine inventories', value: 'Building_Production_fillInventory'});
+                inputOptions.push({group: 'Inventory', text: 'Clear selected machine inventories', value: 'Building_Production_clearInventory'});
             }
             if(haveStorageCategory === true || haveFluidStorageCategory === true)
             {
@@ -366,7 +366,7 @@ export default class Modal_Selection
 
             if(haveConveyorsBelts)
             {
-                inputOptions.push({group: 'Performance Test', text: 'Merge adjacent conveyor belts', value: 'mergeConveyors'});
+                inputOptions.push({group: 'Performance Test', text: 'Merge adjacent conveyor belts', value: 'Building_Conveyor_mergeConveyors'});
             }
 
             if(markers !== null && markers.length > 0)
@@ -400,21 +400,47 @@ export default class Modal_Selection
                     return;
                 }
 
-                let callbackArguments   = form.form.split('_');
+                let callbackArguments   = form.form.split('|');
                 let callbackName        = callbackArguments.shift();
                     callbackName        = 'callback' + callbackName[0].toUpperCase() + callbackName.slice(1);
-                    callbackArguments.unshift(markers);
-                    callbackArguments.unshift(baseLayout);
 
                 // Those callback needs access to the selection!
                 if(['fillArea', 'respawnFlora'].includes(form.form) === false)
                 {
                     Modal_Selection.cancel(baseLayout);
                 }
+
                 // Let's go!
                 if(typeof Modal_Selection[callbackName] === "function")
                 {
+                    callbackArguments.unshift(markers);
+                    callbackArguments.unshift(baseLayout);
+
                     return Modal_Selection[callbackName].apply(null, callbackArguments);
+                }
+                // Generic callback?
+                else
+                {
+                    callbackName = callbackName.slice(8);
+
+                    for(let i = 0; i < markers.length; i++)
+                    {
+                        let contextMenu = baseLayout.getContextMenu(markers[i]);
+                            if(contextMenu !== false)
+                            {
+                                // Search for a className callback in contextmenu...
+                                for(let j = 0; j < contextMenu.length; j++)
+                                {
+                                    if(contextMenu[j].className !== undefined && contextMenu[j].className === callbackName)
+                                    {
+                                        contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout}, false);
+                                        break;
+                                    }
+                                }
+                            }
+                    }
+
+                    baseLayout.updateRadioactivityLayer();
                 }
             }
         });
@@ -1057,146 +1083,6 @@ export default class Modal_Selection
             baseLayout.clearPlayerStorageBuildingInventory({relatedTarget: markers[i]});
         }
         baseLayout.updateRadioactivityLayer();
-    }
-
-
-
-    static callbackDowngrade(baseLayout, markers, type)
-    {
-        for(let i = 0; i < markers.length; i++)
-        {
-            let contextMenu = baseLayout.getContextMenu(markers[i]);
-                if(contextMenu !== false)
-                {
-                    // Search for a downgrade callback in contextmenu...
-                    for(let j = 0; j < contextMenu.length; j++)
-                    {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name === 'downgrade' + type)
-                        {
-                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout});
-                        }
-                    }
-                }
-        }
-    }
-
-    static callbackUpgrade(baseLayout, markers, type)
-    {
-        for(let i = 0; i < markers.length; i++)
-        {
-            let contextMenu = baseLayout.getContextMenu(markers[i]);
-                if(contextMenu !== false)
-                {
-                    // Search for a downgrade callback in contextmenu...
-                    for(let j = 0; j < contextMenu.length; j++)
-                    {
-                        if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name === 'upgrade' + type)
-                        {
-                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout});
-                        }
-                    }
-                }
-        }
-    }
-
-    static callbackMergeConveyors(baseLayout, markers)
-    {
-        for(let i = 0; i < markers.length; i++)
-        {
-            let contextMenu = baseLayout.getContextMenu(markers[i]);
-                if(contextMenu !== false)
-                {
-                    // Search for a downgrade callback in contextmenu...
-                    for(let j = 0; j < contextMenu.length; j++)
-                    {
-                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Building_Conveyor_merge')
-                        {
-                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout}, false);
-                            break;
-                        }
-                    }
-                }
-        }
-    }
-
-    static callbackFillMachineInventories(baseLayout, markers)
-    {
-        for(let i = 0; i < markers.length; i++)
-        {
-            let contextMenu = baseLayout.getContextMenu(markers[i]);
-                if(contextMenu !== false)
-                {
-                    // Search for a downgrade callback in contextmenu...
-                    for(let j = 0; j < contextMenu.length; j++)
-                    {
-                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Building_Production_fillInventory')
-                        {
-                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout}, false);
-                        }
-                    }
-                }
-        }
-
-        baseLayout.updateRadioactivityLayer();
-    }
-
-    static callbackClearMachineInventories(baseLayout, markers)
-    {
-        for(let i = 0; i < markers.length; i++)
-        {
-            let contextMenu = baseLayout.getContextMenu(markers[i]);
-                if(contextMenu !== false)
-                {
-                    // Search for a downgrade callback in contextmenu...
-                    for(let j = 0; j < contextMenu.length; j++)
-                    {
-                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Building_Production_clearInventory')
-                        {
-                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout}, false);
-                        }
-                    }
-                }
-        }
-
-        baseLayout.updateRadioactivityLayer();
-    }
-
-    static callbackTurnOnMachines(baseLayout, markers)
-    {
-        for(let i = 0; i < markers.length; i++)
-        {
-            let contextMenu = baseLayout.getContextMenu(markers[i]);
-                if(contextMenu !== false)
-                {
-                    for(let j = 0; j < contextMenu.length; j++)
-                    {
-                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Building_PowerSwitch_turnOn')
-                        {
-                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout});
-                            break;
-                        }
-                    }
-                }
-        }
-    }
-
-    static callbackTurnOffMachines(baseLayout, markers)
-    {
-        for(let i = 0; i < markers.length; i++)
-        {
-            let contextMenu = baseLayout.getContextMenu(markers[i]);
-                if(contextMenu !== false)
-                {
-                    for(let j = 0; j < contextMenu.length; j++)
-                    {
-                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Building_PowerSwitch_turnOff')
-                        {
-                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout});
-                            break;
-                        }
-                    }
-                }
-        }
     }
 
     static callbackModalProductionStatistics(baseLayout, markers)

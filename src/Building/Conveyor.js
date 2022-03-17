@@ -38,7 +38,7 @@ export default class Building_Conveyor
                     icon        : 'fa-object-group',
                     text        : 'Merge adjacent conveyor belts (Performance test)',
                     callback    : Building_Conveyor.mergeConveyors,
-                    className   : 'Building_Conveyor_merge'
+                    className   : 'Building_Conveyor_mergeConveyors'
                 });
             }
 
@@ -61,7 +61,8 @@ export default class Building_Conveyor
                             contextMenu.push({
                                 icon        : 'fa-level-down-alt',
                                 text        : 'Downgrade to "' + downgradeData.name + '"',
-                                callback    : Building_Conveyor.downgradeConveyor
+                                callback    : Building_Conveyor.downgradeConveyor,
+                                className   : 'Building_Conveyor_downgradeConveyor'
                             });
                         }
                 }
@@ -73,7 +74,8 @@ export default class Building_Conveyor
                             contextMenu.push({
                                 icon        : 'fa-level-up-alt',
                                 text        : 'Upgrade to "' + upgradeData.name + '"',
-                                callback    : Building_Conveyor.upgradeConveyor
+                                callback    : Building_Conveyor.upgradeConveyor,
+                                className   : 'Building_Conveyor_upgradeConveyor'
                             });
                         }
                 }
@@ -291,7 +293,7 @@ export default class Building_Conveyor
             BaseLayout_Modal.notification({
                 image   : buildingData.image,
                 title   : 'Merge adjacent conveyor belts',
-                message : `Are you nuts?! Conveyor belts merged: ${mergesMade}.`
+                message : `Are you nuts?!<br />Conveyor belts merged: ${mergesMade}.`
             });
         }
     }

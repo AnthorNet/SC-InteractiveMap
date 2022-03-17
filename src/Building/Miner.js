@@ -26,7 +26,8 @@ export default class Building_Miner
                             contextMenu.push({
                                 icon        : 'fa-level-down-alt',
                                 text        : 'Downgrade to "' + downgradeData.name + '"',
-                                callback    : Building_Miner.downgradeMiner
+                                callback    : Building_Miner.downgradeMiner,
+                                className   : 'Building_Miner_downgradeMiner'
                             });
                         }
                 }
@@ -38,7 +39,8 @@ export default class Building_Miner
                             contextMenu.push({
                                 icon        : 'fa-level-up-alt',
                                 text        : 'Upgrade to "' + upgradeData.name + '"',
-                                callback    : Building_Miner.upgradeMiner
+                                callback    : Building_Miner.upgradeMiner,
+                                className   : 'Building_Miner_upgradeMiner'
                             });
                         }
                 }

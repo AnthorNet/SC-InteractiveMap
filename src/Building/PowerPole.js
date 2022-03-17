@@ -53,7 +53,8 @@ export default class Building_PowerPole
                             contextMenu.push({
                                 icon        : 'fa-level-down-alt',
                                 text        : 'Downgrade to "' + downgradeData.name + '"',
-                                callback    : Building_PowerPole.downgradePowerPole
+                                callback    : Building_PowerPole.downgradePowerPole,
+                                className   : 'Building_PowerPole_downgradePowerPole'
                             });
                         }
                 }
@@ -65,7 +66,8 @@ export default class Building_PowerPole
                             contextMenu.push({
                                 icon        : 'fa-level-up-alt',
                                 text        : 'Upgrade to "' + upgradeData.name + '"',
-                                callback    : Building_PowerPole.upgradePowerPole
+                                callback    : Building_PowerPole.upgradePowerPole,
+                                className   : 'Building_PowerPole_upgradePowerPole'
                             });
                         }
                 }

@@ -38,7 +38,8 @@ export default class Building_Pipeline
                             contextMenu.push({
                                 icon        : 'fa-level-down-alt',
                                 text        : 'Downgrade to "' + downgradeData.name + '"',
-                                callback    : Building_Pipeline.downgradePipeline
+                                callback    : Building_Pipeline.downgradePipeline,
+                                className   : 'Building_Pipeline_downgradePipeline'
                             });
                         }
                 }
@@ -50,7 +51,8 @@ export default class Building_Pipeline
                             contextMenu.push({
                                 icon        : 'fa-level-up-alt',
                                 text        : 'Upgrade to "' + upgradeData.name + '"',
-                                callback    : Building_Pipeline.upgradePipeline
+                                callback    : Building_Pipeline.upgradePipeline,
+                                className   : 'Building_Pipeline_upgradePipeline'
                             });
                         }
                 }
