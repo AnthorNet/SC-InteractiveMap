@@ -106,14 +106,10 @@ export default class Modal_Map_Options
         let gameState                       = this.baseLayout.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
 
         let unlockSubSystem                 = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
-        let timeSubSystem                   = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.TimeSubsystem");
 
         let mIsBuildingEfficiencyUnlocked   = 0;
         let mIsBuildingOverclockUnlocked    = 0;
         let mIsMapUnlocked                  = 0;
-
-        let mDaySeconds                     = 43200;
-        let mNumberOfPassedDays             = 0;
 
         let mCheatNoCost                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoCost', 0);
         let mCheatNoPower                   = this.baseLayout.getObjectProperty(gameState, 'mCheatNoPower', 0);
@@ -126,12 +122,6 @@ export default class Modal_Map_Options
             mIsMapUnlocked                  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsMapUnlocked', 0);
         }
 
-        if(timeSubSystem !== null)
-        {
-            mDaySeconds                     = this.baseLayout.getObjectProperty(timeSubSystem, 'mDaySeconds', 43200);
-            mNumberOfPassedDays             = this.baseLayout.getObjectProperty(timeSubSystem, 'mNumberOfPassedDays', 0);
-        }
-
         html.push('<div class="form-group row">');
             html.push('<label for="inputSessionName" class="col-sm-3 col-form-label">Session name</label>');
             html.push('<div class="col-sm-9"><input type="text" name="sessionName" class="form-control" id="inputSessionName" value="' + header.sessionName + '"></div>');
@@ -139,11 +129,11 @@ export default class Modal_Map_Options
 
         html.push('<div class="form-group row">');
             html.push('<label for="inputTimeOfDay" class="col-sm-6 col-form-label">Time of day</label>');
-            html.push('<div class="col-sm-6"><input type="text" name="timeOfDay" class="form-control text-right" id="inputTimeOfDay" value="' + new Date(1000 * mDaySeconds).toISOString().substr(11, 8) + '" readonly></div>');
+            html.push('<div class="col-sm-6"><input type="text" name="timeOfDay" class="form-control text-right" id="inputTimeOfDay" value="' + new Date(1000 * this.baseLayout.timeSubSystem.getDaySeconds()).toISOString().substr(11, 8) + '" readonly></div>');
         html.push('</div>');
         html.push('<div class="form-group row">');
             html.push('<label for="inputNumberOfPassedDay" class="col-sm-6 col-form-label">Number of passed days</label>');
-            html.push('<div class="col-sm-6"><input type="text" name="numberOfPassedDay" class="form-control text-right" id="inputNumberOfPassedDay" value="' + mNumberOfPassedDays + '" readonly></div>');
+            html.push('<div class="col-sm-6"><input type="text" name="numberOfPassedDay" class="form-control text-right" id="inputNumberOfPassedDay" value="' + this.baseLayout.timeSubSystem.getNumberOfPassedDays() + '" readonly></div>');
         html.push('</div>');
 
         html.push('<hr />');

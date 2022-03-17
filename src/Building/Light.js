@@ -207,6 +207,15 @@ export default class Building_Light
             return false;
         }
 
+        if(baseLayout.timeSubSystem.isNight() === false)
+        {
+            let isTimeOfDayAware = this.getIsTimeOfDayAware(baseLayout, currentObject);
+                if(isTimeOfDayAware === true)
+                {
+                    return false;
+                }
+        }
+
         return true;
     }
 
