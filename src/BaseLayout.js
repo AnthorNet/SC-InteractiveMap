@@ -623,6 +623,16 @@ export default class BaseLayout
                 {
                     continue;
                 }
+                else
+                {
+                    let haveDropPod = this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId].hasLayer(this.satisfactoryMap.collectableMarkers[currentObject.pathName]);
+                        if(haveDropPod === false)
+                        {
+                            this.satisfactoryMap.collectableMarkers[currentObject.pathName].addTo(
+                                this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId]
+                            );
+                        }
+                }
             }
 
             // Mod nodes
@@ -4686,7 +4696,7 @@ export default class BaseLayout
             }
             else
             {
-                dataCollected--
+                dataCollected--;
                 this.deleteObjectProperty(currentObject, 'mHasBeenOpened');
                 marker.relatedTarget.setOpacity(1);
             }

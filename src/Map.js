@@ -400,7 +400,8 @@ export default class Map
                                         iconSize    : [50, 80]
                                     });
 
-                                    this.collectedHardDrives = new HardDrives({ hardDrivesData: option.markers, language: this.language });
+                                    this.collectedHardDrives    = new HardDrives({ hardDrivesData: option.markers, language: this.language });
+                                    this.localStorage           = this.collectedHardDrives.getLocaleStorage();
                                 }
 
                                 for(let l = 0; l < option.markers.length; l++)
@@ -585,8 +586,16 @@ export default class Map
                                                 if(isCollected === true)
                                                 {
                                                     $('#resetPreviousCollected').show();
-                                                    this.collectableMarkers[marker.pathName].setOpacity(this.collectedOpacity);
-                                                    //this.availableLayers[option.layerId].removeLayer(this.collectableMarkers[marker.pathName]);
+
+                                                    let showCollected = (this.localStorage !== null && this.localStorage.getItem('mapShowCollected') !== null) ? (this.localStorage.getItem('mapShowCollected') === 'true') : false;
+                                                        if(showCollected === false)
+                                                        {
+                                                            this.availableLayers[option.layerId].removeLayer(this.collectableMarkers[marker.pathName]);
+                                                        }
+                                                        else
+                                                        {
+                                                            this.collectableMarkers[marker.pathName].setOpacity(this.collectedOpacity);
+                                                        }
 
                                                     // Update badge!
                                                     let dataCollected   = parseInt($('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-collected')) + 1;
@@ -817,14 +826,22 @@ export default class Map
         }.bind(this));
 
         $('#resetPreviousCollected button').click(function(e){
-            let collected = this.collectedHardDrives.getCollectedHardDrives();
+            let showCollected   = (this.localStorage !== null && this.localStorage.getItem('mapShowCollected') !== null) ? (this.localStorage.getItem('mapShowCollected') === 'true') : false;
+            let collected       = this.collectedHardDrives.getCollectedHardDrives();
+
                 for(let i = 0; i < collected.length; i++)
                 {
                     if(this.collectableMarkers[collected[i]] !== undefined)
                     {
                         let layerId = this.collectableMarkers[collected[i]].options.layerId;
-                            //this.collectableMarkers[collected[i]].addTo(this.availableLayers[layerId]);
-                            this.collectableMarkers[collected[i]].setOpacity(1);
+                            if(showCollected === false)
+                            {
+                                this.collectableMarkers[collected[i]].addTo(this.availableLayers[layerId]);
+                            }
+                            else
+                            {
+                                this.collectableMarkers[collected[i]].setOpacity(1);
+                            }
 
                             let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected')) - 1;
                             let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
