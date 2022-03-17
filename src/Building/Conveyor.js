@@ -37,7 +37,8 @@ export default class Building_Conveyor
                 contextMenu.push({
                     icon        : 'fa-object-group',
                     text        : 'Merge adjacent conveyor belts (Performance test)',
-                    callback    : Building_Conveyor.mergeConveyors
+                    callback    : Building_Conveyor.mergeConveyors,
+                    className   : 'Building_Conveyor_merge'
                 });
             }
 
@@ -127,7 +128,7 @@ export default class Building_Conveyor
             }
     }
 
-    static mergeNextConveyor(marker)
+    static _doMergeNextConveyor(marker)
     {
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
@@ -149,7 +150,7 @@ export default class Building_Conveyor
                                     if(nextConveyorAny0 !== null)
                                     {
                                         let nextConveyor = baseLayout.saveGameParser.getTargetObject(nextConveyorAny0.outerPathName)
-                                            if(nextConveyor !== null && nextConveyor.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true)
+                                            if(nextConveyor !== null && nextConveyor.className === currentObject.className)
                                             {
                                                 // Append spline data to middle
                                                 let middleSplineData    = baseLayout.getObjectProperty(currentObject, 'mSplineData');
@@ -219,53 +220,75 @@ export default class Building_Conveyor
         return false;
     }
 
-    static mergeConveyors(marker)
+    static _doMergeConveyors(marker)
     {
-        let baseLayout      = marker.baseLayout;
-        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let baseLayout          = marker.baseLayout;
+        let haveMergedPrevious  = false;
+        let haveMergedNext      = false;
+        let mergesMade          = 0;
+
+        do {
+            let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+            let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
             if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true)
             {
-                let middleConveyorAny0          = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny0');
+                    let middleConveyorAny0          = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny0');
+                    haveMergedPrevious              = false;
 
-                    // Merge previous belt?
-                    if(middleConveyorAny0 !== null)
-                    {
-                        let mConnectedComponent = baseLayout.getObjectProperty(middleConveyorAny0, 'mConnectedComponent');
-                            if(mConnectedComponent !== null)
-                            {
-                                let previousConveyorAny1 = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName);
-                                    if(previousConveyorAny1 !== null)
-                                    {
-                                        let previousConveyor = baseLayout.saveGameParser.getTargetObject(previousConveyorAny1.outerPathName)
-                                            if(previousConveyor !== null && previousConveyor.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt') === true)
-                                            {
-                                                // Find previous marker and pivot
-                                                let previousMarker = baseLayout.getMarkerFromPathName(previousConveyor.pathName, buildingData.layerId);
-                                                    if(previousMarker !== null)
-                                                    {
-                                                        let haveMerged = Building_Conveyor.mergeNextConveyor({baseLayout: baseLayout, relatedTarget: previousMarker});
-                                                            if(haveMerged === true)
-                                                            {
-                                                                marker = {baseLayout: baseLayout, relatedTarget: baseLayout.getMarkerFromPathName(previousConveyor.pathName, buildingData.layerId)};
-                                                            }
-                                                    }
+                        // Merge previous belt?
+                        if(middleConveyorAny0 !== null)
+                        {
+                            let mConnectedComponent = baseLayout.getObjectProperty(middleConveyorAny0, 'mConnectedComponent');
+                                if(mConnectedComponent !== null)
+                                {
+                                    let previousConveyorAny1 = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName);
+                                        if(previousConveyorAny1 !== null)
+                                        {
+                                            let previousConveyor = baseLayout.saveGameParser.getTargetObject(previousConveyorAny1.outerPathName)
+                                                if(previousConveyor !== null && previousConveyor.className === currentObject.className)
+                                                {
+                                                    // Find previous marker and pivot
+                                                    let previousMarker = baseLayout.getMarkerFromPathName(previousConveyor.pathName, buildingData.layerId);
+                                                        if(previousMarker !== null)
+                                                        {
+                                                            haveMergedPrevious = Building_Conveyor._doMergeNextConveyor({baseLayout: baseLayout, relatedTarget: previousMarker});
+                                                                if(haveMergedPrevious === true)
+                                                                {
+                                                                    marker = {baseLayout: baseLayout, relatedTarget: baseLayout.getMarkerFromPathName(previousConveyor.pathName, buildingData.layerId)};
+                                                                    mergesMade++;
+                                                                }
+                                                        }
 
-                                            }
-                                    }
-                            }
+                                                }
+                                        }
+                                }
+                        }
+
+                    // Merge next belt
+                    haveMergedNext = Building_Conveyor._doMergeNextConveyor(marker);
+                    if (haveMergedNext) {
+                        mergesMade++;
                     }
+                }
+        }
+        while (haveMergedNext || haveMergedPrevious);
 
-                // Merge next belt
-                Building_Conveyor.mergeNextConveyor(marker);
+        return mergesMade;
+    }
 
-                BaseLayout_Modal.notification({
-                    image   : buildingData.image,
-                    title   : 'Merge adjacent conveyor belts',
-                    message : 'Are you nuts?!'
-                });
-            }
+    static mergeConveyors(marker)
+    {
+        const baseLayout        = marker.baseLayout;
+        const currentObject     = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        const buildingData      = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        const mergesMade        = Building_Conveyor._doMergeConveyors(marker);
+
+        BaseLayout_Modal.notification({
+            image   : buildingData.image,
+            title   : 'Merge adjacent conveyor belts',
+            message : `Are you nuts?! Conveyor belts merged: ${mergesMade}.`
+        });
     }
 }
 

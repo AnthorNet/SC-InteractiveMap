@@ -112,6 +112,7 @@ export default class Modal_Selection
         let haveSkinsCategory                   = false;
         let haveExtractionCategory              = false;
         let haveLogisticCategory                = false;
+        let haveConveyorsBelts                  = false;
         let havePowerPoleCategory               = false;
         let havePipelineCategory                = false;
         let haveProductionCategory              = false;
@@ -186,6 +187,10 @@ export default class Modal_Selection
                                                         if(buildingData.category === 'logistic')
                                                         {
                                                             haveLogisticCategory = true;
+
+                                                            if (currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt')) {
+                                                                haveConveyorsBelts = true;
+                                                            }
                                                         }
                                                         if(buildingData.category === 'powerPole')
                                                         {
@@ -356,6 +361,10 @@ export default class Modal_Selection
                 }
 
                 inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorage'});
+            }
+        
+            if(haveConveyorsBelts) {
+                inputOptions.push({group: 'Performance Test', text: 'Merge adjacent conveyor belts', value: 'mergeConveyors'});
             }
 
             if(markers !== null && markers.length > 0)
@@ -1088,6 +1097,26 @@ export default class Modal_Selection
         }
     }
 
+    static callbackMergeConveyors(baseLayout, markers)
+    {
+        for(let i = 0; i < markers.length; i++)
+        {
+            let contextMenu = baseLayout.getContextMenu(markers[i]);
+                if(contextMenu !== false)
+                {
+                    // Search for a downgrade callback in contextmenu...
+                    for(let j = 0; j < contextMenu.length; j++)
+                    {
+                        if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Building_Conveyor_merge')
+                        {
+                            contextMenu[j].callback({relatedTarget: markers[i], baseLayout: baseLayout}, false);
+                            break;
+                        }
+                    }
+                }
+        }
+    }
+    
     static callbackFillMachineInventories(baseLayout, markers)
     {
         for(let i = 0; i < markers.length; i++)
