@@ -188,7 +188,8 @@ export default class Modal_Selection
                                                         {
                                                             haveLogisticCategory = true;
 
-                                                            if (currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt')) {
+                                                            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorBelt'))
+                                                            {
                                                                 haveConveyorsBelts = true;
                                                             }
                                                         }
@@ -362,8 +363,9 @@ export default class Modal_Selection
 
                 inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorage'});
             }
-        
-            if(haveConveyorsBelts) {
+
+            if(haveConveyorsBelts)
+            {
                 inputOptions.push({group: 'Performance Test', text: 'Merge adjacent conveyor belts', value: 'mergeConveyors'});
             }
 
@@ -1116,7 +1118,7 @@ export default class Modal_Selection
                 }
         }
     }
-    
+
     static callbackFillMachineInventories(baseLayout, markers)
     {
         for(let i = 0; i < markers.length; i++)

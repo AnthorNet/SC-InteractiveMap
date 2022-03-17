@@ -25,7 +25,8 @@ export default class BaseLayout_Modal
             modalHeader : '<div class="modal-header"><h5 class="modal-title"></h5></div>',
             modalFooter : '<div class="modal-footer"></div>',
 
-            toast           : '<div class="toast" style="position: fixed; top: 86px; right: 10px;"><div class="toast-body"></div></div>',
+            toastWrapper    : '<div id="toastWrapper" style="position: fixed; top: 86px; right: 10px;"></div>',
+            toast           : '<div class="toast"><div class="toast-body"></div></div>',
             toastHeader     : '<div class="toast-header"><strong class="mr-auto"></strong></div>',
 
             button          : '<button type="button" class="btn"></button>',
@@ -188,9 +189,17 @@ export default class BaseLayout_Modal
     {
         if($.fn.toast)
         {
+            let toastWrapper    = $('body').find('#toastWrapper');
             let toastContent    = $(BaseLayout_Modal.templates.toast);
             let toastBody       = toastContent.find('.toast-body');
                 toastBody.html(options.message);
+
+                // Wrapper?
+                if(toastWrapper.length === 0)
+                {
+                    toastWrapper = $(BaseLayout_Modal.templates.toastWrapper);
+                    $('body').append(toastWrapper);
+                }
 
                 // Title?
                 if(options.title || options.image)
@@ -208,10 +217,16 @@ export default class BaseLayout_Modal
                     }
                 }
 
-                $('body').append(toastContent);
-                toastContent.toast({delay: 4000}).toast('show');
+                toastWrapper.append(toastContent);
+                toastContent.toast({delay: 5000}).toast('show');
                 toastContent.on('hidden.bs.toast', function(){
                     toastContent.remove();
+
+                    let toastWrapperCount    = $('body').find('#toastWrapper').find('.toast');
+                        if(toastWrapperCount.length === 0)
+                        {
+                            toastWrapper.remove();
+                        }
                 });
         }
         else
