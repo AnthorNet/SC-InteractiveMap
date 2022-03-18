@@ -64,7 +64,7 @@ export default class BaseLayout
 
         this.gameMode                           = [];
         this.players                            = {};
-        this.buildingDataClassNameHashTable     = {};
+        this.buildingDataClassNameHashTable     = new Map();
         this.radioactivityLayerNeedsUpdate      = false;
         this.tooltipsEnabled                    = true;
 
@@ -5213,16 +5213,17 @@ export default class BaseLayout
         if(className === '/Game/InfiniteLogistics/Buildable/InfinitePipeHyper/Build_InfinitePipeHyper.Build_InfinitePipeHyper_C'){ className = '/Game/FactoryGame/Buildable/Factory/PipeHyper/Build_PipeHyper.Build_PipeHyper_C'; }
         if(className === '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C'){ className = '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C'; }
 
-        if(this.buildingDataClassNameHashTable[className] !== undefined)
+        const buildingData = this.buildingDataClassNameHashTable.get(className);
+        if(buildingData !== undefined)
         {
-            return this.buildingsData[this.buildingDataClassNameHashTable[className]];
+            return this.buildingsData[buildingData];
         }
 
         for(let i in this.buildingsData)
         {
             if(this.buildingsData[i].className !== undefined && this.buildingsData[i].className === className)
             {
-                this.buildingDataClassNameHashTable[className] = i;
+                this.buildingDataClassNameHashTable.set(className, i);
                 return this.buildingsData[i];
             }
         }
