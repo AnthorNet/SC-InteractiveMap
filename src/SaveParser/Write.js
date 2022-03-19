@@ -103,14 +103,13 @@ export default class SaveParser_Write
 
     generateCollectablesChunks()
     {
-        let countCollectables = this.collectables.length;
-            this.saveBinary  += this.writeInt(countCollectables, false);
+        this.saveBinary  += this.writeInt(this.collectables.size, false);
 
-        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(countCollectables)});
+        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(this.collectables.size)});
 
-        for(let i = 0; i < countCollectables; i++)
+        for(const collectable of this.collectables.values())
         {
-            this.saveBinary += this.writeObjectProperty(this.collectables[i], false);
+            this.saveBinary += this.writeObjectProperty(collectable, false);
 
             if(this.saveBinary.length >= this.maxChunkSize)
             {
@@ -118,7 +117,7 @@ export default class SaveParser_Write
             }
         }
 
-        console.log('Saved ' + countCollectables + ' collectables...');
+        console.log('Saved ' + this.collectables.size + ' collectables...');
 
         return this.finalizeChunks();
     }

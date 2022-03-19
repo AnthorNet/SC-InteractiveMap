@@ -202,14 +202,15 @@ export default class SaveParser_Read
                 this.readEntityV5(entitiesToObjects[i]);
             }
 
-            this.saveResult.collectables   = [];
+            this.saveResult.collectables   = new Map();
                 let countCollected  = this.readInt();
                     console.log('Parsing: ' + countCollected + ' collectables...');
                     this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(countCollected)});
 
             for(let i = 0; i < countCollected; i++)
             {
-                this.saveResult.collectables.push(this.readObjectProperty({}));
+                const collectable = this.readObjectProperty({});
+                this.saveResult.collectables.set(collectable.pathName, collectable);
             }
 
             delete this.arrayBuffer;
