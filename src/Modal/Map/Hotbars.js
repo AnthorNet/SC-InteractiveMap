@@ -17,14 +17,14 @@ export default class Modal_Map_Hotbars
         let hotbarHeaderHtml    = [];
         let hotbarHtml          = [];
 
-        for(let pathName in this.baseLayout.players)
+        for(const [pathName, player] of this.baseLayout.players)
         {
-            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
-            hotbarHeaderHtml.push(this.baseLayout.players[pathName].getDisplayName());
+            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((player.isHost() === true) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
+            hotbarHeaderHtml.push(player.getDisplayName());
             hotbarHeaderHtml.push('</span></li>');
 
-            hotbarHtml.push('<div class="tab-pane fade ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'show active' : '') + '" id="playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
-            hotbarHtml.push(this.parsePlayer(this.baseLayout.players[pathName].player, options));
+            hotbarHtml.push('<div class="tab-pane fade ' + ((player.isHost() === true) ? 'show active' : '') + '" id="playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
+            hotbarHtml.push(this.parsePlayer(player.player, options));
             hotbarHtml.push('</div>');
         }
 

@@ -29,16 +29,16 @@ export default class Modal_Map_Players
                 updateSizeHtml.push('</div>');
             }
 
-            for(let pathName in this.baseLayout.players)
+            for(const [pathName, player] of this.baseLayout.players)
             {
-                let mOwnedPawn  = this.baseLayout.players[pathName].getOwnedPawn();
+                let mOwnedPawn  = player.getOwnedPawn();
                     if(mOwnedPawn !== null)
                     {
-                        inventoryHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'active' : '') + '" data-toggle="tab" href="#playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
-                        inventoryHeaderHtml.push(this.baseLayout.players[pathName].getDisplayName());
+                        inventoryHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((player.isHost() === true) ? 'active' : '') + '" data-toggle="tab" href="#playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
+                        inventoryHeaderHtml.push(player.getDisplayName());
                         inventoryHeaderHtml.push('</span></li>');
 
-                        inventoryHtml.push('<div class="tab-pane fade ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'show active' : '') + '" id="playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
+                        inventoryHtml.push('<div class="tab-pane fade ' + ((player.isHost() === true) ? 'show active' : '') + '" id="playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
 
                         let inventory           = this.baseLayout.getObjectInventory(mOwnedPawn, 'mInventory');
 
@@ -60,7 +60,7 @@ export default class Modal_Map_Players
 
                                     inventoryHtml.push('</div>');
 
-                                    if(this.baseLayout.players[pathName].isHost() === false)
+                                    if(player.isHost() === false)
                                     {
                                         inventoryHtml.push('<button class="btn btn-danger w-100 parseStatisticsPlayerInventoryDeleteGuest" data-pathName="' + pathName +'">Delete player</button>')
                                     }
@@ -94,9 +94,10 @@ export default class Modal_Map_Players
             });
             $('.parseStatisticsPlayerInventoryDeleteGuest').on('click', function(e){
                 let pathName = $(e.target).attr('data-pathName');
-                    if(this.baseLayout.players[pathName] !== undefined)
+                const player = this.baseLayout.players.get(pathName);
+                    if(player !== undefined)
                     {
-                        this.baseLayout.players[pathName].delete();
+                        player.delete();
                     }
                 this.parse();
             }.bind(this));
@@ -112,9 +113,9 @@ export default class Modal_Map_Players
                 this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots', newCount, 'IntProperty');
                 count                        = newCount - mNumTotalArmEquipmentSlots;
 
-            for(let pathName in this.baseLayout.players)
+            for(const player of this.baseLayout.players.values())
             {
-                let mOwnedPawn  = this.baseLayout.players[pathName].getOwnedPawn();
+                let mOwnedPawn  = player.getOwnedPawn();
                     if(mOwnedPawn !== null)
                     {
                         let armSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.ArmSlot');
@@ -166,9 +167,9 @@ export default class Modal_Map_Players
             let newCount                    = Math.max(1, Math.min(9, ((mNumTotalArmEquipmentSlots !== null) ? mNumTotalArmEquipmentSlots : 1) - parseInt(count)));
                 this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots', newCount, 'IntProperty');
 
-            for(let pathName in this.baseLayout.players)
+            for(const player of this.baseLayout.players.values())
             {
-                let mOwnedPawn  = this.baseLayout.players[pathName].getOwnedPawn();
+                let mOwnedPawn  = player.getOwnedPawn();
                     if(mOwnedPawn !== null)
                     {
                         let armSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.ArmSlot');
@@ -197,9 +198,9 @@ export default class Modal_Map_Players
                this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots', newCount, 'IntProperty');
                count                        = newCount - mNumTotalInventorySlots;
 
-            for(let pathName in this.baseLayout.players)
+            for(const player of this.baseLayout.players.values())
             {
-                let mOwnedPawn  = this.baseLayout.players[pathName].getOwnedPawn();
+                let mOwnedPawn  = player.getOwnedPawn();
                     if(mOwnedPawn !== null)
                     {
                         let inventory = this.baseLayout.getObjectInventory(mOwnedPawn, 'mInventory', true);
@@ -251,9 +252,9 @@ export default class Modal_Map_Players
             let newCount                    = Math.max(22, Math.min(500, ((mNumTotalInventorySlots !== null) ? mNumTotalInventorySlots : 22) - parseInt(count)));
                this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots', newCount, 'IntProperty');
 
-            for(let pathName in this.baseLayout.players)
+            for(const player of this.baseLayout.players.values())
             {
-                let mOwnedPawn  = this.baseLayout.players[pathName].getOwnedPawn();
+                let mOwnedPawn  = player.getOwnedPawn();
                     if(mOwnedPawn !== null)
                     {
                         let inventory = this.baseLayout.getObjectInventory(mOwnedPawn, 'mInventory', true);

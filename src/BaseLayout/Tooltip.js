@@ -72,8 +72,9 @@ export default class BaseLayout_Tooltip
                 {
                     switch(currentObject.className)
                     {
-                        case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                            if(this.baseLayout.players[currentObject.pathName] !== undefined)
+                        case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C': {
+                            const player = this.baseLayout.players.get(currentObject.pathName);
+                            if(player !== undefined)
                             {
                                 let emotes = [
                                         '/img/patternIcons/IconDesc_EmoteWave_256.png', '/img/patternIcons/IconDesc_EmoteScissors_256.png', '/img/patternIcons/IconDesc_EmoteRock_256.png', '/img/patternIcons/IconDesc_EmotePoint_256.png',
@@ -81,12 +82,13 @@ export default class BaseLayout_Tooltip
                                         '/img/patternIcons/Emote_Clap_256.png', '/img/patternIcons/Emote_BuildGunSpin_256.png'
                                     ];
                                     return this.setBuildingTooltipContent(currentObject, {
-                                        name    : this.baseLayout.players[currentObject.pathName].getDisplayName(),
+                                        name    : player.getDisplayName(),
                                         image   : emotes[Math.floor(Math.random() * emotes.length)],
-                                        health  : this.baseLayout.players[currentObject.pathName].getCurrentHealth()
+                                        health  : player.getCurrentHealth()
                                     });
                             }
                             break;
+                        }
                         case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
                             let mDecorationDescriptor = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
                                 if(mDecorationDescriptor !== null)

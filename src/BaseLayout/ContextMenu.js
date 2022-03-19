@@ -67,7 +67,7 @@ export default class BaseLayout_ContextMenu
                 {
                     case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
                         contextMenu.push({
-                            text        : this.baseLayout.players[currentObject.pathName].getDisplayName()
+                            text        : this.baseLayout.players.get(currentObject.pathName).getDisplayName()
                         });
                         contextMenu.push({
                             icon        : 'fa-arrows-alt',

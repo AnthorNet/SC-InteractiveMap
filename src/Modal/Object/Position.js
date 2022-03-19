@@ -15,7 +15,7 @@ export default class Modal_Object_Position
         // Switch player object
         if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
         {
-            let mOwnedPawn = baseLayout.players[marker.relatedTarget.options.pathName].getOwnedPawn();
+            let mOwnedPawn = baseLayout.players.get(marker.relatedTarget.options.pathName).getOwnedPawn();
                 if(mOwnedPawn !== null)
                 {
                     teleportPlayer  = true;
@@ -128,7 +128,7 @@ export default class Modal_Object_Position
 
                     if(teleportPlayer !== false)
                     {
-                        baseLayout.players[marker.relatedTarget.options.pathName].teleportTo(newTransform, 0);
+                        baseLayout.players.get(marker.relatedTarget.options.pathName).teleportTo(newTransform, 0);
                     }
                     else
                     {

@@ -472,9 +472,9 @@ export default class Modal_Map_Options
                     }
 
                 // Reset players tutorials
-                for(let pathName in this.baseLayout.players)
+                for(const player of this.baseLayout.players.values())
                 {
-                    this.baseLayout.players[pathName].reset();
+                    player.reset();
                 }
 
                 // Refresh tabs...

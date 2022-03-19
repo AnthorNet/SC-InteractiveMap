@@ -65,7 +65,7 @@ export default class BaseLayout
         this.frackingSmasherCores               = new Map();
 
         this.gameMode                           = [];
-        this.players                            = {};
+        this.players                            = new Map();
         this.buildingDataClassNameHashTable     = new Map();
         this.radioactivityLayerNeedsUpdate      = false;
         this.tooltipsEnabled                    = true;
@@ -727,7 +727,7 @@ export default class BaseLayout
             if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
             {
                 //console.log('BP_PlayerState_C', currentObject);
-                this.players[currentObject.pathName] = new SubSystem_Player({baseLayout: this, player: currentObject});
+                this.players.set(currentObject.pathName, new SubSystem_Player({baseLayout: this, player: currentObject}));
                 continue;
             }
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
@@ -931,15 +931,18 @@ export default class BaseLayout
         }
 
         // Needed when moving players
-        if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C' && this.players[currentObject.pathName] !== undefined)
+        if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
         {
-            let playerState = this.players[currentObject.pathName].addMarker();
+            const player = this.players.get(currentObject.pathName);
+            if (player !== undefined) {
+                let playerState = player.addMarker();
                 if(resolve === false)
                 {
                     return {layer: 'playerPositionLayer', marker: playerState};
                 }
 
-            return resolve();
+                return resolve();
+            }
         }
 
         // Skip on pasting
@@ -1168,9 +1171,9 @@ export default class BaseLayout
                 statisticsCollectables.get();
 
             // Player position
-            for(let pathName in this.players)
+            for(const player of this.players.values())
             {
-                this.players[pathName].addMarker();
+                player.addMarker();
             }
 
             // Global modals
@@ -1759,20 +1762,20 @@ export default class BaseLayout
         let playerPosition  = [0, 0, 0];
         let playerRotation  = [-0, 0, -0.4999995529651642, 0.8660256862640381];
 
-        for(let pathName in this.players)
+        for(const player of this.players.values())
         {
             // Find target
-            let mOwnedPawn  = this.getObjectProperty(this.players[pathName].player, 'mOwnedPawn');
+            let mOwnedPawn  = this.getObjectProperty(player.player, 'mOwnedPawn');
                 if(mOwnedPawn !== null)
                 {
-                    let player = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-                        if(player !== null)
+                    let playerObject = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                        if(playerObject !== null)
                         {
-                            playerPosition = player.transform.translation;
-                            playerRotation = player.transform.rotation;
+                            playerPosition = playerObject.transform.translation;
+                            playerRotation = playerObject.transform.rotation;
                         }
 
-                        if(this.players[pathName].isHost())
+                        if(player.isHost())
                         {
                             break; // No need to check further...
                         }
@@ -1975,17 +1978,17 @@ export default class BaseLayout
         let newTransform    = cloneDeep(currentObject.transform);
 
         let selectOptions   = [];
-            for(let pathName in this.players)
+            for(const [pathName, player] of this.players)
             {
                 selectOptions.push({
-                    text    : this.players[pathName].getDisplayName(),
+                    text    : player.getDisplayName(),
                     value   : pathName
                 });
             }
 
             if(selectOptions.length === 1) // Don't ask if there is only one player on the map...
             {
-                return this.players[selectOptions[0].value].teleportTo(newTransform);
+                return this.players.get(selectOptions[0].value).teleportTo(newTransform);
             }
 
         BaseLayout_Modal.form({
@@ -2002,7 +2005,7 @@ export default class BaseLayout
             {
                 if(form !== null && form.playerPathName !== null)
                 {
-                    return this.players[form.playerPathName].teleportTo(newTransform);
+                    return this.players.get(form.playerPathName).teleportTo(newTransform);
                 }
             }.bind(this)
         });
@@ -2017,7 +2020,7 @@ export default class BaseLayout
             }
             if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
             {
-                let mOwnedPawn = this.players[marker.relatedTarget.options.pathName].getOwnedPawn();
+                let mOwnedPawn = this.players.get(marker.relatedTarget.options.pathName).getOwnedPawn();
                     if(mOwnedPawn !== null)
                     {
                         inventoryProperty   = 'mInventory';
@@ -2036,7 +2039,7 @@ export default class BaseLayout
 
                 if(currentObject.className === '/Game/FactoryGame/Character/Player/Char_Player.Char_Player_C')
                 {
-                    buildingData.name = this.players[marker.relatedTarget.options.pathName].getDisplayName();
+                    buildingData.name = this.players.get(marker.relatedTarget.options.pathName).getDisplayName();
                 }
             }
 

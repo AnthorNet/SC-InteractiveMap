@@ -404,12 +404,12 @@ export default class SubSystem_Buildable
                 a : BaseLayout_Math.linearColorToRGB(1)
             };
 
-        for(let currentPathName in this.baseLayout.players)
+        for(const player of this.baseLayout.players.values())
         {
-            let mCustomColorData  = this.baseLayout.getObjectProperty(this.baseLayout.players[currentPathName].player, 'mCustomColorData');
+            let mCustomColorData  = this.baseLayout.getObjectProperty(player.player, 'mCustomColorData');
                 if(mCustomColorData !== null)
                 {
-                    if(pathName === null || pathName === currentPathName)
+                    if(pathName === null || pathName === player.pathName)
                     {
                         for(let j = 0; j < mCustomColorData.values.length; j++)
                         {
@@ -434,7 +434,7 @@ export default class SubSystem_Buildable
                         }
                     }
 
-                    if(pathName === null && this.baseLayout.players[currentPathName].isHost())
+                    if(pathName === null && player.isHost())
                     {
                         return customColor;
                     }
