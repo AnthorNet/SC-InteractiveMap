@@ -7,7 +7,7 @@ export default class SaveParser_Read
     {
         this.worker             = worker;
         this.saveResult         = {};
-        this.saveResult.objects = {};
+        this.saveResult.objects = new Map();
 
         this.defaultValues      = options.defaultValues;
         this.language           = options.language;
@@ -174,12 +174,12 @@ export default class SaveParser_Read
                     {
                         case 0:
                             let object                                      = this.readObjectV5();
-                                this.saveResult.objects[object.pathName]    = object;
+                                this.saveResult.objects.set(object.pathName, object);
                                 entitiesToObjects[i]                        = object.pathName;
                             break;
                         case 1:
                             let actor                                       = this.readActorV5();
-                                this.saveResult.objects[actor.pathName]     = actor;
+                                this.saveResult.objects.set(actor.pathName, actor);
                                 entitiesToObjects[i]                        = actor.pathName;
 
                                 if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
@@ -313,31 +313,32 @@ export default class SaveParser_Read
     {
         let entityLength                            = this.readInt();
         let startByte                               = this.currentByte;
+        const objectValue                           = this.saveResult.objects.get(objectKey);
 
-        if(this.saveResult.objects[objectKey].type === 1)
+        if(objectValue.type === 1)
         {
-            this.saveResult.objects[objectKey].entity = this.readObjectProperty({});
+            objectValue.entity = this.readObjectProperty({});
 
             let countChild  = this.readInt();
                 if(countChild > 0)
                 {
-                    this.saveResult.objects[objectKey].children = [];
+                    objectValue.children = [];
 
                     for(let i = 0; i < countChild; i++)
                     {
-                        this.saveResult.objects[objectKey].children.push(this.readObjectProperty({}));
+                        objectValue.children.push(this.readObjectProperty({}));
                     }
                 }
         }
 
         if((this.currentByte - startByte) === entityLength)
         {
-            this.saveResult.objects[objectKey].shouldBeNulled = true;
+            objectValue.shouldBeNulled = true;
             return;
         }
 
         // Read properties
-        this.saveResult.objects[objectKey].properties       = [];
+        objectValue.properties       = [];
         while(true)
         {
             let property = this.readPropertyV5();
@@ -346,23 +347,23 @@ export default class SaveParser_Read
                     break;
                 }
 
-                this.saveResult.objects[objectKey].properties.push(property);
+                objectValue.properties.push(property);
         }
 
         // Read Conveyor missing bytes
         if(
-                this.saveResult.objects[objectKey].className.includes('/Build_ConveyorBeltMk')
-             || this.saveResult.objects[objectKey].className.includes('/Build_ConveyorLiftMk')
+                objectValue.className.includes('/Build_ConveyorBeltMk')
+             || objectValue.className.includes('/Build_ConveyorLiftMk')
              // MODS
-             || this.saveResult.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_BeltMk')
-             || this.saveResult.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')
-             || this.saveResult.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
-             || this.saveResult.objects[objectKey].className.startsWith('/CoveredConveyor/')
-             || this.saveResult.objects[objectKey].className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || this.saveResult.objects[objectKey].className.startsWith('/FlexSplines/Conveyor/Build_Belt')
+             || objectValue.className.startsWith('/Conveyors_Mod/Build_BeltMk')
+             || objectValue.className.startsWith('/Conveyors_Mod/Build_LiftMk')
+             || objectValue.className.startsWith('/Game/CoveredConveyor')
+             || objectValue.className.startsWith('/CoveredConveyor/')
+             || objectValue.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
+             || objectValue.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
         )
         {
-            this.saveResult.objects[objectKey].extra    = {count: this.readInt(), items: []};
+            objectValue.extra    = {count: this.readInt(), items: []};
             let itemsLength                             = this.readInt();
                 for(let i = 0; i < itemsLength; i++)
                 {
@@ -377,33 +378,33 @@ export default class SaveParser_Read
                         this.readString(); //currentItem.pathName    = this.readString();
                         currentItem.position    = this.readFloat();
 
-                    this.saveResult.objects[objectKey].extra.items.push(currentItem);
+                    objectValue.extra.items.push(currentItem);
                 }
         }
         else
         {
             // Extra processing
-            switch(this.saveResult.objects[objectKey].className)
+            switch(objectValue.className)
             {
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C':
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C':
-                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), game: []};
+                    objectValue.extra    = {count: this.readInt(), game: []};
                     let gameLength                              = this.readInt();
 
                     for(let i = 0; i < gameLength; i++)
                     {
-                        this.saveResult.objects[objectKey].extra.game.push(this.readObjectProperty({}));
+                        objectValue.extra.game.push(this.readObjectProperty({}));
 
-                        if(i === 0 && this.saveResult.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                        if(i === 0 && objectValue.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
                         {
-                            this.saveResult.playerHostPathName  = this.saveResult.objects[objectKey].extra.game[0].pathName;
+                            this.saveResult.playerHostPathName  = objectValue.extra.game[0].pathName;
                         }
                     }
 
                     break;
                 case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
                     let missingPlayerState                          = (startByte + entityLength) - this.currentByte;
-                        this.saveResult.objects[objectKey].missing  = this.readHex(missingPlayerState);
+                        objectValue.missing  = this.readHex(missingPlayerState);
                         this.currentByte                           -= missingPlayerState; // Reset back to grab the user ID if possible!
 
                         if(missingPlayerState > 0)
@@ -415,7 +416,7 @@ export default class SaveParser_Read
                                     case 248: // EOS
                                             this.readString();
                                         let eosStr                                      = this.readString().split('|');
-                                            this.saveResult.objects[objectKey].eosId    = eosStr[0];
+                                            objectValue.eosId    = eosStr[0];
                                         break;
                                     case 249: // EOS
                                             this.readString(); // EOS, then follow 17
@@ -427,7 +428,7 @@ export default class SaveParser_Read
                                                 epicHex += this.readByte().toString(16).padStart(2, '0');
                                             }
 
-                                        this.saveResult.objects[objectKey].eosId = epicHex.replace(/^0+/, '');
+                                        objectValue.eosId = epicHex.replace(/^0+/, '');
                                         break;
                                     case 25: // Steam
                                         let steamHexLength  = this.readByte();
@@ -437,10 +438,10 @@ export default class SaveParser_Read
                                                 steamHex += this.readByte().toString(16).padStart(2, '0');
                                             }
 
-                                        this.saveResult.objects[objectKey].steamId = steamHex.replace(/^0+/, '');
+                                        objectValue.steamId = steamHex.replace(/^0+/, '');
                                         break;
                                     case 8: // ???
-                                        this.saveResult.objects[objectKey].platformId = this.readString();
+                                        objectValue.platformId = this.readString();
                                         break;
                                     case 3: // Offline
                                         break;
@@ -448,10 +449,10 @@ export default class SaveParser_Read
                                         this.worker.postMessage({command: 'alertParsing'});
                                         if(typeof Sentry !== 'undefined')
                                         {
-                                            Sentry.setContext('BP_PlayerState_C', this.saveResult.objects[objectKey]);
+                                            Sentry.setContext('BP_PlayerState_C', objectValue);
                                             Sentry.setContext('playerType', playerType);
                                         }
-                                        console.log(playerType, this.saveResult.objects[objectKey]);
+                                        console.log(playerType, objectValue);
                                         //throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
 
                                         // By pass, and hope that the user will still continue to send us the save!
@@ -462,16 +463,16 @@ export default class SaveParser_Read
                 //TODO: Not 0 here so bypass those special cases, but why? We mainly do not want to get warned here...
                 case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
                     let missingDrone                                = (startByte + entityLength) - this.currentByte;
-                        this.saveResult.objects[objectKey].missing  = this.readHex(missingDrone);
+                        objectValue.missing  = this.readHex(missingDrone);
 
                     break;
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
-                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), circuits: []};
+                    objectValue.extra    = {count: this.readInt(), circuits: []};
                     let circuitsLength                          = this.readInt();
 
                         for(let i = 0; i < circuitsLength; i++)
                         {
-                            this.saveResult.objects[objectKey].extra.circuits.push({
+                            objectValue.extra.circuits.push({
                                 circuitId   : this.readInt(),
                                 levelName   : this.readString(),
                                 pathName    : this.readString()
@@ -487,7 +488,7 @@ export default class SaveParser_Read
                 case '/AB_CableMod/Visuals3/Build_AB-PLHeavy.Build_AB-PLHeavy_C':
                 case '/AB_CableMod/Visuals4/Build_AB-SPLight.Build_AB-SPLight_C':
                 case '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C':
-                    this.saveResult.objects[objectKey].extra        = {
+                    objectValue.extra        = {
                         count   : this.readInt(),
                         source  : this.readObjectProperty({}),
                         target  : this.readObjectProperty({})
@@ -496,18 +497,18 @@ export default class SaveParser_Read
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
-                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), objects: []};
+                    objectValue.extra    = {count: this.readInt(), objects: []};
                     let trainLength                             = this.readInt();
                         for(let i = 0; i < trainLength; i++)
                         {
-                            this.saveResult.objects[objectKey].extra.objects.push({
+                            objectValue.extra.objects.push({
                                 name   : this.readString(),
                                 unk    : this.readHex(53)
                             });
                         }
 
-                    this.saveResult.objects[objectKey].extra.previous   = this.readObjectProperty({});
-                    this.saveResult.objects[objectKey].extra.next       = this.readObjectProperty({});
+                    objectValue.extra.previous   = this.readObjectProperty({});
+                    objectValue.extra.next       = this.readObjectProperty({});
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
@@ -515,11 +516,11 @@ export default class SaveParser_Read
                 case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
-                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), objects: []};
+                    objectValue.extra    = {count: this.readInt(), objects: []};
                     let vehicleLength                           = this.readInt();
                         for(let i = 0; i < vehicleLength; i++)
                         {
-                            this.saveResult.objects[objectKey].extra.objects.push({
+                            objectValue.extra.objects.push({
                                 name   : this.readString(),
                                 unk    : this.readHex(53)
                             });
@@ -529,8 +530,8 @@ export default class SaveParser_Read
                     let missingBytes = (startByte + entityLength) - this.currentByte;
                         if(missingBytes > 4)
                         {
-                            this.saveResult.objects[objectKey].missing = this.readHex(missingBytes); // TODO
-                            console.log('MISSING ' + missingBytes + '  BYTES', this.saveResult.objects[objectKey]);
+                            objectValue.missing = this.readHex(missingBytes); // TODO
+                            console.log('MISSING ' + missingBytes + '  BYTES', objectValue);
                         }
                         else
                         {

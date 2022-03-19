@@ -9,21 +9,21 @@ export default class SubSystem_Foliage
 {
     static respawn(baseLayout)
     {
-        let selection       = baseLayout.satisfactoryMap.leafletMap.selection._areaSelected;
-        let objects         = baseLayout.saveGameParser.getObjects();
-        let restoredFoliage = 0;
+        let selection           = baseLayout.satisfactoryMap.leafletMap.selection._areaSelected;
+        const objectsIterator   = baseLayout.saveGameParser.getObjectsIterator();
+        let restoredFoliage     = 0;
 
-            for(let pathName in objects)
+            for(const object of objectsIterator)
             {
-                if(objects[pathName].className === '/Script/FactoryGame.FGFoliageRemoval')
+                if(object.className === '/Script/FactoryGame.FGFoliageRemoval')
                 {
-                    if(BaseLayout_Math.isPointInsideSelection(baseLayout, selection, objects[pathName].transform.translation[0], objects[pathName].transform.translation[1]) === true)
+                    if(BaseLayout_Math.isPointInsideSelection(baseLayout, selection, object.transform.translation[0], object.transform.translation[1]) === true)
                     {
-                        baseLayout.saveGameParser.deleteObject(pathName);
+                        baseLayout.saveGameParser.deleteObject(object.pathName);
                     }
                     else
                     {
-                        let mRemovedInstances = baseLayout.getObjectProperty(objects[pathName], 'mRemovedInstances');
+                        let mRemovedInstances = baseLayout.getObjectProperty(object, 'mRemovedInstances');
                             if(mRemovedInstances !== null && mRemovedInstances.values.length > 0)
                             {
                                 for(let i = (mRemovedInstances.values.length - 1); i >= 0; i--)
@@ -62,7 +62,7 @@ export default class SubSystem_Foliage
                                 }
                                 if(mRemovedInstances.values.length === 0)
                                 {
-                                    baseLayout.saveGameParser.deleteObject(pathName);
+                                    baseLayout.saveGameParser.deleteObject(object.pathName);
                                 }
                             }
                     }

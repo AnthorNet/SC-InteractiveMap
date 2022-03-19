@@ -551,30 +551,25 @@ export default class BaseLayout
         });
     }
 
-    parseObjects(i = 0, objectsKeys = null)
+    parseObjects(i = 0, objectsIterator = null, countObjects = 0)
     {
-        if(objectsKeys === null)
+        if(objectsIterator === null)
         {
-            let objects             = this.saveGameParser.getObjects();
-                objectsKeys         = Object.keys(objects);
+            objectsIterator     = this.saveGameParser.getObjectsIterator();
+            countObjects        = this.saveGameParser.getObjectsCount();
 
-                // Performance warning!!!
-                if(objectsKeys.length > 500000)  { this.mapModelsQuality   = 'medium'; }
-                if(objectsKeys.length > 750000)  { this.showPatterns       = false; }
-                if(objectsKeys.length > 1000000) { this.mapModelsQuality   = 'low'; }
+            // Performance warning!!!
+            if(countObjects > 500000)  { this.mapModelsQuality   = 'medium'; }
+            if(countObjects > 750000)  { this.showPatterns       = false; }
+            if(countObjects > 1000000) { this.mapModelsQuality   = 'low'; }
         }
 
-        let countObjects            = objectsKeys.length;
         let parseObjectsProgress    = Math.round(i / countObjects * 100);
         let promises                = [];
 
-        for(i; i < countObjects; i++)
+        for(const currentObject of objectsIterator)
         {
-            let currentObject = this.saveGameParser.getTargetObject(objectsKeys[i]);
-                if(currentObject === null)
-                {
-                    continue;
-                }
+            i++;
 
             // Add menu to nodes and collectables...
             if([
@@ -836,11 +831,10 @@ export default class BaseLayout
             }
 
             // Fix some save/games bugs and/or old object conversion
-            currentObject = SaveParser_FicsIt.callADA(this, currentObject);
-                if(currentObject === null)
-                {
-                    continue;
-                }
+            if(SaveParser_FicsIt.callADA(this, currentObject) === null)
+            {
+                continue;
+            }
 
             /*
             '/Script/FactoryGame.FGInventoryComponent',
@@ -882,7 +876,7 @@ export default class BaseLayout
                         $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', progress));
 
                         setTimeout(() => {
-                            this.parseObjects((i + 1), objectsKeys);
+                            this.parseObjects((i + 1), objectsIterator, countObjects);
                         }, 5);
                     });
                 }

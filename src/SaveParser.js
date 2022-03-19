@@ -62,7 +62,7 @@ export default class SaveParser
 
         this.callback           = callback;
         this.header             = null;
-        this.objects            = {};
+        this.objects            = new Map();
 
         this.worker             = new Worker(this.workers.SaveParserRead, { type: "module" });
         this.worker.onmessage   = function(e){ this.onWorkerMessage(e.data); }.bind(this);
@@ -114,18 +114,10 @@ export default class SaveParser
 
     fixSave(baseLayout)
     {
-        let objectsKeys     = Object.keys(this.objects);
-        let countObjects    = objectsKeys.length;
-
-            for(let i = 0; i < countObjects; i++)
-            {
-                let currentObject = this.getTargetObject(objectsKeys[i]);
-                    if(currentObject === null)
-                    {
-                        continue;
-                    }
-                    SaveParser_FicsIt.callADA(baseLayout, currentObject);
-            }
+        for(const currentObject of this.getObjectsIterator())
+        {
+            SaveParser_FicsIt.callADA(baseLayout, currentObject);
+        }
 
         return;
     }
@@ -198,9 +190,14 @@ export default class SaveParser
         return this.header;
     }
 
-    getObjects()
+    getObjectsIterator()
     {
-        return this.objects;
+        return this.objects.values();
+    }
+
+    getObjectsCount()
+    {
+        return this.objects.size;
     }
 
     getCollectables()
@@ -212,7 +209,7 @@ export default class SaveParser
     /* SAVE MANIPULATION */
     addObject(currentObject)
     {
-        this.objects[currentObject.pathName] = currentObject;
+        this.objects.set(currentObject.pathName, currentObject);
     }
 
     getTargetObject(pathName)
@@ -223,12 +220,7 @@ export default class SaveParser
             pathName = this.gameStatePathName;
         }
 
-        if(this.objects[pathName] !== undefined)
-        {
-            return this.objects[pathName];
-        }
-
-        return null;
+        return this.objects.get(pathName) ?? null;
     }
 
     deleteObject(pathName)
@@ -240,17 +232,11 @@ export default class SaveParser
                 {
                     for(let i = 0; i < currentObject.children.length; i++)
                     {
-                        if(this.objects[currentObject.children[i].pathName] !== undefined)
-                        {
-                            delete this.objects[currentObject.children[i].pathName];
-                        }
+                        this.objects.delete(currentObject.children[i].pathName)
                     }
                 }
 
-                if(this.objects[pathName] !== undefined)
-                {
-                    delete this.objects[pathName];
-                }
+                this.objects.delete(pathName);
             }
     }
 }
