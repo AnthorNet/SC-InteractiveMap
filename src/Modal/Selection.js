@@ -867,14 +867,14 @@ export default class Modal_Selection
         {
             let selection       = baseLayout.satisfactoryMap.leafletMap.selection._areaSelected;
             let inputOptions    = [];
-                for(let i in baseLayout.buildingsData)
+                for(const buildingData of baseLayout.buildingsData.values())
                 {
-                    if(baseLayout.buildingsData[i].category === 'foundation')
+                    if(buildingData.category === 'foundation')
                     {
                         inputOptions.push({
-                            dataContent : '<img src="' + baseLayout.buildingsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + baseLayout.buildingsData[i].name,
-                            value       : baseLayout.buildingsData[i].className,
-                            text        : baseLayout.buildingsData[i].name
+                            dataContent : '<img src="' + buildingData.image + '" style="width: 24px;" class="mr-1" /> ' + buildingData.name,
+                            value       : buildingData.className,
+                            text        : buildingData.name
                         });
                     }
                 }

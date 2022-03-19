@@ -541,9 +541,10 @@ export default class BaseLayout_Tooltip
                 let connectedContent    = [];
                 let unconnectedContent  = [];
                 let extractorRates      = {impure: 30000, normal: 60000, pure: 120000};
-                    if(this.baseLayout.buildingsData.Build_FrackingExtractor_C !== undefined)
+                const Build_FrackingExtractor_C = this.baseLayout.getBuildingDataFromId('Build_FrackingExtractor_C');
+                    if(Build_FrackingExtractor_C !== undefined)
                     {
-                        extractorRates = this.baseLayout.buildingsData.Build_FrackingExtractor_C.extractionRate;
+                        extractorRates = Build_FrackingExtractor_C.extractionRate;
                     }
 
                     for(let i = 0; i < satellites.length; i++)

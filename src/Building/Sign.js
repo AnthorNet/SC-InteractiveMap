@@ -1290,15 +1290,15 @@ export default class Building_Sign
         let options = [];
 
             // Buildings
-            for(let key in baseLayout.buildingsData)
+            for(const buildingData of baseLayout.buildingsData.values())
             {
-                if(baseLayout.buildingsData[key].iconId !== undefined)
+                if(buildingData.iconId !== undefined)
                 {
                     options.push({
                         group       : 'Buildings',
-                        dataContent : '<img src="' + baseLayout.buildingsData[key].image + '" style="width: 24px;" class="mr-1" /> ' + baseLayout.buildingsData[key].name,
-                        value       : baseLayout.buildingsData[key].iconId,
-                        text        : baseLayout.buildingsData[key].name
+                        dataContent : '<img src="' + buildingData.image + '" style="width: 24px;" class="mr-1" /> ' + buildingData.name,
+                        value       : buildingData.iconId,
+                        text        : buildingData.name
                     });
                 }
             }

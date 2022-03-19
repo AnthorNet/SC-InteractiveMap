@@ -68,15 +68,15 @@ export default class Modal_Buildings
             });
             for(let currentCategory in buildingsList)
             {
-                for(let i in this.baseLayout.buildingsData)
+                for(const buildingData of this.baseLayout.buildingsData.values())
                 {
-                    if(this.baseLayout.buildingsData[i].category === currentCategory && this.baseLayout.buildingsData[i].className !== undefined)
+                    if(buildingData.category === currentCategory && buildingData.className !== undefined)
                     {
-                        buildingsList[currentCategory].buildings[this.baseLayout.buildingsData[i].className] = [];
+                        buildingsList[currentCategory].buildings[buildingData.className] = [];
                     }
-                    if(this.baseLayout.buildingsData[i].className !== undefined && this.baseLayout.buildingsData[i].className === currentCategory)
+                    if(buildingData.className !== undefined && buildingData.className === currentCategory)
                     {
-                        buildingsList[currentCategory].buildings[this.baseLayout.buildingsData[i].className] = [];
+                        buildingsList[currentCategory].buildings[buildingData.className] = [];
                     }
                 }
             }

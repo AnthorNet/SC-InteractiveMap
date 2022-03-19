@@ -433,11 +433,11 @@ export default class Modal_Object_SpawnAround
                                     name        : 'supportId',
                                     inputType   : 'select',
                                     inputOptions: [
-                                        {group: 'Best performance', text: baseLayout.buildingsData.Build_Beam_Painted_C.name + ' (Side)', value: 'Build_Beam_Painted_C|0'},
-                                        {group: 'Best performance', text: baseLayout.buildingsData.Build_Beam_Painted_C.name + ' (Face)', value: 'Build_Beam_Painted_C|90'},
-                                        {group: 'Slow performance (Limited to 64px)', text: baseLayout.buildingsData.Build_StandaloneWidgetSign_Square_Tiny_C.name, value: 'Build_StandaloneWidgetSign_Square_Tiny_C|0'},
-                                        {group: 'Slow performance (Limited to 64px)', text: baseLayout.buildingsData.Build_StandaloneWidgetSign_Square_Small_C.name, value: 'Build_StandaloneWidgetSign_Square_Small_C|0'},
-                                        {group: 'Slow performance (Limited to 64px)', text: baseLayout.buildingsData.Build_StandaloneWidgetSign_Square_C.name, value: 'Build_StandaloneWidgetSign_Square_C|0'}
+                                        {group: 'Best performance', text: baseLayout.buildingsData.get('Build_Beam_Painted_C').name + ' (Side)', value: 'Build_Beam_Painted_C|0'},
+                                        {group: 'Best performance', text: baseLayout.buildingsData.get('Build_Beam_Painted_C').name + ' (Face)', value: 'Build_Beam_Painted_C|90'},
+                                        {group: 'Slow performance (Limited to 64px)', text: baseLayout.buildingsData.get('Build_StandaloneWidgetSign_Square_Tiny_C').name, value: 'Build_StandaloneWidgetSign_Square_Tiny_C|0'},
+                                        {group: 'Slow performance (Limited to 64px)', text: baseLayout.buildingsData.get('Build_StandaloneWidgetSign_Square_Small_C').name, value: 'Build_StandaloneWidgetSign_Square_Small_C|0'},
+                                        {group: 'Slow performance (Limited to 64px)', text: baseLayout.buildingsData.get('Build_StandaloneWidgetSign_Square_C').name, value: 'Build_StandaloneWidgetSign_Square_C|0'}
                                     ],
                                     value       : 'Build_Beam_Painted_C|90'
                                 });

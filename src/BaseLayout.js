@@ -360,7 +360,7 @@ export default class BaseLayout
                 }.bind(this)).then(() => {
                     $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, function(data)
                     {
-                        this.buildingsData          = data.buildingsData;
+                        this.buildingsData          = new Map(Object.entries(data.buildingsData));
                         this.buildingsCategories    = new Map(Object.entries(data.buildingsCategories));
                         this.itemsData              = data.itemsData;
                         this.itemsCategories        = new Map(Object.entries(data.itemsCategories));
@@ -404,22 +404,24 @@ export default class BaseLayout
 
                         for(let building in data.Buildings)
                         {
-                            this.buildingsData[building]            = data.Buildings[building];
-                            this.buildingsData[building].mapLayer   = layerId;
+                            const buildingData = data.Buildings[building];
+                            this.buildingsData.set(building, buildingData);
 
-                            if(this.buildingsData[building].detailedModel !== undefined)
+                            buildingData.mapLayer = layerId;
+
+                            if(buildingData.detailedModel !== undefined)
                             {
-                                if(this.detailedModels[this.buildingsData[building].className] === undefined)
+                                if(this.detailedModels[buildingData.className] === undefined)
                                 {
-                                    this.detailedModels[this.buildingsData[building].className] = JSON.parse(this.buildingsData[building].detailedModel);
+                                    this.detailedModels[buildingData.className] = JSON.parse(buildingData.detailedModel);
                                 }
 
-                                delete this.buildingsData[building].detailedModel;
+                                delete buildingData.detailedModel;
                             }
 
                             // Add radial button
-                            let htmlButton = '<button class="btn btn-warning updatePlayerLayerFilter m-1 p-1" style="display: none;" data-id="' + layerId + '" data-filter="' + this.buildingsData[building].className + '" data-hover="tooltip" title="' + this.buildingsData[building].name + '">\
-                                                  <span class="badge badge-secondary badge-layer"></span><img src="' + this.buildingsData[building].image + '" style="width: 40px;" />\
+                            let htmlButton = '<button class="btn btn-warning updatePlayerLayerFilter m-1 p-1" style="display: none;" data-id="' + layerId + '" data-filter="' + buildingData.className + '" data-hover="tooltip" title="' + buildingData.name + '">\
+                                                  <span class="badge badge-secondary badge-layer"></span><img src="' + buildingData.image + '" style="width: 40px;" />\
                                               </button>';
                             $('#playerModsLayer .updatePlayerLayerState[data-id="' + layerId + '"] .radial div').append(htmlButton);
                         }
@@ -1099,7 +1101,7 @@ export default class BaseLayout
                         mapColor        : '#FFFFFF',
                         mapWeight       : 3
                     };
-                        this.buildingsData[currentObject.className] = newBuildingData;
+                        this.buildingsData.set(currentObject.className, newBuildingData);
 
                     return this.addGenericBuilding(currentObject, newBuildingData, resolve, skipMod);
                 }
@@ -2823,9 +2825,10 @@ export default class BaseLayout
         // Activate detailedModel copy from another building?
         if(this.detailedModels !== null && buildingData.mapUseModel !== undefined && this.detailedModels[currentObject.className] === undefined)
         {
-            if(this.buildingsData[buildingData.mapUseModel] !== undefined && this.detailedModels[this.buildingsData[buildingData.mapUseModel].className] !== undefined)
+            const modelClassName = this.buildingsData.get(buildingData.mapUseModel)?.className;
+            if(modelClassName !== undefined && this.detailedModels[modelClassName] !== undefined)
             {
-                this.detailedModels[currentObject.className] = this.detailedModels[this.buildingsData[buildingData.mapUseModel].className];
+                this.detailedModels[currentObject.className] = this.detailedModels[modelClassName];
             }
         }
 
@@ -5113,12 +5116,7 @@ export default class BaseLayout
 
     getBuildingDataFromId(buildingId)
     {
-        if(this.buildingsData[buildingId] !== undefined)
-        {
-            return this.buildingsData[buildingId];
-        }
-
-        return null;
+        return this.buildingsData.get(buildingId) ?? null;
     }
 
     getBuildingDataFromClassName(className)
@@ -5138,70 +5136,95 @@ export default class BaseLayout
         if(className === '/FlexSplines/Track/Build_Track.Build_Track_C'){ className = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'; }
 
         // Create fake angled railings with new width
-        if(this.buildingsData.Build_SM_RailingRamp_8x4_01_C === undefined && this.buildingsData.Build_Railing_01_C !== undefined)
+        if(!this.buildingsData.has('Build_SM_RailingRamp_8x4_01_C'))
         {
-            this.buildingsData.Build_SM_RailingRamp_8x4_01_C            = cloneDeep(this.buildingsData.Build_Railing_01_C);
-            this.buildingsData.Build_SM_RailingRamp_8x4_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x4_01.Build_SM_RailingRamp_8x4_01_C';
-            this.buildingsData.Build_SM_RailingRamp_8x4_01_C.length     = 8;
+            const baseBuildingData = this.buildingsData.get('Build_Railing_01_C');
+            if (baseBuildingData !== undefined) {
+                this.buildingsData.set("Build_SM_RailingRamp_8x4_01_C", {
+                    ...cloneDeep(baseBuildingData),
+                    className: '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x4_01.Build_SM_RailingRamp_8x4_01_C',
+                    length: 8,
+                });
 
-            this.buildingsData.Build_SM_RailingRamp_8x2_01_C            = cloneDeep(this.buildingsData.Build_Railing_01_C);
-            this.buildingsData.Build_SM_RailingRamp_8x2_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x2_01.Build_SM_RailingRamp_8x2_01_C';
-            this.buildingsData.Build_SM_RailingRamp_8x2_01_C.length     = 8;
+                this.buildingsData.set('Build_SM_RailingRamp_8x2_01_C', {
+                    ...cloneDeep(baseBuildingData),
+                    className: '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x2_01.Build_SM_RailingRamp_8x2_01_C',
+                    length: 8,
+                });
 
-            this.buildingsData.Build_SM_RailingRamp_8x1_01_C            = cloneDeep(this.buildingsData.Build_Railing_01_C);
-            this.buildingsData.Build_SM_RailingRamp_8x1_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x1_01.Build_SM_RailingRamp_8x1_01_C';
-            this.buildingsData.Build_SM_RailingRamp_8x1_01_C.length     = 8;
+                this.buildingsData.set('Build_SM_RailingRamp_8x1_01_C', {
+                    ...cloneDeep(baseBuildingData),
+                    className: '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x1_01.Build_SM_RailingRamp_8x1_01_C',
+                    length: 8,
+                });
+            }
         }
 
         // Add equipment vehicles
-        if(this.buildingsData.Desc_GolfCart_C === undefined && this.toolsData.Desc_GolfCart_C !== undefined)
+        if(!this.buildingsData.has('Desc_GolfCart_C'))
         {
-            this.buildingsData.Desc_GolfCart_C                  = cloneDeep(this.toolsData.Desc_GolfCart_C);
-            this.buildingsData.Desc_GolfCart_C.className        = '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C';
-            this.buildingsData.Desc_GolfCart_C.category         = 'vehicle';
+            const baseBuildingData = this.toolsData.Desc_GolfCart_C;
+            if (baseBuildingData !== undefined) {
+                this.buildingsData.set('Desc_GolfCart_C', {
+                    ...cloneDeep(baseBuildingData),
+                    className: '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C',
+                    category: 'vehicle',
+                });
+            }
         }
-        if(this.buildingsData.Desc_GolfcartGold_C === undefined && this.toolsData.Desc_GolfCartGold_C !== undefined)
+        if(!this.buildingsData.has('Desc_GolfcartGold_C'))
         {
-            this.buildingsData.Desc_GolfcartGold_C              = cloneDeep(this.toolsData.Desc_GolfCartGold_C);
-            this.buildingsData.Desc_GolfcartGold_C.className    = '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C';
-            this.buildingsData.Desc_GolfcartGold_C.category     = 'vehicle';
+            const baseBuildingData = this.toolsData.Desc_GolfCartGold_C;
+            if (baseBuildingData !== undefined) {
+                this.buildingsData.set('Desc_GolfcartGold_C', {
+                    ...cloneDeep(baseBuildingData),
+                    className: '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C',
+                    category: 'vehicle',
+                });
+            }
         }
 
         // Add projectiles
-        if(this.buildingsData.BP_FireWorksProjectile_01_C === undefined)
+        if(!this.buildingsData.has('BP_FireWorksProjectile_01_C'))
         {
             if(this.itemsData.Desc_Fireworks_Projectile_01_C !== undefined)
             {
-                this.buildingsData.BP_FireWorksProjectile_01_C                  = cloneDeep(this.itemsData.Desc_Fireworks_Projectile_01_C);
-                this.buildingsData.BP_FireWorksProjectile_01_C.className        = '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_01.BP_FireWorksProjectile_01_C';
-                this.buildingsData.BP_FireWorksProjectile_01_C.mapUseSlotColor  = false;
-                this.buildingsData.BP_FireWorksProjectile_01_C.mapLayer         = 'playerFicsmasLayer';
-                this.buildingsData.BP_FireWorksProjectile_01_C.mapColor         = '#00FF00';
-                this.buildingsData.BP_FireWorksProjectile_01_C.width            = 0.25;
-                this.buildingsData.BP_FireWorksProjectile_01_C.length           = 0.25;
-                this.buildingsData.BP_FireWorksProjectile_01_C.height           = 2;
+                this.buildingsData.set('BP_FireWorksProjectile_01_C', {
+                    ...cloneDeep(this.itemsData.Desc_Fireworks_Projectile_01_C),
+                    className           : '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_01.BP_FireWorksProjectile_01_C',
+                    mapUseSlotColor     : false,
+                    mapLayer            : 'playerFicsmasLayer',
+                    mapColor            : '#00FF00',
+                    width               : 0.25,
+                    length              : 0.25,
+                    height              : 2,
+                });
             }
             if(this.itemsData.Desc_Fireworks_Projectile_02_C !== undefined)
             {
-                this.buildingsData.BP_FireWorksProjectile_02_C                  = cloneDeep(this.itemsData.Desc_Fireworks_Projectile_02_C);
-                this.buildingsData.BP_FireWorksProjectile_02_C.className        = '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_02.BP_FireWorksProjectile_02_C';
-                this.buildingsData.BP_FireWorksProjectile_02_C.mapUseSlotColor  = false;
-                this.buildingsData.BP_FireWorksProjectile_02_C.mapLayer         = 'playerFicsmasLayer';
-                this.buildingsData.BP_FireWorksProjectile_02_C.mapColor         = '#00FF00';
-                this.buildingsData.BP_FireWorksProjectile_02_C.width            = 0.25;
-                this.buildingsData.BP_FireWorksProjectile_02_C.length           = 0.25;
-                this.buildingsData.BP_FireWorksProjectile_02_C.height           = 2;
+                this.buildingsData.set('BP_FireWorksProjectile_02_C', {
+                    ...cloneDeep(this.itemsData.Desc_Fireworks_Projectile_02_C),
+                    className           : '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_02.BP_FireWorksProjectile_02_C',
+                    mapUseSlotColor     : false,
+                    mapLayer            : 'playerFicsmasLayer',
+                    mapColor            : '#00FF00',
+                    width               : 0.25,
+                    length              : 0.25,
+                    height              : 2,
+                });
             }
             if(this.itemsData.Desc_Fireworks_Projectile_03_C !== undefined)
             {
-                this.buildingsData.BP_FireWorksProjectile_03_C                  = cloneDeep(this.itemsData.Desc_Fireworks_Projectile_03_C);
-                this.buildingsData.BP_FireWorksProjectile_03_C.className        = '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireworksProjectile_03.BP_FireworksProjectile_03_C';
-                this.buildingsData.BP_FireWorksProjectile_03_C.mapUseSlotColor  = false;
-                this.buildingsData.BP_FireWorksProjectile_03_C.mapLayer         = 'playerFicsmasLayer';
-                this.buildingsData.BP_FireWorksProjectile_03_C.mapColor         = '#00FF00';
-                this.buildingsData.BP_FireWorksProjectile_03_C.width            = 0.25;
-                this.buildingsData.BP_FireWorksProjectile_03_C.length           = 0.25;
-                this.buildingsData.BP_FireWorksProjectile_03_C.height           = 2;
+                this.buildingsData.set('BP_FireWorksProjectile_03_C', {
+                    ...cloneDeep(this.itemsData.Desc_Fireworks_Projectile_03_C),
+                    className           : '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireworksProjectile_03.BP_FireworksProjectile_03_C',
+                    mapUseSlotColor     : false,
+                    mapLayer            : 'playerFicsmasLayer',
+                    mapColor            : '#00FF00',
+                    width               : 0.25,
+                    length              : 0.25,
+                    height              : 2,
+                });
             }
         }
 
@@ -5209,18 +5232,18 @@ export default class BaseLayout
         if(className === '/Game/InfiniteLogistics/Buildable/InfinitePipeHyper/Build_InfinitePipeHyper.Build_InfinitePipeHyper_C'){ className = '/Game/FactoryGame/Buildable/Factory/PipeHyper/Build_PipeHyper.Build_PipeHyper_C'; }
         if(className === '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C'){ className = '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C'; }
 
-        const buildingData = this.buildingDataClassNameHashTable.get(className);
-        if(buildingData !== undefined)
+        const buildingId = this.buildingDataClassNameHashTable.get(className);
+        if(buildingId !== undefined)
         {
-            return this.buildingsData[buildingData];
+            return this.getBuildingDataFromId(buildingId);
         }
 
-        for(let i in this.buildingsData)
+        for(const [buildingId, buildingData] of this.buildingsData)
         {
-            if(this.buildingsData[i].className !== undefined && this.buildingsData[i].className === className)
+            if(buildingData.className !== undefined && buildingData.className === className)
             {
-                this.buildingDataClassNameHashTable.set(className, i);
-                return this.buildingsData[i];
+                this.buildingDataClassNameHashTable.set(className, buildingId);
+                return buildingData;
             }
         }
 
@@ -5276,11 +5299,11 @@ export default class BaseLayout
                 return this.toolsData[i].image;
             }
         }
-        for(let i in this.buildingsData)
+        for(const buildingData of this.buildingsData.values())
         {
-            if(this.buildingsData[i].iconId !== undefined && this.buildingsData[i].iconId === iconId)
+            if(buildingData.iconId !== undefined && buildingData.iconId === iconId)
             {
-                return this.buildingsData[i].image;
+                return buildingData.image;
             }
         }
 

@@ -14,9 +14,10 @@ export default class Spawn_Image
         let supportType             = options.supportId.split('|')
             this.supportId          = supportType[0];
             this.supportRotation    = parseInt(supportType[1]);
-            this.supportClassName   = this.baseLayout.buildingsData[this.supportId].className;
-            this.supportSize        = this.baseLayout.buildingsData[this.supportId].width * 100;
-            this.layerId            = this.baseLayout.buildingsData[this.supportId].mapLayer;
+        const supportBuildingData = this.baseLayout.buildingsData.get(this.supportId);
+            this.supportClassName   = supportBuildingData.className;
+            this.supportSize        = supportBuildingData.width * 100;
+            this.layerId            = supportBuildingData.mapLayer;
 
         this.maxPixelSize           = 64;
         this.useOwnMaterials        = options.useOwnMaterials;
