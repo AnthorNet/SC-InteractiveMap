@@ -61,7 +61,7 @@ export default class BaseLayout
 
         this.saveGamePipeNetworks               = new Map();
 
-        this.saveGameRailVehicles               = [];
+        this.saveGameRailVehicles               = new Map();
         this.frackingSmasherCores               = {};
 
         this.gameMode                           = [];
@@ -2745,7 +2745,7 @@ export default class BaseLayout
 
             if(layerId === 'playerTrainsLayer')
             {
-                this.saveGameRailVehicles.push(currentObject);
+                this.saveGameRailVehicles.set(currentObject.pathName, currentObject);
             }
         }
 
@@ -3181,13 +3181,7 @@ export default class BaseLayout
                     }
             }
 
-            for(let n = (baseLayout.saveGameRailVehicles.length - 1); n >= 0; n--)
-            {
-                if(baseLayout.saveGameRailVehicles[n].pathName === currentObject.pathName)
-                {
-                    baseLayout.saveGameRailVehicles.splice(n, 1);
-                }
-            }
+            baseLayout.saveGameRailVehicles.delete(currentObject.pathName);
         }
 
         // Delete trains on tracks!
@@ -3197,16 +3191,16 @@ export default class BaseLayout
             || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C'
         )
         {
-            for(let n = (baseLayout.saveGameRailVehicles.length - 1); n >= 0; n--)
+            for(const railVehicle of baseLayout.saveGameRailVehicles)
             {
-                let mTrackPosition = baseLayout.getObjectProperty(baseLayout.saveGameRailVehicles[n], 'mTrackPosition');
+                let mTrackPosition = baseLayout.getObjectProperty(railVehicle, 'mTrackPosition');
                     if(mTrackPosition !== null)
                     {
                         if(mTrackPosition.pathName === currentObject.pathName)
                         {
-                            baseLayout.saveGameParser.deleteObject(baseLayout.saveGameRailVehicles[n].pathName);
-                            baseLayout.deleteMarkerFromElements('playerTrainsLayer', baseLayout.getMarkerFromPathName(baseLayout.saveGameRailVehicles[n].pathName, 'playerTrainsLayer'), fast);
-                            baseLayout.saveGameRailVehicles.splice(n, 1);
+                            baseLayout.saveGameParser.deleteObject(railVehicle.pathName);
+                            baseLayout.deleteMarkerFromElements('playerTrainsLayer', baseLayout.getMarkerFromPathName(railVehicle.pathName, 'playerTrainsLayer'), fast);
+                            baseLayout.saveGameRailVehicles.delete(railVehicle);
                         }
                     }
             }
