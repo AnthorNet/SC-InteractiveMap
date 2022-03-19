@@ -269,9 +269,11 @@ export default class BaseLayout_Tooltip
                     }
                 }
 
-                if(pipeNetworkId !== null && this.baseLayout.saveGamePipeNetworks[pipeNetworkId] !== undefined)
+                if(pipeNetworkId !== null)
                 {
-                    let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGamePipeNetworks[pipeNetworkId]);
+                    const pipeNetwork = this.baseLayout.saveGamePipeNetworks.get(pipeNetworkId);
+                    if (pipeNetwork !== undefined) {
+                        let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(pipeNetwork);
                         if(currentPipeNetwork !== null)
                         {
                             for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
@@ -282,6 +284,7 @@ export default class BaseLayout_Tooltip
                                 }
                             }
                         }
+                    }
                 }
 
             if(itemType !== null)
@@ -983,9 +986,11 @@ export default class BaseLayout_Tooltip
                 }
             }
 
-            if(pipeNetworkId !== null && this.baseLayout.saveGamePipeNetworks[pipeNetworkId] !== undefined)
+            if(pipeNetworkId !== null)
             {
-                let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGamePipeNetworks[pipeNetworkId]);
+                const pipeNetwork = this.baseLayout.saveGamePipeNetworks.get(pipeNetworkId);
+                if (pipeNetwork !== undefined) {
+                    let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(pipeNetwork);
                     if(currentPipeNetwork !== null)
                     {
                         for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
@@ -996,6 +1001,7 @@ export default class BaseLayout_Tooltip
                             }
                         }
                     }
+                }
             }
 
         if(itemType !== null)

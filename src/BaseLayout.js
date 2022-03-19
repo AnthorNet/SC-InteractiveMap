@@ -59,7 +59,7 @@ export default class BaseLayout
         this.satisfactoryMap                    = options.satisfactoryMap;
         this.saveGameParser                     = options.saveGameParser;
 
-        this.saveGamePipeNetworks               = {};
+        this.saveGamePipeNetworks               = new Map();
 
         this.saveGameRailVehicles               = [];
         this.frackingSmasherCores               = {};
@@ -690,7 +690,7 @@ export default class BaseLayout
                 let mPipeNetworkID = this.getObjectProperty(currentObject, 'mPipeNetworkID');
                     if(mPipeNetworkID !== null)
                     {
-                        this.saveGamePipeNetworks[mPipeNetworkID] = currentObject.pathName;
+                        this.saveGamePipeNetworks.set(mPipeNetworkID, currentObject.pathName);
                     }
                     else
                     {
@@ -708,7 +708,7 @@ export default class BaseLayout
                                                 mPipeNetworkID              = this.getObjectProperty(currentInterfaceChildren, 'mPipeNetworkID');
                                                 if(mPipeNetworkID !== null)
                                                 {
-                                                    this.saveGamePipeNetworks[mPipeNetworkID] = currentObject.pathName;
+                                                    this.saveGamePipeNetworks.set(mPipeNetworkID, currentObject.pathName);
                                                     break mFluidIntegrantScriptInterfacesLoop;
                                                 }
                                         }
@@ -2367,9 +2367,13 @@ export default class BaseLayout
                     if(currentChildren !== null)
                     {
                         let mPipeNetworkID = this.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                            if(mPipeNetworkID !== null && this.saveGamePipeNetworks[mPipeNetworkID] !== undefined)
+                            if(mPipeNetworkID !== null)
                             {
-                                return this.saveGameParser.getTargetObject(this.saveGamePipeNetworks[mPipeNetworkID]);
+                                const pipeNetwork = this.saveGamePipeNetworks.get(mPipeNetworkID)
+                                if (pipeNetwork !== undefined)
+                                {
+                                    return this.saveGameParser.getTargetObject(pipeNetwork);
+                                }
                             }
                     }
             }

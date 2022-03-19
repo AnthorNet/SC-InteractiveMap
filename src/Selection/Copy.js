@@ -293,41 +293,44 @@ export default class Selection_Copy
                                         else // mPipeNetworkID
                                         {
                                             let pipeNetworkId = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                                                if(pipeNetworkId !== null && this.baseLayout.saveGamePipeNetworks[pipeNetworkId] !== undefined)
+                                                if(pipeNetworkId !== null)
                                                 {
-                                                    let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGamePipeNetworks[pipeNetworkId]);
-                                                        if(this.clipboard.pipes[pipeNetworkId] === undefined)
-                                                        {
-                                                             this.clipboard.pipes[pipeNetworkId] = {
-                                                                 fluid      : this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor'),
-                                                                 interface  : []
-                                                             };
-                                                        }
-
-                                                    // Check if that pathName is in the current pipe network
-                                                    if(currentPipeNetwork !== null)
-                                                    {
-                                                        let mFluidIntegrantScriptInterfaces = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidIntegrantScriptInterfaces');
-                                                            if(mFluidIntegrantScriptInterfaces !== null)
+                                                    const pipeNetwork = this.baseLayout.saveGamePipeNetworks.get(pipeNetworkId);
+                                                    if (pipeNetwork !== undefined) {
+                                                        let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(pipeNetwork);
+                                                            if(this.clipboard.pipes[pipeNetworkId] === undefined)
                                                             {
-                                                                for(let o = 0; o < mFluidIntegrantScriptInterfaces.values.length; o++)
+                                                                this.clipboard.pipes[pipeNetworkId] = {
+                                                                    fluid      : this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor'),
+                                                                    interface  : []
+                                                                };
+                                                            }
+
+                                                        // Check if that pathName is in the current pipe network
+                                                        if(currentPipeNetwork !== null)
+                                                        {
+                                                            let mFluidIntegrantScriptInterfaces = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidIntegrantScriptInterfaces');
+                                                                if(mFluidIntegrantScriptInterfaces !== null)
                                                                 {
-                                                                    if(mFluidIntegrantScriptInterfaces.values[o].pathName === currentChildren.pathName && this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.pathName) === false)
+                                                                    for(let o = 0; o < mFluidIntegrantScriptInterfaces.values.length; o++)
                                                                     {
-                                                                        this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.pathName);
-                                                                    }
+                                                                        if(mFluidIntegrantScriptInterfaces.values[o].pathName === currentChildren.pathName && this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.pathName) === false)
+                                                                        {
+                                                                            this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.pathName);
+                                                                        }
 
-                                                                    if(mFluidIntegrantScriptInterfaces.values[o].pathName === currentChildren.outerPathName && this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.outerPathName) === false)
-                                                                    {
-                                                                        this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.outerPathName);
-                                                                    }
+                                                                        if(mFluidIntegrantScriptInterfaces.values[o].pathName === currentChildren.outerPathName && this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.outerPathName) === false)
+                                                                        {
+                                                                            this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.outerPathName);
+                                                                        }
 
-                                                                    if(mFluidIntegrantScriptInterfaces.values[o].pathName === mConnectedComponent.pathName && this.clipboard.pipes[pipeNetworkId].interface.includes(mConnectedComponent.pathName) === false)
-                                                                    {
-                                                                        this.clipboard.pipes[pipeNetworkId].interface.push(mConnectedComponent.pathName);
+                                                                        if(mFluidIntegrantScriptInterfaces.values[o].pathName === mConnectedComponent.pathName && this.clipboard.pipes[pipeNetworkId].interface.includes(mConnectedComponent.pathName) === false)
+                                                                        {
+                                                                            this.clipboard.pipes[pipeNetworkId].interface.push(mConnectedComponent.pathName);
+                                                                        }
                                                                     }
                                                                 }
-                                                            }
+                                                        }
                                                     }
                                                 }
                                         }
