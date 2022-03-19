@@ -83,7 +83,7 @@ export default class BaseLayout
         this.itemsData                          = null;
         this.itemsCategories                    = new Map();
         this.toolsData                          = null;
-        this.toolsCategories                    = {};
+        this.toolsCategories                    = new Map();
         this.faunaData                          = null;
         this.faunaCategories                    = {};
         this.recipesData                        = null;
@@ -365,7 +365,7 @@ export default class BaseLayout
                         this.itemsData              = data.itemsData;
                         this.itemsCategories        = new Map(Object.entries(data.itemsCategories));
                         this.toolsData              = data.toolsData;
-                        this.toolsCategories        = data.toolsCategories;
+                        this.toolsCategories        = new Map(Object.entries(data.toolsCategories));
                         this.faunaData              = data.faunaData;
                         this.faunaCategories        = data.faunaCategories;
 
@@ -2437,7 +2437,7 @@ export default class BaseLayout
                     if(this.toolsData[i].className !== undefined && this.toolsData[i].className !== null)
                     {
                         toolsOptions.push({
-                            group       : 'Tools - ' + ((this.toolsData[i].category === 'ficsmas') ? itemsCategories.get(this.toolsData[i].category) : this.toolsCategories[this.toolsData[i].category]),
+                            group       : 'Tools - ' + ((this.toolsData[i].category === 'ficsmas') ? itemsCategories.get(this.toolsData[i].category) : this.toolsCategories.get(this.toolsData[i].category)),
                             dataContent : '<img src="' + this.toolsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.toolsData[i].name,
                             value       : this.toolsData[i].className,
                             text        : this.toolsData[i].name
