@@ -1,7 +1,7 @@
 /* global L, Intl */
 import BaseLayout_Modal                         from './BaseLayout/Modal.js';
 
-export default class Map
+export default class GameMap
 {
     constructor(options)
     {
