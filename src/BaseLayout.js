@@ -81,7 +81,7 @@ export default class BaseLayout
         this.buildingsData                      = null;
         this.buildingsCategories                = new Map();
         this.itemsData                          = null;
-        this.itemsCategories                    = {};
+        this.itemsCategories                    = new Map();
         this.toolsData                          = null;
         this.toolsCategories                    = {};
         this.faunaData                          = null;
@@ -363,7 +363,7 @@ export default class BaseLayout
                         this.buildingsData          = data.buildingsData;
                         this.buildingsCategories    = new Map(Object.entries(data.buildingsCategories));
                         this.itemsData              = data.itemsData;
-                        this.itemsCategories        = data.itemsCategories;
+                        this.itemsCategories        = new Map(Object.entries(data.itemsCategories));
                         this.toolsData              = data.toolsData;
                         this.toolsCategories        = data.toolsCategories;
                         this.faunaData              = data.faunaData;
@@ -2391,23 +2391,23 @@ export default class BaseLayout
         let selectOptions           = [];
         let isFluidInventory        = true;
         let itemsCategories         = cloneDeep(this.itemsCategories);
-            itemsCategories.statue  = 'Statues';
-            itemsCategories.ficsmas = 'FICS*MAS Holiday Event';
-            itemsCategories.mods    = 'Modded items';
+            itemsCategories.set("statue", 'Statues');
+            itemsCategories.set("ficsmas", 'FICS*MAS Holiday Event');
+            itemsCategories.set("mods", 'Modded items');
 
         if(currentObject !== null)
         {
             if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'].includes(currentObject.className) === false)
             {
                 isFluidInventory = false;
-                delete itemsCategories.liquid;
-                delete itemsCategories.gas;
+                itemsCategories.delete('liquid');
+                itemsCategories.delete('gas');
             }
         }
 
-        for(let category in itemsCategories)
+        for(const [categoryKey, categoryValue] of itemsCategories)
         {
-            if(isFluidInventory === true && category !== 'liquid' && category !== 'gas')
+            if(isFluidInventory === true && categoryKey !== 'liquid' && categoryKey !== 'gas')
             {
                 continue;
             }
@@ -2415,10 +2415,10 @@ export default class BaseLayout
             let categoryOptions = [];
                 for(let i in this.itemsData)
                 {
-                    if(this.itemsData[i].className !== undefined && this.itemsData[i].className !== null && this.itemsData[i].category === category)
+                    if(this.itemsData[i].className !== undefined && this.itemsData[i].className !== null && this.itemsData[i].category === categoryKey)
                     {
                         categoryOptions.push({
-                            group       : itemsCategories[category],
+                            group       : categoryValue,
                             dataContent : '<img src="' + this.itemsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.itemsData[i].name,
                             value       : this.itemsData[i].className,
                             text        : this.itemsData[i].name
@@ -2437,7 +2437,7 @@ export default class BaseLayout
                     if(this.toolsData[i].className !== undefined && this.toolsData[i].className !== null)
                     {
                         toolsOptions.push({
-                            group       : 'Tools - ' + ((this.toolsData[i].category === 'ficsmas') ? itemsCategories[this.toolsData[i].category] : this.toolsCategories[this.toolsData[i].category]),
+                            group       : 'Tools - ' + ((this.toolsData[i].category === 'ficsmas') ? itemsCategories.get(this.toolsData[i].category) : this.toolsCategories[this.toolsData[i].category]),
                             dataContent : '<img src="' + this.toolsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.toolsData[i].name,
                             value       : this.toolsData[i].className,
                             text        : this.toolsData[i].name
