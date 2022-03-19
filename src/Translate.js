@@ -9,7 +9,7 @@ export default class Translate
         this.dataUrl                    = options.dataUrl;
 
         this.language                   = options.language;
-        this.translations               = {};
+        this.translations               = null;
 
         this.loadInitialData();
     }
@@ -19,7 +19,7 @@ export default class Translate
         $.getJSON(this.dataUrl, function(data){
             if(data !== undefined)
             {
-                this.translations = data;
+                this.translations = new Map(Object.entries(data));
             }
         }.bind(this)).done(() => {
             if(this.startCallback !== null)
@@ -31,10 +31,7 @@ export default class Translate
 
     _(value, replace)
     {
-        if(this.translations[value] !== undefined)
-        {
-            value = this.translations[value];
-        }
+        value = this.translations?.get(value) ?? value;
 
         if(replace !== undefined)
         {
