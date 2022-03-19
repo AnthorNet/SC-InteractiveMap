@@ -322,11 +322,11 @@ export default class SaveParser_Read
             let countChild  = this.readInt();
                 if(countChild > 0)
                 {
-                    objectValue.children = [];
+                    objectValue.children = new Set();
 
                     for(let i = 0; i < countChild; i++)
                     {
-                        objectValue.children.push(this.readObjectProperty({}));
+                        objectValue.children.add(this.readObjectProperty({}));
                     }
                 }
         }

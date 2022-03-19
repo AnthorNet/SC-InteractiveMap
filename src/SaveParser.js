@@ -228,11 +228,11 @@ export default class SaveParser
         let currentObject = this.getTargetObject(pathName);
             if(currentObject !== null)
             {
-                if(currentObject.children !== undefined && currentObject.children.length > 0)
+                if(currentObject.children !== undefined && currentObject.children.size > 0)
                 {
-                    for(let i = 0; i < currentObject.children.length; i++)
+                    for(const child of currentObject.children)
                     {
-                        this.objects.delete(currentObject.children[i].pathName)
+                        this.objects.delete(child.pathName);
                     }
                 }
 

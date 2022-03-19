@@ -8,9 +8,9 @@ export default class Building_RailroadTrack
         if(currentObject.children !== undefined)
         {
             let connectedComponents     = [];
-                for(let i = 0; i < currentObject.children.length; i++)
+                for(const child of currentObject.children)
                 {
-                    let trackConnection1 = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                    let trackConnection1 = baseLayout.saveGameParser.getTargetObject(child.pathName);
                         if(trackConnection1 !== null)
                         {
                             let mConnectedComponents    = baseLayout.getObjectProperty(trackConnection1, 'mConnectedComponents');

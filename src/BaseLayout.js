@@ -700,9 +700,9 @@ export default class BaseLayout
                                 let currentInterface = this.saveGameParser.getTargetObject(mFluidIntegrantScriptInterfaces.values[j].pathName);
                                     if(currentInterface !== null && currentInterface.children !== undefined)
                                     {
-                                        for(let k = 0; k < currentInterface.children.length; k++)
+                                        for(const child of currentInterface.children)
                                         {
-                                            let currentInterfaceChildren    = this.saveGameParser.getTargetObject(currentInterface.children[k].pathName);
+                                            let currentInterfaceChildren    = this.saveGameParser.getTargetObject(child.pathName);
                                                 mPipeNetworkID              = this.getObjectProperty(currentInterfaceChildren, 'mPipeNetworkID');
                                                 if(mPipeNetworkID !== null)
                                                 {
@@ -1790,7 +1790,7 @@ export default class BaseLayout
                     playerPosition[2] + Math.floor(Math.random() * (400 + 1))
                 ]
             },
-            children                : [{pathName: cratePathName + ".inventory"}],
+            children                : new Set([{pathName: cratePathName + ".inventory"}]),
             properties              : [{
                 name                    : "mInventory",
                 type                    : "ObjectProperty",
@@ -1805,7 +1805,7 @@ export default class BaseLayout
             className               : "/Script/FactoryGame.FGInventoryComponent",
             pathName                : cratePathName + ".inventory",
             outerPathName           : cratePathName,
-            children                : [],
+            children                : new Set(),
             properties              : [
                 {
                     name                : "mInventoryStacks",
@@ -1934,9 +1934,9 @@ export default class BaseLayout
 
             if(properties.object.children !== undefined)
             {
-                for(let j = 0; j < properties.object.children.length; j++)
+                for(const child of properties.object.children)
                 {
-                    let currentObjectChildren = this.saveGameParser.getTargetObject(properties.object.children[j].pathName);
+                    let currentObjectChildren = this.saveGameParser.getTargetObject(child.pathName);
 
                     // Grab wires for redraw...
                     for(let k = 0; k < this.availablePowerConnection.length; k++)
@@ -2359,9 +2359,9 @@ export default class BaseLayout
     {
         if(currentObject.children !== undefined)
         {
-            for(let i = 0; i < currentObject.children.length; i++)
+            for(const child of currentObject.children)
             {
-                let currentChildren = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                let currentChildren = this.saveGameParser.getTargetObject(child.pathName);
                     if(currentChildren !== null)
                     {
                         let mPipeNetworkID = this.getObjectProperty(currentChildren, 'mPipeNetworkID');
@@ -2975,10 +2975,9 @@ export default class BaseLayout
         // Check all known power connection in children and delete wires when needed!
         if(currentObject.children !== undefined)
         {
-            for(let i = 0; i < currentObject.children.length; i++)
+            for(const child of currentObject.children)
             {
-                let childrenPathName    = currentObject.children[i].pathName;
-                let childrenType        = '.' + childrenPathName.split('.').pop();
+                let childrenType        = '.' + child.pathName.split('.').pop();
 
                 if(baseLayout.availablePowerConnection.indexOf(childrenType) !== -1)
                 {
@@ -3417,9 +3416,9 @@ export default class BaseLayout
     {
         if(currentObject.children !== undefined)
         {
-            for(let i = 0; i < currentObject.children.length; i++)
+            for(const child of currentObject.children)
             {
-                let connectedComponent = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                let connectedComponent = this.saveGameParser.getTargetObject(child);
                     if(connectedComponent !== null)
                     {
                         // Belt/Pipe/Hyperpipe connection
@@ -5318,25 +5317,24 @@ export default class BaseLayout
 
         if(currentObject !== null && currentObject.children !== undefined)
         {
-            for(let i = 0; i < currentObject.children.length; i++)
+            for(const child of currentObject.children)
             {
-                let currentChildren = currentObject.children[i];
-                    for(let k = 0; k < this.availablePowerConnection.length; k++)
+                for(let k = 0; k < this.availablePowerConnection.length; k++)
+                {
+                    if(child.pathName.endsWith(this.availablePowerConnection[k]))
                     {
-                        if(currentChildren.pathName.endsWith(this.availablePowerConnection[k]))
-                        {
-                            currentChildren = this.saveGameParser.getTargetObject(currentChildren.pathName);
+                        const childObject = this.saveGameParser.getTargetObject(child.pathName);
 
-                            if(currentChildren !== null)
-                            {
-                                let mWires = this.getObjectProperty(currentChildren, 'mWires');
-                                    if(mWires !== null)
-                                    {
-                                        return true;
-                                    }
-                            }
+                        if(childObject !== null)
+                        {
+                            let mWires = this.getObjectProperty(childObject, 'mWires');
+                                if(mWires !== null)
+                                {
+                                    return true;
+                                }
                         }
                     }
+                }
             }
         }
 

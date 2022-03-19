@@ -354,12 +354,11 @@ export default class SaveParser_Write
 
             if(currentObject.children !== undefined)
             {
-                let countChild  = currentObject.children.length;
-                    entity += this.writeInt(countChild);
-                    for(let i = 0; i < countChild; i++)
-                    {
-                        entity += this.writeObjectProperty(currentObject.children[i]);
-                    }
+                entity += this.writeInt(currentObject.children.size);
+                for(const child of currentObject.children)
+                {
+                    entity += this.writeObjectProperty(child);
+                }
             }
             else
             {

@@ -25,7 +25,7 @@ export default class Building_TrainStation
 
                 platforms = newPlatforms;
             }
-            
+
         return trainStations;
     }
 
@@ -34,9 +34,9 @@ export default class Building_TrainStation
         let platforms = [];
             if(currentObject.children !== undefined)
             {
-                for(let i = 0; i < currentObject.children.length; i++)
+                for(const child of currentObject.children)
                 {
-                    let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                    let currentChildren = baseLayout.saveGameParser.getTargetObject(child.pathName);
                         if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGTrainPlatformConnection')
                         {
                             let mConnectedTo = baseLayout.getObjectProperty(currentChildren, 'mConnectedTo');

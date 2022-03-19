@@ -139,9 +139,9 @@ export default class Selection_Offset
 
                         if(currentObject.children !== undefined)
                         {
-                            for(let j = 0; j < currentObject.children.length; j++)
+                            for(const child of currentObject.children)
                             {
-                                let currentObjectChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName);
+                                let currentObjectChildren = this.baseLayout.saveGameParser.getTargetObject(child.pathName);
                                     if(currentObjectChildren !== null)
                                     {
                                         // Grab wires for redraw...

@@ -252,9 +252,9 @@ export default class BaseLayout_Tooltip
 
                 if(currentObject.children !== undefined)
                 {
-                    for(let i = 0; i < currentObject.children.length; i++)
+                    for(const child of currentObject.children)
                     {
-                        let currentChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                        let currentChildren = this.baseLayout.saveGameParser.getTargetObject(child.pathName);
                             if(currentChildren !== null)
                             {
                                 let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
@@ -966,9 +966,9 @@ export default class BaseLayout_Tooltip
 
             if(currentObject.children !== undefined)
             {
-                for(let i = 0; i < currentObject.children.length; i++)
+                for(const child of currentObject.children)
                 {
-                    let currentChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                    let currentChildren = this.baseLayout.saveGameParser.getTargetObject(child.pathName);
                         if(currentChildren !== null)
                         {
                             let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');

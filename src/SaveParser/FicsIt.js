@@ -53,16 +53,16 @@ export default class SaveParser_FicsIt
     {
         if(currentObject.children !== undefined)
         {
-            for(let j = (currentObject.children.length - 1); j >= 0; j--)
+            for(const child of currentObject.children)
             {
-                let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName);
+                let currentChildren = baseLayout.saveGameParser.getTargetObject(child.pathName);
                     if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGPowerConnectionComponent')
                     {
                         if(currentChildren.properties.length === 0)
                         {
                             console.log('Removing ghost "' + currentChildren.className + '"', currentChildren.pathName);
                             baseLayout.saveGameParser.deleteObject(currentChildren.pathName);
-                            currentObject.children.splice(j, 1);
+                            currentObject.children.delete(child);
                         }
                     }
             }
