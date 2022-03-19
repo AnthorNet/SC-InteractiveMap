@@ -30,7 +30,7 @@ export default class Modal_Object_SpawnAround
 
             for(let faunaId in baseLayout.faunaData)
             {
-                inputOptions.push({group: 'Fauna - ' + baseLayout.faunaCategories[baseLayout.faunaData[faunaId].category], text: baseLayout.faunaData[faunaId].name, value: baseLayout.faunaData[faunaId].className});
+                inputOptions.push({group: 'Fauna - ' + baseLayout.faunaCategories.get(baseLayout.faunaData[faunaId].category), text: baseLayout.faunaData[faunaId].name, value: baseLayout.faunaData[faunaId].className});
             }
 
         BaseLayout_Modal.form({

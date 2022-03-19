@@ -85,7 +85,7 @@ export default class BaseLayout
         this.toolsData                          = null;
         this.toolsCategories                    = new Map();
         this.faunaData                          = null;
-        this.faunaCategories                    = {};
+        this.faunaCategories                    = new Map();
         this.recipesData                        = null;
         this.schematicsData                     = null;
 
@@ -367,7 +367,7 @@ export default class BaseLayout
                         this.toolsData              = data.toolsData;
                         this.toolsCategories        = new Map(Object.entries(data.toolsCategories));
                         this.faunaData              = data.faunaData;
-                        this.faunaCategories        = data.faunaCategories;
+                        this.faunaCategories        = new Map(Object.entries(data.faunaCategories));
 
                         this.recipesData            = data.recipesData;
                         this.schematicsData         = data.schematicsData;
