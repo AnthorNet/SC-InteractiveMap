@@ -2,6 +2,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class Spawn_Blueprint
@@ -10,7 +11,7 @@ export default class Spawn_Blueprint
     {
         this.baseLayout         = options.baseLayout;
 
-        this.clipboard          = JSON.parse(JSON.stringify(options.clipboard));
+        this.clipboard          = cloneDeep(options.clipboard);
         this.marker             = options.marker;
         this.pasteOn            = (options.pasteOn !== undefined) ? options.pasteOn : 'bottom';
 
@@ -241,7 +242,7 @@ export default class Spawn_Blueprint
             setTimeout(resolve, 5);
         }.bind(this)).then(function(){
             $('#liveLoader .progress-bar').css('width', '2%');
-            this.replacePathName(JSON.parse(JSON.stringify(pathNameConversion)));
+            this.replacePathName(cloneDeep(pathNameConversion));
         }.bind(this));
     }
 
@@ -517,7 +518,7 @@ export default class Spawn_Blueprint
             {
                 for(let pathName in this.clipboard.hiddenConnections)
                 {
-                    let currentHiddenConnections            = JSON.parse(JSON.stringify(this.clipboard.hiddenConnections[pathName]));
+                    let currentHiddenConnections            = cloneDeep(this.clipboard.hiddenConnections[pathName]);
                         currentHiddenConnections.pathName   = currentHiddenConnections.pathName.split('.');
                     let extension                           = currentHiddenConnections.pathName[currentHiddenConnections.pathName.length -1];
 
@@ -1026,7 +1027,7 @@ export default class Spawn_Blueprint
 
         for(let i = 0; i < corners.length; i++)
         {
-            let newFoundation                           = JSON.parse(JSON.stringify(this.centerObject));
+            let newFoundation                           = cloneDeep(this.centerObject);
                 newFoundation.pathName                  = this.baseLayout.generateFastPathName(this.centerObject);
             let translationRotation                     = BaseLayout_Math.getPointRotation(corners[i], this.centerObject.transform.translation, this.centerObject.transform.rotation);
                 newFoundation.transform.translation[0]  = translationRotation[0];

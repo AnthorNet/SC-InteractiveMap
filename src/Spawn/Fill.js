@@ -4,6 +4,8 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import Modal_Selection                          from '../Modal/Selection.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class Spawn_Fill
 {
     constructor(options)
@@ -121,7 +123,7 @@ export default class Spawn_Fill
                         }
                 }
 
-                let newFoundation           = JSON.parse(JSON.stringify(this.centerObject));
+                let newFoundation           = cloneDeep(this.centerObject);
                     newFoundation.pathName  = this.baseLayout.generateFastPathName(this.centerObject);
 
                 // Calculate new position
@@ -135,7 +137,7 @@ export default class Spawn_Fill
                     pathName: newFoundation.pathName,
                     layerId: this.layerId,
                     callback: 'deleteGenericBuilding',
-                    properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
+                    properties: {transform: cloneDeep(newFoundation.transform)}
                 });
             }
 

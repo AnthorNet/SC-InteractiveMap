@@ -2,6 +2,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class Spawn_Image
 {
     constructor(options)
@@ -249,7 +251,7 @@ export default class Spawn_Image
             pathName: newSupport.pathName,
             layerId: this.layerId,
             callback: 'deleteGenericBuilding',
-            properties: {transform: JSON.parse(JSON.stringify(newSupport.transform))}
+            properties: {transform: cloneDeep(newSupport.transform)}
         });
 
         return this.baseLayout.parseObject(newSupport);

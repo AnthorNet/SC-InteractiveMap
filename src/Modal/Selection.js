@@ -17,6 +17,8 @@ import Spawn_Fill                               from '../Spawn/Fill.js';
 import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
 import SubSystem_Foliage                        from '../SubSystem/Foliage.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class Modal_Selection
 {
     static cancel(baseLayout)
@@ -651,7 +653,7 @@ export default class Modal_Selection
 
                 for(let i = 0; i < corners.length; i++)
                 {
-                    let newFoundation                           = JSON.parse(JSON.stringify(fakeFoundation));
+                    let newFoundation                           = cloneDeep(fakeFoundation);
                         newFoundation.pathName                  = baseLayout.generateFastPathName(fakeFoundation);
                     let translationRotation                     = BaseLayout_Math.getPointRotation(corners[i], fakeFoundation.transform.translation, fakeFoundation.transform.rotation);
                         newFoundation.transform.translation[0]  = translationRotation[0];

@@ -1,5 +1,7 @@
 import BaseLayout_Modal                         from '../../BaseLayout/Modal.js';
 
+import cloneDeep                                from '../../Lib/cloneDeep.js'
+
 export default class Modal_Map_Hotbars
 {
     constructor(options)
@@ -114,7 +116,7 @@ export default class Modal_Map_Hotbars
                                     let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[parseInt(hotbarSlot)][0].value.values[j].pathName);
                                         if(currentShortcut !== null)
                                         {
-                                            currentShortcut.properties = JSON.parse(JSON.stringify(this.clipboard[0].values[j]));
+                                            currentShortcut.properties = cloneDeep(this.clipboard[0].values[j]);
                                         }
                                 }
 
@@ -198,7 +200,7 @@ export default class Modal_Map_Hotbars
                                         let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[i][0].value.values[j].pathName);
                                             if(currentShortcut !== null)
                                             {
-                                                currentShortcut.properties = JSON.parse(JSON.stringify(this.clipboard[i].values[j]));
+                                                currentShortcut.properties = cloneDeep(this.clipboard[i].values[j]);
                                             }
                                     }
                                 }

@@ -2,6 +2,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class Spawn_Rectangle
 {
     constructor(options)
@@ -97,7 +99,7 @@ export default class Spawn_Rectangle
                         }
                 }
 
-                let newFoundation           = JSON.parse(JSON.stringify(this.centerObject));
+                let newFoundation           = cloneDeep(this.centerObject);
                     newFoundation.pathName  = this.baseLayout.generateFastPathName(this.centerObject);
 
                 // Calculate new position
@@ -124,7 +126,7 @@ export default class Spawn_Rectangle
                     pathName: newFoundation.pathName,
                     layerId: this.layerId,
                     callback: 'deleteGenericBuilding',
-                    properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
+                    properties: {transform: cloneDeep(newFoundation.transform)}
                 });
             }
 

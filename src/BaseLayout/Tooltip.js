@@ -17,6 +17,8 @@ import Building_SmartSplitter                   from '../Building/SmartSplitter.
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class BaseLayout_Tooltip
 {
     static get styleLabels(){ return 'height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;'; }
@@ -110,11 +112,11 @@ export default class BaseLayout_Tooltip
                             let currentItemData = null;
                                 if(this.baseLayout.itemsData[this.target.options.itemId] !== undefined)
                                 {
-                                    currentItemData = JSON.parse(JSON.stringify(this.baseLayout.itemsData[this.target.options.itemId]));
+                                    currentItemData = cloneDeep(this.baseLayout.itemsData[this.target.options.itemId]);
                                 }
                                 if(this.baseLayout.toolsData[this.target.options.itemId] !== undefined)
                                 {
-                                    currentItemData = JSON.parse(JSON.stringify(this.baseLayout.toolsData[this.target.options.itemId]));
+                                    currentItemData = cloneDeep(this.baseLayout.toolsData[this.target.options.itemId]);
                                 }
                                 if(currentItemData !== null && currentItemData !== undefined)
                                 {

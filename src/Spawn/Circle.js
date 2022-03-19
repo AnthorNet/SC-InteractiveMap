@@ -2,6 +2,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class Spawn_Circle
 {
     constructor(options)
@@ -89,7 +91,7 @@ export default class Spawn_Circle
                                 }
                         }
 
-                        let newFoundation                           = JSON.parse(JSON.stringify(this.centerObject));
+                        let newFoundation                           = cloneDeep(this.centerObject);
                             newFoundation.pathName                  = this.baseLayout.generateFastPathName(this.centerObject);
                             newFoundation.transform.translation[0]  = Math.cos(angle * Math.PI / 180) * (radius * 800) + this.centerObject.transform.translation[0];
                             newFoundation.transform.translation[1]  = Math.sin(angle * Math.PI / 180) * (radius * 800) + this.centerObject.transform.translation[1];
@@ -116,7 +118,7 @@ export default class Spawn_Circle
                             pathName: newFoundation.pathName,
                             layerId: this.layerId,
                             callback: 'deleteGenericBuilding',
-                            properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
+                            properties: {transform: cloneDeep(newFoundation.transform)}
                         });
                     }
             }

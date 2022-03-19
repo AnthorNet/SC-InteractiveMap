@@ -43,6 +43,8 @@ import Building_RailroadSwitchControl           from './Building/RailroadSwitchC
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
 
+import cloneDeep                                from './Lib/cloneDeep.js'
+
 export default class BaseLayout
 {
     constructor(options)
@@ -509,7 +511,7 @@ export default class BaseLayout
                     // Special case
                     if(className === '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C')
                     {
-                        this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']         = JSON.parse(JSON.stringify(data[className]));
+                        this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']         = cloneDeep(data[className]);
                         this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].scale   = 2.3;
                     }
                 }
@@ -1846,7 +1848,7 @@ export default class BaseLayout
                     values: [{
                         pathName: marker.relatedTarget.options.pathName,
                         callback: 'refreshMarkerPosition',
-                        properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
+                        properties: {transform: cloneDeep(currentObject.transform)}
                     }]
                 });
             }
@@ -1887,7 +1889,7 @@ export default class BaseLayout
                             values: [{
                                 pathName: marker.relatedTarget.options.pathName,
                                 callback: 'refreshMarkerPosition',
-                                properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
+                                properties: {transform: cloneDeep(currentObject.transform)}
                             }]
                         });
                     }
@@ -1970,7 +1972,7 @@ export default class BaseLayout
     teleportPlayer(marker)
     {
         let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let newTransform    = JSON.parse(JSON.stringify(currentObject.transform));
+        let newTransform    = cloneDeep(currentObject.transform);
 
         let selectOptions   = [];
             for(let pathName in this.players)
@@ -2381,7 +2383,7 @@ export default class BaseLayout
     {
         let selectOptions           = [];
         let isFluidInventory        = true;
-        let itemsCategories         = JSON.parse(JSON.stringify(this.itemsCategories));
+        let itemsCategories         = cloneDeep(this.itemsCategories);
             itemsCategories.statue  = 'Statues';
             itemsCategories.ficsmas = 'FICS*MAS Holiday Event';
             itemsCategories.mods    = 'Modded items';
@@ -2757,7 +2759,7 @@ export default class BaseLayout
 
                     if(this.detailedModels[currentPattern.value.pathName] !== undefined)
                     {
-                        let patternTransform    = JSON.parse(JSON.stringify(currentObject.transform));
+                        let patternTransform    = cloneDeep(currentObject.transform);
                         let patternRotation     = BaseLayout_Math.getQuaternionToEuler(patternTransform.rotation);
                             patternRotation.yaw = BaseLayout_Math.clampEulerAxis(patternRotation.yaw);
                             switch(currentPatternRotation.value.value)
@@ -5137,15 +5139,15 @@ export default class BaseLayout
         // Create fake angled railings with new width
         if(this.buildingsData.Build_SM_RailingRamp_8x4_01_C === undefined && this.buildingsData.Build_Railing_01_C !== undefined)
         {
-            this.buildingsData.Build_SM_RailingRamp_8x4_01_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_Railing_01_C));
+            this.buildingsData.Build_SM_RailingRamp_8x4_01_C            = cloneDeep(this.buildingsData.Build_Railing_01_C);
             this.buildingsData.Build_SM_RailingRamp_8x4_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x4_01.Build_SM_RailingRamp_8x4_01_C';
             this.buildingsData.Build_SM_RailingRamp_8x4_01_C.length     = 8;
 
-            this.buildingsData.Build_SM_RailingRamp_8x2_01_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_Railing_01_C));
+            this.buildingsData.Build_SM_RailingRamp_8x2_01_C            = cloneDeep(this.buildingsData.Build_Railing_01_C);
             this.buildingsData.Build_SM_RailingRamp_8x2_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x2_01.Build_SM_RailingRamp_8x2_01_C';
             this.buildingsData.Build_SM_RailingRamp_8x2_01_C.length     = 8;
 
-            this.buildingsData.Build_SM_RailingRamp_8x1_01_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_Railing_01_C));
+            this.buildingsData.Build_SM_RailingRamp_8x1_01_C            = cloneDeep(this.buildingsData.Build_Railing_01_C);
             this.buildingsData.Build_SM_RailingRamp_8x1_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x1_01.Build_SM_RailingRamp_8x1_01_C';
             this.buildingsData.Build_SM_RailingRamp_8x1_01_C.length     = 8;
         }
@@ -5153,13 +5155,13 @@ export default class BaseLayout
         // Add equipment vehicles
         if(this.buildingsData.Desc_GolfCart_C === undefined && this.toolsData.Desc_GolfCart_C !== undefined)
         {
-            this.buildingsData.Desc_GolfCart_C                  = JSON.parse(JSON.stringify(this.toolsData.Desc_GolfCart_C));
+            this.buildingsData.Desc_GolfCart_C                  = cloneDeep(this.toolsData.Desc_GolfCart_C);
             this.buildingsData.Desc_GolfCart_C.className        = '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C';
             this.buildingsData.Desc_GolfCart_C.category         = 'vehicle';
         }
         if(this.buildingsData.Desc_GolfcartGold_C === undefined && this.toolsData.Desc_GolfCartGold_C !== undefined)
         {
-            this.buildingsData.Desc_GolfcartGold_C              = JSON.parse(JSON.stringify(this.toolsData.Desc_GolfCartGold_C));
+            this.buildingsData.Desc_GolfcartGold_C              = cloneDeep(this.toolsData.Desc_GolfCartGold_C);
             this.buildingsData.Desc_GolfcartGold_C.className    = '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C';
             this.buildingsData.Desc_GolfcartGold_C.category     = 'vehicle';
         }
@@ -5169,7 +5171,7 @@ export default class BaseLayout
         {
             if(this.itemsData.Desc_Fireworks_Projectile_01_C !== undefined)
             {
-                this.buildingsData.BP_FireWorksProjectile_01_C                  = JSON.parse(JSON.stringify(this.itemsData.Desc_Fireworks_Projectile_01_C));
+                this.buildingsData.BP_FireWorksProjectile_01_C                  = cloneDeep(this.itemsData.Desc_Fireworks_Projectile_01_C);
                 this.buildingsData.BP_FireWorksProjectile_01_C.className        = '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_01.BP_FireWorksProjectile_01_C';
                 this.buildingsData.BP_FireWorksProjectile_01_C.mapUseSlotColor  = false;
                 this.buildingsData.BP_FireWorksProjectile_01_C.mapLayer         = 'playerFicsmasLayer';
@@ -5180,7 +5182,7 @@ export default class BaseLayout
             }
             if(this.itemsData.Desc_Fireworks_Projectile_02_C !== undefined)
             {
-                this.buildingsData.BP_FireWorksProjectile_02_C                  = JSON.parse(JSON.stringify(this.itemsData.Desc_Fireworks_Projectile_02_C));
+                this.buildingsData.BP_FireWorksProjectile_02_C                  = cloneDeep(this.itemsData.Desc_Fireworks_Projectile_02_C);
                 this.buildingsData.BP_FireWorksProjectile_02_C.className        = '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_02.BP_FireWorksProjectile_02_C';
                 this.buildingsData.BP_FireWorksProjectile_02_C.mapUseSlotColor  = false;
                 this.buildingsData.BP_FireWorksProjectile_02_C.mapLayer         = 'playerFicsmasLayer';
@@ -5191,7 +5193,7 @@ export default class BaseLayout
             }
             if(this.itemsData.Desc_Fireworks_Projectile_03_C !== undefined)
             {
-                this.buildingsData.BP_FireWorksProjectile_03_C                  = JSON.parse(JSON.stringify(this.itemsData.Desc_Fireworks_Projectile_03_C));
+                this.buildingsData.BP_FireWorksProjectile_03_C                  = cloneDeep(this.itemsData.Desc_Fireworks_Projectile_03_C);
                 this.buildingsData.BP_FireWorksProjectile_03_C.className        = '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireworksProjectile_03.BP_FireworksProjectile_03_C';
                 this.buildingsData.BP_FireWorksProjectile_03_C.mapUseSlotColor  = false;
                 this.buildingsData.BP_FireWorksProjectile_03_C.mapLayer         = 'playerFicsmasLayer';
@@ -5343,7 +5345,7 @@ export default class BaseLayout
 
     generateFastPathName(currentObject)
     {
-        let pathName    = JSON.parse(JSON.stringify(currentObject.pathName.split('_')));
+        let pathName    = cloneDeep(currentObject.pathName.split('_'));
             pathName.pop();
             pathName.push(Math.floor(Math.random() * Math.floor(2147483647)));
 

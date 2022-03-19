@@ -1,6 +1,8 @@
 /* global gtag */
 import Modal_Selection                          from '../Modal/Selection.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class Selection_Copy
 {
     constructor(options)
@@ -87,7 +89,7 @@ export default class Selection_Copy
 
                 let currentObject           = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
                 let newDataObject           = {};
-                    newDataObject.parent    = JSON.parse(JSON.stringify(currentObject));
+                    newDataObject.parent    = cloneDeep(currentObject);
                     newDataObject.children  = new Set();
 
                 // Get object children
@@ -95,7 +97,7 @@ export default class Selection_Copy
                 {
                     for(const child of currentObject.children)
                     {
-                        let newObjectChildren = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(child.pathName)));
+                        let newObjectChildren = cloneDeep(this.baseLayout.saveGameParser.getTargetObject(child.pathName));
                             newDataObject.children.add(newObjectChildren);
                     }
                 }
@@ -119,7 +121,7 @@ export default class Selection_Copy
                                         if(extraPropertyObject !== null)
                                         {
                                             let extraPropertyNewObject          = {};
-                                                extraPropertyNewObject.parent   = JSON.parse(JSON.stringify(extraPropertyObject));
+                                                extraPropertyNewObject.parent   = cloneDeep(extraPropertyObject);
                                                 extraPropertyNewObject.children = new Set();
 
                                                 if(extraPropertyObject.children !== undefined)
@@ -127,7 +129,7 @@ export default class Selection_Copy
                                                     for(const child of extraPropertyObject.children)
                                                     {
                                                         extraPropertyNewObject.children.add(
-                                                            JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(child.pathName)))
+                                                            cloneDeep(this.baseLayout.saveGameParser.getTargetObject(child.pathName))
                                                         );
                                                     }
                                                 }
@@ -214,7 +216,7 @@ export default class Selection_Copy
                         if(trainIdentifier !== null)
                         {
                             let trainIdentifierNewObject            = {};
-                                trainIdentifierNewObject.parent     = JSON.parse(JSON.stringify(trainIdentifier));
+                                trainIdentifierNewObject.parent     = cloneDeep(trainIdentifier);
 
                                 let haveTimeTable                   = this.baseLayout.getObjectProperty(trainIdentifierNewObject.parent, 'TimeTable');
                                     if(haveTimeTable)
@@ -434,7 +436,7 @@ export default class Selection_Copy
                                             let currentHiddenConnection = this.baseLayout.saveGameParser.getTargetObject(mHiddenConnections.values[m].pathName);
                                                 if(currentHiddenConnection !== null)
                                                 {
-                                                        currentHiddenConnection     = JSON.parse(JSON.stringify(currentHiddenConnection));
+                                                        currentHiddenConnection     = cloneDeep(currentHiddenConnection);
                                                     let mCurrentHiddenConnections   = this.baseLayout.getObjectProperty(currentHiddenConnection, 'mHiddenConnections');
 
                                                         if(mCurrentHiddenConnections !== null)
@@ -479,7 +481,7 @@ export default class Selection_Copy
                 let timeTable = this.baseLayout.saveGameParser.getTargetObject(trainTimeTables[i].pathName);;
                     if(timeTable !== null)
                     {
-                        let newTimeTable    = JSON.parse(JSON.stringify(timeTable));
+                        let newTimeTable    = cloneDeep(timeTable);
                         let mStops          = this.baseLayout.getObjectProperty(newTimeTable, 'mStops');
                             if(mStops !== null)
                             {
@@ -515,7 +517,7 @@ export default class Selection_Copy
                 this.clipboard.minY     = boundaries.minY;
                 this.clipboard.maxY     = boundaries.maxY;
 
-            this.baseLayout.clipboard   = JSON.parse(JSON.stringify(this.clipboard));
+            this.baseLayout.clipboard   = cloneDeep(this.clipboard);
         }
 
         Modal_Selection.cancel(this.baseLayout);
