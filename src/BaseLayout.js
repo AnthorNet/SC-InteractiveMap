@@ -79,7 +79,7 @@ export default class BaseLayout
 
         this.dataUrl                            = options.dataUrl;
         this.buildingsData                      = null;
-        this.buildingsCategories                = {};
+        this.buildingsCategories                = new Map();
         this.itemsData                          = null;
         this.itemsCategories                    = {};
         this.toolsData                          = null;
@@ -361,7 +361,7 @@ export default class BaseLayout
                     $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, function(data)
                     {
                         this.buildingsData          = data.buildingsData;
-                        this.buildingsCategories    = data.buildingsCategories;
+                        this.buildingsCategories    = new Map(Object.entries(data.buildingsCategories));
                         this.itemsData              = data.itemsData;
                         this.itemsCategories        = data.itemsCategories;
                         this.toolsData              = data.toolsData;
