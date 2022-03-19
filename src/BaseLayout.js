@@ -62,7 +62,7 @@ export default class BaseLayout
         this.saveGamePipeNetworks               = new Map();
 
         this.saveGameRailVehicles               = new Map();
-        this.frackingSmasherCores               = {};
+        this.frackingSmasherCores               = new Map();
 
         this.gameMode                           = [];
         this.players                            = {};
@@ -861,7 +861,7 @@ export default class BaseLayout
                 let mExtractableResource = this.getObjectProperty(currentObject, 'mExtractableResource');
                     if(mExtractableResource !== null)
                     {
-                        this.frackingSmasherCores[mExtractableResource.pathName] = currentObject.pathName;
+                        this.frackingSmasherCores.set(mExtractableResource.pathName, currentObject.pathName);
                     }
             }
 
