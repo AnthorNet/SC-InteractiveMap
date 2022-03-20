@@ -1304,15 +1304,15 @@ export default class Building_Sign
             }
 
             // Parts
-            for(let key in baseLayout.itemsData)
+            for(const itemData of baseLayout.itemsData.values())
             {
-                if(baseLayout.itemsData[key].iconId !== undefined)
+                if(itemData.iconId !== undefined)
                 {
                     options.push({
                         group       : 'Parts',
-                        dataContent : '<img src="' + baseLayout.itemsData[key].image + '" style="width: 24px;" class="mr-1" /> ' + baseLayout.itemsData[key].name,
-                        value       : baseLayout.itemsData[key].iconId,
-                        text        : baseLayout.itemsData[key].name
+                        dataContent : '<img src="' + itemData.image + '" style="width: 24px;" class="mr-1" /> ' + itemData.name,
+                        value       : itemData.iconId,
+                        text        : itemData.name
                     });
                 }
             }

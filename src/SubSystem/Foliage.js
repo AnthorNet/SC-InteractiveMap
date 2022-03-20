@@ -72,7 +72,7 @@ export default class SubSystem_Foliage
         if(restoredFoliage > 0)
         {
             BaseLayout_Modal.notification({
-                image   : baseLayout.itemsData.Desc_Leaves_C.image,
+                image   : baseLayout.itemsData.get('Desc_Leaves_C').image,
                 title   : 'Respawn flora',
                 message : new Intl.NumberFormat(baseLayout.language).format(restoredFoliage) + ' foliages were restored.'
             });

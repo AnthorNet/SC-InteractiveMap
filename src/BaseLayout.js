@@ -362,7 +362,7 @@ export default class BaseLayout
                     {
                         this.buildingsData          = new Map(Object.entries(data.buildingsData));
                         this.buildingsCategories    = new Map(Object.entries(data.buildingsCategories));
-                        this.itemsData              = data.itemsData;
+                        this.itemsData              = new Map(Object.entries(data.itemsData));
                         this.itemsCategories        = new Map(Object.entries(data.itemsCategories));
                         this.toolsData              = data.toolsData;
                         this.toolsCategories        = new Map(Object.entries(data.toolsCategories));
@@ -430,7 +430,7 @@ export default class BaseLayout
                     {
                         for(let item in data.Items)
                         {
-                            this.itemsData[item] = data.Items[item];
+                            this.itemsData.set(item, data.Items[item]);
                         }
                     }
                     if(data.Tools !== undefined)
@@ -1501,11 +1501,12 @@ export default class BaseLayout
                         let iconType    = layerId + itemId;
                             if(this.satisfactoryMap.availableIcons[iconType] === undefined)
                             {
-                                if(this.itemsData[itemId] !== undefined)
+                                const item = this.itemsData.get(itemId);
+                                if(item !== undefined)
                                 {
                                     this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                                         className   : "leaflet-data-marker",
-                                        html        : this.satisfactoryMap.availableIcons[layerId].options.html.replace(this.itemsData.Desc_OreIron_C.image, this.itemsData[itemId].image),
+                                        html        : this.satisfactoryMap.availableIcons[layerId].options.html.replace(this.itemsData.get('Desc_OreIron_C').image, item.image),
                                         iconAnchor  : [48, 78],
                                         iconSize    : [50, 80]
                                     });
@@ -1571,7 +1572,7 @@ export default class BaseLayout
             {
                 this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                     className   : "leaflet-data-marker",
-                    html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, this.toolsData[itemId].image),
+                    html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, this.toolsData[itemId].image),
                     iconAnchor  : [48, 78],
                     iconSize    : [50, 80]
                 });
@@ -1613,11 +1614,12 @@ export default class BaseLayout
                         let iconType    = 'playerItemsPickupLayer' + itemId;
                             if(this.satisfactoryMap.availableIcons[iconType] === undefined)
                             {
-                                if(this.itemsData[itemId] !== undefined)
+                                const itemData = this.itemsData.get(itemId);
+                                if(itemData !== undefined)
                                 {
                                     this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                                         className   : "leaflet-data-marker",
-                                        html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, this.itemsData[itemId].image),
+                                        html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, itemData.image),
                                         iconAnchor  : [48, 78],
                                         iconSize    : [50, 80]
                                     });
@@ -1628,7 +1630,7 @@ export default class BaseLayout
                                     {
                                         this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                                             className   : "leaflet-data-marker",
-                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, this.toolsData[itemId].image),
+                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, this.toolsData[itemId].image),
                                             iconAnchor  : [48, 78],
                                             iconSize    : [50, 80]
                                         });
@@ -1637,7 +1639,7 @@ export default class BaseLayout
                                     {
                                         this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                                             className   : "leaflet-data-marker",
-                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, 'https://static.satisfactory-calculator.com/img/mapUnknownIcon.png'),
+                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, 'https://static.satisfactory-calculator.com/img/mapUnknownIcon.png'),
                                             iconAnchor  : [48, 78],
                                             iconSize    : [50, 80]
                                         });
@@ -2415,15 +2417,15 @@ export default class BaseLayout
             }
 
             let categoryOptions = [];
-                for(let i in this.itemsData)
+                for(const itemData of this.itemsData.values())
                 {
-                    if(this.itemsData[i].className !== undefined && this.itemsData[i].className !== null && this.itemsData[i].category === categoryKey)
+                    if(itemData.className !== undefined && itemData.className !== null && itemData.category === categoryKey)
                     {
                         categoryOptions.push({
                             group       : categoryValue,
-                            dataContent : '<img src="' + this.itemsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.itemsData[i].name,
-                            value       : this.itemsData[i].className,
-                            text        : this.itemsData[i].name
+                            dataContent : '<img src="' + itemData.image + '" style="width: 24px;" class="mr-1" /> ' + itemData.name,
+                            value       : itemData.className,
+                            text        : itemData.name
                         });
                     }
                 }
@@ -4675,7 +4677,7 @@ export default class BaseLayout
             if(potentialInventory !== null)
             {
                 html += '<div class="text-center"><table class="mr-auto ml-auto mt-3"><tr><td>';
-                html += this.setInventoryTableSlot(potentialInventory, null, 48, '', this.itemsData.Desc_CrystalShard_C.image);
+                html += this.setInventoryTableSlot(potentialInventory, null, 48, '', this.itemsData.get('Desc_CrystalShard_C').image);
                 html += '</td></tr></table></div>';
             }
 
@@ -5017,17 +5019,18 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'){ className = '/Game/FactoryGame/Resource/Equipment/PortableMiner/BP_ItemDescriptorPortableMiner.BP_ItemDescriptorPortableMiner_C'; }
         if(className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C'){ className = '/Game/FactoryGame/Resource/Parts/AnimalParts/Desc_SpitterParts.Desc_SpitterParts_C'; }
 
-        if(this.itemsData[className] !== undefined)
+        const itemData = this.itemsData.get(className);
+        if(itemData !== undefined)
         {
-            this.itemsData[className].id = className;
-            return this.itemsData[className];
+            itemData.id = className;
+            return itemData;
         }
-        for(let i in this.itemsData)
+        for(const [itemId, itemData] of this.itemsData)
         {
-            if(this.itemsData[i].className !== undefined && this.itemsData[i].className === className)
+            if(itemData.className !== undefined && itemData.className === className)
             {
-                this.itemsData[i].id = i;
-                return this.itemsData[i];
+                itemData.id = itemId;
+                return itemData;
             }
         }
         if(this.toolsData[className] !== undefined)
@@ -5052,7 +5055,7 @@ export default class BaseLayout
                 image       : 'https://static.satisfactory-calculator.com/img/mapUnknownIcon.png'
         };
 
-        this.itemsData[className.split('.').pop()] = moddedItem;
+        this.itemsData.set(className.split('.').pop(), moddedItem);
 
         if(debugToConsole === true)
         {
@@ -5068,9 +5071,10 @@ export default class BaseLayout
     }
     getItemDataFromId(itemId)
     {
-        if(this.itemsData[itemId] !== undefined)
+        const itemData = this.itemsData.get(itemId);
+        if(itemData !== undefined)
         {
-            return this.itemsData[itemId];
+            return itemData;
         }
         if(this.toolsData[itemId] !== undefined)
         {
@@ -5187,10 +5191,11 @@ export default class BaseLayout
         // Add projectiles
         if(!this.buildingsData.has('BP_FireWorksProjectile_01_C'))
         {
-            if(this.itemsData.Desc_Fireworks_Projectile_01_C !== undefined)
+            let baseItemData = this.itemsData.get('Desc_Fireworks_Projectile_01_C');
+            if(baseItemData !== undefined)
             {
                 this.buildingsData.set('BP_FireWorksProjectile_01_C', {
-                    ...cloneDeep(this.itemsData.Desc_Fireworks_Projectile_01_C),
+                    ...cloneDeep(baseItemData),
                     className           : '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_01.BP_FireWorksProjectile_01_C',
                     mapUseSlotColor     : false,
                     mapLayer            : 'playerFicsmasLayer',
@@ -5200,10 +5205,12 @@ export default class BaseLayout
                     height              : 2,
                 });
             }
-            if(this.itemsData.Desc_Fireworks_Projectile_02_C !== undefined)
+
+            baseItemData = this.itemsData.get('Desc_Fireworks_Projectile_02_C');
+            if(baseItemData !== undefined)
             {
                 this.buildingsData.set('BP_FireWorksProjectile_02_C', {
-                    ...cloneDeep(this.itemsData.Desc_Fireworks_Projectile_02_C),
+                    ...cloneDeep(baseItemData),
                     className           : '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_02.BP_FireWorksProjectile_02_C',
                     mapUseSlotColor     : false,
                     mapLayer            : 'playerFicsmasLayer',
@@ -5213,10 +5220,12 @@ export default class BaseLayout
                     height              : 2,
                 });
             }
-            if(this.itemsData.Desc_Fireworks_Projectile_03_C !== undefined)
+
+            baseItemData = this.itemsData.get('Desc_Fireworks_Projectile_03_C');
+            if(baseItemData !== undefined)
             {
                 this.buildingsData.set('BP_FireWorksProjectile_03_C', {
-                    ...cloneDeep(this.itemsData.Desc_Fireworks_Projectile_03_C),
+                    ...cloneDeep(baseItemData),
                     className           : '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireworksProjectile_03.BP_FireworksProjectile_03_C',
                     mapUseSlotColor     : false,
                     mapLayer            : 'playerFicsmasLayer',
@@ -5285,11 +5294,11 @@ export default class BaseLayout
 
     getIconSrcFromId(iconId)
     {
-        for(let i in this.itemsData)
+        for(const itemData of this.itemsData.values())
         {
-            if(this.itemsData[i].iconId !== undefined && this.itemsData[i].iconId === iconId)
+            if(itemData.iconId !== undefined && itemData.iconId === iconId)
             {
-                return this.itemsData[i].image;
+                return itemData.image;
             }
         }
         for(let i in this.toolsData)
@@ -5313,7 +5322,7 @@ export default class BaseLayout
             Sentry.captureMessage('Missing iconID: ' + iconId);
         }
 
-        return this.itemsData.Desc_IronIngot_C.image;
+        return this.itemsData.get('Desc_IronIngot_C').image;
     }
 
     getBuildingIsOn(currentObject)

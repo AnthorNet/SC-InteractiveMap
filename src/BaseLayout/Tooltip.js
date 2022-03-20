@@ -112,9 +112,10 @@ export default class BaseLayout_Tooltip
                         case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C':
                         case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_EliteStingerParts.BP_EliteStingerParts_C':
                             let currentItemData = null;
-                                if(this.baseLayout.itemsData[this.target.options.itemId] !== undefined)
+                            const baseItemData = this.baseLayout.itemsData.get(this.target.options.itemId);
+                                if(baseItemData !== undefined)
                                 {
-                                    currentItemData = cloneDeep(this.baseLayout.itemsData[this.target.options.itemId]);
+                                    currentItemData = cloneDeep(baseItemData);
                                 }
                                 if(this.baseLayout.toolsData[this.target.options.itemId] !== undefined)
                                 {
@@ -489,7 +490,7 @@ export default class BaseLayout_Tooltip
                     let inventoryOut    = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
                         content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td>' + this.baseLayout.setInventoryTableSlot(inventoryOut, 1, 64, 'justify-content-center') + '</td></tr></table></div>');
 
-                    content.push('<div><strong>' + this.baseLayout.itemsData[itemType].name + '</strong></div>');
+                    content.push('<div><strong>' + this.baseLayout.itemsData.get(itemType).name + '</strong></div>');
                     content.push('<span class="small"><strong class="text-warning">' + +(Math.round(extractionRate * 100) / 100) + '</strong> per minute</span>');
                 }
 
@@ -617,6 +618,7 @@ export default class BaseLayout_Tooltip
         let craftingTime        = 60 / buildingData.extractionRate[purity];
         let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
         let productionRatio     = buildingData.extractionRate[purity] * clockSpeed;
+        const itemData          = this.baseLayout.itemsData.get(itemType);
 
         // VOLUME
         let currentFluid        = 0;
@@ -625,7 +627,7 @@ export default class BaseLayout_Tooltip
 
             for(let i = 0; i < inventoryOut.length; i++)
             {
-                if(inventoryOut[i] !== null && this.baseLayout.itemsData[itemType] !== undefined && inventoryOut[i].className === this.baseLayout.itemsData[itemType].className)
+                if(inventoryOut[i] !== null && itemData !== undefined && inventoryOut[i].className === itemData.className)
                 {
                     currentFluid = inventoryOut[i].qty;
                     break;
@@ -657,8 +659,8 @@ export default class BaseLayout_Tooltip
 
                 if(extractResourceNode !== null && itemType !== null)
                 {
-                    content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td><div class="d-flex flex-row" style="position:relative;margin: 1px;width: 36px;height: 36px;border: 1px solid #000000;border-radius:50%;padding: 5px;background-color: #FFFFFF;"><img src="' + this.baseLayout.itemsData[itemType].image + '" class="img-fluid" /></div></td></tr></table></div>');
-                    content.push('<div><strong>' + this.baseLayout.itemsData[itemType].name + '</strong></div>');
+                    content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td><div class="d-flex flex-row" style="position:relative;margin: 1px;width: 36px;height: 36px;border: 1px solid #000000;border-radius:50%;padding: 5px;background-color: #FFFFFF;"><img src="' + itemData.image + '" class="img-fluid" /></div></td></tr></table></div>');
+                    content.push('<div><strong>' + itemData.name + '</strong></div>');
                     content.push('<span class="small"><strong class="text-warning">' + +(Math.round((productionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span>');
                 }
 
@@ -668,16 +670,16 @@ export default class BaseLayout_Tooltip
             content.push('<div style="position: absolute;margin-top: 111px;margin-left: 75px; width: 24px;height: 24px;color: #FFFFFF;background: #404040;border-radius: 50%;line-height: 24px;text-align: center;font-size: 14px;box-shadow: 0 0 2px 0px rgba(0,0,0,0.75);"><i class="fas fa-arrow-alt-down"></i></div>');
 
         // DOME
-        if(extractResourceNode !== null && itemType !== null && this.baseLayout.itemsData[itemType].color !== undefined)
+        if(extractResourceNode !== null && itemType !== null && itemData.color !== undefined)
         {
             content.push('<div style="position: absolute;margin-top: 9px;margin-left: 358px;">');
-                if(this.baseLayout.itemsData[itemType].category === 'gas')
+                if(itemData.category === 'gas')
                 {
-                    content.push(this.setGasDome(112, currentFluid, maxFluid, this.baseLayout.itemsData[itemType].color));
+                    content.push(this.setGasDome(112, currentFluid, maxFluid, itemData.color));
                 }
                 else
                 {
-                    content.push(this.setLiquidDome(112, currentFluid, maxFluid, this.baseLayout.itemsData[itemType].color));
+                    content.push(this.setLiquidDome(112, currentFluid, maxFluid, itemData.color));
                 }
             content.push('</div>');
         }
@@ -737,10 +739,11 @@ export default class BaseLayout_Tooltip
         let currentFluid        = 0;
         let maxFluid            = (buildingData.maxFluid !== undefined) ? buildingData.maxFluid : 50000;
         let inventoryOut        = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
+        const itemData          = this.baseLayout.itemsData.get(itemType);
 
             for(let i = 0; i < inventoryOut.length; i++)
             {
-                if(inventoryOut[i] !== null && this.baseLayout.itemsData[itemType] !== undefined && inventoryOut[i].className === this.baseLayout.itemsData[itemType].className)
+                if(inventoryOut[i] !== null && itemData !== undefined && inventoryOut[i].className === itemData.className)
                 {
                     currentFluid = inventoryOut[i].qty;
                     break;
@@ -774,8 +777,8 @@ export default class BaseLayout_Tooltip
 
                 if(extractResourceNode !== null && itemType !== null)
                 {
-                    content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td><div class="d-flex flex-row" style="position:relative;margin: 1px;width: 48px;height: 48px;border: 1px solid #000000;border-radius:50%;padding: 5px;background-color: #FFFFFF;"><img src="' + this.baseLayout.itemsData[itemType].image + '" class="img-fluid" /></div></td></tr></table></div>');
-                    content.push('<div><strong>' + this.baseLayout.itemsData[itemType].name + '</strong></div>');
+                    content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td><div class="d-flex flex-row" style="position:relative;margin: 1px;width: 48px;height: 48px;border: 1px solid #000000;border-radius:50%;padding: 5px;background-color: #FFFFFF;"><img src="' + itemData.image + '" class="img-fluid" /></div></td></tr></table></div>');
+                    content.push('<div><strong>' + itemData.name + '</strong></div>');
                     content.push('<span class="small"><strong class="text-warning">' + +(Math.round((productionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span>');
                 }
 
@@ -786,14 +789,14 @@ export default class BaseLayout_Tooltip
             content.push('<div style="position: absolute;margin-top: 111px;margin-left: 65px; width: 24px;height: 24px;color: #FFFFFF;background: #404040;border-radius: 50%;line-height: 24px;text-align: center;font-size: 14px;box-shadow: 0 0 2px 0px rgba(0,0,0,0.75);"><i class="fas fa-arrow-alt-down"></i></div>');
 
         // DOME
-        if(extractResourceNode !== null && itemType !== null && this.baseLayout.itemsData[itemType].color !== undefined && currentFluid > 0)
+        if(extractResourceNode !== null && itemType !== null && itemData.color !== undefined && currentFluid > 0)
         {
             let volumeHeight = Math.round(currentFluid / maxFluid * 104);
 
                 content.push('<div style="position: absolute;margin-top: 20px;margin-left: 355px;">');
                     content.push('<div style="position: relative;width: 104px;height: 104px;border-radius: 50%;overflow: hidden;">');
                         content.push('<div style="margin-top: ' + (104 - volumeHeight) + 'px;height: ' + volumeHeight + 'px;position: relative;">');
-                            content.push('<div class="liquidDome" style="background-color:' + this.baseLayout.itemsData[itemType].color + ';height: ' + (104 * 2) + 'px;top: -' + (104 / 2) + 'px"></div>');
+                            content.push('<div class="liquidDome" style="background-color:' + itemData.color + ';height: ' + (104 * 2) + 'px;top: -' + (104 / 2) + 'px"></div>');
                         content.push('</div>');
                     content.push('</div>');
                 content.push('</div>');
@@ -1559,12 +1562,14 @@ export default class BaseLayout_Tooltip
         let currentFluid                = 0;
         let maxFluid                    = (buildingData.maxFluid !== undefined) ? buildingData.maxFluid : 50000;
 
+        const itemData                  = this.baseLayout.itemsData.get(buildingData.supplementalLoadType);
+
         // VOLUME
         if(buildingData.supplementalLoadType !== undefined)
         {
                 for(let i = 0; i < inventoryIn.length; i++)
                 {
-                    if(inventoryIn[i] !== null && inventoryIn[i].className === this.baseLayout.itemsData[buildingData.supplementalLoadType].className)
+                    if(inventoryIn[i] !== null && inventoryIn[i].className === itemData.className)
                     {
                         currentFluid = inventoryIn[i].qty;
                         break;
@@ -1674,12 +1679,12 @@ export default class BaseLayout_Tooltip
             if(buildingData.supplementalLoadType !== undefined && buildingData.supplementalLoadRatio !== undefined)
             {
                 // DOME
-                if(this.baseLayout.itemsData[buildingData.supplementalLoadType].color !== undefined && currentFluid > 0)
+                if(itemData.color !== undefined && currentFluid > 0)
                 {
                     let volumeHeight = Math.round(currentFluid / maxFluid * 96);
 
                         content.push('<div style="position: absolute;margin-top: 41px;margin-left: 107px;">');
-                        content.push('<div style="position: relative;width: 96px;height: 96px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (96 - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + this.baseLayout.itemsData[buildingData.supplementalLoadType].color + ';"></div></div>');
+                        content.push('<div style="position: relative;width: 96px;height: 96px;border-radius: 50%;overflow: hidden;"><div style="margin-top: ' + (96 - volumeHeight) + 'px;height: ' + volumeHeight + 'px;background-color:' + itemData.color + ';"></div></div>');
                         content.push('</div>');
                 }
                 content.push('<div style="position: absolute;margin-top: 41px;margin-left: 107px;width: 96px;height: 96px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" width="96" height="96" /></div>');
@@ -1879,7 +1884,7 @@ export default class BaseLayout_Tooltip
                         for(let i = 0; i < potentialInventory.length; i++)
                         {
                             content.push('<td width="62">');
-                            content.push('<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + this.baseLayout.setInventoryTableSlot([potentialInventory[i]], null, 56, '', this.baseLayout.itemsData.Desc_CrystalShard_C.image) + '</td></tr></table></div>');
+                            content.push('<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + this.baseLayout.setInventoryTableSlot([potentialInventory[i]], null, 56, '', this.baseLayout.itemsData.get('Desc_CrystalShard_C').image) + '</td></tr></table></div>');
                             content.push('</td>');
                         }
                     }

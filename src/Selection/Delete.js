@@ -93,7 +93,7 @@ export default class Selection_Delete
                                     '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
                                 ].includes(currentObject.className))
                                 {
-                                    let itemClassName = this.baseLayout.itemsData[this.markers[i].options.itemId].className;
+                                    let itemClassName = this.baseLayout.itemsData.get(this.markers[i].options.itemId).className;
                                         if(putInCrate[itemClassName] === undefined)
                                         {
                                             putInCrate[itemClassName] = 0;

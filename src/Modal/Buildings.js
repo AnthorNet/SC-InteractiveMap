@@ -182,12 +182,13 @@ export default class Modal_Buildings
 
                                         if(itemType !== null)
                                         {
-                                            if(this.baseLayout.itemsData[itemType] === undefined)
+                                            const itemData = this.baseLayout.itemsData.get(itemType);
+                                            if(itemData === undefined)
                                             {
                                                 console.log(itemType, this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options);
                                             }
 
-                                            htmlRow.push('<strong>' + this.baseLayout.itemsData[itemType].name + ' (' + (purity && purity[0].toUpperCase() + purity.slice(1)) + ')</strong><br />');
+                                            htmlRow.push('<strong>' + itemData.name + ' (' + (purity && purity[0].toUpperCase() + purity.slice(1)) + ')</strong><br />');
                                         }
                                     break;
                                 default:
