@@ -122,7 +122,7 @@ export default class BaseLayout
 
         this.detailedModels                     = new Map();
 
-        this.playerLayersNotUsingAltitude       = ['playerRadioactivityLayer', 'playerLightsHaloLayer', 'playerPositionLayer', 'playerFogOfWar', 'playerResourceDepositsLayer', 'playerItemsPickupLayer'];
+        this.playerLayersNotUsingAltitude       = new Set(['playerRadioactivityLayer', 'playerLightsHaloLayer', 'playerPositionLayer', 'playerFogOfWar', 'playerResourceDepositsLayer', 'playerItemsPickupLayer']);
 
         this.setDefaultLayers();
     }
@@ -1388,7 +1388,7 @@ export default class BaseLayout
     {
         element.addTo(this.playerLayers[layerId].subLayer);
 
-        if(this.playerLayersNotUsingAltitude.includes(layerId) === false && element.options.pathName !== undefined)
+        if(this.playerLayersNotUsingAltitude.has(layerId) === false && element.options.pathName !== undefined)
         {
             let currentObject = this.saveGameParser.getTargetObject(element.options.pathName);
                 if(currentObject !== null)
@@ -4162,7 +4162,7 @@ export default class BaseLayout
                                                 if(currentSubLayer.hasLayer(currentMarker) === false && this.playerLayers[layerId].filters.includes(currentClassName) === false)
                                                 {
                                                     let addToSubLayer = true;
-                                                        if(this.playerLayersNotUsingAltitude.includes(layerId) === false)
+                                                        if(this.playerLayersNotUsingAltitude.has(layerId) === false)
                                                         {
                                                             if(currentObject.transform.translation[2] < ($('#altitudeSliderInputs input[name=minAltitude]').val() * 100) || currentObject.transform.translation[2] > ($('#altitudeSliderInputs input[name=maxAltitude]').val() * 100))
                                                             {
@@ -4225,7 +4225,7 @@ export default class BaseLayout
     {
         for(let layerId in this.playerLayers)
         {
-            if(this.playerLayers[layerId].subLayer !== null && this.playerLayersNotUsingAltitude.includes(layerId) === false)
+            if(this.playerLayers[layerId].subLayer !== null && this.playerLayersNotUsingAltitude.has(layerId) === false)
             {
                 let currentSubLayer     = this.playerLayers[layerId].subLayer;
                 let currentLayerLength  = this.playerLayers[layerId].elements.length;
