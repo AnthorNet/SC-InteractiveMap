@@ -109,7 +109,7 @@ export default class Spawn_Node
 
         if(options.className.includes('Miner'))
         {
-            fakeBuilding.properties.push({
+            this.baseLayout.setObjectProperty(fakeBuilding, {
                 name    : 'mExtractableResource',
                 type    : 'ObjectProperty',
                 value   : {pathName: this.centerObject.pathName}

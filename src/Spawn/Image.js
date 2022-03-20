@@ -183,8 +183,8 @@ export default class Spawn_Image
 
             if(this.supportId === 'Build_Beam_Painted_C')
             {
-                newSupport.properties.push({name: 'mLength', type: 'FloatProperty', value: this.supportSize});
-                newSupport.properties.push({name: 'mCustomizationData', type: 'StructProperty', value: {
+                this.baseLayout.setObjectProperty(newSupport, {name: 'mLength', type: 'FloatProperty', value: this.supportSize});
+                this.baseLayout.setObjectProperty(newSupport, {name: 'mCustomizationData', type: 'StructProperty', value: {
                     type    : 'FactoryCustomizationData',
                     values  : [
                         {
@@ -209,15 +209,15 @@ export default class Spawn_Image
             }
             else
             {
-                newSupport.properties.push({name: 'mActivePrefabLayout', type: 'ObjectProperty', value: {levelName: '', pathName: '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C'}});
-                newSupport.properties.push({name: 'mPrefabTextElementSaveData', type: 'ArrayProperty', value: {
+                this.baseLayout.setObjectProperty(newSupport, {name: 'mActivePrefabLayout', type: 'ObjectProperty', value: {levelName: '', pathName: '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C'}});
+                this.baseLayout.setObjectProperty(newSupport, {name: 'mPrefabTextElementSaveData', type: 'ArrayProperty', value: {
                     type    : 'StructProperty',
                     values  : [[
                         {name: 'ElementName', type: 'StrProperty', value: 'Name'},
                         {name: 'Text', type: 'StrProperty', value: ''},
                     ]]
                 }, structureName: 'mPrefabTextElementSaveData', structureType: 'StructProperty', structureSubType: 'PrefabTextElementSaveData'});
-                newSupport.properties.push({name: 'mBackgroundColor', type: 'StructProperty', value: linearColor});
+                this.baseLayout.setObjectProperty(newSupport, {name: 'mBackgroundColor', type: 'StructProperty', value: linearColor});
             }
 
             newSupport.pathName    = this.baseLayout.generateFastPathName(newSupport);

@@ -194,7 +194,7 @@ export default class Building_SpaceElevator
                                 let mGamePhase      = baseLayout.getObjectProperty(phaseManager, 'mGamePhase');
                                     if(mGamePhase === null)
                                     {
-                                        phaseManager.properties.push({
+                                        baseLayout.setObjectProperty(phaseManager, {
                                             name: "mGamePhase",
                                             type: "ByteProperty",
                                             value: {enumName    : "EGamePhase", valueName: values.mGamePhase}
@@ -252,7 +252,7 @@ export default class Building_SpaceElevator
                                 }
                             }
 
-                        phaseManager.properties.push({
+                        baseLayout.setObjectProperty(phaseManager, {
                             name                : "mGamePhaseCosts",
                             type                : "ArrayProperty",
                             value               : {

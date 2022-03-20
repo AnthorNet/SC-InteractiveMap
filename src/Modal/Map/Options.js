@@ -521,10 +521,10 @@ export default class Modal_Map_Options
                 let tutorialIntroManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.TutorialIntroManager");
                     if(tutorialIntroManager !== null)
                     {
-                        tutorialIntroManager.properties = [];
-                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroTutorial", type: "BoolProperty", value: 1});
-                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroSequence", type: "BoolProperty", value: 1});
-                        tutorialIntroManager.properties.push({name: "mTradingPostLevel", type: "IntProperty", value: 6});
+                        this.baseLayout.deleteAllObjectProperties(tutorialIntroManager);
+                        this.baseLayout.setObjectProperty(tutorialIntroManager, {name: "mHasCompletedIntroTutorial", type: "BoolProperty", value: 1});
+                        this.baseLayout.setObjectProperty(tutorialIntroManager, {name: "mHasCompletedIntroSequence", type: "BoolProperty", value: 1});
+                        this.baseLayout.setObjectProperty(tutorialIntroManager, {name: "mTradingPostLevel", type: "IntProperty", value: 6});
                     }
 
                 // Reset players tutorials

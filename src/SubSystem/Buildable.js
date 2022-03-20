@@ -142,7 +142,7 @@ export default class SubSystem_Buildable
         let mCustomizationData = this.getObjectCustomizationData(currentObject);
             if(mCustomizationData === null)
             {
-                currentObject.properties.push({
+                this.baseLayout.setObjectProperty(currentObject, {
                     name    : 'mCustomizationData',
                     type    : 'StructProperty',
                     value   : {
@@ -191,7 +191,7 @@ export default class SubSystem_Buildable
 
         //TODO:OLD
         this.baseLayout.deleteObjectProperty(currentObject, 'mColorSlot');
-        currentObject.properties.push({
+        this.baseLayout.setObjectProperty(currentObject, {
             name    : 'mColorSlot',
             type    : 'ByteProperty',
             value   : {enumName: 'None', value: parseInt(slotIndex)}
@@ -552,7 +552,7 @@ export default class SubSystem_Buildable
                         ]);
                     }
 
-                    this.buildableSubSystem.properties.push(mColorSlots_Data);
+                    this.baseLayout.setObjectProperty(this.buildableSubSystem, mColorSlots_Data);
                     return this.getPrimaryColorSlots();
                 }
             }
@@ -595,7 +595,7 @@ export default class SubSystem_Buildable
                     );
                 }
 
-                this.buildableSubSystem.properties.push(mColorSlotsPrimary_Linear);
+                this.baseLayout.setObjectProperty(this.buildableSubSystem, mColorSlotsPrimary_Linear);
                 return this.getPrimaryColorSlots();
             }
 
@@ -665,7 +665,7 @@ export default class SubSystem_Buildable
                     );
                 }
 
-                this.buildableSubSystem.properties.push(mColorSlotsSecondary_Linear);
+                this.baseLayout.setObjectProperty(this.buildableSubSystem, mColorSlotsSecondary_Linear);
                 return this.getSecondaryColorSlots();
             }
 

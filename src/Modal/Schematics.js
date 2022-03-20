@@ -715,7 +715,7 @@ export default class Modal_Schematics
                     let mPurchasedSchematics    = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
                         if(mPurchasedSchematics === null)
                         {
-                            schematicManager.properties.push({
+                            this.baseLayout.setObjectProperty(schematicManager, {
                                 name    : "mPurchasedSchematics",
                                 type    : "ArrayProperty",
                                 value   : {

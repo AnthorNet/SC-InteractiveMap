@@ -111,7 +111,7 @@ export default class Building_Production
                     {
                         if(mCurrentRecipe === null)
                         {
-                             currentObject.properties.push({name: "mCurrentRecipe", type: "ObjectProperty", value: {levelName: "", pathName: form.recipe}});
+                            baseLayout.setObjectProperty(currentObject, {name: "mCurrentRecipe", type: "ObjectProperty", value: {levelName: "", pathName: form.recipe}});
                         }
                         else
                         {

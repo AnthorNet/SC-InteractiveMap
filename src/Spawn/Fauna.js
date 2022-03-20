@@ -71,10 +71,10 @@ export default class Spawn_Fauna
                 let currentPlayerObject = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGameParser.playerHostPathName);
                 let mOwnedPawn          = this.baseLayout.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
 
-                newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {pathName: mOwnedPawn.pathName}});
-                newFauna.properties.push({name: 'mLootTableIndex', type: 'IntProperty', value: 0});
-                newFauna.properties.push({name: 'mLootTimerHandle', type: 'StructProperty', value: {handle: 'None', type: 'TimerHandle'}});
-                newFauna.properties.push({name: 'mIsPersistent', type: 'BoolProperty', value: 1});
+                this.baseLayout.setObjectProperty(newFauna, {name: 'mFriendActor', type: 'ObjectProperty', value: {pathName: mOwnedPawn.pathName}});
+                this.baseLayout.setObjectProperty(newFauna, {name: 'mLootTableIndex', type: 'IntProperty', value: 0});
+                this.baseLayout.setObjectProperty(newFauna, {name: 'mLootTimerHandle', type: 'StructProperty', value: {handle: 'None', type: 'TimerHandle'}});
+                this.baseLayout.setObjectProperty(newFauna, {name: 'mIsPersistent', type: 'BoolProperty', value: 1});
 
                 let newSpaceRabbitInventory     = {
                     type            : 0,
@@ -118,7 +118,7 @@ export default class Spawn_Fauna
 
             //TODO: Ensure the creature spawner still exists in the save!
             let newCreatureSpawnerId = "Persistent_Exploration_2:PersistentLevel.BP_CreatureSpawner432";
-                newFauna.properties.push({name: "mOwningSpawner", type: "ObjectProperty", value: {levelName: "Persistent_Exploration_2", pathName: newCreatureSpawnerId}});
+                this.baseLayout.setObjectProperty(newFauna, {name: "mOwningSpawner", type: "ObjectProperty", value: {levelName: "Persistent_Exploration_2", pathName: newCreatureSpawnerId}});
 
             this.baseLayout.saveGameParser.addObject(newFauna);
 

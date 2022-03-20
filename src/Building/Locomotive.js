@@ -251,7 +251,7 @@ export default class Building_Locomotive
                                     }
                                     else
                                     {
-                                        trainIdentifier.properties.push({
+                                        baseLayout.setObjectProperty(trainIdentifier, {
                                             flags                       : 18,
                                             hasCultureInvariantString   : 1,
                                             historyType                 : 255,

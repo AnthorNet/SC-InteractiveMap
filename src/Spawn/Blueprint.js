@@ -620,7 +620,7 @@ export default class Spawn_Blueprint
                                 newmFluidDescriptor.value = {levelName: "", pathName: this.clipboard.pipes[pipeNetworkID].fluid};
                             }
 
-                            newPipeNetwork.properties.push(newmFluidDescriptor);
+                            this.baseLayout.setObjectProperty(newPipeNetwork, newmFluidDescriptor);
                     }
 
                     if(this.clipboard.pipes[pipeNetworkID].interface.length > 0)
@@ -647,7 +647,7 @@ export default class Spawn_Blueprint
                                     pipesConversion[newPipeNetworkPathName] = newPipeNetworkID;
                             }
 
-                        newPipeNetwork.properties.push(mFluidIntegrantScriptInterfaces);
+                        this.baseLayout.setObjectProperty(newPipeNetwork, mFluidIntegrantScriptInterfaces);
                     }
 
                     this.baseLayout.saveGameParser.addObject(newPipeNetwork);

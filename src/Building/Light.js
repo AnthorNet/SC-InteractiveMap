@@ -15,7 +15,7 @@ export default class Building_Light
         let mLightControlData = baseLayout.getObjectProperty(currentObject, 'mLightControlData');
             if(mLightControlData === null)
             {
-                currentObject.properties.push({
+                baseLayout.setObjectProperty(currentObject, {
                     name    : "mLightControlData",
                     type    : "StructProperty",
                     value   : { type: "LightSourceControlData", values: [] }

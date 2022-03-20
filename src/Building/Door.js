@@ -50,7 +50,7 @@ export default class Building_Door
 
                         if(values.mDoorConfiguration !== 'Automatic')
                         {
-                            currentObject.properties.push({
+                            baseLayout.setObjectProperty(currentObject, {
                                 name: "mDoorConfiguration", type: "EnumProperty",
                                 value: { name: "EDoorConfiguration", value: values.mDoorConfiguration}
                             });

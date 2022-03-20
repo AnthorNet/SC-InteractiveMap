@@ -1553,7 +1553,7 @@ export default class BaseLayout
 
             if(mIsEmptied === null)
             {
-                currentObject.properties.push({name: "mIsEmptied", type: "BoolProperty", value: 1});
+                this.setObjectProperty(currentObject, {name: "mIsEmptied", type: "BoolProperty", value: 1});
             }
 
             baseLayout.deleteObjectProperty(currentObject, 'mResourcesLeft');
@@ -3727,7 +3727,7 @@ export default class BaseLayout
             // Create the missing property...
             if(mWires === null)
             {
-                currentObject.properties.push({
+                this.setObjectProperty(currentObject, {
                     name    : "mWires",
                     type    : "ArrayProperty",
                     value   : {
@@ -5042,6 +5042,11 @@ export default class BaseLayout
         }
 
         return;
+    }
+
+    deleteAllObjectProperties(object)
+    {
+        object.properties = [];
     }
 
     getItemDataFromRecipe(currentObject, propertyName = 'mCurrentRecipe')

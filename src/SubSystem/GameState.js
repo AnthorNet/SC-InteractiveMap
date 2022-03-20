@@ -86,7 +86,7 @@ export default class SubSystem_GameState
         let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
             if(mPlayerGlobalColorPresets === null)
             {
-                this.gameState.properties.push({
+                this.baseLayout.setObjectProperty(this.gameState, {
                     name                : "mPlayerGlobalColorPresets",
                     structureName       : "mPlayerGlobalColorPresets",
                     structureSubType    : "GlobalColorPreset",
@@ -173,7 +173,7 @@ export default class SubSystem_GameState
                         mBuildableLightColorSlots.value.values[slotIndex]     = cloneDeep(this.getDefaultLightColorSlot(slotIndex, true));
                     }
 
-                    this.gameState.properties.push(mBuildableLightColorSlots);
+                    this.baseLayout.setObjectProperty(this.gameState, mBuildableLightColorSlots);
                     return this.getPlayerLightColorSlots();
                 }
 
