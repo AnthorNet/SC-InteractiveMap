@@ -318,9 +318,9 @@ export default class Modal_Map_Options
                 header.sessionName                      = newSessionName;
                 $('#saveGameInformation strong').html(newSessionName);
 
-                for(let i = 0; i < this.baseLayout.gameMode.length; i++)
+                for(const gameMode of this.baseLayout.gameMode)
                 {
-                    this.baseLayout.setObjectProperty(this.baseLayout.gameMode[i], 'mSaveSessionName', newSessionName, 'StrProperty');
+                    this.baseLayout.setObjectProperty(gameMode, 'mSaveSessionName', newSessionName, 'StrProperty');
                 }
             }
 

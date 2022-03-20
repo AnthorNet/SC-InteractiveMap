@@ -64,7 +64,7 @@ export default class BaseLayout
         this.saveGameRailVehicles               = new Map();
         this.frackingSmasherCores               = new Map();
 
-        this.gameMode                           = [];
+        this.gameMode                           = new Set();
         this.players                            = new Map();
         this.buildingDataClassNameHashTable     = new Map();
         this.radioactivityLayerNeedsUpdate      = false;
@@ -729,7 +729,7 @@ export default class BaseLayout
 
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C')
             {
-                this.gameMode.push(currentObject);
+                this.gameMode.add(currentObject);
                 continue;
             }
             if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
