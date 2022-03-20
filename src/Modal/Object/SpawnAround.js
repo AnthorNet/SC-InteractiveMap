@@ -28,9 +28,9 @@ export default class Modal_Object_SpawnAround
 
             inputOptions.push({group: 'Pixel Art', text: 'Import an image', value: 'importImage'});
 
-            for(let faunaId in baseLayout.faunaData)
+            for(const faunaData of baseLayout.faunaData.values())
             {
-                inputOptions.push({group: 'Fauna - ' + baseLayout.faunaCategories.get(baseLayout.faunaData[faunaId].category), text: baseLayout.faunaData[faunaId].name, value: baseLayout.faunaData[faunaId].className});
+                inputOptions.push({group: 'Fauna - ' + baseLayout.faunaCategories.get(faunaData.category), text: faunaData.name, value: faunaData.className});
             }
 
         BaseLayout_Modal.form({

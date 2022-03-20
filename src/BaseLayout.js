@@ -366,7 +366,7 @@ export default class BaseLayout
                         this.itemsCategories        = new Map(Object.entries(data.itemsCategories));
                         this.toolsData              = new Map(Object.entries(data.toolsData));
                         this.toolsCategories        = new Map(Object.entries(data.toolsCategories));
-                        this.faunaData              = data.faunaData;
+                        this.faunaData              = new Map(Object.entries(data.faunaData));
                         this.faunaCategories        = new Map(Object.entries(data.faunaCategories));
 
                         this.recipesData            = data.recipesData;
@@ -5269,17 +5269,18 @@ export default class BaseLayout
 
     getFaunaDataFromClassName(className)
     {
-        if(this.faunaData[className] !== undefined)
+        const faunaData = this.faunaData.get(className);
+        if(faunaData !== undefined)
         {
-            return this.faunaData[className];
+            return faunaData;
         }
 
-        for(let i in this.faunaData)
+        for(const [faunaId, faunaData] of this.faunaData)
         {
-            if(this.faunaData[i].className !== undefined && this.faunaData[i].className === className)
+            if(faunaData.className !== undefined && faunaData.className === className)
             {
-                this.faunaData[i].id = i;
-                return this.faunaData[i];
+                faunaData.id = faunaId;
+                return faunaData;
             }
         }
 
