@@ -113,12 +113,12 @@ export default class BaseLayout
         this.useFogOfWar                        = (this.localStorage !== null && this.localStorage.getItem('mapUseFogOfWar') !== null) ? (this.localStorage.getItem('mapUseFogOfWar') === 'true') : true;
         this.mapModelsQuality                   = (this.localStorage !== null && this.localStorage.getItem('mapModelsQuality') !== null) ? this.localStorage.getItem('mapModelsQuality') : 'high';
 
-        this.availablePowerConnection           = ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.FGPowerConnection1', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection'];
-        this.availableBeltConnection            = ['.ConveyorAny0', '.ConveyorAny1', '.Input0', '.Input1', '.Input2', '.Input3', '.InPut3', '.Input4', '.Input5', '.Input6', '.Output0', '.Output1', '.Output2', '.Output3'];
-        this.availableRailwayConnection         = ['.TrackConnection0', '.TrackConnection1'];
-        this.availablePlatformConnection        = ['.PlatformConnection0', '.PlatformConnection1'];
-        this.availablePipeConnection            = ['.PipeInputFactory', '.PipeOutputFactory', '.PipelineConnection0', '.PipelineConnection1', '.FGPipeConnectionFactory', '.Connection0', '.Connection1', '.Connection2', '.Connection3', '.ConnectionAny0', '.ConnectionAny1'];
-        this.availableHyperPipeConnection       = ['.PipeHyperConnection0', '.PipeHyperConnection1', '.PipeHyperStartConnection'];
+        this.availablePowerConnection           = new Set(['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.FGPowerConnection1', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection']);
+        this.availableBeltConnection            = new Set(['.ConveyorAny0', '.ConveyorAny1', '.Input0', '.Input1', '.Input2', '.Input3', '.InPut3', '.Input4', '.Input5', '.Input6', '.Output0', '.Output1', '.Output2', '.Output3']);
+        this.availableRailwayConnection         = new Set(['.TrackConnection0', '.TrackConnection1']);
+        this.availablePlatformConnection        = new Set(['.PlatformConnection0', '.PlatformConnection1']);
+        this.availablePipeConnection            = new Set(['.PipeInputFactory', '.PipeOutputFactory', '.PipelineConnection0', '.PipelineConnection1', '.FGPipeConnectionFactory', '.Connection0', '.Connection1', '.Connection2', '.Connection3', '.ConnectionAny0', '.ConnectionAny1']);
+        this.availableHyperPipeConnection       = new Set(['.PipeHyperConnection0', '.PipeHyperConnection1', '.PipeHyperStartConnection']);
 
         this.detailedModels                     = new Map();
 
@@ -1954,27 +1954,24 @@ export default class BaseLayout
                 for(const child of properties.object.children)
                 {
                     let currentObjectChildren = this.saveGameParser.getTargetObject(child.pathName);
+                    const component = '.' + currentObjectChildren.pathName.split('.').pop();
 
-                    // Grab wires for redraw...
-                    for(let k = 0; k < this.availablePowerConnection.length; k++)
+                    if (this.availablePowerConnection.has(component))
                     {
-                        if(currentObjectChildren.pathName.endsWith(this.availablePowerConnection[k]))
+                        for(let m = 0; m < currentObjectChildren.properties.length; m++)
                         {
-                            for(let m = 0; m < currentObjectChildren.properties.length; m++)
+                            if(currentObjectChildren.properties[m].name === 'mWires')
                             {
-                                if(currentObjectChildren.properties[m].name === 'mWires')
+                                for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
                                 {
-                                    for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
-                                    {
-                                        let currentWire     = this.saveGameParser.getTargetObject(currentObjectChildren.properties[m].value.values[n].pathName);
-                                        let result          = this.parseObject(currentWire);
-                                        let oldMarker       = this.getMarkerFromPathName(currentWire.pathName, result.layer);
-                                            this.deleteMarkerFromElements(result.layer, oldMarker);
-                                            this.addElementToLayer(result.layer, result.marker);
-                                    }
-
-                                    break;
+                                    let currentWire     = this.saveGameParser.getTargetObject(currentObjectChildren.properties[m].value.values[n].pathName);
+                                    let result          = this.parseObject(currentWire);
+                                    let oldMarker       = this.getMarkerFromPathName(currentWire.pathName, result.layer);
+                                        this.deleteMarkerFromElements(result.layer, oldMarker);
+                                        this.addElementToLayer(result.layer, result.marker);
                                 }
+
+                                break;
                             }
                         }
                     }
@@ -3003,7 +3000,7 @@ export default class BaseLayout
             {
                 let childrenType        = '.' + child.pathName.split('.').pop();
 
-                if(baseLayout.availablePowerConnection.indexOf(childrenType) !== -1)
+                if(baseLayout.availablePowerConnection.has(childrenType))
                 {
                     let currentObjectChildren = baseLayout.saveGameParser.getTargetObject(pathName + childrenType);
                         if(currentObjectChildren !== null)
@@ -5378,20 +5375,18 @@ export default class BaseLayout
         {
             for(const child of currentObject.children)
             {
-                for(let k = 0; k < this.availablePowerConnection.length; k++)
+                const component = '.' + child.pathName.split('.').pop();
+                if(this.availablePowerConnection.has(component))
                 {
-                    if(child.pathName.endsWith(this.availablePowerConnection[k]))
-                    {
-                        const childObject = this.saveGameParser.getTargetObject(child.pathName);
+                    const childObject = this.saveGameParser.getTargetObject(child.pathName);
 
-                        if(childObject !== null)
-                        {
-                            let mWires = this.getObjectProperty(childObject, 'mWires');
-                                if(mWires !== null)
-                                {
-                                    return true;
-                                }
-                        }
+                    if(childObject !== null)
+                    {
+                        let mWires = this.getObjectProperty(childObject, 'mWires');
+                            if(mWires !== null)
+                            {
+                                return true;
+                            }
                     }
                 }
             }
