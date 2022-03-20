@@ -26,13 +26,13 @@ export default class BaseLayout_Polygon
         if(options.customPolygon !== undefined && options.customModel !== undefined)
         {
             model                               = options.customModel;
-            baseLayout.detailedModels[model]    = {forms: [{points: options.customPolygon}]};
+            baseLayout.detailedModels.set(model, {forms: [{points: options.customPolygon}]});
         }
 
         // Prepare high quality model
-        if(((['medium', 'high'].includes(baseLayout.mapModelsQuality) && baseLayout.detailedModels !== null) || options.customPolygon !== undefined) && baseLayout.detailedModels[model] !== undefined && options.skipDetailedModel === false)
+        if(((['medium', 'high'].includes(baseLayout.mapModelsQuality) && baseLayout.detailedModels !== null) || options.customPolygon !== undefined) && baseLayout.detailedModels.has(model) && options.skipDetailedModel === false)
         {
-            let currentModel        = baseLayout.detailedModels[model];
+            let currentModel        = baseLayout.detailedModels.get(model);
             let currentModelScale   = (currentModel.scale !== undefined) ? currentModel.scale : 1;
             let currentModelXOffset = (currentModel.xOffset !== undefined) ? currentModel.xOffset : 0;
             let currentModelYOffset = (currentModel.yOffset !== undefined) ? currentModel.yOffset : 0;

@@ -17,15 +17,15 @@ export default class Modal_Object_Pattern
             });
             if(baseLayout.detailedModels !== null)
             {
-                for(let patternPathname in baseLayout.detailedModels)
+                for(const [pathName, model] of baseLayout.detailedModels)
                 {
-                    if(baseLayout.detailedModels[patternPathname] !== undefined && baseLayout.detailedModels[patternPathname].patternImage !== undefined)
+                    if(model !== undefined && model.patternImage !== undefined)
                     {
                         availablePatterns.push({
-                            group       : baseLayout.detailedModels[patternPathname].patternGroup,
-                            dataContent : '<img src="' + baseLayout.detailedModels[patternPathname].patternImage + '" style="width: 64px;" class="py-2 mr-1" /> ' + baseLayout.detailedModels[patternPathname].patternGroup + ' - ' + baseLayout.detailedModels[patternPathname].patternName,
-                            value       : patternPathname,
-                            text        : baseLayout.detailedModels[patternPathname].patternGroup + ' - ' + baseLayout.detailedModels[patternPathname].patternName
+                            group       : model.patternGroup,
+                            dataContent : '<img src="' + model.patternImage + '" style="width: 64px;" class="py-2 mr-1" /> ' + model.patternGroup + ' - ' + model.patternName,
+                            value       : pathName,
+                            text        : model.patternGroup + ' - ' + model.patternName
                         })
                     }
                 }

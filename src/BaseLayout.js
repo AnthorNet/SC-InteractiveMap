@@ -120,7 +120,7 @@ export default class BaseLayout
         this.availablePipeConnection            = ['.PipeInputFactory', '.PipeOutputFactory', '.PipelineConnection0', '.PipelineConnection1', '.FGPipeConnectionFactory', '.Connection0', '.Connection1', '.Connection2', '.Connection3', '.ConnectionAny0', '.ConnectionAny1'];
         this.availableHyperPipeConnection       = ['.PipeHyperConnection0', '.PipeHyperConnection1', '.PipeHyperStartConnection'];
 
-        this.detailedModels                     = {};
+        this.detailedModels                     = new Map();
 
         this.playerLayersNotUsingAltitude       = ['playerRadioactivityLayer', 'playerLightsHaloLayer', 'playerPositionLayer', 'playerFogOfWar', 'playerResourceDepositsLayer', 'playerItemsPickupLayer'];
 
@@ -334,7 +334,7 @@ export default class BaseLayout
         $('#altitudeSliderInputs').hide();
         $('#mods_resource_nodes').hide();
 
-        this.detailedModels = {};
+        this.detailedModels = new Map();
 
         console.timeEnd('resetBaseLayout');
     }
@@ -414,9 +414,9 @@ export default class BaseLayout
 
                             if(buildingData.detailedModel !== undefined)
                             {
-                                if(this.detailedModels[buildingData.className] === undefined)
+                                if(!this.detailedModels.has(buildingData.className))
                                 {
-                                    this.detailedModels[buildingData.className] = JSON.parse(buildingData.detailedModel);
+                                    this.detailedModels.set(buildingData.className, JSON.parse(buildingData.detailedModel));
                                 }
 
                                 delete buildingData.detailedModel;
@@ -512,13 +512,15 @@ export default class BaseLayout
             {
                 for(let className in data)
                 {
-                    this.detailedModels[className] = data[className];
+                    this.detailedModels.set(className, data[className]);
 
                     // Special case
                     if(className === '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C')
                     {
-                        this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']         = cloneDeep(data[className]);
-                        this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].scale   = 2.3;
+                        this.detailedModels.set('/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C', {
+                            ...cloneDeep(data[className]),
+                            scale: 2.3
+                        });
                     }
                 }
 
@@ -2774,7 +2776,7 @@ export default class BaseLayout
                             currentPatternRotation = {value: {value: 0}};
                         }
 
-                    if(this.detailedModels[currentPattern.value.pathName] !== undefined)
+                    if(this.detailedModels.has(currentPattern.value.pathName))
                     {
                         let patternTransform    = cloneDeep(currentObject.transform);
                         let patternRotation     = BaseLayout_Math.getQuaternionToEuler(patternTransform.rotation);
@@ -2831,12 +2833,14 @@ export default class BaseLayout
         }
 
         // Activate detailedModel copy from another building?
-        if(this.detailedModels !== null && buildingData.mapUseModel !== undefined && this.detailedModels[currentObject.className] === undefined)
+        if(this.detailedModels !== null && buildingData.mapUseModel !== undefined && !this.detailedModels.has(currentObject.className))
         {
             const modelClassName = this.buildingsData.get(buildingData.mapUseModel)?.className;
-            if(modelClassName !== undefined && this.detailedModels[modelClassName] !== undefined)
-            {
-                this.detailedModels[currentObject.className] = this.detailedModels[modelClassName];
+            if(modelClassName !== undefined) {
+                const detailedModel  = this.detailedModels.get(modelClassName);
+                if(detailedModel !== undefined) {
+                    this.detailedModels.set(currentObject.className, detailedModel);
+                }
             }
         }
 
@@ -3627,22 +3631,28 @@ export default class BaseLayout
 
                         // Does source or target have a connection anchor?
                         let sourceTranslation = currentObjectSourceOuterPath.transform.translation;
-                            if(this.detailedModels !== null && this.detailedModels[currentObjectSourceOuterPath.className] !== undefined && this.detailedModels[currentObjectSourceOuterPath.className].powerConnection !== undefined)
-                            {
-                                let currentModel = this.detailedModels[currentObjectSourceOuterPath.className];
-                                    sourceTranslation= BaseLayout_Math.getPointRotation(
-                                        [
-                                            sourceTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
-                                            sourceTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
-                                        ],
-                                        sourceTranslation,
-                                        currentObjectSourceOuterPath.transform.rotation
-                                    );
-                            }
+                        if (this.detailedModels !== null) {
+                            const sourceDetailedModel = this.detailedModels.get(currentObjectSourceOuterPath.className);
+                                if(sourceDetailedModel !== undefined && sourceDetailedModel.powerConnection !== undefined)
+                                {
+                                    let currentModel = sourceDetailedModel;
+                                        sourceTranslation= BaseLayout_Math.getPointRotation(
+                                            [
+                                                sourceTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
+                                                sourceTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
+                                            ],
+                                            sourceTranslation,
+                                            currentObjectSourceOuterPath.transform.rotation
+                                        );
+                                }
+                        }
+
                         let targetTranslation = currentObjectTargetOuterPath.transform.translation;
-                            if(this.detailedModels !== null && this.detailedModels[currentObjectTargetOuterPath.className] !== undefined && this.detailedModels[currentObjectTargetOuterPath.className].powerConnection !== undefined)
+                        if (this.detailedModels !== null) {
+                            const targetDetailedModel = this.detailedModels.get(currentObjectTargetOuterPath.className);
+                            if(targetDetailedModel !== undefined && targetDetailedModel.powerConnection !== undefined)
                             {
-                                let currentModel = this.detailedModels[currentObjectTargetOuterPath.className];
+                                let currentModel = targetDetailedModel;
                                     targetTranslation= BaseLayout_Math.getPointRotation(
                                         [
                                             targetTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
@@ -3652,6 +3662,7 @@ export default class BaseLayout
                                         currentObjectTargetOuterPath.transform.rotation
                                     );
                             }
+                        }
 
 
                         // Add the power line!
