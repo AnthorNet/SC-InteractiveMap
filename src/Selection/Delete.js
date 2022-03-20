@@ -48,16 +48,17 @@ export default class Selection_Delete
                                     if(mBuiltWithRecipe !== null)
                                     {
                                         let recipeName = mBuiltWithRecipe.pathName.split('.')[1];
-                                            if(this.baseLayout.recipesData[recipeName] !== undefined)
+                                        const recipeData = this.baseLayout.recipesData.get(recipeName);
+                                            if(recipeData !== undefined)
                                             {
-                                                for(let ingredient in this.baseLayout.recipesData[recipeName].ingredients)
+                                                for(let ingredient in recipeData.ingredients)
                                                 {
                                                     if(putInCrate[ingredient] === undefined)
                                                     {
                                                         putInCrate[ingredient] = 0;
                                                     }
 
-                                                    putInCrate[ingredient] += this.baseLayout.recipesData[recipeName].ingredients[ingredient];
+                                                    putInCrate[ingredient] += recipeData.ingredients[ingredient];
                                                 }
                                             }
                                     }

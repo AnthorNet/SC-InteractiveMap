@@ -369,7 +369,7 @@ export default class BaseLayout
                         this.faunaData              = new Map(Object.entries(data.faunaData));
                         this.faunaCategories        = new Map(Object.entries(data.faunaCategories));
 
-                        this.recipesData            = data.recipesData;
+                        this.recipesData            = new Map(Object.entries(data.recipesData));
                         this.schematicsData         = data.schematicsData;
                         this.modsData               = data.modsData;
 
@@ -444,13 +444,14 @@ export default class BaseLayout
                     {
                         for(let recipe in data.Recipes)
                         {
-                            if(this.recipesData[recipe] !== undefined && this.recipesData[recipe].className !== data.Recipes[recipe].className)
+                            const recipeData = this.recipesData.get(recipe);
+                            if(recipeData !== undefined && recipeData.className !== data.Recipes[recipe].className)
                             {
-                                this.recipesData[modId + '|#|' + recipe] = data.Recipes[recipe];
+                                this.recipesData.set(modId + '|#|' + recipe, data.Recipes[recipe]);
                             }
                             else
                             {
-                                this.recipesData[recipe] = data.Recipes[recipe];
+                                this.recipesData.set(recipe, data.Recipes[recipe]);
                             }
                         }
                     }
@@ -4960,9 +4961,10 @@ export default class BaseLayout
         {
             // Extract recipe name
             let recipeName = recipe.pathName.split('.')[1];
-                if(this.recipesData[recipeName] !== undefined) //TODO: Bypass mod override?! ('|#|')
+            const recipeData = this.recipesData.get(recipeName);
+                if(recipeData !== undefined) //TODO: Bypass mod override?! ('|#|')
                 {
-                    return this.recipesData[recipeName];
+                    return recipeData;
                 }
                 else
                 {
@@ -4983,11 +4985,11 @@ export default class BaseLayout
     {
         className = className.replace('Build_', 'Desc_').replace('Build_', 'Desc_');
 
-        for(let recipeId in this.recipesData)
+        for(const recipeData of this.recipesData.values())
         {
-            if(this.recipesData[recipeId].produce !== undefined && this.recipesData[recipeId].produce[className] !== undefined)
+            if(recipeData.produce !== undefined && recipeData.produce[className] !== undefined)
             {
-                return this.recipesData[recipeId];
+                return recipeData;
             }
         }
 
@@ -4996,11 +4998,11 @@ export default class BaseLayout
 
     getItemDataFromRecipeClassName(className)
     {
-        for(let recipeId in this.recipesData)
+        for(const recipeData of this.recipesData.values())
         {
-            if(this.recipesData[recipeId].className !== undefined && this.recipesData[recipeId].className === className)
+            if(recipeData.className !== undefined && recipeData.className === className)
             {
-                return this.recipesData[recipeId];
+                return recipeData;
             }
         }
 
@@ -5406,13 +5408,13 @@ export default class BaseLayout
             if(mBuiltWithRecipe !== null)
             {
                 let className = currentObject.className.replace('Build_', 'Desc_').replace('Build_', 'Desc_');
-                    for(let recipeId in this.recipesData)
+                    for(const recipeData of this.recipesData.values())
                     {
-                       if(this.recipesData[recipeId].produce !== undefined && this.recipesData[recipeId].produce[className] !== undefined)
+                       if(recipeData.produce !== undefined && recipeData.produce[className] !== undefined)
                        {
-                           if(mBuiltWithRecipe.pathName !== this.recipesData[recipeId].className)
+                           if(mBuiltWithRecipe.pathName !== recipeData.className)
                            {
-                               mBuiltWithRecipe.pathName = this.recipesData[recipeId].className;
+                               mBuiltWithRecipe.pathName = recipeData.className;
                            }
 
                            return;
@@ -5594,11 +5596,13 @@ export default class BaseLayout
                 if(mBuiltWithRecipe !== null)
                 {
                     let recipeName = mBuiltWithRecipe.pathName.split('.')[1];
-                        if(this.recipesData[recipeName] !== undefined)
+                    const recipeData = this.recipesData.get(recipeName);
+
+                        if(recipeData !== undefined)
                         {
-                            for(let ingredient in this.recipesData[recipeName].ingredients)
+                            for(let ingredient in recipeData.ingredients)
                             {
-                                for(let i = 0; i < this.recipesData[recipeName].ingredients[ingredient]; i++)
+                                for(let i = 0; i < recipeData.ingredients[ingredient]; i++)
                                 {
                                     recipe.push(ingredient);
                                 }

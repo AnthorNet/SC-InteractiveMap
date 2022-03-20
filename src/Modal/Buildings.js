@@ -197,17 +197,18 @@ export default class Modal_Buildings
                                         {
                                             // Extract recipe name
                                             let recipeName = recipe.pathName.split('.')[1];
-                                                if(this.baseLayout.recipesData[recipeName] !== undefined)
+                                            const recipeData = this.baseLayout.recipesData.get(recipeName);
+                                                if(recipeData !== undefined)
                                                 {
-                                                    htmlRow.push('<strong>' + this.baseLayout.recipesData[recipeName].name + '</strong><br />');
+                                                    htmlRow.push('<strong>' + recipeData.name + '</strong><br />');
                                                 }
                                                 else
                                                 {
-                                                    for(let recipeId in this.baseLayout.recipesData)
+                                                    for(const otherRecipeData of this.baseLayout.recipesData)
                                                     {
-                                                        if(this.baseLayout.recipesData[recipeId].className !== undefined && this.baseLayout.recipesData[recipeId].className === recipe.pathName)
+                                                        if(otherRecipeData.className !== undefined && otherRecipeData.className === recipe.pathName)
                                                         {
-                                                            htmlRow.push('<strong>' + this.baseLayout.recipesData[recipeName].name + '</strong><br />');
+                                                            htmlRow.push('<strong>' + recipeData.name + '</strong><br />');
                                                             break;
                                                         }
                                                     }
