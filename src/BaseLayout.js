@@ -185,12 +185,14 @@ export default class BaseLayout
         };
 
         // Reset mods layer...
-        for(let modId in this.modsData)
-        {
-            if(this.modsData[modId].isLoaded !== undefined && this.modsData[modId].isLoaded === true)
+        if (this.modsData !== null) {
+            for(const [modId, modData] of this.modsData)
             {
-                let layerId = 'playerMods' + modId + 'Layer';
-                    this.setupModSubLayer(modId, layerId);
+                if(modData.isLoaded !== undefined && modData.isLoaded === true)
+                {
+                    let layerId = 'playerMods' + modId + 'Layer';
+                        this.setupModSubLayer(modId, layerId);
+                }
             }
         }
 
@@ -371,7 +373,7 @@ export default class BaseLayout
 
                         this.recipesData            = new Map(Object.entries(data.recipesData));
                         this.schematicsData         = new Map(Object.entries(data.schematicsData));
-                        this.modsData               = data.modsData;
+                        this.modsData               = new Map(Object.entries(data.modsData));
 
                         this.loadDetailedModels();
                     }.bind(this));
@@ -389,12 +391,13 @@ export default class BaseLayout
         if(modId === 'KLib'){ modId = 'SatisfactoryPlus'; }
 
         // Check if the modId exists...
-        if(this.modsData[modId] !== undefined)
+        const modData = this.modsData.get(modId);
+        if(modData !== undefined)
         {
-            if(this.modsData[modId].loading === undefined)
+            if(modData.loading === undefined)
             {
-                this.modsData[modId].loading = true;
-                console.time('Loading mod: ' + this.modsData[modId].name);
+                modData.loading = true;
+                console.time('Loading mod: ' + modData.name);
 
                 $.getJSON(this.modsUrl + '/id/' + modId, function(data){
                     if(data.Buildings !== undefined)
@@ -464,16 +467,16 @@ export default class BaseLayout
                     }
 
                     // Mod is loaded, add object waiting in queue...
-                    this.modsData[modId].loading = false;
-                    if(this.modsData[modId].queue !== undefined)
+                    modData.loading = false;
+                    if(modData.queue !== undefined)
                     {
-                        while(this.modsData[modId].queue.length > 0)
+                        while(modData.queue.length > 0)
                         {
-                            this.modsData[modId].queue.shift()();
+                            modData.queue.shift()();
                         }
                     }
 
-                    console.timeEnd('Loading mod: ' + this.modsData[modId].name);
+                    console.timeEnd('Loading mod: ' + modData.name);
                     return resolve();
                 }.bind(this));
 
@@ -482,14 +485,14 @@ export default class BaseLayout
             else
             {
                 // Add object to queue until the mod is fully loaded...
-                if(this.modsData[modId].loading === true)
+                if(modData.loading === true)
                 {
-                    if(this.modsData[modId].queue === undefined)
+                    if(modData.queue === undefined)
                     {
-                        this.modsData[modId].queue = [];
+                        modData.queue = [];
                     }
 
-                    this.modsData[modId].queue.push(resolve);
+                    modData.queue.push(resolve);
                     return;
                 }
             }
@@ -910,18 +913,18 @@ export default class BaseLayout
 
         if(currentObject.className.startsWith('/Game/FactoryGame/') === false)
         {
-            for(let modId in this.modsData)
+            for(const [modId, modData] of this.modsData)
             {
                 if(currentObject.className.startsWith('/' + modId + '/') === true || currentObject.className.startsWith('/Game/' + modId + '/') === true || (currentObject.className.startsWith('/KLib/') === true) && modId === 'SatisfactoryPlus') //TODO: Add mods multiple references...
                 {
-                    if(this.modsData[modId].queuedPathName === undefined)
+                    if(modData.queuedPathName === undefined)
                     {
-                        this.modsData[modId].queuedPathName = [];
+                        modData.queuedPathName = [];
                     }
 
-                    if(this.modsData[modId].queuedPathName.includes(currentObject.pathName) === false)
+                    if(modData.queuedPathName.includes(currentObject.pathName) === false)
                     {
-                        this.modsData[modId].queuedPathName.push(currentObject.pathName);
+                        modData.queuedPathName.push(currentObject.pathName);
 
                         return this.loadMod(modId, () => {
                             return this.parseObject(currentObject, resolve, skipMod);
@@ -3978,13 +3981,14 @@ export default class BaseLayout
 
     setupModSubLayer(modId, layerId)
     {
+        const modData = this.modsData.get(modId);
         $('#playerModsLayer').show()
                             .find('.col-12')
                             .append('<div class="btn btn-active updatePlayerLayerState m-1 p-1 radialMenu" data-id="'
                                     + layerId
                                     + '" data-hover="tooltip" title="'
-                                    + this.modsData[modId].name + '"><span class="badge badge-secondary badge-layer"></span><img src="'
-                                    + this.modsData[modId].image + '" style="width: 40px;" /><div class="radial"><div class="btn bg-secondary btn-outline-warning active focus p-0"></div></div></div>');
+                                    + modData.name + '"><span class="badge badge-secondary badge-layer"></span><img src="'
+                                    + modData.image + '" style="width: 40px;" /><div class="radial"><div class="btn bg-secondary btn-outline-warning active focus p-0"></div></div></div>');
 
        this.playerLayers[layerId] = {layerGroup: L.layerGroup().addTo(this.satisfactoryMap.leafletMap), subLayer: null, mainDivId: '#playerModsLayer', elements: [], filters: []};
        this.setupSubLayer(layerId);
