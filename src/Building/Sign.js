@@ -1318,15 +1318,15 @@ export default class Building_Sign
             }
 
             // Equipment
-            for(let key in baseLayout.toolsData)
+            for(const toolData of baseLayout.toolsData.values())
             {
-                if(baseLayout.toolsData[key].iconId !== undefined)
+                if(toolData.iconId !== undefined)
                 {
                     options.push({
                         group       : 'Equipment',
-                        dataContent : '<img src="' + baseLayout.toolsData[key].image + '" style="width: 24px;" class="mr-1" /> ' + baseLayout.toolsData[key].name,
-                        value       : baseLayout.toolsData[key].iconId,
-                        text        : baseLayout.toolsData[key].name
+                        dataContent : '<img src="' + toolData.image + '" style="width: 24px;" class="mr-1" /> ' + toolData.name,
+                        value       : toolData.iconId,
+                        text        : toolData.name
                     });
                 }
             }

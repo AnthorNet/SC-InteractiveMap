@@ -90,7 +90,7 @@ export default class BaseLayout_ContextMenu
                             }
                         break;
                     case '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C':
-                        buildingData                        = this.baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C;
+                        buildingData                        = this.baseLayout.toolsData.get('BP_ItemDescriptorPortableMiner_C');
                         buildingData.mapUseSlotColor        = false;
                         break;
                     case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':

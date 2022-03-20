@@ -364,7 +364,7 @@ export default class BaseLayout
                         this.buildingsCategories    = new Map(Object.entries(data.buildingsCategories));
                         this.itemsData              = new Map(Object.entries(data.itemsData));
                         this.itemsCategories        = new Map(Object.entries(data.itemsCategories));
-                        this.toolsData              = data.toolsData;
+                        this.toolsData              = new Map(Object.entries(data.toolsData));
                         this.toolsCategories        = new Map(Object.entries(data.toolsCategories));
                         this.faunaData              = data.faunaData;
                         this.faunaCategories        = new Map(Object.entries(data.faunaCategories));
@@ -437,7 +437,7 @@ export default class BaseLayout
                     {
                         for(let tool in data.Tools)
                         {
-                            this.toolsData[tool] = data.Tools[tool];
+                            this.toolsData.set(tool, data.Tools[tool]);
                         }
                     }
                     if(data.Recipes !== undefined)
@@ -1568,11 +1568,12 @@ export default class BaseLayout
 
         if(this.satisfactoryMap.availableIcons[iconType] === undefined)
         {
-            if(this.toolsData[itemId] !== undefined)
+            const toolData = this.toolsData.get(itemId);
+            if(toolData !== undefined)
             {
                 this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                     className   : "leaflet-data-marker",
-                    html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, this.toolsData[itemId].image),
+                    html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, toolData.image),
                     iconAnchor  : [48, 78],
                     iconSize    : [50, 80]
                 });
@@ -1626,11 +1627,12 @@ export default class BaseLayout
                                 }
                                 else
                                 {
-                                    if(this.toolsData[itemId] !== undefined)
+                                    const toolData = this.toolsData.get(itemId);
+                                    if(toolData !== undefined)
                                     {
                                         this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                                             className   : "leaflet-data-marker",
-                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, this.toolsData[itemId].image),
+                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, toolData.image),
                                             iconAnchor  : [48, 78],
                                             iconSize    : [50, 80]
                                         });
@@ -2436,15 +2438,15 @@ export default class BaseLayout
         if(isFluidInventory === false)
         {
             let toolsOptions = [];
-                for(let i in this.toolsData)
+                for(const toolData of this.toolsData.values())
                 {
-                    if(this.toolsData[i].className !== undefined && this.toolsData[i].className !== null)
+                    if(toolData.className !== undefined && toolData.className !== null)
                     {
                         toolsOptions.push({
-                            group       : 'Tools - ' + ((this.toolsData[i].category === 'ficsmas') ? itemsCategories.get(this.toolsData[i].category) : this.toolsCategories.get(this.toolsData[i].category)),
-                            dataContent : '<img src="' + this.toolsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.toolsData[i].name,
-                            value       : this.toolsData[i].className,
-                            text        : this.toolsData[i].name
+                            group       : 'Tools - ' + ((toolData.category === 'ficsmas') ? itemsCategories.get(toolData.category) : this.toolsCategories.get(toolData.category)),
+                            dataContent : '<img src="' + toolData.image + '" style="width: 24px;" class="mr-1" /> ' + toolData.name,
+                            value       : toolData.className,
+                            text        : toolData.name
                         });
                     }
                 }
@@ -2963,7 +2965,7 @@ export default class BaseLayout
             }
             if(currentObject.className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
             {
-                buildingData                = baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C;
+                buildingData                = baseLayout.toolsData.get('BP_ItemDescriptorPortableMiner_C');
                 buildingData.mapLayer       = 'playerMinersLayer';
             }
 
@@ -5033,17 +5035,19 @@ export default class BaseLayout
                 return itemData;
             }
         }
-        if(this.toolsData[className] !== undefined)
+
+        const toolData = this.toolsData.get(className);
+        if(toolData !== undefined)
         {
-            this.toolsData[className].id = className;
-            return this.toolsData[className];
+            toolData.id = className;
+            return toolData;
         }
-        for(let i in this.toolsData)
+        for(const [toolId, toolData] of this.toolsData)
         {
-            if(this.toolsData[i].className !== undefined && this.toolsData[i].className === className)
+            if(toolData.className !== undefined && toolData.className === className)
             {
-                this.toolsData[i].id = i;
-                return this.toolsData[i];
+                toolData.id = toolId;
+                return toolData;
             }
         }
 
@@ -5076,9 +5080,11 @@ export default class BaseLayout
         {
             return itemData;
         }
-        if(this.toolsData[itemId] !== undefined)
+
+        const toolData = this.toolsData.get(itemId);
+        if(toolData !== undefined)
         {
-            return this.toolsData[itemId];
+            return toolData;
         }
 
         console.log('Missing item itemId', itemId);
@@ -5167,7 +5173,7 @@ export default class BaseLayout
         // Add equipment vehicles
         if(!this.buildingsData.has('Desc_GolfCart_C'))
         {
-            const baseBuildingData = this.toolsData.Desc_GolfCart_C;
+            const baseBuildingData = this.toolsData.get('Desc_GolfCart_C');
             if (baseBuildingData !== undefined) {
                 this.buildingsData.set('Desc_GolfCart_C', {
                     ...cloneDeep(baseBuildingData),
@@ -5178,7 +5184,7 @@ export default class BaseLayout
         }
         if(!this.buildingsData.has('Desc_GolfcartGold_C'))
         {
-            const baseBuildingData = this.toolsData.Desc_GolfCartGold_C;
+            const baseBuildingData = this.toolsData.get('Desc_GolfCartGold_C');
             if (baseBuildingData !== undefined) {
                 this.buildingsData.set('Desc_GolfcartGold_C', {
                     ...cloneDeep(baseBuildingData),
@@ -5301,11 +5307,11 @@ export default class BaseLayout
                 return itemData.image;
             }
         }
-        for(let i in this.toolsData)
+        for(const toolData of this.toolsData.values())
         {
-            if(this.toolsData[i].iconId !== undefined && this.toolsData[i].iconId === iconId)
+            if(toolData.iconId !== undefined && toolData.iconId === iconId)
             {
-                return this.toolsData[i].image;
+                return toolData.image;
             }
         }
         for(const buildingData of this.buildingsData.values())

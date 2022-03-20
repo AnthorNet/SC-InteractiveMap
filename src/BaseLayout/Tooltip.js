@@ -112,14 +112,13 @@ export default class BaseLayout_Tooltip
                         case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C':
                         case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_EliteStingerParts.BP_EliteStingerParts_C':
                             let currentItemData = null;
-                            const baseItemData = this.baseLayout.itemsData.get(this.target.options.itemId);
+                            let baseItemData = this.baseLayout.itemsData.get(this.target.options.itemId);
+                                if (baseItemData === undefined) {
+                                    baseItemData = this.baseLayout.toolsData.get(this.target.options.itemId)
+                                }
                                 if(baseItemData !== undefined)
                                 {
                                     currentItemData = cloneDeep(baseItemData);
-                                }
-                                if(this.baseLayout.toolsData[this.target.options.itemId] !== undefined)
-                                {
-                                    currentItemData = cloneDeep(this.baseLayout.toolsData[this.target.options.itemId]);
                                 }
                                 if(currentItemData !== null && currentItemData !== undefined)
                                 {
@@ -136,7 +135,7 @@ export default class BaseLayout_Tooltip
                         case '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C':
                             return this.setBeaconTooltipContent(currentObject);
                         case '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C':
-                            return this.setBuildingExtractionTooltipContent(currentObject, this.baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C);
+                            return this.setBuildingExtractionTooltipContent(currentObject, this.baseLayout.toolsData.get('BP_ItemDescriptorPortableMiner_C'));
                         case '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C':
                         case '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C':
                         case '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C':
