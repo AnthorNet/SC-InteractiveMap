@@ -68,11 +68,11 @@ export default class Building_Production
             {
                 let isUnlocked = false;
 
-                    for(let schematicId in baseLayout.schematicsData)
+                    for(const schematic of baseLayout.schematicsData.values())
                     {
-                        if(baseLayout.schematicsData[schematicId].className !== undefined && purchasedSchematics.includes(baseLayout.schematicsData[schematicId].className))
+                        if(schematic.className !== undefined && purchasedSchematics.includes(schematic.className))
                         {
-                            if(baseLayout.schematicsData[schematicId].recipes !== undefined && baseLayout.schematicsData[schematicId].recipes.includes(recipeData.className))
+                            if(schematic.recipes !== undefined && schematic.recipes.includes(recipeData.className))
                             {
                                 isUnlocked = true;
                             }

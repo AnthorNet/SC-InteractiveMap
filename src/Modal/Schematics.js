@@ -23,11 +23,11 @@ export default class Modal_Schematics
             html.push('<div class="card-body text-center">You can click on the status of the schematic to update its current state.</div>');
 
         let maxTier = 0;
-            for(let schematicId in this.baseLayout.schematicsData)
+            for(const [schematicId, schematic] of this.baseLayout.schematicsData)
             {
-                if(this.baseLayout.schematicsData[schematicId].tier !== undefined && (schematicId.startsWith('Schematic_') || schematicId.startsWith('Schem_') || schematicId.startsWith('/SS_Mod/Schematics/')))
+                if(schematic.tier !== undefined && (schematicId.startsWith('Schematic_') || schematicId.startsWith('Schem_') || schematicId.startsWith('/SS_Mod/Schematics/')))
                 {
-                    maxTier = Math.max(maxTier, this.baseLayout.schematicsData[schematicId].tier);
+                    maxTier = Math.max(maxTier, schematic.tier);
                 }
             }
 
@@ -46,11 +46,11 @@ export default class Modal_Schematics
             let total           = 0;
 
             let currentData     = {};
-                for(let schematicId in this.baseLayout.schematicsData)
+                for(const [schematicId, schematic] of this.baseLayout.schematicsData)
                 {
-                    if(this.baseLayout.schematicsData[schematicId].tier !== undefined && this.baseLayout.schematicsData[schematicId].tier === i && (schematicId.startsWith('Schematic_') || schematicId.startsWith('Schem_') || schematicId.startsWith('/SS_Mod/Schematics/')))
+                    if(schematic.tier !== undefined && schematic.tier === i && (schematicId.startsWith('Schematic_') || schematicId.startsWith('Schem_') || schematicId.startsWith('/SS_Mod/Schematics/')))
                     {
-                        currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
+                        currentData[schematicId] = schematic;
                     }
                 }
 
@@ -59,7 +59,7 @@ export default class Modal_Schematics
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
                 let className        = schematicsDataKey[j];
-                let currentSchematic = this.baseLayout.schematicsData[className];
+                let currentSchematic = this.baseLayout.schematicsData.get(className);
                     total++;
 
                 if(currentSchematic.tier !== undefined)
@@ -142,8 +142,8 @@ export default class Modal_Schematics
         let total       = 0;
         let htmlData    = [];
 
-        let schematicsDataKey = Object.keys(this.baseLayout.schematicsData).sort(function(a,b){
-                return this.baseLayout.schematicsData[a].name.localeCompare(this.baseLayout.schematicsData[b].name);
+        let schematicsDataKey = [...this.baseLayout.schematicsData.keys()].sort(function(a,b){
+                return this.baseLayout.schematicsData.get(a).name.localeCompare(this.baseLayout.schematicsData.get(b).name);
             }.bind(this));
 
         for(let i = 0; i < schematicsDataKey.length; i++)
@@ -151,7 +151,7 @@ export default class Modal_Schematics
             if(schematicsDataKey[i].includes('Schematic_Alternate_'))
             {
                 let className           = schematicsDataKey[i];
-                let currentSchematic    = this.baseLayout.schematicsData[className];
+                let currentSchematic    = this.baseLayout.schematicsData.get(className);
                     total++;
 
                 htmlData.push('<tr>');
@@ -282,11 +282,11 @@ export default class Modal_Schematics
 
         let purchased   = this.getPurchasedSchematics();
         let categories  = [];
-            for(let schematicId in this.baseLayout.schematicsData)
+            for(const [schematicId, schematic] of this.baseLayout.schematicsData)
             {
-                if(this.baseLayout.schematicsData[schematicId].category !== undefined && schematicId.startsWith('Research_') && categories.includes(this.baseLayout.schematicsData[schematicId].category) === false)
+                if(schematic.category !== undefined && schematicId.startsWith('Research_') && categories.includes(schematic.category) === false)
                 {
-                    categories.push(this.baseLayout.schematicsData[schematicId].category);
+                    categories.push(schematic.category);
                 }
             }
             categories.sort(function(a,b){ return a.localeCompare(b); }.bind(this));
@@ -309,13 +309,13 @@ export default class Modal_Schematics
             let total       = 0;
 
             let currentData = {};
-                for(let schematicId in this.baseLayout.schematicsData)
+                for(const [schematicId, schematic] of this.baseLayout.schematicsData)
                 {
                     if(schematicId.startsWith('Research_'))
                     {
-                        if(this.baseLayout.schematicsData[schematicId].category !== undefined && this.baseLayout.schematicsData[schematicId].category === categories[i])
+                        if(schematic.category !== undefined && schematic.category === categories[i])
                         {
-                            currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
+                            currentData[schematicId] = schematic;
                         }
                     }
                 }
@@ -325,7 +325,7 @@ export default class Modal_Schematics
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
                 let className        = schematicsDataKey[j];
-                let currentSchematic = this.baseLayout.schematicsData[className];
+                let currentSchematic = this.baseLayout.schematicsData.get(className);
                     total++;
 
                 if(currentSchematic.category !== undefined)
@@ -404,11 +404,11 @@ export default class Modal_Schematics
 
         let purchased   = this.getPurchasedSchematics();
         let categories  = [];
-            for(let schematicId in this.baseLayout.schematicsData)
+            for(const [schematicId, schematic] of this.baseLayout.schematicsData)
             {
-                if(this.baseLayout.schematicsData[schematicId].category !== undefined && schematicId.startsWith('ResourceSink_') && categories.includes(this.baseLayout.schematicsData[schematicId].category) === false)
+                if(schematic.category !== undefined && schematicId.startsWith('ResourceSink_') && categories.includes(schematic.category) === false)
                 {
-                    categories.push(this.baseLayout.schematicsData[schematicId].category);
+                    categories.push(schematic.category);
                 }
             }
             categories.sort(function(a,b){ return a.localeCompare(b); }.bind(this));
@@ -431,13 +431,13 @@ export default class Modal_Schematics
             let total       = 0;
 
             let currentData = {};
-                for(let schematicId in this.baseLayout.schematicsData)
+                for(const [schematicId, schematic] of this.baseLayout.schematicsData)
                 {
                     if(schematicId.startsWith('ResourceSink_'))
                     {
-                        if(this.baseLayout.schematicsData[schematicId].category !== undefined && this.baseLayout.schematicsData[schematicId].category === categories[i])
+                        if(schematic.category !== undefined && schematic.category === categories[i])
                         {
-                            currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
+                            currentData[schematicId] = schematic;
                         }
                     }
                 }
@@ -447,7 +447,7 @@ export default class Modal_Schematics
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
                 let className        = schematicsDataKey[j];
-                let currentSchematic = this.baseLayout.schematicsData[className];
+                let currentSchematic = this.baseLayout.schematicsData.get(className);
                     total++;
 
                 if(currentSchematic.category !== undefined)
@@ -534,11 +534,11 @@ export default class Modal_Schematics
         html.push('<div class="tab-content p-0 border border-top-0">');
             let htmlData    = [];
             let currentData = {};
-                for(let schematicId in this.baseLayout.schematicsData)
+                for(const [schematicId, schematic] of this.baseLayout.schematicsData)
                 {
                     if(schematicId.startsWith('Ficsmas_Schematic_') || schematicId.startsWith('Schematic_XMassTree_'))
                     {
-                        currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
+                        currentData[schematicId] = schematic;
                     }
                 }
 
@@ -547,7 +547,7 @@ export default class Modal_Schematics
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
                 let className        = schematicsDataKey[j];
-                let currentSchematic = this.baseLayout.schematicsData[className];
+                let currentSchematic = this.baseLayout.schematicsData.get(className);
                     total++;
 
                 if(currentSchematic.category !== undefined)
@@ -652,9 +652,10 @@ export default class Modal_Schematics
                     {
                         let schematicId = currentSchematic.schematics[k].split('.');
                             schematicId = schematicId.pop();
-                        if(this.baseLayout.schematicsData[schematicId] !== undefined)
+                        const schematic = this.baseLayout.schematicsData.get(schematicId);
+                        if(schematic !== undefined)
                         {
-                            unlocks.push(this.baseLayout.schematicsData[schematicId].name);
+                            unlocks.push(schematic.name);
                         }
                         else
                         {
@@ -734,7 +735,7 @@ export default class Modal_Schematics
 
                                     let schematicId = mPurchasedSchematics.values[i].pathName.split('.').pop();
                                         if(
-                                               this.baseLayout.schematicsData[schematicId] === undefined
+                                            this.baseLayout.schematicsData.get(schematicId) === undefined
                                             && ['Research_HardDrive_0_C', 'Research_FlowerPetals_1_C', 'Research_FlowerPetals_2_C', 'Research_FlowerPetals_3_C'].includes(schematicId) === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
@@ -809,9 +810,9 @@ export default class Modal_Schematics
         this.availableSchematics    = null;
         this.purchasedSchematics    = null;
 
-        if(this.baseLayout.schematicsData[schematicId] !== undefined && this.baseLayout.schematicsData[schematicId].className !== undefined)
+        if(schematic !== undefined && schematic.className !== undefined)
         {
-            let currentSchematic    = this.baseLayout.schematicsData[schematicId];
+            let currentSchematic    = schematic;
             let schematicManager    = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
                 if(schematicManager !== null)
                 {

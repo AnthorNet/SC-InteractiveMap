@@ -370,7 +370,7 @@ export default class BaseLayout
                         this.faunaCategories        = new Map(Object.entries(data.faunaCategories));
 
                         this.recipesData            = new Map(Object.entries(data.recipesData));
-                        this.schematicsData         = data.schematicsData;
+                        this.schematicsData         = new Map(Object.entries(data.schematicsData));
                         this.modsData               = data.modsData;
 
                         this.loadDetailedModels();
@@ -459,7 +459,7 @@ export default class BaseLayout
                     {
                         for(let schematic in data.Schematics)
                         {
-                            this.schematicsData[schematic] = data.Schematics[schematic];
+                            this.schematicsData.set(schematic, data.Schematics[schematic]);
                         }
                     }
 
