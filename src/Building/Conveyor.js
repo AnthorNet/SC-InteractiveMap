@@ -194,13 +194,21 @@ export default class Building_Conveyor
                                                         let mNextConnectedComponentAny1     = baseLayout.getObjectProperty(nextConveyorAny1, 'mConnectedComponent');
                                                             if(mNextConnectedComponentAny1 !== null)
                                                             {
-                                                                baseLayout.setObjectProperty(middleConveyorAny1, 'mConnectedComponent', mNextConnectedComponentAny1);
+                                                                baseLayout.setObjectProperty(middleConveyorAny1, {
+                                                                    name: 'mConnectedComponent',
+                                                                    type: 'ObjectProperty',
+                                                                    value:  mNextConnectedComponentAny1
+                                                                });
 
                                                                 let inputConnectedComponent = baseLayout.saveGameParser.getTargetObject(mNextConnectedComponentAny1.pathName);
                                                                     if(inputConnectedComponent !== null)
                                                                     {
-                                                                        baseLayout.setObjectProperty(inputConnectedComponent, 'mConnectedComponent', {
-                                                                            pathName    : middleConveyorAny1.pathName
+                                                                        baseLayout.setObjectProperty(inputConnectedComponent, {
+                                                                            name: 'mConnectedComponent',
+                                                                            type: 'ObjectProperty',
+                                                                            value:  {
+                                                                                pathName    : middleConveyorAny1.pathName
+                                                                            }
                                                                         });
                                                                     }
 

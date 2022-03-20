@@ -993,15 +993,27 @@ export default class Modal_Selection
                                                                     }
 
                                                                     potentialInventory.properties[k].value.values[m][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                                                    baseLayout.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, 'NumItems', 1, 'IntProperty');
+                                                                    baseLayout.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, {
+                                                                        name: 'NumItems',
+                                                                        type: 'IntProperty',
+                                                                        value: 1
+                                                                    });
                                                                 }
                                                             }
                                                         }
                                                     }
                                             }
 
-                                        baseLayout.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
-                                        baseLayout.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+                                        baseLayout.setObjectProperty(currentObject, {
+                                            name: 'mCurrentPotential',
+                                            type: 'FloatProperty',
+                                            value: clockSpeed / 100
+                                        });
+                                        baseLayout.setObjectProperty(currentObject, {
+                                            name: 'mPendingPotential',
+                                            type: 'FloatProperty',
+                                            value: clockSpeed / 100
+                                        });
                                     }
                                 }
                             }

@@ -205,16 +205,20 @@ export default class Modal_Map_Collectables
                             {
                                 if(playerCollectables[className].markers[m].defaultValue !== undefined)
                                 {
-                                    this.baseLayout.setObjectProperty(currentObject, 'mPickupItems', {
-                                        type: "InventoryStack",
-                                        values: [
-                                            {
-                                                name: "NumItems",
-                                                type: "IntProperty",
-                                                value: playerCollectables[className].markers[m].defaultValue
-                                            }
-                                        ]
-                                    }, 'StructProperty');
+                                    this.baseLayout.setObjectProperty(currentObject, {
+                                        name: 'mPickupItems',
+                                        type: 'StructProperty',
+                                        value: {
+                                            type: "InventoryStack",
+                                            values: [
+                                                {
+                                                    name: "NumItems",
+                                                    type: "IntProperty",
+                                                    value: playerCollectables[className].markers[m].defaultValue
+                                                }
+                                            ]
+                                        }
+                                    });
                                 }
                                 else
                                 {
@@ -247,20 +251,28 @@ export default class Modal_Map_Collectables
                         {
                             if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                             {
-                                this.baseLayout.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'BoolProperty');
+                                this.baseLayout.setObjectProperty(currentObject, {
+                                    name: 'mHasBeenOpened',
+                                    type: 'BoolProperty',
+                                    value: 1
+                                });
                             }
                             else
                             {
-                                this.baseLayout.setObjectProperty(currentObject, 'mPickupItems', {
-                                    type: "InventoryStack",
-                                    values: [
-                                        {
-                                            name: "NumItems",
-                                            type: "IntProperty",
-                                            value: 0
-                                        }
-                                    ]
-                                }, 'StructProperty');
+                                this.baseLayout.setObjectProperty(currentObject, {
+                                    name: 'mPickupItems',
+                                    type: 'StructProperty',
+                                    value: {
+                                        type: "InventoryStack",
+                                        values: [
+                                            {
+                                                name: "NumItems",
+                                                type: "IntProperty",
+                                                value: 0
+                                            }
+                                        ]
+                                    }
+                                });
                             }
                         }
                         else

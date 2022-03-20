@@ -2097,12 +2097,20 @@ export default class BaseLayout
                                         if(values['slot' + (j + 1)] === 'NULL')
                                         {
                                             oldInventory[j][0].value.itemName = "";
-                                            this.setObjectProperty(oldInventory[j][0].value, 'NumItems', 0, 'IntProperty');
+                                            this.setObjectProperty(oldInventory[j][0].value, {
+                                                name: 'NumItems',
+                                                type: 'IntProperty',
+                                                value: 0
+                                            });
                                         }
                                         else
                                         {
                                             oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
-                                            this.setObjectProperty(oldInventory[j][0].value, 'NumItems', Math.max(1, parseInt(values['QTY_slot' + (j + 1)])), 'IntProperty');
+                                            this.setObjectProperty(oldInventory[j][0].value, {
+                                                name: 'NumItems',
+                                                type: 'IntProperty',
+                                                value: Math.max(1, parseInt(values['QTY_slot' + (j + 1)]))
+                                            });
                                         }
                                     }
 
@@ -2182,7 +2190,11 @@ export default class BaseLayout
             {
                 if(buildingData !== null && buildingData.maxFluid !== undefined)
                 {
-                    this.setObjectProperty(storageObjects[i], 'mFluidBox', {type: "FluidBox", value: buildingData.maxFluid / 1000}, 'StructProperty');
+                    this.setObjectProperty(storageObjects[i], {
+                        name: 'mFluidBox',
+                        type: 'StructProperty',
+                        value: {type: "FluidBox", value: buildingData.maxFluid / 1000}
+                    });
                 }
 
                 continue;
@@ -2269,7 +2281,11 @@ export default class BaseLayout
                             if(oldInventory[k] !== undefined)
                             {
                                 oldInventory[k][0].value.itemName = fillWith;
-                                this.setObjectProperty(oldInventory[k][0].value, 'NumItems', stack, 'IntProperty');
+                                this.setObjectProperty(oldInventory[k][0].value, {
+                                    name: 'NumItems',
+                                    type: 'IntProperty',
+                                    value: stack
+                                });
                             }
 
                         }
@@ -2305,7 +2321,11 @@ export default class BaseLayout
         {
             if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
             {
-                this.setObjectProperty(storageObjects[i], 'mFluidBox', {type: "FluidBox", value: 0}, 'StructProperty');
+                this.setObjectProperty(storageObjects[i], {
+                    name: 'mFluidBox',
+                    type: 'StructProperty',
+                    value: {type: "FluidBox", value: 0}
+                });
                 continue;
             }
 
@@ -2320,7 +2340,11 @@ export default class BaseLayout
                                 for(let k = 0; k < mInventoryStacks.length; k++)
                                 {
                                     mInventoryStacks[k][0].value.itemName = "";
-                                    this.setObjectProperty(mInventoryStacks[k][0].value, 'NumItems', 0, 'IntProperty');
+                                    this.setObjectProperty(mInventoryStacks[k][0].value, {
+                                        name: 'NumItems',
+                                        type: 'IntProperty',
+                                        value: 0
+                                    });
                                 }
                             break;
                         }
@@ -2361,7 +2385,11 @@ export default class BaseLayout
                             }
                             else
                             {
-                                this.setObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor', {levelName: "", pathName: values.mFluidDescriptor}, 'ObjectProperty');
+                                this.setObjectProperty(currentObjectPipeNetwork, {
+                                    name: 'mFluidDescriptor',
+                                    type: 'ObjectProperty',
+                                    value:  {levelName: "", pathName: values.mFluidDescriptor}
+                                });
                             }
                         }
                     }.bind(this)
@@ -3249,7 +3277,11 @@ export default class BaseLayout
             let gameState = baseLayout.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
                 if(gameState !== null)
                 {
-                    baseLayout.setObjectProperty(gameState, 'mIsSpaceElevatorBuilt', 0, 'BoolProperty');
+                    baseLayout.setObjectProperty(gameState, {
+                        name: 'mIsSpaceElevatorBuilt',
+                        type: 'BoolProperty',
+                        value:  0
+                    });
                 }
         }
 
@@ -4711,7 +4743,11 @@ export default class BaseLayout
             if(hasBeenOpened == 0)
             {
                 dataCollected++;
-                this.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'BoolProperty');
+                this.setObjectProperty(currentObject, {
+                    name: 'mHasBeenOpened',
+                    type: 'BoolProperty',
+                    value:  1
+                });
                 marker.relatedTarget.setOpacity(window.SCIM.collectedOpacity);
             }
             else
@@ -4750,11 +4786,19 @@ export default class BaseLayout
                             case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
                                 if(isProductionPaused === null)
                                 {
-                                    this.setObjectProperty(currentObjectPowerInfo, 'mBaseProduction', 0, 'FloatProperty');
+                                    this.setObjectProperty(currentObjectPowerInfo, {
+                                        name: 'mBaseProduction',
+                                        type: 'FloatProperty',
+                                        value:  0
+                                    });
                                 }
                                 else
                                 {
-                                    this.setObjectProperty(currentObjectPowerInfo, 'mBaseProduction', buildingData.powerGenerated.normal[1], 'FloatProperty');
+                                    this.setObjectProperty(currentObjectPowerInfo, {
+                                        name: 'mBaseProduction',
+                                        type: 'FloatProperty',
+                                        value:  buildingData.powerGenerated.normal[1]
+                                    });
 
                                     let resourceNode     = this.getObjectProperty(currentObject, 'mExtractableResource');
                                         if(resourceNode !== null)
@@ -4767,9 +4811,11 @@ export default class BaseLayout
                                                     {
                                                         this.setObjectProperty(
                                                             currentObjectPowerInfo,
-                                                            'mBaseProduction',
-                                                            (buildingData.powerGenerated[this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][1] + buildingData.powerGenerated[this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][0]) / 2,
-                                                            'FloatProperty'
+                                                            {
+                                                                name: 'mBaseProduction',
+                                                                type: 'FloatProperty',
+                                                                value:  (buildingData.powerGenerated[this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][1] + buildingData.powerGenerated[this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][0]) / 2
+                                                            }
                                                         );
                                                     }
                                                 }
@@ -4784,7 +4830,11 @@ export default class BaseLayout
                                 }
                                 else
                                 {
-                                    this.setObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity', buildingData.powerGenerated, 'FloatProperty');
+                                    this.setObjectProperty(currentObjectPowerInfo, {
+                                        name: 'mDynamicProductionCapacity',
+                                        type: 'FloatProperty',
+                                        value:  buildingData.powerGenerated
+                                    });
                                 }
                         }
                     }
@@ -4798,11 +4848,19 @@ export default class BaseLayout
                     {
                         if(isProductionPaused === null)
                         {
-                            this.setObjectProperty(currentObjectPowerInfo, 'mTargetConsumption', 0, 'FloatProperty');
+                            this.setObjectProperty(currentObjectPowerInfo, {
+                                name: 'mTargetConsumption',
+                                type: 'FloatProperty',
+                                value:  0
+                            });
                         }
                         else
                         {
-                            this.setObjectProperty(currentObjectPowerInfo, 'mTargetConsumption', buildingData.powerUsed, 'FloatProperty');
+                            this.setObjectProperty(currentObjectPowerInfo, {
+                                name: 'mTargetConsumption',
+                                type: 'FloatProperty',
+                                value:  buildingData.powerUsed
+                            });
                         }
                     }
             }
@@ -4810,7 +4868,11 @@ export default class BaseLayout
             // STATE
             if(isProductionPaused === null)
             {
-                this.setObjectProperty(currentObject, 'mIsProductionPaused', 1, 'BoolProperty');
+                this.setObjectProperty(currentObject, {
+                    name: 'mIsProductionPaused',
+                    type: 'BoolProperty',
+                    value:  1
+                });
             }
             else
             {
@@ -4875,15 +4937,27 @@ export default class BaseLayout
                                             }
 
                                             potentialInventory.properties[i].value.values[j][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                            this.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, 'NumItems', 1, 'IntProperty');
+                                            this.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, {
+                                                name: 'NumItems',
+                                                type: 'IntProperty',
+                                                value:  1
+                                            });
                                         }
                                     }
                                 }
                             }
                     }
 
-                    this.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
-                    this.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+                    this.setObjectProperty(currentObject, {
+                        name: 'mCurrentPotential',
+                        type: 'FloatProperty',
+                        value:  clockSpeed / 100
+                    });
+                    this.setObjectProperty(currentObject, {
+                        name: 'mPendingPotential',
+                        type: 'FloatProperty',
+                        value:  clockSpeed / 100
+                    });
 
                     if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
                     {
@@ -4896,8 +4970,17 @@ export default class BaseLayout
                                     let currentExtractor = this.saveGameParser.getTargetObject(satellites[i].options.extractorPathName);
                                         if(currentExtractor !== null)
                                         {
-                                            this.setObjectProperty(currentExtractor, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
-                                            this.setObjectProperty(currentExtractor, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+
+                                            this.setObjectProperty(currentObject, {
+                                                name: 'mCurrentPotential',
+                                                type: 'FloatProperty',
+                                                value:  clockSpeed / 100
+                                            });
+                                            this.setObjectProperty(currentObject, {
+                                                name: 'mPendingPotential',
+                                                type: 'FloatProperty',
+                                                value:  clockSpeed / 100
+                                            });
                                         }
                                 }
                             }
@@ -4924,26 +5007,22 @@ export default class BaseLayout
         return defaultPropertyValue;
     }
 
-    setObjectProperty(currentObject, propertyName, propertyValue, propertyType = null)
+    setObjectProperty(currentObject, property)
     {
         let currentObjectPropertiesLength = currentObject.properties.length;
             for(let j = 0; j < currentObjectPropertiesLength; j++)
             {
-                if(currentObject.properties[j].name === propertyName)
+                if(currentObject.properties[j].name === property.name)
                 {
-                    currentObject.properties[j].value = propertyValue;
+                    currentObject.properties[j].value = property;
                     return;
                 }
             }
 
         // Property not found, add it!
-        if(propertyType !== null)
+        if(property.type !== null)
         {
-            currentObject.properties.push({
-                name: propertyName,
-                type: propertyType,
-                value: propertyValue
-            });
+            currentObject.properties.push(property);
         }
 
         return;

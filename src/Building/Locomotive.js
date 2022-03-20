@@ -243,7 +243,11 @@ export default class Building_Locomotive
                                 {
                                     if(mTrainName !== null)
                                     {
-                                        baseLayout.setObjectProperty(trainIdentifier, 'mTrainName', values.mTrainName);
+                                        baseLayout.setObjectProperty(trainIdentifier, {
+                                            name: 'mTrainName',
+                                            type: 'StrProperty',
+                                            value:  values.mTrainName
+                                        });
                                     }
                                     else
                                     {
@@ -281,7 +285,11 @@ export default class Building_Locomotive
                     }
                     else
                     {
-                        baseLayout.setObjectProperty(trainIdentifier, 'mIsSelfDrivingEnabled', 1, 'BoolProperty');
+                        baseLayout.setObjectProperty(trainIdentifier, {
+                            name: 'mIsSelfDrivingEnabled',
+                            type: 'BoolProperty',
+                            value:  1
+                        });
                     }
             }
     }

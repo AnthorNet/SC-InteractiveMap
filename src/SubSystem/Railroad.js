@@ -160,12 +160,14 @@ export default class SubSystem_Railroad
                 {
                     this.baseLayout.setObjectProperty(
                         this.railroadSubSystem,
-                        'mTrains',
                         {
-                            type    : 'ObjectProperty',
-                            values  : [{pathName: currentIdentifier.pathName}]
-                        },
-                        'ArrayProperty'
+                            name: 'mTrains',
+                            type: 'ArrayProperty',
+                            value: {
+                                type    : 'ObjectProperty',
+                                values  : [{pathName: currentIdentifier.pathName}]
+                            }
+                        }
                     );
                 }
         }
@@ -187,12 +189,14 @@ export default class SubSystem_Railroad
                 {
                     this.baseLayout.setObjectProperty(
                         this.railroadSubSystem,
-                        'mTrainStationIdentifiers',
                         {
-                            type    : 'ObjectProperty',
-                            values  : [{pathName: currentIdentifier.pathName}]
-                        },
-                        'ArrayProperty'
+                            name: 'mTrainStationIdentifiers',
+                            type: 'ArrayProperty',
+                            value: {
+                                type    : 'ObjectProperty',
+                                values  : [{pathName: currentIdentifier.pathName}]
+                            }
+                        }
                     );
                 }
         }

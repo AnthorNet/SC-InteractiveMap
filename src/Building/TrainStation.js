@@ -100,7 +100,11 @@ export default class Building_TrainStation
                                 {
                                     if(mStationName !== null)
                                     {
-                                        baseLayout.setObjectProperty(trainStationIdentifier, 'mStationName', values.mStationName);
+                                        baseLayout.setObjectProperty(trainStationIdentifier, {
+                                            name: 'mStationName',
+                                            type: 'StrProperty',
+                                            value: values.mStationName
+                                        });
                                     }
                                     else
                                     {

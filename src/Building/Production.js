@@ -150,19 +150,20 @@ export default class Building_Production
                                                     mInventoryStacks.values[i][0].value.itemName = ingredientsKeys[i];
 
                                                     let itemData = baseLayout.getItemDataFromClassName(ingredientsKeys[i]);
-                                                        if(itemData.category === 'liquid' || itemData.category === 'gas')
-                                                        {
-                                                            baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', 50000);
-                                                        }
-                                                        else
-                                                        {
-                                                            baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', itemData.stack);
-                                                        }
+                                                    baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, {
+                                                        name: 'NumItems',
+                                                        type: 'IntProperty',
+                                                        value:  itemData.category === 'liquid' || itemData.category === 'gas' ? 50000 : itemData.stack
+                                                    });
                                                 }
                                                 else
                                                 {
                                                     mInventoryStacks.values[i][0].value.itemName = '';
-                                                    baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', 0);
+                                                    baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, {
+                                                        name: 'NumItems',
+                                                        type: 'IntProperty',
+                                                        value:  0
+                                                    });
                                                 }
                                             }
                                     }
@@ -183,19 +184,20 @@ export default class Building_Production
                                                     mInventoryStacks.values[i][0].value.itemName = produceKeys[i];
 
                                                     let itemData = baseLayout.getItemDataFromClassName(produceKeys[i]);
-                                                        if(itemData.category === 'liquid' || itemData.category === 'gas')
-                                                        {
-                                                            baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', 50000);
-                                                        }
-                                                        else
-                                                        {
-                                                            baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', itemData.stack);
-                                                        }
+                                                    baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, {
+                                                        name: 'NumItems',
+                                                        type: 'IntProperty',
+                                                        value:  itemData.category === 'liquid' || itemData.category === 'gas' ? 50000 : itemData.stack
+                                                    });
                                                 }
                                                 else
                                                 {
                                                     mInventoryStacks.values[i][0].value.itemName = '';
-                                                    baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', 0);
+                                                    baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, {
+                                                        name: 'NumItems',
+                                                        type: 'IntProperty',
+                                                        value:  0
+                                                    });
                                                 }
                                             }
                                     }
@@ -229,7 +231,11 @@ export default class Building_Production
                             for(let i = 0; i < mInventoryStacks.values.length; i++)
                             {
                                 mInventoryStacks.values[i][0].value.itemName = '';
-                                baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', 0);
+                                baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, {
+                                    name: 'NumItems',
+                                    type: 'IntProperty',
+                                    value:  0
+                                });
                             }
                     }
             }
@@ -244,7 +250,11 @@ export default class Building_Production
                             for(let i = 0; i < mInventoryStacks.values.length; i++)
                             {
                                 mInventoryStacks.values[i][0].value.itemName = '';
-                                baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', 0);
+                                baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, {
+                                    name: 'NumItems',
+                                    type: 'IntProperty',
+                                    value:  0
+                                });
                             }
                     }
             }

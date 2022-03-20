@@ -1242,7 +1242,11 @@ export default class Building_Sign
                         baseLayout.deleteObjectProperty(currentObject, 'mEmissive');
                         if(parseInt(values.mEmissive) !== 0)
                         {
-                            baseLayout.setObjectProperty(currentObject, 'mEmissive', parseInt(values.mEmissive), 'FloatProperty');
+                            baseLayout.setObjectProperty(currentObject, {
+                                name: 'mEmissive',
+                                type: 'FloatProperty',
+                                value: parseInt(values.mEmissive)
+                            });
                         }
                     }
                 }
@@ -1275,7 +1279,11 @@ export default class Building_Sign
                         baseLayout.deleteObjectProperty(currentObject, 'mGlossiness');
                         if(parseInt(values.mGlossiness) !== 0)
                         {
-                            baseLayout.setObjectProperty(currentObject, 'mGlossiness', 1, 'FloatProperty');
+                            baseLayout.setObjectProperty(currentObject, {
+                                name: 'mGlossiness',
+                                type: 'FloatProperty',
+                                value: 1
+                            });
                         }
                     }
                 }

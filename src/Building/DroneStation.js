@@ -147,7 +147,11 @@ export default class Building_DroneStation
                             let mInfo = Building_DroneStation.getInformation(baseLayout, currentObject);
                                 if(mInfo !== null)
                                 {
-                                    baseLayout.setObjectProperty(mInfo, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
+                                    baseLayout.setObjectProperty(mInfo, {
+                                        name: 'mBuildingTag',
+                                        type: 'StrProperty',
+                                        value:  values.mBuildingTag
+                                    });
                                 }
                         }
                     }

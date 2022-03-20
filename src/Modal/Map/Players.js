@@ -110,7 +110,11 @@ export default class Modal_Map_Players
         {
             let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
             let newCount                    = Math.max(1, Math.min(9, ((mNumTotalArmEquipmentSlots !== null) ? mNumTotalArmEquipmentSlots : 1) + parseInt(count)));
-                this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots', newCount, 'IntProperty');
+                this.baseLayout.setObjectProperty(this.unlockSubSystem, {
+                    name: 'mNumTotalArmEquipmentSlots',
+                    type: 'IntProperty',
+                    value: newCount
+                });
                 count                        = newCount - mNumTotalArmEquipmentSlots;
 
             for(const player of this.baseLayout.players.values())
@@ -165,7 +169,11 @@ export default class Modal_Map_Players
         {
             let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
             let newCount                    = Math.max(1, Math.min(9, ((mNumTotalArmEquipmentSlots !== null) ? mNumTotalArmEquipmentSlots : 1) - parseInt(count)));
-                this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots', newCount, 'IntProperty');
+                this.baseLayout.setObjectProperty(this.unlockSubSystem, {
+                    name: 'mNumTotalArmEquipmentSlots',
+                    type: 'IntProperty',
+                    value: newCount
+                });
 
             for(const player of this.baseLayout.players.values())
             {
@@ -195,8 +203,12 @@ export default class Modal_Map_Players
         {
             let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
             let newCount                    = Math.max(22, Math.min(500, ((mNumTotalInventorySlots !== null) ? mNumTotalInventorySlots : 22) + parseInt(count)));
-               this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots', newCount, 'IntProperty');
-               count                        = newCount - mNumTotalInventorySlots;
+                this.baseLayout.setObjectProperty(this.unlockSubSystem, {
+                    name: 'mNumTotalInventorySlots',
+                    type: 'IntProperty',
+                    value: newCount
+                });
+                count                        = newCount - mNumTotalInventorySlots;
 
             for(const player of this.baseLayout.players.values())
             {
@@ -250,7 +262,11 @@ export default class Modal_Map_Players
         {
             let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
             let newCount                    = Math.max(22, Math.min(500, ((mNumTotalInventorySlots !== null) ? mNumTotalInventorySlots : 22) - parseInt(count)));
-               this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots', newCount, 'IntProperty');
+                this.baseLayout.setObjectProperty(this.unlockSubSystem, {
+                    name: 'mNumTotalInventorySlots',
+                    type: 'IntProperty',
+                    value: newCount
+                });
 
             for(const player of this.baseLayout.players.values())
             {

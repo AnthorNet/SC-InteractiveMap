@@ -137,19 +137,23 @@ export default class Selection_Copy
                                                 // Removes drone action to reset it
                                                 if(extraPropertyNewObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
                                                 {
-                                                    this.baseLayout.setObjectProperty(extraPropertyNewObject.parent, 'mCurrentDockingState', {
-                                                        type    : "DroneDockingStateInfo",
-                                                        values  : [
-                                                            {
-                                                                name    : "State",
-                                                                type    : "EnumProperty",
-                                                                value   : {
-                                                                    name    : "EDroneDockingState",
-                                                                    value   : "EDroneDockingState::DS_DOCKED"
+                                                    this.baseLayout.setObjectProperty(extraPropertyNewObject.parent, {
+                                                        name: 'mCurrentDockingState',
+                                                        type: 'StructProperty',
+                                                        value: {
+                                                            type    : "DroneDockingStateInfo",
+                                                            values  : [
+                                                                {
+                                                                    name    : "State",
+                                                                    type    : "EnumProperty",
+                                                                    value   : {
+                                                                        name    : "EDroneDockingState",
+                                                                        value   : "EDroneDockingState::DS_DOCKED"
+                                                                    }
                                                                 }
-                                                            }
-                                                        ]
-                                                    }, 'StructProperty');
+                                                            ]
+                                                        }
+                                                    });
                                                     this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mCurrentAction');
                                                     this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mActionsToExecute');
                                                 }
