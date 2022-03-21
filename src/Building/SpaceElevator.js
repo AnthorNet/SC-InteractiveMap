@@ -272,7 +272,7 @@ export default class Building_SpaceElevator
         let gamePhaseManager = Building_SpaceElevator.getManager(baseLayout);
             if(gamePhaseManager !== null)
             {
-                gamePhaseManager.properties = [];
+                baseLayout.deleteAllObjectProperties(gamePhaseManager);
             }
     }
 

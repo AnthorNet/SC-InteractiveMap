@@ -369,9 +369,9 @@ export default class Spawn_Blueprint
                     }
 
                     // Properties
-                    if(this.clipboard.data[i].parent.properties !== undefined && this.clipboard.data[i].parent.properties.length > 0)
+                    if(this.clipboard.data[i].parent.properties !== undefined && this.clipboard.data[i].parent.properties.size > 0)
                     {
-                        this.clipboard.data[i].parent.properties = this.transformPropertiesPathName(this.clipboard.data[i].parent.properties, pathNameConversion);
+                        this.transformPropertiesPathName(this.clipboard.data[i].parent.properties, pathNameConversion);
                     }
 
                     // Children
@@ -402,9 +402,9 @@ export default class Spawn_Blueprint
                                 child.outerPathName = pathNameConversion[child.outerPathName];
                             }
 
-                            if(child.properties !== undefined && child.properties.length > 0)
+                            if(child.properties !== undefined && child.properties.size > 0)
                             {
-                                child.properties = this.transformPropertiesPathName(child.properties, pathNameConversion);
+                                this.transformPropertiesPathName(child.properties, pathNameConversion);
                             }
                         }
                     }
@@ -504,8 +504,6 @@ export default class Spawn_Blueprint
                 }
             }
         }
-
-        return properties;
     }
 
     handleHiddenConnections(pathNameConversion)
@@ -602,7 +600,7 @@ export default class Spawn_Blueprint
                         pathName                : this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.FGPipeNetwork_XXX'}),
                         transform               : {rotation: [0, 0, 0, 1], translation: [0, 0, 0]},
                         children                : new Set(),
-                        properties              : [{name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}],
+                        properties              : new Map([["mPipeNetworkID", {name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}]]),
                         entity                  : {levelName: '', pathName: ''}
                     };
 
@@ -772,7 +770,7 @@ export default class Spawn_Blueprint
             }
 
             // Parent object
-            let newObject       = currentClipboard.parent;
+            let newObject       = cloneDeep(currentClipboard.parent);
 
                 if(this.marker !== null)
                 {

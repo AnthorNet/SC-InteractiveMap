@@ -8,7 +8,7 @@ export default class SubSystem_Event
 
     resetAllEvents()
     {
-        this.eventSubSystem.properties = [];
+        this.baseLayout.deleteAllObjectProperties(this.eventSubSystem);
     }
 
     resetFicsmas()

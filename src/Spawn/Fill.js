@@ -66,21 +66,21 @@ export default class Spawn_Fill
                 translation     : this.center
             },
             entity          : {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"},
-            properties      : [
-                {
+            properties: new Map([
+                ["mBuiltWithRecipe", {
                     name        : "mBuiltWithRecipe",
                     type        : "ObjectProperty",
                     value       : {
                         levelName   : "",
                         pathName    : "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x4_01.Recipe_Foundation_8x4_01_C"
                     }
-                },
-                {
+                }],
+                ["mBuildTimeStamp", {
                     name        : "mBuildTimeStamp",
                     type        : "FloatProperty",
                     value       : 0
                 }
-            ]
+            ]])
         };
         this.baseLayout.buildableSubSystem.setObjectColorSlot(this.centerObject, 16);
         this.baseLayout.updateBuiltWithRecipe(this.centerObject);

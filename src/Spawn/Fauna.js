@@ -53,7 +53,7 @@ export default class Spawn_Fauna
                 className           : this.faunaClassName,
                 pathName            : pathName,
                 entity              : {levelName: '', pathName: ''},
-                properties          : [{name: 'mHealthComponent', type: 'ObjectProperty', value: {pathName: pathName + '.HealthComponent'}}],
+                properties          : new Map([['mHealthComponent', {name: 'mHealthComponent', type: 'ObjectProperty', value: {pathName: pathName + '.HealthComponent'}}]]),
                 transform           : {
                     rotation            : [0, -0, this.centerObject.transform.rotation[2], this.centerObject.transform.rotation[3]],
                     translation         : [
@@ -81,8 +81,8 @@ export default class Spawn_Fauna
                     children        : new Set(),
                     className       : '/Script/FactoryGame.FGInventoryComponent',
                     outerPathName   : pathName, pathName: pathName + '.mInventory',
-                    properties      : [
-                        {
+                    properties      : new Map([
+                        ["mInventoryStacks", {
                             name: "mInventoryStacks",
                             structureName: "mInventoryStacks",
                             structureSubType: "InventoryStack",
@@ -97,14 +97,14 @@ export default class Spawn_Fauna
                                         itemName: "", levelName: "", pathName: "",
                                         type: "InventoryItem",
                                         unk1: 0,
-                                        properties: [{name: "NumItems", type: "IntProperty", value: 0}]
+                                        properties: new Map([["NumItems", {name: "NumItems", type: "IntProperty", value: 0}]])
                                     }
                                 }]]
                             }
-                        },
-                        { name: '"mArbitrarySlotSizes', type: 'ArrayProperty', value: {type: 'IntProperty', values: [0]} },
-                        { name: 'mAllowedItemDescriptors', type: 'ArrayProperty', value: {type: 'ObjectProperty', values: [{levelName: '', pathName: ''}]} }
-                    ]
+                        }],
+                        ['mArbitrarySlotSizes', { name: 'mArbitrarySlotSizes', type: 'ArrayProperty', value: {type: 'IntProperty', values: [0]} }],
+                        ['mAllowedItemDescriptors', { name: 'mAllowedItemDescriptors', type: 'ArrayProperty', value: {type: 'ObjectProperty', values: [{levelName: '', pathName: ''}]} }]
+                    ])
                 };
 
                 this.baseLayout.saveGameParser.addObject(newSpaceRabbitInventory);
@@ -113,7 +113,7 @@ export default class Spawn_Fauna
             this.baseLayout.saveGameParser.addObject({
                 className: '/Script/FactoryGame.FGHealthComponent',
                 outerPathName: pathName, pathName: pathName + '.HealthComponent',
-                properties: [], type: 0
+                properties: new Map(), type: 0
             });
 
             //TODO: Ensure the creature spawner still exists in the save!

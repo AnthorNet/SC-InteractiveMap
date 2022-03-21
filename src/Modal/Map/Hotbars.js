@@ -116,7 +116,10 @@ export default class Modal_Map_Hotbars
                                     let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[parseInt(hotbarSlot)][0].value.values[j].pathName);
                                         if(currentShortcut !== null)
                                         {
-                                            currentShortcut.properties = cloneDeep(this.clipboard[0].values[j]);
+                                            this.baseLayout.deleteAllObjectProperties(currentShortcut);
+                                            for (const property of cloneDeep(this.clipboard[0].values[j])) {
+                                                this.baseLayout.setObjectProperty(currentShortcut, property);
+                                            };
                                         }
                                 }
 
@@ -141,7 +144,7 @@ export default class Modal_Map_Hotbars
                                     let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[parseInt(hotbarSlot)][0].value.values[j].pathName);
                                         if(currentShortcut !== null)
                                         {
-                                            currentShortcut.properties = [];
+                                            this.baseLayout.deleteAllObjectProperties(currentShortcut);
                                         }
                                 }
 
@@ -200,7 +203,10 @@ export default class Modal_Map_Hotbars
                                         let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[i][0].value.values[j].pathName);
                                             if(currentShortcut !== null)
                                             {
-                                                currentShortcut.properties = cloneDeep(this.clipboard[i].values[j]);
+                                                this.baseLayout.deleteAllObjectProperties(currentShortcut);
+                                                for (const property of cloneDeep(this.clipboard[i].values[j])) {
+                                                    this.baseLayout.setObjectProperty(currentShortcut, property);
+                                                };
                                             }
                                     }
                                 }

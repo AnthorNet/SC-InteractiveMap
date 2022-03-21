@@ -58,7 +58,7 @@ export default class SaveParser_FicsIt
                 let currentChildren = baseLayout.saveGameParser.getTargetObject(child.pathName);
                     if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGPowerConnectionComponent')
                     {
-                        if(currentChildren.properties.length === 0)
+                        if(currentChildren.properties.size === 0)
                         {
                             console.log('Removing ghost "' + currentChildren.className + '"', currentChildren.pathName);
                             baseLayout.saveGameParser.deleteObject(currentChildren.pathName);
@@ -151,7 +151,7 @@ export default class SaveParser_FicsIt
         let mPipeNetworkID = baseLayout.getObjectPropertyValue(currentObject, 'mPipeNetworkID');
             if(mPipeNetworkID !== null)
             {
-                if(currentObject.properties.length === 1)
+                if(currentObject.properties.size === 1)
                 {
                     console.log('Removing ghost mPipeNetworkID "' + mPipeNetworkID + '"', currentObject.pathName);
                     baseLayout.deleteObjectProperty(currentObject, 'mPipeNetworkID');

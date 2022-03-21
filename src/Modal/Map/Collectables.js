@@ -299,7 +299,7 @@ export default class Modal_Map_Collectables
 
         if(currentObject !== null)
         {
-            if(currentObject.properties.length > 0)
+            if(currentObject.properties.size > 0)
             {
                 const mHasBeenOpened = this.baseLayout.getObjectPropertyValue(currentObject, 'mHasBeenOpened');
                 if(mHasBeenOpened !== null)

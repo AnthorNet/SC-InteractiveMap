@@ -137,7 +137,7 @@ export default class Modal_Map_Players
                                         pathName: "",
                                         type: "InventoryItem",
                                         unk1: 0,
-                                        properties: [{name: "NumItems", type: "IntProperty", value: 0}]
+                                        properties: new Map([["NumItems", {name: "NumItems", type: "IntProperty", value: 0}]])
                                     }
                                 }]);
                             }
@@ -181,19 +181,16 @@ export default class Modal_Map_Players
                     if(mOwnedPawn !== null)
                     {
                         let armSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.ArmSlot');
-                            for(let j = 0; j < armSlot.properties.length; j++)
+                            const mActiveEquipmentIndex = this.baseLayout.getObjectPropertyValue(armSlot, 'mActiveEquipmentIndex');
+                            if(mActiveEquipmentIndex !== null)
                             {
-                                const mActiveEquipmentIndex = this.baseLayout.getObjectPropertyValue(armSlot, 'mActiveEquipmentIndex');
-                                if(mActiveEquipmentIndex !== null)
+                                this.baseLayout.setObjectPropertyValue(armSlot, 'mActiveEquipmentIndex', 0);
+                            }
+                            for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
+                                const property = this.baseLayout.getObjectPropertyValue(armSlot, propertyName);
+                                if(property !== null)
                                 {
-                                    this.baseLayout.setObjectPropertyValue(armSlot, 'mActiveEquipmentIndex', 0);
-                                }
-                                for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
-                                    const property = this.baseLayout.getObjectPropertyValue(armSlot, propertyName);
-                                    if(property !== null)
-                                    {
-                                        property.values.splice(newCount);
-                                    }
+                                    property.values.splice(newCount);
                                 }
                             }
                     }
@@ -234,7 +231,7 @@ export default class Modal_Map_Players
                                         pathName: "",
                                         type: "InventoryItem",
                                         unk1: 0,
-                                        properties: [{name: "NumItems", type: "IntProperty", value: 0}]
+                                        properties: new Map([["NumItems", {name: "NumItems", type: "IntProperty", value: 0}]])
                                     }
                                 }]);
                             }

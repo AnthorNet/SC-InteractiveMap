@@ -339,7 +339,7 @@ export default class SaveParser_Read
         }
 
         // Read properties
-        objectValue.properties       = [];
+        objectValue.properties = new Map();
         while(true)
         {
             let property = this.readPropertyV5();
@@ -348,7 +348,7 @@ export default class SaveParser_Read
                     break;
                 }
 
-                objectValue.properties.push(property);
+                objectValue.properties.set(property.name, property);
         }
 
         // Read Conveyor missing bytes
@@ -854,7 +854,7 @@ export default class SaveParser_Read
                 currentProperty.value = {
                     keyType         : this.readString(),
                     valueType       : this.readString(),
-                    values          : []
+                    values          : new Map()
                 };
 
                     this.skipBytes(1);
@@ -960,10 +960,7 @@ export default class SaveParser_Read
                                     throw new Error('Unimplemented value type `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
                             }
 
-                        currentProperty.value.values[iMapProperty]    = {
-                            key     : mapPropertyKey,
-                            value   : mapPropertySubProperties
-                        };
+                        currentProperty.value.values.set(mapPropertyKey, mapPropertySubProperties);
                     }
                 break;
 
@@ -1071,8 +1068,8 @@ export default class SaveParser_Read
                         currentProperty.value.unk1          = this.readInt();
                         currentProperty.value.itemName      = this.readString();
                         currentProperty.value               = this.readObjectProperty(currentProperty.value);
-                        currentProperty.value.properties    = [];
-                        currentProperty.value.properties.push(this.readPropertyV5());
+                        const property                      = this.readPropertyV5();
+                        currentProperty.properties          = new Map([[property.name, property]]);
                         break;
 
                     case 'FluidBox':
@@ -1108,7 +1105,7 @@ export default class SaveParser_Read
 
                                 currentProperty.value.values.push(subStructProperty);
 
-                                if(subStructProperty.value !== undefined && subStructProperty.value.properties !== undefined && subStructProperty.value.properties.length === 1 && subStructProperty.value.properties[0] === null)
+                                if(subStructProperty.value !== undefined && subStructProperty.value.properties !== undefined && subStructProperty.value.properties.size === 1 && [...subStructProperty.value.properties.values()][0] === null)
                                 {
                                     break;
                                 }
@@ -1128,7 +1125,7 @@ export default class SaveParser_Read
                 break;
 
             case 'SetProperty':
-                currentProperty.value = {type: this.readString(), values: []};
+                currentProperty.value = {type: this.readString(), values: new Set()};
                 this.skipBytes(5); // skipByte(1) + 0
 
                 let setPropertyLength = this.readInt();
@@ -1137,16 +1134,16 @@ export default class SaveParser_Read
                     switch(currentProperty.value.type)
                     {
                         case 'ObjectProperty': // MOD: Efficiency Checker
-                            currentProperty.value.values.push(this.readObjectProperty({}));
+                            currentProperty.value.values.add(this.readObjectProperty({}));
                             break;
                         case 'StructProperty': // MOD: FicsIt-Networks
-                            currentProperty.value.values.push(this.readFINNetworkTrace());
+                            currentProperty.value.values.add(this.readFINNetworkTrace());
                             break;
                         case 'NameProperty':  // MOD: Sweet Transportal
-                            currentProperty.value.values.push({name: this.readString()});
+                            currentProperty.value.values.add({name: this.readString()});
                             break;
                         case 'IntProperty':  // MOD: ???
-                            currentProperty.value.values.push({int: this.readInt()});
+                            currentProperty.value.values.add({int: this.readInt()});
                             break;
                         default:
                             let rewind = this.lastStrRead + 128;

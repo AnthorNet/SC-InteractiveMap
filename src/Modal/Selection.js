@@ -612,10 +612,10 @@ export default class Modal_Selection
                             rotation        : [0, 0, 0, 1],
                             translation     : [boundaries.centerX, boundaries.centerY, minZ + 100]
                         },
-                        properties      : [
-                            { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
-                            { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
-                        ],
+                        properties      : new Map([
+                            ["mBuiltWithRecipe", { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } }],
+                            ["mBuildTimeStamp", { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }]
+                        ]),
                         entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
                     };
                     fakeFoundation.pathName = baseLayout.generateFastPathName(fakeFoundation);

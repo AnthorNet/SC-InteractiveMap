@@ -160,7 +160,7 @@ export default class Selection_Delete
                             itemName: tempCrate[i].className,
                             levelName: "",
                             pathName: "",
-                            properties: [{name: "NumItems", type: "IntProperty", value: tempCrate[i].amount}]
+                            properties: new Map([["NumItems", {name: "NumItems", type: "IntProperty", value: tempCrate[i].amount}]])
                         }
                     }];
 

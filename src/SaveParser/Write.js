@@ -510,12 +510,11 @@ export default class SaveParser_Write
     }
     writeProperties(currentObject)
     {
-        let propertiesLength    = currentObject.properties.length;
         let properties          = '';
 
-        for(let i = 0; i < propertiesLength; i++)
+        for(const property of currentObject.properties.values())
         {
-            properties += this.writeProperty(currentObject.properties[i]);
+            properties += this.writeProperty(property);
             //this.currentBufferLength += 4; // Add property index for entity length!
         }
 
@@ -705,11 +704,11 @@ export default class SaveParser_Write
 
                         let oldLength   = this.currentBufferLength;
 
-                        for(let i =0; i < currentProperty.value.properties.length; i++)
+                        for(const subProperty of currentProperty.properties.values())
                         {
-                            if(currentProperty.value.properties[i] !== null)
+                            if(subProperty !== null)
                             {
-                                property += this.writeProperty(currentProperty.value.properties[i]);
+                                property += this.writeProperty(subProperty);
                             }
                         }
 
@@ -754,28 +753,26 @@ export default class SaveParser_Write
                 break;
 
             case 'SetProperty':
-                let setPropertyLength = currentProperty.value.values.length;
-
                 property += this.writeString(currentProperty.value.type, false);
                 property += this.writeByte(0, false);
                 property += this.writeInt(0);
-                property += this.writeInt(setPropertyLength);
+                property += this.writeInt(currentProperty.value.values.size);
 
-                for(let iSetProperty = 0; iSetProperty < setPropertyLength; iSetProperty++)
+                for(const iSetProperty of currentProperty.value.values)
                 {
                     switch(currentProperty.value.type)
                     {
                         case 'ObjectProperty': // MOD: Efficiency Checker
-                            property += this.writeObjectProperty(currentProperty.value.values[iSetProperty]);
+                            property += this.writeObjectProperty(iSetProperty);
                             break;
                         case 'StructProperty': // MOD: FicsIt-Networks
-                            property += this.writeFINNetworkTrace(currentProperty.value.values[iSetProperty]);
+                            property += this.writeFINNetworkTrace(iSetProperty);
                             break;
                         case 'NameProperty':  // MOD: Sweet Transportal
-                            property += this.writeString(currentProperty.value.values[iSetProperty].name);
+                            property += this.writeString(iSetProperty.name);
                             break;
                         case 'IntProperty':  // MOD: ???
-                            property += this.writeInt(currentProperty.value.values[iSetProperty].int);
+                            property += this.writeInt(iSetProperty.int);
                             break;
                         default:
                             console.log('Missing ' + currentProperty.value.type + ' in SetProperty=>' + currentProperty.name);
@@ -938,8 +935,6 @@ export default class SaveParser_Write
                 break;
 
             case 'MapProperty':
-                let currentMapPropertyCount    = currentProperty.value.values.length;
-
                 property += this.writeString(currentProperty.value.keyType, false);
                 property += this.writeString(currentProperty.value.valueType, false);
                 property += this.writeByte(0, false);
@@ -952,32 +947,32 @@ export default class SaveParser_Write
                     property += this.writeString(currentProperty.value.modeUnk3);
                 }
 
-                property += this.writeInt(currentMapPropertyCount);
+                property += this.writeInt(currentProperty.value.values.size);
 
-                for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
+                for(const [key, value] of currentProperty.value.values)
                 {
                     switch(currentProperty.value.keyType)
                     {
                         case 'IntProperty':
-                            property += this.writeInt(currentProperty.value.values[iMapProperty].key);
+                            property += this.writeInt(key);
                             break;
                         case 'Int64Property':
-                            property += this.writeLong(currentProperty.value.values[iMapProperty].key);
+                            property += this.writeLong(key);
                             break;
                         case 'NameProperty':
                         case 'StrProperty':
-                            property += this.writeString(currentProperty.value.values[iMapProperty].key);
+                            property += this.writeString(key);
                             break;
                         case 'ObjectProperty':
-                            property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].key);
+                            property += this.writeObjectProperty(key);
                             break;
                         case 'EnumProperty':
-                             property += this.writeString(currentProperty.value.values[iMapProperty].key.name);
+                             property += this.writeString(key.name);
                             break;
                         case 'StructProperty':
-                            for(let i = 0; i < currentProperty.value.values[iMapProperty].key.length; i++)
+                            for(let i = 0; i < key.length; i++)
                             {
-                                property += this.writeProperty(currentProperty.value.values[iMapProperty].key[i]);
+                                property += this.writeProperty(key[i]);
                             }
                             property += this.writeString('None');
                             break;
@@ -990,32 +985,32 @@ export default class SaveParser_Write
                         case 'ByteProperty':
                             if(currentProperty.value.keyType === 'StrProperty')
                             {
-                                property += this.writeString(currentProperty.value.values[iMapProperty].value);
+                                property += this.writeString(value.value);
                             }
                             else
                             {
-                                property += this.writeByte(currentProperty.value.values[iMapProperty].value);
+                                property += this.writeByte(value.value);
                             }
                             break;
                         case 'BoolProperty':
-                            property += this.writeByte(currentProperty.value.values[iMapProperty].value);
+                            property += this.writeByte(value.value);
                             break;
                         case 'IntProperty':
-                            property += this.writeInt(currentProperty.value.values[iMapProperty].value);
+                            property += this.writeInt(value.value);
                             break;
                         case 'StrProperty':
-                            property += this.writeString(currentProperty.value.values[iMapProperty].value);
+                            property += this.writeString(value.value);
                             break;
                         case 'ObjectProperty':
-                            property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].value);
+                            property += this.writeObjectProperty(value.value);
                             break;
                         case 'StructProperty':
                             let currentBufferStartingLength     = this.currentBufferLength;
                             let structPropertyBufferLength      = this.currentEntityLength;
 
-                            for(let i = 0; i < currentProperty.value.values[iMapProperty].value.length; i++)
+                            for(const subValue of value)
                             {
-                                property += this.writeProperty(currentProperty.value.values[iMapProperty].value[i]);
+                                property += this.writeProperty(subValue);
                             }
                             property += this.writeString('None');
 

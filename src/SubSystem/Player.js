@@ -183,24 +183,21 @@ export default class SubSystem_Player
                 let inventory       = this.baseLayout.getObjectInventory(currentPlayer, 'mInventory', true);
                     if(inventory !== null)
                     {
-                        for(let j = 0; j < inventory.properties.length; j++)
+                        const mAdjustedSizeDiff = this.baseLayout.getObjectPropertyValue(inventory, 'mAdjustedSizeDiff');
+                        if (mAdjustedSizeDiff !== null)
                         {
-                            const mAdjustedSizeDiff = this.baseLayout.getObjectPropertyValue(inventory, 'mAdjustedSizeDiff');
-                            if (mAdjustedSizeDiff !== null)
+                            this.baseLayout.setObjectPropertyValue(inventory, 'mAdjustedSizeDiff', 0);
+                        }
+                        for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
+                            const property = this.baseLayout.getObjectPropertyValue(inventory, propertyName);
                             {
-                                this.baseLayout.setObjectPropertyValue(inventory, 'mAdjustedSizeDiff', 0);
-                            }
-                            for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
-                                const property = this.baseLayout.getObjectPropertyValue(inventory, propertyName);
-                                {
-                                    property.values.splice(this.defaultInventorySize);
+                                property.values.splice(this.defaultInventorySize);
 
-                                    // Give Xeno Zapper, Always get prepared ^^
-                                    if(propertyName === 'mInventoryStacks')
-                                    {
-                                        property.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
-                                        this.baseLayout.setObjectPropertyValue(property.values[0][0].value, 'NumItems', 1);
-                                    }
+                                // Give Xeno Zapper, Always get prepared ^^
+                                if(propertyName === 'mInventoryStacks')
+                                {
+                                    property.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
+                                    this.baseLayout.setObjectPropertyValue(property.values[0][0].value, 'NumItems', 1);
                                 }
                             }
                         }

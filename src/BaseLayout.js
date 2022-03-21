@@ -1811,11 +1811,11 @@ export default class BaseLayout
                 ]
             },
             children                : new Set([{pathName: cratePathName + ".inventory"}]),
-            properties              : [{
+            properties              : new Map([["mInventory", {
                 name                    : "mInventory",
                 type                    : "ObjectProperty",
                 value                   : {pathName: cratePathName + ".inventory"}
-            }],
+            }]]),
             entity                  : {levelName: '', pathName: ''}
         };
         this.saveGameParser.addObject(newLootCrate);
@@ -1826,28 +1826,28 @@ export default class BaseLayout
             pathName                : cratePathName + ".inventory",
             outerPathName           : cratePathName,
             children                : new Set(),
-            properties              : [
-                {
+            properties              : new Map([
+                ["mInventoryStacks", {
                     name                : "mInventoryStacks",
                     type                : "ArrayProperty",
                     value               : {type: "StructProperty", values: []}, // Push items
                     structureName       : "mInventoryStacks",
                     structureType       : "StructProperty",
                     structureSubType    : "InventoryStack"
-                },
-                {
+                }],
+                ["mArbitrarySlotSizes", {
                     name                : "mArbitrarySlotSizes",
                     type                : "ArrayProperty",
                     index               : 0,
                     value               : {type: "IntProperty", values: []} // Push 0 value for each slot used
-                },
-                {
+                }],
+                ["mAllowedItemDescriptors", {
                     name                : "mAllowedItemDescriptors",
                     type                : "ArrayProperty",
                     index               : 0,
                     value               : {type: "ObjectProperty", values: [{levelName: "", pathName: ""}]}
-                }
-            ]
+                }]
+            ])
         };
         this.saveGameParser.addObject(newLootCrateInventory);
 
@@ -2222,7 +2222,7 @@ export default class BaseLayout
                                             }
                                             if(buildingData !== null && buildingData.maxFluid !== undefined)
                                             {
-                                                value.properties = [{name: 'NumItems', type: 'IntProperty', value: buildingData.maxFluid}];
+                                                value.properties = new Map([['NumItems', {name: 'NumItems', type: 'IntProperty', value: buildingData.maxFluid}]]);
                                             }
                                     }
                             }
@@ -2249,7 +2249,7 @@ export default class BaseLayout
                                                 let value = mInventoryStacks.values[0][0].value;
                                                     if(buildingData !== null && buildingData.maxFluid !== undefined)
                                                     {
-                                                        value.properties = [{name: 'NumItems', type: 'IntProperty', value: buildingData.maxFluid}];
+                                                        value.properties = new Map([['NumItems', {name: 'NumItems', type: 'IntProperty', value: buildingData.maxFluid}]]);
                                                     }
                                             }
 
@@ -3153,7 +3153,7 @@ export default class BaseLayout
             if(mTargetList !== null)
             {
                 let targetNode = baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
-                    if(targetNode !== null && targetNode.properties.length > 0)
+                    if(targetNode !== null && targetNode.properties.size > 0)
                     {
                         let firstNode   = baseLayout.saveGameParser.getTargetObject(this.getObjectPropertyValue(targetNode, 'mFirst').value.pathName);
                         let lastNode    = baseLayout.saveGameParser.getTargetObject(this.getObjectPropertyValue(targetNode, 'mLast').value.pathName);
@@ -3818,11 +3818,11 @@ export default class BaseLayout
         // Empty properties...
         if(connectedWires <= 0)
         {
-            currentObjectPowerConnection.properties = currentObjectPowerConnection.properties.filter(property => property.name !== 'mWires');
+            this.deleteObjectProperty(currentObjectPowerConnection, 'mWires');
 
             if(keepCircuitId === false) // Train station have "mHiddenConnections" property so we need to keep "mCircuitID"
             {
-                currentObjectPowerConnection.properties = [];
+                this.deleteAllObjectProperties(currentObjectPowerConnection);
             }
         }
     }
@@ -4953,52 +4953,27 @@ export default class BaseLayout
         });
     }
 
-    getObjectProperty(currentObject, propertyName, defaultPropertyValue = null)
+    getObjectProperty(object, propertyName, defaultPropertyValue = null)
     {
-        if(currentObject!== null && currentObject.properties !== undefined)
-        {
-            let currentObjectPropertiesLength   = currentObject.properties.length;
-            for(let j = 0; j < currentObjectPropertiesLength; j++)
-            {
-                if(currentObject.properties[j].name === propertyName)
-                {
-                    return currentObject.properties[j];
-                }
-            }
+        return object.properties?.get(propertyName) ?? defaultPropertyValue;
+    }
+
+    getObjectPropertyValue(object, propertyName, defaultPropertyValue = null)
+    {
+        return this.getObjectProperty(object, propertyName)?.value ?? defaultPropertyValue;
+    }
+
+    setObjectProperty(object, property)
+    {
+        if (object.properties === undefined) {
+            object.properties = new Map();
         }
-
-        return defaultPropertyValue;
+        object.properties.set(property.name, property);
     }
 
-    getObjectPropertyValue(currentObject, propertyName, defaultPropertyValue = null)
+    setObjectPropertyValue(object, propertyName, value, type = null)
     {
-        return this.getObjectProperty(currentObject, propertyName)?.value ?? defaultPropertyValue;
-    }
-
-    setObjectProperty(currentObject, property)
-    {
-        let currentObjectPropertiesLength = currentObject.properties.length;
-            for(let j = 0; j < currentObjectPropertiesLength; j++)
-            {
-                if(currentObject.properties[j].name === property.name)
-                {
-                    currentObject.properties[j] = property;
-                    return;
-                }
-            }
-
-        // Property not found, add it!
-        if(property.type !== null)
-        {
-            currentObject.properties.push(property);
-        }
-
-        return;
-    }
-
-    setObjectPropertyValue(currentObject, propertyName, value, type = null)
-    {
-        const property = this.getObjectProperty(currentObject, propertyName);
+        const property = this.getObjectProperty(object, propertyName);
         if (property !== null) {
             property.value = value;
             if (type !== null) {
@@ -5011,32 +4986,21 @@ export default class BaseLayout
             throw new Error("No property type given.");
         }
 
-        this.setObjectProperty(currentObject, {
+        this.setObjectProperty(object, {
             name: propertyName,
             type,
             value
         });
     }
 
-    deleteObjectProperty(currentObject, propertyName)
+    deleteObjectProperty(object, propertyName)
     {
-        let currentObjectPropertiesLength = currentObject.properties.length;
-
-        for(let j = 0; j < currentObjectPropertiesLength; j++)
-        {
-            if(currentObject.properties[j].name === propertyName)
-            {
-                currentObject.properties.splice(j, 1);
-                return;
-            }
-        }
-
-        return;
+        object.properties.delete(propertyName);
     }
 
     deleteAllObjectProperties(object)
     {
-        object.properties = [];
+        object.properties.clear();
     }
 
     getItemDataFromRecipe(currentObject, propertyName = 'mCurrentRecipe')

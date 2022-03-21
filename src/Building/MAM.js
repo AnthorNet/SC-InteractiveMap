@@ -37,7 +37,7 @@ export default class Building_MAM
         let researchManager = Building_MAM.getManager(baseLayout);
             if(researchManager !== null)
             {
-                researchManager.properties = [];
+                baseLayout.deleteAllObjectProperties(researchManager);
             }
     }
 }

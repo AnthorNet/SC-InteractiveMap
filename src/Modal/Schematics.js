@@ -822,51 +822,65 @@ export default class Modal_Schematics
                     switch(currentStatus)
                     {
                         case 'purchased': // Go to none state
-                            for(let i = 0; i < schematicManager.properties.length; i++)
+                            if(mAvailableSchematics !== undefined)
                             {
-                                if(mAvailableSchematics !== undefined)
+                                for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
                                 {
-                                    for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
+                                    if(mAvailableSchematics[j].pathName === currentSchematic.className)
                                     {
-                                        if(mAvailableSchematics[j].pathName === currentSchematic.className)
-                                        {
-                                            mAvailableSchematics.splice(j, 1);
-                                        }
+                                        mAvailableSchematics.splice(j, 1);
                                     }
                                 }
+                            }
 
-                                if(mPurchasedSchematics !== undefined)
+                            if(mPurchasedSchematics !== undefined)
+                            {
+                                for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
                                 {
-                                    for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
+                                    if(mPurchasedSchematics[j].pathName === currentSchematic.className)
                                     {
-                                        if(mPurchasedSchematics[j].pathName === currentSchematic.className)
-                                        {
-                                            mPurchasedSchematics.splice(j, 1);
-                                        }
+                                        mPurchasedSchematics.splice(j, 1);
                                     }
                                 }
                             }
                             break;
                         case 'available': // Go to purchased state
-                            for(let i = 0; i < schematicManager.properties.length; i++)
+                            if(mAvailableSchematics !== undefined)
                             {
-                                if(mAvailableSchematics !== undefined)
+                                for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
                                 {
-                                    for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
+                                    if(mAvailableSchematics[j].pathName === currentSchematic.className)
                                     {
-                                        if(mAvailableSchematics[j].pathName === currentSchematic.className)
-                                        {
-                                            mAvailableSchematics.splice(j, 1);
-                                        }
+                                        mAvailableSchematics.splice(j, 1);
+                                    }
+                                }
+                            }
+
+                            if(mPurchasedSchematics !== undefined)
+                            {
+                                let preventDuplicate        = false;
+                                for(let j = 0; j < mPurchasedSchematics.length; j++)
+                                {
+                                    if(mPurchasedSchematics[j].pathName === currentSchematic.className)
+                                    {
+                                        preventDuplicate = true;
+                                        break;
                                     }
                                 }
 
-                                if(mPurchasedSchematics !== undefined)
+                                if(preventDuplicate === false)
                                 {
-                                    let preventDuplicate        = false;
-                                    for(let j = 0; j < mPurchasedSchematics.length; j++)
+                                    mPurchasedSchematics.push({levelName: "", pathName: currentSchematic.className});
+                                }
+                            }
+                            break;
+                        case 'none': // Go to available state
+                            if(mAvailableSchematics !== undefined)
+                            {
+                                let preventDuplicate        = false;
+                                    for(let j = 0; j < mAvailableSchematics.length; j++)
                                     {
-                                        if(mPurchasedSchematics[j].pathName === currentSchematic.className)
+                                        if(mAvailableSchematics[j].pathName === currentSchematic.className)
                                         {
                                             preventDuplicate = true;
                                             break;
@@ -875,40 +889,17 @@ export default class Modal_Schematics
 
                                     if(preventDuplicate === false)
                                     {
-                                        mPurchasedSchematics.push({levelName: "", pathName: currentSchematic.className});
+                                        mAvailableSchematics.push({levelName: "", pathName: currentSchematic.className});
                                     }
-                                }
                             }
-                            break;
-                        case 'none': // Go to available state
-                            for(let i = 0; i < schematicManager.properties.length; i++)
+
+                            if(mPurchasedSchematics !== undefined)
                             {
-                                if(mAvailableSchematics !== undefined)
+                                for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
                                 {
-                                    let preventDuplicate        = false;
-                                        for(let j = 0; j < mAvailableSchematics.length; j++)
-                                        {
-                                            if(mAvailableSchematics[j].pathName === currentSchematic.className)
-                                            {
-                                                preventDuplicate = true;
-                                                break;
-                                            }
-                                        }
-
-                                        if(preventDuplicate === false)
-                                        {
-                                            mAvailableSchematics.push({levelName: "", pathName: currentSchematic.className});
-                                        }
-                                }
-
-                                if(mPurchasedSchematics !== undefined)
-                                {
-                                    for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
+                                    if(mPurchasedSchematics[j].pathName === currentSchematic.className)
                                     {
-                                        if(mPurchasedSchematics[j].pathName === currentSchematic.className)
-                                        {
-                                            mPurchasedSchematics.splice(j, 1);
-                                        }
+                                        mPurchasedSchematics.splice(j, 1);
                                     }
                                 }
                             }

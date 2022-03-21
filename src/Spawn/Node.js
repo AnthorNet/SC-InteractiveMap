@@ -96,10 +96,10 @@ export default class Spawn_Node
                                 rotation        : BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.rotation),
                                 translation     : [options.x, options.y, options.z]
                             },
-                            properties      : [
-                                { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "" } },
-                                { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
-                            ],
+                            properties      : new Map([
+                                ["mBuiltWithRecipe", { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "" } }],
+                                ["mBuildTimeStamp", { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }],
+                            ]),
                             entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
                         };
 

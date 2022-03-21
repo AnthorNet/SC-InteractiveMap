@@ -174,11 +174,11 @@ export default class Spawn_Image
                     translation         : [0, 0, 0]
                 },
                 entity              : {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'},
-                properties          : [
-                    {name: 'mDidFirstTimeUse', type: 'BoolProperty', value: 1},
-                    {name: 'mBuiltWithRecipe', type: 'ObjectProperty', value: {levelName: '', pathName: ''}},
-                    {name: 'mBuildTimeStamp', type: 'FloatProperty', value: 0}
-                 ]
+                properties          : new Map([
+                    ['mDidFirstTimeUse', {name: 'mDidFirstTimeUse', type: 'BoolProperty', value: 1}],
+                    ['mBuiltWithRecipe', {name: 'mBuiltWithRecipe', type: 'ObjectProperty', value: {levelName: '', pathName: ''}}],
+                    ['mBuildTimeStamp', {name: 'mBuildTimeStamp', type: 'FloatProperty', value: 0}],
+                ])
             };
 
             if(this.supportId === 'Build_Beam_Painted_C')
