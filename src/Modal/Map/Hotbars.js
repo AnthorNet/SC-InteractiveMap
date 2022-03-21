@@ -37,7 +37,7 @@ export default class Modal_Map_Hotbars
 
                 if(playerState !== null)
                 {
-                    let mPresetHotbars      = this.baseLayout.getObjectProperty(playerState, 'mPresetHotbars');
+                    let mPresetHotbars      = this.baseLayout.getObjectPropertyValue(playerState, 'mPresetHotbars');
                     let currentPreset       = $(e.currentTarget).parent().attr('data-index');
 
                         if(mPresetHotbars !== null)
@@ -62,7 +62,7 @@ export default class Modal_Map_Hotbars
 
                 if(playerState !== null)
                 {
-                    let mPresetHotbars      = this.baseLayout.getObjectProperty(playerState, 'mPresetHotbars');
+                    let mPresetHotbars      = this.baseLayout.getObjectPropertyValue(playerState, 'mPresetHotbars');
                     let currentPreset       = $(e.currentTarget).parent().parent().attr('data-index');
 
                         if(mPresetHotbars !== null)
@@ -79,7 +79,7 @@ export default class Modal_Map_Hotbars
                 if(playerState !== null)
                 {
                     let hotbarSlot          = $(e.target).closest('[data-hotbar]').attr('data-hotbar');
-                    let mHotbars            = this.baseLayout.getObjectProperty(playerState, 'mHotbars');
+                    let mHotbars            = this.baseLayout.getObjectPropertyValue(playerState, 'mHotbars');
                         if(mHotbars !== null)
                         {
                             let hotbarJson = [{values: []}];
@@ -108,7 +108,7 @@ export default class Modal_Map_Hotbars
                     if(playerState !== null)
                     {
                         let hotbarSlot          = $(e.target).closest('[data-hotbar]').attr('data-hotbar');
-                        let mHotbars            = this.baseLayout.getObjectProperty(playerState, 'mHotbars');
+                        let mHotbars            = this.baseLayout.getObjectPropertyValue(playerState, 'mHotbars');
                             if(mHotbars !== null)
                             {
                                 for(let j = 0; j < mHotbars.values[parseInt(hotbarSlot)][0].value.values.length; j++)
@@ -133,7 +133,7 @@ export default class Modal_Map_Hotbars
                     if(playerState !== null)
                     {
                         let hotbarSlot          = $(e.target).closest('[data-hotbar]').attr('data-hotbar');
-                        let mHotbars            = this.baseLayout.getObjectProperty(playerState, 'mHotbars');
+                        let mHotbars            = this.baseLayout.getObjectPropertyValue(playerState, 'mHotbars');
                             if(mHotbars !== null)
                             {
                                 for(let j = 0; j < mHotbars.values[parseInt(hotbarSlot)][0].value.values.length; j++)
@@ -157,7 +157,7 @@ export default class Modal_Map_Hotbars
             let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
                 if(playerState !== null)
                 {
-                    let mHotbars = this.baseLayout.getObjectProperty(playerState, 'mHotbars');
+                    let mHotbars = this.baseLayout.getObjectPropertyValue(playerState, 'mHotbars');
                         if(mHotbars !== null)
                         {
                             let hotbarJson = [];
@@ -190,7 +190,7 @@ export default class Modal_Map_Hotbars
                 let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
                     if(playerState !== null)
                     {
-                        let mHotbars = this.baseLayout.getObjectProperty(playerState, 'mHotbars');
+                        let mHotbars = this.baseLayout.getObjectPropertyValue(playerState, 'mHotbars');
                             if(mHotbars !== null)
                             {
                                 for(let i = 0; i < mHotbars.values.length; i++)
@@ -253,7 +253,7 @@ export default class Modal_Map_Hotbars
 
     parseHotbars(player, cellWidth)
     {
-        let mHotbars            = this.baseLayout.getObjectProperty(player, 'mHotbars');
+        let mHotbars            = this.baseLayout.getObjectPropertyValue(player, 'mHotbars');
         let mHotbarsHtml        = [];
 
             if(mHotbars !== null)
@@ -294,7 +294,7 @@ export default class Modal_Map_Hotbars
                                     }
                                     else
                                     {
-                                        let mCustomizationRecipeToActivate = this.baseLayout.getObjectProperty(currentShortcut, 'mCustomizationRecipeToActivate');
+                                        let mCustomizationRecipeToActivate = this.baseLayout.getObjectPropertyValue(currentShortcut, 'mCustomizationRecipeToActivate');
                                             if(mCustomizationRecipeToActivate !== null)
                                             {
                                                 if(mCustomizationRecipeToActivate.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/Recipe_'))
@@ -369,7 +369,7 @@ export default class Modal_Map_Hotbars
 
     parseHotbarsPresets(player)
     {
-        let mPresetHotbars      = this.baseLayout.getObjectProperty(player, 'mPresetHotbars');
+        let mPresetHotbars      = this.baseLayout.getObjectPropertyValue(player, 'mPresetHotbars');
         let mPresetHotbarsHtml  = [];
         let cellWidth           = 50;
 

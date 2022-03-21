@@ -15,7 +15,7 @@ export default class SubSystem_Event
     {
         this.baseLayout.deleteObjectProperty(this.eventSubSystem, 'mCalendarData'); // OLD
 
-        let mStoredCalendarData = this.baseLayout.getObjectProperty(this.eventSubSystem, 'mStoredCalendarData');
+        let mStoredCalendarData = this.baseLayout.getObjectPropertyValue(this.eventSubSystem, 'mStoredCalendarData');
             if(mStoredCalendarData !== null)
             {
                 for(let i = (mStoredCalendarData.values.length - 1); i >= 0; i--)

@@ -44,7 +44,7 @@ export default class Selection_Delete
                             if(this.keepDeleted === true)
                             {
                                 let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
-                                let mBuiltWithRecipe    = this.baseLayout.getObjectProperty(currentObject, 'mBuiltWithRecipe');
+                                let mBuiltWithRecipe    = this.baseLayout.getObjectPropertyValue(currentObject, 'mBuiltWithRecipe');
                                     if(mBuiltWithRecipe !== null)
                                     {
                                         let recipeName = mBuiltWithRecipe.pathName.split('.')[1];

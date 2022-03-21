@@ -60,7 +60,7 @@ export default class Building_SpaceElevator
         let phaseManager = Building_SpaceElevator.getManager(baseLayout);
             if(phaseManager !== null)
             {
-                let mGamePhase          = baseLayout.getObjectProperty(phaseManager, 'mGamePhase');
+                let mGamePhase          = baseLayout.getObjectPropertyValue(phaseManager, 'mGamePhase');
                     if(mGamePhase !== null)
                     {
                         return mGamePhase.valueName;
@@ -97,7 +97,7 @@ export default class Building_SpaceElevator
                 let phaseManager    = Building_SpaceElevator.getManager(baseLayout);
                     if(phaseManager !== null)
                     {
-                        let mGamePhaseCosts = baseLayout.getObjectProperty(phaseManager, 'mGamePhaseCosts');
+                        let mGamePhaseCosts = baseLayout.getObjectPropertyValue(phaseManager, 'mGamePhaseCosts');
                             if(mGamePhaseCosts !== null)
                             {
                                 for(let i = 0 ; i < mGamePhaseCosts.values.length; i++)
@@ -191,7 +191,7 @@ export default class Building_SpaceElevator
                             }
                             else
                             {
-                                let mGamePhase      = baseLayout.getObjectProperty(phaseManager, 'mGamePhase');
+                                let mGamePhase      = baseLayout.getObjectPropertyValue(phaseManager, 'mGamePhase');
                                     if(mGamePhase === null)
                                     {
                                         baseLayout.setObjectProperty(phaseManager, {
@@ -216,7 +216,7 @@ export default class Building_SpaceElevator
         let phaseManager = Building_SpaceElevator.getManager(baseLayout);
             if(phaseManager !== null)
             {
-                let mGamePhaseCosts = baseLayout.getObjectProperty(phaseManager, 'mGamePhaseCosts');
+                let mGamePhaseCosts = baseLayout.getObjectPropertyValue(phaseManager, 'mGamePhaseCosts');
                     if(mGamePhaseCosts === null)
                     {
                         let availablePhases = Building_SpaceElevator.availablePhases;

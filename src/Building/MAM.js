@@ -10,8 +10,8 @@ export default class Building_MAM
         let researchManager = Building_MAM.getManager(baseLayout);
             if(researchManager !== null)
             {
-                let mUnlockedResearchTrees  = baseLayout.getObjectProperty(researchManager, 'mUnlockedResearchTrees');
-                let mIsActivated            = baseLayout.getObjectProperty(researchManager, 'mIsActivated');
+                let mUnlockedResearchTrees  = baseLayout.getObjectPropertyValue(researchManager, 'mUnlockedResearchTrees');
+                let mIsActivated            = baseLayout.getObjectPropertyValue(researchManager, 'mIsActivated');
 
                     if(mUnlockedResearchTrees === null)
                     {

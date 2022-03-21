@@ -712,7 +712,7 @@ export default class Modal_Schematics
             let schematicManager        = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
                 if(schematicManager !== null)
                 {
-                    let mPurchasedSchematics    = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
+                    let mPurchasedSchematics    = this.baseLayout.getObjectPropertyValue(schematicManager, 'mPurchasedSchematics');
                         if(mPurchasedSchematics === null)
                         {
                             this.baseLayout.setObjectProperty(schematicManager, {
@@ -723,7 +723,7 @@ export default class Modal_Schematics
                                     values  : [],
                                 }
                             });
-                            mPurchasedSchematics    = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
+                            mPurchasedSchematics    = this.baseLayout.getObjectPropertyValue(schematicManager, 'mPurchasedSchematics');
                         }
                         if(mPurchasedSchematics !== null)
                         {
@@ -956,7 +956,7 @@ export default class Modal_Schematics
                                 if(currentResearch[0] === 'Research')
                                 {
                                         Building_MAM.initiate(this.baseLayout);
-                                    let mUnlockedResearchTrees  = this.baseLayout.getObjectProperty(researchManager, 'mUnlockedResearchTrees');
+                                    let mUnlockedResearchTrees  = this.baseLayout.getObjectPropertyValue(researchManager, 'mUnlockedResearchTrees');
                                     let currentTree             = null;
 
                                         switch(currentResearch[1])
@@ -1018,8 +1018,8 @@ export default class Modal_Schematics
                         let recipeManager = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.recipeManager');
                             if(recipeManager !== null)
                             {
-                                let mAvailableRecipes               = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableRecipes');
-                                let mAvailableCustomizationRecipes  = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableCustomizationRecipes');
+                                let mAvailableRecipes               = this.baseLayout.getObjectPropertyValue(recipeManager, 'mAvailableRecipes');
+                                let mAvailableCustomizationRecipes  = this.baseLayout.getObjectPropertyValue(recipeManager, 'mAvailableCustomizationRecipes');
 
                                     switch(currentStatus)
                                     {
@@ -1059,7 +1059,7 @@ export default class Modal_Schematics
                         let unlockSubSystem = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.UnlockSubsystem');
                             if(unlockSubSystem !== null)
                             {
-                                let mUnlockedEmotes  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mUnlockedEmotes');
+                                let mUnlockedEmotes  = this.baseLayout.getObjectPropertyValue(unlockSubSystem, 'mUnlockedEmotes');
 
                                     switch(currentStatus)
                                     {

@@ -58,7 +58,7 @@ export default class Selection_Offset
                         {
                             case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
                                 // Find target
-                                let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
+                                let mOwnedPawn = this.baseLayout.getObjectPropertyValue(currentObject, 'mOwnedPawn');
                                     if(mOwnedPawn !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
@@ -81,7 +81,7 @@ export default class Selection_Offset
                                 break;
                             case '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C':
                                 // HUB should also move hidden objects
-                                let mHubTerminal    = this.baseLayout.getObjectProperty(currentObject, 'mHubTerminal');
+                                let mHubTerminal    = this.baseLayout.getObjectPropertyValue(currentObject, 'mHubTerminal');
                                     if(mHubTerminal !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mHubTerminal.pathName);
@@ -101,7 +101,7 @@ export default class Selection_Offset
                                                 }
                                             }
                                     }
-                                let mWorkBench      = this.baseLayout.getObjectProperty(currentObject, 'mWorkBench');
+                                let mWorkBench      = this.baseLayout.getObjectPropertyValue(currentObject, 'mWorkBench');
                                     if(mWorkBench !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mWorkBench.pathName);

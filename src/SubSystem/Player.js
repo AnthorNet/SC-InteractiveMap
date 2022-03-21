@@ -70,7 +70,7 @@ export default class SubSystem_Player
 
     getOwnedPawn()
     {
-        let mOwnedPawn  = this.baseLayout.getObjectProperty(this.player, 'mOwnedPawn');
+        let mOwnedPawn  = this.baseLayout.getObjectPropertyValue(this.player, 'mOwnedPawn');
             if(mOwnedPawn !== null)
             {
                 return this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
@@ -84,13 +84,13 @@ export default class SubSystem_Player
         let mOwnedPawn = this.getOwnedPawn();
             if(mOwnedPawn !== null)
             {
-                let mHealthComponent = this.baseLayout.getObjectProperty(mOwnedPawn, 'mHealthComponent');
+                let mHealthComponent = this.baseLayout.getObjectPropertyValue(mOwnedPawn, 'mHealthComponent');
                     if(mHealthComponent !== null)
                     {
                         let currentHealthComponent = this.baseLayout.saveGameParser.getTargetObject(mHealthComponent.pathName);
                             if(currentHealthComponent !== null)
                             {
-                                let mCurrentHealth = this.baseLayout.getObjectProperty(currentHealthComponent, 'mCurrentHealth');
+                                let mCurrentHealth = this.baseLayout.getObjectPropertyValue(currentHealthComponent, 'mCurrentHealth');
                                     if(mCurrentHealth !== null)
                                     {
                                         return mCurrentHealth;
@@ -176,7 +176,7 @@ export default class SubSystem_Player
         this.baseLayout.deleteObjectProperty(this.player, 'mMessageData');
 
         // Update player inventories
-        let mOwnedPawn = this.baseLayout.getObjectProperty(this.player, 'mOwnedPawn');
+        let mOwnedPawn = this.baseLayout.getObjectPropertyValue(this.player, 'mOwnedPawn');
             if(mOwnedPawn !== null)
             {
                 let currentPlayer   = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
@@ -223,7 +223,7 @@ export default class SubSystem_Player
     {
         if(this.isHost() === false)
         {
-            let mOwnedPawn  = this.baseLayout.getObjectProperty(this.player, 'mOwnedPawn');
+            let mOwnedPawn  = this.baseLayout.getObjectPropertyValue(this.player, 'mOwnedPawn');
                 if(mOwnedPawn !== null)
                 {
                     this.baseLayout.saveGameParser.deleteObject(mOwnedPawn.pathName);

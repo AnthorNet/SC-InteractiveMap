@@ -46,7 +46,7 @@ export default class Modal_Trains
                 {
                     if(['/Script/FactoryGame.FGTrain', '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C'].includes(currentIdentifier.className))
                     {
-                        let haveTimetable   = this.baseLayout.getObjectProperty(currentIdentifier, 'TimeTable');
+                        let haveTimetable   = this.baseLayout.getObjectPropertyValue(currentIdentifier, 'TimeTable');
                             if(haveTimetable !== null && haveTimetable.pathName !== undefined)
                             {
                                 let currentTimetable = this.baseLayout.saveGameParser.getTargetObject(haveTimetable.pathName);
@@ -71,7 +71,7 @@ export default class Modal_Trains
 
     getCurrentTrainFromIdentifier(currentIdentifier)
     {
-        let FirstVehicle = this.baseLayout.getObjectProperty(currentIdentifier, 'FirstVehicle');
+        let FirstVehicle = this.baseLayout.getObjectPropertyValue(currentIdentifier, 'FirstVehicle');
             if(FirstVehicle !== null)
             {
                 let FirstVehicleTarget  = this.baseLayout.saveGameParser.getTargetObject(FirstVehicle.pathName);
@@ -80,7 +80,7 @@ export default class Modal_Trains
                         return FirstVehicleTarget;
                     }
             }
-        let LastVehicle = this.baseLayout.getObjectProperty(currentIdentifier, 'LastVehicle');
+        let LastVehicle = this.baseLayout.getObjectPropertyValue(currentIdentifier, 'LastVehicle');
             if(LastVehicle !== null)
             {
                 let LastVehicleTarget  = this.baseLayout.saveGameParser.getTargetObject(LastVehicle.pathName);
@@ -96,11 +96,11 @@ export default class Modal_Trains
     getCurrentTimeTable(currentIdentifier, currentTimetable)
     {
         let html = [];
-        let mStops = this.baseLayout.getObjectProperty(currentTimetable, 'mStops');
+        let mStops = this.baseLayout.getObjectPropertyValue(currentTimetable, 'mStops');
             if(mStops !== null)
             {
                 let currentTrain    = this.getCurrentTrainFromIdentifier(currentIdentifier);
-                let haveName        = this.baseLayout.getObjectProperty(currentIdentifier, 'mTrainName');
+                let haveName        = this.baseLayout.getObjectPropertyValue(currentIdentifier, 'mTrainName');
                     if(haveName === null)
                     {
                         let buildingData = this.baseLayout.getBuildingDataFromClassName(currentTrain.className);
@@ -132,8 +132,8 @@ export default class Modal_Trains
                         let lastStopStationIdentifier   = this.baseLayout.saveGameParser.getTargetObject(lastStop.pathName);
                             if(firstStopStationIdentifier !== null && lastStopStationIdentifier !== null)
                             {
-                                let firstStopStationName    = this.baseLayout.getObjectProperty(firstStopStationIdentifier, 'mStationName');
-                                let lastStopStationName     = this.baseLayout.getObjectProperty(lastStopStationIdentifier, 'mStationName');
+                                let firstStopStationName    = this.baseLayout.getObjectPropertyValue(firstStopStationIdentifier, 'mStationName');
+                                let lastStopStationName     = this.baseLayout.getObjectPropertyValue(lastStopStationIdentifier, 'mStationName');
                                     if(firstStopStationName !== null && lastStopStationName !== null)
                                     {
                                         html.push('<tr><td colspan="2" width="50%">Route:</td><td colspan="2" class="pl-3 text-right">' + firstStopStationName + ' <i class="fas fa-chevron-left"></i><i class="fas fa-train"></i><i class="fas fa-chevron-right"></i> ' + lastStopStationName + ' </td></tr>');
@@ -145,7 +145,7 @@ export default class Modal_Trains
                         let nextStop = Building_Locomotive.getNextStop(this.baseLayout, currentTrain);
                             if(nextStop !== null)
                             {
-                                let mStationName = this.baseLayout.getObjectProperty(nextStop, 'mStationName');
+                                let mStationName = this.baseLayout.getObjectPropertyValue(nextStop, 'mStationName');
                                     if(mStationName !== null)
                                     {
                                         html.push('<tr><td colspan="2" width="50%">Next stop:</td><td colspan="2" class="pl-3 text-right">' + mStationName + '</td></tr>');

@@ -118,7 +118,7 @@ export default class Modal_PowerCircuits
 
                                                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
                                                 {
-                                                    let mBaseProduction  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
+                                                    let mBaseProduction  = this.baseLayout.getObjectPropertyValue(buildingPowerInfo, 'mBaseProduction');
                                                         if(mBaseProduction !== null)
                                                         {
                                                             if(playerFuel[buildingData.className] === undefined)
@@ -142,14 +142,14 @@ export default class Modal_PowerCircuits
                                                     continue;
                                                 }
 
-                                            let fuelClass           = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
+                                            let fuelClass           = this.baseLayout.getObjectPropertyValue(currentObject, 'mCurrentFuelClass');
 
-                                                if(fuelClass !== null && this.baseLayout.getObjectProperty(currentObject, 'mIsProductionPaused') === null)
+                                                if(fuelClass !== null && this.baseLayout.getObjectPropertyValue(currentObject, 'mIsProductionPaused') === null)
                                                 {
                                                     let fuelItem = this.baseLayout.getItemDataFromClassName(fuelClass.pathName);
                                                         if(fuelItem !== null && fuelItem.energy !== undefined)
                                                         {
-                                                            let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
+                                                            let mDynamicProductionCapacity  = this.baseLayout.getObjectPropertyValue(buildingPowerInfo, 'mDynamicProductionCapacity');
                                                                 if(mDynamicProductionCapacity !== null)
                                                                 {
                                                                     if(playerFuel[fuelItem.className] === undefined)

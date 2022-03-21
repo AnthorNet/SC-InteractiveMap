@@ -111,15 +111,15 @@ export default class Modal_Map_Options
         let mIsBuildingOverclockUnlocked    = 0;
         let mIsMapUnlocked                  = 0;
 
-        let mCheatNoCost                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoCost', 0);
-        let mCheatNoPower                   = this.baseLayout.getObjectProperty(gameState, 'mCheatNoPower', 0);
-        let mCheatNoFuel                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoFuel', 0);
+        let mCheatNoCost                    = this.baseLayout.getObjectPropertyValue(gameState, 'mCheatNoCost', 0);
+        let mCheatNoPower                   = this.baseLayout.getObjectPropertyValue(gameState, 'mCheatNoPower', 0);
+        let mCheatNoFuel                    = this.baseLayout.getObjectPropertyValue(gameState, 'mCheatNoFuel', 0);
 
         if(unlockSubSystem !== null)
         {
-            mIsBuildingEfficiencyUnlocked   = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', 0);
-            mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0);
-            mIsMapUnlocked                  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsMapUnlocked', 0);
+            mIsBuildingEfficiencyUnlocked   = this.baseLayout.getObjectPropertyValue(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', 0);
+            mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectPropertyValue(unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0);
+            mIsMapUnlocked                  = this.baseLayout.getObjectPropertyValue(unlockSubSystem, 'mIsMapUnlocked', 0);
         }
 
         html.push('<div class="form-group row">');
@@ -457,7 +457,7 @@ export default class Modal_Map_Options
                     });
                     this.baseLayout.deleteObjectProperty(unlockSubSystem, 'mNumTotalArmEquipmentSlots');
 
-                    let scannableResources = this.baseLayout.getObjectProperty(unlockSubSystem, 'mScannableResources');
+                    let scannableResources = this.baseLayout.getObjectPropertyValue(unlockSubSystem, 'mScannableResources');
                     if(scannableResources !== null)
                     {
                         scannableResources.values  = [];
@@ -478,7 +478,7 @@ export default class Modal_Map_Options
                         this.baseLayout.deleteObjectProperty(schematicManager, 'mPaidOffSchematic');
                         this.baseLayout.deleteObjectProperty(schematicManager, 'mActiveSchematic');
 
-                        let mAvailableSchematics = this.baseLayout.getObjectProperty(schematicManager, 'mAvailableSchematics');
+                        let mAvailableSchematics = this.baseLayout.getObjectPropertyValue(schematicManager, 'mAvailableSchematics');
                         if(mAvailableSchematics !== null)
                         {
                             mAvailableSchematics.values  = [];
@@ -488,7 +488,7 @@ export default class Modal_Map_Options
                             }
                         }
 
-                        let mPurchasedSchematics = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
+                        let mPurchasedSchematics = this.baseLayout.getObjectPropertyValue(schematicManager, 'mPurchasedSchematics');
                         if(mPurchasedSchematics !== null)
                         {
                             mPurchasedSchematics.values  = [];
@@ -503,7 +503,7 @@ export default class Modal_Map_Options
                 let recipeManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.recipeManager");
                     if(recipeManager !== null)
                     {
-                        let mAvailableRecipes = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableRecipes');
+                        let mAvailableRecipes = this.baseLayout.getObjectPropertyValue(recipeManager, 'mAvailableRecipes');
                         if(mAvailableRecipes !== null)
                         {
                             mAvailableRecipes.values  = [];

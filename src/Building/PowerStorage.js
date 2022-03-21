@@ -17,7 +17,7 @@ export default class Building_PowerStorage
 
     static storedCharge(baseLayout, currentObject)
     {
-        return baseLayout.getObjectProperty(currentObject, 'mPowerStore', 0);
+        return baseLayout.getObjectPropertyValue(currentObject, 'mPowerStore', 0);
     }
 
     static timeUntilCharged(baseLayout, currentObject)

@@ -7,7 +7,7 @@ export default class Building_Door
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let mDoorConfiguration  = baseLayout.getObjectProperty(currentObject, 'mDoorConfiguration');
+        let mDoorConfiguration  = baseLayout.getObjectPropertyValue(currentObject, 'mDoorConfiguration');
 
         contextMenu.push({
             icon        : ((mDoorConfiguration !== null) ? ((mDoorConfiguration.value === 'EDoorConfiguration::DC_Open') ? 'fa-door-open' : 'fa-door-close') : 'fa-door-open'),
@@ -27,7 +27,7 @@ export default class Building_Door
         let baseLayout          = marker.baseLayout;
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let mDoorConfiguration  = baseLayout.getObjectProperty(currentObject, 'mDoorConfiguration');
+        let mDoorConfiguration  = baseLayout.getObjectPropertyValue(currentObject, 'mDoorConfiguration');
 
             BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" status',

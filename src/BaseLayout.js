@@ -609,7 +609,7 @@ export default class BaseLayout
 
                     if(['sporeFlowers', 'smallRocks', 'largeRocks'].includes(this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId))
                     {
-                        let mHasBeenFractured = this.getObjectProperty(currentObject, 'mHasBeenFractured');
+                        let mHasBeenFractured = this.getObjectPropertyValue(currentObject, 'mHasBeenFractured');
                             if(mHasBeenFractured === null || this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId === 'sporeFlowers')
                             {
                                 this.satisfactoryMap.collectableMarkers[currentObject.pathName].addTo(
@@ -695,7 +695,7 @@ export default class BaseLayout
 
             if(currentObject.className === '/Script/FactoryGame.FGPipeNetwork')
             {
-                let mPipeNetworkID = this.getObjectProperty(currentObject, 'mPipeNetworkID');
+                let mPipeNetworkID = this.getObjectPropertyValue(currentObject, 'mPipeNetworkID');
                     if(mPipeNetworkID !== null)
                     {
                         this.saveGamePipeNetworks.set(mPipeNetworkID, currentObject.pathName);
@@ -703,7 +703,7 @@ export default class BaseLayout
                     else
                     {
                         // IF the mPipeNetworkID don't exists, try to find it from one of the children
-                        let mFluidIntegrantScriptInterfaces = this.getObjectProperty(currentObject, 'mFluidIntegrantScriptInterfaces');
+                        let mFluidIntegrantScriptInterfaces = this.getObjectPropertyValue(currentObject, 'mFluidIntegrantScriptInterfaces');
                             mFluidIntegrantScriptInterfacesLoop:
                             for(let j = 0; j < mFluidIntegrantScriptInterfaces.values.length; j++)
                             {
@@ -713,7 +713,7 @@ export default class BaseLayout
                                         for(const child of currentInterface.children)
                                         {
                                             let currentInterfaceChildren    = this.saveGameParser.getTargetObject(child.pathName);
-                                                mPipeNetworkID              = this.getObjectProperty(currentInterfaceChildren, 'mPipeNetworkID');
+                                                mPipeNetworkID              = this.getObjectPropertyValue(currentInterfaceChildren, 'mPipeNetworkID');
                                                 if(mPipeNetworkID !== null)
                                                 {
                                                     this.saveGamePipeNetworks.set(mPipeNetworkID, currentObject.pathName);
@@ -740,7 +740,7 @@ export default class BaseLayout
             }
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
             {
-                let mTetrominoLeaderBoard = this.getObjectProperty(currentObject, 'mTetrominoLeaderBoard');
+                let mTetrominoLeaderBoard = this.getObjectPropertyValue(currentObject, 'mTetrominoLeaderBoard');
                     if(mTetrominoLeaderBoard !== null)
                     {
                         for(let j = 0; j < mTetrominoLeaderBoard.values.length; j++)
@@ -866,7 +866,7 @@ export default class BaseLayout
             // Update extracted core availability to get satellite status
             if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
             {
-                let mExtractableResource = this.getObjectProperty(currentObject, 'mExtractableResource');
+                let mExtractableResource = this.getObjectPropertyValue(currentObject, 'mExtractableResource');
                     if(mExtractableResource !== null)
                     {
                         this.frackingSmasherCores.set(mExtractableResource.pathName, currentObject.pathName);
@@ -1092,7 +1092,7 @@ export default class BaseLayout
                     if(typeof Sentry !== 'undefined' && this.useDebug === true)
                     {
                         Sentry.setContext('className', {className: currentObject.className});
-                        Sentry.setContext('mBuiltWithRecipe', this.getObjectProperty(currentObject, 'mBuiltWithRecipe'));
+                        Sentry.setContext('mBuiltWithRecipe', this.getObjectPropertyValue(currentObject, 'mBuiltWithRecipe'));
                         Sentry.captureMessage('Missing building className: ' + currentObject.className);
                     }
 
@@ -1428,7 +1428,7 @@ export default class BaseLayout
 
                 if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
                 {
-                    let isSpaceRabbitPersistent = this.getObjectProperty(currentObject, 'mIsPersistent');
+                    let isSpaceRabbitPersistent = this.getObjectPropertyValue(currentObject, 'mIsPersistent');
                         if(isSpaceRabbitPersistent !== null)
                         {
                             iconColor = '#b3ffb3';
@@ -1477,7 +1477,7 @@ export default class BaseLayout
 
                 if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
                 {
-                    let isSpaceRabbitPersistent = baseLayout.getObjectProperty(currentObject, 'mIsPersistent');
+                    let isSpaceRabbitPersistent = baseLayout.getObjectPropertyValue(currentObject, 'mIsPersistent');
                         if(isSpaceRabbitPersistent !== null)
                         {
                             baseLayout.playerLayers.playerCratesLayer.count--;
@@ -1493,8 +1493,8 @@ export default class BaseLayout
     addResourceDeposit(currentObject)
     {
         let layerId                     = 'playerResourceDepositsLayer';
-        let mResourcesLeft              = this.getObjectProperty(currentObject, 'mResourcesLeft');
-        let mIsEmptied                  = this.getObjectProperty(currentObject, 'mIsEmptied');
+        let mResourcesLeft              = this.getObjectPropertyValue(currentObject, 'mResourcesLeft');
+        let mIsEmptied                  = this.getObjectPropertyValue(currentObject, 'mIsEmptied');
 
             if(mIsEmptied === null && mResourcesLeft !== null)
             {
@@ -1549,7 +1549,7 @@ export default class BaseLayout
     {
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let mIsEmptied      = baseLayout.getObjectProperty(currentObject, 'mIsEmptied');
+        let mIsEmptied      = baseLayout.getObjectPropertyValue(currentObject, 'mIsEmptied');
 
             if(mIsEmptied === null)
             {
@@ -1607,7 +1607,7 @@ export default class BaseLayout
 
     addItemPickup(currentObject)
     {
-        let mPickupItems = this.getObjectProperty(currentObject, 'mPickupItems');
+        let mPickupItems = this.getObjectPropertyValue(currentObject, 'mPickupItems');
             if(mPickupItems !== null && mPickupItems.values[0].value.properties[0] !== null && mPickupItems.values[0].value.properties[0].value > 0)
             {
                 let itemId = this.getItemDataFromClassName(mPickupItems.values[0].value.itemName);
@@ -1703,7 +1703,7 @@ export default class BaseLayout
         let beaconColor     = '#b3b3b3';
             //console.log([currentObject.transform.translation[0], currentObject.transform.translation[1]]);
 
-        let mCompassColor   = this.getObjectProperty(currentObject, 'mCompassColor');
+        let mCompassColor   = this.getObjectPropertyValue(currentObject, 'mCompassColor');
             if(mCompassColor !== null)
             {
                 beaconColor = 'rgb(' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.r) + ', ' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.g) + ', ' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.b) + ')';
@@ -1777,7 +1777,7 @@ export default class BaseLayout
         for(const player of this.players.values())
         {
             // Find target
-            let mOwnedPawn  = this.getObjectProperty(player.player, 'mOwnedPawn');
+            let mOwnedPawn  = this.getObjectPropertyValue(player.player, 'mOwnedPawn');
                 if(mOwnedPawn !== null)
                 {
                     let playerObject = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
@@ -2202,13 +2202,13 @@ export default class BaseLayout
 
             if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
             {
-                let storage           = this.getObjectProperty(storageObjects[i], 'mInventory');
+                let storage           = this.getObjectPropertyValue(storageObjects[i], 'mInventory');
                     if(storage !== null)
                     {
                         let storageObject = this.saveGameParser.getTargetObject(storage.pathName);
                             if(storageObject !== null)
                             {
-                                let mInventoryStacks = this.getObjectProperty(storageObject, 'mInventoryStacks');
+                                let mInventoryStacks = this.getObjectPropertyValue(storageObject, 'mInventoryStacks');
                                     if(mInventoryStacks !== null)
                                     {
                                         let value = mInventoryStacks.values[0][0].value;
@@ -2217,7 +2217,7 @@ export default class BaseLayout
                                                 let currentPipeNetwork = this.getObjectPipeNetwork(currentObject);
                                                     if(currentPipeNetwork !== null)
                                                     {
-                                                        let mFluidDescriptor = this.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
+                                                        let mFluidDescriptor = this.getObjectPropertyValue(currentPipeNetwork, 'mFluidDescriptor');
                                                             if(mFluidDescriptor !== null)
                                                             {
                                                                 value.itemName = mFluidDescriptor.pathName;
@@ -2238,16 +2238,16 @@ export default class BaseLayout
             // Skip fluid Freight Wagon
             if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
             {
-                let storage           = this.getObjectProperty(storageObjects[i], inventoryProperty);
+                let storage           = this.getObjectPropertyValue(storageObjects[i], inventoryProperty);
                     if(storage !== null)
                     {
                         let storageObject = this.saveGameParser.getTargetObject(storage.pathName);
                             if(storageObject !== null)
                             {
-                                let mAdjustedSizeDiff = this.getObjectProperty(storageObject, 'mAdjustedSizeDiff');
+                                let mAdjustedSizeDiff = this.getObjectPropertyValue(storageObject, 'mAdjustedSizeDiff');
                                     if(mAdjustedSizeDiff !== null && mAdjustedSizeDiff === -31)
                                     {
-                                        let mInventoryStacks = this.getObjectProperty(storageObject, 'mInventoryStacks');
+                                        let mInventoryStacks = this.getObjectPropertyValue(storageObject, 'mInventoryStacks');
                                             if(mInventoryStacks !== null)
                                             {
                                                 let value = mInventoryStacks.values[0][0].value;
@@ -2364,7 +2364,7 @@ export default class BaseLayout
 
             if(currentObjectPipeNetwork !== null)
             {
-                let currentFluidDescriptor = this.getObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
+                let currentFluidDescriptor = this.getObjectPropertyValue(currentObjectPipeNetwork, 'mFluidDescriptor');
 
                 BaseLayout_Modal.form({
                     title       : 'Update pipe network fluid',
@@ -2406,7 +2406,7 @@ export default class BaseLayout
                 let currentChildren = this.saveGameParser.getTargetObject(child.pathName);
                     if(currentChildren !== null)
                     {
-                        let mPipeNetworkID = this.getObjectProperty(currentChildren, 'mPipeNetworkID');
+                        let mPipeNetworkID = this.getObjectPropertyValue(currentChildren, 'mPipeNetworkID');
                             if(mPipeNetworkID !== null)
                             {
                                 const pipeNetwork = this.saveGamePipeNetworks.get(mPipeNetworkID)
@@ -2495,7 +2495,7 @@ export default class BaseLayout
 
     addDecoration(currentObject, resolve = false, skipMod = false)
     {
-        let mDecorationDescriptor = this.getObjectProperty(currentObject, 'mDecorationDescriptor');
+        let mDecorationDescriptor = this.getObjectPropertyValue(currentObject, 'mDecorationDescriptor');
             if(mDecorationDescriptor !== null)
             {
                 let currentItemData = this.getItemDataFromClassName(mDecorationDescriptor.pathName);
@@ -2578,7 +2578,7 @@ export default class BaseLayout
                     //TODO: Calculate length based on proper pitch angle...
                     if(buildingData.category === 'beam' && Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 0)
                     {
-                        let mLength = this.getObjectProperty(currentObject, 'mLength');
+                        let mLength = this.getObjectPropertyValue(currentObject, 'mLength');
                             if(mLength !== null)
                             {
                                 polygonOptions.width    = mLength;
@@ -2591,7 +2591,7 @@ export default class BaseLayout
         // Update nodes used by extraction building
         if(buildingData.category === 'extraction' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
         {
-            let extractResourceNode     = this.getObjectProperty(currentObject, 'mExtractableResource');
+            let extractResourceNode     = this.getObjectPropertyValue(currentObject, 'mExtractableResource');
                 if(extractResourceNode !== null)
                 {
                     if(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
@@ -2650,7 +2650,7 @@ export default class BaseLayout
         // Conveyor Lift
         if(currentObject.className.includes('/Build_ConveyorLiftMk'))
         {
-            let mTopTransform = this.getObjectProperty(currentObject, 'mTopTransform');
+            let mTopTransform = this.getObjectPropertyValue(currentObject, 'mTopTransform');
                 if(mTopTransform !== null)
                 {
                     polygonOptions.customModel      = 'Build_ConveyorLiftMkXXX__0';
@@ -2992,7 +2992,7 @@ export default class BaseLayout
 
             if(currentObject.className === '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C')
             {
-                let mDecorationDescriptor   = baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
+                let mDecorationDescriptor   = baseLayout.getObjectPropertyValue(currentObject, 'mDecorationDescriptor');
                     buildingData            = baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
                     buildingData.mapLayer   = 'playerStatuesLayer';
             }
@@ -3064,7 +3064,7 @@ export default class BaseLayout
 
             if(currentObject.className.includes('/Build_ConveyorLiftMk'))
             {
-                let mTopTransform = baseLayout.getObjectProperty(currentObject, 'mTopTransform');
+                let mTopTransform = baseLayout.getObjectPropertyValue(currentObject, 'mTopTransform');
                     if(mTopTransform !== null)
                     {
                         for(let i = 0; i < mTopTransform.values.length; i++)
@@ -3098,7 +3098,7 @@ export default class BaseLayout
         }
 
         //MOD: Efficiency Checker
-        let innerPipelineAttachment = baseLayout.getObjectProperty(currentObject, 'innerPipelineAttachment');
+        let innerPipelineAttachment = baseLayout.getObjectPropertyValue(currentObject, 'innerPipelineAttachment');
             if(innerPipelineAttachment !== null)
             {
                 baseLayout.saveGameParser.deleteObject(innerPipelineAttachment.pathName);
@@ -3107,7 +3107,7 @@ export default class BaseLayout
         // Extraction buildings need to release the connected node!
         if((buildingData !== null && buildingData.category === 'extraction') || currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
         {
-            let resourceNode     = baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
+            let resourceNode     = baseLayout.getObjectPropertyValue(currentObject, 'mExtractableResource');
                 if(resourceNode !== null)
                 {
                     resourceNode    = baseLayout.saveGameParser.getTargetObject(resourceNode.pathName);
@@ -3144,7 +3144,7 @@ export default class BaseLayout
                             delete baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.extractorPathName;
                         }
 
-                        let mIsOccupied = baseLayout.getObjectProperty(currentObject, 'mIsOccupied');
+                        let mIsOccupied = baseLayout.getObjectPropertyValue(currentObject, 'mIsOccupied');
                             if(mIsOccupied !== null)
                             {
                                 mIsOccupied = 0;
@@ -3156,10 +3156,10 @@ export default class BaseLayout
         // Delete vehicles waypoints
         if(buildingData !== null && buildingData.category === 'vehicle')
         {
-            let mTargetList = baseLayout.getObjectProperty(currentObject, 'mTargetList'); // Update 5
+            let mTargetList = baseLayout.getObjectPropertyValue(currentObject, 'mTargetList'); // Update 5
                 if(mTargetList === null) //TODO:OLD
                 {
-                    mTargetList = baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
+                    mTargetList = baseLayout.getObjectPropertyValue(currentObject, 'mTargetNodeLinkedList');
                 }
 
             if(mTargetList !== null)
@@ -3236,7 +3236,7 @@ export default class BaseLayout
         {
             for(const railVehicle of baseLayout.saveGameRailVehicles)
             {
-                let mTrackPosition = baseLayout.getObjectProperty(railVehicle, 'mTrackPosition');
+                let mTrackPosition = baseLayout.getObjectPropertyValue(railVehicle, 'mTrackPosition');
                     if(mTrackPosition !== null)
                     {
                         if(mTrackPosition.pathName === currentObject.pathName)
@@ -3258,7 +3258,7 @@ export default class BaseLayout
             || layerId === 'playerTrainsLayer'
         )
         {
-            let mRailroadTrack = baseLayout.getObjectProperty(currentObject, 'mRailroadTrack');
+            let mRailroadTrack = baseLayout.getObjectPropertyValue(currentObject, 'mRailroadTrack');
                 if(mRailroadTrack !== null)
                 {
                     let railroadTrackMarker = baseLayout.getMarkerFromPathName(mRailroadTrack.pathName, layerId);
@@ -3286,7 +3286,7 @@ export default class BaseLayout
         }
 
         // Delete extra properties
-        let mSignPoles = baseLayout.getObjectProperty(currentObject, 'mSignPoles');
+        let mSignPoles = baseLayout.getObjectPropertyValue(currentObject, 'mSignPoles');
             if(mSignPoles !== null)
             {
                 for(let j = 0; j < mSignPoles.values.length; j++)
@@ -3476,7 +3476,7 @@ export default class BaseLayout
                             || connectedComponent.className === '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C' // Hyper tubes
                         )
                         {
-                            let targetConnectedComponent = this.getObjectProperty(connectedComponent, 'mConnectedComponent');
+                            let targetConnectedComponent = this.getObjectPropertyValue(connectedComponent, 'mConnectedComponent');
                                 if(targetConnectedComponent !== null)
                                 {
                                     let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
@@ -3573,12 +3573,12 @@ export default class BaseLayout
         }
 
         // Pipe/Lift Floor Hole
-        let mBottomSnappedConnection = this.getObjectProperty(currentObject, 'mBottomSnappedConnection');
+        let mBottomSnappedConnection = this.getObjectPropertyValue(currentObject, 'mBottomSnappedConnection');
             if(mBottomSnappedConnection !== null)
             {
 
             }
-        let mTopSnappedConnection = this.getObjectProperty(currentObject, 'mTopSnappedConnection');
+        let mTopSnappedConnection = this.getObjectPropertyValue(currentObject, 'mTopSnappedConnection');
             if(mTopSnappedConnection !== null)
             {
 
@@ -3722,7 +3722,7 @@ export default class BaseLayout
 
     checkPlayerWirePowerConnection(currentObject, currentWireObject)
     {
-        let mWires = this.getObjectProperty(currentObject, 'mWires');
+        let mWires = this.getObjectPropertyValue(currentObject, 'mWires');
 
             // Create the missing property...
             if(mWires === null)
@@ -3760,7 +3760,7 @@ export default class BaseLayout
 
     deletePlayerWiresFromPowerConnection(currentObjectPowerConnection)
     {
-        let currentObjectWires              = this.getObjectProperty(currentObjectPowerConnection, 'mWires');
+        let currentObjectWires              = this.getObjectPropertyValue(currentObjectPowerConnection, 'mWires');
 
         if(currentObjectWires !== null)
         {
@@ -4410,7 +4410,7 @@ export default class BaseLayout
     // Inventory
     getObjectInventory(currentObject, inventoryPropertyName = 'mInventory', raw = false)
     {
-        let inventory = this.getObjectProperty(currentObject, inventoryPropertyName);
+        let inventory = this.getObjectPropertyValue(currentObject, inventoryPropertyName);
             if(inventory !== null)
             {
                 let inventoryObject = this.saveGameParser.getTargetObject(inventory.pathName);
@@ -4438,13 +4438,13 @@ export default class BaseLayout
     {
         if(this.useRadioactivity === true)
         {
-            let inventoryPathName = this.getObjectProperty(currentObject, inventoryPropertyName);
+            let inventoryPathName = this.getObjectPropertyValue(currentObject, inventoryPropertyName);
                 if(inventoryPathName !== null)
                 {
                     let inventoryObject = this.saveGameParser.getTargetObject(inventoryPathName.pathName);
                         if(inventoryObject !== null)
                         {
-                            let mInventoryStacks = this.getObjectProperty(inventoryObject, 'mInventoryStacks');
+                            let mInventoryStacks = this.getObjectPropertyValue(inventoryObject, 'mInventoryStacks');
                                 if(mInventoryStacks !== null)
                                 {
                                     let radioactivityItems  = [];
@@ -4483,10 +4483,10 @@ export default class BaseLayout
     getObjectTargetInventory(currentObject)
     {
         let inventory               = [];
-        let mInventoryStacks        = this.getObjectProperty(currentObject, 'mInventoryStacks');
+        let mInventoryStacks        = this.getObjectPropertyValue(currentObject, 'mInventoryStacks');
             if(mInventoryStacks !== null)
             {
-                let mActiveEquipmentIndex   = this.getObjectProperty(currentObject, 'mActiveEquipmentIndex');
+                let mActiveEquipmentIndex   = this.getObjectPropertyValue(currentObject, 'mActiveEquipmentIndex');
 
                 for(let k = 0; k < mInventoryStacks.values.length; k++)
                 {
@@ -4702,13 +4702,13 @@ export default class BaseLayout
     // Overclocking
     getClockSpeed(currentObject)
     {
-        let currentPotential = this.getObjectProperty(currentObject, 'mCurrentPotential');
+        let currentPotential = this.getObjectPropertyValue(currentObject, 'mCurrentPotential');
             if(currentPotential !== null)
             {
                 return currentPotential;
             }
 
-        let pendingPotential = this.getObjectProperty(currentObject, 'mPendingPotential');
+        let pendingPotential = this.getObjectPropertyValue(currentObject, 'mPendingPotential');
             if(pendingPotential !== null)
             {
                 return pendingPotential;
@@ -4739,7 +4739,7 @@ export default class BaseLayout
         let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected'));
         let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
 
-        let hasBeenOpened   = this.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
+        let hasBeenOpened   = this.getObjectPropertyValue(currentObject, 'mHasBeenOpened', 0);
             if(hasBeenOpened == 0)
             {
                 dataCollected++;
@@ -4773,7 +4773,7 @@ export default class BaseLayout
     {
         let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
-        let isProductionPaused  = this.getObjectProperty(currentObject, 'mIsProductionPaused');
+        let isProductionPaused  = this.getObjectPropertyValue(currentObject, 'mIsProductionPaused');
 
             // GENERATOR
             if(buildingData !== null && buildingData.category === 'generator' && buildingData.powerGenerated !== undefined)
@@ -4800,7 +4800,7 @@ export default class BaseLayout
                                         value:  buildingData.powerGenerated.normal[1]
                                     });
 
-                                    let resourceNode     = this.getObjectProperty(currentObject, 'mExtractableResource');
+                                    let resourceNode     = this.getObjectPropertyValue(currentObject, 'mExtractableResource');
                                         if(resourceNode !== null)
                                         {
                                             if(this.satisfactoryMap.collectableMarkers !== undefined && this.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
@@ -4999,12 +4999,17 @@ export default class BaseLayout
             {
                 if(currentObject.properties[j].name === propertyName)
                 {
-                    return currentObject.properties[j].value;
+                    return currentObject.properties[j];
                 }
             }
         }
 
         return defaultPropertyValue;
+    }
+
+    getObjectPropertyValue(currentObject, propertyName, defaultPropertyValue = null)
+    {
+        return this.getObjectProperty(currentObject, propertyName)?.value ?? defaultPropertyValue;
     }
 
     setObjectProperty(currentObject, property)
@@ -5014,7 +5019,7 @@ export default class BaseLayout
             {
                 if(currentObject.properties[j].name === property.name)
                 {
-                    currentObject.properties[j].value = property;
+                    currentObject.properties[j] = property;
                     return;
                 }
             }
@@ -5051,7 +5056,7 @@ export default class BaseLayout
 
     getItemDataFromRecipe(currentObject, propertyName = 'mCurrentRecipe')
     {
-        let recipe              = this.getObjectProperty(currentObject, propertyName);
+        let recipe              = this.getObjectPropertyValue(currentObject, propertyName);
 
         if(recipe !== null)
         {
@@ -5192,7 +5197,7 @@ export default class BaseLayout
 
     getItemIdFromDepositTableIndex(currentObject)
     {
-        let mResourceDepositTableIndex  = this.getObjectProperty(currentObject, 'mResourceDepositTableIndex');
+        let mResourceDepositTableIndex  = this.getObjectPropertyValue(currentObject, 'mResourceDepositTableIndex');
             switch(mResourceDepositTableIndex)
             {
                 case 0:
@@ -5439,7 +5444,7 @@ export default class BaseLayout
 
         if(currentObject !== null)
         {
-            if(this.getObjectProperty(currentObject, 'mIsProductionPaused') !== null)
+            if(this.getObjectPropertyValue(currentObject, 'mIsProductionPaused') !== null)
             {
                 return false;
             }
@@ -5466,7 +5471,7 @@ export default class BaseLayout
 
                     if(childObject !== null)
                     {
-                        let mWires = this.getObjectProperty(childObject, 'mWires');
+                        let mWires = this.getObjectPropertyValue(childObject, 'mWires');
                             if(mWires !== null)
                             {
                                 return true;
@@ -5498,7 +5503,7 @@ export default class BaseLayout
 
     updateBuiltWithRecipe(currentObject)
     {
-        let mBuiltWithRecipe    = this.getObjectProperty(currentObject, 'mBuiltWithRecipe');
+        let mBuiltWithRecipe    = this.getObjectPropertyValue(currentObject, 'mBuiltWithRecipe');
             if(mBuiltWithRecipe !== null)
             {
                 let className = currentObject.className.replace('Build_', 'Desc_').replace('Build_', 'Desc_');
@@ -5686,7 +5691,7 @@ export default class BaseLayout
 
         if(typeof currentObject === 'object')
         {
-            let mBuiltWithRecipe = this.getObjectProperty(currentObject, 'mBuiltWithRecipe')
+            let mBuiltWithRecipe = this.getObjectPropertyValue(currentObject, 'mBuiltWithRecipe')
                 if(mBuiltWithRecipe !== null)
                 {
                     let recipeName = mBuiltWithRecipe.pathName.split('.')[1];

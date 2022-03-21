@@ -61,7 +61,7 @@ export default class Selection_Rotate
                         switch(currentObject.className)
                         {
                             case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                                let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
+                                let mOwnedPawn = this.baseLayout.getObjectPropertyValue(currentObject, 'mOwnedPawn');
                                     if(mOwnedPawn !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
@@ -80,7 +80,7 @@ export default class Selection_Rotate
                                 break;
                             case '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C':
                                 // HUB should also move hidden objects
-                                let mHubTerminal    = this.baseLayout.getObjectProperty(currentObject, 'mHubTerminal');
+                                let mHubTerminal    = this.baseLayout.getObjectPropertyValue(currentObject, 'mHubTerminal');
                                     if(mHubTerminal !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mHubTerminal.pathName);
@@ -96,7 +96,7 @@ export default class Selection_Rotate
                                                 currentObjectTarget.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(currentObjectTarget.transform.rotation, this.angle);
                                             }
                                     }
-                                let mWorkBench      = this.baseLayout.getObjectProperty(currentObject, 'mWorkBench');
+                                let mWorkBench      = this.baseLayout.getObjectPropertyValue(currentObject, 'mWorkBench');
                                     if(mWorkBench !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mWorkBench.pathName);
@@ -122,7 +122,7 @@ export default class Selection_Rotate
                                     currentObject.transform.translation[1]  = translationRotation[1];
 
                                 // Rotate all spline data and tangeant!
-                                let mSplineData                      = this.baseLayout.getObjectProperty(currentObject, 'mSplineData');
+                                let mSplineData                      = this.baseLayout.getObjectPropertyValue(currentObject, 'mSplineData');
                                     if(mSplineData !== null)
                                     {
                                         for(let j = 0; j < mSplineData.values.length; j++)

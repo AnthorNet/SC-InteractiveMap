@@ -86,7 +86,7 @@ export default class Modal_Statistics_Production
 
                             if(buildingData.category === 'extraction')
                             {
-                                let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
+                                let extractResourceNode     = this.baseLayout.getObjectPropertyValue(currentObject, 'mExtractableResource');
                                 let purity                  = 'normal';
 
                                 if(extractResourceNode !== null)
@@ -266,7 +266,7 @@ export default class Modal_Statistics_Production
                             {
                                 let clockSpeed                  = this.baseLayout.getClockSpeed(currentObject);
                                 let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
-                                let fuelClass                   = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
+                                let fuelClass                   = this.baseLayout.getObjectPropertyValue(currentObject, 'mCurrentFuelClass');
 
                                 if(fuelClass !== null)
                                 {

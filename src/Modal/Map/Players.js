@@ -16,8 +16,8 @@ export default class Modal_Map_Players
 
             if(this.unlockSubSystem !== null)
             {
-                let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
-                let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
+                let mNumTotalInventorySlots     = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalInventorySlots');
+                let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
 
                 updateSizeHtml.push('<div class="row">');
                 updateSizeHtml.push('<div class="col-6">');
@@ -108,7 +108,7 @@ export default class Modal_Map_Players
     {
         if(this.unlockSubSystem !== null)
         {
-            let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
+            let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
             let newCount                    = Math.max(1, Math.min(9, ((mNumTotalArmEquipmentSlots !== null) ? mNumTotalArmEquipmentSlots : 1) + parseInt(count)));
                 this.baseLayout.setObjectProperty(this.unlockSubSystem, {
                     name: 'mNumTotalArmEquipmentSlots',
@@ -167,7 +167,7 @@ export default class Modal_Map_Players
     {
         if(this.unlockSubSystem !== null)
         {
-            let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
+            let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
             let newCount                    = Math.max(1, Math.min(9, ((mNumTotalArmEquipmentSlots !== null) ? mNumTotalArmEquipmentSlots : 1) - parseInt(count)));
                 this.baseLayout.setObjectProperty(this.unlockSubSystem, {
                     name: 'mNumTotalArmEquipmentSlots',
@@ -201,7 +201,7 @@ export default class Modal_Map_Players
     {
         if(this.unlockSubSystem !== null)
         {
-            let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
+            let mNumTotalInventorySlots     = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalInventorySlots');
             let newCount                    = Math.max(22, Math.min(500, ((mNumTotalInventorySlots !== null) ? mNumTotalInventorySlots : 22) + parseInt(count)));
                 this.baseLayout.setObjectProperty(this.unlockSubSystem, {
                     name: 'mNumTotalInventorySlots',
@@ -260,7 +260,7 @@ export default class Modal_Map_Players
     {
         if(this.unlockSubSystem !== null)
         {
-            let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
+            let mNumTotalInventorySlots     = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalInventorySlots');
             let newCount                    = Math.max(22, Math.min(500, ((mNumTotalInventorySlots !== null) ? mNumTotalInventorySlots : 22) - parseInt(count)));
                 this.baseLayout.setObjectProperty(this.unlockSubSystem, {
                     name: 'mNumTotalInventorySlots',

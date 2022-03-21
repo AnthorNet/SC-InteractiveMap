@@ -14,7 +14,7 @@ export default class Building_SmartSplitter
 {
     static getSortRule(baseLayout, currentObject, index)
     {
-        let mSortRules = baseLayout.getObjectProperty(currentObject, 'mSortRules');
+        let mSortRules = baseLayout.getObjectPropertyValue(currentObject, 'mSortRules');
             if(mSortRules  !== null)
             {
                 let indexRules = [];

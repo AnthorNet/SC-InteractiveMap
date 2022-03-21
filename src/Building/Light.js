@@ -12,7 +12,7 @@ export default class Building_Light
      */
     static getControlData(baseLayout, currentObject)
     {
-        let mLightControlData = baseLayout.getObjectProperty(currentObject, 'mLightControlData');
+        let mLightControlData = baseLayout.getObjectPropertyValue(currentObject, 'mLightControlData');
             if(mLightControlData === null)
             {
                 baseLayout.setObjectProperty(currentObject, {
@@ -21,7 +21,7 @@ export default class Building_Light
                     value   : { type: "LightSourceControlData", values: [] }
                 });
 
-                mLightControlData = baseLayout.getObjectProperty(currentObject, 'mLightControlData');
+                mLightControlData = baseLayout.getObjectPropertyValue(currentObject, 'mLightControlData');
             }
 
             return mLightControlData;
@@ -114,7 +114,7 @@ export default class Building_Light
     }
     static followPowerConnections(baseLayout, currentPowerConnection, followedPowerConnections, stopAtSwitches = true)
     {
-        let mWires = baseLayout.getObjectProperty(currentPowerConnection, 'mWires');
+        let mWires = baseLayout.getObjectPropertyValue(currentPowerConnection, 'mWires');
             if(mWires !== null)
             {
                 for(let i = 0; i < mWires.values.length; i++)

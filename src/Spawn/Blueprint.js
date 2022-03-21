@@ -544,7 +544,7 @@ export default class Spawn_Blueprint
                         currentHiddenConnections.outerPathName = pathNameConversion[currentHiddenConnections.outerPathName];
                     }
 
-                    let mHiddenConnections = this.baseLayout.getObjectProperty(currentHiddenConnections, 'mHiddenConnections');
+                    let mHiddenConnections = this.baseLayout.getObjectPropertyValue(currentHiddenConnections, 'mHiddenConnections');
                         if(mHiddenConnections !== null)
                         {
                             for(let j = 0; j < mHiddenConnections.values.length; j++)
@@ -677,23 +677,23 @@ export default class Spawn_Blueprint
             if(currentClipboard.linkedList !== undefined)
             {
                 let newLinkedList           = currentClipboard.linkedList;
-                    let mTargetList = this.baseLayout.getObjectProperty(currentClipboard.parent, 'mTargetList');
+                    let mTargetList = this.baseLayout.getObjectPropertyValue(currentClipboard.parent, 'mTargetList');
                         if(mTargetList !== null)
                         {
                             newLinkedList.pathName  = this.baseLayout.generateFastPathName(newLinkedList);
                             mTargetList.pathName    = newLinkedList.pathName;
                         }
                     //TODO:OLD
-                    let mTargetNodeLinkedList = this.baseLayout.getObjectProperty(currentClipboard.parent, 'mTargetNodeLinkedList');
+                    let mTargetNodeLinkedList = this.baseLayout.getObjectPropertyValue(currentClipboard.parent, 'mTargetNodeLinkedList');
                         if(mTargetNodeLinkedList !== null)
                         {
                             newLinkedList.pathName          = currentClipboard.parent.pathName + '.LinkedList';
                             mTargetNodeLinkedList.pathName  = newLinkedList.pathName;
                         }
 
-                let firstNode               = this.baseLayout.getObjectProperty(newLinkedList, 'mFirst');
-                let lastNode                = this.baseLayout.getObjectProperty(newLinkedList, 'mLast');
-                let currentNode             = this.baseLayout.getObjectProperty(newLinkedList, 'mCurrentTarget');
+                let firstNode               = this.baseLayout.getObjectPropertyValue(newLinkedList, 'mFirst');
+                let lastNode                = this.baseLayout.getObjectPropertyValue(newLinkedList, 'mLast');
+                let currentNode             = this.baseLayout.getObjectPropertyValue(newLinkedList, 'mCurrentTarget');
 
                 let targetConversion        = {};
 
@@ -801,7 +801,7 @@ export default class Spawn_Blueprint
                             }
 
                         // Rotate all spline data and tangeant!
-                        let mSplineData                      = this.baseLayout.getObjectProperty(newObject, 'mSplineData');
+                        let mSplineData                      = this.baseLayout.getObjectPropertyValue(newObject, 'mSplineData');
                             if(mSplineData !== null)
                             {
                                 for(let j = 0; j < mSplineData.values.length; j++)
@@ -827,7 +827,7 @@ export default class Spawn_Blueprint
                     }
 
                     // Update vehicle current destination
-                    let mCurrentDestination = this.baseLayout.getObjectProperty(newObject, 'mCurrentDestination');
+                    let mCurrentDestination = this.baseLayout.getObjectPropertyValue(newObject, 'mCurrentDestination');
                         if(mCurrentDestination !== null)
                         {
                             let translationRotation = BaseLayout_Math.getPointRotation(

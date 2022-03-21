@@ -13,7 +13,7 @@ export default class Building_Production
         });
         contextMenu.push('-');
 
-        let mCurrentRecipe      = baseLayout.getObjectProperty(currentObject, 'mCurrentRecipe');
+        let mCurrentRecipe      = baseLayout.getObjectPropertyValue(currentObject, 'mCurrentRecipe');
             if(mCurrentRecipe !== null)
             {
                 contextMenu.push({
@@ -40,7 +40,7 @@ export default class Building_Production
         let baseLayout          = marker.baseLayout;
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let mCurrentRecipe      = baseLayout.getObjectProperty(currentObject, 'mCurrentRecipe');
+        let mCurrentRecipe      = baseLayout.getObjectPropertyValue(currentObject, 'mCurrentRecipe');
         let selectedRecipes     = [];
         let selectOptions       = [];
 
@@ -129,20 +129,20 @@ export default class Building_Production
     {
         let baseLayout          = marker.baseLayout;
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let mCurrentRecipe      = baseLayout.getObjectProperty(currentObject, 'mCurrentRecipe');
+        let mCurrentRecipe      = baseLayout.getObjectPropertyValue(currentObject, 'mCurrentRecipe');
             if(mCurrentRecipe !== null)
             {
                 let currentRecipe       = baseLayout.getItemDataFromRecipe(currentObject);
                     if(currentRecipe !== null)
                     {
-                        let mInputInventory     = baseLayout.getObjectProperty(currentObject, 'mInputInventory');
+                        let mInputInventory     = baseLayout.getObjectPropertyValue(currentObject, 'mInputInventory');
                             if(mInputInventory !== null)
                             {
                                 let inputInventory = baseLayout.saveGameParser.getTargetObject(mInputInventory.pathName);
                                     if(inputInventory !== null)
                                     {
                                         let ingredientsKeys     = Object.keys(currentRecipe.ingredients);
-                                        let mInventoryStacks    = baseLayout.getObjectProperty(inputInventory, 'mInventoryStacks');
+                                        let mInventoryStacks    = baseLayout.getObjectPropertyValue(inputInventory, 'mInventoryStacks');
                                             for(let i = 0; i < mInventoryStacks.values.length; i++)
                                             {
                                                 if(ingredientsKeys[i] !== undefined)
@@ -169,14 +169,14 @@ export default class Building_Production
                                     }
                             }
 
-                        let mOutputInventory    = baseLayout.getObjectProperty(currentObject, 'mOutputInventory');
+                        let mOutputInventory    = baseLayout.getObjectPropertyValue(currentObject, 'mOutputInventory');
                             if(mOutputInventory !== null)
                             {
                                 let outInventory = baseLayout.saveGameParser.getTargetObject(mOutputInventory.pathName);
                                     if(outInventory !== null)
                                     {
                                         let produceKeys         = Object.keys(currentRecipe.produce)
-                                        let mInventoryStacks    = baseLayout.getObjectProperty(outInventory, 'mInventoryStacks');
+                                        let mInventoryStacks    = baseLayout.getObjectPropertyValue(outInventory, 'mInventoryStacks');
                                             for(let i = 0; i < mInventoryStacks.values.length; i++)
                                             {
                                                 if(produceKeys[i] !== undefined)
@@ -221,13 +221,13 @@ export default class Building_Production
         let baseLayout          = marker.baseLayout;
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
 
-        let mInputInventory     = baseLayout.getObjectProperty(currentObject, 'mInputInventory');
+        let mInputInventory     = baseLayout.getObjectPropertyValue(currentObject, 'mInputInventory');
             if(mInputInventory !== null)
             {
                 let inputInventory = baseLayout.saveGameParser.getTargetObject(mInputInventory.pathName);
                     if(inputInventory !== null)
                     {
-                        let mInventoryStacks = baseLayout.getObjectProperty(inputInventory, 'mInventoryStacks');
+                        let mInventoryStacks = baseLayout.getObjectPropertyValue(inputInventory, 'mInventoryStacks');
                             for(let i = 0; i < mInventoryStacks.values.length; i++)
                             {
                                 mInventoryStacks.values[i][0].value.itemName = '';
@@ -240,13 +240,13 @@ export default class Building_Production
                     }
             }
 
-        let mOutputInventory    = baseLayout.getObjectProperty(currentObject, 'mOutputInventory');
+        let mOutputInventory    = baseLayout.getObjectPropertyValue(currentObject, 'mOutputInventory');
             if(mOutputInventory !== null)
             {
                 let outInventory = baseLayout.saveGameParser.getTargetObject(mOutputInventory.pathName);
                     if(outInventory !== null)
                     {
-                        let mInventoryStacks = baseLayout.getObjectProperty(outInventory, 'mInventoryStacks');
+                        let mInventoryStacks = baseLayout.getObjectPropertyValue(outInventory, 'mInventoryStacks');
                             for(let i = 0; i < mInventoryStacks.values.length; i++)
                             {
                                 mInventoryStacks.values[i][0].value.itemName = '';

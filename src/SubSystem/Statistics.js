@@ -28,7 +28,7 @@ export default class SubSystem_Statistics
 
     getConsumablesConsumedCount()
     {
-        let mConsumablesConsumedCount = this.baseLayout.getObjectProperty(this.statisticsSubSystem, 'mConsumablesConsumedCount');
+        let mConsumablesConsumedCount = this.baseLayout.getObjectPropertyValue(this.statisticsSubSystem, 'mConsumablesConsumedCount');
             if(mConsumablesConsumedCount !== null)
             {
                 return this.convert(mConsumablesConsumedCount.values);
@@ -39,7 +39,7 @@ export default class SubSystem_Statistics
 
     getCreaturesKilledCount()
     {
-        let mCreaturesKilledCount = this.baseLayout.getObjectProperty(this.statisticsSubSystem, 'mCreaturesKilledCount');
+        let mCreaturesKilledCount = this.baseLayout.getObjectPropertyValue(this.statisticsSubSystem, 'mCreaturesKilledCount');
             if(mCreaturesKilledCount !== null)
             {
                 return this.convert(mCreaturesKilledCount.values);
@@ -50,7 +50,7 @@ export default class SubSystem_Statistics
 
     getItemsManuallyCraftedCount()
     {
-        let mItemsManuallyCraftedCount = this.baseLayout.getObjectProperty(this.statisticsSubSystem, 'mItemsManuallyCraftedCount');
+        let mItemsManuallyCraftedCount = this.baseLayout.getObjectPropertyValue(this.statisticsSubSystem, 'mItemsManuallyCraftedCount');
             if(mItemsManuallyCraftedCount !== null)
             {
                 return this.convert(mItemsManuallyCraftedCount.values);
@@ -61,7 +61,7 @@ export default class SubSystem_Statistics
 
     getActorsBuiltCount()
     {
-        let mActorsBuiltCount = this.baseLayout.getObjectProperty(this.statisticsSubSystem, 'mActorsBuiltCount');
+        let mActorsBuiltCount = this.baseLayout.getObjectPropertyValue(this.statisticsSubSystem, 'mActorsBuiltCount');
             if(mActorsBuiltCount !== null)
             {
                 return this.convert(mActorsBuiltCount.values);

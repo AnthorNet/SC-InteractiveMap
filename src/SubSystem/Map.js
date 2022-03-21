@@ -18,7 +18,7 @@ export default class SubSystem_Map
 
     getFogOfWar()
     {
-        let mFogOfWarRawData = this.baseLayout.getObjectProperty(this.mapSubSystem, 'mFogOfWarRawData');
+        let mFogOfWarRawData = this.baseLayout.getObjectPropertyValue(this.mapSubSystem, 'mFogOfWarRawData');
             if(mFogOfWarRawData !== null)
             {
                 return mFogOfWarRawData.values;

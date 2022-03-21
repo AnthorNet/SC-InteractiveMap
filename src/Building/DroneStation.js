@@ -20,7 +20,7 @@ export default class Building_DroneStation
      */
     static getInformation(baseLayout, currentObject)
     {
-        let mInfo = baseLayout.getObjectProperty(currentObject, 'mInfo');
+        let mInfo = baseLayout.getObjectPropertyValue(currentObject, 'mInfo');
             if(mInfo !== null)
             {
                 let stationInfo = baseLayout.saveGameParser.getTargetObject(mInfo.pathName);
@@ -35,7 +35,7 @@ export default class Building_DroneStation
 
     static getDrone(baseLayout, currentObject)
     {
-        let mStationDrone = baseLayout.getObjectProperty(currentObject, 'mStationDrone');
+        let mStationDrone = baseLayout.getObjectPropertyValue(currentObject, 'mStationDrone');
             if(mStationDrone !== null)
             {
                 let stationDrone = baseLayout.saveGameParser.getTargetObject(mStationDrone.pathName);
@@ -53,7 +53,7 @@ export default class Building_DroneStation
         let mInfo = Building_DroneStation.getInformation(baseLayout, currentObject);
             if(mInfo !== null)
             {
-                let mPairedStation = baseLayout.getObjectProperty(mInfo, 'mPairedStation');
+                let mPairedStation = baseLayout.getObjectPropertyValue(mInfo, 'mPairedStation');
                     if(mPairedStation !== null)
                     {
                         let stationInfo = baseLayout.saveGameParser.getTargetObject(mPairedStation.pathName);
@@ -72,7 +72,7 @@ export default class Building_DroneStation
         let mPairedStation = Building_DroneStation.getPairedStationInformation(baseLayout, currentObject);
             if(mPairedStation !== null)
             {
-                let mStation = baseLayout.getObjectProperty(mPairedStation, 'mStation');
+                let mStation = baseLayout.getObjectPropertyValue(mPairedStation, 'mStation');
                     if(mStation !== null)
                     {
                         let mStationObject  = baseLayout.saveGameParser.getTargetObject(mStation.pathName);
@@ -95,7 +95,7 @@ export default class Building_DroneStation
         let mInfo = Building_DroneStation.getInformation(baseLayout, currentObject);
             if(mInfo !== null)
             {
-                let mBuildingTag = baseLayout.getObjectProperty(mInfo, 'mBuildingTag');
+                let mBuildingTag = baseLayout.getObjectPropertyValue(mInfo, 'mBuildingTag');
                     if(mBuildingTag !== null && mBuildingTag !== '')
                     {
                         return mBuildingTag;
@@ -169,7 +169,7 @@ export default class Building_DroneStation
 
             if(mStationDrone !== null)
             {
-                let mCurrentDockingState    = baseLayout.getObjectProperty(mStationDrone, 'mCurrentDockingState');
+                let mCurrentDockingState    = baseLayout.getObjectPropertyValue(mStationDrone, 'mCurrentDockingState');
                     if(mCurrentDockingState !== null)
                     {
                         for(let i = 0; i < mCurrentDockingState.values.length; i++)
@@ -202,7 +202,7 @@ export default class Building_DroneStation
                     }
                     else
                     {
-                        let mCurrentAction = baseLayout.getObjectProperty(mStationDrone, 'mCurrentAction');
+                        let mCurrentAction = baseLayout.getObjectPropertyValue(mStationDrone, 'mCurrentAction');
                             if(mCurrentAction !== null)
                             {
                                 if(mCurrentAction.pathName.includes('FGDroneAction_TraversePath'))
@@ -259,7 +259,7 @@ export default class Building_DroneStation
             content.push('TARGET:');
             if(mPairedStation !== null)
             {
-                let mPairedBuildingTag = baseLayout.getObjectProperty(mPairedStation, 'mBuildingTag');
+                let mPairedBuildingTag = baseLayout.getObjectPropertyValue(mPairedStation, 'mBuildingTag');
                     if(mPairedBuildingTag !== null)
                     {
                         content.push('<div style="line-height: 13px;">');
@@ -295,7 +295,7 @@ export default class Building_DroneStation
         let tripDuration            = 0;
             if(mInfo !== null)
             {
-                let mLatestDroneTrips = baseLayout.getObjectProperty(mInfo, 'mLatestDroneTrips');
+                let mLatestDroneTrips = baseLayout.getObjectPropertyValue(mInfo, 'mLatestDroneTrips');
                     if(mLatestDroneTrips !== null)
                     {
                         let mLatestDroneTripsNumbers = {};
@@ -383,7 +383,7 @@ export default class Building_DroneStation
             let powerInfo = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.powerInfo');
                 if(powerInfo !== null)
                 {
-                    let mTargetConsumption = baseLayout.getObjectProperty(powerInfo, 'mTargetConsumption');
+                    let mTargetConsumption = baseLayout.getObjectPropertyValue(powerInfo, 'mTargetConsumption');
                         if(mTargetConsumption !== null)
                         {
                             content.push('<i style="font-size: 22px;line-height: 24px;" class="fas fa-bolt"></i><br />');

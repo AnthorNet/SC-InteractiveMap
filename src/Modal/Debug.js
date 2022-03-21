@@ -22,7 +22,7 @@ export default class Modal_Debug
                 let currentChildren = baseLayout.saveGameParser.getTargetObject(child.pathName);
                     if(currentChildren !== null)
                     {
-                        let mWires = baseLayout.getObjectProperty(currentChildren, 'mWires');
+                        let mWires = baseLayout.getObjectPropertyValue(currentChildren, 'mWires');
                             if(mWires !== null)
                             {
                                 for(let j = 0; j < mWires.values.length; j++)
@@ -49,7 +49,7 @@ export default class Modal_Debug
         let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles', 'mBottomSnappedConnection', 'mTopSnappedConnection', 'mHubTerminal', 'mWorkBench', 'mGenerators'];
             for(let i = 0; i < extraProperties.length; i++)
             {
-                let extraProperty = baseLayout.getObjectProperty(currentObject, extraProperties[i]);
+                let extraProperty = baseLayout.getObjectPropertyValue(currentObject, extraProperties[i]);
                     if(extraProperty !== null)
                     {
                         if(['mSignPoles', 'mActionsToExecute', 'mGenerators'].includes(extraProperties[i]))
@@ -120,7 +120,7 @@ export default class Modal_Debug
                             htmlChildren.push(Modal_Debug.getJsonViewer(currentChildren));
                             htmlChildren.push('</div>');
 
-                            let mHiddenConnections = baseLayout.getObjectProperty(currentChildren, 'mHiddenConnections');
+                            let mHiddenConnections = baseLayout.getObjectPropertyValue(currentChildren, 'mHiddenConnections');
                                 if(mHiddenConnections !== null)
                                 {
                                     for(let j = 0; j < mHiddenConnections.values.length; j++)

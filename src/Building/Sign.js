@@ -186,7 +186,7 @@ export default class Building_Sign
 
     static getBackgroundColor(baseLayout, currentObject)
     {
-        let mBackgroundColor = baseLayout.getObjectProperty(currentObject, 'mBackgroundColor');
+        let mBackgroundColor = baseLayout.getObjectPropertyValue(currentObject, 'mBackgroundColor');
             if(mBackgroundColor !== null)
             {
                 return 'rgb(' + BaseLayout_Math.linearColorToRGB(mBackgroundColor.values.r) + ', ' + BaseLayout_Math.linearColorToRGB(mBackgroundColor.values.g) + ', ' + BaseLayout_Math.linearColorToRGB(mBackgroundColor.values.b) + ')';
@@ -197,7 +197,7 @@ export default class Building_Sign
 
     static getAuxilaryColor(baseLayout, currentObject)
     {
-        let mAuxilaryColor = baseLayout.getObjectProperty(currentObject, 'mAuxilaryColor');
+        let mAuxilaryColor = baseLayout.getObjectPropertyValue(currentObject, 'mAuxilaryColor');
             if(mAuxilaryColor !== null)
             {
                 return 'rgb(' + BaseLayout_Math.linearColorToRGB(mAuxilaryColor.values.r) + ', ' + BaseLayout_Math.linearColorToRGB(mAuxilaryColor.values.g) + ', ' + BaseLayout_Math.linearColorToRGB(mAuxilaryColor.values.b) + ')';
@@ -208,7 +208,7 @@ export default class Building_Sign
 
     static getForegroundColor(baseLayout, currentObject)
     {
-        let mForegroundColor = baseLayout.getObjectProperty(currentObject, 'mForegroundColor');
+        let mForegroundColor = baseLayout.getObjectPropertyValue(currentObject, 'mForegroundColor');
             if(mForegroundColor !== null)
             {
                 return 'rgb(' + BaseLayout_Math.linearColorToRGB(mForegroundColor.values.r) + ', ' + BaseLayout_Math.linearColorToRGB(mForegroundColor.values.g) + ', ' + BaseLayout_Math.linearColorToRGB(mForegroundColor.values.b) + ')';
@@ -219,7 +219,7 @@ export default class Building_Sign
 
     static getIconID(baseLayout, currentObject, elementName = 'Icon')
     {
-        let mPrefabIconElementSaveData = baseLayout.getObjectProperty(currentObject, 'mPrefabIconElementSaveData');
+        let mPrefabIconElementSaveData = baseLayout.getObjectPropertyValue(currentObject, 'mPrefabIconElementSaveData');
             if(mPrefabIconElementSaveData !== null)
             {
                 for(let i = 0; i < mPrefabIconElementSaveData.values.length; i++)
@@ -311,7 +311,7 @@ export default class Building_Sign
 
     static getText(baseLayout, currentObject, elementName = 'Name', defaultName = 'Shennanigans')
     {
-        let mPrefabTextElementSaveData = baseLayout.getObjectProperty(currentObject, 'mPrefabTextElementSaveData');
+        let mPrefabTextElementSaveData = baseLayout.getObjectPropertyValue(currentObject, 'mPrefabTextElementSaveData');
             if(mPrefabTextElementSaveData !== null)
             {
                 for(let i = 0; i < mPrefabTextElementSaveData.values.length; i++)
@@ -391,7 +391,7 @@ export default class Building_Sign
 
     static getActivePrefabLayout(baseLayout, currentObject)
     {
-        let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
+        let mActivePrefabLayout = baseLayout.getObjectPropertyValue(currentObject, 'mActivePrefabLayout');
             if(mActivePrefabLayout !== null)
             {
                 return mActivePrefabLayout.pathName;
@@ -762,7 +762,7 @@ export default class Building_Sign
             layoutTemplate  = layoutTemplate.replace(/{{FOREGROUND_COLOR}}/g, foregroundColor);
 
         let emissiveStyle   = '';
-        let mEmissive       = baseLayout.getObjectProperty(currentObject, 'mEmissive');
+        let mEmissive       = baseLayout.getObjectPropertyValue(currentObject, 'mEmissive');
             if(mEmissive !== null)
             {
                 switch(mEmissive)
@@ -792,7 +792,7 @@ export default class Building_Sign
 
     static updatePrefabData(baseLayout, currentObject, propertyName, elementKey, elementName, value)
     {
-        let mPropertyName = baseLayout.getObjectProperty(currentObject, propertyName);
+        let mPropertyName = baseLayout.getObjectPropertyValue(currentObject, propertyName);
             if(mPropertyName !== null)
             {
                 for(let i = 0; i < mPropertyName.values.length; i++)
@@ -999,7 +999,7 @@ export default class Building_Sign
                 {
                     if(values !== null)
                     {
-                        let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
+                        let mActivePrefabLayout = baseLayout.getObjectPropertyValue(currentObject, 'mActivePrefabLayout');
                             if(mActivePrefabLayout !== null)
                             {
                                 mActivePrefabLayout.pathName = values.mActivePrefabLayout;
@@ -1030,7 +1030,7 @@ export default class Building_Sign
                 {
                     if(values !== null)
                     {
-                        let mBackgroundColor = baseLayout.getObjectProperty(currentObject, 'mBackgroundColor');
+                        let mBackgroundColor = baseLayout.getObjectPropertyValue(currentObject, 'mBackgroundColor');
                             if(mBackgroundColor !== null)
                             {
                                 mBackgroundColor.values = {
@@ -1063,7 +1063,7 @@ export default class Building_Sign
                 {
                     if(values !== null)
                     {
-                        let mAuxilaryColor = baseLayout.getObjectProperty(currentObject, 'mAuxilaryColor');
+                        let mAuxilaryColor = baseLayout.getObjectPropertyValue(currentObject, 'mAuxilaryColor');
                             if(mAuxilaryColor !== null)
                             {
                                 mAuxilaryColor.values = {
@@ -1096,7 +1096,7 @@ export default class Building_Sign
                 {
                     if(values !== null)
                     {
-                        let mForegroundColor = baseLayout.getObjectProperty(currentObject, 'mForegroundColor');
+                        let mForegroundColor = baseLayout.getObjectPropertyValue(currentObject, 'mForegroundColor');
                             if(mForegroundColor !== null)
                             {
                                 mForegroundColor.values = {
@@ -1219,7 +1219,7 @@ export default class Building_Sign
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let mEmissive       = baseLayout.getObjectProperty(currentObject, 'mEmissive');
+        let mEmissive       = baseLayout.getObjectPropertyValue(currentObject, 'mEmissive');
 
             BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" emission strength',
@@ -1258,7 +1258,7 @@ export default class Building_Sign
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let mGlossiness     = baseLayout.getObjectProperty(currentObject, 'mGlossiness');
+        let mGlossiness     = baseLayout.getObjectPropertyValue(currentObject, 'mGlossiness');
 
             BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" surface finish',

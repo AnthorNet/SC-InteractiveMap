@@ -107,7 +107,7 @@ export default class Selection_Copy
                 let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone', 'mSignPoles'];
                     for(let j = 0; j < extraProperties.length; j++)
                     {
-                        let extraProperty   = this.baseLayout.getObjectProperty(currentObject, extraProperties[j]);
+                        let extraProperty   = this.baseLayout.getObjectPropertyValue(currentObject, extraProperties[j]);
                             if(extraProperty !== null)
                             {
                                 if(extraProperty.pathName !== undefined && extraProperty.values === undefined)
@@ -166,10 +166,10 @@ export default class Selection_Copy
                     }
 
                 // Does vehicle have a list of waypoints?
-                let mTargetList = this.baseLayout.getObjectProperty(currentObject, 'mTargetList'); // Update 5
+                let mTargetList = this.baseLayout.getObjectPropertyValue(currentObject, 'mTargetList'); // Update 5
                     if(mTargetList === null) //TODO:OLD
                     {
-                        mTargetList = this.baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
+                        mTargetList = this.baseLayout.getObjectPropertyValue(currentObject, 'mTargetNodeLinkedList');
                     }
                     if(mTargetList !== null)
                     {
@@ -177,8 +177,8 @@ export default class Selection_Copy
 
                             if(linkedList !== null)
                             {
-                                let mFirst                      = this.baseLayout.getObjectProperty(linkedList, 'mFirst');
-                                let mLast                       = this.baseLayout.getObjectProperty(linkedList, 'mLast');
+                                let mFirst                      = this.baseLayout.getObjectPropertyValue(linkedList, 'mFirst');
+                                let mLast                       = this.baseLayout.getObjectPropertyValue(linkedList, 'mLast');
                                     newDataObject.linkedList    = linkedList;
 
                                     if(mFirst !== null && mLast !== null)
@@ -194,7 +194,7 @@ export default class Selection_Copy
                                                     {
                                                         newDataObject.targetPoints.push(checkCurrentNode);
 
-                                                        let mNext               = this.baseLayout.getObjectProperty(checkCurrentNode, 'mNext');
+                                                        let mNext               = this.baseLayout.getObjectPropertyValue(checkCurrentNode, 'mNext');
                                                             checkCurrentNode    = null;
                                                             if(mNext !== null)
                                                             {
@@ -222,7 +222,7 @@ export default class Selection_Copy
                             let trainIdentifierNewObject            = {};
                                 trainIdentifierNewObject.parent     = cloneDeep(trainIdentifier);
 
-                                let haveTimeTable                   = this.baseLayout.getObjectProperty(trainIdentifierNewObject.parent, 'TimeTable');
+                                let haveTimeTable                   = this.baseLayout.getObjectPropertyValue(trainIdentifierNewObject.parent, 'TimeTable');
                                     if(haveTimeTable)
                                     {
                                         trainTimeTables.push(haveTimeTable)
@@ -242,7 +242,7 @@ export default class Selection_Copy
             {
                 if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {
-                    let mControlledConnection = this.baseLayout.getObjectProperty(this.clipboard.data[i].parent, 'mControlledConnection');
+                    let mControlledConnection = this.baseLayout.getObjectPropertyValue(this.clipboard.data[i].parent, 'mControlledConnection');
                         if(mControlledConnection !== null)
                         {
                             let testPathName    = mControlledConnection.pathName.split('.');
@@ -262,7 +262,7 @@ export default class Selection_Copy
                     {
                         let endWith             = '.' + currentChildren.pathName.split('.').pop();
 
-                        let mConnectedComponent = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedComponent');
+                        let mConnectedComponent = this.baseLayout.getObjectPropertyValue(currentChildren, 'mConnectedComponent');
                             if(mConnectedComponent !== null)
                             {
                                 // Remove belt/hyper pipe connection for objects that aren't in the loop...
@@ -296,7 +296,7 @@ export default class Selection_Copy
                                         }
                                         else // mPipeNetworkID
                                         {
-                                            let pipeNetworkId = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
+                                            let pipeNetworkId = this.baseLayout.getObjectPropertyValue(currentChildren, 'mPipeNetworkID');
                                                 if(pipeNetworkId !== null)
                                                 {
                                                     const pipeNetwork = this.baseLayout.saveGamePipeNetworks.get(pipeNetworkId);
@@ -305,7 +305,7 @@ export default class Selection_Copy
                                                             if(this.clipboard.pipes[pipeNetworkId] === undefined)
                                                             {
                                                                 this.clipboard.pipes[pipeNetworkId] = {
-                                                                    fluid      : this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor'),
+                                                                    fluid      : this.baseLayout.getObjectPropertyValue(currentPipeNetwork, 'mFluidDescriptor'),
                                                                     interface  : []
                                                                 };
                                                             }
@@ -313,7 +313,7 @@ export default class Selection_Copy
                                                         // Check if that pathName is in the current pipe network
                                                         if(currentPipeNetwork !== null)
                                                         {
-                                                            let mFluidIntegrantScriptInterfaces = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidIntegrantScriptInterfaces');
+                                                            let mFluidIntegrantScriptInterfaces = this.baseLayout.getObjectPropertyValue(currentPipeNetwork, 'mFluidIntegrantScriptInterfaces');
                                                                 if(mFluidIntegrantScriptInterfaces !== null)
                                                                 {
                                                                     for(let o = 0; o < mFluidIntegrantScriptInterfaces.values.length; o++)
@@ -343,7 +343,7 @@ export default class Selection_Copy
 
 
                         // Remove railway connection for objects that aren't in the loop...
-                        let mConnectedComponents = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedComponents');
+                        let mConnectedComponents = this.baseLayout.getObjectPropertyValue(currentChildren, 'mConnectedComponents');
                             if(mConnectedComponents !== null && this.baseLayout.availableRailwayConnection.has(endWith))
                             {
                                 for(let n = (mConnectedComponents.values.length - 1); n >= 0; n--)
@@ -360,7 +360,7 @@ export default class Selection_Copy
                             }
 
                         // Remove platform connection for objects that aren't in the loop...
-                        let mConnectedTo = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedTo');
+                        let mConnectedTo = this.baseLayout.getObjectPropertyValue(currentChildren, 'mConnectedTo');
                             if(mConnectedTo !== null && this.baseLayout.availablePlatformConnection.has(endWith))
                             {
                                 let testPathName    = mConnectedTo.pathName.split('.');
@@ -386,7 +386,7 @@ export default class Selection_Copy
                         const component = '.' + currentChildren.pathName.split('.').pop();
                         if(this.baseLayout.availablePowerConnection.has(component))
                         {
-                            let mWires = this.baseLayout.getObjectProperty(currentChildren, 'mWires');
+                            let mWires = this.baseLayout.getObjectPropertyValue(currentChildren, 'mWires');
                                 if(mWires !== null)
                                 {
                                     for(let m = (mWires.values.length - 1); m >= 0; m--)
@@ -434,7 +434,7 @@ export default class Selection_Copy
                                     }
                                 }
 
-                            let mHiddenConnections = this.baseLayout.getObjectProperty(currentChildren, 'mHiddenConnections');
+                            let mHiddenConnections = this.baseLayout.getObjectPropertyValue(currentChildren, 'mHiddenConnections');
                                 if(mHiddenConnections !== null)
                                 {
                                     for(let m = (mHiddenConnections.values.length - 1); m >= 0; m--)
@@ -443,7 +443,7 @@ export default class Selection_Copy
                                             if(currentHiddenConnection !== null)
                                             {
                                                     currentHiddenConnection     = cloneDeep(currentHiddenConnection);
-                                                let mCurrentHiddenConnections   = this.baseLayout.getObjectProperty(currentHiddenConnection, 'mHiddenConnections');
+                                                let mCurrentHiddenConnections   = this.baseLayout.getObjectPropertyValue(currentHiddenConnection, 'mHiddenConnections');
 
                                                     if(mCurrentHiddenConnections !== null)
                                                     {
@@ -487,7 +487,7 @@ export default class Selection_Copy
                     if(timeTable !== null)
                     {
                         let newTimeTable    = cloneDeep(timeTable);
-                        let mStops          = this.baseLayout.getObjectProperty(newTimeTable, 'mStops');
+                        let mStops          = this.baseLayout.getObjectPropertyValue(newTimeTable, 'mStops');
                             if(mStops !== null)
                             {
                                 for(let j = (mStops.values.length - 1); j >= 0; j--)

@@ -39,7 +39,7 @@ export default class Building_TrainStation
                     let currentChildren = baseLayout.saveGameParser.getTargetObject(child.pathName);
                         if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGTrainPlatformConnection')
                         {
-                            let mConnectedTo = baseLayout.getObjectProperty(currentChildren, 'mConnectedTo');
+                            let mConnectedTo = baseLayout.getObjectPropertyValue(currentChildren, 'mConnectedTo');
                                 if(mConnectedTo !== null)
                                 {
                                     let mConnectedToObject = baseLayout.saveGameParser.getTargetObject(mConnectedTo.pathName);
@@ -82,7 +82,7 @@ export default class Building_TrainStation
         let trainStationIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainStationIdentifier !== null)
             {
-                let mStationName    = baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
+                let mStationName    = baseLayout.getObjectPropertyValue(trainStationIdentifier, 'mStationName');
 
                     BaseLayout_Modal.form({
                         title       : 'Update "<strong>' + buildingData.name + '</strong>" sign',

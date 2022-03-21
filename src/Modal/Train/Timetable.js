@@ -11,7 +11,7 @@ export default class Modal_Train_Timetable
         this.locomotive         = options.locomotive;
 
         this.trainIdentifier    = this.baseLayout.railroadSubSystem.getObjectIdentifier(this.locomotive);
-        this.timeTable          = this.baseLayout.getObjectProperty(this.trainIdentifier, 'TimeTable');
+        this.timeTable          = this.baseLayout.getObjectPropertyValue(this.trainIdentifier, 'TimeTable');
 
         if(this.timeTable !== null)
         {
@@ -56,10 +56,10 @@ export default class Modal_Train_Timetable
     getTimeTableList()
     {
         let html = [];
-        let mStops = this.baseLayout.getObjectProperty(this.timeTable, 'mStops');
+        let mStops = this.baseLayout.getObjectPropertyValue(this.timeTable, 'mStops');
             if(mStops !== null)
             {
-                let mCurrentStop    = this.baseLayout.getObjectProperty(this.timeTable, 'mCurrentStop', 0);
+                let mCurrentStop    = this.baseLayout.getObjectPropertyValue(this.timeTable, 'mCurrentStop', 0);
 
                 html.push('<table class="table table-hover mb-0">');
                     for(let j = 0; j < mStops.values.length; j++)
@@ -83,14 +83,14 @@ export default class Modal_Train_Timetable
                             html.push('<td>');
                                 if(trainStationIdentifier !== null)
                                 {
-                                    let mStation        = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStation');
-                                    let mStationName    = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
+                                    let mStation        = this.baseLayout.getObjectPropertyValue(trainStationIdentifier, 'mStation');
+                                    let mStationName    = this.baseLayout.getObjectPropertyValue(trainStationIdentifier, 'mStationName');
                                     let isDocked        = false;
 
                                         if(mStation !== null)
                                         {
                                             let currentStation      = this.baseLayout.saveGameParser.getTargetObject(mStation.pathName);
-                                            let mDockingLocomotive  = this.baseLayout.getObjectProperty(currentStation, 'mDockingLocomotive');
+                                            let mDockingLocomotive  = this.baseLayout.getObjectPropertyValue(currentStation, 'mDockingLocomotive');
                                                 if(mDockingLocomotive !== null)
                                                 {
                                                     if(this.locomotive.pathName === mDockingLocomotive.pathName)
@@ -120,7 +120,7 @@ export default class Modal_Train_Timetable
 
                                     html.push('<em><small>');
 
-                                        let DockingDefinition = this.baseLayout.getObjectProperty(trainStationRules, 'DockingDefinition');
+                                        let DockingDefinition = this.baseLayout.getObjectPropertyValue(trainStationRules, 'DockingDefinition');
                                             switch(DockingDefinition.value)
                                             {
                                                 case 'ETrainDockingDefinition::TDD_LoadUnloadOnce':
@@ -132,7 +132,7 @@ export default class Modal_Train_Timetable
                                                 default:
                                                     html.push(DockingDefinition.value);
                                             }
-                                        let IsDurationAndRule = this.baseLayout.getObjectProperty(trainStationRules, 'IsDurationAndRule');
+                                        let IsDurationAndRule = this.baseLayout.getObjectPropertyValue(trainStationRules, 'IsDurationAndRule');
                                             if(IsDurationAndRule === 1)
                                             {
                                                 html.push(' <strong>AND</strong> ');
@@ -141,11 +141,11 @@ export default class Modal_Train_Timetable
                                             {
                                                 html.push(' <strong>OR</strong> ');
                                             }
-                                        let DockForDuration = this.baseLayout.getObjectProperty(trainStationRules, 'DockForDuration');
+                                        let DockForDuration = this.baseLayout.getObjectPropertyValue(trainStationRules, 'DockForDuration');
                                             html.push('wait for ' + new Intl.NumberFormat(this.baseLayout.language).format(DockForDuration) + ' seconds.');
 
 
-                                        let LoadFilterDescriptors = this.baseLayout.getObjectProperty(trainStationRules, 'LoadFilterDescriptors');
+                                        let LoadFilterDescriptors = this.baseLayout.getObjectPropertyValue(trainStationRules, 'LoadFilterDescriptors');
                                             if(LoadFilterDescriptors.values.length > 0)
                                             {
                                                 let loadFilter = [];
@@ -175,7 +175,7 @@ export default class Modal_Train_Timetable
                                                         html.push('<br /><strong>Load Only:</strong> ' + loadFilter.join(', '));
                                                     }
                                             }
-                                        let UnloadFilterDescriptors = this.baseLayout.getObjectProperty(trainStationRules, 'UnloadFilterDescriptors');
+                                        let UnloadFilterDescriptors = this.baseLayout.getObjectPropertyValue(trainStationRules, 'UnloadFilterDescriptors');
                                             if(UnloadFilterDescriptors.values.length > 0)
                                             {
                                                 let unloadFilter = [];
@@ -220,7 +220,7 @@ export default class Modal_Train_Timetable
     getTimeTableStationsPoints()
     {
         let points  = [];
-        let mStops  = this.baseLayout.getObjectProperty(this.timeTable, 'mStops');
+        let mStops  = this.baseLayout.getObjectPropertyValue(this.timeTable, 'mStops');
             if(mStops !== null)
             {
                 for(let j = 0; j < mStops.values.length; j++)
@@ -232,7 +232,7 @@ export default class Modal_Train_Timetable
                             let trainStationIdentifier = this.baseLayout.saveGameParser.getTargetObject(mStops.values[j][k].value.pathName);
                                 if(trainStationIdentifier !== null)
                                 {
-                                    let mStation = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStation');
+                                    let mStation = this.baseLayout.getObjectPropertyValue(trainStationIdentifier, 'mStation');
                                         if(mStation !== null)
                                         {
                                             let currentStation = this.baseLayout.saveGameParser.getTargetObject(mStation.pathName);
@@ -257,7 +257,7 @@ export default class Modal_Train_Timetable
         let startStation    = null;
         let prevStation     = null;
 
-        let mStops          = this.baseLayout.getObjectProperty(this.timeTable, 'mStops');
+        let mStops          = this.baseLayout.getObjectPropertyValue(this.timeTable, 'mStops');
             if(mStops !== null)
             {
                 for(let j = 0; j < mStops.values.length; j++)
@@ -269,7 +269,7 @@ export default class Modal_Train_Timetable
                             let trainStationIdentifier = this.baseLayout.saveGameParser.getTargetObject(mStops.values[j][k].value.pathName);
                                 if(trainStationIdentifier !== null)
                                 {
-                                    let mStation = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStation');
+                                    let mStation = this.baseLayout.getObjectPropertyValue(trainStationIdentifier, 'mStation');
                                         if(mStation !== null)
                                         {
                                             let nextStation = this.baseLayout.saveGameParser.getTargetObject(mStation.pathName);
@@ -306,8 +306,8 @@ export default class Modal_Train_Timetable
      */
     getPointsBetweenStations(prevStation, nextStation)
     {
-        let prevRailroadTrack = this.baseLayout.getObjectProperty(prevStation, 'mRailroadTrack');
-        let nextRailroadTrack = this.baseLayout.getObjectProperty(nextStation, 'mRailroadTrack');
+        let prevRailroadTrack = this.baseLayout.getObjectPropertyValue(prevStation, 'mRailroadTrack');
+        let nextRailroadTrack = this.baseLayout.getObjectPropertyValue(nextStation, 'mRailroadTrack');
 
             if(prevRailroadTrack !== null && nextRailroadTrack !== null)
             {
@@ -387,7 +387,7 @@ export default class Modal_Train_Timetable
                     if(trackConnection !== null)
                     {
                             alreadyChecked.push(currentRailroad.pathName);
-                        let mConnectedComponents = this.baseLayout.getObjectProperty(trackConnection, 'mConnectedComponents');
+                        let mConnectedComponents = this.baseLayout.getObjectPropertyValue(trackConnection, 'mConnectedComponents');
                             if(mConnectedComponents !== null)
                             {
                                 let haveNewComponent = false;

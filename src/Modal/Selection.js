@@ -46,7 +46,7 @@ export default class Modal_Selection
                         continue;
                     }
 
-                let mSplineData = baseLayout.getObjectProperty(currentObject, 'mSplineData');
+                let mSplineData = baseLayout.getObjectPropertyValue(currentObject, 'mSplineData');
                     if(mSplineData !== null)
                     {
                         let splineMinX = Infinity;

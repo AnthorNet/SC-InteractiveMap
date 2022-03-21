@@ -69,7 +69,7 @@ export default class Spawn_Fauna
                 newFauna.children.add({pathName: pathName + '.mInventory'});
 
                 let currentPlayerObject = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGameParser.playerHostPathName);
-                let mOwnedPawn          = this.baseLayout.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
+                let mOwnedPawn          = this.baseLayout.getObjectPropertyValue(currentPlayerObject, 'mOwnedPawn');
 
                 this.baseLayout.setObjectProperty(newFauna, {name: 'mFriendActor', type: 'ObjectProperty', value: {pathName: mOwnedPawn.pathName}});
                 this.baseLayout.setObjectProperty(newFauna, {name: 'mLootTableIndex', type: 'IntProperty', value: 0});
