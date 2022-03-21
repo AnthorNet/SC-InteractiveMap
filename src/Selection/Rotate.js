@@ -129,15 +129,15 @@ export default class Selection_Rotate
                                         {
                                             for(let k = 0; k < mSplineData.values[j].length; k++)
                                             {
-                                                let currentValue    = mSplineData.values[j][k];
+                                                let currentValue    = mSplineData.values[j][k].value;
                                                 let splineRotation  = BaseLayout_Math.getPointRotation(
-                                                    [currentValue.value.values.x, currentValue.value.values.y],
+                                                    [currentValue.values.x, currentValue.values.y],
                                                     [0, 0],
                                                     BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
                                                 );
 
-                                                currentValue.value.values.x = splineRotation[0];
-                                                currentValue.value.values.y = splineRotation[1];
+                                                currentValue.values.x = splineRotation[0];
+                                                currentValue.values.y = splineRotation[1];
                                             }
                                         }
                                     }
@@ -158,19 +158,15 @@ export default class Selection_Rotate
                                         const component = '.' + currentObjectChildren.pathName.split('.').pop();
                                         if(this.baseLayout.availablePowerConnection.has(component))
                                         {
-                                            for(let m = 0; m < currentObjectChildren.properties.length; m++)
+                                            const mWires = this.baseLayout.getObjectPropertyValue(currentObjectChildren, 'mWires')
+                                            if(mWires !== null)
                                             {
-                                                if(currentObjectChildren.properties[m].name === 'mWires')
+                                                for(let n = 0; n < mWires.values.length; n++)
                                                 {
-                                                    for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
+                                                    if(wires.includes(mWires.values[n].pathName) === false)
                                                     {
-                                                        if(wires.includes(currentObjectChildren.properties[m].value.values[n].pathName) === false)
-                                                        {
-                                                            wires.push(currentObjectChildren.properties[m].value.values[n].pathName);
-                                                        }
+                                                        wires.push(mWires.values[n].pathName);
                                                     }
-
-                                                    break;
                                                 }
                                             }
                                         }

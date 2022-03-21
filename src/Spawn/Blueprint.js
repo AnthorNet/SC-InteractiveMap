@@ -434,77 +434,75 @@ export default class Spawn_Blueprint
 
     transformPropertiesPathName(properties, pathNameConversion)
     {
-        for(let j = 0; j < properties.length; j++)
+        for(const currentProperty of properties)
         {
-            let currentProperty = properties[j];
-
-                if(currentProperty.type === 'ArrayProperty' && currentProperty.value.values !== undefined)
+            if(currentProperty.type === 'ArrayProperty' && currentProperty.values !== undefined)
+            {
+                for(let k = 0; k < currentProperty.values.length; k++)
                 {
-                    for(let k = 0; k < currentProperty.value.values.length; k++)
+                    if(currentProperty.values[k].pathName !== undefined && currentProperty.values[k].pathName !== '')
                     {
-                        if(currentProperty.value.values[k].pathName !== undefined && currentProperty.value.values[k].pathName !== '')
+                        if(pathNameConversion[currentProperty.values[k].pathName] !== undefined)
                         {
-                            if(pathNameConversion[currentProperty.value.values[k].pathName] !== undefined)
-                            {
-                                currentProperty.value.values[k].pathName = pathNameConversion[currentProperty.value.values[k].pathName];
-                            }
-                            else
-                            {
-                                let testPathName    = currentProperty.value.values[k].pathName.split('.');
-                                let extraPart       = testPathName.pop();
-                                    testPathName    = testPathName.join('.');
+                            currentProperty.values[k].pathName = pathNameConversion[currentProperty.values[k].pathName];
+                        }
+                        else
+                        {
+                            let testPathName    = currentProperty.values[k].pathName.split('.');
+                            let extraPart       = testPathName.pop();
+                                testPathName    = testPathName.join('.');
 
-                                if(pathNameConversion[testPathName] !== undefined)
-                                {
-                                    currentProperty.value.values[k].pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                                }
+                            if(pathNameConversion[testPathName] !== undefined)
+                            {
+                                currentProperty.values[k].pathName = pathNameConversion[testPathName] + '.' + extraPart;
                             }
                         }
+                    }
 
-                        if(Array.isArray(currentProperty.value.values[k]))
+                    if(Array.isArray(currentProperty.values[k]))
+                    {
+                        for(let i = 0; i < currentProperty.values[k].length; i++)
                         {
-                            for(let i = 0; i < currentProperty.value.values[k].length; i++)
+                            if(currentProperty.values[k][i].value !== undefined && currentProperty.values[k][i].value.pathName !== undefined && currentProperty.values[k][i].value.pathName !== '')
                             {
-                                if(currentProperty.value.values[k][i].value !== undefined && currentProperty.value.values[k][i].value.pathName !== undefined && currentProperty.value.values[k][i].value.pathName !== '')
+                                if(pathNameConversion[currentProperty.values[k][i].value.pathName] !== undefined)
                                 {
-                                    if(pathNameConversion[currentProperty.value.values[k][i].value.pathName] !== undefined)
-                                    {
-                                        currentProperty.value.values[k][i].value.pathName = pathNameConversion[currentProperty.value.values[k][i].value.pathName];
-                                    }
-                                    else
-                                    {
-                                        let testPathName    = currentProperty.value.values[k][i].value.pathName.split('.');
-                                        let extraPart       = testPathName.pop();
-                                            testPathName    = testPathName.join('.');
+                                    currentProperty.values[k][i].value.pathName = pathNameConversion[currentProperty.values[k][i].value.pathName];
+                                }
+                                else
+                                {
+                                    let testPathName    = currentProperty.values[k][i].value.pathName.split('.');
+                                    let extraPart       = testPathName.pop();
+                                        testPathName    = testPathName.join('.');
 
-                                        if(pathNameConversion[testPathName] !== undefined)
-                                        {
-                                            currentProperty.value.values[k][i].value.pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                                        }
+                                    if(pathNameConversion[testPathName] !== undefined)
+                                    {
+                                        currentProperty.values[k][i].value.pathName = pathNameConversion[testPathName] + '.' + extraPart;
                                     }
                                 }
                             }
                         }
                     }
                 }
-                if(currentProperty.value !== undefined && currentProperty.value.pathName !== undefined)
+            }
+            if(currentProperty.value !== undefined && currentProperty.pathName !== undefined)
+            {
+                if(pathNameConversion[currentProperty.pathName] !== undefined)
                 {
-                    if(pathNameConversion[currentProperty.value.pathName] !== undefined)
-                    {
-                        currentProperty.value.pathName = pathNameConversion[currentProperty.value.pathName];
-                    }
-                    else
-                    {
-                        let testPathName    = currentProperty.value.pathName.split('.');
-                        let extraPart       = testPathName.pop();
-                            testPathName    = testPathName.join('.');
+                    currentProperty.pathName = pathNameConversion[currentProperty.pathName];
+                }
+                else
+                {
+                    let testPathName    = currentProperty.pathName.split('.');
+                    let extraPart       = testPathName.pop();
+                        testPathName    = testPathName.join('.');
 
-                        if(pathNameConversion[testPathName] !== undefined)
-                        {
-                            currentProperty.value.pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                        }
+                    if(pathNameConversion[testPathName] !== undefined)
+                    {
+                        currentProperty.pathName = pathNameConversion[testPathName] + '.' + extraPart;
                     }
                 }
+            }
         }
 
         return properties;
@@ -643,7 +641,7 @@ export default class Spawn_Blueprint
                                         }
                                     }
 
-                                    mFluidIntegrantScriptInterfaces.value.values.push({pathName: newPipeNetworkPathName});
+                                    mFluidIntegrantScriptInterfaces.values.push({pathName: newPipeNetworkPathName});
                                     pipesConversion[newPipeNetworkPathName] = newPipeNetworkID;
                             }
 
@@ -749,19 +747,18 @@ export default class Spawn_Blueprint
 
                             if(currentTargetPoint.properties !== undefined)
                             {
-                                for(let k = 0; k < currentTargetPoint.properties.length; k++)
+                                const mNext = this.baseLayout.getObjectPropertyValue(currentTargetPoint, 'mNext');
+                                if(mNext)
                                 {
-                                    if(currentTargetPoint.properties[k].name === 'mNext')
+                                    if(targetConversion[mNext.pathName] !== undefined)
                                     {
-                                        if(targetConversion[currentTargetPoint.properties[k].value.pathName] !== undefined)
-                                        {
-                                            currentTargetPoint.properties[k].value.pathName = targetConversion[currentTargetPoint.properties[k].value.pathName];
-                                        }
+                                        mNext.pathName = targetConversion[mNext.pathName];
                                     }
-                                    if(currentTargetPoint.properties[k].name === 'mOwningVehicle')
-                                    {
-                                        currentTargetPoint.properties[k].value.pathName = currentClipboard.parent.pathName;
-                                    }
+                                }
+                                const mOwningVehicle = this.baseLayout.getObjectPropertyValue(currentTargetPoint, 'mOwningVehicle');
+                                if(mOwningVehicle)
+                                {
+                                    mOwningVehicle.pathName = currentClipboard.parent.pathName;
                                 }
                             }
 
@@ -808,15 +805,15 @@ export default class Spawn_Blueprint
                                 {
                                     for(let k = 0; k < mSplineData.values[j].length; k++)
                                     {
-                                        let currentValue    = mSplineData.values[j][k];
+                                        let currentValue    = mSplineData.values[j][k].value;
                                         let splineRotation  = BaseLayout_Math.getPointRotation(
-                                            [currentValue.value.values.x, currentValue.value.values.y],
+                                            [currentValue.values.x, currentValue.values.y],
                                             [0, 0],
                                             this.centerObject.transform.rotation
                                         );
 
-                                        currentValue.value.values.x = splineRotation[0];
-                                        currentValue.value.values.y = splineRotation[1];
+                                        currentValue.values.x = splineRotation[0];
+                                        currentValue.values.y = splineRotation[1];
                                     }
                                 }
                             }
@@ -890,24 +887,18 @@ export default class Spawn_Blueprint
                         // Do we need to update mPipeNetworkID?
                         if(pipesConversion[newChild.pathName] !== undefined)
                         {
-                            for(let m = 0; m < newChild.properties.length; m++)
+                            const mPipeNetworkID = this.baseLayout.getObjectPropertyValue(newChild, 'mPipeNetworkID');
+                            if(mPipeNetworkID !== null)
                             {
-                                if(newChild.properties[m].name === 'mPipeNetworkID')
-                                {
-                                    newChild.properties[m].value = pipesConversion[newChild.pathName];
-                                    break;
-                                }
+                                this.baseLayout.setObjectPropertyValue(mPipeNetworkID, 'mPipeNetworkID', pipesConversion[newChild.pathName]);
                             }
                         }
                         if(pipesConversion[testPathName] !== undefined)
                         {
-                            for(let m = 0; m < newChild.properties.length; m++)
+                            const mPipeNetworkID = this.baseLayout.getObjectPropertyValue(newChild, 'mPipeNetworkID');
+                            if(mPipeNetworkID !== null)
                             {
-                                if(newChild.properties[m].name === 'mPipeNetworkID')
-                                {
-                                    newChild.properties[m].value = pipesConversion[testPathName];
-                                    break;
-                                }
+                                this.baseLayout.setObjectPropertyValue(mPipeNetworkID, 'mPipeNetworkID', pipesConversion[testPathName]);
                             }
                         }
 

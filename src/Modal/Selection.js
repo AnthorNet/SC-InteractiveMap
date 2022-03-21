@@ -58,13 +58,13 @@ export default class Modal_Selection
                         {
                             for(let k = 0; k < mSplineData.values[j].length; k++)
                             {
-                                let currentValue = mSplineData.values[j][k];
+                                let currentValue = mSplineData.values[j][k].value;
                                     if(currentValue.name === 'Location')
                                     {
-                                        splineMinX  = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMaxX  = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMinY  = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                        splineMaxY  = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
+                                        splineMinX  = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.values.x);
+                                        splineMaxX  = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.values.x);
+                                        splineMinY  = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.values.y);
+                                        splineMaxY  = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.values.y);
                                     }
                             }
                         }
@@ -976,29 +976,27 @@ export default class Modal_Selection
                                                 let potentialInventory = baseLayout.getObjectInventory(currentObject, 'mInventoryPotential', true);
                                                     if(potentialInventory !== null)
                                                     {
-                                                        for(let k = 0; k < potentialInventory.properties.length; k++)
+                                                        const mInventoryStacks = baseLayout.getObjectPropertyValue(potentialInventory, 'mInventoryStacks');
+                                                        if(mInventoryStacks !== null)
                                                         {
-                                                            if(potentialInventory.properties[k].name === 'mInventoryStacks')
+                                                            for(let m = 0; m < totalPowerShards; m++)
                                                             {
-                                                                for(let m = 0; m < totalPowerShards; m++)
+                                                                if(parseInt(form.useOwnPowershards) === 1)
                                                                 {
-                                                                    if(parseInt(form.useOwnPowershards) === 1)
-                                                                    {
-                                                                        let result = baseLayout.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
-                                                                            if(result === false)
-                                                                            {
-                                                                                clockSpeed = Math.min(clockSpeed, 100 + (m * 50)); // Downgrade...
-                                                                                break;
-                                                                            }
-                                                                    }
-
-                                                                    potentialInventory.properties[k].value.values[m][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                                                    baseLayout.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, {
-                                                                        name: 'NumItems',
-                                                                        type: 'IntProperty',
-                                                                        value: 1
-                                                                    });
+                                                                    let result = baseLayout.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
+                                                                        if(result === false)
+                                                                        {
+                                                                            clockSpeed = Math.min(clockSpeed, 100 + (m * 50)); // Downgrade...
+                                                                            break;
+                                                                        }
                                                                 }
+
+                                                                mInventoryStacks.values[m][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
+                                                                baseLayout.setObjectProperty(mInventoryStacks.values[m][0].value, {
+                                                                    name: 'NumItems',
+                                                                    type: 'IntProperty',
+                                                                    value: 1
+                                                                });
                                                             }
                                                         }
                                                     }

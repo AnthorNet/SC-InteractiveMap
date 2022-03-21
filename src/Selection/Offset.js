@@ -148,19 +148,15 @@ export default class Selection_Offset
                                         const component = '.' + currentObjectChildren.pathName.split('.').pop();
                                         if(this.baseLayout.availablePowerConnection.has(component))
                                         {
-                                            for(let m = 0; m < currentObjectChildren.properties.length; m++)
+                                            const mWires = this.baseLayout.getObjectPropertyValue(currentObjectChildren, 'mWires');
+                                            if(mWires !== null)
                                             {
-                                                if(currentObjectChildren.properties[m].name === 'mWires')
+                                                for(let n = 0; n < mWires.values.length; n++)
                                                 {
-                                                    for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
+                                                    if(wires.includes(mWires.values[n].pathName) === false)
                                                     {
-                                                        if(wires.includes(currentObjectChildren.properties[m].value.values[n].pathName) === false)
-                                                        {
-                                                            wires.push(currentObjectChildren.properties[m].value.values[n].pathName);
-                                                        }
+                                                        wires.push(mWires.values[n].pathName);
                                                     }
-
-                                                    break;
                                                 }
                                             }
                                         }

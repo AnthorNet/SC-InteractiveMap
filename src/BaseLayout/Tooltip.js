@@ -278,12 +278,10 @@ export default class BaseLayout_Tooltip
                         let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(pipeNetwork);
                         if(currentPipeNetwork !== null)
                         {
-                            for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
+                            const mFluidDescriptor = this.baseLayout.getObjectPropertyValue(currentPipeNetwork, 'mFluidDescriptor');
+                            if(mFluidDescriptor !== null)
                             {
-                                if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
-                                {
-                                    itemType = currentPipeNetwork.properties[n].value.pathName;
-                                }
+                                itemType = mFluidDescriptor.pathName;
                             }
                         }
                     }
@@ -998,12 +996,10 @@ export default class BaseLayout_Tooltip
                     let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(pipeNetwork);
                     if(currentPipeNetwork !== null)
                     {
-                        for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
+                        const mFluidDescriptor = this.baseLayout.getObjectPropertyValue(currentPipeNetwork, 'mFluidDescriptor')
+                        if(mFluidDescriptor !== null)
                         {
-                            if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
-                            {
-                                itemType = currentPipeNetwork.properties[n].value.pathName;
-                            }
+                            itemType = mFluidDescriptor.pathName;
                         }
                     }
                 }
@@ -1779,15 +1775,13 @@ export default class BaseLayout_Tooltip
 
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
         {
-            for(let j = 0; j < currentObject.properties.length; j++)
+            const mMapText = this.baseLayout.getObjectPropertyValue(currentObject, 'mMapText');
+            if(mMapText !== null)
             {
-                if(currentObject.properties[j].name === 'mMapText')
+                if(mMapText.historyType === 3)
                 {
-                    if(currentObject.properties[j].historyType === 3)
-                    {
-                        let mapText     = currentObject.properties[j].sourceFmt.value;
-                            content.push(mapText.replace('{Name}', currentObject.properties[j].arguments[0].argumentValue.value));
-                    }
+                    let mapText     = mMapText.sourceFmt.value;
+                        content.push(mapText.replace('{Name}', mMapText.arguments[0].argumentValue.value));
                 }
             }
         }

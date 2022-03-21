@@ -1608,70 +1608,73 @@ export default class BaseLayout
     addItemPickup(currentObject)
     {
         let mPickupItems = this.getObjectPropertyValue(currentObject, 'mPickupItems');
-            if(mPickupItems !== null && mPickupItems.values[0].value.properties[0] !== null && mPickupItems.values[0].value.properties[0].value > 0)
+            if(mPickupItems !== null)
             {
-                let itemId = this.getItemDataFromClassName(mPickupItems.values[0].value.itemName);
-                    if(itemId !== null)
-                    {
-                        itemId = itemId.id;
+                const propertyNumItems = this.getObjectPropertyValue(mPickupItems.values[0].value, 'NumItems');
+                if (propertyNumItems !== null && propertyNumItems.value > 0) {
+                    let itemId = this.getItemDataFromClassName(mPickupItems.values[0].value.itemName);
+                        if(itemId !== null)
+                        {
+                            itemId = itemId.id;
 
-                        this.setupSubLayer('playerItemsPickupLayer', false);
+                            this.setupSubLayer('playerItemsPickupLayer', false);
 
-                        let position    = this.satisfactoryMap.unproject(currentObject.transform.translation);
-                        let iconType    = 'playerItemsPickupLayer' + itemId;
-                            if(this.satisfactoryMap.availableIcons[iconType] === undefined)
-                            {
-                                const itemData = this.itemsData.get(itemId);
-                                if(itemData !== undefined)
+                            let position    = this.satisfactoryMap.unproject(currentObject.transform.translation);
+                            let iconType    = 'playerItemsPickupLayer' + itemId;
+                                if(this.satisfactoryMap.availableIcons[iconType] === undefined)
                                 {
-                                    this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
-                                        className   : "leaflet-data-marker",
-                                        html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, itemData.image),
-                                        iconAnchor  : [48, 78],
-                                        iconSize    : [50, 80]
-                                    });
-                                }
-                                else
-                                {
-                                    const toolData = this.toolsData.get(itemId);
-                                    if(toolData !== undefined)
+                                    const itemData = this.itemsData.get(itemId);
+                                    if(itemData !== undefined)
                                     {
                                         this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
                                             className   : "leaflet-data-marker",
-                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, toolData.image),
+                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, itemData.image),
                                             iconAnchor  : [48, 78],
                                             iconSize    : [50, 80]
                                         });
                                     }
                                     else
                                     {
-                                        this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
-                                            className   : "leaflet-data-marker",
-                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, 'https://static.satisfactory-calculator.com/img/mapUnknownIcon.png'),
-                                            iconAnchor  : [48, 78],
-                                            iconSize    : [50, 80]
-                                        });
+                                        const toolData = this.toolsData.get(itemId);
+                                        if(toolData !== undefined)
+                                        {
+                                            this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
+                                                className   : "leaflet-data-marker",
+                                                html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, toolData.image),
+                                                iconAnchor  : [48, 78],
+                                                iconSize    : [50, 80]
+                                            });
+                                        }
+                                        else
+                                        {
+                                            this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
+                                                className   : "leaflet-data-marker",
+                                                html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.get('Desc_Cable_C').image, 'https://static.satisfactory-calculator.com/img/mapUnknownIcon.png'),
+                                                iconAnchor  : [48, 78],
+                                                iconSize    : [50, 80]
+                                            });
+                                        }
                                     }
                                 }
-                            }
 
-                        let itemMarker = L.marker(
-                                position,
-                                {
-                                    pathName: currentObject.pathName,
-                                    itemId: itemId,
-                                    itemQty: mPickupItems.values[0].value.properties[0].value,
-                                    icon: this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
-                                }
-                            );
-                            itemMarker.bindContextMenu(this);
-                            this.autoBindTooltip(itemMarker);
+                            let itemMarker = L.marker(
+                                    position,
+                                    {
+                                        pathName: currentObject.pathName,
+                                        itemId: itemId,
+                                        itemQty: propertyNumItems.value,
+                                        icon: this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
+                                    }
+                                );
+                                itemMarker.bindContextMenu(this);
+                                this.autoBindTooltip(itemMarker);
 
-                        this.playerLayers.playerItemsPickupLayer.elements.push(itemMarker);
-                        itemMarker.addTo(this.playerLayers.playerItemsPickupLayer.subLayer);
+                            this.playerLayers.playerItemsPickupLayer.elements.push(itemMarker);
+                            itemMarker.addTo(this.playerLayers.playerItemsPickupLayer.subLayer);
 
-                        return itemMarker;
-                    }
+                            return itemMarker;
+                        }
+                }
             }
     }
 
@@ -1958,20 +1961,16 @@ export default class BaseLayout
 
                     if (this.availablePowerConnection.has(component))
                     {
-                        for(let m = 0; m < currentObjectChildren.properties.length; m++)
+                        const mWires = this.getObjectPropertyValue(currentObjectChildren, 'mWires');
+                        if(mWires !== null && mWires.name === 'mWires')
                         {
-                            if(currentObjectChildren.properties[m].name === 'mWires')
+                            for(let n = 0; n < mWires.values.length; n++)
                             {
-                                for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
-                                {
-                                    let currentWire     = this.saveGameParser.getTargetObject(currentObjectChildren.properties[m].value.values[n].pathName);
-                                    let result          = this.parseObject(currentWire);
-                                    let oldMarker       = this.getMarkerFromPathName(currentWire.pathName, result.layer);
-                                        this.deleteMarkerFromElements(result.layer, oldMarker);
-                                        this.addElementToLayer(result.layer, result.marker);
-                                }
-
-                                break;
+                                let currentWire     = this.saveGameParser.getTargetObject(mWires.values[n].pathName);
+                                let result          = this.parseObject(currentWire);
+                                let oldMarker       = this.getMarkerFromPathName(currentWire.pathName, result.layer);
+                                    this.deleteMarkerFromElements(result.layer, oldMarker);
+                                    this.addElementToLayer(result.layer, result.marker);
                             }
                         }
                     }
@@ -2084,38 +2083,35 @@ export default class BaseLayout
                 if(values !== null)
                 {
                     let oldInventory = this.getObjectInventory(currentObject, inventoryProperty, true);
-                        for(let i = 0; i < oldInventory.properties.length; i++)
+                    const inventoryStacks = this.getObjectPropertyValue(oldInventory, 'mInventoryStacks')
+                        if(inventoryStacks !== null)
                         {
-                            if(oldInventory.properties[i].name === 'mInventoryStacks')
+                            oldInventory = inventoryStacks.values;
+
+                            for(let j = 0; j < buildingData.maxSlot; j++)
                             {
-                                oldInventory = oldInventory.properties[i].value.values;
-
-                                for(let j = 0; j < buildingData.maxSlot; j++)
+                                if(oldInventory[j] !== undefined)
                                 {
-                                    if(oldInventory[j] !== undefined)
+                                    if(values['slot' + (j + 1)] === 'NULL')
                                     {
-                                        if(values['slot' + (j + 1)] === 'NULL')
-                                        {
-                                            oldInventory[j][0].value.itemName = "";
-                                            this.setObjectProperty(oldInventory[j][0].value, {
-                                                name: 'NumItems',
-                                                type: 'IntProperty',
-                                                value: 0
-                                            });
-                                        }
-                                        else
-                                        {
-                                            oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
-                                            this.setObjectProperty(oldInventory[j][0].value, {
-                                                name: 'NumItems',
-                                                type: 'IntProperty',
-                                                value: Math.max(1, parseInt(values['QTY_slot' + (j + 1)]))
-                                            });
-                                        }
+                                        oldInventory[j][0].value.itemName = "";
+                                        this.setObjectProperty(oldInventory[j][0].value, {
+                                            name: 'NumItems',
+                                            type: 'IntProperty',
+                                            value: 0
+                                        });
                                     }
-
+                                    else
+                                    {
+                                        oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
+                                        this.setObjectProperty(oldInventory[j][0].value, {
+                                            name: 'NumItems',
+                                            type: 'IntProperty',
+                                            value: Math.max(1, parseInt(values['QTY_slot' + (j + 1)]))
+                                        });
+                                    }
                                 }
-                                break;
+
                             }
                         }
 
@@ -2270,26 +2266,22 @@ export default class BaseLayout
             }
 
             let oldInventory    = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
-                for(let j = 0; j < oldInventory.properties.length; j++)
+            const inventoryStacks = this.getObjectPropertyValue(oldInventory, 'mInventoryStacks')
+                if(inventoryStacks !== null)
                 {
-                    if(oldInventory.properties[j].name === 'mInventoryStacks')
+                    oldInventory = inventoryStacks.values;
+
+                    for(let k = 0; k < buildingData.maxSlot; k++)
                     {
-                        oldInventory = oldInventory.properties[j].value.values;
-
-                        for(let k = 0; k < buildingData.maxSlot; k++)
+                        if(oldInventory[k] !== undefined)
                         {
-                            if(oldInventory[k] !== undefined)
-                            {
-                                oldInventory[k][0].value.itemName = fillWith;
-                                this.setObjectProperty(oldInventory[k][0].value, {
-                                    name: 'NumItems',
-                                    type: 'IntProperty',
-                                    value: stack
-                                });
-                            }
-
+                            oldInventory[k][0].value.itemName = fillWith;
+                            this.setObjectProperty(oldInventory[k][0].value, {
+                                name: 'NumItems',
+                                type: 'IntProperty',
+                                value: stack
+                            });
                         }
-                        break;
                     }
                 }
 
@@ -2332,21 +2324,17 @@ export default class BaseLayout
             let oldInventory    = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
                 if(oldInventory !== null)
                 {
-                    for(let j = 0; j < oldInventory.properties.length; j++)
+                    const mInventoryStacks = this.getObjectPropertyValue(oldInventory, 'mInventoryStacks')?.value?.values;
+                    if(mInventoryStacks !== undefined)
                     {
-                        if(oldInventory.properties[j].name === 'mInventoryStacks')
+                        for(let k = 0; k < mInventoryStacks.length; k++)
                         {
-                            let mInventoryStacks = oldInventory.properties[j].value.values;
-                                for(let k = 0; k < mInventoryStacks.length; k++)
-                                {
-                                    mInventoryStacks[k][0].value.itemName = "";
-                                    this.setObjectProperty(mInventoryStacks[k][0].value, {
-                                        name: 'NumItems',
-                                        type: 'IntProperty',
-                                        value: 0
-                                    });
-                                }
-                            break;
+                            mInventoryStacks[k][0].value.itemName = "";
+                            this.setObjectProperty(mInventoryStacks[k][0].value, {
+                                name: 'NumItems',
+                                type: 'IntProperty',
+                                value: 0
+                            });
                         }
                     }
                 }
@@ -3167,24 +3155,8 @@ export default class BaseLayout
                 let targetNode = baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
                     if(targetNode !== null && targetNode.properties.length > 0)
                     {
-                        let firstNode   = null;
-                        let lastNode    = null;
-
-                        for(let j = 0; j < targetNode.properties.length; j++)
-                        {
-                            if(targetNode.properties[j].name === 'mFirst')
-                            {
-                                firstNode = baseLayout.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
-                            }
-                            if(targetNode.properties[j].name === 'mLast')
-                            {
-                                lastNode = baseLayout.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
-                            }
-                            if(firstNode !== null && lastNode !== null)
-                            {
-                                break;
-                            }
-                        }
+                        let firstNode   = baseLayout.saveGameParser.getTargetObject(this.getObjectPropertyValue(targetNode, 'mFirst').value.pathName);
+                        let lastNode    = baseLayout.saveGameParser.getTargetObject(this.getObjectPropertyValue(targetNode, 'mLast').value.pathName);
 
                         if(firstNode !== null && lastNode !== null)
                         {
@@ -3482,12 +3454,8 @@ export default class BaseLayout
                                     let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
                                         if(currentConnectedComponent !== null)
                                         {
-                                            for(let j = 0; j < currentConnectedComponent.properties.length; j++)
-                                            {
-                                                if(currentConnectedComponent.properties[j].name === 'mConnectedComponent' && currentConnectedComponent.properties[j].value.pathName === connectedComponent.pathName)
-                                                {
-                                                    currentConnectedComponent.properties.splice(j, 1);
-                                                }
+                                            if (this.getObjectPropertyValue(connectedComponent, 'mConnectedComponent').value.pathName === connectedComponent.pathName) {
+                                                this.deleteObjectProperty(currentConnectedComponent, 'mConnectedComponent')
                                             }
                                         }
                                 }
@@ -3828,26 +3796,23 @@ export default class BaseLayout
         let connectedWires  = Infinity;
         let keepCircuitId   = false;
 
-        for(let i = 0; i < currentObjectPowerConnection.properties.length; i++)
+        const mWires = this.getObjectPropertyValue(currentObjectPowerConnection, 'mWires');
+        if(mWires !== null)
         {
-            if(currentObjectPowerConnection.properties[i].name === 'mWires')
+            for(let j = 0; j < mWires.values.length; j++)
             {
-                for(let j = 0; j < currentObjectPowerConnection.properties[i].value.values.length; j++)
+                if(mWires.values[j].pathName === targetObject.pathName)
                 {
-                    if(currentObjectPowerConnection.properties[i].value.values[j].pathName === targetObject.pathName)
-                    {
-                        currentObjectPowerConnection.properties[i].value.values.splice(j, 1);
-                        break;
-                    }
+                    mWires.values.splice(j, 1);
+                    break;
                 }
-
-                connectedWires = currentObjectPowerConnection.properties[i].value.values.length;
             }
 
-            if(currentObjectPowerConnection.properties[i].name === 'mHiddenConnections')
-            {
-                keepCircuitId = true;
-            }
+            connectedWires = mWires.values.length;
+        }
+
+        if (this.getObjectPropertyValue(currentObjectPowerConnection, 'mHiddenConnections') !== null) {
+            keepCircuitId = true;
         }
 
         // Empty properties...
@@ -4459,7 +4424,7 @@ export default class BaseLayout
                                                         if(currentItemData.radioactiveDecay !== undefined)
                                                         {
                                                             radioactivityItems.push({
-                                                                qty                 : mInventoryStacks.values[k][0].value.properties[0].value,
+                                                                qty                 : this.getObjectPropertyValue(mInventoryStacks.values[k][0], 'NumItems'),
                                                                 radioactiveDecay    : currentItemData.radioactiveDecay
                                                             });
                                                         }
@@ -4502,7 +4467,7 @@ export default class BaseLayout
                                     category        : currentItemData.category,
                                     name            : currentItemData.name,
                                     image           : currentItemData.image,
-                                    qty             : mInventoryStacks.values[k][0].value.properties[0].value,
+                                    qty             : this.getObjectPropertyValue(mInventoryStacks.values[k][0].value, 'NumItems'),
                                     isActive        : ((mActiveEquipmentIndex !== null && mActiveEquipmentIndex === k) ? true : false)
                                 });
                             }
@@ -4920,29 +4885,27 @@ export default class BaseLayout
                         let potentialInventory = this.getObjectInventory(currentObject, 'mInventoryPotential', true);
                             if(potentialInventory !== null)
                             {
-                                for(let i = 0; i < potentialInventory.properties.length; i++)
+                                const mInventoryStacks = this.getObjectPropertyValue(potentialInventory, 'mInventoryStacks');
+                                if(mInventoryStacks !== null)
                                 {
-                                    if(potentialInventory.properties[i].name === 'mInventoryStacks')
+                                    for(let j = 0; j < totalPowerShards; j++)
                                     {
-                                        for(let j = 0; j < totalPowerShards; j++)
+                                        if(parseInt(form.useOwnPowershards) === 1)
                                         {
-                                            if(parseInt(form.useOwnPowershards) === 1)
-                                            {
-                                                let result = this.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
-                                                    if(result === false)
-                                                    {
-                                                        clockSpeed = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
-                                                        break;
-                                                    }
-                                            }
-
-                                            potentialInventory.properties[i].value.values[j][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                            this.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, {
-                                                name: 'NumItems',
-                                                type: 'IntProperty',
-                                                value:  1
-                                            });
+                                            let result = this.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
+                                                if(result === false)
+                                                {
+                                                    clockSpeed = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
+                                                    break;
+                                                }
                                         }
+
+                                        mInventoryStacks.values[j][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
+                                        this.setObjectProperty(mInventoryStacks.values[j][0].value, {
+                                            name: 'NumItems',
+                                            type: 'IntProperty',
+                                            value:  1
+                                        });
                                     }
                                 }
                             }
@@ -5031,6 +4994,28 @@ export default class BaseLayout
         }
 
         return;
+    }
+
+    setObjectPropertyValue(currentObject, propertyName, value, type = null)
+    {
+        const property = this.getObjectProperty(currentObject, propertyName);
+        if (property !== null) {
+            property.value = value;
+            if (type !== null) {
+                property.type = type;
+            }
+            return;
+        }
+
+        if (type === null) {
+            throw new Error("No property type given.");
+        }
+
+        this.setObjectProperty(currentObject, {
+            name: propertyName,
+            type,
+            value
+        });
     }
 
     deleteObjectProperty(currentObject, propertyName)
@@ -5727,35 +5712,34 @@ export default class BaseLayout
 
                     if(storageInventory !== null)
                     {
-                        for(let j = 0; j < storageInventory.properties.length; j++)
+                        const mInventoryStacks = this.getObjectPropertyValue(storageInventory, 'mInventoryStacks');
+                        if(mInventoryStacks !== null)
                         {
-                            if(storageInventory.properties[j].name === 'mInventoryStacks')
+                            for(let k = 0; k < mInventoryStacks.values.length; k++)
                             {
-                                for(let k = 0; k < storageInventory.properties[j].value.values.length; k++)
+                                if(mInventoryStacks.values[k][0].value.itemName !== '')
                                 {
-                                    if(storageInventory.properties[j].value.values[k][0].value.itemName !== '')
+                                    while(recipe.includes(mInventoryStacks.values[k][0].value.itemName))
                                     {
-                                        while(recipe.includes(storageInventory.properties[j].value.values[k][0].value.itemName))
-                                        {
-                                            let currentIndex = recipe.indexOf(storageInventory.properties[j].value.values[k][0].value.itemName);
-                                                if(currentIndex !== -1)
+                                        let currentIndex = recipe.indexOf(mInventoryStacks.values[k][0].value.itemName);
+                                            if(currentIndex !== -1)
+                                            {
+                                                recipe.splice(currentIndex, 1);
+                                                const numItems = this.getObjectPropertyValue(mInventoryStacks.values[k][0].value, 'NumItems');
+                                                numItems.value--;
+
+                                                if(numItems.value === 0)
                                                 {
-                                                    recipe.splice(currentIndex, 1);
-                                                    storageInventory.properties[j].value.values[k][0].value.properties[0].value--;
+                                                    mInventoryStacks.values[k][0].value.itemName    = '';
 
-                                                    if(storageInventory.properties[j].value.values[k][0].value.properties[0].value === 0)
-                                                    {
-                                                        storageInventory.properties[j].value.values[k][0].value.itemName    = '';
-
-                                                        break;
-                                                    }
+                                                    break;
                                                 }
-                                        }
+                                            }
+                                    }
 
-                                        if(recipe.length === 0) // We found everything!
-                                        {
-                                            return true;
-                                        }
+                                    if(recipe.length === 0) // We found everything!
+                                    {
+                                        return true;
                                     }
                                 }
                             }

@@ -170,7 +170,7 @@ export default class SubSystem_GameState
                     };
                     for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
                     {
-                        mBuildableLightColorSlots.value.values[slotIndex]     = cloneDeep(this.getDefaultLightColorSlot(slotIndex, true));
+                        mBuildableLightColorSlots.values[slotIndex]     = cloneDeep(this.getDefaultLightColorSlot(slotIndex, true));
                     }
 
                     this.baseLayout.setObjectProperty(this.gameState, mBuildableLightColorSlots);

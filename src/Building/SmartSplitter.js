@@ -172,7 +172,7 @@ export default class Building_SmartSplitter
 
                                 for(let i = 0; i < values[outputIndex].length; i++)
                                 {
-                                    mSortRules.value.values.push([
+                                    mSortRules.values.push([
                                         {name: "ItemClass", type: "ObjectProperty", value: {levelName: "", pathName: values[outputIndex][i]}},
                                         {name: "OutputIndex", type: "IntProperty", value: parseInt(outputIndex)}
                                     ]);

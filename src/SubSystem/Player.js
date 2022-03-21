@@ -185,19 +185,22 @@ export default class SubSystem_Player
                     {
                         for(let j = 0; j < inventory.properties.length; j++)
                         {
-                            if(inventory.properties[j].name === 'mAdjustedSizeDiff')
+                            const mAdjustedSizeDiff = this.baseLayout.getObjectPropertyValue(inventory, 'mAdjustedSizeDiff');
+                            if (mAdjustedSizeDiff !== null)
                             {
-                                inventory.properties[j].value = 0;
+                                this.baseLayout.setObjectPropertyValue(inventory, 'mAdjustedSizeDiff', 0);
                             }
-                            if(inventory.properties[j].name === 'mInventoryStacks' || inventory.properties[j].name === 'mArbitrarySlotSizes' || inventory.properties[j].name === 'mAllowedItemDescriptors')
-                            {
-                                inventory.properties[j].value.values.splice(this.defaultInventorySize);
-
-                                // Give Xeno Zapper, Always get prepared ^^
-                                if(inventory.properties[j].name === 'mInventoryStacks')
+                            for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
+                                const property = this.baseLayout.getObjectPropertyValue(inventory, propertyName);
                                 {
-                                    inventory.properties[j].value.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
-                                    inventory.properties[j].value.values[0][0].value.properties[0].value    = 1;
+                                    property.values.splice(this.defaultInventorySize);
+
+                                    // Give Xeno Zapper, Always get prepared ^^
+                                    if(propertyName === 'mInventoryStacks')
+                                    {
+                                        property.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
+                                        this.baseLayout.setObjectPropertyValue(property.values[0][0].value, 'NumItems', 1);
+                                    }
                                 }
                             }
                         }
@@ -205,17 +208,21 @@ export default class SubSystem_Player
 
                 let armSlot         = this.baseLayout.saveGameParser.getTargetObject(currentPlayer.pathName + '.ArmSlot');
                                       this.baseLayout.deleteObjectProperty(armSlot, 'mEquipmentInSlot');
-                    for(let j = 0; j < armSlot.properties.length; j++)
+
+                for (const propertyName of ['mAdjustedSizeDiff', 'mActiveEquipmentIndex']) {
+                    const property = this.baseLayout.getObjectPropertyValue(armSlot, propertyName);
+                    if(property !== null)
                     {
-                        if(armSlot.properties[j].name === 'mAdjustedSizeDiff' || armSlot.properties[j].name === 'mActiveEquipmentIndex')
-                        {
-                            armSlot.properties[j].value = 0;
-                        }
-                        if(armSlot.properties[j].name === 'mInventoryStacks' || armSlot.properties[j].name === 'mArbitrarySlotSizes' || armSlot.properties[j].name === 'mAllowedItemDescriptors')
-                        {
-                            armSlot.properties[j].value.values.splice(this.defaultArmSlots);
-                        }
+                        this.baseLayout.setObjectPropertyValue(armSlot, propertyName, 0);
                     }
+                }
+                for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
+                    const property = this.baseLayout.getObjectPropertyValue(armSlot, propertyName);
+                    if(property !== null)
+                    {
+                        property.values.splice(this.defaultArmSlots);
+                    }
+                }
             }
     }
 

@@ -164,8 +164,8 @@ export default class Selection_Delete
                         }
                     }];
 
-                    currentLootCrateInventory.properties[0].value.values.push(newItem);
-                    currentLootCrateInventory.properties[1].value.values.push(0);
+                    this.baseLayout.getObjectPropertyValue(currentLootCrateInventory, 'mInventoryStacks').values.push(newItem);
+                    this.baseLayout.getObjectPropertyValue(currentLootCrateInventory, 'mArbitrarySlotSizes').values.push(0);
                 }
 
                 this.baseLayout.setBadgeLayerCount('playerCratesLayer');

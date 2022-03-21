@@ -536,7 +536,7 @@ export default class SubSystem_Buildable
 
                     for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                     {
-                        mColorSlots_Data.value.values.push([
+                        mColorSlots_Data.values.push([
                             {
                                 name    : 'PrimaryColor',
                                 type    : 'StructProperty',
@@ -590,7 +590,7 @@ export default class SubSystem_Buildable
 
                 for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                 {
-                    mColorSlotsPrimary_Linear.value.values.push(
+                    mColorSlotsPrimary_Linear.values.push(
                         cloneDeep(this.getDefaultPrimaryColorSlot(slotIndex, true))
                     );
                 }
@@ -660,7 +660,7 @@ export default class SubSystem_Buildable
 
                 for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                 {
-                    mColorSlotsSecondary_Linear.value.values.push(
+                    mColorSlotsSecondary_Linear.values.push(
                         cloneDeep(this.getDefaultSecondaryColorSlot(slotIndex, true))
                     );
                 }

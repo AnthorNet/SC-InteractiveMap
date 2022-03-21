@@ -285,18 +285,16 @@ export default class SubSystem_Circuit
         {
             let currentCiruitSubSystem = this.baseLayout.saveGameParser.getTargetObject(this.circuitSubSystem.extra.circuits[i].pathName);
 
-            for(let j = 0; j < currentCiruitSubSystem.properties.length; j++)
+            const mComponents = this.baseLayout.getObjectPropertyValue(currentCiruitSubSystem, 'mComponents');
+            if (mComponents !== null)
             {
-                if(currentCiruitSubSystem.properties[j].name === 'mComponents')
+                for(let k = (mComponents.values.length - 1); k >= 0; k--)
                 {
-                    for(let k = (currentCiruitSubSystem.properties[j].value.values.length - 1); k >= 0; k--)
-                    {
-                        let currentObject = this.baseLayout.saveGameParser.getTargetObject(currentCiruitSubSystem.properties[j].value.values[k].pathName);
-                            if(currentObject === null)
-                            {
-                                currentCiruitSubSystem.properties[j].value.values.splice(k, 1);
-                            }
-                    }
+                    let currentObject = this.baseLayout.saveGameParser.getTargetObject(mComponents.values[k].pathName);
+                        if(currentObject === null)
+                        {
+                            mComponents.values.splice(k, 1);
+                        }
                 }
             }
         }

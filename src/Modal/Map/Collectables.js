@@ -301,59 +301,52 @@ export default class Modal_Map_Collectables
         {
             if(currentObject.properties.length > 0)
             {
-                for(let n = 0; n < currentObject.properties.length; n++)
+                const mHasBeenOpened = this.baseLayout.getObjectPropertyValue(currentObject, 'mHasBeenOpened');
+                if(mHasBeenOpened !== null)
                 {
-                    if(currentObject.properties[n].name === 'mHasBeenOpened')
+                    if(mHasBeenOpened.value === 1)
                     {
-                        if(currentObject.properties[n].value === 1)
-                        {
-                            this.baseLayout.collectedHardDrives.setCollected(currentObject.pathName);
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        this.baseLayout.collectedHardDrives.setCollected(currentObject.pathName);
+                        return true;
                     }
-
-                    if(currentObject.properties[n].name === 'mPickupItems')
+                    else
                     {
-                        let intValue = null;
-
-                        switch(currentObject.properties[n].value.values[0].type)
-                        {
-                            case 'IntProperty':
-                                intValue = currentObject.properties[n].value.values[0].value;
-                                break;
-                            case 'StructProperty':
-                                if(currentObject.properties[n].value.values[0].value.properties[0] === null)
-                                {
-                                    intValue = 0;
-                                }
-                                else
-                                {
-                                    intValue = currentObject.properties[n].value.values[0].value.properties[0].value;
-                                }
-                                break;
-                            default:
-                                console.log('Modal_Map_Collectables::getStatusFromPathName', currentObject.properties[n].value.values[0]);
-                                break;
-                        }
-
-                        if(intValue === 0)
-                        {
-                            return true;
-                        }
-
                         return false;
                     }
+                }
 
-                    if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C' && currentObject.properties[n].name === 'mIsEmptied')
+                const mPickupItems = this.baseLayout.getObjectPropertyValue(currentObject, 'mPickupItems');
+                if(mPickupItems !== null)
+                {
+                    let intValue = null;
+
+                    switch(mPickupItems.values[0].type)
                     {
-                        if(currentObject.properties[n].value === 1)
-                        {
-                            return true;
-                        }
+                        case 'IntProperty':
+                            intValue = mPickupItems.values[0].value;
+                            break;
+                        case 'StructProperty':
+                            intValue = this.baseLayout.getObjectPropertyValue(mPickupItems.values[0].value, 'NumItems')?.value ?? 0;
+                            break;
+                        default:
+                            console.log('Modal_Map_Collectables::getStatusFromPathName', mPickupItems.values[0]);
+                            break;
+                    }
+
+                    if(intValue === 0)
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                const mIsEmptied = this.baseLayout.getObjectPropertyValue(currentObject, 'mIsEmptied');
+                if(mIsEmptied !== null && currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C')
+                {
+                    if(mIsEmptied.value === 1)
+                    {
+                        return true;
                     }
                 }
             }
