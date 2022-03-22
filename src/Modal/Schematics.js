@@ -810,14 +810,15 @@ export default class Modal_Schematics
         this.availableSchematics    = null;
         this.purchasedSchematics    = null;
 
-        if(schematic !== undefined && schematic.className !== undefined)
+        if(this.baseLayout.schematicsData.has(schematicId))
         {
-            let currentSchematic    = schematic;
+            let currentSchematic    = this.baseLayout.schematicsData.get(schematicId);
             let schematicManager    = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
-                if(schematicManager !== null)
+
+                if(schematicManager !== null && currentSchematic.className !== undefined)
                 {
-                    const mAvailableSchematics = this.baseLayout.getObjectPropertyValue(schematicManager, 'mAvailableSchematics')?.value?.values;
-                    const mPurchasedSchematics = this.baseLayout.getObjectPropertyValue(schematicManager, 'mPurchasedSchematics')?.value?.values;
+                    const mAvailableSchematics    = this.baseLayout.getObjectPropertyValue(schematicManager, 'mAvailableSchematics')?.values;
+                    const mPurchasedSchematics    = this.baseLayout.getObjectPropertyValue(schematicManager, 'mPurchasedSchematics')?.values;
 
                     switch(currentStatus)
                     {
