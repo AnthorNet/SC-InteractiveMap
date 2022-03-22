@@ -1,4 +1,5 @@
-/* global iro */
+import iro                                      from '../Lib/iro.js';
+
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_GameState                      from '../SubSystem/GameState.js';
