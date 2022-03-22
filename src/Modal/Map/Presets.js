@@ -1,4 +1,5 @@
-/* global iro */
+import iro                                      from '../../Lib/iro.js';
+
 import BaseLayout_Math                          from '../../BaseLayout/Math.js';
 
 export default class Modal_Map_Presets

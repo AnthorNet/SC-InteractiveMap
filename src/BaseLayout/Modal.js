@@ -1,4 +1,4 @@
-/* global iro */
+import iro                                      from '../Lib/iro.js';
 
 export default class BaseLayout_Modal
 {
