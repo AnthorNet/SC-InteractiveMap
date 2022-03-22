@@ -58,7 +58,7 @@ export default class SaveParser_FicsIt
                 let currentChildren = baseLayout.saveGameParser.getTargetObject(child.pathName);
                     if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGPowerConnectionComponent')
                     {
-                        if(currentChildren.properties.length === 0)
+                        if(currentChildren.properties.size === 0)
                         {
                             console.log('Removing ghost "' + currentChildren.className + '"', currentChildren.pathName);
                             baseLayout.saveGameParser.deleteObject(currentChildren.pathName);
@@ -118,7 +118,7 @@ export default class SaveParser_FicsIt
                 let currentTrainStationIdentifier = baseLayout.saveGameParser.getTargetObject(trainStation[i]);
                     if(currentTrainStationIdentifier !== null)
                     {
-                        let mStation = baseLayout.getObjectProperty(currentTrainStationIdentifier, 'mStation');
+                        let mStation = baseLayout.getObjectPropertyValue(currentTrainStationIdentifier, 'mStation');
                             if(mStation !== null)
                             {
                                 let currentTrainStation = baseLayout.saveGameParser.getTargetObject(mStation.pathName);
@@ -127,7 +127,7 @@ export default class SaveParser_FicsIt
                                         let completeTrainStation = Building_TrainStation.getCompleteTrainStation(baseLayout, currentTrainStation);
                                             for(let j = 0; j < completeTrainStation.length; j++)
                                             {
-                                                let mRailroadTrack = baseLayout.getObjectProperty(completeTrainStation[j], 'mRailroadTrack');
+                                                let mRailroadTrack = baseLayout.getObjectPropertyValue(completeTrainStation[j], 'mRailroadTrack');
                                                     if(mRailroadTrack !== null && mRailroadTrack.pathName === currentObject.pathName)
                                                     {
                                                         return currentObject;
@@ -148,10 +148,10 @@ export default class SaveParser_FicsIt
      */
     static fixPipeConnectionFactory(baseLayout, currentObject)
     {
-        let mPipeNetworkID = baseLayout.getObjectProperty(currentObject, 'mPipeNetworkID');
+        let mPipeNetworkID = baseLayout.getObjectPropertyValue(currentObject, 'mPipeNetworkID');
             if(mPipeNetworkID !== null)
             {
-                if(currentObject.properties.length === 1)
+                if(currentObject.properties.size === 1)
                 {
                     console.log('Removing ghost mPipeNetworkID "' + mPipeNetworkID + '"', currentObject.pathName);
                     baseLayout.deleteObjectProperty(currentObject, 'mPipeNetworkID');
@@ -168,11 +168,11 @@ export default class SaveParser_FicsIt
      */
     static fixRampsRotation(baseLayout, currentObject, newRecipe)
     {
-        let mBuiltWithRecipe    = baseLayout.getObjectProperty(currentObject, 'mBuiltWithRecipe');
+        let mBuiltWithRecipe    = baseLayout.getObjectPropertyValue(currentObject, 'mBuiltWithRecipe');
             if(mBuiltWithRecipe === null)
             {
                 currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 90);
-                currentObject.properties.push({
+                baseLayout.setObjectProperty(currentObject, {
                     name    : 'mBuiltWithRecipe',
                     type    : 'ObjectProperty',
                     value   : {levelName: '', pathName: newRecipe}
@@ -213,7 +213,7 @@ export default class SaveParser_FicsIt
      */
     static checkPairedStation(baseLayout, currentObject)
     {
-        let mPairedStation = baseLayout.getObjectProperty(currentObject, 'mPairedStation');
+        let mPairedStation = baseLayout.getObjectPropertyValue(currentObject, 'mPairedStation');
             if(mPairedStation !== null)
             {
                 let currentPairedStation = baseLayout.saveGameParser.getTargetObject(mPairedStation.pathName);
@@ -232,7 +232,7 @@ export default class SaveParser_FicsIt
      */
     static checkDroneStation(baseLayout, currentObject)
     {
-        let mDockedDrone = baseLayout.getObjectProperty(currentObject, 'mDockedDrone');
+        let mDockedDrone = baseLayout.getObjectPropertyValue(currentObject, 'mDockedDrone');
             if(mDockedDrone !== null)
             {
                 let currentDockedDrone = baseLayout.saveGameParser.getTargetObject(mDockedDrone.pathName);
@@ -251,7 +251,7 @@ export default class SaveParser_FicsIt
      */
     static checkDroneTransport(baseLayout, currentObject)
     {
-        let mCurrentTripDestinationStation = baseLayout.getObjectProperty(currentObject, 'mCurrentTripDestinationStation');
+        let mCurrentTripDestinationStation = baseLayout.getObjectPropertyValue(currentObject, 'mCurrentTripDestinationStation');
             if(mCurrentTripDestinationStation !== null)
             {
                 let currentTripDestinationStation = baseLayout.saveGameParser.getTargetObject(mCurrentTripDestinationStation.pathName);
@@ -263,7 +263,7 @@ export default class SaveParser_FicsIt
                     }
             }
 
-        let mHomeStation = baseLayout.getObjectProperty(currentObject, 'mHomeStation');
+        let mHomeStation = baseLayout.getObjectPropertyValue(currentObject, 'mHomeStation');
             if(mHomeStation !== null)
             {
                 let currentHomeStation = baseLayout.saveGameParser.getTargetObject(mHomeStation.pathName);
@@ -275,7 +275,7 @@ export default class SaveParser_FicsIt
                     }
             }
 
-        let mCurrentAction = baseLayout.getObjectProperty(currentObject, 'mCurrentAction');
+        let mCurrentAction = baseLayout.getObjectPropertyValue(currentObject, 'mCurrentAction');
             if(mCurrentAction !== null)
             {
                 let currentAction = baseLayout.saveGameParser.getTargetObject(mCurrentAction.pathName);
@@ -286,7 +286,7 @@ export default class SaveParser_FicsIt
                     }
             }
 
-        let mActionsToExecute = baseLayout.getObjectProperty(currentObject, 'mActionsToExecute');
+        let mActionsToExecute = baseLayout.getObjectPropertyValue(currentObject, 'mActionsToExecute');
             if(mActionsToExecute !== null)
             {
                 for(let i = 0; i < mActionsToExecute.values.length; i++)

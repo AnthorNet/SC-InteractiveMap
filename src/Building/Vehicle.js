@@ -9,10 +9,10 @@ export default class Building_Vehicle
 
     static getTargetList(baseLayout, currentObject)
     {
-        let mTargetList     = baseLayout.getObjectProperty(currentObject, 'mTargetList'); // Update 5
+        let mTargetList     = baseLayout.getObjectPropertyValue(currentObject, 'mTargetList'); // Update 5
             if(mTargetList === null) //TODO:OLD
             {
-                mTargetList = baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
+                mTargetList = baseLayout.getObjectPropertyValue(currentObject, 'mTargetNodeLinkedList');
             }
 
         return mTargetList;
@@ -26,8 +26,8 @@ export default class Building_Vehicle
                 let targetNode = baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
                     if(targetNode !== null)
                     {
-                        let mFirst  = baseLayout.getObjectProperty(targetNode, 'mFirst');
-                        let mLast   = baseLayout.getObjectProperty(targetNode, 'mLast');
+                        let mFirst  = baseLayout.getObjectPropertyValue(targetNode, 'mFirst');
+                        let mLast   = baseLayout.getObjectPropertyValue(targetNode, 'mLast');
 
                             if(mFirst !== null && mLast !== null)
                             {
@@ -42,7 +42,7 @@ export default class Building_Vehicle
                                             {
                                                 currentTrack.push(checkCurrentNode.transform.translation);
 
-                                                let mNext               = baseLayout.getObjectProperty(checkCurrentNode, 'mNext');
+                                                let mNext               = baseLayout.getObjectPropertyValue(checkCurrentNode, 'mNext');
                                                     checkCurrentNode    = null;
                                                     if(mNext !== null)
                                                     {
@@ -70,8 +70,8 @@ export default class Building_Vehicle
                 let targetNode = baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
                     if(targetNode !== null)
                     {
-                        let mFirst  = baseLayout.getObjectProperty(targetNode, 'mFirst');
-                        let mLast   = baseLayout.getObjectProperty(targetNode, 'mLast');
+                        let mFirst  = baseLayout.getObjectPropertyValue(targetNode, 'mFirst');
+                        let mLast   = baseLayout.getObjectPropertyValue(targetNode, 'mLast');
 
                             if(mFirst !== null && mLast !== null)
                             {
@@ -87,13 +87,13 @@ export default class Building_Vehicle
                                             {
                                                 currentTrack.push(checkCurrentNode.transform.translation);
 
-                                                let mNext               = baseLayout.getObjectProperty(checkCurrentNode, 'mNext');
+                                                let mNext               = baseLayout.getObjectPropertyValue(checkCurrentNode, 'mNext');
                                                     if(mNext !== null)
                                                     {
                                                         if(currentTrack.length === (dataPoint + 1))
                                                         {
                                                             // Replace next on previsous node
-                                                            let mNextPreviousNode           = baseLayout.getObjectProperty(previousNode, 'mNext');
+                                                            let mNextPreviousNode           = baseLayout.getObjectPropertyValue(previousNode, 'mNext');
                                                                 mNextPreviousNode.pathName  = mNext.pathName;
 
                                                             // Delete current node from the save

@@ -46,7 +46,7 @@ export default class Modal_Selection
                         continue;
                     }
 
-                let mSplineData = baseLayout.getObjectProperty(currentObject, 'mSplineData');
+                let mSplineData = baseLayout.getObjectPropertyValue(currentObject, 'mSplineData');
                     if(mSplineData !== null)
                     {
                         let splineMinX = Infinity;
@@ -58,13 +58,13 @@ export default class Modal_Selection
                         {
                             for(let k = 0; k < mSplineData.values[j].length; k++)
                             {
-                                let currentValue = mSplineData.values[j][k];
+                                let currentValue = mSplineData.values[j][k].value;
                                     if(currentValue.name === 'Location')
                                     {
-                                        splineMinX  = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMaxX  = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMinY  = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                        splineMaxY  = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
+                                        splineMinX  = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.values.x);
+                                        splineMaxX  = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.values.x);
+                                        splineMinY  = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.values.y);
+                                        splineMaxY  = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.values.y);
                                     }
                             }
                         }
@@ -612,10 +612,10 @@ export default class Modal_Selection
                             rotation        : [0, 0, 0, 1],
                             translation     : [boundaries.centerX, boundaries.centerY, minZ + 100]
                         },
-                        properties      : [
-                            { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
-                            { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
-                        ],
+                        properties      : new Map([
+                            ["mBuiltWithRecipe", { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } }],
+                            ["mBuildTimeStamp", { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }]
+                        ]),
                         entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
                     };
                     fakeFoundation.pathName = baseLayout.generateFastPathName(fakeFoundation);
@@ -976,32 +976,42 @@ export default class Modal_Selection
                                                 let potentialInventory = baseLayout.getObjectInventory(currentObject, 'mInventoryPotential', true);
                                                     if(potentialInventory !== null)
                                                     {
-                                                        for(let k = 0; k < potentialInventory.properties.length; k++)
+                                                        const mInventoryStacks = baseLayout.getObjectPropertyValue(potentialInventory, 'mInventoryStacks');
+                                                        if(mInventoryStacks !== null)
                                                         {
-                                                            if(potentialInventory.properties[k].name === 'mInventoryStacks')
+                                                            for(let m = 0; m < totalPowerShards; m++)
                                                             {
-                                                                for(let m = 0; m < totalPowerShards; m++)
+                                                                if(parseInt(form.useOwnPowershards) === 1)
                                                                 {
-                                                                    if(parseInt(form.useOwnPowershards) === 1)
-                                                                    {
-                                                                        let result = baseLayout.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
-                                                                            if(result === false)
-                                                                            {
-                                                                                clockSpeed = Math.min(clockSpeed, 100 + (m * 50)); // Downgrade...
-                                                                                break;
-                                                                            }
-                                                                    }
-
-                                                                    potentialInventory.properties[k].value.values[m][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                                                    baseLayout.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, 'NumItems', 1, 'IntProperty');
+                                                                    let result = baseLayout.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
+                                                                        if(result === false)
+                                                                        {
+                                                                            clockSpeed = Math.min(clockSpeed, 100 + (m * 50)); // Downgrade...
+                                                                            break;
+                                                                        }
                                                                 }
+
+                                                                mInventoryStacks.values[m][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
+                                                                baseLayout.setObjectProperty(mInventoryStacks.values[m][0].value, {
+                                                                    name: 'NumItems',
+                                                                    type: 'IntProperty',
+                                                                    value: 1
+                                                                });
                                                             }
                                                         }
                                                     }
                                             }
 
-                                        baseLayout.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
-                                        baseLayout.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+                                        baseLayout.setObjectProperty(currentObject, {
+                                            name: 'mCurrentPotential',
+                                            type: 'FloatProperty',
+                                            value: clockSpeed / 100
+                                        });
+                                        baseLayout.setObjectProperty(currentObject, {
+                                            name: 'mPendingPotential',
+                                            type: 'FloatProperty',
+                                            value: clockSpeed / 100
+                                        });
                                     }
                                 }
                             }

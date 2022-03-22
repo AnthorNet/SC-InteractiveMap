@@ -13,7 +13,7 @@ export default class Building_RailroadTrack
                     let trackConnection1 = baseLayout.saveGameParser.getTargetObject(child.pathName);
                         if(trackConnection1 !== null)
                         {
-                            let mConnectedComponents    = baseLayout.getObjectProperty(trackConnection1, 'mConnectedComponents');
+                            let mConnectedComponents    = baseLayout.getObjectPropertyValue(trackConnection1, 'mConnectedComponents');
                                 if(mConnectedComponents !== null)
                                 {
                                     for(let j = 0; j < mConnectedComponents.values.length; j++)
@@ -116,14 +116,14 @@ export default class Building_RailroadTrack
         let baseLayout              = marker.baseLayout;
         let currentObject           = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
 
-        let mControlledConnection   = baseLayout.getObjectProperty(currentObject, 'mControlledConnection');
+        let mControlledConnection   = baseLayout.getObjectPropertyValue(currentObject, 'mControlledConnection');
             if(mControlledConnection !== null)
             {
                 let trackConnection1 = baseLayout.saveGameParser.getTargetObject(mControlledConnection.pathName);
                     if(trackConnection1 !== null)
                     {
-                        let mConnectedComponents    = baseLayout.getObjectProperty(trackConnection1, 'mConnectedComponents');
-                        let mSwitchPosition         = baseLayout.getObjectProperty(trackConnection1, 'mSwitchPosition');
+                        let mConnectedComponents    = baseLayout.getObjectPropertyValue(trackConnection1, 'mConnectedComponents');
+                        let mSwitchPosition         = baseLayout.getObjectPropertyValue(trackConnection1, 'mSwitchPosition');
                         let connectedComponents     = [trackConnection1];
 
                             if(mConnectedComponents !== null && mSwitchPosition !== null && mConnectedComponents.values[mSwitchPosition] !== undefined)
@@ -137,7 +137,11 @@ export default class Building_RailroadTrack
 
                             if(connectedComponents.length > 1)
                             {
-                                baseLayout.setObjectProperty(trackConnection1, 'mSwitchPosition', ((mSwitchPosition === 0) ? 1 : 0), 'IntProperty');
+                                baseLayout.setObjectProperty(trackConnection1, {
+                                    name: 'mSwitchPosition',
+                                    type: 'IntProperty',
+                                    value: mSwitchPosition === 0 ? 1 : 0
+                                });
                             }
                     }
             }

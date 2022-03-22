@@ -475,7 +475,7 @@ export default class BaseLayout_Modal
                     input.ColorPicker = new iro.ColorPicker(input.find('.colorPicker')[0], {
                         width       : 294,
                         display     : 'inline-block',
-                        color       : ((options.value instanceof Object && options.value.r !== undefined) ? 'rgb(' + options.value.r + ', ' + options.value.g + ', ' + options.value.b + ')' : options.value),
+                        color       : ((options.value instanceof Object && options.r !== undefined) ? 'rgb(' + options.r + ', ' + options.g + ', ' + options.b + ')' : options.value),
                         borderWidth : 1,
                         borderColor : "#000000"
                     });

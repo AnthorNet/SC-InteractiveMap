@@ -61,7 +61,7 @@ export default class Selection_Rotate
                         switch(currentObject.className)
                         {
                             case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                                let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
+                                let mOwnedPawn = this.baseLayout.getObjectPropertyValue(currentObject, 'mOwnedPawn');
                                     if(mOwnedPawn !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
@@ -80,7 +80,7 @@ export default class Selection_Rotate
                                 break;
                             case '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C':
                                 // HUB should also move hidden objects
-                                let mHubTerminal    = this.baseLayout.getObjectProperty(currentObject, 'mHubTerminal');
+                                let mHubTerminal    = this.baseLayout.getObjectPropertyValue(currentObject, 'mHubTerminal');
                                     if(mHubTerminal !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mHubTerminal.pathName);
@@ -96,7 +96,7 @@ export default class Selection_Rotate
                                                 currentObjectTarget.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(currentObjectTarget.transform.rotation, this.angle);
                                             }
                                     }
-                                let mWorkBench      = this.baseLayout.getObjectProperty(currentObject, 'mWorkBench');
+                                let mWorkBench      = this.baseLayout.getObjectPropertyValue(currentObject, 'mWorkBench');
                                     if(mWorkBench !== null)
                                     {
                                         let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mWorkBench.pathName);
@@ -122,22 +122,22 @@ export default class Selection_Rotate
                                     currentObject.transform.translation[1]  = translationRotation[1];
 
                                 // Rotate all spline data and tangeant!
-                                let mSplineData                      = this.baseLayout.getObjectProperty(currentObject, 'mSplineData');
+                                let mSplineData                      = this.baseLayout.getObjectPropertyValue(currentObject, 'mSplineData');
                                     if(mSplineData !== null)
                                     {
                                         for(let j = 0; j < mSplineData.values.length; j++)
                                         {
                                             for(let k = 0; k < mSplineData.values[j].length; k++)
                                             {
-                                                let currentValue    = mSplineData.values[j][k];
+                                                let currentValue    = mSplineData.values[j][k].value;
                                                 let splineRotation  = BaseLayout_Math.getPointRotation(
-                                                    [currentValue.value.values.x, currentValue.value.values.y],
+                                                    [currentValue.values.x, currentValue.values.y],
                                                     [0, 0],
                                                     BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
                                                 );
 
-                                                currentValue.value.values.x = splineRotation[0];
-                                                currentValue.value.values.y = splineRotation[1];
+                                                currentValue.values.x = splineRotation[0];
+                                                currentValue.values.y = splineRotation[1];
                                             }
                                         }
                                     }
@@ -158,19 +158,15 @@ export default class Selection_Rotate
                                         const component = '.' + currentObjectChildren.pathName.split('.').pop();
                                         if(this.baseLayout.availablePowerConnection.has(component))
                                         {
-                                            for(let m = 0; m < currentObjectChildren.properties.length; m++)
+                                            const mWires = this.baseLayout.getObjectPropertyValue(currentObjectChildren, 'mWires')
+                                            if(mWires !== null)
                                             {
-                                                if(currentObjectChildren.properties[m].name === 'mWires')
+                                                for(let n = 0; n < mWires.values.length; n++)
                                                 {
-                                                    for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
+                                                    if(wires.includes(mWires.values[n].pathName) === false)
                                                     {
-                                                        if(wires.includes(currentObjectChildren.properties[m].value.values[n].pathName) === false)
-                                                        {
-                                                            wires.push(currentObjectChildren.properties[m].value.values[n].pathName);
-                                                        }
+                                                        wires.push(mWires.values[n].pathName);
                                                     }
-
-                                                    break;
                                                 }
                                             }
                                         }

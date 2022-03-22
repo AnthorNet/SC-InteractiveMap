@@ -215,6 +215,10 @@ export default class SaveParser
 
     getTargetObject(pathName)
     {
+        if (pathName === undefined || pathName === null) {
+            return null;
+        }
+
         // Bypass game state for easy retrievale
         if(pathName === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C' && this.gameStatePathName !== null)
         {

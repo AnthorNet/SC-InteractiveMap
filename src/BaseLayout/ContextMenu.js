@@ -82,7 +82,7 @@ export default class BaseLayout_ContextMenu
                         });
                         break;
                     case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
-                        let mDecorationDescriptor           = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
+                        let mDecorationDescriptor           = this.baseLayout.getObjectPropertyValue(currentObject, 'mDecorationDescriptor');
                             buildingData                    = this.baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
                             if(buildingData !== null)
                             {
@@ -215,7 +215,7 @@ export default class BaseLayout_ContextMenu
 
                         if(currentObject.className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                         {
-                            let hasBeenOpened = this.baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
+                            let hasBeenOpened = this.baseLayout.getObjectPropertyValue(currentObject, 'mHasBeenOpened', 0);
                                 contextMenu.push({
                                     text    : ((hasBeenOpened === 1) ? '<strong class="text-danger">Close</strong>' : '<strong class="text-success">Open</strong>') + ' drop-pod',
                                     callback: this.baseLayout.toggleDropPodHasBeenOpened.bind(this.baseLayout)
@@ -404,13 +404,13 @@ export default class BaseLayout_ContextMenu
                         }
                         if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
                         {
-                            let storage = this.baseLayout.getObjectProperty(currentObject, 'mStorageInventory');
+                            let storage = this.baseLayout.getObjectPropertyValue(currentObject, 'mStorageInventory');
                                 if(storage !== null)
                                 {
                                     let storageObject = this.baseLayout.saveGameParser.getTargetObject(storage.pathName);
                                         if(storageObject !== null)
                                         {
-                                            let mAdjustedSizeDiff = this.baseLayout.getObjectProperty(storageObject, 'mAdjustedSizeDiff');
+                                            let mAdjustedSizeDiff = this.baseLayout.getObjectPropertyValue(storageObject, 'mAdjustedSizeDiff');
                                                 if(mAdjustedSizeDiff !== null && mAdjustedSizeDiff === -31)
                                                 {
                                                     inventoryType = 'liquid';

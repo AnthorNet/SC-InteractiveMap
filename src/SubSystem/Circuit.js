@@ -18,7 +18,7 @@ export default class SubSystem_Circuit
                 let currentSubCircuit = this.baseLayout.saveGameParser.getTargetObject(this.circuitSubSystem.extra.circuits[i].pathName);
                     if(currentSubCircuit !== null)
                     {
-                        let mComponents = this.baseLayout.getObjectProperty(currentSubCircuit, 'mComponents');
+                        let mComponents = this.baseLayout.getObjectPropertyValue(currentSubCircuit, 'mComponents');
                             if(mComponents !== null)
                             {
                                 let componentsArray = [];
@@ -78,7 +78,7 @@ export default class SubSystem_Circuit
 
             if(currentCircuit !== null)
             {
-                let mComponents = this.baseLayout.getObjectProperty(currentCircuit, 'mComponents');
+                let mComponents = this.baseLayout.getObjectPropertyValue(currentCircuit, 'mComponents');
                     if(mComponents !== null)
                     {
                         for(let i = 0; i < mComponents.values.length; i++)
@@ -157,8 +157,8 @@ export default class SubSystem_Circuit
                         let buildingData                = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
 
                         // PRODUCTION
-                        let mIsFullBlast                = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
-                        let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
+                        let mIsFullBlast                = this.baseLayout.getObjectPropertyValue(buildingPowerInfo, 'mIsFullBlast');
+                        let mDynamicProductionCapacity  = this.baseLayout.getObjectPropertyValue(buildingPowerInfo, 'mDynamicProductionCapacity');
                             if(mDynamicProductionCapacity !== null)
                             {
                                 if(mIsFullBlast !== null && mIsFullBlast === 1)
@@ -176,13 +176,13 @@ export default class SubSystem_Circuit
 
                         if(currentComponent !== null && currentComponent.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
                         {
-                            let mBaseProduction  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
+                            let mBaseProduction  = this.baseLayout.getObjectPropertyValue(buildingPowerInfo, 'mBaseProduction');
                                 if(mBaseProduction !== null)
                                 {
                                     statistics.production += mBaseProduction;
 
                                     // Check max production based on purity
-                                    let resourceNode     = this.baseLayout.getObjectProperty(currentComponent, 'mExtractableResource');
+                                    let resourceNode     = this.baseLayout.getObjectPropertyValue(currentComponent, 'mExtractableResource');
                                         if(resourceNode !== null)
                                         {
                                             if(this.baseLayout.satisfactoryMap.collectableMarkers !== undefined && this.baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
@@ -200,7 +200,7 @@ export default class SubSystem_Circuit
                         }
 
                         // CONSUMPTION
-                        let mTargetConsumption  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption');
+                        let mTargetConsumption  = this.baseLayout.getObjectPropertyValue(buildingPowerInfo, 'mTargetConsumption');
                             if(mTargetConsumption !== null)
                             {
                                 statistics.consumption += mTargetConsumption;
@@ -285,18 +285,16 @@ export default class SubSystem_Circuit
         {
             let currentCiruitSubSystem = this.baseLayout.saveGameParser.getTargetObject(this.circuitSubSystem.extra.circuits[i].pathName);
 
-            for(let j = 0; j < currentCiruitSubSystem.properties.length; j++)
+            const mComponents = this.baseLayout.getObjectPropertyValue(currentCiruitSubSystem, 'mComponents');
+            if (mComponents !== null)
             {
-                if(currentCiruitSubSystem.properties[j].name === 'mComponents')
+                for(let k = (mComponents.values.length - 1); k >= 0; k--)
                 {
-                    for(let k = (currentCiruitSubSystem.properties[j].value.values.length - 1); k >= 0; k--)
-                    {
-                        let currentObject = this.baseLayout.saveGameParser.getTargetObject(currentCiruitSubSystem.properties[j].value.values[k].pathName);
-                            if(currentObject === null)
-                            {
-                                currentCiruitSubSystem.properties[j].value.values.splice(k, 1);
-                            }
-                    }
+                    let currentObject = this.baseLayout.saveGameParser.getTargetObject(mComponents.values[k].pathName);
+                        if(currentObject === null)
+                        {
+                            mComponents.values.splice(k, 1);
+                        }
                 }
             }
         }

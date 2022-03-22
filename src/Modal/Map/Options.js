@@ -111,15 +111,15 @@ export default class Modal_Map_Options
         let mIsBuildingOverclockUnlocked    = 0;
         let mIsMapUnlocked                  = 0;
 
-        let mCheatNoCost                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoCost', 0);
-        let mCheatNoPower                   = this.baseLayout.getObjectProperty(gameState, 'mCheatNoPower', 0);
-        let mCheatNoFuel                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoFuel', 0);
+        let mCheatNoCost                    = this.baseLayout.getObjectPropertyValue(gameState, 'mCheatNoCost', 0);
+        let mCheatNoPower                   = this.baseLayout.getObjectPropertyValue(gameState, 'mCheatNoPower', 0);
+        let mCheatNoFuel                    = this.baseLayout.getObjectPropertyValue(gameState, 'mCheatNoFuel', 0);
 
         if(unlockSubSystem !== null)
         {
-            mIsBuildingEfficiencyUnlocked   = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', 0);
-            mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0);
-            mIsMapUnlocked                  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsMapUnlocked', 0);
+            mIsBuildingEfficiencyUnlocked   = this.baseLayout.getObjectPropertyValue(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', 0);
+            mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectPropertyValue(unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0);
+            mIsMapUnlocked                  = this.baseLayout.getObjectPropertyValue(unlockSubSystem, 'mIsMapUnlocked', 0);
         }
 
         html.push('<div class="form-group row">');
@@ -320,18 +320,30 @@ export default class Modal_Map_Options
 
                 for(const gameMode of this.baseLayout.gameMode)
                 {
-                    this.baseLayout.setObjectProperty(gameMode, 'mSaveSessionName', newSessionName, 'StrProperty');
+                    this.baseLayout.setObjectProperty(gameMode, {
+                        name: 'mSaveSessionName',
+                        type: 'StrProperty',
+                        value: newSessionName
+                    });
                 }
             }
 
             if(isValidNewSessionName === true)
             {
-                this.baseLayout.setObjectProperty(gameState, 'mReplicatedSessionName', newSessionName, 'StrProperty');
+                this.baseLayout.setObjectProperty(gameState, {
+                    name: 'mReplicatedSessionName',
+                    type: 'StrProperty',
+                    value: newSessionName
+                });
             }
 
             if($('#inputCheatNoCost').is(':checked') === true)
             {
-                this.baseLayout.setObjectProperty(gameState, 'mCheatNoCost', 1, 'BoolProperty');
+                this.baseLayout.setObjectProperty(gameState, {
+                    name: 'mCheatNoCost',
+                    type: 'BoolProperty',
+                    value: 1
+                });
             }
             else
             {
@@ -340,7 +352,11 @@ export default class Modal_Map_Options
 
             if($('#inputCheatNoPower').is(':checked') === true)
             {
-                this.baseLayout.setObjectProperty(gameState, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+                this.baseLayout.setObjectProperty(gameState, {
+                    name: 'mCheatNoPower',
+                    type: 'BoolProperty',
+                    value: $('#inputCheatNoPower').is(':checked') === true ? 1 : 0
+                });
             }
             else
             {
@@ -349,20 +365,40 @@ export default class Modal_Map_Options
 
             if($('#inputCheatNoFuel').is(':checked') === true)
             {
-                this.baseLayout.setObjectProperty(gameState, 'mCheatNoFuel', (($('#inputCheatNoFuel').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+                this.baseLayout.setObjectProperty(gameState, {
+                    name: 'mCheatNoFuel',
+                    type: 'BoolProperty',
+                    value: $('#inputCheatNoFuel').is(':checked') === true ? 1 : 0
+                });
             }
             else
             {
                 this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoFuel');
             }
 
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', (($('#inputBuildingOverclockUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', (($('#inputGameStateMapUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+            this.baseLayout.setObjectProperty(unlockSubSystem, {
+                    name: 'mIsBuildingEfficiencyUnlocked',
+                    type: 'BoolProperty',
+                    value: $('#inputBuildingEfficiencyUnlocked').is(':checked') === true ? 1 : 0
+                });
+            this.baseLayout.setObjectProperty(unlockSubSystem, {
+                    name: 'mIsBuildingOverclockUnlocked',
+                    type: 'BoolProperty',
+                    value: $('#inputBuildingOverclockUnlocked').is(':checked') === true ? 1 : 0
+                });
+            this.baseLayout.setObjectProperty(unlockSubSystem, {
+                    name: 'mIsMapUnlocked',
+                    type: 'BoolProperty',
+                    value: $('#inputGameStateMapUnlocked').is(':checked') === true ? 1 : 0
+                });
 
             if($('#inputCheatNoCost').is(':checked') === true)
             {
-                this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoCost', (($('#inputCheatNoCost').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+                this.baseLayout.setObjectProperty(unlockSubSystem, {
+                    name: 'mCheatNoCost',
+                    type: 'BoolProperty',
+                    value: $('#inputCheatNoCost').is(':checked') === true ? 1 : 0
+                });
             }
             else
             {
@@ -371,7 +407,11 @@ export default class Modal_Map_Options
 
             if($('#inputCheatNoPower').is(':checked') === true)
             {
-                this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+                this.baseLayout.setObjectProperty(unlockSubSystem, {
+                    name: 'mCheatNoPower',
+                    type: 'BoolProperty',
+                    value: $('#inputCheatNoPower').is(':checked') === true ? 1 : 0
+                });
             }
             else
             {
@@ -394,14 +434,30 @@ export default class Modal_Map_Options
             setTimeout(() => {
                 if(unlockSubSystem !== null)
                 {
-                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', 0, 'BoolProperty');
-                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0, 'BoolProperty');
-                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', 0, 'BoolProperty');
+                    this.baseLayout.setObjectProperty(unlockSubSystem, {
+                        name: 'mIsBuildingEfficiencyUnlocked',
+                        type: 'BoolProperty',
+                        value: 0
+                    });
+                    this.baseLayout.setObjectProperty(unlockSubSystem, {
+                        name: 'mIsBuildingOverclockUnlocked',
+                        type: 'BoolProperty',
+                        value: 0
+                    });
+                    this.baseLayout.setObjectProperty(unlockSubSystem, {
+                        name: 'mIsMapUnlocked',
+                        type: 'BoolProperty',
+                        value: 0
+                    });
 
-                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mNumTotalInventorySlots', 22, 'IntProperty');
+                    this.baseLayout.setObjectProperty(unlockSubSystem, {
+                        name: 'mNumTotalInventorySlots',
+                        type: 'IntProperty',
+                        value: 22
+                    });
                     this.baseLayout.deleteObjectProperty(unlockSubSystem, 'mNumTotalArmEquipmentSlots');
 
-                    let scannableResources = this.baseLayout.getObjectProperty(unlockSubSystem, 'mScannableResources');
+                    let scannableResources = this.baseLayout.getObjectPropertyValue(unlockSubSystem, 'mScannableResources');
                     if(scannableResources !== null)
                     {
                         scannableResources.values  = [];
@@ -422,7 +478,7 @@ export default class Modal_Map_Options
                         this.baseLayout.deleteObjectProperty(schematicManager, 'mPaidOffSchematic');
                         this.baseLayout.deleteObjectProperty(schematicManager, 'mActiveSchematic');
 
-                        let mAvailableSchematics = this.baseLayout.getObjectProperty(schematicManager, 'mAvailableSchematics');
+                        let mAvailableSchematics = this.baseLayout.getObjectPropertyValue(schematicManager, 'mAvailableSchematics');
                         if(mAvailableSchematics !== null)
                         {
                             mAvailableSchematics.values  = [];
@@ -432,7 +488,7 @@ export default class Modal_Map_Options
                             }
                         }
 
-                        let mPurchasedSchematics = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
+                        let mPurchasedSchematics = this.baseLayout.getObjectPropertyValue(schematicManager, 'mPurchasedSchematics');
                         if(mPurchasedSchematics !== null)
                         {
                             mPurchasedSchematics.values  = [];
@@ -447,7 +503,7 @@ export default class Modal_Map_Options
                 let recipeManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.recipeManager");
                     if(recipeManager !== null)
                     {
-                        let mAvailableRecipes = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableRecipes');
+                        let mAvailableRecipes = this.baseLayout.getObjectPropertyValue(recipeManager, 'mAvailableRecipes');
                         if(mAvailableRecipes !== null)
                         {
                             mAvailableRecipes.values  = [];
@@ -465,10 +521,10 @@ export default class Modal_Map_Options
                 let tutorialIntroManager = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.TutorialIntroManager");
                     if(tutorialIntroManager !== null)
                     {
-                        tutorialIntroManager.properties = [];
-                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroTutorial", type: "BoolProperty", value: 1});
-                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroSequence", type: "BoolProperty", value: 1});
-                        tutorialIntroManager.properties.push({name: "mTradingPostLevel", type: "IntProperty", value: 6});
+                        this.baseLayout.deleteAllObjectProperties(tutorialIntroManager);
+                        this.baseLayout.setObjectProperty(tutorialIntroManager, {name: "mHasCompletedIntroTutorial", type: "BoolProperty", value: 1});
+                        this.baseLayout.setObjectProperty(tutorialIntroManager, {name: "mHasCompletedIntroSequence", type: "BoolProperty", value: 1});
+                        this.baseLayout.setObjectProperty(tutorialIntroManager, {name: "mTradingPostLevel", type: "IntProperty", value: 6});
                     }
 
                 // Reset players tutorials

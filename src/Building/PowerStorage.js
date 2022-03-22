@@ -17,7 +17,7 @@ export default class Building_PowerStorage
 
     static storedCharge(baseLayout, currentObject)
     {
-        return baseLayout.getObjectProperty(currentObject, 'mPowerStore', 0);
+        return baseLayout.getObjectPropertyValue(currentObject, 'mPowerStore', 0);
     }
 
     static timeUntilCharged(baseLayout, currentObject)
@@ -93,7 +93,11 @@ export default class Building_PowerStorage
                 {
                     if(values !== null)
                     {
-                        baseLayout.setObjectProperty(currentObject, 'mPowerStore', parseFloat(values.mPowerStore), 'FloatProperty');
+                        baseLayout.setObjectProperty(currentObject, {
+                            name: 'mPowerStore',
+                            type: 'FloatProperty',
+                            value:  parseFloat(values.mPowerStore)
+                        });
                     }
                 }
             });

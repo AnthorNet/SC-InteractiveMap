@@ -13,7 +13,7 @@ export default class Building_Locomotive
         let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
-                let mTrainName      = baseLayout.getObjectProperty(trainIdentifier, 'mTrainName');
+                let mTrainName      = baseLayout.getObjectPropertyValue(trainIdentifier, 'mTrainName');
                     if(mTrainName !== null)
                     {
                         return mTrainName;
@@ -95,7 +95,7 @@ export default class Building_Locomotive
         let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
-                let mIsSelfDrivingEnabled   = baseLayout.getObjectProperty(trainIdentifier, 'mIsSelfDrivingEnabled');
+                let mIsSelfDrivingEnabled   = baseLayout.getObjectPropertyValue(trainIdentifier, 'mIsSelfDrivingEnabled');
                     if(mIsSelfDrivingEnabled !== null && mIsSelfDrivingEnabled === 1)
                     {
                         return true;
@@ -110,7 +110,7 @@ export default class Building_Locomotive
         let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
-                let mSimulationData = baseLayout.getObjectProperty(trainIdentifier, 'mSimulationData');
+                let mSimulationData = baseLayout.getObjectPropertyValue(trainIdentifier, 'mSimulationData');
                     if(mSimulationData !== null)
                     {
                         for(let i = 0; i < mSimulationData.values.length; i++)
@@ -131,7 +131,7 @@ export default class Building_Locomotive
         let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
-                let TimeTable       = baseLayout.getObjectProperty(trainIdentifier, 'TimeTable');
+                let TimeTable       = baseLayout.getObjectPropertyValue(trainIdentifier, 'TimeTable');
                     if(TimeTable !== null)
                     {
                         return baseLayout.saveGameParser.getTargetObject(TimeTable.pathName);
@@ -146,8 +146,8 @@ export default class Building_Locomotive
         let timeTable       = Building_Locomotive.getTimeTable(baseLayout, currentObject);
             if(timeTable !== null)
             {
-                let mStops          = baseLayout.getObjectProperty(timeTable, 'mStops');
-                let mCurrentStop    = baseLayout.getObjectProperty(timeTable, 'mCurrentStop', 0);
+                let mStops          = baseLayout.getObjectPropertyValue(timeTable, 'mStops');
+                let mCurrentStop    = baseLayout.getObjectPropertyValue(timeTable, 'mCurrentStop', 0);
                     if(specificStop !== null)
                     {
                         mCurrentStop = specificStop;
@@ -195,7 +195,7 @@ export default class Building_Locomotive
         let timeTable = Building_Locomotive.getTimeTable(baseLayout, currentObject);
             if(timeTable !== null)
             {
-                let mStops = baseLayout.getObjectProperty(timeTable, 'mStops');
+                let mStops = baseLayout.getObjectPropertyValue(timeTable, 'mStops');
                     if(mStops !== null)
                     {
                         contextMenu.push({
@@ -225,7 +225,7 @@ export default class Building_Locomotive
         let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainIdentifier !== null)
             {
-                let mTrainName      = baseLayout.getObjectProperty(trainIdentifier, 'mTrainName');
+                let mTrainName      = baseLayout.getObjectPropertyValue(trainIdentifier, 'mTrainName');
 
                     BaseLayout_Modal.form({
                         title       : 'Update "<strong>' + buildingData.name + '</strong>" sign',
@@ -243,11 +243,15 @@ export default class Building_Locomotive
                                 {
                                     if(mTrainName !== null)
                                     {
-                                        baseLayout.setObjectProperty(trainIdentifier, 'mTrainName', values.mTrainName);
+                                        baseLayout.setObjectProperty(trainIdentifier, {
+                                            name: 'mTrainName',
+                                            type: 'StrProperty',
+                                            value:  values.mTrainName
+                                        });
                                     }
                                     else
                                     {
-                                        trainIdentifier.properties.push({
+                                        baseLayout.setObjectProperty(trainIdentifier, {
                                             flags                       : 18,
                                             hasCultureInvariantString   : 1,
                                             historyType                 : 255,
@@ -281,7 +285,11 @@ export default class Building_Locomotive
                     }
                     else
                     {
-                        baseLayout.setObjectProperty(trainIdentifier, 'mIsSelfDrivingEnabled', 1, 'BoolProperty');
+                        baseLayout.setObjectProperty(trainIdentifier, {
+                            name: 'mIsSelfDrivingEnabled',
+                            type: 'BoolProperty',
+                            value:  1
+                        });
                     }
             }
     }
@@ -324,7 +332,7 @@ export default class Building_Locomotive
                         let nextStop = Building_Locomotive.getNextStop(baseLayout, currentObject);
                             if(nextStop !== null)
                             {
-                                let mStationName = baseLayout.getObjectProperty(nextStop, 'mStationName');
+                                let mStationName = baseLayout.getObjectPropertyValue(nextStop, 'mStationName');
                                     if(mStationName !== null)
                                     {
                                         content.push('<tr><td>Next stop:</td><td class="pl-3 text-right">' + mStationName + '</td></tr>');

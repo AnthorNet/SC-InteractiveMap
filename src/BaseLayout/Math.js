@@ -278,7 +278,7 @@ export default class BaseLayout_Math
         let pointsCoordinates   = [];
         let points              = [];
 
-        let mSplineData         = baseLayout.getObjectProperty(currentObject, 'mSplineData');
+        let mSplineData         = baseLayout.getObjectPropertyValue(currentObject, 'mSplineData');
             if(mSplineData !== null)
             {
                 if(currentObject.className.includes('Train/Track/Build_RailroadTrack'))

@@ -4,7 +4,7 @@ export default class Building_PowerSwitch
 {
     static isOn(baseLayout, currentObject)
     {
-        let mIsSwitchOn = baseLayout.getObjectProperty(currentObject, 'mIsSwitchOn');
+        let mIsSwitchOn = baseLayout.getObjectPropertyValue(currentObject, 'mIsSwitchOn');
             if(mIsSwitchOn !== null && mIsSwitchOn === 1)
             {
                 return true;
@@ -15,7 +15,7 @@ export default class Building_PowerSwitch
 
     static getSign(baseLayout, currentObject)
     {
-        let mBuildingTag = baseLayout.getObjectProperty(currentObject, 'mBuildingTag');
+        let mBuildingTag = baseLayout.getObjectPropertyValue(currentObject, 'mBuildingTag');
             if(mBuildingTag !== null && mBuildingTag !== '')
             {
                 return mBuildingTag;
@@ -69,8 +69,16 @@ export default class Building_PowerSwitch
                     {
                         if(values.mBuildingTag !== '')
                         {
-                            baseLayout.setObjectProperty(currentObject, 'mHasBuildingTag', 1, 'BoolProperty');
-                            baseLayout.setObjectProperty(currentObject, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
+                            baseLayout.setObjectProperty(currentObject, {
+                                name: 'mHasBuildingTag',
+                                type: 'BoolProperty',
+                                value:  1
+                            });
+                            baseLayout.setObjectProperty(currentObject, {
+                                name: 'mBuildingTag',
+                                type: 'StrProperty',
+                                value:  values.mBuildingTag
+                            });
                         }
                         else
                         {
@@ -94,7 +102,11 @@ export default class Building_PowerSwitch
             }
             else
             {
-                baseLayout.setObjectProperty(currentObject, 'mIsSwitchOn', 1, 'BoolProperty');
+                baseLayout.setObjectProperty(currentObject, {
+                    name: 'mIsSwitchOn',
+                    type: 'BoolProperty',
+                    value:  1
+                });
             }
     }
 }

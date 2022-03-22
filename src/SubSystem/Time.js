@@ -8,12 +8,12 @@ export default class SubSystem_Time
 
     getDaySeconds()
     {
-        return this.baseLayout.getObjectProperty(this.timeSubSystem, 'mDaySeconds', 43200);
+        return this.baseLayout.getObjectPropertyValue(this.timeSubSystem, 'mDaySeconds', 43200);
     }
 
     getNumberOfPassedDays()
     {
-        return this.baseLayout.getObjectProperty(this.timeSubSystem, 'mNumberOfPassedDays', 0);
+        return this.baseLayout.getObjectPropertyValue(this.timeSubSystem, 'mNumberOfPassedDays', 0);
     }
 
     isNight()

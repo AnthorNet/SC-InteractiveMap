@@ -20,7 +20,7 @@ export default class SubSystem_GameState
     getPlayerColorPresets()
     {
         let presets                     = [];
-        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectPropertyValue(this.gameState, 'mPlayerGlobalColorPresets');
             if(mPlayerGlobalColorPresets !== null)
             {
                 for(let i = 0; i < mPlayerGlobalColorPresets.values.length; i++)
@@ -59,7 +59,7 @@ export default class SubSystem_GameState
     }
     setPlayerColorPreset(presetIndex, name, primaryColor)
     {
-        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectPropertyValue(this.gameState, 'mPlayerGlobalColorPresets');
             if(mPlayerGlobalColorPresets !== null)
             {
                 if(mPlayerGlobalColorPresets.values[presetIndex] !== undefined)
@@ -83,10 +83,10 @@ export default class SubSystem_GameState
     }
     addPlayerColorPreset(name, primaryColor)
     {
-        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectPropertyValue(this.gameState, 'mPlayerGlobalColorPresets');
             if(mPlayerGlobalColorPresets === null)
             {
-                this.gameState.properties.push({
+                this.baseLayout.setObjectProperty(this.gameState, {
                     name                : "mPlayerGlobalColorPresets",
                     structureName       : "mPlayerGlobalColorPresets",
                     structureSubType    : "GlobalColorPreset",
@@ -119,7 +119,7 @@ export default class SubSystem_GameState
     }
     deletePlayerColorPreset(presetIndex)
     {
-        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectPropertyValue(this.gameState, 'mPlayerGlobalColorPresets');
             if(mPlayerGlobalColorPresets !== null)
             {
                 if(mPlayerGlobalColorPresets.values[presetIndex] !== undefined)
@@ -170,10 +170,10 @@ export default class SubSystem_GameState
                     };
                     for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
                     {
-                        mBuildableLightColorSlots.value.values[slotIndex]     = cloneDeep(this.getDefaultLightColorSlot(slotIndex, true));
+                        mBuildableLightColorSlots.values[slotIndex]     = cloneDeep(this.getDefaultLightColorSlot(slotIndex, true));
                     }
 
-                    this.gameState.properties.push(mBuildableLightColorSlots);
+                    this.baseLayout.setObjectProperty(this.gameState, mBuildableLightColorSlots);
                     return this.getPlayerLightColorSlots();
                 }
 
@@ -215,7 +215,7 @@ export default class SubSystem_GameState
 
     getLightColorSlots()
     {
-        return this.baseLayout.getObjectProperty(this.gameState, 'mBuildableLightColorSlots');
+        return this.baseLayout.getObjectPropertyValue(this.gameState, 'mBuildableLightColorSlots');
     }
 
     getDefaultLightColorSlot(index, raw = false)

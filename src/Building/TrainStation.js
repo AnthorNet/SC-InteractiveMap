@@ -39,7 +39,7 @@ export default class Building_TrainStation
                     let currentChildren = baseLayout.saveGameParser.getTargetObject(child.pathName);
                         if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGTrainPlatformConnection')
                         {
-                            let mConnectedTo = baseLayout.getObjectProperty(currentChildren, 'mConnectedTo');
+                            let mConnectedTo = baseLayout.getObjectPropertyValue(currentChildren, 'mConnectedTo');
                                 if(mConnectedTo !== null)
                                 {
                                     let mConnectedToObject = baseLayout.saveGameParser.getTargetObject(mConnectedTo.pathName);
@@ -82,7 +82,7 @@ export default class Building_TrainStation
         let trainStationIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
             if(trainStationIdentifier !== null)
             {
-                let mStationName    = baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
+                let mStationName    = baseLayout.getObjectPropertyValue(trainStationIdentifier, 'mStationName');
 
                     BaseLayout_Modal.form({
                         title       : 'Update "<strong>' + buildingData.name + '</strong>" sign',
@@ -100,11 +100,15 @@ export default class Building_TrainStation
                                 {
                                     if(mStationName !== null)
                                     {
-                                        baseLayout.setObjectProperty(trainStationIdentifier, 'mStationName', values.mStationName);
+                                        baseLayout.setObjectProperty(trainStationIdentifier, {
+                                            name: 'mStationName',
+                                            type: 'StrProperty',
+                                            value: values.mStationName
+                                        });
                                     }
                                     else
                                     {
-                                        trainStationIdentifier.properties.push({
+                                        baseLayout.setObjectProperty(trainStationIdentifier, {
                                             flags                       : 18,
                                             hasCultureInvariantString   : 1,
                                             historyType                 : 255,

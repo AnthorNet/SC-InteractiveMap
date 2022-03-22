@@ -147,7 +147,7 @@ export default class Building_Conveyor
                     // Merge next belt
                     if(middleConveyorAny1 !== null)
                     {
-                        let mConnectedComponentAny1 = baseLayout.getObjectProperty(middleConveyorAny1, 'mConnectedComponent');
+                        let mConnectedComponentAny1 = baseLayout.getObjectPropertyValue(middleConveyorAny1, 'mConnectedComponent');
                             if(mConnectedComponentAny1 !== null)
                             {
                                 let nextConveyorAny0 = baseLayout.saveGameParser.getTargetObject(mConnectedComponentAny1.pathName);
@@ -157,8 +157,8 @@ export default class Building_Conveyor
                                             if(nextConveyor !== null && nextConveyor.className === currentObject.className)
                                             {
                                                 // Append spline data to middle
-                                                let middleSplineData    = baseLayout.getObjectProperty(currentObject, 'mSplineData');
-                                                let nextSplineData      = baseLayout.getObjectProperty(nextConveyor, 'mSplineData');
+                                                let middleSplineData    = baseLayout.getObjectPropertyValue(currentObject, 'mSplineData');
+                                                let nextSplineData      = baseLayout.getObjectPropertyValue(nextConveyor, 'mSplineData');
                                                     for(let i = 0; i < nextSplineData.values.length; i++)
                                                     {
                                                         let newSplineData = nextSplineData.values[i];
@@ -191,16 +191,24 @@ export default class Building_Conveyor
                                                 let nextConveyorAny1 = baseLayout.saveGameParser.getTargetObject(nextConveyor.pathName + '.ConveyorAny1');
                                                     if(nextConveyorAny1 !== null)
                                                     {
-                                                        let mNextConnectedComponentAny1     = baseLayout.getObjectProperty(nextConveyorAny1, 'mConnectedComponent');
+                                                        let mNextConnectedComponentAny1     = baseLayout.getObjectPropertyValue(nextConveyorAny1, 'mConnectedComponent');
                                                             if(mNextConnectedComponentAny1 !== null)
                                                             {
-                                                                baseLayout.setObjectProperty(middleConveyorAny1, 'mConnectedComponent', mNextConnectedComponentAny1);
+                                                                baseLayout.setObjectProperty(middleConveyorAny1, {
+                                                                    name: 'mConnectedComponent',
+                                                                    type: 'ObjectProperty',
+                                                                    value:  mNextConnectedComponentAny1
+                                                                });
 
                                                                 let inputConnectedComponent = baseLayout.saveGameParser.getTargetObject(mNextConnectedComponentAny1.pathName);
                                                                     if(inputConnectedComponent !== null)
                                                                     {
-                                                                        baseLayout.setObjectProperty(inputConnectedComponent, 'mConnectedComponent', {
-                                                                            pathName    : middleConveyorAny1.pathName
+                                                                        baseLayout.setObjectProperty(inputConnectedComponent, {
+                                                                            name: 'mConnectedComponent',
+                                                                            type: 'ObjectProperty',
+                                                                            value:  {
+                                                                                pathName    : middleConveyorAny1.pathName
+                                                                            }
                                                                         });
                                                                     }
 
@@ -244,7 +252,7 @@ export default class Building_Conveyor
                         // Merge previous belt?
                         if(middleConveyorAny0 !== null)
                         {
-                            let mConnectedComponent = baseLayout.getObjectProperty(middleConveyorAny0, 'mConnectedComponent');
+                            let mConnectedComponent = baseLayout.getObjectPropertyValue(middleConveyorAny0, 'mConnectedComponent');
                                 if(mConnectedComponent !== null)
                                 {
                                     let previousConveyorAny1 = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName);

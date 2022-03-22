@@ -90,7 +90,7 @@ export default class BaseLayout_Tooltip
                             break;
                         }
                         case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
-                            let mDecorationDescriptor = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
+                            let mDecorationDescriptor = this.baseLayout.getObjectPropertyValue(currentObject, 'mDecorationDescriptor');
                                 if(mDecorationDescriptor !== null)
                                 {
                                     let currentItemData = this.baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
@@ -201,7 +201,7 @@ export default class BaseLayout_Tooltip
     setBeaconTooltipContent(currentObject)
     {
         let content         = [];
-        let mCompassText    = this.baseLayout.getObjectProperty(currentObject, 'mCompassText');
+        let mCompassText    = this.baseLayout.getObjectPropertyValue(currentObject, 'mCompassText');
             if(mCompassText !== null)
             {
                 content.push('Beacon: <strong>' + mCompassText + '</strong>');
@@ -244,7 +244,7 @@ export default class BaseLayout_Tooltip
             let maxFluid        = 3.1415926535897932 * Math.pow((1.3 / 2), 2) * splineData.distanceStraight * 1000; // Use straigth calculation
             let itemType        = null;
 
-            let fluidBox        = this.baseLayout.getObjectProperty(currentObject, 'mFluidBox');
+            let fluidBox        = this.baseLayout.getObjectPropertyValue(currentObject, 'mFluidBox');
                 if(fluidBox === null)
                 {
                     fluidBox = {value: 0};
@@ -261,7 +261,7 @@ export default class BaseLayout_Tooltip
                         let currentChildren = this.baseLayout.saveGameParser.getTargetObject(child.pathName);
                             if(currentChildren !== null)
                             {
-                                let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
+                                let mPipeNetworkID = this.baseLayout.getObjectPropertyValue(currentChildren, 'mPipeNetworkID');
                                     if(mPipeNetworkID !== null)
                                     {
                                         pipeNetworkId = mPipeNetworkID;
@@ -278,12 +278,10 @@ export default class BaseLayout_Tooltip
                         let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(pipeNetwork);
                         if(currentPipeNetwork !== null)
                         {
-                            for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
+                            const mFluidDescriptor = this.baseLayout.getObjectPropertyValue(currentPipeNetwork, 'mFluidDescriptor');
+                            if(mFluidDescriptor !== null)
                             {
-                                if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
-                                {
-                                    itemType = currentPipeNetwork.properties[n].value.pathName;
-                                }
+                                itemType = mFluidDescriptor.pathName;
                             }
                         }
                     }
@@ -370,7 +368,7 @@ export default class BaseLayout_Tooltip
             }
 
         // Conveyor lift
-        let mTopTransform = this.baseLayout.getObjectProperty(currentObject, 'mTopTransform');
+        let mTopTransform = this.baseLayout.getObjectPropertyValue(currentObject, 'mTopTransform');
             if(mTopTransform !== null)
             {
                 for(let i = 0; i < mTopTransform.values.length; i++)
@@ -417,11 +415,11 @@ export default class BaseLayout_Tooltip
         let itemType                = null;
         let purity                  = 'normal';
         let extractionRate          = 60;
-        let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
+        let extractResourceNode     = this.baseLayout.getObjectPropertyValue(currentObject, 'mExtractableResource');
 
             if(currentObject.className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
             {
-                extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractResourceNode');
+                extractResourceNode     = this.baseLayout.getObjectPropertyValue(currentObject, 'mExtractResourceNode');
             }
 
             if(extractResourceNode !== null && this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
@@ -466,7 +464,7 @@ export default class BaseLayout_Tooltip
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
                 content.push('<strong>' + buildingData.name + '</strong>');
 
-                let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
+                let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectPropertyValue(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
                     content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
                     content.push('<span style="font-size: 10px;" class="d-block mb-3">Mining - <span class="text-warning">' + currentProgress + '%</span></span>');
 
@@ -593,7 +591,7 @@ export default class BaseLayout_Tooltip
 
     setBuildingFrackerExtractorTooltipContent(currentObject, buildingData)
     {
-        let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
+        let extractResourceNode     = this.baseLayout.getObjectPropertyValue(currentObject, 'mExtractableResource');
         let itemType                = null;
         let purity                  = 'normal';
 
@@ -644,7 +642,7 @@ export default class BaseLayout_Tooltip
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
                 content.push('<strong class="small">' + buildingData.name + '</strong>');
 
-                let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
+                let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectPropertyValue(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
                     content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
                     content.push('<span style="font-size: 10px;" class="d-block mb-2">Extracting - <span class="text-warning">' + currentProgress + '%</span></span>');
 
@@ -707,7 +705,7 @@ export default class BaseLayout_Tooltip
 
     setBuildingPumpTooltipContent(currentObject, buildingData)
     {
-        let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
+        let extractResourceNode     = this.baseLayout.getObjectPropertyValue(currentObject, 'mExtractableResource');
         let itemType                = null;
         let purity                  = 'normal';
 
@@ -760,7 +758,7 @@ export default class BaseLayout_Tooltip
             content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
                 content.push('<strong>' + buildingData.name + '</strong>');
 
-                let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
+                let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectPropertyValue(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
                     content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
                     content.push('<span style="font-size: 10px;" class="d-block mb-3">Extracting - <span class="text-warning">' + currentProgress + '%</span></span>');
 
@@ -844,13 +842,13 @@ export default class BaseLayout_Tooltip
         }
         if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
         {
-            let storage           = this.baseLayout.getObjectProperty(currentObject, inventoryKey);
+            let storage           = this.baseLayout.getObjectPropertyValue(currentObject, inventoryKey);
                 if(storage !== null)
                 {
                     let storageObject = this.baseLayout.saveGameParser.getTargetObject(storage.pathName);
                         if(storageObject !== null)
                         {
-                            let mAdjustedSizeDiff = this.baseLayout.getObjectProperty(storageObject, 'mAdjustedSizeDiff');
+                            let mAdjustedSizeDiff = this.baseLayout.getObjectPropertyValue(storageObject, 'mAdjustedSizeDiff');
                                 if(mAdjustedSizeDiff !== null && mAdjustedSizeDiff === -31)
                                 {
                                     inventoryType = 'liquid';
@@ -964,7 +962,7 @@ export default class BaseLayout_Tooltip
         let currentFluid    = maxFluid; //TODO: Until we get fluidBox method working!
         let itemType        = null;
 
-        let fluidBox        = this.baseLayout.getObjectProperty(currentObject, 'mFluidBox');
+        let fluidBox        = this.baseLayout.getObjectPropertyValue(currentObject, 'mFluidBox');
             if(fluidBox === null)
             {
                 fluidBox = {value: 0};
@@ -981,7 +979,7 @@ export default class BaseLayout_Tooltip
                     let currentChildren = this.baseLayout.saveGameParser.getTargetObject(child.pathName);
                         if(currentChildren !== null)
                         {
-                            let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
+                            let mPipeNetworkID = this.baseLayout.getObjectPropertyValue(currentChildren, 'mPipeNetworkID');
                                 if(mPipeNetworkID !== null)
                                 {
                                     pipeNetworkId = mPipeNetworkID;
@@ -998,12 +996,10 @@ export default class BaseLayout_Tooltip
                     let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(pipeNetwork);
                     if(currentPipeNetwork !== null)
                     {
-                        for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
+                        const mFluidDescriptor = this.baseLayout.getObjectPropertyValue(currentPipeNetwork, 'mFluidDescriptor')
+                        if(mFluidDescriptor !== null)
                         {
-                            if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
-                            {
-                                itemType = currentPipeNetwork.properties[n].value.pathName;
-                            }
+                            itemType = mFluidDescriptor.pathName;
                         }
                     }
                 }
@@ -1361,7 +1357,7 @@ export default class BaseLayout_Tooltip
                 let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.powerInfo');
                     if(buildingPowerInfo !== null)
                     {
-                        let mTargetConsumption  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mTargetConsumption');
+                        let mTargetConsumption  = this.baseLayout.getObjectPropertyValue(buildingPowerInfo, 'mTargetConsumption');
                             if(mTargetConsumption !== null)
                             {
                                 powerUsed = Math.round(mTargetConsumption);
@@ -1458,7 +1454,7 @@ export default class BaseLayout_Tooltip
                     content.push('</div>');
                 }
 
-                let currentProgress = Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentManufacturingProgress', 0) * 100);
+                let currentProgress = Math.round(this.baseLayout.getObjectPropertyValue(currentObject, 'mCurrentManufacturingProgress', 0) * 100);
                     content.push('<div class="progress rounded-sm mx-2 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
 
                     if(currentProgress === 0)
@@ -1552,7 +1548,7 @@ export default class BaseLayout_Tooltip
 
         let clockSpeed                  = this.baseLayout.getClockSpeed(currentObject);
         let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
-        let fuelClass                   = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
+        let fuelClass                   = this.baseLayout.getObjectPropertyValue(currentObject, 'mCurrentFuelClass');
 
             craftingTime               /= clockSpeed; // Overclocking...
 
@@ -1647,7 +1643,7 @@ export default class BaseLayout_Tooltip
                         {
                             tooltipFooterOptions.fuelEnergyValue = fuelItem.energy;
 
-                            let currentProgress = Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelAmount', 0) / fuelItem.energy * 100);
+                            let currentProgress = Math.round(this.baseLayout.getObjectPropertyValue(currentObject, 'mCurrentFuelAmount', 0) / fuelItem.energy * 100);
                                 if(fuelItem.category === 'liquid' || fuelItem.category === 'gas')
                                 {
                                     currentProgress = Math.round(currentProgress / 100) / 10;
@@ -1745,7 +1741,7 @@ export default class BaseLayout_Tooltip
                 let trainStationIdentifier  = this.baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
                     if(trainStationIdentifier !== null)
                     {
-                        let mStationName    = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
+                        let mStationName    = this.baseLayout.getObjectPropertyValue(trainStationIdentifier, 'mStationName');
                             if(mStationName !== null)
                             {
                                 content.push('<div><strong>' + direction + inverted + mStationName + ' <em class="small">(' + buildingData.name + ')</em></strong></div>');
@@ -1758,7 +1754,7 @@ export default class BaseLayout_Tooltip
 
         if(buildingData.category === 'wall' && (currentObject.className.includes('_Door_') || currentObject.className.includes('_CDoor_') || currentObject.className.includes('_SDoor_') || currentObject.className.includes('_Gate_Automated_')))
         {
-            let mDoorConfiguration = this.baseLayout.getObjectProperty(currentObject, 'mDoorConfiguration');
+            let mDoorConfiguration = this.baseLayout.getObjectPropertyValue(currentObject, 'mDoorConfiguration');
                 if(mDoorConfiguration !== null)
                 {
                     switch(mDoorConfiguration.value)
@@ -1779,15 +1775,13 @@ export default class BaseLayout_Tooltip
 
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
         {
-            for(let j = 0; j < currentObject.properties.length; j++)
+            const mMapText = this.baseLayout.getObjectPropertyValue(currentObject, 'mMapText');
+            if(mMapText !== null)
             {
-                if(currentObject.properties[j].name === 'mMapText')
+                if(mMapText.historyType === 3)
                 {
-                    if(currentObject.properties[j].historyType === 3)
-                    {
-                        let mapText     = currentObject.properties[j].sourceFmt.value;
-                            content.push(mapText.replace('{Name}', currentObject.properties[j].arguments[0].argumentValue.value));
-                    }
+                    let mapText     = mMapText.sourceFmt.value;
+                        content.push(mapText.replace('{Name}', mMapText.arguments[0].argumentValue.value));
                 }
             }
         }
@@ -1927,7 +1921,7 @@ export default class BaseLayout_Tooltip
 
     setStationLoadMode(currentObject)
     {
-        let mIsInLoadMode   = this.baseLayout.getObjectProperty(currentObject, 'mIsInLoadMode');
+        let mIsInLoadMode   = this.baseLayout.getObjectPropertyValue(currentObject, 'mIsInLoadMode');
         let imageFile       = 'stationLoadMode.png';
             if(mIsInLoadMode !== null && mIsInLoadMode === 0)
             {

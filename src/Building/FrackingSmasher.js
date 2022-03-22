@@ -3,7 +3,7 @@ export default class Building_FrackingSmasher
     static getSatellites(baseLayout, currentObject)
     {
         let currentObjectSatellites = [];
-        let extractedCore           = baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
+        let extractedCore           = baseLayout.getObjectPropertyValue(currentObject, 'mExtractableResource');
             if(extractedCore !== null)
             {
                 for(let pathName in baseLayout.satisfactoryMap.collectableMarkers)

@@ -8,14 +8,14 @@ export default class SubSystem_Event
 
     resetAllEvents()
     {
-        this.eventSubSystem.properties = [];
+        this.baseLayout.deleteAllObjectProperties(this.eventSubSystem);
     }
 
     resetFicsmas()
     {
         this.baseLayout.deleteObjectProperty(this.eventSubSystem, 'mCalendarData'); // OLD
 
-        let mStoredCalendarData = this.baseLayout.getObjectProperty(this.eventSubSystem, 'mStoredCalendarData');
+        let mStoredCalendarData = this.baseLayout.getObjectPropertyValue(this.eventSubSystem, 'mStoredCalendarData');
             if(mStoredCalendarData !== null)
             {
                 for(let i = (mStoredCalendarData.values.length - 1); i >= 0; i--)

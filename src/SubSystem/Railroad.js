@@ -14,7 +14,7 @@ export default class SubSystem_Railroad
         let trainStations = [];
             if(this.railroadSubSystem !== null)
             {
-                let mTrainStationIdentifiers = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrainStationIdentifiers');
+                let mTrainStationIdentifiers = this.baseLayout.getObjectPropertyValue(this.railroadSubSystem, 'mTrainStationIdentifiers');
                     if(mTrainStationIdentifiers !== null)
                     {
                         for(let i = 0; i < mTrainStationIdentifiers.values.length; i++)
@@ -32,7 +32,7 @@ export default class SubSystem_Railroad
         let trains = [];
             if(this.railroadSubSystem !== null)
             {
-                let mTrains = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrains');
+                let mTrains = this.baseLayout.getObjectPropertyValue(this.railroadSubSystem, 'mTrains');
                     if(mTrains !== null)
                     {
                         for(let i = 0; i < mTrains.values.length; i++)
@@ -53,7 +53,7 @@ export default class SubSystem_Railroad
                 let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(trainStations[i]);
                     if(currentIdentifier !== null)
                     {
-                        let mStation = this.baseLayout.getObjectProperty(currentIdentifier, 'mStation')
+                        let mStation = this.baseLayout.getObjectPropertyValue(currentIdentifier, 'mStation')
                             if(mStation !== null)
                             {
                                 if(mStation.pathName === currentObject.pathName)
@@ -71,7 +71,7 @@ export default class SubSystem_Railroad
                 let currentIdentifier = this.baseLayout.saveGameParser.getTargetObject(trains[i])
                     if(currentIdentifier !== null)
                     {
-                        let FirstVehicle    = this.baseLayout.getObjectProperty(currentIdentifier, 'FirstVehicle');
+                        let FirstVehicle    = this.baseLayout.getObjectPropertyValue(currentIdentifier, 'FirstVehicle');
                             if(FirstVehicle !== null)
                             {
                                 if(FirstVehicle.pathName === currentObject.pathName)
@@ -79,7 +79,7 @@ export default class SubSystem_Railroad
                                     return currentIdentifier;
                                 }
                             }
-                        let LastVehicle     = this.baseLayout.getObjectProperty(currentIdentifier, 'LastVehicle');
+                        let LastVehicle     = this.baseLayout.getObjectPropertyValue(currentIdentifier, 'LastVehicle');
                             if(LastVehicle !== null)
                             {
                                 if(LastVehicle.pathName === currentObject.pathName)
@@ -99,7 +99,7 @@ export default class SubSystem_Railroad
         let currentIdentifier = this.getObjectIdentifier(currentObject);
             if(currentIdentifier !== null)
             {
-                let timeTable = this.baseLayout.getObjectProperty(currentObject, 'TimeTable');
+                let timeTable = this.baseLayout.getObjectPropertyValue(currentObject, 'TimeTable');
                     if(timeTable !== null)
                     {
                         this.baseLayout.saveGameParser.deleteObject(timeTable.pathName);
@@ -109,7 +109,7 @@ export default class SubSystem_Railroad
 
                 if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrain'].includes(currentIdentifier.className))
                 {
-                    let mTrains = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrains');
+                    let mTrains = this.baseLayout.getObjectPropertyValue(this.railroadSubSystem, 'mTrains');
                         if(mTrains !== null)
                         {
                             for(let i = 0; i < mTrains.values.length; i ++)
@@ -124,7 +124,7 @@ export default class SubSystem_Railroad
                 }
                 if(currentIdentifier.className === '/Script/FactoryGame.FGTrainStationIdentifier')
                 {
-                    let mTrainStationIdentifiers = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrainStationIdentifiers');
+                    let mTrainStationIdentifiers = this.baseLayout.getObjectPropertyValue(this.railroadSubSystem, 'mTrainStationIdentifiers');
                         if(mTrainStationIdentifiers !== null)
                         {
                             for(let i = 0; i < mTrainStationIdentifiers.values.length; i ++)
@@ -144,7 +144,7 @@ export default class SubSystem_Railroad
     {
         if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrain'].includes(currentIdentifier.className))
         {
-            let mTrains = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrains');
+            let mTrains = this.baseLayout.getObjectPropertyValue(this.railroadSubSystem, 'mTrains');
                 if(mTrains !== null)
                 {
                     for(let i = 0; i < mTrains.values.length; i ++) // Avoid duplicate!
@@ -160,18 +160,20 @@ export default class SubSystem_Railroad
                 {
                     this.baseLayout.setObjectProperty(
                         this.railroadSubSystem,
-                        'mTrains',
                         {
-                            type    : 'ObjectProperty',
-                            values  : [{pathName: currentIdentifier.pathName}]
-                        },
-                        'ArrayProperty'
+                            name: 'mTrains',
+                            type: 'ArrayProperty',
+                            value: {
+                                type    : 'ObjectProperty',
+                                values  : [{pathName: currentIdentifier.pathName}]
+                            }
+                        }
                     );
                 }
         }
         if(currentIdentifier.className === '/Script/FactoryGame.FGTrainStationIdentifier')
         {
-            let mTrainStationIdentifiers = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrainStationIdentifiers');
+            let mTrainStationIdentifiers = this.baseLayout.getObjectPropertyValue(this.railroadSubSystem, 'mTrainStationIdentifiers');
                 if(mTrainStationIdentifiers !== null)
                 {
                     for(let i = 0; i < mTrainStationIdentifiers.values.length; i ++)
@@ -187,12 +189,14 @@ export default class SubSystem_Railroad
                 {
                     this.baseLayout.setObjectProperty(
                         this.railroadSubSystem,
-                        'mTrainStationIdentifiers',
                         {
-                            type    : 'ObjectProperty',
-                            values  : [{pathName: currentIdentifier.pathName}]
-                        },
-                        'ArrayProperty'
+                            name: 'mTrainStationIdentifiers',
+                            type: 'ArrayProperty',
+                            value: {
+                                type    : 'ObjectProperty',
+                                values  : [{pathName: currentIdentifier.pathName}]
+                            }
+                        }
                     );
                 }
         }
@@ -203,7 +207,7 @@ export default class SubSystem_Railroad
 
     unlinkRailroadTrackConnections(currentObject)
     {
-        let mConnectedComponents    = this.baseLayout.getObjectProperty(currentObject, 'mConnectedComponents');
+        let mConnectedComponents    = this.baseLayout.getObjectPropertyValue(currentObject, 'mConnectedComponents');
         let connectedSwitchPool     = [currentObject.pathName];
             if(mConnectedComponents !== null)
             {
@@ -213,7 +217,7 @@ export default class SubSystem_Railroad
                         if(currentConnectedComponent !== null)
                         {
                                 connectedSwitchPool.push(currentConnectedComponent.pathName);
-                            let mConnectedComponents = this.baseLayout.getObjectProperty(currentConnectedComponent, 'mConnectedComponents');
+                            let mConnectedComponents = this.baseLayout.getObjectPropertyValue(currentConnectedComponent, 'mConnectedComponents');
                                 if(mConnectedComponents !== null)
                                 {
                                     for(let m = (mConnectedComponents.values.length - 1); m >= 0; m--)
@@ -239,7 +243,7 @@ export default class SubSystem_Railroad
             let currentSwitch = this.baseLayout.saveGameParser.getTargetObject(this.railroadSwitchControls[i]);
                 if(currentSwitch !== null)
                 {
-                    let mControlledConnection = this.baseLayout.getObjectProperty(currentSwitch, 'mControlledConnection');
+                    let mControlledConnection = this.baseLayout.getObjectPropertyValue(currentSwitch, 'mControlledConnection');
                         if(mControlledConnection !== null)
                         {
                             if(connectedSwitchPool.includes(mControlledConnection.pathName))
@@ -255,13 +259,13 @@ export default class SubSystem_Railroad
 
     unlinkTrainPlatformConnections(currentObject)
     {
-        let mConnectedTo = this.baseLayout.getObjectProperty(currentObject, 'mConnectedTo');
+        let mConnectedTo = this.baseLayout.getObjectPropertyValue(currentObject, 'mConnectedTo');
             if(mConnectedTo !== null)
             {
                 let currentConnectedComponent = this.baseLayout.saveGameParser.getTargetObject(mConnectedTo.pathName);
                     if(currentConnectedComponent !== null)
                     {
-                        let mConnectedTo = this.baseLayout.getObjectProperty(currentConnectedComponent, 'mConnectedTo');
+                        let mConnectedTo = this.baseLayout.getObjectPropertyValue(currentConnectedComponent, 'mConnectedTo');
                             if(mConnectedTo !== null)
                             {
                                 if(mConnectedTo.pathName === currentObject.pathName)

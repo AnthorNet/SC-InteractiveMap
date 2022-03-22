@@ -160,7 +160,7 @@ export default class Modal_Buildings
                             switch(currentCategory)
                             {
                                 case 'extraction':
-                                    let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
+                                    let extractResourceNode     = this.baseLayout.getObjectPropertyValue(currentObject, 'mExtractableResource');
                                     let itemType                = null;
                                     let purity                  = 'normal';
 
@@ -192,7 +192,7 @@ export default class Modal_Buildings
                                         }
                                     break;
                                 default:
-                                    let recipe              = this.baseLayout.getObjectProperty(currentObject, 'mCurrentRecipe');
+                                    let recipe              = this.baseLayout.getObjectPropertyValue(currentObject, 'mCurrentRecipe');
                                         if(recipe !== null)
                                         {
                                             // Extract recipe name
@@ -217,7 +217,7 @@ export default class Modal_Buildings
                                     break;
                             }
 
-                                let mBuildTimeStamp = this.baseLayout.getObjectProperty(currentObject, 'mBuildTimeStamp');
+                                let mBuildTimeStamp = this.baseLayout.getObjectPropertyValue(currentObject, 'mBuildTimeStamp');
                                     if(mBuildTimeStamp !== null)
                                     {
                                         htmlRow.push('<small><em>Built ' + new Date(1000 * -mBuildTimeStamp).toISOString().substr(11, 8) + ' ago</em></small>');

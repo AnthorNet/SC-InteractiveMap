@@ -44,7 +44,7 @@ export default class Selection_Delete
                             if(this.keepDeleted === true)
                             {
                                 let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
-                                let mBuiltWithRecipe    = this.baseLayout.getObjectProperty(currentObject, 'mBuiltWithRecipe');
+                                let mBuiltWithRecipe    = this.baseLayout.getObjectPropertyValue(currentObject, 'mBuiltWithRecipe');
                                     if(mBuiltWithRecipe !== null)
                                     {
                                         let recipeName = mBuiltWithRecipe.pathName.split('.')[1];
@@ -160,12 +160,12 @@ export default class Selection_Delete
                             itemName: tempCrate[i].className,
                             levelName: "",
                             pathName: "",
-                            properties: [{name: "NumItems", type: "IntProperty", value: tempCrate[i].amount}]
+                            properties: new Map([["NumItems", {name: "NumItems", type: "IntProperty", value: tempCrate[i].amount}]])
                         }
                     }];
 
-                    currentLootCrateInventory.properties[0].value.values.push(newItem);
-                    currentLootCrateInventory.properties[1].value.values.push(0);
+                    this.baseLayout.getObjectPropertyValue(currentLootCrateInventory, 'mInventoryStacks').values.push(newItem);
+                    this.baseLayout.getObjectPropertyValue(currentLootCrateInventory, 'mArbitrarySlotSizes').values.push(0);
                 }
 
                 this.baseLayout.setBadgeLayerCount('playerCratesLayer');

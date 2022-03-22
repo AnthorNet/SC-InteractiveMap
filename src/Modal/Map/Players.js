@@ -16,8 +16,8 @@ export default class Modal_Map_Players
 
             if(this.unlockSubSystem !== null)
             {
-                let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
-                let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
+                let mNumTotalInventorySlots     = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalInventorySlots');
+                let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
 
                 updateSizeHtml.push('<div class="row">');
                 updateSizeHtml.push('<div class="col-6">');
@@ -108,9 +108,13 @@ export default class Modal_Map_Players
     {
         if(this.unlockSubSystem !== null)
         {
-            let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
+            let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
             let newCount                    = Math.max(1, Math.min(9, ((mNumTotalArmEquipmentSlots !== null) ? mNumTotalArmEquipmentSlots : 1) + parseInt(count)));
-                this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots', newCount, 'IntProperty');
+                this.baseLayout.setObjectProperty(this.unlockSubSystem, {
+                    name: 'mNumTotalArmEquipmentSlots',
+                    type: 'IntProperty',
+                    value: newCount
+                });
                 count                        = newCount - mNumTotalArmEquipmentSlots;
 
             for(const player of this.baseLayout.players.values())
@@ -119,41 +123,41 @@ export default class Modal_Map_Players
                     if(mOwnedPawn !== null)
                     {
                         let armSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.ArmSlot');
-                            for(let j = 0; j < armSlot.properties.length; j++)
+                        const mInventoryStacks = this.baseLayout.getObjectPropertyValue(armSlot, 'mInventoryStacks');
+                        if(mInventoryStacks !== null)
+                        {
+                            for(let k = 0; k < count; k++)
                             {
-                                if(armSlot.properties[j].name === 'mInventoryStacks')
-                                {
-                                    for(let k = 0; k < count; k++)
-                                    {
-                                        armSlot.properties[j].value.values.push([{
-                                            name: "Item",
-                                            type: "StructProperty",
-                                            value: {
-                                                itemName: "",
-                                                levelName: "",
-                                                pathName: "",
-                                                type: "InventoryItem",
-                                                unk1: 0,
-                                                properties: [{name: "NumItems", type: "IntProperty", value: 0}]
-                                            }
-                                        }]);
+                                mInventoryStacks.values.push([{
+                                    name: "Item",
+                                    type: "StructProperty",
+                                    value: {
+                                        itemName: "",
+                                        levelName: "",
+                                        pathName: "",
+                                        type: "InventoryItem",
+                                        unk1: 0,
+                                        properties: new Map([["NumItems", {name: "NumItems", type: "IntProperty", value: 0}]])
                                     }
-                                }
-                                if(armSlot.properties[j].name === 'mArbitrarySlotSizes')
-                                {
-                                    for(let k = 0; k < count; k++)
-                                    {
-                                        armSlot.properties[j].value.values.push(0);
-                                    }
-                                }
-                                if(armSlot.properties[j].name === 'mAllowedItemDescriptors')
-                                {
-                                    for(let k = 0; k < count; k++)
-                                    {
-                                        armSlot.properties[j].value.values.push({levelName: "", pathName: ""});
-                                    }
-                                }
+                                }]);
                             }
+                        }
+                        const mArbitrarySlotSizes = this.baseLayout.getObjectPropertyValue(armSlot, 'mArbitrarySlotSizes');
+                        if(mArbitrarySlotSizes !== null)
+                        {
+                            for(let k = 0; k < count; k++)
+                            {
+                                mArbitrarySlotSizes.values.push(0);
+                            }
+                        }
+                        const mAllowedItemDescriptors = this.baseLayout.getObjectPropertyValue(armSlot, 'mAllowedItemDescriptors');
+                        if(mAllowedItemDescriptors !== null)
+                        {
+                            for(let k = 0; k < count; k++)
+                            {
+                                mAllowedItemDescriptors.values.push({levelName: "", pathName: ""});
+                            }
+                        }
                     }
             }
         }
@@ -163,9 +167,13 @@ export default class Modal_Map_Players
     {
         if(this.unlockSubSystem !== null)
         {
-            let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
+            let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
             let newCount                    = Math.max(1, Math.min(9, ((mNumTotalArmEquipmentSlots !== null) ? mNumTotalArmEquipmentSlots : 1) - parseInt(count)));
-                this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots', newCount, 'IntProperty');
+                this.baseLayout.setObjectProperty(this.unlockSubSystem, {
+                    name: 'mNumTotalArmEquipmentSlots',
+                    type: 'IntProperty',
+                    value: newCount
+                });
 
             for(const player of this.baseLayout.players.values())
             {
@@ -173,15 +181,16 @@ export default class Modal_Map_Players
                     if(mOwnedPawn !== null)
                     {
                         let armSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.ArmSlot');
-                            for(let j = 0; j < armSlot.properties.length; j++)
+                            const mActiveEquipmentIndex = this.baseLayout.getObjectPropertyValue(armSlot, 'mActiveEquipmentIndex');
+                            if(mActiveEquipmentIndex !== null)
                             {
-                                if(armSlot.properties[j].name === 'mActiveEquipmentIndex')
+                                this.baseLayout.setObjectPropertyValue(armSlot, 'mActiveEquipmentIndex', 0);
+                            }
+                            for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
+                                const property = this.baseLayout.getObjectPropertyValue(armSlot, propertyName);
+                                if(property !== null)
                                 {
-                                    armSlot.properties[j].value = 0;
-                                }
-                                if(armSlot.properties[j].name === 'mInventoryStacks' || armSlot.properties[j].name === 'mArbitrarySlotSizes' || armSlot.properties[j].name === 'mAllowedItemDescriptors')
-                                {
-                                    armSlot.properties[j].value.values.splice(newCount);
+                                    property.values.splice(newCount);
                                 }
                             }
                     }
@@ -193,10 +202,14 @@ export default class Modal_Map_Players
     {
         if(this.unlockSubSystem !== null)
         {
-            let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
+            let mNumTotalInventorySlots     = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalInventorySlots');
             let newCount                    = Math.max(22, Math.min(500, ((mNumTotalInventorySlots !== null) ? mNumTotalInventorySlots : 22) + parseInt(count)));
-               this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots', newCount, 'IntProperty');
-               count                        = newCount - mNumTotalInventorySlots;
+                this.baseLayout.setObjectProperty(this.unlockSubSystem, {
+                    name: 'mNumTotalInventorySlots',
+                    type: 'IntProperty',
+                    value: newCount
+                });
+                count                        = newCount - mNumTotalInventorySlots;
 
             for(const player of this.baseLayout.players.values())
             {
@@ -204,41 +217,41 @@ export default class Modal_Map_Players
                     if(mOwnedPawn !== null)
                     {
                         let inventory = this.baseLayout.getObjectInventory(mOwnedPawn, 'mInventory', true);
-                            for(let j = 0; j < inventory.properties.length; j++)
+                        const mInventoryStacks = this.baseLayout.getObjectPropertyValue(inventory, 'mInventoryStacks');
+                        if(mInventoryStacks !== null)
+                        {
+                            for(let k = 0; k < count; k++)
                             {
-                                if(inventory.properties[j].name === 'mInventoryStacks')
-                                {
-                                    for(let k = 0; k < count; k++)
-                                    {
-                                        inventory.properties[j].value.values.push([{
-                                            name: "Item",
-                                            type: "StructProperty",
-                                            value: {
-                                                itemName: "",
-                                                levelName: "",
-                                                pathName: "",
-                                                type: "InventoryItem",
-                                                unk1: 0,
-                                                properties: [{name: "NumItems", type: "IntProperty", value: 0}]
-                                            }
-                                        }]);
+                                mInventoryStacks.values.push([{
+                                    name: "Item",
+                                    type: "StructProperty",
+                                    value: {
+                                        itemName: "",
+                                        levelName: "",
+                                        pathName: "",
+                                        type: "InventoryItem",
+                                        unk1: 0,
+                                        properties: new Map([["NumItems", {name: "NumItems", type: "IntProperty", value: 0}]])
                                     }
-                                }
-                                if(inventory.properties[j].name === 'mArbitrarySlotSizes')
-                                {
-                                    for(let k = 0; k < count; k++)
-                                    {
-                                        inventory.properties[j].value.values.push(0);
-                                    }
-                                }
-                                if(inventory.properties[j].name === 'mAllowedItemDescriptors')
-                                {
-                                    for(let k = 0; k < count; k++)
-                                    {
-                                        inventory.properties[j].value.values.push({levelName: "", pathName: ""});
-                                    }
-                                }
+                                }]);
                             }
+                        }
+                        const mArbitrarySlotSizes = this.baseLayout.getObjectPropertyValue(inventory, 'mArbitrarySlotSizes');
+                        if(mArbitrarySlotSizes !== null)
+                        {
+                            for(let k = 0; k < count; k++)
+                            {
+                                mArbitrarySlotSizes.values.push(0);
+                            }
+                        }
+                        const mAllowedItemDescriptors = this.baseLayout.getObjectPropertyValue(inventory, 'mAllowedItemDescriptors');
+                        if(mAllowedItemDescriptors !== null)
+                        {
+                            for(let k = 0; k < count; k++)
+                            {
+                                mAllowedItemDescriptors.values.push({levelName: "", pathName: ""});
+                            }
+                        }
                     }
             }
         }
@@ -248,9 +261,13 @@ export default class Modal_Map_Players
     {
         if(this.unlockSubSystem !== null)
         {
-            let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
+            let mNumTotalInventorySlots     = this.baseLayout.getObjectPropertyValue(this.unlockSubSystem, 'mNumTotalInventorySlots');
             let newCount                    = Math.max(22, Math.min(500, ((mNumTotalInventorySlots !== null) ? mNumTotalInventorySlots : 22) - parseInt(count)));
-               this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots', newCount, 'IntProperty');
+                this.baseLayout.setObjectProperty(this.unlockSubSystem, {
+                    name: 'mNumTotalInventorySlots',
+                    type: 'IntProperty',
+                    value: newCount
+                });
 
             for(const player of this.baseLayout.players.values())
             {
@@ -258,13 +275,13 @@ export default class Modal_Map_Players
                     if(mOwnedPawn !== null)
                     {
                         let inventory = this.baseLayout.getObjectInventory(mOwnedPawn, 'mInventory', true);
-                            for(let j = 0; j < inventory.properties.length; j++)
+                            for(const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors'])
                             {
-                                if(inventory.properties[j].name === 'mInventoryStacks' || inventory.properties[j].name === 'mArbitrarySlotSizes' || inventory.properties[j].name === 'mAllowedItemDescriptors')
+                                const property = this.baseLayout.getObjectPropertyValue(inventory, propertyName);
                                 {
                                     for(let k = 0; k < count; k++)
                                     {
-                                        inventory.properties[j].value.values.splice(newCount);
+                                        property.values.splice(newCount);
                                     }
                                 }
                             }

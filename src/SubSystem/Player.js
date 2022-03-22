@@ -70,7 +70,7 @@ export default class SubSystem_Player
 
     getOwnedPawn()
     {
-        let mOwnedPawn  = this.baseLayout.getObjectProperty(this.player, 'mOwnedPawn');
+        let mOwnedPawn  = this.baseLayout.getObjectPropertyValue(this.player, 'mOwnedPawn');
             if(mOwnedPawn !== null)
             {
                 return this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
@@ -84,13 +84,13 @@ export default class SubSystem_Player
         let mOwnedPawn = this.getOwnedPawn();
             if(mOwnedPawn !== null)
             {
-                let mHealthComponent = this.baseLayout.getObjectProperty(mOwnedPawn, 'mHealthComponent');
+                let mHealthComponent = this.baseLayout.getObjectPropertyValue(mOwnedPawn, 'mHealthComponent');
                     if(mHealthComponent !== null)
                     {
                         let currentHealthComponent = this.baseLayout.saveGameParser.getTargetObject(mHealthComponent.pathName);
                             if(currentHealthComponent !== null)
                             {
-                                let mCurrentHealth = this.baseLayout.getObjectProperty(currentHealthComponent, 'mCurrentHealth');
+                                let mCurrentHealth = this.baseLayout.getObjectPropertyValue(currentHealthComponent, 'mCurrentHealth');
                                     if(mCurrentHealth !== null)
                                     {
                                         return mCurrentHealth;
@@ -176,28 +176,28 @@ export default class SubSystem_Player
         this.baseLayout.deleteObjectProperty(this.player, 'mMessageData');
 
         // Update player inventories
-        let mOwnedPawn = this.baseLayout.getObjectProperty(this.player, 'mOwnedPawn');
+        let mOwnedPawn = this.baseLayout.getObjectPropertyValue(this.player, 'mOwnedPawn');
             if(mOwnedPawn !== null)
             {
                 let currentPlayer   = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
                 let inventory       = this.baseLayout.getObjectInventory(currentPlayer, 'mInventory', true);
                     if(inventory !== null)
                     {
-                        for(let j = 0; j < inventory.properties.length; j++)
+                        const mAdjustedSizeDiff = this.baseLayout.getObjectPropertyValue(inventory, 'mAdjustedSizeDiff');
+                        if (mAdjustedSizeDiff !== null)
                         {
-                            if(inventory.properties[j].name === 'mAdjustedSizeDiff')
+                            this.baseLayout.setObjectPropertyValue(inventory, 'mAdjustedSizeDiff', 0);
+                        }
+                        for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
+                            const property = this.baseLayout.getObjectPropertyValue(inventory, propertyName);
                             {
-                                inventory.properties[j].value = 0;
-                            }
-                            if(inventory.properties[j].name === 'mInventoryStacks' || inventory.properties[j].name === 'mArbitrarySlotSizes' || inventory.properties[j].name === 'mAllowedItemDescriptors')
-                            {
-                                inventory.properties[j].value.values.splice(this.defaultInventorySize);
+                                property.values.splice(this.defaultInventorySize);
 
                                 // Give Xeno Zapper, Always get prepared ^^
-                                if(inventory.properties[j].name === 'mInventoryStacks')
+                                if(propertyName === 'mInventoryStacks')
                                 {
-                                    inventory.properties[j].value.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
-                                    inventory.properties[j].value.values[0][0].value.properties[0].value    = 1;
+                                    property.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
+                                    this.baseLayout.setObjectPropertyValue(property.values[0][0].value, 'NumItems', 1);
                                 }
                             }
                         }
@@ -205,17 +205,21 @@ export default class SubSystem_Player
 
                 let armSlot         = this.baseLayout.saveGameParser.getTargetObject(currentPlayer.pathName + '.ArmSlot');
                                       this.baseLayout.deleteObjectProperty(armSlot, 'mEquipmentInSlot');
-                    for(let j = 0; j < armSlot.properties.length; j++)
+
+                for (const propertyName of ['mAdjustedSizeDiff', 'mActiveEquipmentIndex']) {
+                    const property = this.baseLayout.getObjectPropertyValue(armSlot, propertyName);
+                    if(property !== null)
                     {
-                        if(armSlot.properties[j].name === 'mAdjustedSizeDiff' || armSlot.properties[j].name === 'mActiveEquipmentIndex')
-                        {
-                            armSlot.properties[j].value = 0;
-                        }
-                        if(armSlot.properties[j].name === 'mInventoryStacks' || armSlot.properties[j].name === 'mArbitrarySlotSizes' || armSlot.properties[j].name === 'mAllowedItemDescriptors')
-                        {
-                            armSlot.properties[j].value.values.splice(this.defaultArmSlots);
-                        }
+                        this.baseLayout.setObjectPropertyValue(armSlot, propertyName, 0);
                     }
+                }
+                for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
+                    const property = this.baseLayout.getObjectPropertyValue(armSlot, propertyName);
+                    if(property !== null)
+                    {
+                        property.values.splice(this.defaultArmSlots);
+                    }
+                }
             }
     }
 
@@ -223,7 +227,7 @@ export default class SubSystem_Player
     {
         if(this.isHost() === false)
         {
-            let mOwnedPawn  = this.baseLayout.getObjectProperty(this.player, 'mOwnedPawn');
+            let mOwnedPawn  = this.baseLayout.getObjectPropertyValue(this.player, 'mOwnedPawn');
                 if(mOwnedPawn !== null)
                 {
                     this.baseLayout.saveGameParser.deleteObject(mOwnedPawn.pathName);

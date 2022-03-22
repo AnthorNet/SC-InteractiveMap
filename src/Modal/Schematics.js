@@ -712,10 +712,10 @@ export default class Modal_Schematics
             let schematicManager        = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
                 if(schematicManager !== null)
                 {
-                    let mPurchasedSchematics    = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
+                    let mPurchasedSchematics    = this.baseLayout.getObjectPropertyValue(schematicManager, 'mPurchasedSchematics');
                         if(mPurchasedSchematics === null)
                         {
-                            schematicManager.properties.push({
+                            this.baseLayout.setObjectProperty(schematicManager, {
                                 name    : "mPurchasedSchematics",
                                 type    : "ArrayProperty",
                                 value   : {
@@ -723,7 +723,7 @@ export default class Modal_Schematics
                                     values  : [],
                                 }
                             });
-                            mPurchasedSchematics    = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
+                            mPurchasedSchematics    = this.baseLayout.getObjectPropertyValue(schematicManager, 'mPurchasedSchematics');
                         }
                         if(mPurchasedSchematics !== null)
                         {
@@ -816,103 +816,91 @@ export default class Modal_Schematics
             let schematicManager    = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
                 if(schematicManager !== null)
                 {
+                    const mAvailableSchematics = this.baseLayout.getObjectPropertyValue(schematicManager, 'mAvailableSchematics')?.value?.values;
+                    const mPurchasedSchematics = this.baseLayout.getObjectPropertyValue(schematicManager, 'mPurchasedSchematics')?.value?.values;
+
                     switch(currentStatus)
                     {
                         case 'purchased': // Go to none state
-                            for(let i = 0; i < schematicManager.properties.length; i++)
+                            if(mAvailableSchematics !== undefined)
                             {
-                                if(schematicManager.properties[i].name === 'mAvailableSchematics')
+                                for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
                                 {
-                                    let mAvailableSchematics = schematicManager.properties[i].value.values;
-                                        for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
-                                        {
-                                            if(mAvailableSchematics[j].pathName === currentSchematic.className)
-                                            {
-                                                mAvailableSchematics.splice(j, 1);
-                                            }
-                                        }
+                                    if(mAvailableSchematics[j].pathName === currentSchematic.className)
+                                    {
+                                        mAvailableSchematics.splice(j, 1);
+                                    }
                                 }
+                            }
 
-                                if(schematicManager.properties[i].name === 'mPurchasedSchematics')
+                            if(mPurchasedSchematics !== undefined)
+                            {
+                                for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
                                 {
-                                    let mPurchasedSchematics = schematicManager.properties[i].value.values;
-                                        for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
-                                        {
-                                            if(mPurchasedSchematics[j].pathName === currentSchematic.className)
-                                            {
-                                                mPurchasedSchematics.splice(j, 1);
-                                            }
-                                        }
+                                    if(mPurchasedSchematics[j].pathName === currentSchematic.className)
+                                    {
+                                        mPurchasedSchematics.splice(j, 1);
+                                    }
                                 }
                             }
                             break;
                         case 'available': // Go to purchased state
-                            for(let i = 0; i < schematicManager.properties.length; i++)
+                            if(mAvailableSchematics !== undefined)
                             {
-                                if(schematicManager.properties[i].name === 'mAvailableSchematics')
+                                for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
                                 {
-                                    let mAvailableSchematics = schematicManager.properties[i].value.values;
-                                        for(let j = (mAvailableSchematics.length - 1); j >= 0; j--)
-                                        {
-                                            if(mAvailableSchematics[j].pathName === currentSchematic.className)
-                                            {
-                                                mAvailableSchematics.splice(j, 1);
-                                            }
-                                        }
+                                    if(mAvailableSchematics[j].pathName === currentSchematic.className)
+                                    {
+                                        mAvailableSchematics.splice(j, 1);
+                                    }
+                                }
+                            }
+
+                            if(mPurchasedSchematics !== undefined)
+                            {
+                                let preventDuplicate        = false;
+                                for(let j = 0; j < mPurchasedSchematics.length; j++)
+                                {
+                                    if(mPurchasedSchematics[j].pathName === currentSchematic.className)
+                                    {
+                                        preventDuplicate = true;
+                                        break;
+                                    }
                                 }
 
-                                if(schematicManager.properties[i].name === 'mPurchasedSchematics')
+                                if(preventDuplicate === false)
                                 {
-                                    let preventDuplicate        = false;
-                                    let mPurchasedSchematics    = schematicManager.properties[i].value.values;
-                                        for(let j = 0; j < mPurchasedSchematics.length; j++)
-                                        {
-                                            if(mPurchasedSchematics[j].pathName === currentSchematic.className)
-                                            {
-                                                preventDuplicate = true;
-                                                break;
-                                            }
-                                        }
-
-                                        if(preventDuplicate === false)
-                                        {
-                                            mPurchasedSchematics.push({levelName: "", pathName: currentSchematic.className});
-                                        }
+                                    mPurchasedSchematics.push({levelName: "", pathName: currentSchematic.className});
                                 }
                             }
                             break;
                         case 'none': // Go to available state
-                            for(let i = 0; i < schematicManager.properties.length; i++)
+                            if(mAvailableSchematics !== undefined)
                             {
-                                if(schematicManager.properties[i].name === 'mAvailableSchematics')
-                                {
-                                    let preventDuplicate        = false;
-                                    let mAvailableSchematics    = schematicManager.properties[i].value.values;
-                                        for(let j = 0; j < mAvailableSchematics.length; j++)
+                                let preventDuplicate        = false;
+                                    for(let j = 0; j < mAvailableSchematics.length; j++)
+                                    {
+                                        if(mAvailableSchematics[j].pathName === currentSchematic.className)
                                         {
-                                            if(mAvailableSchematics[j].pathName === currentSchematic.className)
-                                            {
-                                                preventDuplicate = true;
-                                                break;
-                                            }
+                                            preventDuplicate = true;
+                                            break;
                                         }
+                                    }
 
-                                        if(preventDuplicate === false)
-                                        {
-                                            mAvailableSchematics.push({levelName: "", pathName: currentSchematic.className});
-                                        }
-                                }
+                                    if(preventDuplicate === false)
+                                    {
+                                        mAvailableSchematics.push({levelName: "", pathName: currentSchematic.className});
+                                    }
+                            }
 
-                                if(schematicManager.properties[i].name === 'mPurchasedSchematics')
+                            if(mPurchasedSchematics !== undefined)
+                            {
+                                for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
                                 {
-                                    let mPurchasedSchematics = schematicManager.properties[i].value.values;
-                                        for(let j = (mPurchasedSchematics.length - 1); j >= 0; j--)
-                                        {
-                                            if(mPurchasedSchematics[j].pathName === currentSchematic.className)
-                                            {
-                                                mPurchasedSchematics.splice(j, 1);
-                                            }
-                                        }
+                                    if(mPurchasedSchematics[j].pathName === currentSchematic.className)
+                                    {
+                                        mPurchasedSchematics.splice(j, 1);
+                                    }
                                 }
                             }
                             break;
@@ -956,7 +944,7 @@ export default class Modal_Schematics
                                 if(currentResearch[0] === 'Research')
                                 {
                                         Building_MAM.initiate(this.baseLayout);
-                                    let mUnlockedResearchTrees  = this.baseLayout.getObjectProperty(researchManager, 'mUnlockedResearchTrees');
+                                    let mUnlockedResearchTrees  = this.baseLayout.getObjectPropertyValue(researchManager, 'mUnlockedResearchTrees');
                                     let currentTree             = null;
 
                                         switch(currentResearch[1])
@@ -1018,8 +1006,8 @@ export default class Modal_Schematics
                         let recipeManager = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.recipeManager');
                             if(recipeManager !== null)
                             {
-                                let mAvailableRecipes               = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableRecipes');
-                                let mAvailableCustomizationRecipes  = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableCustomizationRecipes');
+                                let mAvailableRecipes               = this.baseLayout.getObjectPropertyValue(recipeManager, 'mAvailableRecipes');
+                                let mAvailableCustomizationRecipes  = this.baseLayout.getObjectPropertyValue(recipeManager, 'mAvailableCustomizationRecipes');
 
                                     switch(currentStatus)
                                     {
@@ -1059,7 +1047,7 @@ export default class Modal_Schematics
                         let unlockSubSystem = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.UnlockSubsystem');
                             if(unlockSubSystem !== null)
                             {
-                                let mUnlockedEmotes  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mUnlockedEmotes');
+                                let mUnlockedEmotes  = this.baseLayout.getObjectPropertyValue(unlockSubSystem, 'mUnlockedEmotes');
 
                                     switch(currentStatus)
                                     {

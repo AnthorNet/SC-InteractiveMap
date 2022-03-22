@@ -36,7 +36,7 @@ value: 182
         let resourceSinkSubSystem   = Building_AwesomeSink.getResourceSinkSubsystem(baseLayout);
             if(resourceSinkSubSystem !== null)
             {
-                let mTotalResourceSinkPoints      = baseLayout.getObjectProperty(resourceSinkSubSystem, 'mTotalResourceSinkPoints');
+                let mTotalResourceSinkPoints      = baseLayout.getObjectPropertyValue(resourceSinkSubSystem, 'mTotalResourceSinkPoints');
                     if(mTotalResourceSinkPoints !== null)
                     {
                         return mTotalResourceSinkPoints;
@@ -51,7 +51,7 @@ value: 182
         let resourceSinkSubSystem   = Building_AwesomeSink.getResourceSinkSubsystem(baseLayout);
             if(resourceSinkSubSystem !== null)
             {
-                let mGlobalPointHistory      = baseLayout.getObjectProperty(resourceSinkSubSystem, 'mGlobalPointHistory');
+                let mGlobalPointHistory      = baseLayout.getObjectPropertyValue(resourceSinkSubSystem, 'mGlobalPointHistory');
                     if(mGlobalPointHistory !== null)
                     {
                         return mGlobalPointHistory.values;
@@ -66,7 +66,7 @@ value: 182
         let resourceSinkSubSystem   = Building_AwesomeSink.getResourceSinkSubsystem(baseLayout);
             if(resourceSinkSubSystem !== null)
             {
-                let mNumResourceSinkCoupons      = baseLayout.getObjectProperty(resourceSinkSubSystem, 'mNumResourceSinkCoupons');
+                let mNumResourceSinkCoupons      = baseLayout.getObjectPropertyValue(resourceSinkSubSystem, 'mNumResourceSinkCoupons');
                     if(mNumResourceSinkCoupons !== null)
                     {
                         return mNumResourceSinkCoupons;
@@ -81,7 +81,7 @@ value: 182
         let resourceSinkSubSystem   = Building_AwesomeSink.getResourceSinkSubsystem(baseLayout);
             if(resourceSinkSubSystem !== null)
             {
-                let mCurrentPointLevel      = baseLayout.getObjectProperty(resourceSinkSubSystem, 'mCurrentPointLevel');
+                let mCurrentPointLevel      = baseLayout.getObjectPropertyValue(resourceSinkSubSystem, 'mCurrentPointLevel');
                     if(mCurrentPointLevel !== null)
                     {
                         return mCurrentPointLevel + 1;

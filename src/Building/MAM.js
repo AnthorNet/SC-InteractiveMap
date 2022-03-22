@@ -10,16 +10,24 @@ export default class Building_MAM
         let researchManager = Building_MAM.getManager(baseLayout);
             if(researchManager !== null)
             {
-                let mUnlockedResearchTrees  = baseLayout.getObjectProperty(researchManager, 'mUnlockedResearchTrees');
-                let mIsActivated            = baseLayout.getObjectProperty(researchManager, 'mIsActivated');
+                let mUnlockedResearchTrees  = baseLayout.getObjectPropertyValue(researchManager, 'mUnlockedResearchTrees');
+                let mIsActivated            = baseLayout.getObjectPropertyValue(researchManager, 'mIsActivated');
 
                     if(mUnlockedResearchTrees === null)
                     {
-                        baseLayout.setObjectProperty(researchManager, 'mUnlockedResearchTrees', {type: 'ObjectProperty', values: []}, 'ArrayProperty');
+                        baseLayout.setObjectProperty(researchManager, {
+                            name: 'mUnlockedResearchTrees',
+                            type: 'ArrayProperty',
+                            value:  {type: 'ObjectProperty', values: []}
+                        });
                     }
                     if(mIsActivated === null)
                     {
-                        baseLayout.setObjectProperty(researchManager, 'mIsActivated', 1, 'BoolProperty');
+                        baseLayout.setObjectProperty(researchManager, {
+                            name: 'mIsActivated',
+                            type: 'BoolProperty',
+                            value:  1
+                        });
                     }
             }
     }
@@ -29,7 +37,7 @@ export default class Building_MAM
         let researchManager = Building_MAM.getManager(baseLayout);
             if(researchManager !== null)
             {
-                researchManager.properties = [];
+                baseLayout.deleteAllObjectProperties(researchManager);
             }
     }
 }

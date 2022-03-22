@@ -5,14 +5,14 @@ export default class Building_RailroadSwitchControl
 {
     static getConnectedComponents(baseLayout, currentObject)
     {
-        let mControlledConnection = baseLayout.getObjectProperty(currentObject, 'mControlledConnection');
+        let mControlledConnection = baseLayout.getObjectPropertyValue(currentObject, 'mControlledConnection');
             if(mControlledConnection !== null)
             {
                 let trackConnection1 = baseLayout.saveGameParser.getTargetObject(mControlledConnection.pathName);
                     if(trackConnection1 !== null)
                     {
-                        let mConnectedComponents    = baseLayout.getObjectProperty(trackConnection1, 'mConnectedComponents');
-                        let mSwitchPosition         = baseLayout.getObjectProperty(trackConnection1, 'mSwitchPosition');
+                        let mConnectedComponents    = baseLayout.getObjectPropertyValue(trackConnection1, 'mConnectedComponents');
+                        let mSwitchPosition         = baseLayout.getObjectPropertyValue(trackConnection1, 'mSwitchPosition');
                         let connectedComponents     = [trackConnection1];
 
                             if(mConnectedComponents !== null && mSwitchPosition !== null && mConnectedComponents.values[mSwitchPosition] !== undefined)
@@ -122,14 +122,14 @@ export default class Building_RailroadSwitchControl
         let baseLayout              = marker.baseLayout;
         let currentObject           = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
 
-        let mControlledConnection   = baseLayout.getObjectProperty(currentObject, 'mControlledConnection');
+        let mControlledConnection   = baseLayout.getObjectPropertyValue(currentObject, 'mControlledConnection');
             if(mControlledConnection !== null)
             {
                 let trackConnection1 = baseLayout.saveGameParser.getTargetObject(mControlledConnection.pathName);
                     if(trackConnection1 !== null)
                     {
-                        let mConnectedComponents    = baseLayout.getObjectProperty(trackConnection1, 'mConnectedComponents');
-                        let mSwitchPosition         = baseLayout.getObjectProperty(trackConnection1, 'mSwitchPosition');
+                        let mConnectedComponents    = baseLayout.getObjectPropertyValue(trackConnection1, 'mConnectedComponents');
+                        let mSwitchPosition         = baseLayout.getObjectPropertyValue(trackConnection1, 'mSwitchPosition');
                         let connectedComponents     = [trackConnection1];
 
                             if(mConnectedComponents !== null && mSwitchPosition !== null && mConnectedComponents.values[mSwitchPosition] !== undefined)
@@ -143,7 +143,11 @@ export default class Building_RailroadSwitchControl
 
                             if(connectedComponents.length > 1)
                             {
-                                baseLayout.setObjectProperty(trackConnection1, 'mSwitchPosition', ((mSwitchPosition === 0) ? 1 : 0), 'IntProperty');
+                                baseLayout.setObjectProperty(trackConnection1, {
+                                    name: 'mSwitchPosition',
+                                    type: 'IntProperty',
+                                    value: mSwitchPosition === 0 ? 1 : 0
+                                });
                             }
                     }
             }

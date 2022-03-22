@@ -23,7 +23,7 @@ export default class SubSystem_Foliage
                     }
                     else
                     {
-                        let mRemovedInstances = baseLayout.getObjectProperty(object, 'mRemovedInstances');
+                        let mRemovedInstances = baseLayout.getObjectPropertyValue(object, 'mRemovedInstances');
                             if(mRemovedInstances !== null && mRemovedInstances.values.length > 0)
                             {
                                 for(let i = (mRemovedInstances.values.length - 1); i >= 0; i--)
