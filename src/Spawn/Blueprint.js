@@ -4,6 +4,7 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import cloneDeep                                from '../Lib/lodash/cloneDeep.js'
 import pako                                     from '../Lib/pako.esm.mjs';
+import saveAs                                   from '../Lib/FileSaver.js';
 
 export default class Spawn_Blueprint
 {
