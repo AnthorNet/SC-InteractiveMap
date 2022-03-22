@@ -326,7 +326,7 @@ export default class Modal_Map_Collectables
                             intValue = mPickupItems.values[0].value;
                             break;
                         case 'StructProperty':
-                            intValue = this.baseLayout.getObjectPropertyValue(mPickupItems.values[0].value, 'NumItems')?.value ?? 0;
+                            intValue = this.baseLayout.getObjectPropertyValue(mPickupItems.values[0].value, 'NumItems') ?? 0;
                             break;
                         default:
                             console.log('Modal_Map_Collectables::getStatusFromPathName', mPickupItems.values[0]);
