@@ -1,5 +1,5 @@
 import BaseLayout                               from './BaseLayout.js';
-import GameMap                                  from './Map.js';
+import GameMap                                  from './GameMap.js';
 import SaveParser                               from './SaveParser.js';
 import Translate                                from './Translate.js';
 
