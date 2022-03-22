@@ -1,5 +1,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class SubSystem_Buildable
 {
     static get totalColorSlots(){ return 16; }
@@ -198,8 +200,8 @@ export default class SubSystem_Buildable
 
     setObjectCustomColor(currentObject, primaryColor, secondaryColor)
     {
-            primaryColor        = JSON.parse(JSON.stringify(primaryColor));
-            secondaryColor      = JSON.parse(JSON.stringify(secondaryColor));
+            primaryColor        = cloneDeep(primaryColor);
+            secondaryColor      = cloneDeep(secondaryColor);
         let mCustomizationData  = this.getObjectCustomizationData(currentObject);
             if(mCustomizationData !== null)
             {
@@ -357,11 +359,11 @@ export default class SubSystem_Buildable
             {
                 if(primaryColorSlots[slotIndex] === undefined)
                 {
-                    primaryColorSlots[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
+                    primaryColorSlots[slotIndex] = cloneDeep(this.getDefaultPrimaryColorSlot(slotIndex, true));
                 }
                 if(secondaryColorSlots[slotIndex] === undefined)
                 {
-                    secondaryColorSlots[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
+                    secondaryColorSlots[slotIndex] = cloneDeep(this.getDefaultSecondaryColorSlot(slotIndex, true));
                 }
 
                 playerColors.push({
@@ -402,12 +404,12 @@ export default class SubSystem_Buildable
                 a : BaseLayout_Math.linearColorToRGB(1)
             };
 
-        for(let currentPathName in this.baseLayout.players)
+        for(const player of this.baseLayout.players.values())
         {
-            let mCustomColorData  = this.baseLayout.getObjectProperty(this.baseLayout.players[currentPathName].player, 'mCustomColorData');
+            let mCustomColorData  = this.baseLayout.getObjectProperty(player.player, 'mCustomColorData');
                 if(mCustomColorData !== null)
                 {
-                    if(pathName === null || pathName === currentPathName)
+                    if(pathName === null || pathName === player.pathName)
                     {
                         for(let j = 0; j < mCustomColorData.values.length; j++)
                         {
@@ -432,7 +434,7 @@ export default class SubSystem_Buildable
                         }
                     }
 
-                    if(pathName === null && this.baseLayout.players[currentPathName].isHost())
+                    if(pathName === null && player.isHost())
                     {
                         return customColor;
                     }
@@ -454,12 +456,12 @@ export default class SubSystem_Buildable
                         {
                             name    : 'PrimaryColor',
                             type    : 'StructProperty',
-                            value   : {type: 'LinearColor', values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))}
+                            value   : {type: 'LinearColor', values: cloneDeep(this.getDefaultPrimaryColorSlot(slotIndex, true))}
                         },
                         {
                             name    : 'SecondaryColor',
                             type    : 'StructProperty',
-                            value   : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
+                            value   : {type: 'LinearColor', values : cloneDeep(this.getDefaultSecondaryColorSlot(slotIndex, true))}
                         },
                         {name: 'Metallic', type: 'FloatProperty', value: 0},
                         {name: 'Roughness', type: 'FloatProperty', value: 0}
@@ -489,7 +491,7 @@ export default class SubSystem_Buildable
             {
                 if(mColorSlotsPrimary_Linear.values[slotIndex] === undefined)
                 {
-                    mColorSlotsPrimary_Linear.values[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
+                    mColorSlotsPrimary_Linear.values[slotIndex] = cloneDeep(this.getDefaultPrimaryColorSlot(slotIndex, true));
                 }
 
                 mColorSlotsPrimary_Linear.values[slotIndex].r   = primaryColor.r;
@@ -501,7 +503,7 @@ export default class SubSystem_Buildable
             {
                 if(mColorSlotsSecondary_Linear.values[slotIndex] === undefined)
                 {
-                    mColorSlotsSecondary_Linear.values[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
+                    mColorSlotsSecondary_Linear.values[slotIndex] = cloneDeep(this.getDefaultSecondaryColorSlot(slotIndex, true));
                 }
 
                 mColorSlotsSecondary_Linear.values[slotIndex].r = secondaryColor.r;
@@ -538,12 +540,12 @@ export default class SubSystem_Buildable
                             {
                                 name    : 'PrimaryColor',
                                 type    : 'StructProperty',
-                                value   : {type: 'LinearColor', values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))}
+                                value   : {type: 'LinearColor', values: cloneDeep(this.getDefaultPrimaryColorSlot(slotIndex, true))}
                             },
                             {
                                 name    : 'SecondaryColor',
                                 type    : 'StructProperty',
-                                value   : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
+                                value   : {type: 'LinearColor', values : cloneDeep(this.getDefaultSecondaryColorSlot(slotIndex, true))}
                             },
                             {name: 'Metallic', type: 'FloatProperty', value: 0},
                             {name: 'Roughness', type: 'FloatProperty', value: 0}
@@ -589,7 +591,7 @@ export default class SubSystem_Buildable
                 for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                 {
                     mColorSlotsPrimary_Linear.value.values.push(
-                        JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))
+                        cloneDeep(this.getDefaultPrimaryColorSlot(slotIndex, true))
                     );
                 }
 
@@ -659,7 +661,7 @@ export default class SubSystem_Buildable
                 for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                 {
                     mColorSlotsSecondary_Linear.value.values.push(
-                        JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))
+                        cloneDeep(this.getDefaultSecondaryColorSlot(slotIndex, true))
                     );
                 }
 

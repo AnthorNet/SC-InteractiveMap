@@ -15,11 +15,11 @@ export default class Modal_Debug
 
         if(currentObject.children !== undefined)
         {
-            for(let i = 0; i < currentObject.children.length; i++)
+            for(const child of currentObject.children)
             {
-                childrenPathName.push(currentObject.children[i].pathName);
+                childrenPathName.push(child.pathName);
 
-                let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                let currentChildren = baseLayout.saveGameParser.getTargetObject(child.pathName);
                     if(currentChildren !== null)
                     {
                         let mWires = baseLayout.getObjectProperty(currentChildren, 'mWires');
@@ -70,9 +70,9 @@ export default class Modal_Debug
                                     {
                                         if(mOwnedPawn.children !== undefined)
                                         {
-                                            for(let j = 0; j < mOwnedPawn.children.length; j++)
+                                            for(const child of mOwnedPawn.children)
                                             {
-                                                extraPathName.push(mOwnedPawn.children[j].pathName);
+                                                extraPathName.push(child.pathName);
                                             }
                                         }
                                     }
@@ -109,14 +109,14 @@ export default class Modal_Debug
 
             if(currentObject.children !== undefined)
             {
-                for(let i = 0; i < currentObject.children.length; i++)
+                for(const child of currentObject.children)
                 {
-                    html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;cursor:pointer;" data-toggle="tab" href="#advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">.' + currentObject.children[i].pathName.split('.').pop() + '</span></li>');
+                    html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;cursor:pointer;" data-toggle="tab" href="#advancedDebugObject-' + child.pathName.split('.').pop() + '">.' + child.pathName.split('.').pop() + '</span></li>');
 
-                    let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                    let currentChildren = baseLayout.saveGameParser.getTargetObject(child.pathName);
                         if(currentChildren !== null)
                         {
-                            htmlChildren.push('<div class="tab-pane fade" id="advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">');
+                            htmlChildren.push('<div class="tab-pane fade" id="advancedDebugObject-' + child.pathName.split('.').pop() + '">');
                             htmlChildren.push(Modal_Debug.getJsonViewer(currentChildren));
                             htmlChildren.push('</div>');
 
@@ -134,7 +134,7 @@ export default class Modal_Debug
                         }
                         else
                         {
-                            console.log('Missing children: ' + currentObject.children[i].pathName);
+                            console.log('Missing children: ' + child.pathName);
                         }
                 }
             }

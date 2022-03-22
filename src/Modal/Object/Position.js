@@ -1,6 +1,8 @@
 import BaseLayout_Math                          from '../../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../../BaseLayout/Modal.js';
 
+import cloneDeep                                from '../../Lib/cloneDeep.js'
+
 export default class Modal_Object_Position
 {
     static getHTML(marker)
@@ -13,7 +15,7 @@ export default class Modal_Object_Position
         // Switch player object
         if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
         {
-            let mOwnedPawn = baseLayout.players[marker.relatedTarget.options.pathName].getOwnedPawn();
+            let mOwnedPawn = baseLayout.players.get(marker.relatedTarget.options.pathName).getOwnedPawn();
                 if(mOwnedPawn !== null)
                 {
                     teleportPlayer  = true;
@@ -101,12 +103,12 @@ export default class Modal_Object_Position
                             values: [{
                                 pathName: marker.relatedTarget.options.pathName,
                                 callback: 'refreshMarkerPosition',
-                                properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
+                                properties: {transform: cloneDeep(currentObject.transform)}
                             }]
                         });
                     }
 
-                        let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
+                        let newTransform = cloneDeep(currentObject.transform);
                             if(isNaN(form.x) === false)
                             {
                                 newTransform.translation[0] = form.x;
@@ -126,11 +128,11 @@ export default class Modal_Object_Position
 
                     if(teleportPlayer !== false)
                     {
-                        baseLayout.players[marker.relatedTarget.options.pathName].teleportTo(newTransform, 0);
+                        baseLayout.players.get(marker.relatedTarget.options.pathName).teleportTo(newTransform, 0);
                     }
                     else
                     {
-                        baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: JSON.parse(JSON.stringify(newTransform)), object: currentObject});
+                        baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: cloneDeep(newTransform), object: currentObject});
                         baseLayout.updateRadioactivityLayer();
                     }
                 }

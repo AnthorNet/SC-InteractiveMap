@@ -236,7 +236,7 @@ export default class SubSystem_Player
                 }
 
             this.baseLayout.saveGameParser.deleteObject(this.player.pathName);
-            delete(this.baseLayout.players[this.player.pathName]);
+            this.baseLayout.players.delete(this.player.pathName);
         }
     }
 }

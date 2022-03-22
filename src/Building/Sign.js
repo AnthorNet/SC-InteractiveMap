@@ -1290,43 +1290,43 @@ export default class Building_Sign
         let options = [];
 
             // Buildings
-            for(let key in baseLayout.buildingsData)
+            for(const buildingData of baseLayout.buildingsData.values())
             {
-                if(baseLayout.buildingsData[key].iconId !== undefined)
+                if(buildingData.iconId !== undefined)
                 {
                     options.push({
                         group       : 'Buildings',
-                        dataContent : '<img src="' + baseLayout.buildingsData[key].image + '" style="width: 24px;" class="mr-1" /> ' + baseLayout.buildingsData[key].name,
-                        value       : baseLayout.buildingsData[key].iconId,
-                        text        : baseLayout.buildingsData[key].name
+                        dataContent : '<img src="' + buildingData.image + '" style="width: 24px;" class="mr-1" /> ' + buildingData.name,
+                        value       : buildingData.iconId,
+                        text        : buildingData.name
                     });
                 }
             }
 
             // Parts
-            for(let key in baseLayout.itemsData)
+            for(const itemData of baseLayout.itemsData.values())
             {
-                if(baseLayout.itemsData[key].iconId !== undefined)
+                if(itemData.iconId !== undefined)
                 {
                     options.push({
                         group       : 'Parts',
-                        dataContent : '<img src="' + baseLayout.itemsData[key].image + '" style="width: 24px;" class="mr-1" /> ' + baseLayout.itemsData[key].name,
-                        value       : baseLayout.itemsData[key].iconId,
-                        text        : baseLayout.itemsData[key].name
+                        dataContent : '<img src="' + itemData.image + '" style="width: 24px;" class="mr-1" /> ' + itemData.name,
+                        value       : itemData.iconId,
+                        text        : itemData.name
                     });
                 }
             }
 
             // Equipment
-            for(let key in baseLayout.toolsData)
+            for(const toolData of baseLayout.toolsData.values())
             {
-                if(baseLayout.toolsData[key].iconId !== undefined)
+                if(toolData.iconId !== undefined)
                 {
                     options.push({
                         group       : 'Equipment',
-                        dataContent : '<img src="' + baseLayout.toolsData[key].image + '" style="width: 24px;" class="mr-1" /> ' + baseLayout.toolsData[key].name,
-                        value       : baseLayout.toolsData[key].iconId,
-                        text        : baseLayout.toolsData[key].name
+                        dataContent : '<img src="' + toolData.image + '" style="width: 24px;" class="mr-1" /> ' + toolData.name,
+                        value       : toolData.iconId,
+                        text        : toolData.name
                     });
                 }
             }

@@ -38,9 +38,9 @@ export default class SubSystem_Circuit
 
                                     if(currentObject.children !== undefined && powerConnection === 'PowerConnection')
                                     {
-                                        for(let j = 0; j < currentObject.children.length; j++)
+                                        for(const child of currentObject.children)
                                         {
-                                            if(componentsArray.includes(currentObject.children[j].pathName))
+                                            if(componentsArray.includes(child.pathName))
                                             {
                                                 return this.circuitSubSystem.extra.circuits[i];
                                             }

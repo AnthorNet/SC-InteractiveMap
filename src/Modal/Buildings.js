@@ -68,15 +68,15 @@ export default class Modal_Buildings
             });
             for(let currentCategory in buildingsList)
             {
-                for(let i in this.baseLayout.buildingsData)
+                for(const buildingData of this.baseLayout.buildingsData.values())
                 {
-                    if(this.baseLayout.buildingsData[i].category === currentCategory && this.baseLayout.buildingsData[i].className !== undefined)
+                    if(buildingData.category === currentCategory && buildingData.className !== undefined)
                     {
-                        buildingsList[currentCategory].buildings[this.baseLayout.buildingsData[i].className] = [];
+                        buildingsList[currentCategory].buildings[buildingData.className] = [];
                     }
-                    if(this.baseLayout.buildingsData[i].className !== undefined && this.baseLayout.buildingsData[i].className === currentCategory)
+                    if(buildingData.className !== undefined && buildingData.className === currentCategory)
                     {
-                        buildingsList[currentCategory].buildings[this.baseLayout.buildingsData[i].className] = [];
+                        buildingsList[currentCategory].buildings[buildingData.className] = [];
                     }
                 }
             }
@@ -182,12 +182,13 @@ export default class Modal_Buildings
 
                                         if(itemType !== null)
                                         {
-                                            if(this.baseLayout.itemsData[itemType] === undefined)
+                                            const itemData = this.baseLayout.itemsData.get(itemType);
+                                            if(itemData === undefined)
                                             {
                                                 console.log(itemType, this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options);
                                             }
 
-                                            htmlRow.push('<strong>' + this.baseLayout.itemsData[itemType].name + ' (' + (purity && purity[0].toUpperCase() + purity.slice(1)) + ')</strong><br />');
+                                            htmlRow.push('<strong>' + itemData.name + ' (' + (purity && purity[0].toUpperCase() + purity.slice(1)) + ')</strong><br />');
                                         }
                                     break;
                                 default:
@@ -196,17 +197,18 @@ export default class Modal_Buildings
                                         {
                                             // Extract recipe name
                                             let recipeName = recipe.pathName.split('.')[1];
-                                                if(this.baseLayout.recipesData[recipeName] !== undefined)
+                                            const recipeData = this.baseLayout.recipesData.get(recipeName);
+                                                if(recipeData !== undefined)
                                                 {
-                                                    htmlRow.push('<strong>' + this.baseLayout.recipesData[recipeName].name + '</strong><br />');
+                                                    htmlRow.push('<strong>' + recipeData.name + '</strong><br />');
                                                 }
                                                 else
                                                 {
-                                                    for(let recipeId in this.baseLayout.recipesData)
+                                                    for(const otherRecipeData of this.baseLayout.recipesData)
                                                     {
-                                                        if(this.baseLayout.recipesData[recipeId].className !== undefined && this.baseLayout.recipesData[recipeId].className === recipe.pathName)
+                                                        if(otherRecipeData.className !== undefined && otherRecipeData.className === recipe.pathName)
                                                         {
-                                                            htmlRow.push('<strong>' + this.baseLayout.recipesData[recipeName].name + '</strong><br />');
+                                                            htmlRow.push('<strong>' + recipeData.name + '</strong><br />');
                                                             break;
                                                         }
                                                     }

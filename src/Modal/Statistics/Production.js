@@ -67,10 +67,11 @@ export default class Modal_Statistics_Production
                             {
                                 if(playerProduction['/Game/FactoryGame/Events/Christmas/Parts/Desc_Gift.Desc_Gift_C'] === undefined)
                                 {
+                                    const giftData = this.baseLayout.itemsData.get('Desc_Gift_C');
                                     playerProduction['/Game/FactoryGame/Events/Christmas/Parts/Desc_Gift.Desc_Gift_C'] = {
-                                        name        : this.baseLayout.itemsData.Desc_Gift_C.name,
-                                        image       : this.baseLayout.itemsData.Desc_Gift_C.image,
-                                        category    : this.baseLayout.itemsData.Desc_Gift_C.category,
+                                        name        : giftData.name,
+                                        image       : giftData.image,
+                                        category    : giftData.category,
                                         produced    : 15,
                                         offProduced : 0,
                                         consumed    : 0,
@@ -108,7 +109,7 @@ export default class Modal_Statistics_Production
                                                 itemType = 'Desc_LiquidOil_C';
                                             }
 
-                                            itemClassName   = this.baseLayout.itemsData[itemType].className;
+                                            itemClassName   = this.baseLayout.itemsData.get(itemType).className;
                                         }
                                     }
 
@@ -142,7 +143,8 @@ export default class Modal_Statistics_Production
 
                                     if(itemClassName !== null && itemType !== null)
                                     {
-                                        if(this.baseLayout.itemsData[itemType].category === 'liquid' || this.baseLayout.itemsData[itemType].category === 'gas')
+                                        const itemData = this.baseLayout.itemsData.get(itemType);
+                                        if(itemData.category === 'liquid' || itemData.category === 'gas')
                                         {
                                             productionRatio     = Math.min(600000, productionRatio);
                                             offProductionRatio  = Math.min(600000, offProductionRatio);
@@ -156,9 +158,9 @@ export default class Modal_Statistics_Production
                                         if(playerProduction[itemClassName] === undefined)
                                         {
                                             playerProduction[itemClassName] = {
-                                                name        : this.baseLayout.itemsData[itemType].name,
-                                                image       : this.baseLayout.itemsData[itemType].image,
-                                                category    : this.baseLayout.itemsData[itemType].category,
+                                                name        : itemData.name,
+                                                image       : itemData.image,
+                                                category    : itemData.category,
                                                 produced    : productionRatio,
                                                 offProduced : offProductionRatio,
                                                 consumed    : 0,
@@ -316,13 +318,14 @@ export default class Modal_Statistics_Production
                                                     offSupplementalLoadConsumed = supplementalLoadConsumed;
                                                 }
 
-                                            let supplementalLoadClassName   = this.baseLayout.itemsData[buildingData.supplementalLoadType].className;
+                                            const itemData = this.baseLayout.itemsData.get(buildingData.supplementalLoadType);
+                                            let supplementalLoadClassName   = itemData.className;
                                                 if(playerProduction[supplementalLoadClassName] === undefined)
                                                 {
                                                     playerProduction[supplementalLoadClassName] = {
-                                                        name        : this.baseLayout.itemsData[buildingData.supplementalLoadType].name,
-                                                        image       : this.baseLayout.itemsData[buildingData.supplementalLoadType].image,
-                                                        category    : this.baseLayout.itemsData[buildingData.supplementalLoadType].category,
+                                                        name        : itemData.name,
+                                                        image       : itemData.image,
+                                                        category    : itemData.category,
                                                         produced    : 0,
                                                         offProduced : 0,
                                                         consumed    : onSupplementalLoadConsumed,

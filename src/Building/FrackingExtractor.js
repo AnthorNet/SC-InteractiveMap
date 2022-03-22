@@ -7,9 +7,10 @@ export default class Building_FrackingExtractor
             {
                 if(baseLayout.satisfactoryMap.collectableMarkers[mExtractableResource.pathName] !== undefined && baseLayout.satisfactoryMap.collectableMarkers[mExtractableResource.pathName].options.core !== undefined)
                 {
-                    if(baseLayout.frackingSmasherCores[baseLayout.satisfactoryMap.collectableMarkers[mExtractableResource.pathName].options.core] !== undefined)
+                    const frackingSmasherCore = baseLayout.frackingSmasherCores.get(baseLayout.satisfactoryMap.collectableMarkers[mExtractableResource.pathName].options.core);
+                    if(frackingSmasherCore !== undefined)
                     {
-                        return baseLayout.saveGameParser.getTargetObject(baseLayout.frackingSmasherCores[baseLayout.satisfactoryMap.collectableMarkers[mExtractableResource.pathName].options.core]);
+                        return baseLayout.saveGameParser.getTargetObject(frackingSmasherCore);
                     }
                 }
             }

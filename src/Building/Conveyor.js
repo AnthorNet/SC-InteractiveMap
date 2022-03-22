@@ -1,6 +1,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class Building_Conveyor
 {
     static get availableConveyorBelts()
@@ -211,7 +213,7 @@ export default class Building_Conveyor
                                                 baseLayout.deleteGenericBuilding({baseLayout: baseLayout, relatedTarget: baseLayout.getMarkerFromPathName(nextConveyor.pathName, buildingData.layerId)})
 
                                                 // Redraw middle conveyor!
-                                                baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: JSON.parse(JSON.stringify(currentObject.transform)), object: currentObject});
+                                                baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: cloneDeep(currentObject.transform), object: currentObject});
                                                 return true;
                                             }
                                     }

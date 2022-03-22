@@ -2,6 +2,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class Spawn_Polygon
 {
     constructor(options)
@@ -94,7 +96,7 @@ export default class Spawn_Polygon
                             }
                     }
 
-                    let newFoundation                       = JSON.parse(JSON.stringify(this.centerObject));
+                    let newFoundation                       = cloneDeep(this.centerObject);
                         newFoundation.pathName              = this.baseLayout.generateFastPathName(this.centerObject);
                         newFoundation.transform.rotation    = centerRotation;
 
@@ -129,7 +131,7 @@ export default class Spawn_Polygon
                         pathName: newFoundation.pathName,
                         layerId: this.layerId,
                         callback: 'deleteGenericBuilding',
-                        properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
+                        properties: {transform: cloneDeep(newFoundation.transform)}
                     });
                 }
 

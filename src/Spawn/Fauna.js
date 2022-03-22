@@ -49,7 +49,7 @@ export default class Spawn_Fauna
             let pathName        = this.baseLayout.generateFastPathName({pathName: this.faunaPathName});
             let newFauna        = {
                 type                : 1,
-                children            : [{pathName: pathName + '.HealthComponent'}],
+                children            : new Set([{pathName: pathName + '.HealthComponent'}]),
                 className           : this.faunaClassName,
                 pathName            : pathName,
                 entity              : {levelName: '', pathName: ''},
@@ -66,7 +66,7 @@ export default class Spawn_Fauna
 
             if(this.faunaClassName === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
             {
-                newFauna.children.unshift({pathName: pathName + '.mInventory'});
+                newFauna.children.add({pathName: pathName + '.mInventory'});
 
                 let currentPlayerObject = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGameParser.playerHostPathName);
                 let mOwnedPawn          = this.baseLayout.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
@@ -78,7 +78,7 @@ export default class Spawn_Fauna
 
                 let newSpaceRabbitInventory     = {
                     type            : 0,
-                    children        : [],
+                    children        : new Set(),
                     className       : '/Script/FactoryGame.FGInventoryComponent',
                     outerPathName   : pathName, pathName: pathName + '.mInventory',
                     properties      : [

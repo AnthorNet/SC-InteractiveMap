@@ -48,16 +48,17 @@ export default class Selection_Delete
                                     if(mBuiltWithRecipe !== null)
                                     {
                                         let recipeName = mBuiltWithRecipe.pathName.split('.')[1];
-                                            if(this.baseLayout.recipesData[recipeName] !== undefined)
+                                        const recipeData = this.baseLayout.recipesData.get(recipeName);
+                                            if(recipeData !== undefined)
                                             {
-                                                for(let ingredient in this.baseLayout.recipesData[recipeName].ingredients)
+                                                for(let ingredient in recipeData.ingredients)
                                                 {
                                                     if(putInCrate[ingredient] === undefined)
                                                     {
                                                         putInCrate[ingredient] = 0;
                                                     }
 
-                                                    putInCrate[ingredient] += this.baseLayout.recipesData[recipeName].ingredients[ingredient];
+                                                    putInCrate[ingredient] += recipeData.ingredients[ingredient];
                                                 }
                                             }
                                     }
@@ -93,7 +94,7 @@ export default class Selection_Delete
                                     '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
                                 ].includes(currentObject.className))
                                 {
-                                    let itemClassName = this.baseLayout.itemsData[this.markers[i].options.itemId].className;
+                                    let itemClassName = this.baseLayout.itemsData.get(this.markers[i].options.itemId).className;
                                         if(putInCrate[itemClassName] === undefined)
                                         {
                                             putInCrate[itemClassName] = 0;

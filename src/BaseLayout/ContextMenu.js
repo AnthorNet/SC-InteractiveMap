@@ -67,7 +67,7 @@ export default class BaseLayout_ContextMenu
                 {
                     case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
                         contextMenu.push({
-                            text        : this.baseLayout.players[currentObject.pathName].getDisplayName()
+                            text        : this.baseLayout.players.get(currentObject.pathName).getDisplayName()
                         });
                         contextMenu.push({
                             icon        : 'fa-arrows-alt',
@@ -90,7 +90,7 @@ export default class BaseLayout_ContextMenu
                             }
                         break;
                     case '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C':
-                        buildingData                        = this.baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C;
+                        buildingData                        = this.baseLayout.toolsData.get('BP_ItemDescriptorPortableMiner_C');
                         buildingData.mapUseSlotColor        = false;
                         break;
                     case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':

@@ -224,15 +224,7 @@ export default class Modal_Map_Collectables
                         }
                         else
                         {
-                            for(let i = (collectables.length - 1); i >= 0; i--)
-                            {
-                                if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
-                                {
-                                    // Removes from collectables...
-                                    collectables.splice(i, 1);
-                                    break;
-                                }
-                            }
+                            collectables.delete(playerCollectables[className].markers[m].pathName);
                         }
                 }
         }
@@ -273,22 +265,13 @@ export default class Modal_Map_Collectables
                         }
                         else
                         {
-                            let collectableAlreadyIn = false;
-                                for(let i = (collectables.length - 1); i >= 0; i--)
-                                {
-                                    if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
-                                    {
-                                        collectableAlreadyIn = true;
-                                        break;
-                                    }
-                                }
-
-                            if(collectableAlreadyIn === false)
+                            const pathName = playerCollectables[className].markers[m].pathName;
+                            if(!collectables.has(pathName))
                             {
-                                let levelName = playerCollectables[className].markers[m].pathName.split(':');
-                                    collectables.push({
+                                let levelName = pathName.split(':');
+                                    collectables.set(pathName, {
                                         levelName   : levelName.shift(),
-                                        pathName    : playerCollectables[className].markers[m].pathName
+                                        pathName
                                     });
                             }
                         }
@@ -367,14 +350,7 @@ export default class Modal_Map_Collectables
         {
             if(className !== null)
             {
-                let collectables = this.baseLayout.saveGameParser.getCollectables();
-                    for(let n = 0; n < collectables.length; n++)
-                    {
-                        if(pathName === collectables[n].pathName)
-                        {
-                            return true;
-                        }
-                    }
+                return this.baseLayout.saveGameParser.getCollectables().has(pathName);
             }
         }
 

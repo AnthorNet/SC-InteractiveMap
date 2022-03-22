@@ -1,6 +1,8 @@
 /* global gtag */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class Spawn_Node
 {
     constructor(options)
@@ -140,7 +142,7 @@ export default class Spawn_Node
             pathName: fakeBuilding.pathName,
             layerId: resultCenter.layer,
             callback: 'deleteGenericBuilding',
-            properties: {transform: JSON.parse(JSON.stringify(fakeBuilding.transform))}
+            properties: {transform: cloneDeep(fakeBuilding.transform)}
         });
 
         return true;

@@ -36,81 +36,80 @@ export default class SaveParser_Write
     generateChunks()
     {
             this.generatedChunks    = [];
-        let objectsKeys             = Object.keys(this.objects);
-        let countObjects            = objectsKeys.length;
 
-            this.saveBinary += this.writeInt(countObjects, false); // This is a reservation for the inflated length ;)
-            this.saveBinary += this.writeInt(countObjects, false);
+            this.saveBinary += this.writeInt(this.objects.size, false); // This is a reservation for the inflated length ;)
+            this.saveBinary += this.writeInt(this.objects.size, false);
 
-        return this.generateObjectsChunks(objectsKeys);
+        return this.generateObjectsChunks(this.objects);
     }
 
-    generateObjectsChunks(objectsKeys)
+    generateObjectsChunks(objects)
     {
-        let countObjects = objectsKeys.length;
-            for(let i = 0; i < countObjects; i++)
+        let i = 0;
+        for(const objectValue of objects.values())
+        {
+            i++;
+            if(objectValue !== undefined)
             {
-                if(this.objects[objectsKeys[i]] !== undefined)
+                if(objectValue.type === 0)
                 {
-                    if(this.objects[objectsKeys[i]].type === 0)
-                    {
-                        this.saveBinary += this.writeObject(this.objects[objectsKeys[i]]);
-                    }
-                    if(this.objects[objectsKeys[i]].type === 1)
-                    {
-                        this.saveBinary += this.writeActor(this.objects[objectsKeys[i]]);
-                    }
+                    this.saveBinary += this.writeObject(objectValue);
                 }
-
-                if(this.saveBinary.length >= this.maxChunkSize)
+                if(objectValue.type === 1)
                 {
-                    this.pushSaveToChunk();
-
-                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s/%2$s objects...', replace: [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]});
-                    this.worker.postMessage({command: 'loaderProgress', percentage: ((i / countObjects * 100) * 0.48)});
+                    this.saveBinary += this.writeActor(objectValue);
                 }
             }
 
-        console.log('Saved ' + countObjects + ' objects...');
+            if(this.saveBinary.length >= this.maxChunkSize)
+            {
+                this.pushSaveToChunk();
 
-        this.saveBinary += this.writeInt(countObjects, false);
-        return this.generateEntitiesChunks(objectsKeys);
+                this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s/%2$s objects...', replace: [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(objects.size)]});
+                this.worker.postMessage({command: 'loaderProgress', percentage: ((i / objects.size * 100) * 0.48)});
+            }
+        }
+
+        console.log('Saved ' + objects.size + ' objects...');
+
+        this.saveBinary += this.writeInt(objects.size, false);
+        return this.generateEntitiesChunks(objects);
     }
 
-    generateEntitiesChunks(objectsKeys)
+    generateEntitiesChunks(objects)
     {
-        let countObjects = objectsKeys.length;
-            for(let i = 0; i < countObjects; i++)
+        let i = 0;
+        for(const objectValue of objects.values())
+        {
+            i++;
+            if(objectValue !== undefined)
             {
-                if(this.objects[objectsKeys[i]] !== undefined)
-                {
-                    this.saveBinary += this.writeEntity(this.objects[objectsKeys[i]]);
-                }
-
-                if(this.saveBinary.length >= this.maxChunkSize)
-                {
-                    this.pushSaveToChunk();
-
-                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s/%2$s entities...', replace: [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]});
-                    this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (i / countObjects * 100) * 0.48)});
-                }
+                this.saveBinary += this.writeEntity(objectValue);
             }
 
-        console.log('Saved ' + countObjects + ' entities...');
+            if(this.saveBinary.length >= this.maxChunkSize)
+            {
+                this.pushSaveToChunk();
+
+                this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s/%2$s entities...', replace: [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(objects.size)]});
+                this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (i / objects.size * 100) * 0.48)});
+            }
+        }
+
+        console.log('Saved ' + objects.size + ' entities...');
 
         return this.generateCollectablesChunks();
     }
 
     generateCollectablesChunks()
     {
-        let countCollectables = this.collectables.length;
-            this.saveBinary  += this.writeInt(countCollectables, false);
+        this.saveBinary  += this.writeInt(this.collectables.size, false);
 
-        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(countCollectables)});
+        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(this.collectables.size)});
 
-        for(let i = 0; i < countCollectables; i++)
+        for(const collectable of this.collectables.values())
         {
-            this.saveBinary += this.writeObjectProperty(this.collectables[i], false);
+            this.saveBinary += this.writeObjectProperty(collectable, false);
 
             if(this.saveBinary.length >= this.maxChunkSize)
             {
@@ -118,7 +117,7 @@ export default class SaveParser_Write
             }
         }
 
-        console.log('Saved ' + countCollectables + ' collectables...');
+        console.log('Saved ' + this.collectables.size + ' collectables...');
 
         return this.finalizeChunks();
     }
@@ -354,12 +353,11 @@ export default class SaveParser_Write
 
             if(currentObject.children !== undefined)
             {
-                let countChild  = currentObject.children.length;
-                    entity += this.writeInt(countChild);
-                    for(let i = 0; i < countChild; i++)
-                    {
-                        entity += this.writeObjectProperty(currentObject.children[i]);
-                    }
+                entity += this.writeInt(currentObject.children.size);
+                for(const child of currentObject.children)
+                {
+                    entity += this.writeObjectProperty(child);
+                }
             }
             else
             {

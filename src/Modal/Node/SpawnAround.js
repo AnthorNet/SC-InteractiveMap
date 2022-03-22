@@ -11,25 +11,25 @@ export default class Modal_Node_SpawnAround
 
         let foundationTypes = [];
         let minerTypes      = [];
-            for(let buildingId in baseLayout.buildingsData)
+            for(const buildingData of baseLayout.buildingsData.values())
             {
                 let currentBuildingOption = {
-                        dataContent : '<img src="' + baseLayout.buildingsData[buildingId].image + '" style="width: 48px;" class="py-2 mr-1" /> ' + baseLayout.buildingsData[buildingId].name,
-                        value       : baseLayout.buildingsData[buildingId].className,
-                        text        : baseLayout.buildingsData[buildingId].name
+                        dataContent : '<img src="' + buildingData.image + '" style="width: 48px;" class="py-2 mr-1" /> ' + buildingData.name,
+                        value       : buildingData.className,
+                        text        : buildingData.name
                     }
 
-                if(baseLayout.buildingsData[buildingId].category === 'foundation')
+                if(buildingData.category === 'foundation')
                 {
-                    if(baseLayout.buildingsData[buildingId].className.includes('Build_Foundation'))
+                    if(buildingData.className.includes('Build_Foundation'))
                     {
-                        currentBuildingOption.group = baseLayout.buildingsData[buildingId].subCategory;
+                        currentBuildingOption.group = buildingData.subCategory;
                         foundationTypes.push(currentBuildingOption);
                     }
                 }
-                if(baseLayout.buildingsData[buildingId].category === 'extraction')
+                if(buildingData.category === 'extraction')
                 {
-                    if(baseLayout.buildingsData[buildingId].className.startsWith('/Game/FactoryGame/Buildable/Factory/Miner'))
+                    if(buildingData.className.startsWith('/Game/FactoryGame/Buildable/Factory/Miner'))
                     {
                         minerTypes.push(currentBuildingOption);
                     }

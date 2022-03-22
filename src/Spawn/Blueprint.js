@@ -2,6 +2,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class Spawn_Blueprint
@@ -10,7 +11,7 @@ export default class Spawn_Blueprint
     {
         this.baseLayout         = options.baseLayout;
 
-        this.clipboard          = JSON.parse(JSON.stringify(options.clipboard));
+        this.clipboard          = cloneDeep(options.clipboard);
         this.marker             = options.marker;
         this.pasteOn            = (options.pasteOn !== undefined) ? options.pasteOn : 'bottom';
 
@@ -241,7 +242,7 @@ export default class Spawn_Blueprint
             setTimeout(resolve, 5);
         }.bind(this)).then(function(){
             $('#liveLoader .progress-bar').css('width', '2%');
-            this.replacePathName(JSON.parse(JSON.stringify(pathNameConversion)));
+            this.replacePathName(cloneDeep(pathNameConversion));
         }.bind(this));
     }
 
@@ -374,36 +375,36 @@ export default class Spawn_Blueprint
                     }
 
                     // Children
-                    if(this.clipboard.data[i].children !== undefined && this.clipboard.data[i].children.length > 0)
+                    if(this.clipboard.data[i].children !== undefined && this.clipboard.data[i].children.size > 0)
                     {
-                        for(let j = 0; j < this.clipboard.data[i].children.length; j++)
+                        for(const child of this.clipboard.data[i].children)
                         {
-                            let childrenPathName    = this.clipboard.data[i].children[j].pathName.split('.');
+                            let childrenPathName    = child.pathName.split('.');
                             let extraPart           = childrenPathName.pop();
                                 childrenPathName    = childrenPathName.join('.');
 
                             if(pathNameConversion[childrenPathName] !== undefined)
                             {
-                                for(let k = 0; k < this.clipboard.data[i].parent.children.length; k++)
+                                for(const nibling of this.clipboard.data[i].parent.children)
                                 {
-                                    if(this.clipboard.data[i].parent.children[k].pathName === this.clipboard.data[i].children[j].pathName)
+                                    if(nibling.pathName === child.pathName)
                                     {
-                                        this.clipboard.data[i].parent.children[k].pathName = pathNameConversion[childrenPathName] + '.' + extraPart;
+                                        nibling.pathName = pathNameConversion[childrenPathName] + '.' + extraPart;
                                         break;
                                     }
                                 }
 
-                                this.clipboard.data[i].children[j].pathName = pathNameConversion[childrenPathName] + '.' + extraPart;
+                                child.pathName = pathNameConversion[childrenPathName] + '.' + extraPart;
                             }
 
-                            if(this.clipboard.data[i].children[j].outerPathName !== undefined && pathNameConversion[this.clipboard.data[i].children[j].outerPathName] !== undefined)
+                            if(child.outerPathName !== undefined && pathNameConversion[child.outerPathName] !== undefined)
                             {
-                                this.clipboard.data[i].children[j].outerPathName = pathNameConversion[this.clipboard.data[i].children[j].outerPathName];
+                                child.outerPathName = pathNameConversion[child.outerPathName];
                             }
 
-                            if(this.clipboard.data[i].children[j].properties !== undefined && this.clipboard.data[i].children[j].properties.length > 0)
+                            if(child.properties !== undefined && child.properties.length > 0)
                             {
-                                this.clipboard.data[i].children[j].properties = this.transformPropertiesPathName(this.clipboard.data[i].children[j].properties, pathNameConversion);
+                                child.properties = this.transformPropertiesPathName(child.properties, pathNameConversion);
                             }
                         }
                     }
@@ -517,7 +518,7 @@ export default class Spawn_Blueprint
             {
                 for(let pathName in this.clipboard.hiddenConnections)
                 {
-                    let currentHiddenConnections            = JSON.parse(JSON.stringify(this.clipboard.hiddenConnections[pathName]));
+                    let currentHiddenConnections            = cloneDeep(this.clipboard.hiddenConnections[pathName]);
                         currentHiddenConnections.pathName   = currentHiddenConnections.pathName.split('.');
                     let extension                           = currentHiddenConnections.pathName[currentHiddenConnections.pathName.length -1];
 
@@ -569,11 +570,11 @@ export default class Spawn_Blueprint
                     {
                         if(this.baseLayout.railroadSubSystem.railroadSubSystem.children === undefined)
                         {
-                            this.baseLayout.railroadSubSystem.railroadSubSystem.children = [];
+                            this.baseLayout.railroadSubSystem.railroadSubSystem.children = new Set();
                         }
-                        if(this.baseLayout.railroadSubSystem.railroadSubSystem.children.includes(currentHiddenConnections.pathName) === false)
+                        if(this.baseLayout.railroadSubSystem.railroadSubSystem.children.has(currentHiddenConnections.pathName) === false)
                         {
-                            this.baseLayout.railroadSubSystem.railroadSubSystem.children.push({pathName: currentHiddenConnections.pathName});
+                            this.baseLayout.railroadSubSystem.railroadSubSystem.children.add({pathName: currentHiddenConnections.pathName});
                         }
                     }
                 }
@@ -595,14 +596,14 @@ export default class Spawn_Blueprint
             {
                 for(let pipeNetworkID in this.clipboard.pipes)
                 {
-                    let newPipeNetworkID    = Object.keys(this.baseLayout.saveGamePipeNetworks);
+                    let newPipeNetworkID    = this.baseLayout.saveGamePipeNetworks.keys();
                         newPipeNetworkID    = (newPipeNetworkID.length > 0) ? (parseInt(newPipeNetworkID.reduce(function(a, b){ return parseInt(a) > parseInt(b) ? parseInt(a) : parseInt(b) })) + 1) : 1;
                     let newPipeNetwork      = {
                         type                    : 1,
                         className               : '/Script/FactoryGame.FGPipeNetwork',
                         pathName                : this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.FGPipeNetwork_XXX'}),
                         transform               : {rotation: [0, 0, 0, 1], translation: [0, 0, 0]},
-                        children                : [],
+                        children                : new Set(),
                         properties              : [{name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}],
                         entity                  : {levelName: '', pathName: ''}
                     };
@@ -650,7 +651,7 @@ export default class Spawn_Blueprint
                     }
 
                     this.baseLayout.saveGameParser.addObject(newPipeNetwork);
-                    this.baseLayout.saveGamePipeNetworks[newPipeNetworkID] = newPipeNetwork.pathName;
+                    this.baseLayout.saveGamePipeNetworks.set(newPipeNetworkID, newPipeNetwork.pathName);
                 }
             }
 
@@ -880,38 +881,37 @@ export default class Spawn_Blueprint
 
             if(currentClipboard.children !== undefined)
             {
-                for(let j = 0; j < currentClipboard.children.length; j++)
+                for(const newChild of currentClipboard.children)
                 {
-                    let newChildren     = currentClipboard.children[j];
-                    let testPathName    = newChildren.pathName.split('.');
+                    let testPathName    = newChild.pathName.split('.');
                             testPathName.pop();
                             testPathName    = testPathName.join('.');
 
                         // Do we need to update mPipeNetworkID?
-                        if(pipesConversion[newChildren.pathName] !== undefined)
+                        if(pipesConversion[newChild.pathName] !== undefined)
                         {
-                            for(let m = 0; m < newChildren.properties.length; m++)
+                            for(let m = 0; m < newChild.properties.length; m++)
                             {
-                                if(newChildren.properties[m].name === 'mPipeNetworkID')
+                                if(newChild.properties[m].name === 'mPipeNetworkID')
                                 {
-                                    newChildren.properties[m].value = pipesConversion[newChildren.pathName];
+                                    newChild.properties[m].value = pipesConversion[newChild.pathName];
                                     break;
                                 }
                             }
                         }
                         if(pipesConversion[testPathName] !== undefined)
                         {
-                            for(let m = 0; m < newChildren.properties.length; m++)
+                            for(let m = 0; m < newChild.properties.length; m++)
                             {
-                                if(newChildren.properties[m].name === 'mPipeNetworkID')
+                                if(newChild.properties[m].name === 'mPipeNetworkID')
                                 {
-                                    newChildren.properties[m].value = pipesConversion[testPathName];
+                                    newChild.properties[m].value = pipesConversion[testPathName];
                                     break;
                                 }
                             }
                         }
 
-                    this.baseLayout.saveGameParser.addObject(newChildren);
+                    this.baseLayout.saveGameParser.addObject(newChild);
                 }
             }
 
@@ -1027,7 +1027,7 @@ export default class Spawn_Blueprint
 
         for(let i = 0; i < corners.length; i++)
         {
-            let newFoundation                           = JSON.parse(JSON.stringify(this.centerObject));
+            let newFoundation                           = cloneDeep(this.centerObject);
                 newFoundation.pathName                  = this.baseLayout.generateFastPathName(this.centerObject);
             let translationRotation                     = BaseLayout_Math.getPointRotation(corners[i], this.centerObject.transform.translation, this.centerObject.transform.rotation);
                 newFoundation.transform.translation[0]  = translationRotation[0];

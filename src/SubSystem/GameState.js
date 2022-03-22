@@ -2,6 +2,8 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import Building_Light                           from '../Building/Light.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class SubSystem_GameState
 {
     static get totalLightColorSlots(){ return 7; }
@@ -168,7 +170,7 @@ export default class SubSystem_GameState
                     };
                     for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
                     {
-                        mBuildableLightColorSlots.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultLightColorSlot(slotIndex, true)));
+                        mBuildableLightColorSlots.value.values[slotIndex]     = cloneDeep(this.getDefaultLightColorSlot(slotIndex, true));
                     }
 
                     this.gameState.properties.push(mBuildableLightColorSlots);

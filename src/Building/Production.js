@@ -49,29 +49,30 @@ export default class Building_Production
             });
         let purchasedSchematics = statisticsSchematics.getPurchasedSchematics();
 
-        for(let recipeId in baseLayout.recipesData)
+        for(const [recipeId, recipeData] of baseLayout.recipesData)
         {
-            if(baseLayout.recipesData[recipeId].mProducedIn !== undefined && baseLayout.recipesData[recipeId].mProducedIn.includes(currentObject.className))
+            if(recipeData.mProducedIn !== undefined && recipeData.mProducedIn.includes(currentObject.className))
             {
                 selectedRecipes.push(recipeId);
             }
         }
 
         selectedRecipes.sort(function(a, b){
-            return baseLayout.recipesData[a].name.localeCompare(baseLayout.recipesData[b].name);
+            return baseLayout.recipesData.get(a).name.localeCompare(baseLayout.recipesData.get(b).name);
         }.bind(baseLayout));
 
         for(let i = 0; i < selectedRecipes.length; i++)
         {
-            if(baseLayout.recipesData[selectedRecipes[i]].className !== undefined)
+            const recipeData = baseLayout.recipesData.get(selectedRecipes[i]);
+            if(recipeData.className !== undefined)
             {
                 let isUnlocked = false;
 
-                    for(let schematicId in baseLayout.schematicsData)
+                    for(const schematic of baseLayout.schematicsData.values())
                     {
-                        if(baseLayout.schematicsData[schematicId].className !== undefined && purchasedSchematics.includes(baseLayout.schematicsData[schematicId].className))
+                        if(schematic.className !== undefined && purchasedSchematics.includes(schematic.className))
                         {
-                            if(baseLayout.schematicsData[schematicId].recipes !== undefined && baseLayout.schematicsData[schematicId].recipes.includes(baseLayout.recipesData[selectedRecipes[i]].className))
+                            if(schematic.recipes !== undefined && schematic.recipes.includes(recipeData.className))
                             {
                                 isUnlocked = true;
                             }
@@ -80,7 +81,7 @@ export default class Building_Production
 
                     if(isUnlocked === true)
                     {
-                        selectOptions.push({text: baseLayout.recipesData[selectedRecipes[i]].name, value: baseLayout.recipesData[selectedRecipes[i]].className});
+                        selectOptions.push({text: recipeData.name, value: recipeData.className});
                     }
             }
         }

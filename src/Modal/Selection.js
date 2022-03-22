@@ -17,6 +17,8 @@ import Spawn_Fill                               from '../Spawn/Fill.js';
 import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
 import SubSystem_Foliage                        from '../SubSystem/Foliage.js';
 
+import cloneDeep                                from '../Lib/cloneDeep.js'
+
 export default class Modal_Selection
 {
     static cancel(baseLayout)
@@ -651,7 +653,7 @@ export default class Modal_Selection
 
                 for(let i = 0; i < corners.length; i++)
                 {
-                    let newFoundation                           = JSON.parse(JSON.stringify(fakeFoundation));
+                    let newFoundation                           = cloneDeep(fakeFoundation);
                         newFoundation.pathName                  = baseLayout.generateFastPathName(fakeFoundation);
                     let translationRotation                     = BaseLayout_Math.getPointRotation(corners[i], fakeFoundation.transform.translation, fakeFoundation.transform.rotation);
                         newFoundation.transform.translation[0]  = translationRotation[0];
@@ -865,14 +867,14 @@ export default class Modal_Selection
         {
             let selection       = baseLayout.satisfactoryMap.leafletMap.selection._areaSelected;
             let inputOptions    = [];
-                for(let i in baseLayout.buildingsData)
+                for(const buildingData of baseLayout.buildingsData.values())
                 {
-                    if(baseLayout.buildingsData[i].category === 'foundation')
+                    if(buildingData.category === 'foundation')
                     {
                         inputOptions.push({
-                            dataContent : '<img src="' + baseLayout.buildingsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + baseLayout.buildingsData[i].name,
-                            value       : baseLayout.buildingsData[i].className,
-                            text        : baseLayout.buildingsData[i].name
+                            dataContent : '<img src="' + buildingData.image + '" style="width: 24px;" class="mr-1" /> ' + buildingData.name,
+                            value       : buildingData.className,
+                            text        : buildingData.name
                         });
                     }
                 }
