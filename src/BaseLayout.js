@@ -2324,7 +2324,7 @@ export default class BaseLayout
             let oldInventory    = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
                 if(oldInventory !== null)
                 {
-                    const mInventoryStacks = this.getObjectPropertyValue(oldInventory, 'mInventoryStacks')?.value?.values;
+                    const mInventoryStacks = this.getObjectPropertyValue(oldInventory, 'mInventoryStacks')?.values;
                     if(mInventoryStacks !== undefined)
                     {
                         for(let k = 0; k < mInventoryStacks.length; k++)
