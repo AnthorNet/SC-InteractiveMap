@@ -117,9 +117,10 @@ export default class Modal_Map_Hotbars
                                         if(currentShortcut !== null)
                                         {
                                             this.baseLayout.deleteAllObjectProperties(currentShortcut);
-                                            for (const property of cloneDeep(this.clipboard[0].values[j])) {
+                                            for(const property of cloneDeep(this.clipboard[0].values[j]))
+                                            {
                                                 this.baseLayout.setObjectProperty(currentShortcut, property);
-                                            };
+                                            }
                                         }
                                 }
 
@@ -204,9 +205,10 @@ export default class Modal_Map_Hotbars
                                             if(currentShortcut !== null)
                                             {
                                                 this.baseLayout.deleteAllObjectProperties(currentShortcut);
-                                                for (const property of cloneDeep(this.clipboard[i].values[j])) {
+                                                for(const property of cloneDeep(this.clipboard[i].values[j]))
+                                                {
                                                     this.baseLayout.setObjectProperty(currentShortcut, property);
-                                                };
+                                                }
                                             }
                                     }
                                 }

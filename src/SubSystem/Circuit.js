@@ -286,7 +286,7 @@ export default class SubSystem_Circuit
             let currentCiruitSubSystem = this.baseLayout.saveGameParser.getTargetObject(this.circuitSubSystem.extra.circuits[i].pathName);
 
             const mComponents = this.baseLayout.getObjectPropertyValue(currentCiruitSubSystem, 'mComponents');
-            if (mComponents !== null)
+            if(mComponents !== null)
             {
                 for(let k = (mComponents.values.length - 1); k >= 0; k--)
                 {

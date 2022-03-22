@@ -931,7 +931,7 @@ export default class GameMap
     updateHash()
     {
         let hash = this.formatHash(this.SatisfactoryMap);
-            if (this.lastHash !== hash)
+            if(this.lastHash !== hash)
             {
                 location.replace(hash);
                 this.lastHash = hash;

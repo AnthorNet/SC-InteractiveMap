@@ -215,7 +215,8 @@ export default class SaveParser
 
     getTargetObject(pathName)
     {
-        if (pathName === undefined || pathName === null) {
+        if(pathName === undefined || pathName === null)
+        {
             return null;
         }
 

@@ -112,8 +112,9 @@ export default class BaseLayout_Tooltip
                         case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C':
                         case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_EliteStingerParts.BP_EliteStingerParts_C':
                             let currentItemData = null;
-                            let baseItemData = this.baseLayout.itemsData.get(this.target.options.itemId);
-                                if (baseItemData === undefined) {
+                            let baseItemData    = this.baseLayout.itemsData.get(this.target.options.itemId);
+                                if(baseItemData === undefined)
+                                {
                                     baseItemData = this.baseLayout.toolsData.get(this.target.options.itemId)
                                 }
                                 if(baseItemData !== undefined)
@@ -244,47 +245,18 @@ export default class BaseLayout_Tooltip
             let maxFluid        = 3.1415926535897932 * Math.pow((1.3 / 2), 2) * splineData.distanceStraight * 1000; // Use straigth calculation
             let itemType        = null;
 
-            let fluidBox        = this.baseLayout.getObjectPropertyValue(currentObject, 'mFluidBox');
-                if(fluidBox === null)
-                {
-                    fluidBox = {value: 0};
-                }
-            let currentFluid    = Math.min(maxFluid, fluidBox.value * 1000); //TODO: Until we get fluidBox method working!
+            let fluidBox        = this.baseLayout.getObjectPropertyValue(currentObject, 'mFluidBox', 0);
+            let currentFluid    = Math.min(maxFluid, fluidBox * 1000); //TODO: Until we get fluidBox method working!
 
             // Get fluid type
-            let pipeNetworkId   = null;
-
-                if(currentObject.children !== undefined)
+            const currentPipeNetwork   = this.baseLayout.getObjectPipeNetwork(currentObject);
+                if(currentPipeNetwork !== null)
                 {
-                    for(const child of currentObject.children)
-                    {
-                        let currentChildren = this.baseLayout.saveGameParser.getTargetObject(child.pathName);
-                            if(currentChildren !== null)
-                            {
-                                let mPipeNetworkID = this.baseLayout.getObjectPropertyValue(currentChildren, 'mPipeNetworkID');
-                                    if(mPipeNetworkID !== null)
-                                    {
-                                        pipeNetworkId = mPipeNetworkID;
-                                        break;
-                                    }
-                            }
-                    }
-                }
-
-                if(pipeNetworkId !== null)
-                {
-                    const pipeNetwork = this.baseLayout.saveGamePipeNetworks.get(pipeNetworkId);
-                    if (pipeNetwork !== undefined) {
-                        let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(pipeNetwork);
-                        if(currentPipeNetwork !== null)
+                    const mFluidDescriptor = this.baseLayout.getObjectPropertyValue(currentPipeNetwork, 'mFluidDescriptor');
+                        if(mFluidDescriptor !== null)
                         {
-                            const mFluidDescriptor = this.baseLayout.getObjectPropertyValue(currentPipeNetwork, 'mFluidDescriptor');
-                            if(mFluidDescriptor !== null)
-                            {
-                                itemType = mFluidDescriptor.pathName;
-                            }
+                            itemType = mFluidDescriptor.pathName;
                         }
-                    }
                 }
 
             if(itemType !== null)
@@ -962,47 +934,18 @@ export default class BaseLayout_Tooltip
         let currentFluid    = maxFluid; //TODO: Until we get fluidBox method working!
         let itemType        = null;
 
-        let fluidBox        = this.baseLayout.getObjectPropertyValue(currentObject, 'mFluidBox');
-            if(fluidBox === null)
-            {
-                fluidBox = {value: 0};
-            }
-            currentFluid    = Math.min(maxFluid, fluidBox.value * 1000);
+        let fluidBox        = this.baseLayout.getObjectPropertyValue(currentObject, 'mFluidBox', 0);
+            currentFluid    = Math.min(maxFluid, fluidBox * 1000);
 
         // Get fluid type
-        let pipeNetworkId   = null;
-
-            if(currentObject.children !== undefined)
+        const currentPipeNetwork = this.baseLayout.getObjectPipeNetwork(currentObject);
+            if(currentPipeNetwork !== null)
             {
-                for(const child of currentObject.children)
-                {
-                    let currentChildren = this.baseLayout.saveGameParser.getTargetObject(child.pathName);
-                        if(currentChildren !== null)
-                        {
-                            let mPipeNetworkID = this.baseLayout.getObjectPropertyValue(currentChildren, 'mPipeNetworkID');
-                                if(mPipeNetworkID !== null)
-                                {
-                                    pipeNetworkId = mPipeNetworkID;
-                                    break;
-                                }
-                        }
-                }
-            }
-
-            if(pipeNetworkId !== null)
-            {
-                const pipeNetwork = this.baseLayout.saveGamePipeNetworks.get(pipeNetworkId);
-                if (pipeNetwork !== undefined) {
-                    let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(pipeNetwork);
-                    if(currentPipeNetwork !== null)
+                const mFluidDescriptor = this.baseLayout.getObjectPropertyValue(currentPipeNetwork, 'mFluidDescriptor')
+                    if(mFluidDescriptor !== null)
                     {
-                        const mFluidDescriptor = this.baseLayout.getObjectPropertyValue(currentPipeNetwork, 'mFluidDescriptor')
-                        if(mFluidDescriptor !== null)
-                        {
-                            itemType = mFluidDescriptor.pathName;
-                        }
+                        itemType = mFluidDescriptor.pathName;
                     }
-                }
             }
 
         if(itemType !== null)

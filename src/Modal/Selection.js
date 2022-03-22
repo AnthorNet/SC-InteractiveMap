@@ -275,7 +275,7 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Blueprints', text: 'Add "Foundation 8m x 2m" helpers on selection boundaries', value: 'helpers'});
                 inputOptions.push({group: 'Blueprints', text: 'Copy selected items', value: 'copy'});
 
-                if (haveProductionCategory === true || haveExtractionCategory === true || haveGeneratorCategory === true)
+                if(haveProductionCategory === true || haveExtractionCategory === true || haveGeneratorCategory === true)
                 {
                     inputOptions.push({group: 'Power/Overclocking', text: 'Set selected machines clock speed', value: 'clockSpeed'});
 

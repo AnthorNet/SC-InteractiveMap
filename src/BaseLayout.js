@@ -185,7 +185,8 @@ export default class BaseLayout
         };
 
         // Reset mods layer...
-        if (this.modsData !== null) {
+        if(this.modsData !== null)
+        {
             for(const [modId, modData] of this.modsData)
             {
                 if(modData.isLoaded !== undefined && modData.isLoaded === true)
@@ -942,12 +943,13 @@ export default class BaseLayout
         if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
         {
             const player = this.players.get(currentObject.pathName);
-            if (player !== undefined) {
+            if(player !== undefined)
+            {
                 let playerState = player.addMarker();
-                if(resolve === false)
-                {
-                    return {layer: 'playerPositionLayer', marker: playerState};
-                }
+                    if(resolve === false)
+                    {
+                        return {layer: 'playerPositionLayer', marker: playerState};
+                    }
 
                 return resolve();
             }
@@ -1610,8 +1612,9 @@ export default class BaseLayout
         let mPickupItems = this.getObjectPropertyValue(currentObject, 'mPickupItems');
             if(mPickupItems !== null)
             {
-                const propertyNumItems = this.getObjectPropertyValue(mPickupItems.values[0].value, 'NumItems');
-                if (propertyNumItems !== null && propertyNumItems.value > 0) {
+                const propertyNumItems = this.getObjectPropertyValue(mPickupItems.values[0], 'NumItems', 0);
+                if(propertyNumItems > 0)
+                {
                     let itemId = this.getItemDataFromClassName(mPickupItems.values[0].value.itemName);
                         if(itemId !== null)
                         {
@@ -1662,7 +1665,7 @@ export default class BaseLayout
                                     {
                                         pathName: currentObject.pathName,
                                         itemId: itemId,
-                                        itemQty: propertyNumItems.value,
+                                        itemQty: propertyNumItems,
                                         icon: this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
                                     }
                                 );
@@ -1959,7 +1962,7 @@ export default class BaseLayout
                     let currentObjectChildren = this.saveGameParser.getTargetObject(child.pathName);
                     const component = '.' + currentObjectChildren.pathName.split('.').pop();
 
-                    if (this.availablePowerConnection.has(component))
+                    if(this.availablePowerConnection.has(component))
                     {
                         const mWires = this.getObjectPropertyValue(currentObjectChildren, 'mWires');
                         if(mWires !== null && mWires.name === 'mWires')
@@ -2397,8 +2400,8 @@ export default class BaseLayout
                         let mPipeNetworkID = this.getObjectPropertyValue(currentChildren, 'mPipeNetworkID');
                             if(mPipeNetworkID !== null)
                             {
-                                const pipeNetwork = this.saveGamePipeNetworks.get(mPipeNetworkID)
-                                if (pipeNetwork !== undefined)
+                                const pipeNetwork = this.saveGamePipeNetworks.get(mPipeNetworkID);
+                                if(pipeNetwork !== undefined)
                                 {
                                     return this.saveGameParser.getTargetObject(pipeNetwork);
                                 }
@@ -3454,7 +3457,8 @@ export default class BaseLayout
                                     let currentConnectedComponent = this.saveGameParser.getTargetObject(targetConnectedComponent.pathName);
                                         if(currentConnectedComponent !== null)
                                         {
-                                            if (this.getObjectPropertyValue(connectedComponent, 'mConnectedComponent').value.pathName === connectedComponent.pathName) {
+                                            if(this.getObjectPropertyValue(connectedComponent, 'mConnectedComponent').value.pathName === connectedComponent.pathName)
+                                            {
                                                 this.deleteObjectProperty(currentConnectedComponent, 'mConnectedComponent')
                                             }
                                         }
@@ -3628,39 +3632,40 @@ export default class BaseLayout
 
                         // Does source or target have a connection anchor?
                         let sourceTranslation = currentObjectSourceOuterPath.transform.translation;
-                        if (this.detailedModels !== null) {
-                            const sourceDetailedModel = this.detailedModels.get(currentObjectSourceOuterPath.className);
-                                if(sourceDetailedModel !== undefined && sourceDetailedModel.powerConnection !== undefined)
-                                {
-                                    let currentModel = sourceDetailedModel;
-                                        sourceTranslation= BaseLayout_Math.getPointRotation(
-                                            [
-                                                sourceTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
-                                                sourceTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
-                                            ],
-                                            sourceTranslation,
-                                            currentObjectSourceOuterPath.transform.rotation
-                                        );
-                                }
-                        }
+                            if(this.detailedModels !== null)
+                            {
+                                const sourceDetailedModel = this.detailedModels.get(currentObjectSourceOuterPath.className);
+                                    if(sourceDetailedModel !== undefined && sourceDetailedModel.powerConnection !== undefined)
+                                    {
+                                        let currentModel = sourceDetailedModel;
+                                            sourceTranslation= BaseLayout_Math.getPointRotation(
+                                                [
+                                                    sourceTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
+                                                    sourceTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
+                                                ],
+                                                sourceTranslation,
+                                                currentObjectSourceOuterPath.transform.rotation
+                                            );
+                                    }
+                            }
 
                         let targetTranslation = currentObjectTargetOuterPath.transform.translation;
-                        if (this.detailedModels !== null) {
-                            const targetDetailedModel = this.detailedModels.get(currentObjectTargetOuterPath.className);
-                            if(targetDetailedModel !== undefined && targetDetailedModel.powerConnection !== undefined)
+                            if(this.detailedModels !== null)
                             {
-                                let currentModel = targetDetailedModel;
-                                    targetTranslation= BaseLayout_Math.getPointRotation(
-                                        [
-                                            targetTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
-                                            targetTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
-                                        ],
-                                        targetTranslation,
-                                        currentObjectTargetOuterPath.transform.rotation
-                                    );
+                                const targetDetailedModel = this.detailedModels.get(currentObjectTargetOuterPath.className);
+                                if(targetDetailedModel !== undefined && targetDetailedModel.powerConnection !== undefined)
+                                {
+                                    let currentModel = targetDetailedModel;
+                                        targetTranslation= BaseLayout_Math.getPointRotation(
+                                            [
+                                                targetTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
+                                                targetTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
+                                            ],
+                                            targetTranslation,
+                                            currentObjectTargetOuterPath.transform.rotation
+                                        );
+                                }
                             }
-                        }
-
 
                         // Add the power line!
                         let powerline = L.polyline([
@@ -3811,7 +3816,8 @@ export default class BaseLayout
             connectedWires = mWires.values.length;
         }
 
-        if (this.getObjectPropertyValue(currentObjectPowerConnection, 'mHiddenConnections') !== null) {
+        if(this.getObjectPropertyValue(currentObjectPowerConnection, 'mHiddenConnections') !== null)
+        {
             keepCircuitId = true;
         }
 
@@ -4467,7 +4473,7 @@ export default class BaseLayout
                                     category        : currentItemData.category,
                                     name            : currentItemData.name,
                                     image           : currentItemData.image,
-                                    qty             : this.getObjectPropertyValue(mInventoryStacks.values[k][0].value, 'NumItems'),
+                                    qty             : this.getObjectPropertyValue(mInventoryStacks.values[k][0], 'NumItems'),
                                     isActive        : ((mActiveEquipmentIndex !== null && mActiveEquipmentIndex === k) ? true : false)
                                 });
                             }
@@ -4965,7 +4971,8 @@ export default class BaseLayout
 
     setObjectProperty(object, property)
     {
-        if (object.properties === undefined) {
+        if(object.properties === undefined)
+        {
             object.properties = new Map();
         }
         object.properties.set(property.name, property);
@@ -4974,15 +4981,18 @@ export default class BaseLayout
     setObjectPropertyValue(object, propertyName, value, type = null)
     {
         const property = this.getObjectProperty(object, propertyName);
-        if (property !== null) {
+        if(property !== null)
+        {
             property.value = value;
-            if (type !== null) {
+            if(type !== null)
+            {
                 property.type = type;
             }
             return;
         }
 
-        if (type === null) {
+        if(type === null)
+        {
             throw new Error("No property type given.");
         }
 
@@ -5005,28 +5015,27 @@ export default class BaseLayout
 
     getItemDataFromRecipe(currentObject, propertyName = 'mCurrentRecipe')
     {
-        let recipe              = this.getObjectPropertyValue(currentObject, propertyName);
+        let recipe = this.getObjectPropertyValue(currentObject, propertyName);
+            if(recipe !== null)
+            {
+                // Extract recipe name
+                let recipeName      = recipe.pathName.split('.')[1];
+                const recipeData    = this.recipesData.get(recipeName);
+                    if(recipeData !== undefined) //TODO: Bypass mod override?! ('|#|')
+                    {
+                        return recipeData;
+                    }
+                    else
+                    {
+                        let fromClassName =  this.getItemDataFromRecipeClassName(recipe.pathName);
+                            if(fromClassName !== null)
+                            {
+                                return fromClassName;
+                            }
 
-        if(recipe !== null)
-        {
-            // Extract recipe name
-            let recipeName = recipe.pathName.split('.')[1];
-            const recipeData = this.recipesData.get(recipeName);
-                if(recipeData !== undefined) //TODO: Bypass mod override?! ('|#|')
-                {
-                    return recipeData;
-                }
-                else
-                {
-                    let fromClassName =  this.getItemDataFromRecipeClassName(recipe.pathName);
-                        if(fromClassName !== null)
-                        {
-                            return fromClassName;
-                        }
-
-                    console.log('Recipe not found?', recipeName, currentObject);
-                }
-        }
+                        console.log('Recipe not found?', recipeName, currentObject);
+                    }
+            }
 
         return null;
     }
@@ -5201,7 +5210,8 @@ export default class BaseLayout
         if(!this.buildingsData.has('Build_SM_RailingRamp_8x4_01_C'))
         {
             const baseBuildingData = this.buildingsData.get('Build_Railing_01_C');
-            if (baseBuildingData !== undefined) {
+            if(baseBuildingData !== undefined)
+            {
                 this.buildingsData.set("Build_SM_RailingRamp_8x4_01_C", {
                     ...cloneDeep(baseBuildingData),
                     className: '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x4_01.Build_SM_RailingRamp_8x4_01_C',
@@ -5226,7 +5236,8 @@ export default class BaseLayout
         if(!this.buildingsData.has('Desc_GolfCart_C'))
         {
             const baseBuildingData = this.toolsData.get('Desc_GolfCart_C');
-            if (baseBuildingData !== undefined) {
+            if(baseBuildingData !== undefined)
+            {
                 this.buildingsData.set('Desc_GolfCart_C', {
                     ...cloneDeep(baseBuildingData),
                     className: '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C',
@@ -5237,7 +5248,8 @@ export default class BaseLayout
         if(!this.buildingsData.has('Desc_GolfcartGold_C'))
         {
             const baseBuildingData = this.toolsData.get('Desc_GolfCartGold_C');
-            if (baseBuildingData !== undefined) {
+            if(baseBuildingData !== undefined)
+            {
                 this.buildingsData.set('Desc_GolfcartGold_C', {
                     ...cloneDeep(baseBuildingData),
                     className: '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C',
@@ -5250,19 +5262,19 @@ export default class BaseLayout
         if(!this.buildingsData.has('BP_FireWorksProjectile_01_C'))
         {
             let baseItemData = this.itemsData.get('Desc_Fireworks_Projectile_01_C');
-            if(baseItemData !== undefined)
-            {
-                this.buildingsData.set('BP_FireWorksProjectile_01_C', {
-                    ...cloneDeep(baseItemData),
-                    className           : '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_01.BP_FireWorksProjectile_01_C',
-                    mapUseSlotColor     : false,
-                    mapLayer            : 'playerFicsmasLayer',
-                    mapColor            : '#00FF00',
-                    width               : 0.25,
-                    length              : 0.25,
-                    height              : 2,
-                });
-            }
+                if(baseItemData !== undefined)
+                {
+                    this.buildingsData.set('BP_FireWorksProjectile_01_C', {
+                        ...cloneDeep(baseItemData),
+                        className           : '/Game/FactoryGame/Events/Christmas/Fireworks/BP_FireWorksProjectile_01.BP_FireWorksProjectile_01_C',
+                        mapUseSlotColor     : false,
+                        mapLayer            : 'playerFicsmasLayer',
+                        mapColor            : '#00FF00',
+                        width               : 0.25,
+                        length              : 0.25,
+                        height              : 2,
+                    });
+                }
 
             baseItemData = this.itemsData.get('Desc_Fireworks_Projectile_02_C');
             if(baseItemData !== undefined)

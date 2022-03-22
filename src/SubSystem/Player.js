@@ -184,12 +184,14 @@ export default class SubSystem_Player
                     if(inventory !== null)
                     {
                         const mAdjustedSizeDiff = this.baseLayout.getObjectPropertyValue(inventory, 'mAdjustedSizeDiff');
-                        if (mAdjustedSizeDiff !== null)
+                        if(mAdjustedSizeDiff !== null)
                         {
                             this.baseLayout.setObjectPropertyValue(inventory, 'mAdjustedSizeDiff', 0);
                         }
-                        for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
+                        for(const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors'])
+                        {
                             const property = this.baseLayout.getObjectPropertyValue(inventory, propertyName);
+                            if(property !== null)
                             {
                                 property.values.splice(this.defaultInventorySize);
 
@@ -197,7 +199,7 @@ export default class SubSystem_Player
                                 if(propertyName === 'mInventoryStacks')
                                 {
                                     property.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
-                                    this.baseLayout.setObjectPropertyValue(property.values[0][0].value, 'NumItems', 1);
+                                    this.baseLayout.setObjectPropertyValue(property.values[0][0], 'NumItems', 1);
                                 }
                             }
                         }
@@ -206,14 +208,16 @@ export default class SubSystem_Player
                 let armSlot         = this.baseLayout.saveGameParser.getTargetObject(currentPlayer.pathName + '.ArmSlot');
                                       this.baseLayout.deleteObjectProperty(armSlot, 'mEquipmentInSlot');
 
-                for (const propertyName of ['mAdjustedSizeDiff', 'mActiveEquipmentIndex']) {
+                for(const propertyName of ['mAdjustedSizeDiff', 'mActiveEquipmentIndex'])
+                {
                     const property = this.baseLayout.getObjectPropertyValue(armSlot, propertyName);
                     if(property !== null)
                     {
                         this.baseLayout.setObjectPropertyValue(armSlot, propertyName, 0);
                     }
                 }
-                for (const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors']) {
+                for(const propertyName of ['mInventoryStacks', 'mArbitrarySlotSizes', 'mAllowedItemDescriptors'])
+                {
                     const property = this.baseLayout.getObjectPropertyValue(armSlot, propertyName);
                     if(property !== null)
                     {
