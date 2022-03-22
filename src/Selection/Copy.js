@@ -1,7 +1,7 @@
 /* global gtag */
 import Modal_Selection                          from '../Modal/Selection.js';
 
-import cloneDeep                                from '../Lib/cloneDeep.js'
+import cloneDeep                                from '../Lib/lodash/cloneDeep.js'
 
 export default class Selection_Copy
 {

@@ -1,6 +1,6 @@
 import BaseLayout_Modal                         from '../../BaseLayout/Modal.js';
 
-import cloneDeep                                from '../../Lib/cloneDeep.js'
+import cloneDeep                                from '../../Lib/lodash/cloneDeep.js'
 
 export default class Modal_Map_Hotbars
 {

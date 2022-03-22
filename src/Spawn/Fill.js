@@ -4,7 +4,7 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import Modal_Selection                          from '../Modal/Selection.js';
 
-import cloneDeep                                from '../Lib/cloneDeep.js'
+import cloneDeep                                from '../Lib/lodash/cloneDeep.js'
 
 export default class Spawn_Fill
 {

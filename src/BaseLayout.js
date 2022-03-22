@@ -43,7 +43,7 @@ import Building_RailroadSwitchControl           from './Building/RailroadSwitchC
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
 
-import cloneDeep                                from './Lib/cloneDeep.js'
+import cloneDeep                                from './Lib/lodash/cloneDeep.js'
 
 export default class BaseLayout
 {

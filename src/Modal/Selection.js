@@ -17,7 +17,7 @@ import Spawn_Fill                               from '../Spawn/Fill.js';
 import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
 import SubSystem_Foliage                        from '../SubSystem/Foliage.js';
 
-import cloneDeep                                from '../Lib/cloneDeep.js'
+import cloneDeep                                from '../Lib/lodash/cloneDeep.js'
 
 export default class Modal_Selection
 {

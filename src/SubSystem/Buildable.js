@@ -1,6 +1,6 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
-import cloneDeep                                from '../Lib/cloneDeep.js'
+import cloneDeep                                from '../Lib/lodash/cloneDeep.js'
 
 export default class SubSystem_Buildable
 {

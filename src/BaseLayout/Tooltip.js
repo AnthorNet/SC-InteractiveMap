@@ -17,7 +17,7 @@ import Building_SmartSplitter                   from '../Building/SmartSplitter.
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
 
-import cloneDeep                                from '../Lib/cloneDeep.js'
+import cloneDeep                                from '../Lib/lodash/cloneDeep.js'
 
 export default class BaseLayout_Tooltip
 {
