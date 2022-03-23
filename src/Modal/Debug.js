@@ -239,6 +239,15 @@ export default class Modal_Debug
                 return '<span class="json-literal" style="user-select: text;">' + json + '</span>';
         }
 
+        if(json instanceof Map)
+        {
+            json = Array.from(json.values());
+        }
+        if(json instanceof Set)
+        {
+            json = Array.from(json);
+        }
+
         if(json instanceof Array)
         {
             if(json.length > 0)
