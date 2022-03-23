@@ -536,7 +536,7 @@ export default class SubSystem_Buildable
 
                     for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                     {
-                        mColorSlots_Data.values.push([
+                        mColorSlots_Data.value.values.push([
                             {
                                 name    : 'PrimaryColor',
                                 type    : 'StructProperty',
