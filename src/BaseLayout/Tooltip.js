@@ -245,8 +245,8 @@ export default class BaseLayout_Tooltip
             let maxFluid        = 3.1415926535897932 * Math.pow((1.3 / 2), 2) * splineData.distanceStraight * 1000; // Use straigth calculation
             let itemType        = null;
 
-            let fluidBox        = this.baseLayout.getObjectPropertyValue(currentObject, 'mFluidBox', 0);
-            let currentFluid    = Math.min(maxFluid, fluidBox * 1000); //TODO: Until we get fluidBox method working!
+            let fluidBox        = this.baseLayout.getObjectPropertyValue(currentObject, 'mFluidBox', {value: 0});
+            let currentFluid    = Math.min(maxFluid, fluidBox.value * 1000); //TODO: Until we get fluidBox method working!
 
             // Get fluid type
             const currentPipeNetwork   = this.baseLayout.getObjectPipeNetwork(currentObject);
@@ -934,8 +934,8 @@ export default class BaseLayout_Tooltip
         let currentFluid    = maxFluid; //TODO: Until we get fluidBox method working!
         let itemType        = null;
 
-        let fluidBox        = this.baseLayout.getObjectPropertyValue(currentObject, 'mFluidBox', 0);
-            currentFluid    = Math.min(maxFluid, fluidBox * 1000);
+        let fluidBox        = this.baseLayout.getObjectPropertyValue(currentObject, 'mFluidBox', {value: 0});
+            currentFluid    = Math.min(maxFluid, fluidBox.value * 1000);
 
         // Get fluid type
         const currentPipeNetwork = this.baseLayout.getObjectPipeNetwork(currentObject);
@@ -1673,6 +1673,10 @@ export default class BaseLayout_Tooltip
                 if(buildingData.mapCorrectedAngle !== undefined)
                 {
                     angle += buildingData.mapCorrectedAngle;
+                }
+                if(buildingData.category === 'wall')
+                {
+                    angle += 90;
                 }
 
                 direction = '<i class="fas fa-location-arrow" style="transform: rotate(' + angle + 'deg)"></i>&nbsp;&nbsp;&nbsp;';

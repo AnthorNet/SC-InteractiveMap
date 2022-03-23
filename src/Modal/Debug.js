@@ -1,3 +1,5 @@
+/* global Map, Set */
+
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 
 export default class Modal_Debug

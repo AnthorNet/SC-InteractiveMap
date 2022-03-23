@@ -1069,7 +1069,7 @@ export default class SaveParser_Read
                         currentProperty.value.itemName      = this.readString();
                         currentProperty.value               = this.readObjectProperty(currentProperty.value);
                         const property                      = this.readPropertyV5();
-                        currentProperty.properties          = new Map([[property.name, property]]);
+                        currentProperty.value.properties    = new Map([[property.name, property]]);
                         break;
 
                     case 'FluidBox':

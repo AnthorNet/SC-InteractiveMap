@@ -704,7 +704,7 @@ export default class SaveParser_Write
 
                         let oldLength   = this.currentBufferLength;
 
-                        for(const subProperty of currentProperty.properties.values())
+                        for(const subProperty of currentProperty.value.properties.values())
                         {
                             if(subProperty !== null)
                             {

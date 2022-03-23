@@ -4473,7 +4473,7 @@ export default class BaseLayout
                                     category        : currentItemData.category,
                                     name            : currentItemData.name,
                                     image           : currentItemData.image,
-                                    qty             : this.getObjectPropertyValue(mInventoryStacks.values[k][0], 'NumItems'),
+                                    qty             : this.getObjectPropertyValue(mInventoryStacks.values[k][0].value, 'NumItems'),
                                     isActive        : ((mActiveEquipmentIndex !== null && mActiveEquipmentIndex === k) ? true : false)
                                 });
                             }
