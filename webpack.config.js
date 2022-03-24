@@ -17,7 +17,8 @@ module.exports = env => {
         entry           : {
             SCIM                        : './SCIM.js',
             'Worker/SaveParser/Read'    : './SaveParser/Read.js',
-            'Worker/SaveParser/Write'   : './SaveParser/Write.js'
+            'Worker/SaveParser/Write'   : './SaveParser/Write.js',
+            'Worker/Operations/Worker'   : './Operations/Worker.js'
         },
 
         output          : {

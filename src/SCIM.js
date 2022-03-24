@@ -6,6 +6,10 @@ import Translate                                from './Translate.js';
 import BaseLayout_Modal                         from './BaseLayout/Modal.js';
 import Lib_LeafletPlugins                       from './Lib/LeafletPlugins.js';
 
+import OperationManager                         from './Operations/Manager.js';
+
+import Selection_Copy_Operation                 from "./Operations/Selection/Copy.js"
+
 export default class SCIM
 {
     constructor()
@@ -26,6 +30,8 @@ export default class SCIM
 
         this.saveParserReadWorker       = '/js/InteractiveMap/build/Worker/SaveParser/Read.js';
         this.saveParserWriteWorker      = '/js/InteractiveMap/build/Worker/SaveParser/Write.js';
+
+        this.operationWorker            = '/js/InteractiveMap/build/Worker/Operations/Worker.js'
 
         this.collectedOpacity           = 0.3;
 
@@ -150,6 +156,10 @@ export default class SCIM
 
                 saveParserReadWorker        : this.saveParserReadWorker,
                 saveParserWriteWorker       : this.saveParserWriteWorker
+            });
+
+            options.operationManager    = new OperationManager({
+                operationWorker : this.operationWorker,
             });
 
             this.baseLayout = new BaseLayout(options);
