@@ -1,6 +1,28 @@
 /* global Sentry, Intl, self */
+
+/**
+ * @typedef {import("./types").GameSave} GameSave
+ * @typedef {import("./types").DefaultValues} DefaultValues
+ * @typedef {import("./types").ParsedByte} ParsedByte
+ * @typedef {import("./types").ParsedDouble} ParsedDouble
+ * @typedef {import("./types").ParsedFloat} ParsedFloat
+ * @typedef {import("./types").ParsedHex} ParsedHex
+ * @typedef {import("./types").ParsedInt} ParsedInt
+ * @typedef {import("./types").ParsedInt8} ParsedInt8
+ * @typedef {import("./types").ParsedLong} ParsedLong
+ * @typedef {import("./types").ParsedString} ParsedString
+ * @typedef {import("./types").ParsedFINGPUT1BufferPixel} ParsedFINGPUT1BufferPixel
+ */
+
 import pako                                     from '../Lib/pako.esm.mjs';
 
+/**
+ * Parse the given save file.
+ *
+ * @param {Window | Worker} worker
+ * @param {{ arrayBuffer: ArrayBuffer; defaultValues: DefaultValues; language: string; }} options
+ * @returns {GameSave}
+ */
 export function parse(worker, options) {
     const parser = new SaveParser_Read(worker, options);
     if (parser.successful) {
@@ -11,20 +33,37 @@ export function parse(worker, options) {
 
 class SaveParser_Read
 {
+    /**
+     * @param {Window | Worker} worker
+     * @param {{ arrayBuffer: ArrayBuffer; defaultValues: DefaultValues; language: string; }} options
+     */
     constructor(worker, options)
     {
-        this.worker             = worker;
-        this.saveResult         = {};
-        this.saveResult.objects = {};
+        /** @type {Window | Worker} */
+        this.worker = worker;
 
-        this.defaultValues      = options.defaultValues;
-        this.language           = options.language;
+        /** @type {GameSave} */
+        this.saveResult = {
+            objects: {}
+        };
 
-        this.arrayBuffer        = options.arrayBuffer;
-        this.bufferView         = new DataView(this.arrayBuffer); // Still used for header...
-        this.currentByte        = 0;
+        /** @type {DefaultValues} */
+        this.defaultValues = options.defaultValues;
 
-        this.successful         = false;
+        /** @type {string} */
+        this.language = options.language;
+
+        /** @type {ArrayBuffer} */
+        this.arrayBuffer = options.arrayBuffer;
+
+        /** @type {DataView} */
+        this.bufferView = new DataView(this.arrayBuffer); // Still used for header...
+
+        /** @type {number} */
+        this.currentByte = 0;
+
+        /** @type {boolean} */
+        this.successful = false;
 
         this.parseHeader();
     }
@@ -1306,10 +1345,14 @@ class SaveParser_Read
     {
         this.currentByte += byteLength;
     }
+
+    /** @returns {ParsedByte} */
     readByte()
     {
         return parseInt(this.bufferView.getUint8(this.currentByte++, true));
     }
+
+    /** @returns {ParsedHex} */
     readHex(hexLength)
     {
         let hexPart = [];
@@ -1324,17 +1367,22 @@ class SaveParser_Read
         return hexPart.join('');
     }
 
+    /** @returns {ParsedInt8} */
     readInt8()
     {
         let data = this.bufferView.getInt8(this.currentByte++, true);
             return data;
     }
+
+    /** @returns {ParsedInt} */
     readInt()
     {
         let data = this.bufferView.getInt32(this.currentByte, true);
             this.currentByte += 4;
             return data;
     }
+
+    /** @returns {ParsedLong} */
     readLong()
     {
         let data1   = this.readInt();
@@ -1350,12 +1398,15 @@ class SaveParser_Read
             }
     }
 
+    /** @returns {ParsedFloat} */
     readFloat()
     {
         let data = this.bufferView.getFloat32(this.currentByte, true);
             this.currentByte += 4;
             return data;
     }
+
+    /** @returns {ParsedDouble} */
     readDouble()
     {
         let data = this.bufferView.getFloat64(this.currentByte, true);
@@ -1363,6 +1414,7 @@ class SaveParser_Read
             return data;
     }
 
+    /** @returns {ParsedString} */
     readString()
     {
         let strLength       = this.readInt();
@@ -1433,6 +1485,7 @@ class SaveParser_Read
         return;
     }
 
+    /** @returns {ParsedFINGPUT1BufferPixel} */
     readFINGPUT1BufferPixel()
     {
         return {
