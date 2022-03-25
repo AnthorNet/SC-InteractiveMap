@@ -65,7 +65,7 @@ module.exports = env => {
                 // webpack specific configuration
                 validate: true,
                 include: path.resolve(__dirname, 'build'),
-                ignore: ['node_modules', 'webpack.config.js']
+                ignore: ['node_modules', 'webpack.config.js', '*Experimental.js', '*Experimental.js.map']
             })
         ]
     };
