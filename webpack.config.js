@@ -24,20 +24,6 @@ module.exports = env => {
             path            : path.resolve(__dirname, 'build'),
             filename        : './[name].js'
         },
-        module: {
-            rules: [
-                {
-                    test: /\.js$/u,
-                    exclude: /(node_modules)/u,
-                    use: {
-                        loader: "babel-loader",
-                        options: {
-                            babelrc: true
-                        }
-                    }
-                }
-            ]
-        },
         optimization    : {
             minimize        : true,
             minimizer       : [
