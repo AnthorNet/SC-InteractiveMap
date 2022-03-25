@@ -1,21 +1,64 @@
 /* global Sentry, Intl, self */
+
+/**
+ * @typedef {import("./types").Header} Header
+ * @typedef {import("./types").SaveResult} SaveResult
+ * @typedef {import("./types").DefaultValues} DefaultValues
+ * @typedef {import("./types").ParsedByte} ParsedByte
+ * @typedef {import("./types").ParsedDouble} ParsedDouble
+ * @typedef {import("./types").ParsedFloat} ParsedFloat
+ * @typedef {import("./types").ParsedHex} ParsedHex
+ * @typedef {import("./types").ParsedInt} ParsedInt
+ * @typedef {import("./types").ParsedInt8} ParsedInt8
+ * @typedef {import("./types").ParsedLong} ParsedLong
+ * @typedef {import("./types").ParsedString} ParsedString
+ * @typedef {import("./types").ParsedFINGPUT1BufferPixel} ParsedFINGPUT1BufferPixel
+ */
+
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class SaveParser_Read
 {
+    /** @type {ArrayBuffer} */
     #arrayBuffer;
+
+    /** @type {DataView} */
     #bufferView;
+
+    /** @type {number} */
     #currentByte;
+
+    /** @type {Uint8Array[]} */
     #currentChunks;
+
+    /** @type {DefaultValues} */
     #defaultValues;
+
+    /** @type {number} */
     #handledByte;
+
+    /** @type {Header} */
     #header;
+
+    /** @type {string} */
     #language;
+
+    /** @type {number} */
     #lastStrRead;
+
+    /** @type {number} */
     #maxByte;
+
+    /** @type {SaveResult} */
     #saveResult;
+
+    /** @type {Window} */
     #worker;
 
+    /**
+     * @param {Window} worker
+     * @param {{arrayBuffer: ArrayBuffer;defaultValues: DefaultValues; language: string;}} options
+     */
     constructor(worker, options)
     {
         this.#worker             = worker;
@@ -1312,10 +1355,14 @@ export default class SaveParser_Read
     {
         this.#currentByte += byteLength;
     }
+
+    /** @returns {ParsedByte} */
     #readByte()
     {
         return parseInt(this.#bufferView.getUint8(this.#currentByte++, true));
     }
+
+    /** @returns {ParsedHex} */
     #readHex(hexLength)
     {
         let hexPart = [];
@@ -1330,17 +1377,22 @@ export default class SaveParser_Read
         return hexPart.join('');
     }
 
+    /** @returns {ParsedInt8} */
     #readInt8()
     {
         let data = this.#bufferView.getInt8(this.#currentByte++, true);
             return data;
     }
+
+    /** @returns {ParsedInt} */
     #readInt()
     {
         let data = this.#bufferView.getInt32(this.#currentByte, true);
             this.#currentByte += 4;
             return data;
     }
+
+    /** @returns {ParsedLong} */
     #readLong()
     {
         let data1   = this.#readInt();
@@ -1356,12 +1408,15 @@ export default class SaveParser_Read
             }
     }
 
+    /** @returns {ParsedFloat} */
     #readFloat()
     {
         let data = this.#bufferView.getFloat32(this.#currentByte, true);
             this.#currentByte += 4;
             return data;
     }
+
+    /** @returns {ParsedDouble} */
     #readDouble()
     {
         let data = this.#bufferView.getFloat64(this.#currentByte, true);
@@ -1369,6 +1424,7 @@ export default class SaveParser_Read
             return data;
     }
 
+    /** @returns {ParsedString} */
     #readString()
     {
         let strLength       = this.#readInt();
@@ -1439,6 +1495,7 @@ export default class SaveParser_Read
         return;
     }
 
+    /** @returns {ParsedFINGPUT1BufferPixel} */
     #readFINGPUT1BufferPixel()
     {
         return {
