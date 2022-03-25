@@ -3,121 +3,134 @@ import pako                                     from '../Lib/pako.esm.mjs';
 
 export default class SaveParser_Read
 {
+    #arrayBuffer;
+    #bufferView;
+    #currentByte;
+    #currentChunks;
+    #defaultValues;
+    #handledByte;
+    #header;
+    #language;
+    #lastStrRead;
+    #maxByte;
+    #saveResult;
+    #worker;
+
     constructor(worker, options)
     {
-        this.worker             = worker;
-        this.saveResult         = {};
-        this.saveResult.objects = {};
+        this.#worker             = worker;
+        this.#saveResult         = {};
+        this.#saveResult.objects = {};
 
-        this.defaultValues      = options.defaultValues;
-        this.language           = options.language;
+        this.#defaultValues      = options.defaultValues;
+        this.#language           = options.language;
 
-        this.arrayBuffer        = options.arrayBuffer;
-        this.bufferView         = new DataView(this.arrayBuffer); // Still used for header...
-        this.currentByte        = 0;
+        this.#arrayBuffer        = options.arrayBuffer;
+        this.#bufferView         = new DataView(this.#arrayBuffer); // Still used for header...
+        this.#currentByte        = 0;
 
-        this.parseHeader();
+        this.#parseHeader();
     }
 
-    parseHeader()
+    #parseHeader()
     {
-        this.header                      = {};
-        this.header.saveHeaderType       = this.readInt();
-        this.header.saveVersion          = this.readInt();
-        this.header.buildVersion         = this.readInt();
-        this.header.mapName              = this.readString();
-        this.header.mapOptions           = this.readString();
-        this.header.sessionName          = this.readString();
-        this.header.playDurationSeconds  = this.readInt();
-        this.header.saveDateTime         = this.readLong();
-        this.header.sessionVisibility    = this.readByte();
+        this.#header                      = {};
+        this.#header.saveHeaderType       = this.#readInt();
+        this.#header.saveVersion          = this.#readInt();
+        this.#header.buildVersion         = this.#readInt();
+        this.#header.mapName              = this.#readString();
+        this.#header.mapOptions           = this.#readString();
+        this.#header.sessionName          = this.#readString();
+        this.#header.playDurationSeconds  = this.#readInt();
+        this.#header.saveDateTime         = this.#readLong();
+        this.#header.sessionVisibility    = this.#readByte();
 
-        if(this.header.saveHeaderType >= 7)
+        if(this.#header.saveHeaderType >= 7)
         {
-            this.header.fEditorObjectVersion = this.readInt();
+            this.#header.fEditorObjectVersion = this.#readInt();
         }
-        if(this.header.saveHeaderType >= 8)
+        if(this.#header.saveHeaderType >= 8)
         {
-            this.header.modMetadata      = this.readString();
-            this.header.isModdedSave     = this.readInt();
+            this.#header.modMetadata      = this.#readString();
+            this.#header.isModdedSave     = this.#readInt();
         }
 
-        console.log(this.header);
+        console.log(this.#header);
 
-        this.worker.postMessage({command: 'saveResult', result: {header: this.header}});
+        this.#worker.postMessage({command: 'saveResult', result: {header: this.#header}});
 
-        this.parseObjects();
+        this.#parseObjects();
     }
 
-    parseObjects()
+    #parseObjects()
     {
         // We should now unzip the body!
-        if(this.header.saveVersion >= 21)
+        if(this.#header.saveVersion >= 21)
         {
-            this.parseCompressedObjectsV21();
+            this.#parseCompressedObjectsV21();
         }
         else
         {
-            this.worker.postMessage({command: 'alert', message: 'That save version isn\'t supported anymore... Please save it again in the game.'});
+            this.#worker.postMessage({command: 'alert', message: 'That save version isn\'t supported anymore... Please save it again in the game.'});
         }
     }
 
     // V21 FUNCTIONS
-    parseCompressedObjectsV21()
+    #parseCompressedObjectsV21()
     {
         // Remove the header...
-        this.arrayBuffer                    = this.arrayBuffer.slice(this.currentByte);
+        this.#arrayBuffer                    = this.#arrayBuffer.slice(this.#currentByte);
 
-        this.handledByte                    = 0;
-        this.currentByte                    = 0;
-        this.maxByte                        = this.arrayBuffer.byteLength;
+        this.#handledByte                    = 0;
+        this.#currentByte                    = 0;
+        this.#maxByte                        = this.#arrayBuffer.byteLength;
 
-        this.saveResult.PACKAGE_FILE_TAG    = null;
-        this.saveResult.maxChunkSize        = null;
-        this.currentChunks                  = [];
+        this.#saveResult.PACKAGE_FILE_TAG    = null;
+        this.#saveResult.maxChunkSize        = null;
+        this.#currentChunks                  = [];
 
-        return this.inflateChunks();
+        return this.#inflateChunks();
     }
 
-    inflateChunks()
+    #inflateChunks()
     {
-        while(this.handledByte < this.maxByte)
+        while(this.#handledByte < this.#maxByte)
         {
             // Read chunk info size...
-            let chunkHeader         = new DataView(this.arrayBuffer.slice(0, 48));
-                this.currentByte    = 48;
-                this.handledByte   += 48;
+            let chunkHeader         = new DataView(this.#arrayBuffer.slice(0, 48));
+                this.#currentByte    = 48;
+                this.#handledByte   += 48;
 
-            if(this.saveResult.PACKAGE_FILE_TAG === null)
+            if(this.#saveResult.PACKAGE_FILE_TAG === null)
             {
-                //this.saveResult.PACKAGE_FILE_TAG = chunkHeader.getBigInt64(0, true);
-                this.saveResult.PACKAGE_FILE_TAG = chunkHeader.getUint32(0, true);
+                //this.#saveResult.PACKAGE_FILE_TAG = chunkHeader.getBigInt64(0, true);
+                this.#saveResult.PACKAGE_FILE_TAG = chunkHeader.getUint32(0, true);
                 //console.log(chunkHeader.getBigInt64(0, true), chunkHeader.getUint32(0, true));
             }
-            if(this.saveResult.maxChunkSize === null)
+            if(this.#saveResult.maxChunkSize === null)
             {
-                this.saveResult.maxChunkSize = chunkHeader.getUint32(8, true);
+                this.#saveResult.maxChunkSize = chunkHeader.getUint32(8, true);
             }
 
             let currentChunkSize    = chunkHeader.getUint32(16, true);
-            let currentChunk        = this.arrayBuffer.slice(this.currentByte, this.currentByte + currentChunkSize);
-                this.handledByte   += currentChunkSize;
-                this.currentByte   += currentChunkSize;
+            let currentChunk        = this.#arrayBuffer.slice(this.#currentByte, this.#currentByte + currentChunkSize);
+                this.#handledByte   += currentChunkSize;
+                this.#currentByte   += currentChunkSize;
 
             // Free memory from previous chunk...
-            this.arrayBuffer            = this.arrayBuffer.slice(this.currentByte);
-            this.currentByte            = 0;
+            this.#arrayBuffer            = this.#arrayBuffer.slice(this.#currentByte);
+            this.#currentByte            = 0;
 
             // Unzip!
             try {
                 // Inflate current chunk
                 let currentInflatedChunk    = null;
                     currentInflatedChunk    = pako.inflate(currentChunk);
-                    this.currentChunks.push(currentInflatedChunk);
+                    this.#currentChunks.push(currentInflatedChunk);
             }
             catch(err)
             {
-                this.worker.postMessage({command: 'alert', message: 'Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'});
+                this.#worker.postMessage({command: 'alert', message: 'Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('pako', pako);
@@ -128,63 +141,63 @@ export default class SaveParser_Read
                 return;
             }
 
-            let currentPercentage = Math.round(this.handledByte / this.maxByte * 100);
-                this.worker.postMessage({command: 'loaderMessage', message: 'Inflating save game (' + currentPercentage + '%)...'});
-                this.worker.postMessage({command: 'loaderProgress', percentage: (currentPercentage * 0.4)});
+            let currentPercentage = Math.round(this.#handledByte / this.#maxByte * 100);
+                this.#worker.postMessage({command: 'loaderMessage', message: 'Inflating save game (' + currentPercentage + '%)...'});
+                this.#worker.postMessage({command: 'loaderProgress', percentage: (currentPercentage * 0.4)});
         }
 
-        console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
-        this.worker.postMessage({command: 'loaderMessage', message: 'Merging inflated chunks...'});
+        console.log('Inflated: ' + this.#currentChunks.length + ' chunks...');
+        this.#worker.postMessage({command: 'loaderMessage', message: 'Merging inflated chunks...'});
 
         // Create the complete Uint8Array
         let newChunkLength = 0;
-            for(let i = 0; i < this.currentChunks.length; i++)
+            for(let i = 0; i < this.#currentChunks.length; i++)
             {
-                newChunkLength += this.currentChunks[i].length;
+                newChunkLength += this.#currentChunks[i].length;
             }
 
         let tempChunk       = new Uint8Array(newChunkLength);
         let currentLength   = 0;
-            for(let i = 0; i < this.currentChunks.length; i++)
+            for(let i = 0; i < this.#currentChunks.length; i++)
             {
-                tempChunk.set(this.currentChunks[i], currentLength);
-                currentLength += this.currentChunks[i].length;
+                tempChunk.set(this.#currentChunks[i], currentLength);
+                currentLength += this.#currentChunks[i].length;
             }
 
         // Parse them as usual while skipping the firt 4 bytes!
-        this.currentByte        = 4;
-        this.maxByte            = tempChunk.buffer.byteLength;
-        this.bufferView         = new DataView(tempChunk.buffer);
+        this.#currentByte        = 4;
+        this.#maxByte            = tempChunk.buffer.byteLength;
+        this.#bufferView         = new DataView(tempChunk.buffer);
 
-        return this.parseObjectsV5();
+        return this.#parseObjectsV5();
     }
 
     // V5 FUNCTIONS
-    parseObjectsV5()
+    #parseObjectsV5()
     {
-        let countObjects                = this.readInt();
+        let countObjects                = this.#readInt();
         let entitiesToObjects           = [];
             console.log('Parsing: ' + countObjects + ' objects...');
-            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects...', replace: new Intl.NumberFormat(this.language).format(countObjects)});
+            this.#worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects...', replace: new Intl.NumberFormat(this.#language).format(countObjects)});
 
             for(let i = 0; i < countObjects; i++)
             {
-                let objectType = this.readInt();
+                let objectType = this.#readInt();
                     switch(objectType)
                     {
                         case 0:
-                            let object                                      = this.readObjectV5();
-                                this.saveResult.objects[object.pathName]    = object;
+                            let object                                      = this.#readObjectV5();
+                                this.#saveResult.objects[object.pathName]    = object;
                                 entitiesToObjects[i]                        = object.pathName;
                             break;
                         case 1:
-                            let actor                                       = this.readActorV5();
-                                this.saveResult.objects[actor.pathName]     = actor;
+                            let actor                                       = this.#readActorV5();
+                                this.#saveResult.objects[actor.pathName]     = actor;
                                 entitiesToObjects[i]                        = actor.pathName;
 
                                 if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
                                 {
-                                    this.saveResult.gameStatePathName   = actor.pathName;
+                                    this.#saveResult.gameStatePathName   = actor.pathName;
                                 }
                             break;
                         default:
@@ -193,70 +206,70 @@ export default class SaveParser_Read
                     }
             }
 
-            let countEntities   = this.readInt();
+            let countEntities   = this.#readInt();
                 console.log('Parsing: ' + countEntities + ' entities...');
-                this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities...', replace: new Intl.NumberFormat(this.language).format(countEntities)});
+                this.#worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities...', replace: new Intl.NumberFormat(this.#language).format(countEntities)});
 
             for(let i = 0; i < countEntities; i++)
             {
-                this.readEntityV5(entitiesToObjects[i]);
+                this.#readEntityV5(entitiesToObjects[i]);
             }
 
-            this.saveResult.collectables   = [];
-                let countCollected  = this.readInt();
+            this.#saveResult.collectables   = [];
+                let countCollected  = this.#readInt();
                     console.log('Parsing: ' + countCollected + ' collectables...');
-                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(countCollected)});
+                    this.#worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s collectables...', replace: new Intl.NumberFormat(this.#language).format(countCollected)});
 
             for(let i = 0; i < countCollected; i++)
             {
-                this.saveResult.collectables.push(this.readObjectProperty({}));
+                this.#saveResult.collectables.push(this.#readObjectProperty({}));
             }
 
-            delete this.arrayBuffer;
-            delete this.bufferView;
+            this.#arrayBuffer = undefined;
+            this.#bufferView = undefined;
 
-            this.worker.postMessage({command: 'saveResult', result: this.saveResult});
-            this.worker.postMessage({command: 'endSaveLoading'});
+            this.#worker.postMessage({command: 'saveResult', result: this.#saveResult});
+            this.#worker.postMessage({command: 'endSaveLoading'});
     }
 
     // V5 Functions
-    readObjectV5()
+    #readObjectV5()
     {
         let object                  = {type : 0};
-            object.className        = this.readString();
-            object                  = this.readObjectProperty(object);
-            object.outerPathName    = this.readString();
+            object.className        = this.#readString();
+            object                  = this.#readObjectProperty(object);
+            object.outerPathName    = this.#readString();
 
         return object;
     }
 
-    readActorV5()
+    #readActorV5()
     {
         let actor               = {type : 1};
-            actor.className     = this.readString();
-            actor               = this.readObjectProperty(actor);
+            actor.className     = this.#readString();
+            actor               = this.#readObjectProperty(actor);
 
-        let needTransform       = this.readInt();
+        let needTransform       = this.#readInt();
             if(needTransform !== 0)
             {
                 actor.needTransform = needTransform;
             }
 
             // {rotation: [0, 0, 0, 1], translation: [0, 0, 0], scale3d: [1, 1, 1]}
-        let rotation            = [this.readFloat(), this.readFloat(), this.readFloat(), this.readFloat()];
-        let translation         = [this.readFloat(), this.readFloat(), this.readFloat()];
-        let scale3d             = [this.readFloat(), this.readFloat(), this.readFloat()];
+        let rotation            = [this.#readFloat(), this.#readFloat(), this.#readFloat(), this.#readFloat()];
+        let translation         = [this.#readFloat(), this.#readFloat(), this.#readFloat()];
+        let scale3d             = [this.#readFloat(), this.#readFloat(), this.#readFloat()];
 
             actor.transform     = {};
 
             if(
-                    rotation[0] === this.defaultValues.rotation[0]
-                 && rotation[1] === this.defaultValues.rotation[1]
-                 && rotation[2] === this.defaultValues.rotation[2]
-                 && rotation[3] === this.defaultValues.rotation[3]
+                    rotation[0] === this.#defaultValues.rotation[0]
+                 && rotation[1] === this.#defaultValues.rotation[1]
+                 && rotation[2] === this.#defaultValues.rotation[2]
+                 && rotation[3] === this.#defaultValues.rotation[3]
             )
             {
-                actor.transform.rotation    = this.defaultValues.rotation;
+                actor.transform.rotation    = this.#defaultValues.rotation;
             }
             else
             {
@@ -264,12 +277,12 @@ export default class SaveParser_Read
             }
 
             if(
-                    translation[0] === this.defaultValues.translation[0]
-                 && translation[1] === this.defaultValues.translation[1]
-                 && translation[2] === this.defaultValues.translation[2]
+                    translation[0] === this.#defaultValues.translation[0]
+                 && translation[1] === this.#defaultValues.translation[1]
+                 && translation[2] === this.#defaultValues.translation[2]
             )
             {
-                actor.transform.translation = this.defaultValues.translation;
+                actor.transform.translation = this.#defaultValues.translation;
             }
             else
             {
@@ -300,7 +313,7 @@ export default class SaveParser_Read
                 actor.transform.scale3d = scale3d
             }
 
-        let wasPlacedInLevel       = this.readInt();
+        let wasPlacedInLevel       = this.#readInt();
             if(wasPlacedInLevel !== 0) //TODO: Switch to 1?
             {
                 actor.wasPlacedInLevel = wasPlacedInLevel;
@@ -309,172 +322,172 @@ export default class SaveParser_Read
         return actor;
     }
 
-    readEntityV5(objectKey)
+    #readEntityV5(objectKey)
     {
-        let entityLength                            = this.readInt();
-        let startByte                               = this.currentByte;
+        let entityLength                            = this.#readInt();
+        let startByte                               = this.#currentByte;
 
-        if(this.saveResult.objects[objectKey].type === 1)
+        if(this.#saveResult.objects[objectKey].type === 1)
         {
-            this.saveResult.objects[objectKey].entity = this.readObjectProperty({});
+            this.#saveResult.objects[objectKey].entity = this.#readObjectProperty({});
 
-            let countChild  = this.readInt();
+            let countChild  = this.#readInt();
                 if(countChild > 0)
                 {
-                    this.saveResult.objects[objectKey].children = [];
+                    this.#saveResult.objects[objectKey].children = [];
 
                     for(let i = 0; i < countChild; i++)
                     {
-                        this.saveResult.objects[objectKey].children.push(this.readObjectProperty({}));
+                        this.#saveResult.objects[objectKey].children.push(this.#readObjectProperty({}));
                     }
                 }
         }
 
-        if((this.currentByte - startByte) === entityLength)
+        if((this.#currentByte - startByte) === entityLength)
         {
-            this.saveResult.objects[objectKey].shouldBeNulled = true;
+            this.#saveResult.objects[objectKey].shouldBeNulled = true;
             return;
         }
 
         // Read properties
-        this.saveResult.objects[objectKey].properties       = [];
+        this.#saveResult.objects[objectKey].properties       = [];
         while(true)
         {
-            let property = this.readPropertyV5();
+            let property = this.#readPropertyV5();
                 if(property === null)
                 {
                     break;
                 }
 
-                this.saveResult.objects[objectKey].properties.push(property);
+                this.#saveResult.objects[objectKey].properties.push(property);
         }
 
         // Read Conveyor missing bytes
         if(
-                this.saveResult.objects[objectKey].className.includes('/Build_ConveyorBeltMk')
-             || this.saveResult.objects[objectKey].className.includes('/Build_ConveyorLiftMk')
+                this.#saveResult.objects[objectKey].className.includes('/Build_ConveyorBeltMk')
+             || this.#saveResult.objects[objectKey].className.includes('/Build_ConveyorLiftMk')
              // MODS
-             || this.saveResult.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_BeltMk')
-             || this.saveResult.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')
-             || this.saveResult.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
-             || this.saveResult.objects[objectKey].className.startsWith('/CoveredConveyor/')
-             || this.saveResult.objects[objectKey].className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || this.saveResult.objects[objectKey].className.startsWith('/FlexSplines/Conveyor/Build_Belt')
+             || this.#saveResult.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_BeltMk')
+             || this.#saveResult.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')
+             || this.#saveResult.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
+             || this.#saveResult.objects[objectKey].className.startsWith('/CoveredConveyor/')
+             || this.#saveResult.objects[objectKey].className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
+             || this.#saveResult.objects[objectKey].className.startsWith('/FlexSplines/Conveyor/Build_Belt')
         )
         {
-            this.saveResult.objects[objectKey].extra    = {count: this.readInt(), items: []};
-            let itemsLength                             = this.readInt();
+            this.#saveResult.objects[objectKey].extra    = {count: this.#readInt(), items: []};
+            let itemsLength                             = this.#readInt();
                 for(let i = 0; i < itemsLength; i++)
                 {
                     let currentItem             = {};
-                    let currentItemLength       = this.readInt();
+                    let currentItemLength       = this.#readInt();
                         if(currentItemLength !== 0)
                         {
                             currentItem.length  = currentItemLength;
                         }
-                        currentItem.name        = this.readString();
-                        this.readString(); //currentItem.levelName   = this.readString();
-                        this.readString(); //currentItem.pathName    = this.readString();
-                        currentItem.position    = this.readFloat();
+                        currentItem.name        = this.#readString();
+                        this.#readString(); //currentItem.levelName   = this.#readString();
+                        this.#readString(); //currentItem.pathName    = this.#readString();
+                        currentItem.position    = this.#readFloat();
 
-                    this.saveResult.objects[objectKey].extra.items.push(currentItem);
+                    this.#saveResult.objects[objectKey].extra.items.push(currentItem);
                 }
         }
         else
         {
             // Extra processing
-            switch(this.saveResult.objects[objectKey].className)
+            switch(this.#saveResult.objects[objectKey].className)
             {
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C':
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C':
-                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), game: []};
-                    let gameLength                              = this.readInt();
+                    this.#saveResult.objects[objectKey].extra    = {count: this.#readInt(), game: []};
+                    let gameLength                              = this.#readInt();
 
                     for(let i = 0; i < gameLength; i++)
                     {
-                        this.saveResult.objects[objectKey].extra.game.push(this.readObjectProperty({}));
+                        this.#saveResult.objects[objectKey].extra.game.push(this.#readObjectProperty({}));
 
-                        if(i === 0 && this.saveResult.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                        if(i === 0 && this.#saveResult.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
                         {
-                            this.saveResult.playerHostPathName  = this.saveResult.objects[objectKey].extra.game[0].pathName;
+                            this.#saveResult.playerHostPathName  = this.#saveResult.objects[objectKey].extra.game[0].pathName;
                         }
                     }
 
                     break;
                 case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                    let missingPlayerState                          = (startByte + entityLength) - this.currentByte;
-                        this.saveResult.objects[objectKey].missing  = this.readHex(missingPlayerState);
-                        this.currentByte                           -= missingPlayerState; // Reset back to grab the user ID if possible!
+                    let missingPlayerState                          = (startByte + entityLength) - this.#currentByte;
+                        this.#saveResult.objects[objectKey].missing  = this.#readHex(missingPlayerState);
+                        this.#currentByte                           -= missingPlayerState; // Reset back to grab the user ID if possible!
 
                         if(missingPlayerState > 0)
                         {
-                            this.readInt(); // Skip count
-                            let playerType = this.readByte();
+                            this.#readInt(); // Skip count
+                            let playerType = this.#readByte();
                                 switch(playerType)
                                 {
                                     case 248: // EOS
-                                            this.readString();
-                                        let eosStr                                      = this.readString().split('|');
-                                            this.saveResult.objects[objectKey].eosId    = eosStr[0];
+                                            this.#readString();
+                                        let eosStr                                      = this.#readString().split('|');
+                                            this.#saveResult.objects[objectKey].eosId    = eosStr[0];
                                         break;
                                     case 249: // EOS
-                                            this.readString(); // EOS, then follow 17
+                                            this.#readString(); // EOS, then follow 17
                                     case 17: // Old EOS
-                                        let epicHexLength   = this.readByte();
+                                        let epicHexLength   = this.#readByte();
                                         let epicHex         = '';
                                             for(let i = 0; i < epicHexLength; i++)
                                             {
-                                                epicHex += this.readByte().toString(16).padStart(2, '0');
+                                                epicHex += this.#readByte().toString(16).padStart(2, '0');
                                             }
 
-                                        this.saveResult.objects[objectKey].eosId = epicHex.replace(/^0+/, '');
+                                        this.#saveResult.objects[objectKey].eosId = epicHex.replace(/^0+/, '');
                                         break;
                                     case 25: // Steam
-                                        let steamHexLength  = this.readByte();
+                                        let steamHexLength  = this.#readByte();
                                         let steamHex        = '';
                                             for(let i = 0; i < steamHexLength; i++)
                                             {
-                                                steamHex += this.readByte().toString(16).padStart(2, '0');
+                                                steamHex += this.#readByte().toString(16).padStart(2, '0');
                                             }
 
-                                        this.saveResult.objects[objectKey].steamId = steamHex.replace(/^0+/, '');
+                                        this.#saveResult.objects[objectKey].steamId = steamHex.replace(/^0+/, '');
                                         break;
                                     case 8: // ???
-                                        this.saveResult.objects[objectKey].platformId = this.readString();
+                                        this.#saveResult.objects[objectKey].platformId = this.#readString();
                                         break;
                                     case 3: // Offline
                                         break;
                                     default:
-                                        this.worker.postMessage({command: 'alertParsing'});
+                                        this.#worker.postMessage({command: 'alertParsing'});
                                         if(typeof Sentry !== 'undefined')
                                         {
-                                            Sentry.setContext('BP_PlayerState_C', this.saveResult.objects[objectKey]);
+                                            Sentry.setContext('BP_PlayerState_C', this.#saveResult.objects[objectKey]);
                                             Sentry.setContext('playerType', playerType);
                                         }
-                                        console.log(playerType, this.saveResult.objects[objectKey]);
+                                        console.log(playerType, this.#saveResult.objects[objectKey]);
                                         //throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
 
                                         // By pass, and hope that the user will still continue to send us the save!
-                                        this.currentByte += missingPlayerState - 5;
+                                        this.#currentByte += missingPlayerState - 5;
                                 }
                         }
                     break;
                 //TODO: Not 0 here so bypass those special cases, but why? We mainly do not want to get warned here...
                 case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
-                    let missingDrone                                = (startByte + entityLength) - this.currentByte;
-                        this.saveResult.objects[objectKey].missing  = this.readHex(missingDrone);
+                    let missingDrone                                = (startByte + entityLength) - this.#currentByte;
+                        this.#saveResult.objects[objectKey].missing  = this.#readHex(missingDrone);
 
                     break;
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
-                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), circuits: []};
-                    let circuitsLength                          = this.readInt();
+                    this.#saveResult.objects[objectKey].extra    = {count: this.#readInt(), circuits: []};
+                    let circuitsLength                          = this.#readInt();
 
                         for(let i = 0; i < circuitsLength; i++)
                         {
-                            this.saveResult.objects[objectKey].extra.circuits.push({
-                                circuitId   : this.readInt(),
-                                levelName   : this.readString(),
-                                pathName    : this.readString()
+                            this.#saveResult.objects[objectKey].extra.circuits.push({
+                                circuitId   : this.#readInt(),
+                                levelName   : this.#readString(),
+                                pathName    : this.#readString()
                             });
                         }
 
@@ -487,27 +500,27 @@ export default class SaveParser_Read
                 case '/AB_CableMod/Visuals3/Build_AB-PLHeavy.Build_AB-PLHeavy_C':
                 case '/AB_CableMod/Visuals4/Build_AB-SPLight.Build_AB-SPLight_C':
                 case '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C':
-                    this.saveResult.objects[objectKey].extra        = {
-                        count   : this.readInt(),
-                        source  : this.readObjectProperty({}),
-                        target  : this.readObjectProperty({})
+                    this.#saveResult.objects[objectKey].extra        = {
+                        count   : this.#readInt(),
+                        source  : this.#readObjectProperty({}),
+                        target  : this.#readObjectProperty({})
                     };
 
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
-                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), objects: []};
-                    let trainLength                             = this.readInt();
+                    this.#saveResult.objects[objectKey].extra    = {count: this.#readInt(), objects: []};
+                    let trainLength                             = this.#readInt();
                         for(let i = 0; i < trainLength; i++)
                         {
-                            this.saveResult.objects[objectKey].extra.objects.push({
-                                name   : this.readString(),
-                                unk    : this.readHex(53)
+                            this.#saveResult.objects[objectKey].extra.objects.push({
+                                name   : this.#readString(),
+                                unk    : this.#readHex(53)
                             });
                         }
 
-                    this.saveResult.objects[objectKey].extra.previous   = this.readObjectProperty({});
-                    this.saveResult.objects[objectKey].extra.next       = this.readObjectProperty({});
+                    this.#saveResult.objects[objectKey].extra.previous   = this.#readObjectProperty({});
+                    this.#saveResult.objects[objectKey].extra.next       = this.#readObjectProperty({});
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
@@ -515,26 +528,26 @@ export default class SaveParser_Read
                 case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
-                    this.saveResult.objects[objectKey].extra    = {count: this.readInt(), objects: []};
-                    let vehicleLength                           = this.readInt();
+                    this.#saveResult.objects[objectKey].extra    = {count: this.#readInt(), objects: []};
+                    let vehicleLength                           = this.#readInt();
                         for(let i = 0; i < vehicleLength; i++)
                         {
-                            this.saveResult.objects[objectKey].extra.objects.push({
-                                name   : this.readString(),
-                                unk    : this.readHex(53)
+                            this.#saveResult.objects[objectKey].extra.objects.push({
+                                name   : this.#readString(),
+                                unk    : this.#readHex(53)
                             });
                         }
                     break;
                 default:
-                    let missingBytes = (startByte + entityLength) - this.currentByte;
+                    let missingBytes = (startByte + entityLength) - this.#currentByte;
                         if(missingBytes > 4)
                         {
-                            this.saveResult.objects[objectKey].missing = this.readHex(missingBytes); // TODO
-                            console.log('MISSING ' + missingBytes + '  BYTES', this.saveResult.objects[objectKey]);
+                            this.#saveResult.objects[objectKey].missing = this.#readHex(missingBytes); // TODO
+                            console.log('MISSING ' + missingBytes + '  BYTES', this.#saveResult.objects[objectKey]);
                         }
                         else
                         {
-                            this.skipBytes(4);
+                            this.#skipBytes(4);
                         }
 
                     break;
@@ -543,21 +556,21 @@ export default class SaveParser_Read
     }
 
 
-    readPropertyV5()
+    #readPropertyV5()
     {
         let currentProperty         = {};
-            currentProperty.name    = this.readString();
+            currentProperty.name    = this.#readString();
 
         if(currentProperty.name === 'None')
         {
             return null;
         }
 
-        currentProperty.type    = this.readString();
+        currentProperty.type    = this.#readString();
 
-        this.skipBytes(4); // Length of the property, this is calculated when writing back ;)
+        this.#skipBytes(4); // Length of the property, this is calculated when writing back ;)
 
-        let index = this.readInt();
+        let index = this.#readInt();
             if(index !== 0)
             {
                 currentProperty.index = index;
@@ -566,106 +579,106 @@ export default class SaveParser_Read
         switch(currentProperty.type)
         {
             case 'BoolProperty':
-                currentProperty.value = this.readByte();
+                currentProperty.value = this.#readByte();
 
-                let unkBoolByte = this.readByte();
+                let unkBoolByte = this.#readByte();
                     if(unkBoolByte === 1)
                     {
-                        currentProperty.unkBool = this.readHex(16);
+                        currentProperty.unkBool = this.#readHex(16);
                     }
 
                 break;
 
             case 'Int8Property':
-                this.skipBytes();
-                currentProperty.value = this.readInt8();
+                this.#skipBytes();
+                currentProperty.value = this.#readInt8();
 
                 break;
 
             case 'IntProperty':
             case 'UInt32Property': // Mod?
-                let unkIntByte = this.readByte();
+                let unkIntByte = this.#readByte();
                     if(unkIntByte === 1)
                     {
-                        currentProperty.unkInt = this.readHex(16);
+                        currentProperty.unkInt = this.#readHex(16);
                     }
-                currentProperty.value = this.readInt();
+                currentProperty.value = this.#readInt();
 
                 break;
 
             case 'Int64Property':
             case 'UInt64Property':
-                this.skipBytes();
-                currentProperty.value = this.readLong();
+                this.#skipBytes();
+                currentProperty.value = this.#readLong();
 
                 break;
 
             case 'FloatProperty':
-                this.skipBytes();
-                currentProperty.value = this.readFloat();
+                this.#skipBytes();
+                currentProperty.value = this.#readFloat();
 
                 break;
 
             case 'DoubleProperty':
-                this.skipBytes();
-                currentProperty.value = this.readDouble();
+                this.#skipBytes();
+                currentProperty.value = this.#readDouble();
 
                 break;
 
             case 'StrProperty':
             case 'NameProperty':
-                this.skipBytes();
-                currentProperty.value = this.readString();
+                this.#skipBytes();
+                currentProperty.value = this.#readString();
 
                 break;
 
             case 'ObjectProperty':
             case 'InterfaceProperty':
-                this.skipBytes();
-                currentProperty.value = this.readObjectProperty({});
+                this.#skipBytes();
+                currentProperty.value = this.#readObjectProperty({});
                 break;
 
             case 'EnumProperty':
-                let enumPropertyName = this.readString();
-                this.skipBytes();
+                let enumPropertyName = this.#readString();
+                this.#skipBytes();
                 currentProperty.value = {
                     name: enumPropertyName,
-                    value: this.readString()
+                    value: this.#readString()
                 };
 
                 break;
 
             case 'ByteProperty':
-                let enumName = this.readString(); //TODO
-                this.skipBytes();
+                let enumName = this.#readString(); //TODO
+                this.#skipBytes();
 
                 if(enumName === 'None')
                 {
                     currentProperty.value = {
                         enumName: enumName,
-                        value: this.readByte()
+                        value: this.#readByte()
                     };
                 }
                 else
                 {
                     currentProperty.value = {
                         enumName: enumName,
-                        valueName: this.readString()
+                        valueName: this.#readString()
                     };
                 }
 
                 break;
 
             case 'TextProperty':
-                this.skipBytes();
-                currentProperty             = this.readTextProperty(currentProperty);
+                this.#skipBytes();
+                currentProperty             = this.#readTextProperty(currentProperty);
 
                 break;
 
             case 'ArrayProperty':
-                    currentProperty.value       = {type    : this.readString(), values  : []};
-                    this.skipBytes();
-                let currentArrayPropertyCount   = this.readInt();
+                    currentProperty.value       = {type    : this.#readString(), values  : []};
+                    this.#skipBytes();
+                let currentArrayPropertyCount   = this.#readInt();
 
                 switch(currentProperty.value.type)
                 {
@@ -675,16 +688,16 @@ export default class SaveParser_Read
                             case 'mFogOfWarRawData':
                                 for(let i = 0; i < (currentArrayPropertyCount / 4); i++)
                                 {
-                                    this.readByte(); // 0
-                                    this.readByte(); // 0
-                                    currentProperty.value.values.push(this.readByte());
-                                    this.readByte(); // 255
+                                    this.#readByte(); // 0
+                                    this.#readByte(); // 0
+                                    currentProperty.value.values.push(this.#readByte());
+                                    this.#readByte(); // 255
                                 }
                                 break;
                             default:
                                 for(let i = 0; i < currentArrayPropertyCount; i++)
                                 {
-                                    currentProperty.value.values.push(this.readByte());
+                                    currentProperty.value.values.push(this.#readByte());
                                 }
                         }
                         break;
@@ -692,33 +705,33 @@ export default class SaveParser_Read
                     case 'IntProperty':
                         for(let i = 0; i < currentArrayPropertyCount; i++)
                         {
-                            currentProperty.value.values.push(this.readInt());
+                            currentProperty.value.values.push(this.#readInt());
                         }
                         break;
 
                     case 'FloatProperty':
                         for(let i = 0; i < currentArrayPropertyCount; i++)
                         {
-                            currentProperty.value.values.push(this.readFloat());
+                            currentProperty.value.values.push(this.#readFloat());
                         }
                         break;
 
                     case 'EnumProperty':
                         for(let i = 0; i < currentArrayPropertyCount; i++)
                         {
-                            currentProperty.value.values.push({name: this.readString()});
+                            currentProperty.value.values.push({name: this.#readString()});
                         }
                         break;
                     case 'StrProperty':
                         for(let i = 0; i < currentArrayPropertyCount; i++)
                         {
-                            currentProperty.value.values.push(this.readString());
+                            currentProperty.value.values.push(this.#readString());
                         }
                         break;
                     case 'TextProperty': // ???
                         for(let i = 0; i < currentArrayPropertyCount; i++)
                         {
-                            currentProperty.value.values.push(this.readTextProperty({}));
+                            currentProperty.value.values.push(this.#readTextProperty({}));
                         }
                         break;
 
@@ -726,23 +739,23 @@ export default class SaveParser_Read
                     case 'InterfaceProperty':
                         for(let i = 0; i < currentArrayPropertyCount; i++)
                         {
-                            currentProperty.value.values.push(this.readObjectProperty({}));
+                            currentProperty.value.values.push(this.#readObjectProperty({}));
                         }
                         break;
 
                     case 'StructProperty':
-                        currentProperty.structureName       = this.readString();
-                        currentProperty.structureType       = this.readString();
+                        currentProperty.structureName       = this.#readString();
+                        currentProperty.structureType       = this.#readString();
 
-                        this.readInt(); // structureSize
-                        this.readInt(); // 0
+                        this.#readInt(); // structureSize
+                        this.#readInt(); // 0
 
-                        currentProperty.structureSubType    = this.readString();
+                        currentProperty.structureSubType    = this.#readString();
 
-                        let propertyGuid1 = this.readInt();
-                        let propertyGuid2 = this.readInt();
-                        let propertyGuid3 = this.readInt();
-                        let propertyGuid4 = this.readInt();
+                        let propertyGuid1 = this.#readInt();
+                        let propertyGuid2 = this.#readInt();
+                        let propertyGuid3 = this.#readInt();
+                        let propertyGuid4 = this.#readInt();
                             if(propertyGuid1 !== 0)
                             {
                                 currentProperty.propertyGuid1 = propertyGuid1;
@@ -760,7 +773,7 @@ export default class SaveParser_Read
                                 currentProperty.propertyGuid4 = propertyGuid4;
                             }
 
-                        this.skipBytes(1);
+                        this.#skipBytes(1);
 
                         for(let i = 0; i < currentArrayPropertyCount; i++)
                         {
@@ -768,42 +781,42 @@ export default class SaveParser_Read
                             {
                                 case 'InventoryItem': // MOD: FicsItNetworks
                                     currentProperty.value.values.push({
-                                        unk1          : this.readInt(),
-                                        itemName      : this.readString(),
-                                        levelName     : this.readString(),
-                                        pathName      : this.readString()
+                                        unk1          : this.#readInt(),
+                                        itemName      : this.#readString(),
+                                        levelName     : this.#readString(),
+                                        pathName      : this.#readString()
                                     });
                                     break;
 
                                 case 'Guid':
-                                    currentProperty.value.values.push(this.readHex(16));
+                                    currentProperty.value.values.push(this.#readHex(16));
                                     break;
 
                                 case 'FINNetworkTrace': // MOD: FicsIt-Networks
-                                    currentProperty.value.values.push(this.readFINNetworkTrace());
+                                    currentProperty.value.values.push(this.#readFINNetworkTrace());
                                     break;
 
                                 case 'Vector':
                                     currentProperty.value.values.push({
-                                        x           : this.readFloat(),
-                                        y           : this.readFloat(),
-                                        z           : this.readFloat()
+                                        x           : this.#readFloat(),
+                                        y           : this.#readFloat(),
+                                        z           : this.#readFloat()
                                     });
                                     break;
 
                                 case 'LinearColor':
                                     currentProperty.value.values.push({
-                                        r : this.readFloat(),
-                                        g : this.readFloat(),
-                                        b : this.readFloat(),
-                                        a : this.readFloat()
+                                        r : this.#readFloat(),
+                                        g : this.#readFloat(),
+                                        b : this.#readFloat(),
+                                        a : this.#readFloat()
                                     });
                                     break;
 
                                 // MOD: FicsIt-Networks
                                 // See: https://github.com/CoderDE/FicsIt-Networks/blob/3472a437bcd684deb7096ede8f03a7e338b4a43d/Source/FicsItNetworks/Computer/FINComputerGPUT1.h#L42
                                 case 'FINGPUT1BufferPixel':
-                                    currentProperty.value.values.push(this.readFINGPUT1BufferPixel());
+                                    currentProperty.value.values.push(this.#readFINGPUT1BufferPixel());
                                     break;
 
                                 default: // Try normalised structure, then throw Error if not working...
@@ -812,7 +825,7 @@ export default class SaveParser_Read
                                         let subStructProperties = [];
                                             while(true)
                                             {
-                                                let subStructProperty = this.readPropertyV5();
+                                                let subStructProperty = this.#readPropertyV5();
 
                                                     if(subStructProperty === null)
                                                     {
@@ -825,7 +838,7 @@ export default class SaveParser_Read
                                     }
                                     catch(error)
                                     {
-                                        this.worker.postMessage({command: 'alertParsing'});
+                                        this.#worker.postMessage({command: 'alertParsing'});
                                         if(typeof Sentry !== 'undefined')
                                         {
                                             Sentry.setContext('currentProperty', currentProperty);
@@ -838,7 +851,7 @@ export default class SaveParser_Read
                         break;
 
                     default:
-                        this.worker.postMessage({command: 'alertParsing'});
+                        this.#worker.postMessage({command: 'alertParsing'});
                         if(typeof Sentry !== 'undefined')
                         {
                             Sentry.setContext('currentProperty', currentProperty);
@@ -850,22 +863,22 @@ export default class SaveParser_Read
 
             case 'MapProperty':
                 currentProperty.value = {
-                    keyType         : this.readString(),
-                    valueType       : this.readString(),
+                    keyType         : this.#readString(),
+                    valueType       : this.#readString(),
                     values          : []
                 };
 
-                    this.skipBytes(1);
-                    currentProperty.value.modeType = this.readInt();
+                    this.#skipBytes(1);
+                    currentProperty.value.modeType = this.#readInt();
 
                     if(currentProperty.value.modeType === 3)
                     {
-                        currentProperty.value.modeUnk1 = this.readHex(9);
-                        currentProperty.value.modeUnk2 = this.readString();
-                        currentProperty.value.modeUnk3 = this.readString();
+                        currentProperty.value.modeUnk1 = this.#readHex(9);
+                        currentProperty.value.modeUnk2 = this.#readString();
+                        currentProperty.value.modeUnk3 = this.#readString();
                     }
 
-                let currentMapPropertyCount = this.readInt();
+                let currentMapPropertyCount = this.#readInt();
                     for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
                     {
                         let mapPropertyKey;
@@ -874,28 +887,28 @@ export default class SaveParser_Read
                             switch(currentProperty.value.keyType)
                             {
                                 case 'IntProperty':
-                                    mapPropertyKey = this.readInt();
+                                    mapPropertyKey = this.#readInt();
                                     break;
                                 case 'Int64Property':
-                                    mapPropertyKey = this.readLong();
+                                    mapPropertyKey = this.#readLong();
                                     break;
                                 case 'NameProperty':
                                 case 'StrProperty':
-                                    mapPropertyKey = this.readString();
+                                    mapPropertyKey = this.#readString();
                                     break;
                                 case 'ObjectProperty':
-                                    mapPropertyKey = this.readObjectProperty({});
+                                    mapPropertyKey = this.#readObjectProperty({});
                                     break;
                                 case 'EnumProperty':
                                     mapPropertyKey = {
-                                        name        : this.readString()
+                                        name        : this.#readString()
                                     };
                                     break;
                                 case 'StructProperty':
                                     mapPropertyKey = [];
                                     while(true)
                                     {
-                                        let subMapPropertyValue = this.readPropertyV5();
+                                        let subMapPropertyValue = this.#readPropertyV5();
                                             if(subMapPropertyValue === null)
                                             {
                                                 break;
@@ -905,7 +918,7 @@ export default class SaveParser_Read
                                     }
                                     break;
                                 default:
-                                    this.worker.postMessage({command: 'alertParsing'});
+                                    this.#worker.postMessage({command: 'alertParsing'});
                                     if(typeof Sentry !== 'undefined')
                                     {
                                         Sentry.setContext('currentProperty', currentProperty);
@@ -918,29 +931,29 @@ export default class SaveParser_Read
                                 case 'ByteProperty':
                                     if(currentProperty.value.keyType === 'StrProperty')
                                     {
-                                        mapPropertySubProperties = this.readString();
+                                        mapPropertySubProperties = this.#readString();
                                     }
                                     else
                                     {
-                                        mapPropertySubProperties = this.readByte();
+                                        mapPropertySubProperties = this.#readByte();
                                     }
                                     break;
                                 case 'BoolProperty':
-                                    mapPropertySubProperties = this.readByte();
+                                    mapPropertySubProperties = this.#readByte();
                                     break;
                                 case 'IntProperty':
-                                    mapPropertySubProperties = this.readInt();
+                                    mapPropertySubProperties = this.#readInt();
                                     break;
                                 case 'StrProperty':
-                                    mapPropertySubProperties = this.readString();
+                                    mapPropertySubProperties = this.#readString();
                                     break;
                                 case 'ObjectProperty':
-                                    mapPropertySubProperties = this.readObjectProperty({});
+                                    mapPropertySubProperties = this.#readObjectProperty({});
                                     break;
                                 case 'StructProperty':
                                     while(true)
                                     {
-                                        let subMapProperty = this.readPropertyV5();
+                                        let subMapProperty = this.#readPropertyV5();
                                             if(subMapProperty === null)
                                             {
                                                 break;
@@ -950,7 +963,7 @@ export default class SaveParser_Read
                                     }
                                     break;
                                 default:
-                                    this.worker.postMessage({command: 'alertParsing'});
+                                    this.#worker.postMessage({command: 'alertParsing'});
                                     if(typeof Sentry !== 'undefined')
                                     {
                                         Sentry.setContext('currentProperty', currentProperty);
@@ -966,40 +979,40 @@ export default class SaveParser_Read
                 break;
 
             case 'StructProperty':
-                currentProperty.value = {type: this.readString()};
-                this.skipBytes(17); // 0 0 0 0 + skipByte(1)
+                currentProperty.value = {type: this.#readString()};
+                this.#skipBytes(17); // 0 0 0 0 + skipByte(1)
 
                 switch(currentProperty.value.type)
                 {
                     case 'Color':
                         currentProperty.value.values = {
-                            b           : this.readByte(),
-                            g           : this.readByte(),
-                            r           : this.readByte(),
-                            a           : this.readByte()
+                            b           : this.#readByte(),
+                            g           : this.#readByte(),
+                            r           : this.#readByte(),
+                            a           : this.#readByte()
                         };
 
                         break;
 
                     case 'LinearColor':
                         currentProperty.value.values ={
-                            r           : this.readFloat(),
-                            g           : this.readFloat(),
-                            b           : this.readFloat(),
-                            a           : this.readFloat()
+                            r           : this.#readFloat(),
+                            g           : this.#readFloat(),
+                            b           : this.#readFloat(),
+                            a           : this.#readFloat()
                         };
 
                         // We use default values to avoid memory consumption
                         if(currentProperty.name === 'mPrimaryColor' || currentProperty.name === 'mSecondaryColor')
                         {
                             if(
-                                   currentProperty.value.values.r === this.defaultValues[currentProperty.name].value.values.r
-                                && currentProperty.value.values.g === this.defaultValues[currentProperty.name].value.values.g
-                                && currentProperty.value.values.b === this.defaultValues[currentProperty.name].value.values.b
-                                && currentProperty.value.values.a === this.defaultValues[currentProperty.name].value.values.a
+                                   currentProperty.value.values.r === this.#defaultValues[currentProperty.name].value.values.r
+                                && currentProperty.value.values.g === this.#defaultValues[currentProperty.name].value.values.g
+                                && currentProperty.value.values.b === this.#defaultValues[currentProperty.name].value.values.b
+                                && currentProperty.value.values.a === this.#defaultValues[currentProperty.name].value.values.a
                             )
                             {
-                                currentProperty = this.defaultValues[currentProperty.name];
+                                currentProperty = this.#defaultValues[currentProperty.name];
                             }
                         }
 
@@ -1008,17 +1021,17 @@ export default class SaveParser_Read
                     case 'Vector':
                     case 'Rotator':
                         currentProperty.value.values = {
-                            x           : this.readFloat(),
-                            y           : this.readFloat(),
-                            z           : this.readFloat()
+                            x           : this.#readFloat(),
+                            y           : this.#readFloat(),
+                            z           : this.#readFloat()
                         };
 
                         break;
 
                     case 'Vector2D': // Mod?
                         currentProperty.value.values = {
-                            x           : this.readFloat(),
-                            y           : this.readFloat()
+                            x           : this.#readFloat(),
+                            y           : this.#readFloat()
                         };
 
                         break;
@@ -1026,70 +1039,70 @@ export default class SaveParser_Read
                     case 'Quat':
                     case 'Vector4':
                         currentProperty.value.values = {
-                            a           : this.readFloat(),
-                            b           : this.readFloat(),
-                            c           : this.readFloat(),
-                            d           : this.readFloat()
+                            a           : this.#readFloat(),
+                            b           : this.#readFloat(),
+                            c           : this.#readFloat(),
+                            d           : this.#readFloat()
                         };
 
                         break;
 
                     case 'Box':
                         currentProperty.value.min = {
-                            x           : this.readFloat(),
-                            y           : this.readFloat(),
-                            z           : this.readFloat()
+                            x           : this.#readFloat(),
+                            y           : this.#readFloat(),
+                            z           : this.#readFloat()
                         };
                         currentProperty.value.max = {
-                            x           : this.readFloat(),
-                            y           : this.readFloat(),
-                            z           : this.readFloat()
+                            x           : this.#readFloat(),
+                            y           : this.#readFloat(),
+                            z           : this.#readFloat()
                         };
-                        currentProperty.value.isValid = this.readByte();
+                        currentProperty.value.isValid = this.#readByte();
 
                         break;
 
                     case 'RailroadTrackPosition':
-                        currentProperty.value               = this.readObjectProperty(currentProperty.value);
-                        currentProperty.value.offset        = this.readFloat();
-                        currentProperty.value.forward       = this.readFloat();
+                        currentProperty.value               = this.#readObjectProperty(currentProperty.value);
+                        currentProperty.value.offset        = this.#readFloat();
+                        currentProperty.value.forward       = this.#readFloat();
 
                         break;
 
                     case 'TimerHandle':
-                        currentProperty.value.handle        = this.readString();
+                        currentProperty.value.handle        = this.#readString();
 
                         break;
 
                     case 'Guid': // MOD?
-                        currentProperty.value.guid          = this.readHex(16);
+                        currentProperty.value.guid          = this.#readHex(16);
                         break;
 
                     case 'InventoryItem':
-                        currentProperty.value.unk1          = this.readInt();
-                        currentProperty.value.itemName      = this.readString();
-                        currentProperty.value               = this.readObjectProperty(currentProperty.value);
+                        currentProperty.value.unk1          = this.#readInt();
+                        currentProperty.value.itemName      = this.#readString();
+                        currentProperty.value               = this.#readObjectProperty(currentProperty.value);
                         currentProperty.value.properties    = [];
-                        currentProperty.value.properties.push(this.readPropertyV5());
+                        currentProperty.value.properties.push(this.#readPropertyV5());
                         break;
 
                     case 'FluidBox':
-                        currentProperty.value.value         = this.readFloat();
+                        currentProperty.value.value         = this.#readFloat();
                         break;
 
                     case 'SlateBrush': // MOD?
-                        currentProperty.value.unk1          = this.readString();
+                        currentProperty.value.unk1          = this.#readString();
                         break;
 
                     case 'DateTime': // MOD: Power Suit
-                        currentProperty.value.dateTime      = this.readLong();
+                        currentProperty.value.dateTime      = this.#readLong();
                         break;
 
                     case 'FINNetworkTrace': // MOD: FicsIt-Networks
-                        currentProperty.value.values        = this.readFINNetworkTrace();
+                        currentProperty.value.values        = this.#readFINNetworkTrace();
                         break;
                     case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
-                        currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
+                        currentProperty.value.values        = this.#readFINLuaProcessorStateStorage();
                         break;
 
                     default: // Try normalised structure, then throw Error if not working...
@@ -1098,7 +1111,7 @@ export default class SaveParser_Read
                             currentProperty.value.values = [];
                             while(true)
                             {
-                                let subStructProperty = this.readPropertyV5();
+                                let subStructProperty = this.#readPropertyV5();
                                     if(subStructProperty === null)
                                     {
                                         break;
@@ -1114,7 +1127,7 @@ export default class SaveParser_Read
                         }
                         catch(error)
                         {
-                            this.worker.postMessage({command: 'alertParsing'});
+                            this.#worker.postMessage({command: 'alertParsing'});
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
@@ -1126,51 +1139,51 @@ export default class SaveParser_Read
                 break;
 
             case 'SetProperty':
-                currentProperty.value = {type: this.readString(), values: []};
-                this.skipBytes(5); // skipByte(1) + 0
+                currentProperty.value = {type: this.#readString(), values: []};
+                this.#skipBytes(5); // skipByte(1) + 0
 
-                let setPropertyLength = this.readInt();
+                let setPropertyLength = this.#readInt();
                 for(let iSetProperty = 0; iSetProperty < setPropertyLength; iSetProperty++)
                 {
                     switch(currentProperty.value.type)
                     {
                         case 'ObjectProperty': // MOD: Efficiency Checker
-                            currentProperty.value.values.push(this.readObjectProperty({}));
+                            currentProperty.value.values.push(this.#readObjectProperty({}));
                             break;
                         case 'StructProperty': // MOD: FicsIt-Networks
-                            currentProperty.value.values.push(this.readFINNetworkTrace());
+                            currentProperty.value.values.push(this.#readFINNetworkTrace());
                             break;
                         case 'NameProperty':  // MOD: Sweet Transportal
-                            currentProperty.value.values.push({name: this.readString()});
+                            currentProperty.value.values.push({name: this.#readString()});
                             break;
                         case 'IntProperty':  // MOD: ???
-                            currentProperty.value.values.push({int: this.readInt()});
+                            currentProperty.value.values.push({int: this.#readInt()});
                             break;
                         default:
-                            let rewind = this.lastStrRead + 128;
-                                this.currentByte -= rewind;
-                            console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                            this.worker.postMessage({command: 'alertParsing'});
+                            let rewind = this.#lastStrRead + 128;
+                                this.#currentByte -= rewind;
+                            console.log(this.#lastStrRead, this.#readHex(rewind), this.#readInt(), this.#readInt(), this.#readInt(), this.#readInt());
+                            this.#worker.postMessage({command: 'alertParsing'});
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
                             }
-                            throw new Error('Unimplemented type `' + currentProperty.value.type + '` in SetProperty `' + currentProperty.name + '` (' + this.currentByte + ')');
+                            throw new Error('Unimplemented type `' + currentProperty.value.type + '` in SetProperty `' + currentProperty.name + '` (' + this.#currentByte + ')');
                     }
                 }
 
                 break;
 
             default:
-                let rewind = this.lastStrRead + 128;
-                    this.currentByte -= rewind;
-                console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                this.worker.postMessage({command: 'alertParsing'});
+                let rewind = this.#lastStrRead + 128;
+                    this.#currentByte -= rewind;
+                console.log(this.#lastStrRead, this.#readHex(rewind), this.#readInt(), this.#readInt(), this.#readInt(), this.#readInt());
+                this.#worker.postMessage({command: 'alertParsing'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
                 }
-                throw new Error('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.currentByte + ')');
+                throw new Error('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.#currentByte + ')');
         }
 
         return currentProperty;
@@ -1200,41 +1213,41 @@ export default class SaveParser_Read
     const FORMATARGUMENTTYPE_TEXT = 4;
     const FORMATARGUMENTTYPE_GENDER = 5;
     */
-    readTextProperty(currentProperty)
+    #readTextProperty(currentProperty)
     {
-        currentProperty.flags       = this.readInt();
-        currentProperty.historyType = this.readByte();
+        currentProperty.flags       = this.#readInt();
+        currentProperty.historyType = this.#readByte();
 
         switch(currentProperty.historyType)
         {
             // HISTORYTYPE_BASE
             case 0:
-                currentProperty.namespace       = this.readString();
-                currentProperty.key             = this.readString();
-                currentProperty.value           = this.readString();
+                currentProperty.namespace       = this.#readString();
+                currentProperty.key             = this.#readString();
+                currentProperty.value           = this.#readString();
                 break;
             // HISTORYTYPE_NAMEDFORMAT
             case 1:
             // HISTORYTYPE_ARGUMENTFORMAT
             case 3:
-                currentProperty.sourceFmt       = this.readTextProperty({});
+                currentProperty.sourceFmt       = this.#readTextProperty({});
 
-                currentProperty.argumentsCount  = this.readInt();
+                currentProperty.argumentsCount  = this.#readInt();
                 currentProperty.arguments       = [];
 
                 for(let i = 0; i < currentProperty.argumentsCount; i++)
                 {
                     let currentArgumentsData                = {};
-                        currentArgumentsData.name           = this.readString();
-                        currentArgumentsData.valueType      = this.readByte();
+                        currentArgumentsData.name           = this.#readString();
+                        currentArgumentsData.valueType      = this.#readByte();
 
                         switch(currentArgumentsData.valueType)
                         {
                             case 4:
-                                currentArgumentsData.argumentValue    = this.readTextProperty({});
+                                currentArgumentsData.argumentValue    = this.#readTextProperty({});
                                 break;
                             default:
-                                this.worker.postMessage({command: 'alertParsing'});
+                                this.#worker.postMessage({command: 'alertParsing'});
                                 if(typeof Sentry !== 'undefined')
                                 {
                                     Sentry.setContext('currentProperty', currentProperty);
@@ -1249,24 +1262,24 @@ export default class SaveParser_Read
             // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2268
             // HISTORYTYPE_TRANSFORM
             case 10:
-                currentProperty.sourceText          = this.readTextProperty({});
-                currentProperty.transformType       = this.readByte();
+                currentProperty.sourceText          = this.#readTextProperty({});
+                currentProperty.transformType       = this.#readByte();
                 break;
             // HISTORYTYPE_NONE
             case 255:
                 // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
-                if(this.header.buildVersion >= 140822)
+                if(this.#header.buildVersion >= 140822)
                 {
-                    currentProperty.hasCultureInvariantString   = this.readInt();
+                    currentProperty.hasCultureInvariantString   = this.#readInt();
 
                     if(currentProperty.hasCultureInvariantString === 1)
                     {
-                        currentProperty.value = this.readString();
+                        currentProperty.value = this.#readString();
                     }
                 }
                 break;
             default:
-                this.worker.postMessage({command: 'alertParsing'});
+                this.#worker.postMessage({command: 'alertParsing'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
@@ -1276,14 +1289,14 @@ export default class SaveParser_Read
 
         return currentProperty;
     }
-    readObjectProperty(currentProperty)
+    #readObjectProperty(currentProperty)
     {
-        let levelName   = this.readString();
+        let levelName   = this.#readString();
             if(levelName !== 'Persistent_Level')
             {
                 currentProperty.levelName = levelName;
             }
-        currentProperty.pathName  = this.readString();
+        currentProperty.pathName  = this.#readString();
 
         return currentProperty;
     }
@@ -1295,21 +1308,21 @@ export default class SaveParser_Read
     /*
      * BYTES MANIPULATIONS
      */
-    skipBytes(byteLength = 1)
+    #skipBytes(byteLength = 1)
     {
-        this.currentByte += byteLength;
+        this.#currentByte += byteLength;
     }
-    readByte()
+    #readByte()
     {
-        return parseInt(this.bufferView.getUint8(this.currentByte++, true));
+        return parseInt(this.#bufferView.getUint8(this.#currentByte++, true));
     }
-    readHex(hexLength)
+    #readHex(hexLength)
     {
         let hexPart = [];
             for(let i = 0; i < hexLength; i++)
             {
                 let currentHex = String.fromCharCode(
-                        this.bufferView.getUint8(this.currentByte++, true)
+                        this.#bufferView.getUint8(this.#currentByte++, true)
                     );
                     hexPart.push(currentHex);
             }
@@ -1317,21 +1330,21 @@ export default class SaveParser_Read
         return hexPart.join('');
     }
 
-    readInt8()
+    #readInt8()
     {
-        let data = this.bufferView.getInt8(this.currentByte++, true);
+        let data = this.#bufferView.getInt8(this.#currentByte++, true);
             return data;
     }
-    readInt()
+    #readInt()
     {
-        let data = this.bufferView.getInt32(this.currentByte, true);
-            this.currentByte += 4;
+        let data = this.#bufferView.getInt32(this.#currentByte, true);
+            this.#currentByte += 4;
             return data;
     }
-    readLong()
+    #readLong()
     {
-        let data1   = this.readInt();
-        let data2   = this.readInt();
+        let data1   = this.#readInt();
+        let data2   = this.#readInt();
 
             if(data2 === 0)
             {
@@ -1343,24 +1356,24 @@ export default class SaveParser_Read
             }
     }
 
-    readFloat()
+    #readFloat()
     {
-        let data = this.bufferView.getFloat32(this.currentByte, true);
-            this.currentByte += 4;
+        let data = this.#bufferView.getFloat32(this.#currentByte, true);
+            this.#currentByte += 4;
             return data;
     }
-    readDouble()
+    #readDouble()
     {
-        let data = this.bufferView.getFloat64(this.currentByte, true);
-            this.currentByte += 8;
+        let data = this.#bufferView.getFloat64(this.#currentByte, true);
+            this.#currentByte += 8;
             return data;
     }
 
-    readString()
+    #readString()
     {
-        let strLength       = this.readInt();
-        this.lastStrRead    = strLength;
-        let startBytes      = this.currentByte;
+        let strLength       = this.#readInt();
+        this.#lastStrRead    = strLength;
+        let startBytes      = this.#currentByte;
 
         if(strLength === 0)
         {
@@ -1368,13 +1381,13 @@ export default class SaveParser_Read
         }
 
         // Range error!
-        if(strLength > (this.maxByte - this.currentByte))
+        if(strLength > (this.#maxByte - this.#currentByte))
         {
             let debugSize       = 512;
-            this.currentByte    = Math.max(0, startBytes - (debugSize * 2));
-            let errorMessage    = 'Cannot readString (' + strLength + '): `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
+            this.#currentByte    = Math.max(0, startBytes - (debugSize * 2));
+            let errorMessage    = 'Cannot readString (' + strLength + '): `' + this.#readHex(debugSize * 2) + '`=========`' + this.#readHex(debugSize) + '`';
                 console.log(errorMessage);
-                this.worker.postMessage({command: 'alertParsing'});
+                this.#worker.postMessage({command: 'alertParsing'});
                 throw new Error(errorMessage);
         }
 
@@ -1387,13 +1400,13 @@ export default class SaveParser_Read
             for(let i = 0; i < strLength; ++i)
             {
                 let caracter = String.fromCharCode(
-                        this.bufferView.getUint16(this.currentByte++, true)
+                        this.#bufferView.getUint16(this.#currentByte++, true)
                     );
                     string.push(caracter);
-                    this.currentByte++;
+                    this.#currentByte++;
             }
-            this.currentByte++;
-            this.currentByte++;
+            this.#currentByte++;
+            this.#currentByte++;
 
             return string.join('');
         }
@@ -1406,145 +1419,145 @@ export default class SaveParser_Read
             for(let i = 0; i < strLength; i++)
             {
                 string.push(String.fromCharCode(
-                    this.bufferView.getUint8(this.currentByte++, true)
+                    this.#bufferView.getUint8(this.#currentByte++, true)
                 ));
             }
-            this.currentByte++;
+            this.#currentByte++;
 
             return string.join('');
         }
         catch(error)
         {
             let debugSize       = 512;
-            this.currentByte    = Math.max(0, startBytes - (debugSize * 2));
-            let errorMessage    = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
+            this.#currentByte    = Math.max(0, startBytes - (debugSize * 2));
+            let errorMessage    = 'Cannot readString (' + strLength + '):' + error + ': `' + this.#readHex(debugSize * 2) + '`=========`' + this.#readHex(debugSize) + '`';
                 console.log(errorMessage);
-                this.worker.postMessage({command: 'alertParsing'});
+                this.#worker.postMessage({command: 'alertParsing'});
                 throw new Error(errorMessage);
         }
 
         return;
     }
 
-    readFINGPUT1BufferPixel()
+    #readFINGPUT1BufferPixel()
     {
         return {
-            character           : this.readHex(2),
+            character           : this.#readHex(2),
             foregroundColor     : {
-                r : this.readFloat(),
-                g : this.readFloat(),
-                b : this.readFloat(),
-                a : this.readFloat()
+                r : this.#readFloat(),
+                g : this.#readFloat(),
+                b : this.#readFloat(),
+                a : this.#readFloat()
             },
             backgroundColor     : {
-                r : this.readFloat(),
-                g : this.readFloat(),
-                b : this.readFloat(),
-                a : this.readFloat()
+                r : this.#readFloat(),
+                g : this.#readFloat(),
+                b : this.#readFloat(),
+                a : this.#readFloat()
             }
         };
     }
 
     // https://github.com/CoderDE/FicsIt-Networks/blob/ab918a81a8a7527aec0cf6cd35270edfc5a1ddfe/Source/FicsItNetworks/Network/FINNetworkTrace.cpp#L154
-    readFINNetworkTrace()
+    #readFINNetworkTrace()
     {
         let data            = {};
-            data.levelName  = this.readString();
-            data.pathName   = this.readString();
+            data.levelName  = this.#readString();
+            data.pathName   = this.#readString();
 
-            let hasPrev = this.readInt();
+            let hasPrev = this.#readInt();
                 if(hasPrev === 1)
                 {
-                    data.prev  = this.readFINNetworkTrace();
+                    data.prev  = this.#readFINNetworkTrace();
                 }
-            let hasStep = this.readInt();
+            let hasStep = this.#readInt();
                 if(hasStep === 1)
                 {
-                    data.step  = this.readString();
+                    data.step  = this.#readString();
                 }
 
         return data;
     }
 
     // https://github.com/CoderDE/FicsIt-Networks/blob/master/Source/FicsItNetworks/FicsItKernel/Processor/Lua/LuaProcessorStateStorage.cpp#L6
-    readFINLuaProcessorStateStorage()
+    #readFINLuaProcessorStateStorage()
     {
         let data            = {trace: [], reference: [], structs: []};
-        let countTrace      = this.readInt();
+        let countTrace      = this.#readInt();
             for(let i = 0; i < countTrace; i++)
             {
-                data.trace.push(this.readFINNetworkTrace());
+                data.trace.push(this.#readFINNetworkTrace());
             }
 
-        let countReference  = this.readInt();
+        let countReference  = this.#readInt();
             for(let i = 0; i < countReference; i++)
             {
                 data.reference.push({
-                    levelName: this.readString(),
-                    pathName: this.readString()
+                    levelName: this.#readString(),
+                    pathName: this.#readString()
                 });
             }
 
-        data.thread         = this.readString();
-        data.globals        = this.readString();
+        data.thread         = this.#readString();
+        data.globals        = this.#readString();
 
-        let countStructs    = this.readInt();
+        let countStructs    = this.#readInt();
             data.structs    = [];
 
             for(let i = 0; i < countStructs; i++)
             {
                 let structure = {};
-                    structure.unk1  = this.readInt();
-                    structure.unk2  = this.readString();
+                    structure.unk1  = this.#readInt();
+                    structure.unk2  = this.#readString();
 
                     switch(structure.unk2)
                     {
                         case '/Script/CoreUObject.Vector':
-                            structure.x         = this.readFloat();
-                            structure.y         = this.readFloat();
-                            structure.z         = this.readFloat();
+                            structure.x         = this.#readFloat();
+                            structure.y         = this.#readFloat();
+                            structure.z         = this.#readFloat();
                             break;
                         case '/Script/CoreUObject.LinearColor':
-                            structure.r         = this.readFloat();
-                            structure.g         = this.readFloat();
-                            structure.b         = this.readFloat();
-                            structure.a         = this.readFloat();
+                            structure.r         = this.#readFloat();
+                            structure.g         = this.#readFloat();
+                            structure.b         = this.#readFloat();
+                            structure.a         = this.#readFloat();
                             break;
                         case '/Script/FactoryGame.InventoryStack':
-                            structure.unk3      = this.readInt();
-                            structure.unk4      = this.readString();
-                            structure.unk5      = this.readInt();
-                            structure.unk6      = this.readInt();
-                            structure.unk7      = this.readInt();
+                            structure.unk3      = this.#readInt();
+                            structure.unk4      = this.#readString();
+                            structure.unk5      = this.#readInt();
+                            structure.unk6      = this.#readInt();
+                            structure.unk7      = this.#readInt();
                             break;
                         case '/Script/FactoryGame.ItemAmount':
-                            structure.unk3      = this.readInt();
-                            structure.unk4      = this.readString();
-                            structure.unk5      = this.readInt();
+                            structure.unk3      = this.#readInt();
+                            structure.unk4      = this.#readString();
+                            structure.unk5      = this.#readInt();
                             break;
                         case '/Script/FicsItNetworks.FINTrackGraph':
-                            structure.trace     = this.readFINNetworkTrace();
-                            structure.trackId   = this.readInt();
+                            structure.trace     = this.#readFINNetworkTrace();
+                            structure.trackId   = this.#readInt();
                             break;
                         case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture': // Skip!
                         case '/Script/FactoryGame.InventoryItem': // Skip!
                             break;
                         case '/Script/FicsItNetworks.FINGPUT1Buffer':
-                            structure.x         = this.readInt();
-                            structure.y         = this.readInt();
-                            structure.size      = this.readInt();
-                            structure.name      = this.readString();
-                            structure.type      = this.readString();
-                            structure.length    = this.readInt();
+                            structure.x         = this.#readInt();
+                            structure.y         = this.#readInt();
+                            structure.size      = this.#readInt();
+                            structure.name      = this.#readString();
+                            structure.type      = this.#readString();
+                            structure.length    = this.#readInt();
                             structure.buffer    = [];
                                 for(let size = 0; size < structure.size; size++)
                                 {
-                                    structure.buffer.push(this.readFINGPUT1BufferPixel());
+                                    structure.buffer.push(this.#readFINGPUT1BufferPixel());
                                 }
-                            structure.unk3      = this.readHex(45); //TODO: Not sure at all!
+                            structure.unk3      = this.#readHex(45); //TODO: Not sure at all!
                             break;
                         default:
-                            this.worker.postMessage({command: 'alertParsing'});
+                            this.#worker.postMessage({command: 'alertParsing'});
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentData', data);
