@@ -32,11 +32,11 @@ module.exports = env => {
                     use: {
                         loader: "babel-loader",
                         options: {
-                            babelrc: true,
-                        },
-                    },
-                },
-            ],
+                            babelrc: true
+                        }
+                    }
+                }
+            ]
         },
         optimization    : {
             minimize        : true,
