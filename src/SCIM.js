@@ -24,7 +24,7 @@ export default class SCIM
         this.tetrominoUrl               = "https://satisfactory-calculator.com/" + this.language + "/api/tetromino";
         this.usersUrl                   = "https://satisfactory-calculator.com/" + this.language + "/api/users";
 
-        this.saveParserReadWorker       = '/js/InteractiveMap/build/Worker/SaveParser/Read.js';
+        this.saveParserReadWorker       = '/js/InteractiveMap/build/Worker/SaveParser/ReadWorker.js';
         this.saveParserWriteWorker      = '/js/InteractiveMap/build/Worker/SaveParser/Write.js';
 
         this.collectedOpacity           = 0.3;

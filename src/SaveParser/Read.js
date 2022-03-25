@@ -1,7 +1,11 @@
 /* global Sentry, Intl, self */
 import pako                                     from '../Lib/pako.esm.mjs';
 
-export default class SaveParser_Read
+export function parse(window, options) {
+    new SaveParser_Read(window, options);
+}
+
+class SaveParser_Read
 {
     constructor(worker, options)
     {
@@ -1558,8 +1562,4 @@ export default class SaveParser_Read
 
         return data;
     }
-};
-
-self.onmessage = function(e){
-    return new SaveParser_Read(self, e.data);
 };

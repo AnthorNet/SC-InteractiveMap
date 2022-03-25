@@ -16,7 +16,7 @@ module.exports = env => {
         context         : path.resolve(__dirname, 'src'),
         entry           : {
             SCIM                        : './SCIM.js',
-            'Worker/SaveParser/Read'    : './SaveParser/Read.js',
+            'Worker/SaveParser/Read'    : './SaveParser/ReadWorker.js',
             'Worker/SaveParser/Write'   : './SaveParser/Write.js'
         },
 
