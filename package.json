@@ -8,7 +8,10 @@
         "Build: Interactive Map": "webpack"
     },
     "devDependencies": {
+        "@babel/core": "^7.17.8",
+        "@babel/preset-env": "^7.16.11",
         "@sentry/webpack-plugin": "^1.18.8",
+        "babel-loader": "^8.2.4",
         "json-minimizer-webpack-plugin": "^3.3.0",
         "merge-json-webpack-plugin": "^6.1.0",
         "terser-webpack-plugin": "^5.3.1",
