@@ -4,6 +4,8 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_GameState                      from '../SubSystem/GameState.js';
 
+import { translate }                            from '../Translate.js';
+
 export default class Modal_LightColorSlots
 {
     constructor(options)
@@ -13,7 +15,7 @@ export default class Modal_LightColorSlots
 
     parse()
     {
-        $('#genericModal .modal-title').empty().html(this.baseLayout.translate._('GLOBAL\\Light color slots'));
+        $('#genericModal .modal-title').empty().html(translate('GLOBAL\\Light color slots'));
         let html            = [];
         let playerColors    = this.baseLayout.gameStateSubSystem.getPlayerLightColorSlots();
             for(let slotIndex = 0; slotIndex < SubSystem_GameState.totalLightColorSlots; slotIndex++)

@@ -17,6 +17,8 @@ import Building_SmartSplitter                   from '../Building/SmartSplitter.
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
 
+import { translate }                            from '../Translate.js';
+
 export default class BaseLayout_Tooltip
 {
     static get styleLabels(){ return 'height: 11px;color: #5b5b5b;background: #e6e6e4;border-radius: 4px;line-height: 11px;text-align: center;font-size: 10px;'; }
@@ -1610,7 +1612,7 @@ export default class BaseLayout_Tooltip
                     let inventoryOut    = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
 
                         content.push('<td class="text-center"><i class="fas fa-arrow-alt-right"></i></td>');
-                        content.push('<td class="text-center"><div class="small">' + this.baseLayout.translate._('MAP\\TOOLTIP\\Waste') + '</div>');
+                        content.push('<td class="text-center"><div class="small">' + translate('MAP\\TOOLTIP\\Waste') + '</div>');
                             content.push('<table class="mx-auto"><tr><td>' + this.baseLayout.getInventoryImage(inventoryOut[0], 48) + '</td></tr></table>');
                         content.push('</td>');
                 }

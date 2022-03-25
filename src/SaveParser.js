@@ -2,6 +2,8 @@ import BaseLayout_Modal                         from './BaseLayout/Modal.js';
 import SaveParser_FicsIt                        from './SaveParser/FicsIt.js';
 import saveAs                                   from './Lib/FileSaver.js';
 
+import { translate }                            from './Translate.js';
+
 export default class SaveParser
 {
     constructor(options)
@@ -10,7 +12,6 @@ export default class SaveParser
         this.arrayBuffer            = options.arrayBuffer;
 
         this.language               = options.language;
-        this.translate              = options.translate;
         this.workers                = {SaveParserRead: options.saveParserReadWorker, SaveParserWrite: options.saveParserWriteWorker};
 
         this.header                 = null;
@@ -142,7 +143,7 @@ export default class SaveParser
             case 'alertParsing':
                 return BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
             case 'loaderMessage':
-                return $('.loader h6').html(this.translate._(data.message, data.replace));
+                return $('.loader h6').html(translate(data.message, data.replace));
             case 'loaderProgress':
                 return $('#loaderProgressBar .progress-bar').css('width', data.percentage + '%');
 

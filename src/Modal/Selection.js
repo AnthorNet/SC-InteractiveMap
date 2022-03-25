@@ -17,6 +17,8 @@ import Spawn_Fill                               from '../Spawn/Fill.js';
 import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
 import SubSystem_Foliage                        from '../SubSystem/Foliage.js';
 
+import { translate }                            from '../Translate.js';
+
 export default class Modal_Selection
 {
     static cancel(baseLayout)
@@ -1092,7 +1094,7 @@ export default class Modal_Selection
                 markers     : markers
             });
 
-        $('#genericModal .modal-title').empty().html(baseLayout.translate._('MAP\\MODAL\\Statistics - Production'));
+        $('#genericModal .modal-title').empty().html(translate('MAP\\MODAL\\Statistics - Production'));
         $('#genericModal .modal-body').empty().html(statisticsProduction.parse());
         setTimeout(function(){
             $('#genericModal').modal('show').modal('handleUpdate');
@@ -1106,7 +1108,7 @@ export default class Modal_Selection
                 markers     : markers
             });
 
-        $('#genericModal .modal-title').empty().html(baseLayout.translate._('MAP\\MODAL\\Statistics - Storage'));
+        $('#genericModal .modal-title').empty().html(translate('MAP\\MODAL\\Statistics - Storage'));
         $('#genericModal .modal-body').empty().html(statisticsStorage.parse());
         setTimeout(function(){
             $('#genericModal').modal('show').modal('handleUpdate');

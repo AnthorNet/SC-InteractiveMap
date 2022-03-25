@@ -1,53 +1,37 @@
-export default class Translate
-{
-    constructor(options)
-    {
-        this.build                      = options.build;
-        this.version                    = options.version;
-        this.startCallback              = (options.startCallback !== undefined) ? options.startCallback : null;
+/** @type {Map<string, string> | undefined} */
+let translations = undefined;
 
-        this.dataUrl                    = options.dataUrl;
-
-        this.language                   = options.language;
-        this.translations               = {};
-
-        this.loadInitialData();
-    }
-
-    loadInitialData()
-    {
-        $.getJSON(this.dataUrl, function(data){
-            if(data !== undefined)
-            {
-                this.translations = data;
-            }
-        }.bind(this)).done(() => {
-            if(this.startCallback !== null)
-            {
-                this.startCallback();
-            }
-        });
-    }
-
-    _(value, replace)
-    {
-        if(this.translations[value] !== undefined)
-        {
-            value = this.translations[value];
+export function setupTranslate({ callback, dataUrl }) {
+    $.getJSON(dataUrl, (data) => {
+        if (data !== undefined) {
+            translations = new Map(Object.entries(data));
         }
+    }).done(() => {
+        callback?.();
+    });
+}
 
-        if(replace !== undefined)
-        {
-            if(Array.isArray(replace) === false)
-            {
-                replace = [replace];
-            }
-            for(let i = 0; i < replace.length; i++)
-            {
-                value = value.replace('%' + (i + 1) + '$s', replace[i]);
-            }
-        }
-
-        return value;
+/**
+ * Translate the given string
+ *
+ * @param {string} value
+ * @param {string|string[]} [replace]
+ * @returns
+ */
+export function translate(value, replace) {
+    const registeredString = translations.get(value);
+    if (registeredString !== undefined) {
+        value = registeredString;
     }
+
+    if (replace !== undefined) {
+        if (!Array.isArray(replace)) {
+            replace = [replace];
+        }
+        for (let i = 0; i < replace.length; i++) {
+            value = value.replace("%" + (i + 1) + "$s", replace[i]);
+        }
+    }
+
+    return value;
 }

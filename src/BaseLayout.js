@@ -43,6 +43,8 @@ import Building_RailroadSwitchControl           from './Building/RailroadSwitchC
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
 
+import { translate }                            from './Translate.js';
+
 export default class BaseLayout
 {
     constructor(options)
@@ -91,7 +93,6 @@ export default class BaseLayout
         this.modsUrl                            = options.modsUrl;
 
         this.language                           = options.language.split('_')[0]; // Handle pt_BR locales
-        this.translate                          = options.translate;
 
         this.collectedHardDrives                = new HardDrives({language: options.language});
         this.collectedSchematics                = new Schematics({language: options.language});
@@ -353,7 +354,7 @@ export default class BaseLayout
             {
                 return new Promise(function(resolve){
                     $('#loaderProgressBar .progress-bar').css('width', '47.5%');
-                    $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading game data...'));
+                    $('.loader h6').html(translate('MAP\\LOADER\\Loading game data...'));
                     setTimeout(resolve, 50);
                 }.bind(this)).then(() => {
                     $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, function(data)
@@ -497,7 +498,7 @@ export default class BaseLayout
     {
         return new Promise(function(resolve){
             $('#loaderProgressBar .progress-bar').css('width', '50%');
-            $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
+            $('.loader h6').html(translate('MAP\\LOADER\\Loading detailed models...'));
             setTimeout(resolve, 50);
         }.bind(this)).then(() => {
             $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, function(data)
@@ -543,7 +544,7 @@ export default class BaseLayout
                 $('#saveGameInformation').html('<strong>' + header.sessionName + '</strong> <em><small>(' + hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's)</small></em>');
 
             $('#loaderProgressBar .progress-bar').css('width', '50%');
-            $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', 0));
+            $('.loader h6').html(translate('MAP\\LOADER\\Rendering objects (%1$s%)...', 0));
             console.time('renderObjects');
             setTimeout(resolve, 50);
         }.bind(this)).then(() => {
@@ -879,7 +880,7 @@ export default class BaseLayout
                 {
                     return Promise.all(promises).then(() => {
                         $('#loaderProgressBar .progress-bar').css('width', (50 + progress * 0.4) + '%');
-                        $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', progress));
+                        $('.loader h6').html(translate('MAP\\LOADER\\Rendering objects (%1$s%)...', progress));
 
                         setTimeout(() => {
                             this.parseObjects((i + 1), objectsKeys);
@@ -1143,7 +1144,7 @@ export default class BaseLayout
                         let progress = Math.round(i / layersKeys.length * 100);
                             return new Promise(function(resolve){
                                 $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
-                                $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
+                                $('.loader h6').html(translate('MAP\\LOADER\\Adding map layers (%1$s)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
                                 setTimeout(resolve, 5);
                             }.bind(this)).then(() => {
                                 this.addLayers((i + 1));
@@ -1155,7 +1156,7 @@ export default class BaseLayout
 
         return new Promise(function(resolve){
             $('#loaderProgressBar .progress-bar').css('width', '100%');
-            $('.loader h6').html(this.translate._('MAP\\LOADER\\Finalization of statistics and controls...'));
+            $('.loader h6').html(translate('MAP\\LOADER\\Finalization of statistics and controls...'));
             setTimeout(resolve, 25);
         }.bind(this)).then(() => {
             // Altitude slider

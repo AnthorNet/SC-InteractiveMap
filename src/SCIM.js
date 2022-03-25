@@ -1,7 +1,7 @@
 import BaseLayout                               from './BaseLayout.js';
 import GameMap                                  from './GameMap.js';
 import SaveParser                               from './SaveParser.js';
-import Translate                                from './Translate.js';
+import { setupTranslate }                       from './Translate.js';
 
 import BaseLayout_Modal                         from './BaseLayout/Modal.js';
 import Lib_LeafletPlugins                       from './Lib/LeafletPlugins.js';
@@ -37,7 +37,6 @@ export default class SCIM
         // Hold...
         this.map                        = null;
         this.baseLayout                 = null;
-        this.translate                  = null;
     }
 
     start(remoteUrl)
@@ -47,14 +46,9 @@ export default class SCIM
             this.intervalScriptsVERSION = setInterval(this.checkVersion.bind(this), 300 * 1000);
         }
 
-        this.translate = new Translate({
-            build               : this.build,
-            version             : this.scriptsVERSION,
-
-            dataUrl             : this.translationDataUrl,
-
-            language            : this.language,
-            startCallback       : function(){
+        setupTranslate({
+            dataUrl: this.translationDataUrl,
+            callback: () => {
                 this.map = new GameMap({
                     build               : this.build,
                     version             : this.scriptsVERSION,
@@ -85,7 +79,7 @@ export default class SCIM
                 {
                     $('#dropSaveGame').remove();
                 }
-            }.bind(this)
+            }
         });
     }
 
@@ -139,14 +133,12 @@ export default class SCIM
             options.usersUrl            = this.usersUrl;
 
             options.language            = this.language;
-            options.translate           = this.translate;
 
             options.satisfactoryMap     = this.map;
             options.saveGameParser      = new SaveParser({
                 arrayBuffer                 : options.droppedFileResult,
                 fileName                    : options.droppedFileName,
                 language                    : this.language,
-                translate                   : this.translate,
 
                 saveParserReadWorker        : this.saveParserReadWorker,
                 saveParserWriteWorker       : this.saveParserWriteWorker

@@ -4,6 +4,8 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
 
+import { translate }                            from '../Translate.js';
+
 export default class Modal_ColorSlots
 {
     constructor(options)
@@ -13,7 +15,7 @@ export default class Modal_ColorSlots
 
     parse()
     {
-        $('#genericModal .modal-title').empty().html(this.baseLayout.translate._('GLOBAL\\Color swatches'));
+        $('#genericModal .modal-title').empty().html(translate('GLOBAL\\Color swatches'));
         let html            = [];
         let playerColors    = this.baseLayout.buildableSubSystem.getPlayerColorSlots();
 
