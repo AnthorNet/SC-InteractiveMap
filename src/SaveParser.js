@@ -1,5 +1,6 @@
 import BaseLayout_Modal                         from './BaseLayout/Modal.js';
 import SaveParser_FicsIt                        from './SaveParser/FicsIt.js';
+import saveAs                                   from './Lib/FileSaver.js';
 
 export default class SaveParser
 {

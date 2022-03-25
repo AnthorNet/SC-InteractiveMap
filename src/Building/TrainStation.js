@@ -25,7 +25,7 @@ export default class Building_TrainStation
 
                 platforms = newPlatforms;
             }
-            
+
         return trainStations;
     }
 

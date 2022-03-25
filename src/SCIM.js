@@ -1,5 +1,5 @@
 import BaseLayout                               from './BaseLayout.js';
-import Map                                      from './Map.js';
+import GameMap                                  from './GameMap.js';
 import SaveParser                               from './SaveParser.js';
 import Translate                                from './Translate.js';
 
@@ -55,7 +55,7 @@ export default class SCIM
 
             language            : this.language,
             startCallback       : function(){
-                this.map = new Map({
+                this.map = new GameMap({
                     build               : this.build,
                     version             : this.scriptsVERSION,
 
