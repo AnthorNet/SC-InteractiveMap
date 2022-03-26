@@ -65,6 +65,25 @@ class SaveParser_Read
         /** @type {boolean} */
         this.successful = false;
 
+        /** @type {number} */
+        this._totalProgressWeight = 0.45;
+
+        /** @type {number} */
+        this._previousStepsTotalProgress = 0;
+
+        /** @type {number} */
+        this._progressStep = 0;
+
+        /** @type {number[]} */
+        this._loadingProgressWeights = [
+            0.550,   // Inflating Chunks
+            0.024,   // Merging Chunks - part 1
+            0.025,   // Merging Chunks - part 2
+            0.200,   // Parsing Objects
+            0.200,   // Parsing Entities
+            0.001,   // Parsing Collectables
+        ];
+
         this.parseHeader();
     }
 
@@ -175,11 +194,13 @@ class SaveParser_Read
                 return;
             }
 
-            let currentPercentage = Math.round(this.handledByte / this.maxByte * 100);
-                this.worker.postMessage({command: 'loaderMessage', message: 'Inflating save game (' + currentPercentage + '%)...'});
-                this.worker.postMessage({command: 'loaderProgress', percentage: (currentPercentage * 0.4)});
+            let stepProgress = this.handledByte / this.maxByte;
+            const totalProgress = this.getTotalLoadingProgress(stepProgress);
+                this.worker.postMessage({command: 'loaderMessage', message: 'Inflating save game (' + (100 * stepProgress).toFixed(0) + '%)...'});
+                this.worker.postMessage({command: 'loaderProgress', progress: totalProgress});
         }
 
+        this.gotoNextProgressStep();
         console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
         this.worker.postMessage({command: 'loaderMessage', message: 'Merging inflated chunks...'});
 
@@ -187,16 +208,32 @@ class SaveParser_Read
         let newChunkLength = 0;
             for(let i = 0; i < this.currentChunks.length; i++)
             {
+                if (i % 100 === 0) {
+                    this.worker.postMessage({
+                        command: 'loaderProgress',
+                        progress: this.getTotalLoadingProgress(i / this.currentChunks.length)
+                    });
+                }
+
                 newChunkLength += this.currentChunks[i].length;
             }
+            this.gotoNextProgressStep();
 
         let tempChunk       = new Uint8Array(newChunkLength);
         let currentLength   = 0;
             for(let i = 0; i < this.currentChunks.length; i++)
             {
+                if (i % 100 === 0) {
+                    this.worker.postMessage({
+                        command: 'loaderProgress',
+                        progress: this.getTotalLoadingProgress(i / this.currentChunks.length)
+                    });
+                }
+
                 tempChunk.set(this.currentChunks[i], currentLength);
                 currentLength += this.currentChunks[i].length;
             }
+            this.gotoNextProgressStep();
 
         // Parse them as usual while skipping the firt 4 bytes!
         this.currentByte        = 4;
@@ -216,6 +253,13 @@ class SaveParser_Read
 
             for(let i = 0; i < countObjects; i++)
             {
+                if (i % 100 === 0) {
+                    this.worker.postMessage({
+                        command: 'loaderProgress',
+                        progress: this.getTotalLoadingProgress(i / countObjects)
+                    });
+                }
+
                 let objectType = this.readInt();
                     switch(objectType)
                     {
@@ -239,6 +283,7 @@ class SaveParser_Read
                             break;
                     }
             }
+            this.gotoNextProgressStep();
 
             let countEntities   = this.readInt();
                 console.log('Parsing: ' + countEntities + ' entities...');
@@ -246,8 +291,16 @@ class SaveParser_Read
 
             for(let i = 0; i < countEntities; i++)
             {
+                if (i % 100 === 0) {
+                    this.worker.postMessage({
+                        command: 'loaderProgress',
+                        progress: this.getTotalLoadingProgress(i / countObjects)
+                    });
+                }
+
                 this.readEntityV5(entitiesToObjects[i]);
             }
+            this.gotoNextProgressStep();
 
             this.saveResult.collectables   = [];
                 let countCollected  = this.readInt();
@@ -256,8 +309,16 @@ class SaveParser_Read
 
             for(let i = 0; i < countCollected; i++)
             {
+                if (i % 100 === 0) {
+                    this.worker.postMessage({
+                        command: 'loaderProgress',
+                        progress: this.getTotalLoadingProgress(i / countCollected)
+                    });
+                }
+
                 this.saveResult.collectables.push(this.readObjectProperty({}));
             }
+            this.gotoNextProgressStep();
 
             delete this.arrayBuffer;
             delete this.bufferView;
@@ -1335,8 +1396,20 @@ class SaveParser_Read
     }
 
 
+    getTotalLoadingProgress(stepProgress) {
+        return (
+            this._totalProgressWeight *
+            (
+                this._previousStepsTotalProgress +
+                stepProgress * this._loadingProgressWeights[this._progressStep]
+            )
+        );
+    }
 
-
+    gotoNextProgressStep() {
+        this._previousStepsTotalProgress += this._loadingProgressWeights[this._progressStep];
+        this._progressStep++;
+    }
 
     /*
      * BYTES MANIPULATIONS

@@ -74,7 +74,7 @@ export default class SaveParser
         });
 
         $('#loaderProgressBar').css('display', 'flex');
-        this.onWorkerMessage({command: 'loaderProgress', percentage: 0});
+        this.onWorkerMessage({command: 'loaderProgress', progress: 0});
 
         delete this.arrayBuffer;
     }
@@ -105,7 +105,7 @@ export default class SaveParser
             });
 
             $('#loaderProgressBar').css('display', 'flex');
-            this.onWorkerMessage({command: 'loaderProgress', percentage: 0});
+            this.onWorkerMessage({command: 'loaderProgress', progress: 0});
         }
         else
         {
@@ -144,7 +144,7 @@ export default class SaveParser
             case 'loaderMessage':
                 return $('.loader h6').html(this.translate._(data.message, data.replace));
             case 'loaderProgress':
-                return $('#loaderProgressBar .progress-bar').css('width', data.percentage + '%');
+                return $('#loaderProgressBar .progress-bar').css('width', (100 * data.progress) + '%');
 
             case 'saveResult':
                 for(const [key, value] of Object.entries(data.result))
@@ -153,7 +153,7 @@ export default class SaveParser
                 }
 
                 console.timeEnd('loadSave');
-                this.onWorkerMessage({command: 'loaderProgress', percentage: 45});
+                this.onWorkerMessage({command: 'loaderProgress', progress: 0.45});
 
                 if(this.callback !== null)
                 {
@@ -162,7 +162,7 @@ export default class SaveParser
                 }
                 else
                 {
-                    this.onWorkerMessage({command: 'loaderProgress', percentage: 100});
+                    this.onWorkerMessage({command: 'loaderProgress', progress: 1});
                 }
 
                 return this.worker.terminate();
@@ -184,7 +184,7 @@ export default class SaveParser
                 }
                 else
                 {
-                    this.onWorkerMessage({command: 'loaderProgress', percentage: 100});
+                    this.onWorkerMessage({command: 'loaderProgress', progress: 1});
                     window.SCIM.hideLoader();
                 }
 

@@ -67,7 +67,7 @@ export default class SaveParser_Write
                     this.pushSaveToChunk();
 
                     this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s/%2$s objects...', replace: [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]});
-                    this.worker.postMessage({command: 'loaderProgress', percentage: ((i / countObjects * 100) * 0.48)});
+                    this.worker.postMessage({command: 'loaderProgress', progress: ((i / countObjects) * 0.48)});
                 }
             }
 
@@ -92,7 +92,7 @@ export default class SaveParser_Write
                     this.pushSaveToChunk();
 
                     this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s/%2$s entities...', replace: [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]});
-                    this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (i / countObjects * 100) * 0.48)});
+                    this.worker.postMessage({command: 'loaderProgress', progress: (0.48 + (i / countObjects) * 0.48)});
                 }
             }
 
