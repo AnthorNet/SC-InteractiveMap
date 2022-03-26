@@ -2,7 +2,11 @@
 import pako                                     from '../Lib/pako.esm.mjs';
 
 export function parse(worker, options) {
-    new SaveParser_Read(worker, options);
+    const parser = new SaveParser_Read(worker, options);
+    if (parser.successful) {
+        return parser.saveResult;
+    }
+    return undefined;
 }
 
 class SaveParser_Read
@@ -19,6 +23,8 @@ class SaveParser_Read
         this.arrayBuffer        = options.arrayBuffer;
         this.bufferView         = new DataView(this.arrayBuffer); // Still used for header...
         this.currentByte        = 0;
+
+        this.successful         = false;
 
         this.parseHeader();
     }
@@ -217,7 +223,7 @@ class SaveParser_Read
             delete this.arrayBuffer;
             delete this.bufferView;
 
-            this.worker.postMessage({command: 'saveResult', result: this.saveResult});
+            this.successful = true;
     }
 
     // V5 Functions

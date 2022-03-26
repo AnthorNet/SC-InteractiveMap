@@ -1,5 +1,8 @@
 import { parse } from "./Read.js"
 
 self.onmessage = (e) => {
-    parse(self, e.data);
+    const result = parse(self, e.data);
+    if (result !== undefined) {
+        self.postMessage({ command: 'saveResult', result });
+    }
 };
