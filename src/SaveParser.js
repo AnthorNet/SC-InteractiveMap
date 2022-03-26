@@ -151,9 +151,7 @@ export default class SaveParser
                 {
                     this[key] = value;
                 }
-                break;
 
-            case 'endSaveLoading':
                 console.timeEnd('loadSave');
                 this.onWorkerMessage({command: 'loaderProgress', percentage: 45});
 

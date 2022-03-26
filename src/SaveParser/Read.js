@@ -25,30 +25,28 @@ class SaveParser_Read
 
     parseHeader()
     {
-        this.header                      = {};
-        this.header.saveHeaderType       = this.readInt();
-        this.header.saveVersion          = this.readInt();
-        this.header.buildVersion         = this.readInt();
-        this.header.mapName              = this.readString();
-        this.header.mapOptions           = this.readString();
-        this.header.sessionName          = this.readString();
-        this.header.playDurationSeconds  = this.readInt();
-        this.header.saveDateTime         = this.readLong();
-        this.header.sessionVisibility    = this.readByte();
+        this.saveResult.header                      = {};
+        this.saveResult.header.saveHeaderType       = this.readInt();
+        this.saveResult.header.saveVersion          = this.readInt();
+        this.saveResult.header.buildVersion         = this.readInt();
+        this.saveResult.header.mapName              = this.readString();
+        this.saveResult.header.mapOptions           = this.readString();
+        this.saveResult.header.sessionName          = this.readString();
+        this.saveResult.header.playDurationSeconds  = this.readInt();
+        this.saveResult.header.saveDateTime         = this.readLong();
+        this.saveResult.header.sessionVisibility    = this.readByte();
 
-        if(this.header.saveHeaderType >= 7)
+        if(this.saveResult.header.saveHeaderType >= 7)
         {
-            this.header.fEditorObjectVersion = this.readInt();
+            this.saveResult.header.fEditorObjectVersion = this.readInt();
         }
-        if(this.header.saveHeaderType >= 8)
+        if(this.saveResult.header.saveHeaderType >= 8)
         {
-            this.header.modMetadata      = this.readString();
-            this.header.isModdedSave     = this.readInt();
+            this.saveResult.header.modMetadata      = this.readString();
+            this.saveResult.header.isModdedSave     = this.readInt();
         }
 
-        console.log(this.header);
-
-        this.worker.postMessage({command: 'saveResult', result: {header: this.header}});
+        console.log(this.saveResult.header);
 
         this.parseObjects();
     }
@@ -56,7 +54,7 @@ class SaveParser_Read
     parseObjects()
     {
         // We should now unzip the body!
-        if(this.header.saveVersion >= 21)
+        if(this.saveResult.header.saveVersion >= 21)
         {
             this.parseCompressedObjectsV21();
         }
@@ -220,7 +218,6 @@ class SaveParser_Read
             delete this.bufferView;
 
             this.worker.postMessage({command: 'saveResult', result: this.saveResult});
-            this.worker.postMessage({command: 'endSaveLoading'});
     }
 
     // V5 Functions
@@ -1259,7 +1256,7 @@ class SaveParser_Read
             // HISTORYTYPE_NONE
             case 255:
                 // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
-                if(this.header.buildVersion >= 140822)
+                if(this.saveResult.header.buildVersion >= 140822)
                 {
                     currentProperty.hasCultureInvariantString   = this.readInt();
 
