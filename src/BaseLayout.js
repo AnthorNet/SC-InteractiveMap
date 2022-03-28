@@ -629,13 +629,16 @@ export default class BaseLayout
                 }
                 else
                 {
-                    let haveDropPod = this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId].hasLayer(this.satisfactoryMap.collectableMarkers[currentObject.pathName]);
-                        if(haveDropPod === false)
-                        {
-                            this.satisfactoryMap.collectableMarkers[currentObject.pathName].addTo(
-                                this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId]
-                            );
-                        }
+                    if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] != undefined)
+                    {
+                        let haveDropPod = this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId].hasLayer(this.satisfactoryMap.collectableMarkers[currentObject.pathName]);
+                            if(haveDropPod === false)
+                            {
+                                this.satisfactoryMap.collectableMarkers[currentObject.pathName].addTo(
+                                    this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId]
+                                );
+                            }
+                    }
                 }
             }
 
