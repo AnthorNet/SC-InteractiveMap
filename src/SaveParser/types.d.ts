@@ -97,3 +97,13 @@ export type ParsedFINGPUT1BufferPixel = {
 // TODO: these types properly.
 type GameObject = Record<string, any>;
 type GameObjectProperty = Record<string, any>;
+
+type MessageToUser = {
+  message: string;
+  messageReplace?: string | string[];
+};
+
+export type Reporter = {
+  reportProgress(data: { progress: number } | MessageToUser);
+  reportFailure(data?: MessageToUser);
+};

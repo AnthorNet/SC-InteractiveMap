@@ -12,6 +12,7 @@
  * @typedef {import("./types").ParsedLong} ParsedLong
  * @typedef {import("./types").ParsedString} ParsedString
  * @typedef {import("./types").ParsedFINGPUT1BufferPixel} ParsedFINGPUT1BufferPixel
+ * @typedef {import("./types").Reporter} Reporter
  */
 
 import pako                                     from '../Lib/pako.esm.mjs';
@@ -19,12 +20,12 @@ import pako                                     from '../Lib/pako.esm.mjs';
 /**
  * Parse the given save file.
  *
- * @param {Window | Worker} worker
+ * @param {Reporter} reporter
  * @param {{ arrayBuffer: ArrayBuffer; defaultValues: DefaultValues; language: string; }} options
  * @returns {GameSave}
  */
-export function parse(worker, options) {
-    const parser = new SaveParser_Read(worker, options);
+export function parse(reporter, options) {
+    const parser = new SaveParser_Read(reporter, options);
     if (parser.successful) {
         return parser.saveResult;
     }
@@ -34,13 +35,13 @@ export function parse(worker, options) {
 class SaveParser_Read
 {
     /**
-     * @param {Window | Worker} worker
+     * @param {Reporter} reporter
      * @param {{ arrayBuffer: ArrayBuffer; defaultValues: DefaultValues; language: string; }} options
      */
-    constructor(worker, options)
+    constructor(reporter, options)
     {
-        /** @type {Window | Worker} */
-        this.worker = worker;
+        /** @type {Reporter} */
+        this.reporter = reporter;
 
         /** @type {GameSave} */
         this.saveResult = {
@@ -124,7 +125,9 @@ class SaveParser_Read
         }
         else
         {
-            this.worker.postMessage({command: 'alert', message: 'That save version isn\'t supported anymore... Please save it again in the game.'});
+            this.reporter.reportFailure({
+                message: 'That save version isn\'t supported anymore... Please save it again in the game.'
+            });
         }
     }
 
@@ -183,7 +186,9 @@ class SaveParser_Read
             }
             catch(err)
             {
-                this.worker.postMessage({command: 'alert', message: 'Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'});
+                this.reporter.reportFailure({
+                    message: 'Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'
+                });
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('pako', pako);
@@ -196,21 +201,24 @@ class SaveParser_Read
 
             let stepProgress = this.handledByte / this.maxByte;
             const totalProgress = this.getTotalLoadingProgress(stepProgress);
-                this.worker.postMessage({command: 'loaderMessage', message: 'Inflating save game (' + (100 * stepProgress).toFixed(0) + '%)...'});
-                this.worker.postMessage({command: 'loaderProgress', progress: totalProgress});
+            this.reporter.reportProgress({
+                message: 'Inflating save game (' + (100 * stepProgress).toFixed(0) + '%)...',
+                progress: totalProgress,
+            });
         }
 
         this.gotoNextProgressStep();
         console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
-        this.worker.postMessage({command: 'loaderMessage', message: 'Merging inflated chunks...'});
+        this.reporter.reportProgress({
+            message: 'Merging inflated chunks...',
+        });
 
         // Create the complete Uint8Array
         let newChunkLength = 0;
             for(let i = 0; i < this.currentChunks.length; i++)
             {
                 if (i % 100 === 0) {
-                    this.worker.postMessage({
-                        command: 'loaderProgress',
+                    this.reporter.reportProgress({
                         progress: this.getTotalLoadingProgress(i / this.currentChunks.length)
                     });
                 }
@@ -224,8 +232,7 @@ class SaveParser_Read
             for(let i = 0; i < this.currentChunks.length; i++)
             {
                 if (i % 100 === 0) {
-                    this.worker.postMessage({
-                        command: 'loaderProgress',
+                    this.reporter.reportProgress({
                         progress: this.getTotalLoadingProgress(i / this.currentChunks.length)
                     });
                 }
@@ -249,13 +256,15 @@ class SaveParser_Read
         let countObjects                = this.readInt();
         let entitiesToObjects           = [];
             console.log('Parsing: ' + countObjects + ' objects...');
-            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects...', replace: new Intl.NumberFormat(this.language).format(countObjects)});
+            this.reporter.reportProgress({
+                message: 'MAP\\SAVEPARSER\\Parsing %1$s objects...',
+                messageReplace: new Intl.NumberFormat(this.language).format(countObjects)
+            });
 
             for(let i = 0; i < countObjects; i++)
             {
                 if (i % 100 === 0) {
-                    this.worker.postMessage({
-                        command: 'loaderProgress',
+                    this.reporter.reportProgress({
                         progress: this.getTotalLoadingProgress(i / countObjects)
                     });
                 }
@@ -287,13 +296,15 @@ class SaveParser_Read
 
             let countEntities   = this.readInt();
                 console.log('Parsing: ' + countEntities + ' entities...');
-                this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities...', replace: new Intl.NumberFormat(this.language).format(countEntities)});
+                this.reporter.reportProgress({
+                    message: 'MAP\\SAVEPARSER\\Parsing %1$s entities...',
+                    messageReplace: new Intl.NumberFormat(this.language).format(countEntities)
+                });
 
             for(let i = 0; i < countEntities; i++)
             {
                 if (i % 100 === 0) {
-                    this.worker.postMessage({
-                        command: 'loaderProgress',
+                    this.reporter.reportProgress({
                         progress: this.getTotalLoadingProgress(i / countObjects)
                     });
                 }
@@ -305,13 +316,15 @@ class SaveParser_Read
             this.saveResult.collectables   = [];
                 let countCollected  = this.readInt();
                     console.log('Parsing: ' + countCollected + ' collectables...');
-                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(countCollected)});
+                    this.reporter.reportProgress({
+                        message: 'MAP\\SAVEPARSER\\Parsing %1$s collectables...',
+                        messageReplace: new Intl.NumberFormat(this.language).format(countCollected)
+                    });
 
             for(let i = 0; i < countCollected; i++)
             {
                 if (i % 100 === 0) {
-                    this.worker.postMessage({
-                        command: 'loaderProgress',
+                    this.reporter.reportProgress({
                         progress: this.getTotalLoadingProgress(i / countCollected)
                     });
                 }
@@ -552,7 +565,7 @@ class SaveParser_Read
                                     case 3: // Offline
                                         break;
                                     default:
-                                        this.worker.postMessage({command: 'alertParsing'});
+                                        this.reporter.reportFailure();
                                         if(typeof Sentry !== 'undefined')
                                         {
                                             Sentry.setContext('BP_PlayerState_C', this.saveResult.objects[objectKey]);
@@ -932,7 +945,7 @@ class SaveParser_Read
                                     }
                                     catch(error)
                                     {
-                                        this.worker.postMessage({command: 'alertParsing'});
+                                        this.reporter.reportFailure();
                                         if(typeof Sentry !== 'undefined')
                                         {
                                             Sentry.setContext('currentProperty', currentProperty);
@@ -945,7 +958,7 @@ class SaveParser_Read
                         break;
 
                     default:
-                        this.worker.postMessage({command: 'alertParsing'});
+                        this.reporter.reportFailure();
                         if(typeof Sentry !== 'undefined')
                         {
                             Sentry.setContext('currentProperty', currentProperty);
@@ -1012,7 +1025,7 @@ class SaveParser_Read
                                     }
                                     break;
                                 default:
-                                    this.worker.postMessage({command: 'alertParsing'});
+                                    this.reporter.reportFailure();
                                     if(typeof Sentry !== 'undefined')
                                     {
                                         Sentry.setContext('currentProperty', currentProperty);
@@ -1057,7 +1070,7 @@ class SaveParser_Read
                                     }
                                     break;
                                 default:
-                                    this.worker.postMessage({command: 'alertParsing'});
+                                    this.reporter.reportFailure();
                                     if(typeof Sentry !== 'undefined')
                                     {
                                         Sentry.setContext('currentProperty', currentProperty);
@@ -1221,7 +1234,7 @@ class SaveParser_Read
                         }
                         catch(error)
                         {
-                            this.worker.postMessage({command: 'alertParsing'});
+                            this.reporter.reportFailure();
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
@@ -1257,7 +1270,7 @@ class SaveParser_Read
                             let rewind = this.lastStrRead + 128;
                                 this.currentByte -= rewind;
                             console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                            this.worker.postMessage({command: 'alertParsing'});
+                            this.reporter.reportFailure();
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
@@ -1272,7 +1285,7 @@ class SaveParser_Read
                 let rewind = this.lastStrRead + 128;
                     this.currentByte -= rewind;
                 console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                this.worker.postMessage({command: 'alertParsing'});
+                this.reporter.reportFailure();
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
@@ -1341,7 +1354,7 @@ class SaveParser_Read
                                 currentArgumentsData.argumentValue    = this.readTextProperty({});
                                 break;
                             default:
-                                this.worker.postMessage({command: 'alertParsing'});
+                                this.reporter.reportFailure();
                                 if(typeof Sentry !== 'undefined')
                                 {
                                     Sentry.setContext('currentProperty', currentProperty);
@@ -1373,7 +1386,7 @@ class SaveParser_Read
                 }
                 break;
             default:
-                this.worker.postMessage({command: 'alertParsing'});
+                this.reporter.reportFailure();
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
@@ -1506,7 +1519,7 @@ class SaveParser_Read
             this.currentByte    = Math.max(0, startBytes - (debugSize * 2));
             let errorMessage    = 'Cannot readString (' + strLength + '): `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
                 console.log(errorMessage);
-                this.worker.postMessage({command: 'alertParsing'});
+                this.reporter.reportFailure();
                 throw new Error(errorMessage);
         }
 
@@ -1551,7 +1564,7 @@ class SaveParser_Read
             this.currentByte    = Math.max(0, startBytes - (debugSize * 2));
             let errorMessage    = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
                 console.log(errorMessage);
-                this.worker.postMessage({command: 'alertParsing'});
+                this.reporter.reportFailure();
                 throw new Error(errorMessage);
         }
 
@@ -1677,7 +1690,7 @@ class SaveParser_Read
                             structure.unk3      = this.readHex(45); //TODO: Not sure at all!
                             break;
                         default:
-                            this.worker.postMessage({command: 'alertParsing'});
+                            this.reporter.reportFailure();
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentData', data);
