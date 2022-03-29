@@ -248,37 +248,13 @@ export default class BaseLayout_Tooltip
             let currentFluid    = Math.min(maxFluid, fluidBox.value * 1000); //TODO: Until we get fluidBox method working!
 
             // Get fluid type
-            let pipeNetworkId   = null;
-
-                if(currentObject.children !== undefined)
+            let currentPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
+                if(currentPipeNetwork !== null)
                 {
-                    for(let i = 0; i < currentObject.children.length; i++)
-                    {
-                        let currentChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                            if(currentChildren !== null)
-                            {
-                                let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                                    if(mPipeNetworkID !== null)
-                                    {
-                                        pipeNetworkId = mPipeNetworkID;
-                                        break;
-                                    }
-                            }
-                    }
-                }
-
-                if(pipeNetworkId !== null && this.baseLayout.saveGamePipeNetworks[pipeNetworkId] !== undefined)
-                {
-                    let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGamePipeNetworks[pipeNetworkId]);
-                        if(currentPipeNetwork !== null)
+                    let mFluidDescriptor = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
+                        if(mFluidDescriptor !== null)
                         {
-                            for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
-                            {
-                                if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
-                                {
-                                    itemType = currentPipeNetwork.properties[n].value.pathName;
-                                }
-                            }
+                            itemType = mFluidDescriptor.pathName;
                         }
                 }
 
@@ -962,37 +938,13 @@ export default class BaseLayout_Tooltip
             currentFluid    = Math.min(maxFluid, fluidBox.value * 1000);
 
         // Get fluid type
-        let pipeNetworkId   = null;
-
-            if(currentObject.children !== undefined)
+        let currentPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
+            if(currentPipeNetwork !== null)
             {
-                for(let i = 0; i < currentObject.children.length; i++)
-                {
-                    let currentChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                        if(currentChildren !== null)
-                        {
-                            let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                                if(mPipeNetworkID !== null)
-                                {
-                                    pipeNetworkId = mPipeNetworkID;
-                                    break;
-                                }
-                        }
-                }
-            }
-
-            if(pipeNetworkId !== null && this.baseLayout.saveGamePipeNetworks[pipeNetworkId] !== undefined)
-            {
-                let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGamePipeNetworks[pipeNetworkId]);
-                    if(currentPipeNetwork !== null)
+                let mFluidDescriptor = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
+                    if(mFluidDescriptor !== null)
                     {
-                        for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
-                        {
-                            if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
-                            {
-                                itemType = currentPipeNetwork.properties[n].value.pathName;
-                            }
-                        }
+                        itemType = mFluidDescriptor.pathName;
                     }
             }
 

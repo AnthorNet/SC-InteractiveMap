@@ -596,8 +596,7 @@ export default class Spawn_Blueprint
             {
                 for(let pipeNetworkID in this.clipboard.pipes)
                 {
-                    let newPipeNetworkID    = Object.keys(this.baseLayout.saveGamePipeNetworks);
-                        newPipeNetworkID    = (newPipeNetworkID.length > 0) ? (parseInt(newPipeNetworkID.reduce(function(a, b){ return parseInt(a) > parseInt(b) ? parseInt(a) : parseInt(b) })) + 1) : 1;
+                    let newPipeNetworkID    = this.baseLayout.pipeNetworkSubSystem.getNextId();
                     let newPipeNetwork      = {
                         type                    : 1,
                         className               : '/Script/FactoryGame.FGPipeNetwork',
@@ -651,7 +650,7 @@ export default class Spawn_Blueprint
                     }
 
                     this.baseLayout.saveGameParser.addObject(newPipeNetwork);
-                    this.baseLayout.saveGamePipeNetworks[newPipeNetworkID] = newPipeNetwork.pathName;
+                    this.baseLayout.pipeNetworkSubSystem.add(newPipeNetwork);
                 }
             }
 

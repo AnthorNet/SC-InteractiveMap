@@ -17,9 +17,9 @@ export default class SaveParser_FicsIt
                 return SaveParser_FicsIt.fixTrainIdentifier(baseLayout, currentObject);
             case '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C':
                 return SaveParser_FicsIt.fixRailroadTrackIntegrated(baseLayout, currentObject);
-            case '/Script/FactoryGame.FGPipeConnectionFactory':
+            //case '/Script/FactoryGame.FGPipeConnectionFactory':
             //case '/Script/FactoryGame.FGPipeConnectionComponent':
-                return SaveParser_FicsIt.fixPipeConnectionFactory(baseLayout, currentObject);
+            //    return SaveParser_FicsIt.fixPipeConnectionFactory(baseLayout, currentObject);
 
             case '/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x1_02.Build_Ramp_Diagonal_8x1_02_C':
                 return SaveParser_FicsIt.fixRampsRotation(baseLayout, currentObject, '/Game/FactoryGame/Recipes/Buildings/Ramps/Recipe_Ramp_Diagonal_8x1_02.Recipe_Ramp_Diagonal_8x1_02_C');
@@ -145,7 +145,9 @@ export default class SaveParser_FicsIt
 
     /*
      * Fix FGPipeConnectionFactory with a pipe network id but no pipe connected or no real network...
+     * TODO: IT seems that forcing the ga   me to recreate a faulty pipe network could make it crash?
      */
+    /*
     static fixPipeConnectionFactory(baseLayout, currentObject)
     {
         let mPipeNetworkID = baseLayout.getObjectProperty(currentObject, 'mPipeNetworkID');
@@ -153,13 +155,22 @@ export default class SaveParser_FicsIt
             {
                 if(currentObject.properties.length === 1)
                 {
-                    console.log('Removing ghost mPipeNetworkID "' + mPipeNetworkID + '"', currentObject.pathName);
-                    baseLayout.deleteObjectProperty(currentObject, 'mPipeNetworkID');
+                    let parentObject = baseLayout.saveGameParser.getTargetObject(currentObject.outerPathName);
+                        if(parentObject !== null)
+                        {
+                            let pipeNetwork = baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(parentObject);
+                                if(pipeNetwork !== null)
+                                {
+                                    console.log('Removing ghost mPipeNetworkID "' + mPipeNetworkID + '"', currentObject.pathName);
+                                    baseLayout.deleteObjectProperty(currentObject, 'mPipeNetworkID');
+                                    baseLayout.saveGameParser.deleteObject(pipeNetwork);
+                                }
+                        }
                 }
             }
-
         return currentObject;
     }
+    */
 
 
     /*

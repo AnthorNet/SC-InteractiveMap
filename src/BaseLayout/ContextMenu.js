@@ -447,13 +447,13 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push('-');
                 }
 
-                let currentObjectPipeNetwork = this.baseLayout.getObjectPipeNetwork(currentObject);
+                let currentObjectPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
                     if(currentObjectPipeNetwork !== null)
                     {
                         contextMenu.push({
                             icon        : 'fa-water',
                             text        : 'Update pipe network fluid',
-                            callback    : this.baseLayout.updatePipeNetworkFluid.bind(this.baseLayout)
+                            callback    : this.baseLayout.pipeNetworkSubSystem.updateFluid.bind(this.baseLayout.pipeNetworkSubSystem)
                         });
                         contextMenu.push('-');
                     }

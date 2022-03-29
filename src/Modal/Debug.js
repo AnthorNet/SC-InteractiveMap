@@ -139,10 +139,10 @@ export default class Modal_Debug
                 }
             }
 
-            let currentObjectPipeNetworkPathName = baseLayout.getObjectPipeNetwork(currentObject);
-                if(currentObjectPipeNetworkPathName !== null)
+            let currentObjectPipeNetwork = baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
+                if(currentObjectPipeNetwork !== null)
                 {
-                    extraPathName.push(currentObjectPipeNetworkPathName.pathName);
+                    extraPathName.push(currentObjectPipeNetwork.pathName);
                 }
 
             for(let j = 0; j < extraPathName.length; j++)

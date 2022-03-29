@@ -11,11 +11,12 @@ import BaseLayout_Tooltip                       from './BaseLayout/Tooltip.js';
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 import SubSystem_GameState                      from './SubSystem/GameState.js';
+import SubSystem_Map                            from './SubSystem/Map.js';
+import SubSystem_PipeNetwork                    from './SubSystem/PipeNetwork.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
 import SubSystem_Railroad                       from './SubSystem/Railroad.js';
-import SubSystem_Map                            from './SubSystem/Map.js';
-import SubSystem_Unlock                         from './SubSystem/Unlock.js';
 import SubSystem_Time                           from './SubSystem/Time.js';
+import SubSystem_Unlock                         from './SubSystem/Unlock.js';
 
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
 import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
@@ -56,8 +57,6 @@ export default class BaseLayout
 
         this.satisfactoryMap                    = options.satisfactoryMap;
         this.saveGameParser                     = options.saveGameParser;
-
-        this.saveGamePipeNetworks               = {};
 
         this.saveGameRailVehicles               = [];
         this.frackingSmasherCores               = {};
@@ -342,12 +341,13 @@ export default class BaseLayout
 
         this.saveGameParser.load(() => {
             // Hold sub system to get better performance
-            this.buildableSubSystem = new SubSystem_Buildable({baseLayout: this});
-            this.gameStateSubSystem = new SubSystem_GameState({baseLayout: this});
-            this.railroadSubSystem  = new SubSystem_Railroad({baseLayout: this});
-            this.mapSubSystem       = new SubSystem_Map({baseLayout: this});
-            this.unlockSubSystem    = new SubSystem_Unlock({baseLayout: this});
-            this.timeSubSystem      = new SubSystem_Time({baseLayout: this});
+            this.buildableSubSystem     = new SubSystem_Buildable({baseLayout: this});
+            this.gameStateSubSystem     = new SubSystem_GameState({baseLayout: this});
+            this.mapSubSystem           = new SubSystem_Map({baseLayout: this});
+            this.pipeNetworkSubSystem   = new SubSystem_PipeNetwork({baseLayout: this});
+            this.railroadSubSystem      = new SubSystem_Railroad({baseLayout: this});
+            this.timeSubSystem          = new SubSystem_Time({baseLayout: this});
+            this.unlockSubSystem        = new SubSystem_Unlock({baseLayout: this});
 
             if(this.buildingsData === null)
             {
@@ -693,35 +693,7 @@ export default class BaseLayout
 
             if(currentObject.className === '/Script/FactoryGame.FGPipeNetwork')
             {
-                let mPipeNetworkID = this.getObjectProperty(currentObject, 'mPipeNetworkID');
-                    if(mPipeNetworkID !== null)
-                    {
-                        this.saveGamePipeNetworks[mPipeNetworkID] = currentObject.pathName;
-                    }
-                    else
-                    {
-                        // IF the mPipeNetworkID don't exists, try to find it from one of the children
-                        let mFluidIntegrantScriptInterfaces = this.getObjectProperty(currentObject, 'mFluidIntegrantScriptInterfaces');
-                            mFluidIntegrantScriptInterfacesLoop:
-                            for(let j = 0; j < mFluidIntegrantScriptInterfaces.values.length; j++)
-                            {
-                                let currentInterface = this.saveGameParser.getTargetObject(mFluidIntegrantScriptInterfaces.values[j].pathName);
-                                    if(currentInterface !== null && currentInterface.children !== undefined)
-                                    {
-                                        for(let k = 0; k < currentInterface.children.length; k++)
-                                        {
-                                            let currentInterfaceChildren    = this.saveGameParser.getTargetObject(currentInterface.children[k].pathName);
-                                                mPipeNetworkID              = this.getObjectProperty(currentInterfaceChildren, 'mPipeNetworkID');
-                                                if(mPipeNetworkID !== null)
-                                                {
-                                                    this.saveGamePipeNetworks[mPipeNetworkID] = currentObject.pathName;
-                                                    break mFluidIntegrantScriptInterfacesLoop;
-                                                }
-                                        }
-                                    }
-                            }
-                    }
-
+                this.pipeNetworkSubSystem.add(currentObject);
                 continue;
             }
 
@@ -2197,7 +2169,7 @@ export default class BaseLayout
                                         let value = mInventoryStacks.values[0][0].value;
                                             if(value.itemName === '')
                                             {
-                                                let currentPipeNetwork = this.getObjectPipeNetwork(currentObject);
+                                                let currentPipeNetwork = this.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
                                                     if(currentPipeNetwork !== null)
                                                     {
                                                         let mFluidDescriptor = this.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
@@ -2327,64 +2299,6 @@ export default class BaseLayout
                 this.getObjectRadioactivity(storageObjects[i], inventoryProperty);
         }
     }
-
-    updatePipeNetworkFluid(marker)
-    {
-        let currentObject               = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let currentObjectPipeNetwork    = this.getObjectPipeNetwork(currentObject);
-
-            if(currentObjectPipeNetwork !== null)
-            {
-                let currentFluidDescriptor = this.getObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
-
-                BaseLayout_Modal.form({
-                    title       : 'Update pipe network fluid',
-                    container   : '#leafletMap',
-                    inputs      : [{
-                        name            : 'mFluidDescriptor',
-                        inputType       : 'selectPicker',
-                        inputOptions    : this.generateInventoryOptions(currentObject),
-                        value           : ((currentFluidDescriptor !== null) ? currentFluidDescriptor.pathName : 'NULL')
-                    }],
-                    callback    : function(values)
-                    {
-                        if(values !== null)
-                        {
-                            if(values.mFluidDescriptor === 'NULL')
-                            {
-                                this.deleteObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
-                            }
-                            else
-                            {
-                                this.setObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor', {levelName: "", pathName: values.mFluidDescriptor}, 'ObjectProperty');
-                            }
-                        }
-                    }.bind(this)
-                });
-            }
-    }
-
-    getObjectPipeNetwork(currentObject)
-    {
-        if(currentObject.children !== undefined)
-        {
-            for(let i = 0; i < currentObject.children.length; i++)
-            {
-                let currentChildren = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                    if(currentChildren !== null)
-                    {
-                        let mPipeNetworkID = this.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                            if(mPipeNetworkID !== null && this.saveGamePipeNetworks[mPipeNetworkID] !== undefined)
-                            {
-                                return this.saveGameParser.getTargetObject(this.saveGamePipeNetworks[mPipeNetworkID]);
-                            }
-                    }
-            }
-        }
-
-        return null;
-    }
-
 
     generateInventoryOptions(currentObject, addNULL = true)
     {
