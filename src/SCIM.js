@@ -47,6 +47,9 @@ export default class SCIM
             this.intervalScriptsVERSION = setInterval(this.checkVersion.bind(this), 300 * 1000);
         }
 
+        // Handle pt_BR locales
+        this.language = this.language.split('_')[0];
+
         this.translate = new Translate({
             build               : this.build,
             version             : this.scriptsVERSION,
