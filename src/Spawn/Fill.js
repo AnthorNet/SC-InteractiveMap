@@ -4,6 +4,8 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import Modal_Selection                          from '../Modal/Selection.js';
 
+import { defaultValues }                        from '../SaveParser.js'
+
 export default class Spawn_Fill
 {
     constructor(options)
@@ -60,7 +62,7 @@ export default class Spawn_Fill
             pathName        : 'Persistent_Level:PersistentLevel.' + extractPathName + '_XXX',
             needTransform   : 1,
             transform       : {
-                rotation        : this.baseLayout.saveGameParser.defaultValues.rotation,
+                rotation        : defaultValues.rotation,
                 translation     : this.center
             },
             entity          : {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"},

@@ -1,6 +1,8 @@
 /* global Sentry, Intl, self */
 import pako                                     from '../Lib/pako.esm.mjs';
 
+import { defaultValues }                        from '../SaveParser.js'
+
 export default class SaveParser_Read
 {
     constructor(worker, options)
@@ -9,7 +11,6 @@ export default class SaveParser_Read
         this.saveResult         = {};
         this.saveResult.objects = {};
 
-        this.defaultValues      = options.defaultValues;
         this.language           = options.language;
 
         this.arrayBuffer        = options.arrayBuffer;
@@ -250,13 +251,13 @@ export default class SaveParser_Read
             actor.transform     = {};
 
             if(
-                    rotation[0] === this.defaultValues.rotation[0]
-                 && rotation[1] === this.defaultValues.rotation[1]
-                 && rotation[2] === this.defaultValues.rotation[2]
-                 && rotation[3] === this.defaultValues.rotation[3]
+                    rotation[0] === defaultValues.rotation[0]
+                 && rotation[1] === defaultValues.rotation[1]
+                 && rotation[2] === defaultValues.rotation[2]
+                 && rotation[3] === defaultValues.rotation[3]
             )
             {
-                actor.transform.rotation    = this.defaultValues.rotation;
+                actor.transform.rotation    = defaultValues.rotation;
             }
             else
             {
@@ -264,12 +265,12 @@ export default class SaveParser_Read
             }
 
             if(
-                    translation[0] === this.defaultValues.translation[0]
-                 && translation[1] === this.defaultValues.translation[1]
-                 && translation[2] === this.defaultValues.translation[2]
+                    translation[0] === defaultValues.translation[0]
+                 && translation[1] === defaultValues.translation[1]
+                 && translation[2] === defaultValues.translation[2]
             )
             {
-                actor.transform.translation = this.defaultValues.translation;
+                actor.transform.translation = defaultValues.translation;
             }
             else
             {
@@ -993,13 +994,13 @@ export default class SaveParser_Read
                         if(currentProperty.name === 'mPrimaryColor' || currentProperty.name === 'mSecondaryColor')
                         {
                             if(
-                                   currentProperty.value.values.r === this.defaultValues[currentProperty.name].value.values.r
-                                && currentProperty.value.values.g === this.defaultValues[currentProperty.name].value.values.g
-                                && currentProperty.value.values.b === this.defaultValues[currentProperty.name].value.values.b
-                                && currentProperty.value.values.a === this.defaultValues[currentProperty.name].value.values.a
+                                   currentProperty.value.values.r === defaultValues[currentProperty.name].value.values.r
+                                && currentProperty.value.values.g === defaultValues[currentProperty.name].value.values.g
+                                && currentProperty.value.values.b === defaultValues[currentProperty.name].value.values.b
+                                && currentProperty.value.values.a === defaultValues[currentProperty.name].value.values.a
                             )
                             {
-                                currentProperty = this.defaultValues[currentProperty.name];
+                                currentProperty = defaultValues[currentProperty.name];
                             }
                         }
 

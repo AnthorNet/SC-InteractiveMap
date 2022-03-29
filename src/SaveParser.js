@@ -22,39 +22,6 @@ export default class SaveParser
 
         this.gameStatePathName      = null;
         this.playerHostPathName     = null;
-
-        // Holds some default values to reduce memory usage...
-        this.defaultValues          = {
-            rotation                    : [0, 0, 0, 1],
-            translation                 : [0, 0, 0],
-
-            mPrimaryColor               : {
-                name: "mPrimaryColor",
-                type: "StructProperty",
-                value: {
-                    type: "LinearColor",
-                    values: {
-                        a: 1,
-                        b: 0.15631400048732758,
-                        g: 0.44070500135421753,
-                        r: 1
-                    }
-                }
-            },
-            mSecondaryColor             : {
-                name: "mSecondaryColor",
-                type: "StructProperty",
-                value: {
-                    type: "LinearColor",
-                    values: {
-                        a: 1,
-                        b: 0.26225098967552185,
-                        g: 0.13286800682544708,
-                        r: 0.11697100102901459
-                    }
-                }
-            }
-        };
     }
 
     load(callback = null)
@@ -69,7 +36,6 @@ export default class SaveParser
         this.worker.onmessage   = function(e){ this.onWorkerMessage(e.data); }.bind(this);
         this.worker.postMessage({
             arrayBuffer     : this.arrayBuffer,
-            defaultValues   : this.defaultValues,
             language        : this.language
         });
 
@@ -91,7 +57,6 @@ export default class SaveParser
             this.worker             = new Worker(this.workers.SaveParserWrite, { type: "module" });
             this.worker.onmessage   = function(e){ this.onWorkerMessage(e.data); }.bind(this);
             this.worker.postMessage({
-                defaultValues       : this.defaultValues,
                 language            : this.language,
 
                 header              : this.header,
@@ -255,3 +220,36 @@ export default class SaveParser
             }
     }
 }
+
+// Holds some default values to reduce memory usage...
+export const defaultValues = {
+    rotation: [0, 0, 0, 1],
+    translation: [0, 0, 0],
+
+    mPrimaryColor: {
+        name: "mPrimaryColor",
+        type: "StructProperty",
+        value: {
+            type: "LinearColor",
+            values: {
+                a: 1,
+                b: 0.15631400048732758,
+                g: 0.44070500135421753,
+                r: 1
+            }
+        }
+    },
+    mSecondaryColor: {
+        name: "mSecondaryColor",
+        type: "StructProperty",
+        value: {
+            type: "LinearColor",
+            values: {
+                a: 1,
+                b: 0.26225098967552185,
+                g: 0.13286800682544708,
+                r: 0.11697100102901459
+            }
+        }
+    }
+};
