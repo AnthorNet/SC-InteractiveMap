@@ -3828,6 +3828,13 @@ export default class BaseLayout
                 this.satisfactoryMap.leafletMap.getPane(layerId).style.pointerEvents = 'none';
                 this.playerLayers[layerId].renderer = L.canvas({ pane: layerId });
             }
+            if(layerId === 'playerLightsHaloLayer')
+            {
+                this.satisfactoryMap.leafletMap.createPane(layerId);
+                this.satisfactoryMap.leafletMap.getPane(layerId).style.zIndex = 449;
+                this.satisfactoryMap.leafletMap.getPane(layerId).style.pointerEvents = 'none';
+                this.playerLayers[layerId].renderer = L.canvas({ pane: layerId });
+            }
         }
 
         if(this.playerLayers[layerId].subLayer === null)
@@ -3957,7 +3964,7 @@ export default class BaseLayout
                 else
                 {
                     // Redraw to keep layer order...
-                    if(isHiding === false && updateLayerId !== 'playerFogOfWar')
+                    if(isHiding === false && ['playerLightsHaloLayer', 'playerFogOfWar'].includes(updateLayerId) === false)
                     {
                         if(this.playerLayers[layerId].layerGroup.hasLayer(this.playerLayers[layerId].subLayer))
                         {
