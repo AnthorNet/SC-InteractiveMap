@@ -1,4 +1,6 @@
 /* global Infinity, gtag, L */
+import SaveParser_FicsIt                        from '../SaveParser/FicsIt.js';
+
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
@@ -69,6 +71,16 @@ export default class Spawn_Blueprint
                             this.clipboard.data[i].parent.transform.translation[2] += 400;
                         }
                     }
+                }
+            }
+
+            // Apply SaveParser_FicsIt
+            for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
+            {
+                this.clipboard.data[i].parent = SaveParser_FicsIt.callADA(this.baseLayout, this.clipboard.data[i].parent, false);
+                if(this.clipboard.data[i].parent === null)
+                {
+                    this.clipboard.data.splice(i, 1);
                 }
             }
 

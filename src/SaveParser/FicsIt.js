@@ -4,23 +4,36 @@ import Building_TrainStation                    from '../Building/TrainStation.j
 
 export default class SaveParser_FicsIt
 {
-    static callADA(baseLayout, currentObject)
+    static callADA(baseLayout, currentObject, fullFix = true)
     {
+        if(fullFix === true)
+        {
+            switch(currentObject.className)
+            {
+                case '/Game/FactoryGame/-Shared/Blueprint/BP_RailroadSubsystem.BP_RailroadSubsystem_C':
+                    return SaveParser_FicsIt.fixRailroadSubsystem(baseLayout, currentObject);
+                case '/Script/FactoryGame.FGTrainStationIdentifier':
+                    return SaveParser_FicsIt.fixTrainStationIdentifier(baseLayout, currentObject);
+                case '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C':
+                case '/Script/FactoryGame.FGTrain':
+                    return SaveParser_FicsIt.fixTrainIdentifier(baseLayout, currentObject);
+                case '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C':
+                    return SaveParser_FicsIt.fixRailroadTrackIntegrated(baseLayout, currentObject);
+                //case '/Script/FactoryGame.FGPipeConnectionFactory':
+                //case '/Script/FactoryGame.FGPipeConnectionComponent':
+                //    return SaveParser_FicsIt.fixPipeConnectionFactory(baseLayout, currentObject);
+
+                case '/Script/FactoryGame.FGDroneStationInfo':
+                    return SaveParser_FicsIt.checkPairedStation(baseLayout, currentObject);
+                case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
+                    return SaveParser_FicsIt.checkDroneStation(baseLayout, currentObject);
+                case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
+                    return SaveParser_FicsIt.checkDroneTransport(baseLayout, currentObject);
+            }
+        }
+
         switch(currentObject.className)
         {
-            case '/Game/FactoryGame/-Shared/Blueprint/BP_RailroadSubsystem.BP_RailroadSubsystem_C':
-                return SaveParser_FicsIt.fixRailroadSubsystem(baseLayout, currentObject);
-            case '/Script/FactoryGame.FGTrainStationIdentifier':
-                return SaveParser_FicsIt.fixTrainStationIdentifier(baseLayout, currentObject);
-            case '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C':
-            case '/Script/FactoryGame.FGTrain':
-                return SaveParser_FicsIt.fixTrainIdentifier(baseLayout, currentObject);
-            case '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C':
-                return SaveParser_FicsIt.fixRailroadTrackIntegrated(baseLayout, currentObject);
-            //case '/Script/FactoryGame.FGPipeConnectionFactory':
-            //case '/Script/FactoryGame.FGPipeConnectionComponent':
-            //    return SaveParser_FicsIt.fixPipeConnectionFactory(baseLayout, currentObject);
-
             case '/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x1_02.Build_Ramp_Diagonal_8x1_02_C':
                 return SaveParser_FicsIt.fixRampsRotation(baseLayout, currentObject, '/Game/FactoryGame/Recipes/Buildings/Ramps/Recipe_Ramp_Diagonal_8x1_02.Recipe_Ramp_Diagonal_8x1_02_C');
             case '/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal_8x2_02.Build_Ramp_Diagonal_8x2_02_C':
@@ -33,13 +46,6 @@ export default class SaveParser_FicsIt
                 return SaveParser_FicsIt.convertRightDoorWall(baseLayout, currentObject, '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_03.Build_Wall_Door_8x4_03_C');
             case '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_02_Steel.Build_Wall_Door_8x4_02_Steel_C':
                 return SaveParser_FicsIt.convertRightDoorWall(baseLayout, currentObject, '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_03_Steel.Build_Wall_Door_8x4_03_Steel_C');
-
-            case '/Script/FactoryGame.FGDroneStationInfo':
-                return SaveParser_FicsIt.checkPairedStation(baseLayout, currentObject);
-            case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
-                return SaveParser_FicsIt.checkDroneStation(baseLayout, currentObject);
-            case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
-                return SaveParser_FicsIt.checkDroneTransport(baseLayout, currentObject);
         }
 
         return currentObject;
