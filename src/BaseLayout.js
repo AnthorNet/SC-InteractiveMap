@@ -5354,7 +5354,7 @@ export default class BaseLayout
         return null;
     }
 
-    deleteMarkerFromElements(layerId, marker, fast = false)
+    deleteMarkerFromElements(layerId, marker, fastDelete = false)
     {
         if(this.playerLayers[layerId] !== undefined)
         {
@@ -5380,7 +5380,7 @@ export default class BaseLayout
                             this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(marker.options.haloMarker);
                         }
 
-                        if(fast === false)
+                        if(fastDelete === false)
                         {
                             this.setBadgeLayerCount(layerId);
                         }

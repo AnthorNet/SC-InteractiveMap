@@ -142,7 +142,7 @@ export default class Spawn_Node
                 pathName: fakeBuilding.pathName,
                 layerId: result.layer,
                 callback: 'deleteGenericBuilding',
-                properties: {transform: JSON.parse(JSON.stringify(fakeBuilding.transform))}
+                properties: {transform: JSON.parse(JSON.stringify(fakeBuilding.transform)), fastDelete: true}
             });
 
             this.baseLayout.addElementToLayer(result.layer, result.marker);

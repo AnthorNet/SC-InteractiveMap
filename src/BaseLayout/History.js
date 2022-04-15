@@ -72,7 +72,7 @@ export default class BaseLayout_History
                             switch(currentOperation.callback)
                             {
                                 case 'deleteGenericBuilding':
-                                    if(currentOperation.properties.fast !== undefined && currentOperation.properties.fast === true)
+                                    if(currentOperation.properties.fastDelete !== undefined && currentOperation.properties.fastDelete === true)
                                     {
                                         this.baseLayout.deleteGenericBuilding({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker}, false, true);
                                     }

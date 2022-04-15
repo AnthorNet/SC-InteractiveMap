@@ -131,7 +131,7 @@ export default class Spawn_Polygon
                             pathName: newFoundation.pathName,
                             layerId: this.layerId,
                             callback: 'deleteGenericBuilding',
-                            properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
+                            properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform)), fastDelete: true}
                         });
 
                         return this.baseLayout.parseObject(newFoundation, resolve);
