@@ -873,15 +873,11 @@ export default class BaseLayout
         return this.addLayers();
     }
 
-    parseObject(currentObject, resolve = false, skipMod = false)
+    parseObject(currentObject, resolve, skipMod = false)
     {
         if(currentObject === null)
         {
-            if(resolve === false)
-            {
-                return;
-            }
-            return resolve();
+            return resolve(null);
         }
 
         if(currentObject.className.startsWith('/Game/FactoryGame/') === false)
@@ -912,65 +908,37 @@ export default class BaseLayout
         // Needed when moving players
         if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C' && this.players[currentObject.pathName] !== undefined)
         {
-            let playerState = this.players[currentObject.pathName].addMarker();
-                if(resolve === false)
-                {
-                    return {layer: 'playerPositionLayer', marker: playerState};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerPositionLayer', marker: this.players[currentObject.pathName].addMarker()});
         }
 
         // Skip on pasting
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C')
         {
-            if(resolve === false)
-            {
-                return;
-            }
-            return resolve();
+            return resolve(null);
         }
 
         if(currentObject.className === '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C')
         {
-            return this.addDecoration(currentObject, resolve, skipMod);
+            return this.addDecoration(currentObject, resolve);
         }
         if(currentObject.className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
         {
-            return this.addPortableMiner(currentObject, resolve, skipMod);
+            return this.addPortableMiner(currentObject, resolve);
         }
 
         if(currentObject.className === '/Script/FactoryGame.FGItemPickup_Spawnable' || currentObject.className === '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C')
         {
-            let building = this.addItemPickup(currentObject);
-                if(resolve === false)
-                {
-                    return {layer: 'playerItemsPickupLayer', marker: building};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerItemsPickupLayer', marker: this.addItemPickup(currentObject)});
         }
 
         if(currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C' || currentObject.className === '/CrashSiteBeacons/BP_Beacon_Child.BP_Beacon_Child_C')
         {
-            let building = this.addPlayerBeacon(currentObject);
-                if(resolve === false)
-                {
-                    return {layer: 'playerOrientationLayer', marker: building};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerOrientationLayer', marker: this.addPlayerBeacon(currentObject)});
         }
 
         if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
         {
-            let building = this.addPlayerLootCrate(currentObject);
-                if(resolve === false)
-                {
-                    return {layer: 'playerCratesLayer', marker: building};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerCratesLayer', marker: this.addPlayerLootCrate(currentObject)});
         }
 
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
@@ -990,13 +958,7 @@ export default class BaseLayout
             '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C'
         ].includes(currentObject.className))
         {
-            let building = this.addPlayerPowerLine(currentObject);
-                if(resolve === false)
-                {
-                    return {layer: 'playerPowerGridLayer', marker: building};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerPowerGridLayer', marker: this.addPlayerPowerLine(currentObject)});
         }
 
         if(
@@ -1016,42 +978,24 @@ export default class BaseLayout
              || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
         )
         {
-            let building = this.addPlayerBelt(currentObject);
-                if(resolve === false && building !== false)
-                {
-                    return building;
-                }
-
-            return resolve();
+            return resolve(this.addPlayerBelt(currentObject));
         }
         if(currentObject.className.includes('Train/Track/Build_RailroadTrack') || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
         {
-            let building = this.addPlayerTrack(currentObject);
-                if(resolve === false)
-                {
-                    return {layer: 'playerTracksLayer', marker: building};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerTracksLayer', marker: this.addPlayerTrack(currentObject)});
         }
 
         // Add fauna
         if(currentObject.className.includes('/Game/FactoryGame/Character/Creature/Wildlife/') || currentObject.className.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
         {
-            let building = this.addPlayerFauna(currentObject);
-                if(resolve === false)
-                {
-                    return building;
-                }
-
-            return resolve();
+            return resolve(this.addPlayerFauna(currentObject));
         }
 
         // Add buildings data...
         let isCurrentObjectBuilding = this.getBuildingDataFromClassName(currentObject.className);
             if(isCurrentObjectBuilding !== null)
             {
-                return this.addGenericBuilding(currentObject, isCurrentObjectBuilding, resolve, skipMod);
+                return this.addGenericBuilding(currentObject, isCurrentObjectBuilding, resolve);
             }
             else
             {
@@ -1077,7 +1021,7 @@ export default class BaseLayout
                     };
                         this.buildingsData[currentObject.className] = newBuildingData;
 
-                    return this.addGenericBuilding(currentObject, newBuildingData, resolve, skipMod);
+                    return this.addGenericBuilding(currentObject, newBuildingData, resolve);
                 }
                 else
                 {
@@ -1093,10 +1037,8 @@ export default class BaseLayout
                 }
             }
 
-        if(resolve !== false)
-        {
-            return resolve();
-        }
+        // /Script/FactoryGame.***
+        return resolve(null);
     }
 
     addLayers(i = 0)
@@ -1897,14 +1839,16 @@ export default class BaseLayout
         });
     }
 
-    refreshMarkerPosition(properties)
+    refreshMarkerPosition(properties, fastDelete = false)
     {
         let refreshSliderBoundaries     = (properties.transform.translation[2] !== properties.object.transform.translation[2]);
             properties.object.transform = properties.transform;
 
         // Delete and add again!
-        let result                      = this.parseObject(properties.object);
-            this.deleteMarkerFromElements(result.layer, properties.marker);
+        return new Promise(function(resolve){
+            this.parseObject(properties.object, resolve);
+        }.bind(this)).then(function(result){
+            this.deleteMarkerFromElements(result.layer, properties.marker, fastDelete);
 
             if(result.marker.options.haloMarker !== undefined)
             {
@@ -1918,34 +1862,34 @@ export default class BaseLayout
                 for(let j = 0; j < properties.object.children.length; j++)
                 {
                     let currentObjectChildren = this.saveGameParser.getTargetObject(properties.object.children[j].pathName);
-
-                    // Grab wires for redraw...
-                    for(let k = 0; k < this.availablePowerConnection.length; k++)
-                    {
-                        if(currentObjectChildren.pathName.endsWith(this.availablePowerConnection[k]))
+                        if(currentObjectChildren !== null)
                         {
-                            for(let m = 0; m < currentObjectChildren.properties.length; m++)
+                            // Grab wires for redraw...
+                            for(let k = 0; k < this.availablePowerConnection.length; k++)
                             {
-                                if(currentObjectChildren.properties[m].name === 'mWires')
+                                if(currentObjectChildren.pathName.endsWith(this.availablePowerConnection[k]))
                                 {
-                                    for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
-                                    {
-                                        let currentWire     = this.saveGameParser.getTargetObject(currentObjectChildren.properties[m].value.values[n].pathName);
-                                        let result          = this.parseObject(currentWire);
-                                        let oldMarker       = this.getMarkerFromPathName(currentWire.pathName, result.layer);
-                                            this.deleteMarkerFromElements(result.layer, oldMarker);
-                                            this.addElementToLayer(result.layer, result.marker);
-                                    }
-
-                                    break;
+                                    let mWires = this.getObjectProperty(currentObjectChildren, 'mWires');
+                                        if(mWires !== null)
+                                        {
+                                            for(let n = 0; n < mWires.values.length; n++)
+                                            {
+                                                let currentWire     = this.saveGameParser.getTargetObject(mWires.values[n].pathName);
+                                                    new Promise(function(resolve){
+                                                        this.parseObject(currentWire, resolve);
+                                                    }.bind(this)).then(function(result){
+                                                        let oldMarker       = this.getMarkerFromPathName(currentWire.pathName, result.layer);
+                                                            this.deleteMarkerFromElements(result.layer, oldMarker, fastDelete);
+                                                            this.addElementToLayer(result.layer, result.marker);
+                                                    }.bind(this));
+                                            }
+                                        }
                                 }
                             }
                         }
-                    }
                 }
             }
-
-        return;
+        }.bind(this));
     }
 
     teleportPlayer(marker)
@@ -2370,42 +2314,35 @@ export default class BaseLayout
         return selectOptions;
     }
 
-    addDecoration(currentObject, resolve = false, skipMod = false)
+    addDecoration(currentObject, resolve)
     {
-        let mDecorationDescriptor = this.getObjectProperty(currentObject, 'mDecorationDescriptor');
+        let currentItemData         = {};
+        let mDecorationDescriptor   = this.getObjectProperty(currentObject, 'mDecorationDescriptor');
             if(mDecorationDescriptor !== null)
             {
-                let currentItemData = this.getItemDataFromClassName(mDecorationDescriptor.pathName);
-                    if(currentItemData !== null)
-                    {
-                        currentItemData.width       = 4;
-                        currentItemData.length      = 4;
-                        currentItemData.mapLayer    = 'playerStatuesLayer';
-                        return this.addGenericBuilding(currentObject, currentItemData, resolve, skipMod);
-                    }
+                currentItemData = this.getItemDataFromClassName(mDecorationDescriptor.pathName);
             }
 
-        // If not found resolve if needed...
-        if(resolve !== false)
-        {
-            return resolve();
-        }
+        // Default values?
+        currentItemData.width       = 4;
+        currentItemData.length      = 4;
+        currentItemData.mapLayer    = 'playerStatuesLayer';
+
+        return this.addGenericBuilding(currentObject, currentItemData, resolve);
     }
 
-    addPortableMiner(currentObject, resolve = false, skipMod = false)
+    addPortableMiner(currentObject, resolve)
     {
-        let currentItemData = this.getItemDataFromClassName(currentObject.className);
-            if(currentItemData !== null)
-            {
-                currentItemData.width       = 1;
-                currentItemData.length      = 1;
-                currentItemData.category    = 'extractor';
-                currentItemData.mapLayer    = 'playerMinersLayer';
-                return this.addGenericBuilding(currentObject, currentItemData, resolve, skipMod);
-            }
+        let currentItemData             = this.getItemDataFromClassName(currentObject.className);
+            currentItemData.width       = 1;
+            currentItemData.length      = 1;
+            currentItemData.category    = 'extractor';
+            currentItemData.mapLayer    = 'playerMinersLayer';
+
+        return this.addGenericBuilding(currentObject, currentItemData, resolve);
     }
 
-    addGenericBuilding(currentObject, buildingData, resolve = false, skipMod = false)
+    addGenericBuilding(currentObject, buildingData, resolve)
     {
         let layerId         = (buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerUnknownLayer';
             this.setupSubLayer(layerId);
@@ -2758,12 +2695,7 @@ export default class BaseLayout
         }
         this.playerLayers[layerId].elements.push(building);
 
-        if(resolve === false)
-        {
-            return {layer: layerId, marker: building};
-        }
-
-        return resolve();
+        return resolve({layer: layerId, marker: building});
     }
 
     setBuildingMouseOverStyle(marker, buildingData)
@@ -5505,7 +5437,7 @@ export default class BaseLayout
         {
             if(storages[i].options.pathName !== undefined)
             {
-                let currentStorage      = this.saveGameParser.getTargetObject(storages[i].options.pathName);
+                let currentStorage = this.saveGameParser.getTargetObject(storages[i].options.pathName);
 
                 if(currentStorage !== null)
                 {

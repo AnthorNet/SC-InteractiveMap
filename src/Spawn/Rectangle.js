@@ -1,4 +1,4 @@
-/* global gtag */
+/* global gtag, Promise */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
@@ -8,7 +8,7 @@ export default class Spawn_Rectangle
     {
         this.marker             = options.marker;
         this.baseLayout         = options.marker.baseLayout;
-        this.layerId            = null;
+        this.layerId            = 'playerFoundationsLayer';
 
         this.minWidth           = parseInt(options.minWidth);
         this.maxWidth           = parseInt(options.maxWidth);
@@ -61,6 +61,8 @@ export default class Spawn_Rectangle
 
     spawn()
     {
+        console.time('spawnRectangle');
+
         $('#liveLoader').show()
                         .find('.progress-bar').css('width', '0%');
 
@@ -117,28 +119,30 @@ export default class Spawn_Rectangle
                         newFoundation.transform.translation[2] -= height * this.centerObjectHeight;
                     }
 
-                this.baseLayout.saveGameParser.addObject(newFoundation);
-                results.push(this.baseLayout.parseObject(newFoundation));
+                results.push(new Promise(function(resolve){
+                    this.baseLayout.saveGameParser.addObject(newFoundation);
 
-                this.history.push({
-                    pathName: newFoundation.pathName,
-                    layerId: this.layerId,
-                    callback: 'deleteGenericBuilding',
-                    properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
-                });
+                    this.history.push({
+                        pathName: newFoundation.pathName,
+                        layerId: this.layerId,
+                        callback: 'deleteGenericBuilding',
+                        properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
+                    });
+
+                    return this.baseLayout.parseObject(newFoundation, resolve);
+                }.bind(this)));
             }
 
-            return new Promise(function(resolve){
-                $('#liveLoader .progress-bar').css('width', Math.round((width + this.maxWidth) / (this.maxWidth * 2) * 100) + '%');
-                setTimeout(resolve, 5);
-            }.bind(this)).then(function(){
+            return Promise.all(results).then(function(results){
                 for(let i = 0; i < results.length; i++)
                 {
-                    let result = results[i];
-                        this.baseLayout.addElementToLayer(result.layer, result.marker);
+                    this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
-
-                this.loop((width + 1));
+            }.bind(this)).finally(function(){
+                setTimeout(function(){
+                    $('#liveLoader .progress-bar').css('width', Math.round((width + this.maxWidth) / (this.maxWidth * 2) * 100) + '%');
+                    this.loop((width + 1));
+                }.bind(this), 1);
             }.bind(this));
         }
 
@@ -156,6 +160,8 @@ export default class Spawn_Rectangle
         }
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
-        this.baseLayout.setBadgeLayerCount('playerFoundationsLayer');
+        this.baseLayout.setBadgeLayerCount(this.layerId);
+
+        console.timeEnd('spawnRectangle');
     }
 }

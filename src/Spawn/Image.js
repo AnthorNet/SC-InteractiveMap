@@ -1,4 +1,4 @@
-/* global gtag, FileReader */
+/* global gtag, FileReader, Promise */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
@@ -98,6 +98,8 @@ export default class Spawn_Image
 
     spawn()
     {
+        console.time('spawnImage');
+
         $('#liveLoader').show()
                         .find('.progress-bar').css('width', '0%');
 
@@ -120,17 +122,16 @@ export default class Spawn_Image
                         }
                 }
 
-            return new Promise(function(resolve){
-                $('#liveLoader .progress-bar').css('width', Math.round(x / this.imageWidth * 100) + '%');
-                setTimeout(resolve, 5);
-            }.bind(this)).then(function(){
+            return Promise.all(results).then(function(results){
                 for(let i = 0; i < results.length; i++)
                 {
-                    let result = results[i];
-                        this.baseLayout.addElementToLayer(result.layer, result.marker);
+                    this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
-
-                this.loop(x+1);
+            }.bind(this)).finally(function(){
+                setTimeout(function(){
+                    $('#liveLoader .progress-bar').css('width', Math.round(x / this.imageWidth * 100) + '%');
+                    this.loop(x+1);
+                }.bind(this), 1);
             }.bind(this));
         }
 
@@ -223,7 +224,7 @@ export default class Spawn_Image
             // Check around for materials!
             if(this.useOwnMaterials === 1)
             {
-                let result = this.baseLayout.removeFromStorage(this.centerObject);
+                let result = this.baseLayout.removeFromStorage(newSupport);
                     if(result === false)
                     {
                         BaseLayout_Modal.alert("We could not find enough materials and stopped your construction!");
@@ -231,7 +232,7 @@ export default class Spawn_Image
                     }
             }
 
-            // Calculate suport position!
+            // Calculate support position!
             let rotation                = BaseLayout_Math.getPointRotation(
                 [
                     this.centerObject.transform.translation[0] - (this.imageWidth * this.supportSize / 2) + (x * this.supportSize),
@@ -244,15 +245,18 @@ export default class Spawn_Image
             newSupport.transform.translation[1]  = rotation[1];
             newSupport.transform.translation[2]  = this.centerObject.transform.translation[2] + (this.imageHeight * this.supportSize) - (y * this.supportSize) + this.centerObjectHeight - (this.supportSize / 2);
 
-        this.baseLayout.saveGameParser.addObject(newSupport);
-        this.history.push({
-            pathName: newSupport.pathName,
-            layerId: this.layerId,
-            callback: 'deleteGenericBuilding',
-            properties: {transform: JSON.parse(JSON.stringify(newSupport.transform))}
-        });
+        return new Promise(function(resolve){
+            this.baseLayout.saveGameParser.addObject(newSupport);
 
-        return this.baseLayout.parseObject(newSupport);
+            this.history.push({
+                pathName: newSupport.pathName,
+                layerId: this.layerId,
+                callback: 'deleteGenericBuilding',
+                properties: {transform: JSON.parse(JSON.stringify(newSupport.transform))}
+            });
+
+            return this.baseLayout.parseObject(newSupport, resolve);
+        }.bind(this));
     }
 
     release()
@@ -267,5 +271,7 @@ export default class Spawn_Image
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
         this.baseLayout.setBadgeLayerCount(this.layerId);
+
+        console.timeEnd('spawnImage');
     }
 }

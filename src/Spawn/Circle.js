@@ -1,4 +1,4 @@
-/* global gtag */
+/* global gtag, Promise */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
@@ -53,6 +53,8 @@ export default class Spawn_Circle
 
     spawn()
     {
+        console.time('spawnCircle');
+
         $('#liveLoader').show()
                         .find('.progress-bar').css('width', '0%');
 
@@ -67,10 +69,7 @@ export default class Spawn_Circle
         {
             let results     = [];
             let adder       = (radius >= 9) ? 1 : 0;
-            let boxCount    = ((Math.PI * 2) * (radius + adder));
-                boxCount    = Math.max(24, (Math.ceil(boxCount / this.multiplier) * this.multiplier));
-
-            //console.log(radius, boxCount);
+            let boxCount    = Math.max(24, (Math.ceil(((Math.PI * 2) * (radius + adder)) / this.multiplier) * this.multiplier));
 
             for(let i = 0; i < boxCount; i++)
             {
@@ -109,29 +108,31 @@ export default class Spawn_Circle
 
                             newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, angle - this.centerYaw);
 
-                        this.baseLayout.saveGameParser.addObject(newFoundation);
-                        results.push(this.baseLayout.parseObject(newFoundation));
+                        results.push(new Promise(function(resolve){
+                            this.baseLayout.saveGameParser.addObject(newFoundation);
 
-                        this.history.push({
-                            pathName: newFoundation.pathName,
-                            layerId: this.layerId,
-                            callback: 'deleteGenericBuilding',
-                            properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
-                        });
+                            this.history.push({
+                                pathName: newFoundation.pathName,
+                                layerId: this.layerId,
+                                callback: 'deleteGenericBuilding',
+                                properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
+                            });
+
+                            return this.baseLayout.parseObject(newFoundation, resolve);
+                        }.bind(this)));
                     }
             }
 
-            return new Promise(function(resolve){
-                $('#liveLoader .progress-bar').css('width', Math.round(radius / this.maxRadius * 100) + '%');
-                setTimeout(resolve, 5);
-            }.bind(this)).then(function(){
+            return Promise.all(results).then(function(results){
                 for(let i = 0; i < results.length; i++)
                 {
-                    let result = results[i];
-                        this.baseLayout.addElementToLayer(result.layer, result.marker);
+                    this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
-
-                this.loop((radius + 1));
+            }.bind(this)).finally(function(){
+                setTimeout(function(){
+                    $('#liveLoader .progress-bar').css('width', Math.round(radius / this.maxRadius * 100) + '%');
+                    this.loop((radius + 1));
+                }.bind(this), 1);
             }.bind(this));
         }
 
@@ -150,5 +151,7 @@ export default class Spawn_Circle
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
         this.baseLayout.setBadgeLayerCount(this.layerId);
+
+        console.timeEnd('spawnCircle');
     }
 }

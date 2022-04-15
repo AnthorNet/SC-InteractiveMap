@@ -1,4 +1,4 @@
-/* global gtag */
+/* global gtag, Promise */
 import Modal_Selection                          from '../Modal/Selection.js';
 
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
@@ -30,6 +30,7 @@ export default class Selection_Offset
         if(this.markers)
         {
             console.time('offsetMultipleMarkers');
+            let offsetResults   = [];
             let historyPathName = [];
 
             for(let i = 0; i < this.markers.length; i++)
@@ -135,25 +136,27 @@ export default class Selection_Offset
                                     break;
                             }
 
-                            this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: currentObject.transform, object: currentObject});
+                            offsetResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: currentObject.transform, object: currentObject}, true));
                         }
                 }
             }
 
-            if(this.useHistory === true && this.baseLayout.history !== null)
-            {
-                this.baseLayout.history.add({
-                    name: 'Undo: Offset selection',
-                    values: [{
-                        pathNameArray: historyPathName,
-                        callback: 'Selection_Offset',
-                        properties: {offsetX: -this.offsetX, offsetY: -this.offsetY, offsetZ: -this.offsetZ}
-                    }]
-                });
-            }
+            Promise.all(offsetResults).then(function(){
+                if(this.useHistory === true && this.baseLayout.history !== null)
+                {
+                    this.baseLayout.history.add({
+                        name: 'Undo: Offset selection',
+                        values: [{
+                            pathNameArray: historyPathName,
+                            callback: 'Selection_Offset',
+                            properties: {offsetX: -this.offsetX, offsetY: -this.offsetY, offsetZ: -this.offsetZ}
+                        }]
+                    });
+                }
 
-            console.timeEnd('offsetMultipleMarkers');
-            this.baseLayout.updateRadioactivityLayer();
+                console.timeEnd('offsetMultipleMarkers');
+                this.baseLayout.updateRadioactivityLayer();
+            }.bind(this));
         }
 
         Modal_Selection.cancel(this.baseLayout);

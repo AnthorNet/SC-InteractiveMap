@@ -735,9 +735,12 @@ export default class SubSystem_Buildable
                         }
 
                     // Redraw!
-                    let result = baseLayout.parseObject(currentObject);
-                        baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-                        baseLayout.addElementToLayer(result.layer, result.marker);
+                    new Promise(function(resolve){
+                        return this.parseObject(currentObject, resolve);
+                    }.bind(baseLayout)).then(function(result){
+                        this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                        this.addElementToLayer(result.layer, result.marker);
+                    }.bind(baseLayout));
                 }
         }
     }
@@ -779,9 +782,12 @@ export default class SubSystem_Buildable
                 }
 
             // Redraw! (In case at some point we add different models ^^
-            let result = baseLayout.parseObject(currentObject);
-                baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-                baseLayout.addElementToLayer(result.layer, result.marker);
+            new Promise(function(resolve){
+                return this.parseObject(currentObject, resolve);
+            }.bind(baseLayout)).then(function(result){
+                this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                this.addElementToLayer(result.layer, result.marker);
+            }.bind(baseLayout));
         }
     }
 
@@ -824,8 +830,11 @@ export default class SubSystem_Buildable
             }
 
         // Redraw!
-        let result = baseLayout.parseObject(currentObject);
-            baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-            baseLayout.addElementToLayer(result.layer, result.marker);
+        new Promise(function(resolve){
+            return this.parseObject(currentObject, resolve);
+        }.bind(baseLayout)).then(function(result){
+            this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+            this.addElementToLayer(result.layer, result.marker);
+        }.bind(baseLayout));
     }
 }

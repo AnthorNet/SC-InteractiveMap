@@ -1,4 +1,4 @@
-/* global gtag */
+/* global gtag, Promise */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
@@ -8,7 +8,7 @@ export default class Spawn_Polygon
     {
         this.marker             = options.marker;
         this.baseLayout         = options.marker.baseLayout;
-        this.layerId            = null;
+        this.layerId            = 'playerFoundationsLayer';
 
         this.numberOfSides      = options.numberOfSides;
 
@@ -53,6 +53,8 @@ export default class Spawn_Polygon
 
     spawn()
     {
+        console.time('spawnPolygon');
+
         $('#liveLoader').show()
                         .find('.progress-bar').css('width', '0%');
 
@@ -122,43 +124,34 @@ export default class Spawn_Polygon
                             }
                         }
 
-                    this.baseLayout.saveGameParser.addObject(newFoundation);
-                    results.push(this.baseLayout.parseObject(newFoundation));
+                    results.push(new Promise(function(resolve){
+                        this.baseLayout.saveGameParser.addObject(newFoundation);
 
-                    this.history.push({
-                        pathName: newFoundation.pathName,
-                        layerId: this.layerId,
-                        callback: 'deleteGenericBuilding',
-                        properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
-                    });
+                        this.history.push({
+                            pathName: newFoundation.pathName,
+                            layerId: this.layerId,
+                            callback: 'deleteGenericBuilding',
+                            properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
+                        });
+
+                        return this.baseLayout.parseObject(newFoundation, resolve);
+                    }.bind(this)));
                 }
 
-                return new Promise(function(resolve){
-                    $('#liveLoader .progress-bar').css('width', Math.round((minSize * this.numberOfSides) / (this.maxSize * this.numberOfSides) * 100) + '%');
-                    setTimeout(resolve, 5);
-                }.bind(this)).then(function(){
+                return Promise.all(results).then(function(results){
                     for(let i = 0; i < results.length; i++)
                     {
-                        let result = results[i];
-                            this.baseLayout.addElementToLayer(result.layer, result.marker);
+                        this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                     }
-
-                    this.loop(minSize, (side + 1));
+                }.bind(this)).finally(function(){
+                    setTimeout(function(){
+                        $('#liveLoader .progress-bar').css('width', Math.round((minSize * this.numberOfSides) / (this.maxSize * this.numberOfSides) * 100) + '%');
+                        this.loop(minSize, (side + 1));
+                    }.bind(this), 1);
                 }.bind(this));
             }
 
-            return new Promise(function(resolve){
-                $('#liveLoader .progress-bar').css('width', Math.round(minSize / this.maxSize * 100) + '%');
-                setTimeout(resolve, 5);
-            }.bind(this)).then(function(){
-                for(let i = 0; i < results.length; i++)
-                {
-                    let result = results[i];
-                        this.baseLayout.addElementToLayer(result.layer, result.marker);
-                }
-
-                this.loop((minSize + 1));
-            }.bind(this));
+            return this.loop((minSize + 1));
         }
 
         return this.release();
@@ -175,6 +168,8 @@ export default class Spawn_Polygon
         }
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
-        this.baseLayout.setBadgeLayerCount('playerFoundationsLayer');
+        this.baseLayout.setBadgeLayerCount(this.layerId);
+
+        console.timeEnd('spawnPolygon');
     }
 }

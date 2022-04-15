@@ -1,4 +1,4 @@
-/* global gtag */
+/* global gtag, BaseLayout_Modal */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 export default class Spawn_Node
@@ -35,6 +35,8 @@ export default class Spawn_Node
 
     spawn()
     {
+        console.time('spawnOnNode');
+
         $('#liveLoader').show()
                         .find('.progress-bar').css('width', '0%');
 
@@ -131,17 +133,21 @@ export default class Spawn_Node
             fakeBuilding.transform.translation[1]   = rotation[1];
 
         // Insert building
-        this.baseLayout.saveGameParser.addObject(fakeBuilding);
-        let resultCenter = this.baseLayout.parseObject(fakeBuilding);
-            this.baseLayout.addElementToLayer(resultCenter.layer, resultCenter.marker);
-            this.baseLayout.setBadgeLayerCount(resultCenter.layer);
+        new Promise(function(resolve){
+            this.baseLayout.saveGameParser.addObject(fakeBuilding);
 
-        this.history.push({
-            pathName: fakeBuilding.pathName,
-            layerId: resultCenter.layer,
-            callback: 'deleteGenericBuilding',
-            properties: {transform: JSON.parse(JSON.stringify(fakeBuilding.transform))}
-        });
+            return this.baseLayout.parseObject(fakeBuilding, resolve);
+        }.bind(this)).then(function(result){
+            this.history.push({
+                pathName: fakeBuilding.pathName,
+                layerId: result.layer,
+                callback: 'deleteGenericBuilding',
+                properties: {transform: JSON.parse(JSON.stringify(fakeBuilding.transform))}
+            });
+
+            this.baseLayout.addElementToLayer(result.layer, result.marker);
+            this.baseLayout.setBadgeLayerCount(result.layer);
+        }.bind(this));
 
         return true;
     }
@@ -157,5 +163,7 @@ export default class Spawn_Node
         }
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
+
+        console.timeEnd('spawnOnNode');
     }
 }

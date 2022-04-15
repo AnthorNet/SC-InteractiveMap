@@ -66,9 +66,12 @@ export default class Modal_Object_Pattern
                         }
 
                     // Redraw!
-                    let result = baseLayout.parseObject(currentObject);
-                        baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-                        baseLayout.addElementToLayer(result.layer, result.marker);
+                    new Promise(function(resolve){
+                        return this.parseObject(currentObject, resolve);
+                    }.bind(baseLayout)).then(function(result){
+                        this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                        this.addElementToLayer(result.layer, result.marker);
+                    }.bind(baseLayout));
                 }
             }
         });
