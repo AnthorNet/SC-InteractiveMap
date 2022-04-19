@@ -115,7 +115,7 @@ export default class Spawn_Circle
                                 pathName: newFoundation.pathName,
                                 layerId: this.layerId,
                                 callback: 'deleteGenericBuilding',
-                                properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform)), fastDelete: true}
+                                properties: {fastDelete: true}
                             });
 
                             return this.baseLayout.parseObject(newFoundation, resolve);

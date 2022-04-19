@@ -103,7 +103,7 @@ export default class Spawn_Node
                             entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
                         };
 
-                        this.baseLayout.buildableSubSystem.setObjectColorSlot(fakeBuilding, ((options.className.includes('Foundation')) ? 16 : 0));
+                        this.baseLayout.buildableSubSystem.setObjectDefaultColorSlot(fakeBuilding);
                         fakeBuilding.pathName = this.baseLayout.generateFastPathName(fakeBuilding);
                         this.baseLayout.updateBuiltWithRecipe(fakeBuilding);
 
@@ -142,7 +142,7 @@ export default class Spawn_Node
                 pathName: fakeBuilding.pathName,
                 layerId: result.layer,
                 callback: 'deleteGenericBuilding',
-                properties: {transform: JSON.parse(JSON.stringify(fakeBuilding.transform)), fastDelete: true}
+                properties: {fastDelete: true}
             });
 
             this.baseLayout.addElementToLayer(result.layer, result.marker);

@@ -33,7 +33,7 @@ export default class Spawn_Road
         let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.centerObject.className);
             if(currentObjectData !== null)
             {
-                if(currentObjectData !== null && currentObjectData.mapLayer !== undefined)
+                if(currentObjectData.mapLayer !== undefined)
                 {
                     this.layerId = currentObjectData.mapLayer;
                 }
@@ -425,7 +425,7 @@ export default class Spawn_Road
                 pathName: newFoundation.pathName,
                 layerId: this.layerId,
                 callback: 'deleteGenericBuilding',
-                properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform)), fastDelete: true}
+                properties: {fastDelete: true}
             });
 
             return this.baseLayout.parseObject(newFoundation, resolve);

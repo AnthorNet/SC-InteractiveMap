@@ -252,7 +252,7 @@ export default class Spawn_Image
                 pathName: newSupport.pathName,
                 layerId: this.layerId,
                 callback: 'deleteGenericBuilding',
-                properties: {transform: JSON.parse(JSON.stringify(newSupport.transform)), fastDelete: true}
+                properties: {fastDelete: true}
             });
 
             return this.baseLayout.parseObject(newSupport, resolve);

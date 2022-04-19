@@ -11,7 +11,7 @@ export default class Modal_Object_Pattern
 
         let availablePatterns       = [];
             availablePatterns.push({
-                dataContent : '<img src="/img/gameUpdate5/IconDesc_PatternRemover_256.png" style="width: 64px;" class="py-2 mr-1" /> No pattern',
+                dataContent : '<img src="/img/gameUpdate5/IconDesc_PatternRemover_256.png" style="width: 64px;height: 64px;" class="my-2 mr-1" /> No pattern',
                 value       : 'NULL',
                 text        : 'No pattern'
             });
@@ -23,7 +23,7 @@ export default class Modal_Object_Pattern
                     {
                         availablePatterns.push({
                             group       : baseLayout.detailedModels[patternPathname].patternGroup,
-                            dataContent : '<img src="' + baseLayout.detailedModels[patternPathname].patternImage + '" style="width: 64px;" class="py-2 mr-1" /> ' + baseLayout.detailedModels[patternPathname].patternGroup + ' - ' + baseLayout.detailedModels[patternPathname].patternName,
+                            dataContent : '<img src="' + baseLayout.detailedModels[patternPathname].patternImage + '" style="width: 64px;height: 64px;" class="my-2 mr-1" /> ' + baseLayout.detailedModels[patternPathname].patternGroup + ' - ' + baseLayout.detailedModels[patternPathname].patternName,
                             value       : patternPathname,
                             text        : baseLayout.detailedModels[patternPathname].patternGroup + ' - ' + baseLayout.detailedModels[patternPathname].patternName
                         })

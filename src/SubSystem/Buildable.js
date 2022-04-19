@@ -135,6 +135,31 @@ export default class SubSystem_Buildable
         return 0;
     }
 
+
+    setObjectDefaultColorSlot(currentObject)
+    {
+        let slotIndex = 0;
+            if(currentObject.className.includes('Foundation'))
+            {
+                slotIndex = 16;
+            }
+            if(currentObject.className.includes('_Concrete_'))
+            {
+                slotIndex = 18;
+            }
+            if(currentObject.className.includes('_ConcretePolished_'))
+            {
+                slotIndex = 18;
+            }
+            if(currentObject.className.includes('_Asphalt_'))
+            {
+                slotIndex = 18;
+            }
+
+        return this.setObjectColorSlot(currentObject, slotIndex)
+    }
+
+
     setObjectColorSlot(currentObject, slotIndex)
     {
         let mCustomizationData = this.getObjectCustomizationData(currentObject);
