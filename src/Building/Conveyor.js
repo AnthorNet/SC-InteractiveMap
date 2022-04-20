@@ -326,11 +326,44 @@ L.Conveyor = L.Polyline.extend({
         L.Polyline.prototype.onRemove.call(this, map);
     },
 
+    setDashArray()
+    {
+        // Check conveyor direction
+        let flowDirection   = 1;
+        let conveyorAny0    = this.baseLayout.saveGameParser.getTargetObject(this.options.pathName + '.ConveyorAny0'); //TODO: Dynamic?!
+            if(conveyorAny0 !== null)
+            {
+                let mDirection = this.baseLayout.getObjectProperty(conveyorAny0, 'mDirection');
+                    if(mDirection.value === 'EFactoryConnectionDirection::FCD_INPUT')
+                    {
+                        flowDirection = -1;
+                    }
+            }
+
+
+        // Flow animation
+        this.options.currentDashOffset  = 0;
+        this.options.dashArrayAnimation = setInterval(function(){
+            this.options.currentDashOffset++;
+            this.setStyle({
+                dashOffset: flowDirection * this.options.currentDashOffset * (this.options.weight / 4)
+            });
+        }.bind(this), 25);
+
+        return this.setStyle({dashArray: (this.options.weight * 1.5) + " " + (this.options.weight  * 1.5)});
+    },
+
+    removeDashArray()
+    {
+        clearInterval(this.options.dashArrayAnimation);
+        return this.setStyle({dashArray: null});
+    },
+
     _updateWeight: function(map)
     {
-        this.setStyle({
-            weight: this._getWeight(map, this.weight)
-        });
+        let currentWeight   = this._getWeight(map, this.weight);
+
+        return this.setStyle({weight: currentWeight});
     },
 
     _getWeight: function(map, weight)
@@ -346,3 +379,16 @@ L.conveyor = function(latlngs, options)
 {
     return new L.Conveyor(latlngs, options || { weight: 100 });
 };
+
+(function(){
+    let _originalFillStroke = L.Canvas.prototype._fillStroke;
+        L.Canvas.include({
+            _fillStroke: function(ctx, layer)
+            {
+                //TODO: Wait for https://github.com/Leaflet/Leaflet/pull/7867
+                ctx.lineDashOffset = Number(layer.options.dashOffset || 0);
+
+                return _originalFillStroke.call(this, ctx, layer);
+            }
+        });
+})();

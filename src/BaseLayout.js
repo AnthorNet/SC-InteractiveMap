@@ -3229,7 +3229,13 @@ export default class BaseLayout
         belt.on('mouseover', function(marker){
             let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
             let slotColor           = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
-                marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')', opacity: 0.5});
+
+                if(currentObject.className.includes('/Build_ConveyorBeltMk'))
+                {
+                    marker.sourceTarget.setDashArray();
+                }
+
+            marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')', opacity: 0.5});
         }.bind(this));
         belt.on('mouseout', function(marker){
             let mouseOutStyle       = {opacity: 0.9};
@@ -3241,6 +3247,11 @@ export default class BaseLayout
                         {
                             mouseOutStyle.color = buildingData.mapColor;
                         }
+
+                    if(currentObject.className.includes('/Build_ConveyorBeltMk'))
+                    {
+                        marker.sourceTarget.removeDashArray();
+                    }
                 }
 
             marker.sourceTarget.setStyle(mouseOutStyle);
