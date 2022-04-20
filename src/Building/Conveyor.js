@@ -3,6 +3,11 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class Building_Conveyor
 {
+    static teleporter = {
+        entry   : null,
+        exit    : null,
+    };
+
     static get availableConveyorBelts()
     {
         return [
@@ -40,6 +45,36 @@ export default class Building_Conveyor
                     callback    : Building_Conveyor.mergeConveyors,
                     className   : 'Building_Conveyor_mergeConveyors'
                 });
+
+                let conveyorAny0 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny0');
+                    if(conveyorAny0 !== null)
+                    {
+                        let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
+                            if(mConnectedComponent === null)
+                            {
+                                contextMenu.push({
+                                    icon        : 'fa-portal-exit',
+                                    text        : 'Use input as teleporter exit',
+                                    callback    : Building_Conveyor.storeTeleporterExit,
+                                    className   : 'Building_Conveyor_storeTeleporterExit'
+                                });
+                            }
+                    }
+
+                let conveyorAny1 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny1');
+                    if(conveyorAny1 !== null)
+                    {
+                        let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
+                            if(mConnectedComponent === null)
+                            {
+                                contextMenu.push({
+                                    icon        : 'fa-portal-enter',
+                                    text        : 'Use output as teleporter entry',
+                                    callback    : Building_Conveyor.storeTeleporterEntry,
+                                    className   : 'Building_Conveyor_storeTeleporterEntry'
+                                });
+                            }
+                    }
             }
 
         let usePool = Building_Conveyor.availableConveyorBelts;
@@ -87,6 +122,78 @@ export default class Building_Conveyor
             }
 
         return contextMenu;
+    }
+
+    /**
+     * TELEPORT
+     */
+
+    static storeTeleporterEntry(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let conveyorAny1    = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + '.ConveyorAny1');
+            if(conveyorAny1 !== null)
+            {
+                let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
+                    if(mConnectedComponent === null)
+                    {
+                        Building_Conveyor.teleporter.entry = marker.relatedTarget.options.pathName + '.ConveyorAny1';
+                    }
+            }
+
+        if(Building_Conveyor.teleporter.entry !== null && Building_Conveyor.teleporter.exit !== null)
+        {
+            Building_Conveyor.validateTeleporter(baseLayout);
+        }
+    }
+
+    static storeTeleporterExit(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let conveyorAny0    = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + '.ConveyorAny0');
+            if(conveyorAny0 !== null)
+            {
+                let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
+                    if(mConnectedComponent === null)
+                    {
+                        Building_Conveyor.teleporter.exit = marker.relatedTarget.options.pathName + '.ConveyorAny0';
+                    }
+            }
+
+        if(Building_Conveyor.teleporter.entry !== null && Building_Conveyor.teleporter.exit !== null)
+        {
+            Building_Conveyor.validateTeleporter(baseLayout);
+        }
+    }
+
+    static validateTeleporter(baseLayout)
+    {
+        let conveyorAny0    = baseLayout.saveGameParser.getTargetObject(Building_Conveyor.teleporter.exit);
+            if(conveyorAny0 !== null)
+            {
+                let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
+                    if(mConnectedComponent === null)
+                    {
+                        baseLayout.setObjectProperty(conveyorAny0, 'mConnectedComponent', {pathName: Building_Conveyor.teleporter.entry}, 'ObjectProperty');
+                    }
+            }
+
+        let conveyorAny1    = baseLayout.saveGameParser.getTargetObject(Building_Conveyor.teleporter.entry);
+            if(conveyorAny1 !== null)
+            {
+                let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
+                    if(mConnectedComponent === null)
+                    {
+                        baseLayout.setObjectProperty(conveyorAny1, 'mConnectedComponent', {pathName: Building_Conveyor.teleporter.exit}, 'ObjectProperty');
+                    }
+            }
+
+        BaseLayout_Modal.notification({
+            message: 'Conveyor belts teleporter added!'
+        });
+
+        Building_Conveyor.teleporter.entry  = null;
+        Building_Conveyor.teleporter.exit   = null;
     }
 
     /**
