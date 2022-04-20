@@ -37,6 +37,10 @@ export default class Spawn_Tower
         let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.centerObject.className);
             if(currentObjectData !== null)
             {
+                if(currentObjectData.mapLayer !== undefined)
+                {
+                    this.delayedLayerId.push(currentObjectData.mapLayer);
+                }
                 if(currentObjectData.height !== undefined)
                 {
                     this.centerObjectHeight = currentObjectData.height * 100;
@@ -47,26 +51,9 @@ export default class Spawn_Tower
                 }
             }
 
-        this.foundationType     = options.foundationType;
-        this.foundationHeight   = 400;
-
-        let foundationData      = this.baseLayout.getBuildingDataFromClassName(this.foundationType);
-            if(foundationData !== null)
-            {
-                if(foundationData.mapLayer !== undefined)
-                {
-                    this.delayedLayerId.push(foundationData.mapLayer);
-                }
-                if(foundationData.height !== undefined)
-                {
-                    this.foundationHeight = foundationData.height * 100;
-                }
-            }
-
-        this.wallType           = options.wallType;
-        this.wallHeight         = 400;
-
-        let wallData      = this.baseLayout.getBuildingDataFromClassName(this.wallType);
+            this.wallType   = options.wallType;
+            this.wallHeight = 400;
+        let wallData        = this.baseLayout.getBuildingDataFromClassName(this.wallType);
             if(wallData !== null)
             {
                 if(wallData.mapLayer !== undefined)
@@ -79,9 +66,24 @@ export default class Spawn_Tower
                 }
             }
 
+            this.wallCornerType     = options.wallCornerType;
+            this.wallCornerHeight   = 400;
+        let wallCornerData          = this.baseLayout.getBuildingDataFromClassName(this.wallCornerType);
+            if(wallCornerData !== null)
+            {
+                if(wallCornerData.mapLayer !== undefined)
+                {
+                    this.delayedLayerId.push(wallCornerData.mapLayer);
+                }
+                if(wallCornerData.height !== undefined)
+                {
+                    this.wallCornerHeight = wallCornerData.height * 100;
+                }
+            }
+
         // Floor is going on top of the spawning foundation
         this.currentFloor       = 1;
-        this.currentAltitude    = this.centerObject.transform.translation[2] + (this.centerObjectHeight / 2) + (this.foundationHeight / 2);
+        this.currentAltitude    = this.centerObject.transform.translation[2];
         this.currentRotation    = this.centerYaw + this.correctedCenterYaw;
 
         if(typeof gtag === 'function')
@@ -122,11 +124,17 @@ export default class Spawn_Tower
 
             for(let height = -this.maxHeight; height <= this.maxHeight; height++)
             {
-                let pathName        = this.foundationType.split('.');
+                // Don't overwrite the center
+                if(this.currentAltitude === this.centerObject.transform.translation[2] && width === 0 && height === 0)
+                {
+                    continue;
+                }
+
+                let pathName        = this.centerObject.className.split('.');
                     pathName        = 'Persistent_Level:PersistentLevel.' + pathName.pop() + '_XXX';
                 let newFoundation   = {
                         type            : 1,
-                        className       : this.foundationType,
+                        className       : this.centerObject.className,
                         pathName        : pathName,
                         transform       : {
                             rotation        : BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.currentRotation),
@@ -194,7 +202,7 @@ export default class Spawn_Tower
         }
 
         // Raise wall!
-        this.currentAltitude    += (this.foundationHeight / 2);
+        this.currentAltitude    += (this.centerObjectHeight / 2);
 
         return this.loopWall(1);
     }
@@ -210,13 +218,15 @@ export default class Spawn_Tower
                     {
                         if(width === -this.maxWidth || width === this.maxWidth || height === -this.maxHeight || height === this.maxHeight)
                         {
-                            let xOffset     = (width * 800) + ((width === -this.maxWidth) ? -400 : ((width === this.maxWidth) ? 400 : 0));
-                            let yOffset     = (height * 800) + ((height === -this.maxHeight) ? -400 : ((height === this.maxHeight) ? 400 : 0));
-                            let rotation    = this.currentRotation + ((height === -this.maxHeight || height === this.maxHeight) ? 90 : 0);
+                            let currentWallType = this.wallType;
+                            let xOffset         = (width * 800) + ((width === -this.maxWidth) ? -400 : ((width === this.maxWidth) ? 400 : 0));
+                            let yOffset         = (height * 800) + ((height === -this.maxHeight) ? -400 : ((height === this.maxHeight) ? 400 : 0));
+                            let rotation        = this.currentRotation + ((height === -this.maxHeight || height === this.maxHeight) ? 90 : 0);
 
                                 if((width === -this.maxWidth && height === -this.maxHeight) || (width === -this.maxWidth && height === this.maxHeight))
                                 {
-                                    let newWallCorner = this.spawnWall((xOffset + 400), yOffset, rotation);
+                                        currentWallType = this.wallCornerType;
+                                    let newWallCorner   = this.spawnWall(currentWallType, (xOffset + 400), yOffset, rotation);
                                         if(newWallCorner === false)
                                         {
                                             return this.release(); // Don't have materials, stop it...
@@ -231,7 +241,8 @@ export default class Spawn_Tower
 
                                 if((width === this.maxWidth && height === -this.maxHeight) || (width === this.maxWidth && height === this.maxHeight))
                                 {
-                                    let newWallCorner = this.spawnWall((xOffset - 400), yOffset, rotation);
+                                        currentWallType = this.wallCornerType;
+                                    let newWallCorner   = this.spawnWall(currentWallType, (xOffset - 400), yOffset, rotation);
                                         if(newWallCorner === false)
                                         {
                                             return this.release(); // Don't have materials, stop it...
@@ -244,7 +255,7 @@ export default class Spawn_Tower
                                     rotation   -=90;
                                 }
 
-                            let newWall     = this.spawnWall(xOffset, yOffset, rotation);
+                            let newWall     = this.spawnWall(currentWallType, xOffset, yOffset, rotation);
                                 if(newWall === false)
                                 {
                                     return this.release(); // Don't have materials, stop it...
@@ -278,20 +289,20 @@ export default class Spawn_Tower
 
         // Raise floor!
         this.currentFloor++;
-        this.currentAltitude    += (this.foundationHeight / 2);
+        this.currentAltitude    += (this.centerObjectHeight / 2);
         this.currentRotation    -= this.wallRotation; // Reset extra rotation
         this.currentRotation    += this.foundationRotation;
 
         return this.loop();
     }
 
-    spawnWall(xOffset, yOffset, rotation)
+    spawnWall(currentWallType, xOffset, yOffset, rotation)
     {
-        let pathName        = this.wallType.split('.');
+        let pathName        = currentWallType.split('.');
             pathName        = 'Persistent_Level:PersistentLevel.' + pathName.pop() + '_XXX';
         let newWall         = {
                 type            : 1,
-                className       : this.wallType,
+                className       : currentWallType,
                 pathName        : pathName,
                 transform       : {
                     rotation        : BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], rotation),

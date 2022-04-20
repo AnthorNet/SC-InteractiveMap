@@ -184,7 +184,7 @@ export default class Modal_Object_SpawnAround
                                     label       : 'Outer width <em class="small">(Between 3 and 65)</em>',
                                     name        : 'maxWidth',
                                     inputType   : 'number',
-                                    value       : 6,
+                                    value       : 7,
                                     min         : 3,
                                     max         : 65
                                 });
@@ -192,7 +192,7 @@ export default class Modal_Object_SpawnAround
                                     label       : 'Outer length <em class="small">(Between 3 and 65)</em>',
                                     name        : 'maxHeight',
                                     inputType   : 'number',
-                                    value       : 6,
+                                    value       : 7,
                                     min         : 3,
                                     max         : 65
                                 });
@@ -423,7 +423,6 @@ export default class Modal_Object_SpawnAround
                             });
                             break;
                         case 'tower':
-                            let foundationTypes = [];
                             let wallTypes       = [];
                                 for(let buildingId in baseLayout.buildingsData)
                                 {
@@ -432,15 +431,6 @@ export default class Modal_Object_SpawnAround
                                             value       : baseLayout.buildingsData[buildingId].className,
                                             text        : baseLayout.buildingsData[buildingId].name
                                         }
-
-                                    if(baseLayout.buildingsData[buildingId].category === 'foundation')
-                                    {
-                                        if(baseLayout.buildingsData[buildingId].className.includes('Build_Foundation'))
-                                        {
-                                            currentBuildingOption.group = baseLayout.buildingsData[buildingId].subCategory;
-                                            foundationTypes.push(currentBuildingOption);
-                                        }
-                                    }
                                     if(baseLayout.buildingsData[buildingId].category === 'wall')
                                     {
                                         if(
@@ -465,7 +455,7 @@ export default class Modal_Object_SpawnAround
                                     label       : 'Width <em class="small">(Between 3 and 65)</em>',
                                     name        : 'maxWidth',
                                     inputType   : 'number',
-                                    value       : 6,
+                                    value       : 7,
                                     min         : 3,
                                     max         : 65
                                 });
@@ -473,7 +463,7 @@ export default class Modal_Object_SpawnAround
                                     label       : 'Length <em class="small">(Between 3 and 65)</em>',
                                     name        : 'maxHeight',
                                     inputType   : 'number',
-                                    value       : 6,
+                                    value       : 7,
                                     min         : 3,
                                     max         : 65
                                 });
@@ -493,14 +483,6 @@ export default class Modal_Object_SpawnAround
                                     min         : 1,
                                     max         : 24
                                 });
-
-                                towerOptions.push({
-                                    name            : 'foundationType',
-                                    inputType       : 'selectPicker',
-                                    inputHeight     : true,
-                                    inputOptions    : foundationTypes,
-                                    value           : '/Game/FactoryGame/Buildable/Building/Foundation/ConcreteSet/Build_Foundation_Concrete_8x1.Build_Foundation_Concrete_8x1_C'
-                                });
                                 towerOptions.push({
                                     label       : 'Foudation rotation <em class="small">(Between -30 and 30)</em>',
                                     name        : 'foundationRotation',
@@ -511,11 +493,20 @@ export default class Modal_Object_SpawnAround
                                 });
 
                                 towerOptions.push({
+                                    label           : 'Wall type',
                                     name            : 'wallType',
                                     inputType       : 'selectPicker',
                                     inputHeight     : true,
                                     inputOptions    : wallTypes,
                                     value           : '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Window_Thin_8x4_02.Build_Wall_Window_Thin_8x4_02_C'
+                                });
+                                towerOptions.push({
+                                    label           : 'Wall corner type',
+                                    name            : 'wallCornerType',
+                                    inputType       : 'selectPicker',
+                                    inputHeight     : true,
+                                    inputOptions    : wallTypes,
+                                    value           : '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_8x4_01.Build_Wall_8x4_01_C'
                                 });
                                 towerOptions.push({
                                     label       : 'Wall rotation <em class="small">(Between -30 and 30)</em>',
@@ -527,9 +518,10 @@ export default class Modal_Object_SpawnAround
                                 });
 
                             BaseLayout_Modal.form({
-                                title: "Tower options",
-                                container: '#leafletMap',
-                                inputs: towerOptions,
+                                title       : 'Tower options',
+                                message     : 'Floor foundation type will be the one you are spawning on.',
+                                container   : '#leafletMap',
+                                inputs      : towerOptions,
                                 callback: function(values)
                                 {
                                     if(values !== null && values.maxWidth !== null && values.maxHeight !== null)
@@ -542,9 +534,9 @@ export default class Modal_Object_SpawnAround
                                             maxFloor            : values.maxFloor,
                                             floorHeight         : values.floorHeight,
 
-                                            foundationType      : values.foundationType,
                                             foundationRotation  : values.foundationRotation,
                                             wallType            : values.wallType,
+                                            wallCornerType      : values.wallCornerType,
                                             wallRotation        : values.wallRotation,
 
                                             useOwnMaterials     : form.useOwnMaterials
