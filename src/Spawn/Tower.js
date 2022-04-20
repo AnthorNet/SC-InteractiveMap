@@ -108,12 +108,13 @@ export default class Spawn_Tower
 
     loop()
     {
-        if(this.currentFloor <= (this.maxFloor + 1)) // Extra roof
+        if(this.currentFloor <= this.maxFloor)
         {
             return this.loopFloor(-this.maxWidth);
         }
 
-        return this.release();
+        //TODO: Real Roof
+        return this.loopFloor(-this.maxWidth);
     }
 
     loopFloor(width)
@@ -204,7 +205,12 @@ export default class Spawn_Tower
         // Raise wall!
         this.currentAltitude    += (this.centerObjectHeight / 2);
 
-        return this.loopWall(1);
+        if(this.currentFloor <= this.maxFloor)
+        {
+            return this.loopWall(1);
+        }
+
+        return this.release();
     }
 
     loopWall(floorHeight)
