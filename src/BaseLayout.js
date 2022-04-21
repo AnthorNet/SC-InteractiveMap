@@ -36,6 +36,7 @@ import Modal_Schematics                         from './Modal/Schematics.js';
 import Modal_Selection                          from './Modal/Selection.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
+import Building_Conveyor                        from './Building/Conveyor.js';
 import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
@@ -970,12 +971,7 @@ export default class BaseLayout
              || currentObject.className === '/Game/InfiniteLogistics/Buildable/InfinitePipeHyper/Build_InfinitePipeHyper.Build_InfinitePipeHyper_C'
              || currentObject.className === '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C'
              // Belts
-             || currentObject.className.includes('/Build_ConveyorBeltMk')
-             // Belts Mod
-             || (currentObject.className.startsWith('/CoveredConveyor') && currentObject.className.includes('lift') === false)
-             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
-             || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
+             || Building_Conveyor.isConveyorBelt(currentObject)
         )
         {
             return resolve(this.addPlayerBelt(currentObject));
@@ -1618,11 +1614,10 @@ export default class BaseLayout
         let beacon          = L.marker(
             this.satisfactoryMap.unproject(currentObject.transform.translation),
             {
-                pathName: currentObject.pathName,
-                icon: this.getMarkerIcon('#FFFFFF', beaconColor, this.staticUrl + '/img/mapBeaconIcon.png'),
-                riseOnHover: true,
-                zIndexOffset: 900,
-                altitude: currentObject.transform.translation[2]
+                pathName        : currentObject.pathName,
+                icon            : this.getMarkerIcon('#FFFFFF', beaconColor, this.staticUrl + '/img/mapBeaconIcon.png'),
+                riseOnHover     : true,
+                zIndexOffset    : 900
             }
         );
 
@@ -1650,11 +1645,10 @@ export default class BaseLayout
         let crate = L.marker(
             this.satisfactoryMap.unproject(currentObject.transform.translation),
             {
-                pathName: currentObject.pathName,
-                icon: this.getMarkerIcon('#FFFFFF', '#b3b3b3', this.staticUrl + '/img/mapLootCrateIcon.png'),
-                riseOnHover: true,
-                zIndexOffset: 900,
-                altitude: currentObject.transform.translation[2]
+                pathName        : currentObject.pathName,
+                icon            : this.getMarkerIcon('#FFFFFF', '#b3b3b3', this.staticUrl + '/img/mapLootCrateIcon.png'),
+                riseOnHover     : true,
+                zIndexOffset    : 900
             }
         );
 
@@ -2565,12 +2559,11 @@ export default class BaseLayout
                     let vehicleTrackMarker = L.polyline(
                         vehicleTrackData,
                         {
-                            pathName: currentObject.pathName + '_vehicleTrackData',
-                            originPathName: currentObject.pathName,
-                            color: '#FFC0CB',
-                            weight: 2,
-                            dashArray: '15 5',
-                            altitude: currentObject.transform.translation[2]
+                            pathName        : currentObject.pathName + '_vehicleTrackData',
+                            originPathName  : currentObject.pathName,
+                            color           : '#FFC0CB',
+                            weight          : 2,
+                            dashArray       : '15 5'
                         }
                     );
 
@@ -3123,7 +3116,7 @@ export default class BaseLayout
         baseLayout.deleteMarkerFromElements(layerId, marker.relatedTarget, fast);
 
         // Refresh radioactivity
-        if(currentObject.className.includes('/Build_ConveyorBeltMk'))
+        if(Building_Conveyor.isConveyorBelt(currentObject))
         {
             if(baseLayout.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
             {
@@ -3221,42 +3214,33 @@ export default class BaseLayout
                 {
                     pathName    : currentObject.pathName,
                     weight      : 135,
-                    altitude    : currentObject.transform.translation[2]
+                    opacity     : 0.9,
+                    color       : buildingData.mapColor
                 }
         );
 
         belt.bindContextMenu(this);
-        belt.on('mouseover', function(marker){
-            let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-            let slotColor           = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
 
-                if(currentObject.className.includes('/Build_ConveyorBeltMk'))
-                {
-                    marker.sourceTarget.setDashArray();
-                }
+        if(Building_Conveyor.isConveyorBelt(currentObject) === false) // Conveyor are handled with the tooltips bind
+        {
+            belt.on('mouseover', function(marker){
+                let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
+                let slotColor           = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
 
-            marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')', opacity: 0.5});
-        }.bind(this));
-        belt.on('mouseout', function(marker){
-            let mouseOutStyle       = {opacity: 0.9};
-            let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-                if(currentObject !== null)
-                {
-                    let buildingData = this.getBuildingDataFromClassName(currentObject.className);
-                        if(buildingData !== null)
-                        {
-                            mouseOutStyle.color = buildingData.mapColor;
-                        }
-
-                    if(currentObject.className.includes('/Build_ConveyorBeltMk'))
+                marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
+            }.bind(this));
+            belt.on('mouseout', function(marker){
+                let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
+                    if(currentObject !== null)
                     {
-                        marker.sourceTarget.removeDashArray();
+                        let buildingData = this.getBuildingDataFromClassName(currentObject.className);
+                            if(buildingData !== null)
+                            {
+                                marker.sourceTarget.setStyle({color: buildingData.mapColor});
+                            }
                     }
-                }
-
-            marker.sourceTarget.setStyle(mouseOutStyle);
-        }.bind(this));
-        belt.fire('mouseout');
+            }.bind(this));
+        }
 
         this.autoBindTooltip(belt);
 
@@ -3416,7 +3400,6 @@ export default class BaseLayout
                     pathName    : currentObject.pathName,
                     weight      : 600,
                     color       : '#ff69b4',
-                    altitude    : currentObject.transform.translation[2],
                     opacity     : 0.9
                 }
             );
@@ -3508,8 +3491,7 @@ export default class BaseLayout
                                 pathName    : currentObject.pathName,
                                 color       : ((currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff'),
                                 weight      : 1,
-                                interactive : false,
-                                altitude    : ((currentObjectSourceOuterPath.transform.translation[2] + currentObjectTargetOuterPath.transform.translation[2]) / 2)
+                                interactive : false
                             });
 
                         this.playerLayers.playerPowerGridLayer.elements.push(powerline);
@@ -5311,6 +5293,10 @@ export default class BaseLayout
                 {
                     Building_RailroadTrack.bindTooltip(this, currentObject, tooltipOptions);
                 }
+                if(Building_Conveyor.isConveyorBelt(currentObject))
+                {
+                    Building_Conveyor.bindTooltip(this, currentObject, tooltipOptions);
+                }
 
             e.target.closeTooltip.bind(this);
             e.target.bindTooltip(content, tooltipOptions);
@@ -5329,6 +5315,10 @@ export default class BaseLayout
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C')
                 {
                     Building_RailroadTrack.unbindTooltip(this, currentObject);
+                }
+                if(Building_Conveyor.isConveyorBelt(currentObject))
+                {
+                    Building_Conveyor.unbindTooltip(this, currentObject);
                 }
             }
 

@@ -1,6 +1,8 @@
 /* global Intl, self */
 import pako                                     from '../Lib/pako.esm.mjs';
 
+import Building_Conveyor                        from '../Building/Conveyor.js';
+
 export default class SaveParser_Write
 {
     constructor(worker, options)
@@ -377,15 +379,12 @@ export default class SaveParser_Write
 
         // Extra properties!
         if(
-                currentObject.className.includes('/Build_ConveyorBeltMk')
+                Building_Conveyor.isConveyorBelt(currentObject)
              || currentObject.className.includes('/Build_ConveyorLiftMk')
-             // MODS
-             || currentObject.className.startsWith('/Conveyors_Mod/Build_BeltMk')
+             // MODS (Also have lifts)
              || currentObject.className.startsWith('/Conveyors_Mod/Build_LiftMk')
              || currentObject.className.startsWith('/Game/CoveredConveyor')
              || currentObject.className.startsWith('/CoveredConveyor')
-             || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
         )
         {
             let itemsLength  = currentObject.extra.items.length;

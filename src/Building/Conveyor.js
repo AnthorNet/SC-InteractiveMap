@@ -30,6 +30,30 @@ export default class Building_Conveyor
         ];
     }
 
+    /*
+     * BELT LOOKUP, includes mods to avoid finding them everywhere
+     */
+    static isConveyorBelt(currentObject)
+    {
+        if(Building_Conveyor.availableConveyorBelts.includes(currentObject.className))
+        {
+            return true;
+        }
+
+        // Belts Mod
+        if(
+               (currentObject.className.startsWith('/CoveredConveyor') && currentObject.className.includes('lift') === false)
+             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
+             || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
+             || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
+        )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * CONTEXT MENU
      */
@@ -237,6 +261,113 @@ export default class Building_Conveyor
             }
     }
 
+
+
+    /**
+     * TOOLTIP
+     */
+    static bindTooltip(baseLayout, currentObject, tooltipOptions)
+    {
+        //tooltipOptions.direction    = 'bottom';
+        tooltipOptions.opacity      = 0.8;
+
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let mapLayer        = 'playerUnknownLayer';
+            if(buildingData !== null)
+            {
+                mapLayer = buildingData.mapLayer;
+            }
+
+        let marker          = baseLayout.getMarkerFromPathName(currentObject.pathName, mapLayer);
+            if(marker !== null)
+            {
+                let slotColor           = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
+
+                marker.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
+                marker.setDashArray();
+            }
+
+        // Loop conveyor children to find ConveyorAny connections
+        for(let i = 0; i < currentObject.children.length; i++)
+        {
+            let conveyorAny = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                if(conveyorAny !== null)
+                {
+                    let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny, 'mConnectedComponent');
+                        if(mConnectedComponent !== null)
+                        {
+                            if(mConnectedComponent.pathName.endsWith('.ConveyorAny0') || mConnectedComponent.pathName.endsWith('.ConveyorAny1'))
+                            {
+                                let connectedComponent  = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName.replace('.ConveyorAny0', '').replace('.ConveyorAny1', ''));
+                                    if(connectedComponent !== null)
+                                    {
+                                        let connectedMarker     = baseLayout.getMarkerFromPathName(connectedComponent.pathName, mapLayer);
+                                            if(connectedMarker !== null)
+                                            {
+                                                connectedMarker.setStyle({color: '#00FF00'});
+                                                connectedMarker.setDashArray();
+                                            }
+                                    }
+                            }
+                        }
+                }
+        }
+    }
+    static unbindTooltip(baseLayout, currentObject)
+    {
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let mapLayer        = 'playerUnknownLayer';
+            if(buildingData !== null)
+            {
+                mapLayer = buildingData.mapLayer;
+            }
+
+        let marker          = baseLayout.getMarkerFromPathName(currentObject.pathName, mapLayer);
+            if(marker !== null)
+            {
+                if(buildingData !== null)
+                {
+                    marker.setStyle({color: buildingData.mapColor});
+                }
+
+                marker.removeDashArray();
+            }
+
+
+
+        // Loop conveyor children to find ConveyorAny connections
+        for(let i = 0; i < currentObject.children.length; i++)
+        {
+            let conveyorAny = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                if(conveyorAny !== null)
+                {
+                    let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny, 'mConnectedComponent');
+                        if(mConnectedComponent !== null)
+                        {
+                            if(mConnectedComponent.pathName.endsWith('.ConveyorAny0') || mConnectedComponent.pathName.endsWith('.ConveyorAny1'))
+                            {
+                                let connectedComponent  = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName.replace('.ConveyorAny0', '').replace('.ConveyorAny1', ''));
+                                    if(connectedComponent !== null)
+                                    {
+                                        let connectedMarker     = baseLayout.getMarkerFromPathName(connectedComponent.pathName, mapLayer);
+                                            if(connectedMarker !== null)
+                                            {
+                                                connectedMarker.setStyle({color: buildingData.mapColor});
+                                                connectedMarker.removeDashArray();
+                                            }
+                                    }
+                            }
+                        }
+                }
+        }
+    }
+
+
+
+
+    /**
+     * MERGING CONVEYORS
+     */
     static _doMergeNextConveyor(marker)
     {
         let baseLayout      = marker.baseLayout;
@@ -406,96 +537,98 @@ export default class Building_Conveyor
     }
 }
 
-L.Conveyor = L.Polyline.extend({
-    initialize: function(latlngs, options)
-    {
-        L.Polyline.prototype.initialize.call(this, latlngs, options);
-
-        this.weight = options.weight;
-
-        let self                = this;
-            this.updateCallback = function()
-            {
-                self._updateWeight(this);
-            };
-    },
-
-    onAdd: function(map)
-    {
-        L.Polyline.prototype.onAdd.call(this, map);
-        map.on('zoomend', this.updateCallback);
-        this._updateWeight(map);
-    },
-
-    onRemove: function(map)
-    {
-        map.off('zoomend', this.updateCallback);
-        L.Polyline.prototype.onRemove.call(this, map);
-    },
-
-    setDashArray()
-    {
-        // Check conveyor direction
-        let flowDirection   = 1;
-        let conveyorAny0    = this.baseLayout.saveGameParser.getTargetObject(this.options.pathName + '.ConveyorAny0'); //TODO: Dynamic?!
-            if(conveyorAny0 !== null)
-            {
-                let mDirection = this.baseLayout.getObjectProperty(conveyorAny0, 'mDirection');
-                    if(mDirection.value === 'EFactoryConnectionDirection::FCD_INPUT')
-                    {
-                        flowDirection = -1;
-                    }
-            }
-
-
-        // Flow animation
-        this.options.currentDashOffset  = 0;
-        this.options.dashArrayAnimation = setInterval(function(){
-            this.options.currentDashOffset++;
-            this.setStyle({
-                dashOffset: flowDirection * this.options.currentDashOffset * (this.options.weight / 4)
-            });
-        }.bind(this), 25);
-
-        return this.setStyle({dashArray: (this.options.weight * 1.5) + " " + (this.options.weight  * 1.5)});
-    },
-
-    removeDashArray()
-    {
-        clearInterval(this.options.dashArrayAnimation);
-        return this.setStyle({dashArray: null});
-    },
-
-    _updateWeight: function(map)
-    {
-        let currentWeight   = this._getWeight(map, this.weight);
-
-        return this.setStyle({weight: currentWeight});
-    },
-
-    _getWeight: function(map, weight)
-    {
-        let position    = [window.SCIM.map.unproject([0, 0]), window.SCIM.map.unproject([10000, 0])];
-        let meterWeight = map.latLngToContainerPoint(position[1]).x - map.latLngToContainerPoint(position[0]).x;
-
-        return Math.max(2, (weight / 10000 * meterWeight));
-    }
-});
-
-L.conveyor = function(latlngs, options)
+if('undefined' !== typeof L) // Avoid worker error
 {
-    return new L.Conveyor(latlngs, options || { weight: 100 });
-};
+    L.Conveyor = L.Polyline.extend({
+        initialize: function(latlngs, options)
+        {
+            L.Polyline.prototype.initialize.call(this, latlngs, options);
 
-(function(){
-    let _originalFillStroke = L.Canvas.prototype._fillStroke;
-        L.Canvas.include({
-            _fillStroke: function(ctx, layer)
-            {
-                //TODO: Wait for https://github.com/Leaflet/Leaflet/pull/7867
-                ctx.lineDashOffset = Number(layer.options.dashOffset || 0);
+            this.weight = options.weight;
 
-                return _originalFillStroke.call(this, ctx, layer);
-            }
-        });
-})();
+            let self                = this;
+                this.updateCallback = function()
+                {
+                    self._updateWeight(this);
+                };
+        },
+
+        onAdd: function(map)
+        {
+            L.Polyline.prototype.onAdd.call(this, map);
+            map.on('zoomend', this.updateCallback);
+            this._updateWeight(map);
+        },
+
+        onRemove: function(map)
+        {
+            map.off('zoomend', this.updateCallback);
+            L.Polyline.prototype.onRemove.call(this, map);
+        },
+
+        setDashArray()
+        {
+            // Check conveyor direction
+            let flowDirection   = 1;
+            let conveyorAny0    = this.baseLayout.saveGameParser.getTargetObject(this.options.pathName + '.ConveyorAny0'); //TODO: Dynamic?!
+                if(conveyorAny0 !== null)
+                {
+                    let mDirection = this.baseLayout.getObjectProperty(conveyorAny0, 'mDirection');
+                        if(mDirection.value === 'EFactoryConnectionDirection::FCD_INPUT')
+                        {
+                            flowDirection = -1;
+                        }
+                }
+
+            // Flow animation
+            this.options.currentDashOffset  = 0;
+            this.options.dashArrayAnimation = setInterval(function(){
+                this.options.currentDashOffset++;
+                this.setStyle({
+                    dashOffset: flowDirection * this.options.currentDashOffset * (this.options.weight / 4)
+                });
+            }.bind(this), 25);
+
+            return this.setStyle({dashArray: (this.options.weight * 1.5) + " " + (this.options.weight  * 1.5)});
+        },
+
+        removeDashArray()
+        {
+            clearInterval(this.options.dashArrayAnimation);
+            return this.setStyle({dashArray: null});
+        },
+
+        _updateWeight: function(map)
+        {
+            let currentWeight   = this._getWeight(map, this.weight);
+
+            return this.setStyle({weight: currentWeight});
+        },
+
+        _getWeight: function(map, weight)
+        {
+            let position    = [window.SCIM.map.unproject([0, 0]), window.SCIM.map.unproject([10000, 0])];
+            let meterWeight = map.latLngToContainerPoint(position[1]).x - map.latLngToContainerPoint(position[0]).x;
+
+            return Math.max(2, (weight / 10000 * meterWeight));
+        }
+    });
+
+    L.conveyor = function(latlngs, options)
+    {
+        return new L.Conveyor(latlngs, options || { weight: 100 });
+    };
+
+    (function(){
+        let _originalFillStroke = L.Canvas.prototype._fillStroke;
+            L.Canvas.include({
+                _fillStroke: function(ctx, layer)
+                {
+                    //TODO: Wait for https://github.com/Leaflet/Leaflet/pull/7867
+                    ctx.lineDashOffset = Number(layer.options.dashOffset || 0);
+
+                    return _originalFillStroke.call(this, ctx, layer);
+                }
+            });
+    })();
+}

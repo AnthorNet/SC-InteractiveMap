@@ -6,6 +6,7 @@ import SubSystem_Creature                       from '../SubSystem/Creature.js';
 import SubSystem_Unlock                         from '../SubSystem/Unlock.js';
 
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
+import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_FrackingSmasher                 from '../Building/FrackingSmasher.js';
 import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoThermal.js';
@@ -55,14 +56,7 @@ export default class BaseLayout_Tooltip
             }
             else
             {
-                if(
-                        currentObject.className.includes('/Build_ConveyorBeltMk')
-                     || currentObject.className.includes('/Build_ConveyorLiftMk')
-                     // Belts Mod
-                     || currentObject.className.startsWith('/Game/CoveredConveyor')
-                     || currentObject.className.startsWith('/CoveredConveyor')
-                     || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
-                )
+                if(Building_Conveyor.isConveyorBelt(currentObject) || currentObject.className.includes('/Build_ConveyorLiftMk'))
                 {
                     return this.setBeltTooltipContent(currentObject);
                 }
