@@ -2496,7 +2496,7 @@ export default class BaseLayout
                         // Add distance...
                         if(mTopTransform.values[i].name === 'Translation')
                         {
-                            let height      = Math.abs(mTopTransform.values[i].value.values.z) / 100;
+                            let height = Math.abs(mTopTransform.values[i].value.values.z) / 100;
                                 this.playerLayers[layerId].distance += height;
 
                                 if(this.playerLayers[layerId].filtersCount !== undefined)
@@ -2676,9 +2676,11 @@ export default class BaseLayout
         let building = BaseLayout_Polygon.createBuilding(this, currentObject, markerOptions, polygonOptions);
             building.on('mouseover', function(marker){
                 this.setBuildingMouseOverStyle(marker.sourceTarget, buildingData);
+                Building_Conveyor.bindConnectedComponents(this, currentObject);
             }.bind(this));
             building.on('mouseout', function(marker){
                 this.setBuildingMouseOutStyle(marker.sourceTarget, buildingData);
+                Building_Conveyor.unbindConnectedComponents(this, currentObject);
             }.bind(this));
             this.setBuildingMouseOutStyle(building, buildingData, currentObject);
 
@@ -5296,6 +5298,18 @@ export default class BaseLayout
                 if(Building_Conveyor.isConveyorBelt(currentObject))
                 {
                     Building_Conveyor.bindTooltip(this, currentObject, tooltipOptions);
+                }
+                if(
+                        currentObject.className.includes('/Build_ConveyorLiftMk')
+                     || [
+                            '/Game/FactoryGame/Buildable/Factory/CA_Splitter/Build_ConveyorAttachmentSplitter.Build_ConveyorAttachmentSplitter_C',
+                            '/Game/FactoryGame/Buildable/Factory/CA_Merger/Build_ConveyorAttachmentMerger.Build_ConveyorAttachmentMerger_C',
+                            '/Game/FactoryGame/Buildable/Factory/CA_SplitterSmart/Build_ConveyorAttachmentSplitterSmart.Build_ConveyorAttachmentSplitterSmart_C',
+                            '/Game/FactoryGame/Buildable/Factory/CA_SplitterProgrammable/Build_ConveyorAttachmentSplitterProgrammable.Build_ConveyorAttachmentSplitterProgrammable_C'
+                        ].includes(currentObject.className)
+                )
+                {
+                    tooltipOptions.opacity      = 0.8;
                 }
 
             e.target.closeTooltip.bind(this);

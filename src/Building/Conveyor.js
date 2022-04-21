@@ -287,6 +287,16 @@ export default class Building_Conveyor
                 marker.setDashArray();
             }
 
+        Building_Conveyor.bindConnectedComponents(baseLayout, currentObject);
+    }
+
+    static bindConnectedComponents(baseLayout, currentObject)
+    {
+        if(currentObject.children === undefined)
+        {
+            return;
+        }
+
         // Loop conveyor children to find ConveyorAny connections
         for(let i = 0; i < currentObject.children.length; i++)
         {
@@ -296,23 +306,31 @@ export default class Building_Conveyor
                     let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny, 'mConnectedComponent');
                         if(mConnectedComponent !== null)
                         {
-                            if(mConnectedComponent.pathName.endsWith('.ConveyorAny0') || mConnectedComponent.pathName.endsWith('.ConveyorAny1'))
-                            {
-                                let connectedComponent  = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName.replace('.ConveyorAny0', '').replace('.ConveyorAny1', ''));
-                                    if(connectedComponent !== null)
-                                    {
-                                        let connectedMarker     = baseLayout.getMarkerFromPathName(connectedComponent.pathName, mapLayer);
-                                            if(connectedMarker !== null)
-                                            {
-                                                connectedMarker.setStyle({color: '#00FF00'});
-
-                                                if(Building_Conveyor.isConveyorBelt(connectedComponent))
+                            let endsWith = '.' + mConnectedComponent.pathName.split('.').pop();
+                                if(baseLayout.availableBeltConnection.includes(endsWith))
+                                {
+                                    let connectedComponent  = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName.replace(endsWith, ''));
+                                        if(connectedComponent !== null)
+                                        {
+                                            let buildingData    = baseLayout.getBuildingDataFromClassName(connectedComponent.className);
+                                            let mapLayer        = 'playerUnknownLayer';
+                                                if(buildingData !== null)
                                                 {
-                                                    connectedMarker.setDashArray();
+                                                    mapLayer = buildingData.mapLayer;
                                                 }
-                                            }
-                                    }
-                            }
+
+                                            let connectedMarker     = baseLayout.getMarkerFromPathName(connectedComponent.pathName, mapLayer);
+                                                if(connectedMarker !== null)
+                                                {
+                                                    connectedMarker.setStyle({color: '#00FF00'});
+
+                                                    if(Building_Conveyor.isConveyorBelt(connectedComponent))
+                                                    {
+                                                        connectedMarker.setDashArray();
+                                                    }
+                                                }
+                                        }
+                                }
                         }
                 }
         }
@@ -337,7 +355,15 @@ export default class Building_Conveyor
                 marker.removeDashArray();
             }
 
+        Building_Conveyor.unbindConnectedComponents(baseLayout, currentObject);
+    }
 
+    static unbindConnectedComponents(baseLayout, currentObject)
+    {
+        if(currentObject.children === undefined)
+        {
+            return;
+        }
 
         // Loop conveyor children to find ConveyorAny connections
         for(let i = 0; i < currentObject.children.length; i++)
@@ -348,23 +374,35 @@ export default class Building_Conveyor
                     let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny, 'mConnectedComponent');
                         if(mConnectedComponent !== null)
                         {
-                            if(mConnectedComponent.pathName.endsWith('.ConveyorAny0') || mConnectedComponent.pathName.endsWith('.ConveyorAny1'))
-                            {
-                                let connectedComponent  = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName.replace('.ConveyorAny0', '').replace('.ConveyorAny1', ''));
-                                    if(connectedComponent !== null)
-                                    {
-                                        let connectedMarker     = baseLayout.getMarkerFromPathName(connectedComponent.pathName, mapLayer);
-                                            if(connectedMarker !== null)
-                                            {
-                                                connectedMarker.setStyle({color: buildingData.mapColor});
-
-                                                if(Building_Conveyor.isConveyorBelt(connectedComponent))
+                            let endsWith = '.' + mConnectedComponent.pathName.split('.').pop();
+                                console.log(endsWith)
+                                if(baseLayout.availableBeltConnection.includes(endsWith))
+                                {
+                                    let connectedComponent  = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName.replace(endsWith, ''));
+                                        if(connectedComponent !== null)
+                                        {
+                                            let buildingData    = baseLayout.getBuildingDataFromClassName(connectedComponent.className);
+                                            let mapLayer        = 'playerUnknownLayer';
+                                                if(buildingData !== null)
                                                 {
-                                                    connectedMarker.removeDashArray();
+                                                    mapLayer = buildingData.mapLayer;
                                                 }
-                                            }
-                                    }
-                            }
+
+                                            let connectedMarker     = baseLayout.getMarkerFromPathName(connectedComponent.pathName, mapLayer);
+                                                if(connectedMarker !== null)
+                                                {
+                                                    if(buildingData !== null)
+                                                    {
+                                                        connectedMarker.setStyle({color: buildingData.mapColor});
+                                                    }
+
+                                                    if(Building_Conveyor.isConveyorBelt(connectedComponent))
+                                                    {
+                                                        connectedMarker.removeDashArray();
+                                                    }
+                                                }
+                                        }
+                                }
                         }
                 }
         }
