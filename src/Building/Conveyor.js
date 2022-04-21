@@ -305,7 +305,11 @@ export default class Building_Conveyor
                                             if(connectedMarker !== null)
                                             {
                                                 connectedMarker.setStyle({color: '#00FF00'});
-                                                connectedMarker.setDashArray();
+
+                                                if(Building_Conveyor.isConveyorBelt(connectedComponent))
+                                                {
+                                                    connectedMarker.setDashArray();
+                                                }
                                             }
                                     }
                             }
@@ -353,7 +357,11 @@ export default class Building_Conveyor
                                             if(connectedMarker !== null)
                                             {
                                                 connectedMarker.setStyle({color: buildingData.mapColor});
-                                                connectedMarker.removeDashArray();
+
+                                                if(Building_Conveyor.isConveyorBelt(connectedComponent))
+                                                {
+                                                    connectedMarker.removeDashArray();
+                                                }
                                             }
                                     }
                             }
