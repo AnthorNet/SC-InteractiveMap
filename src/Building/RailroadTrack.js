@@ -51,41 +51,31 @@ export default class Building_RailroadTrack
         let connectedComponents = Building_RailroadTrack.getConnectedComponents(baseLayout, currentObject);
             if(connectedComponents !== null)
             {
-                let markers = [];
-                    for(let i = 0; i < connectedComponents.length; i++)
+                for(let i = 0; i < connectedComponents.length; i++)
+                {
+                    if(connectedComponents[i].outerPathName !== undefined)
                     {
-                        if(connectedComponents[i].outerPathName !== undefined)
-                        {
-                            let connectedObject = baseLayout.saveGameParser.getTargetObject(connectedComponents[i].outerPathName);
-                                if(connectedObject !== null)
-                                {
-                                    let marker = baseLayout.getMarkerFromPathName(connectedComponents[i].outerPathName, 'playerTracksLayer');
-                                        if(marker !== null)
-                                        {
-                                            markers.push(marker);
-                                            marker.setStyle({color: '#00FF00'});
-                                        }
-                                }
-                        }
+                        let connectedObject = baseLayout.saveGameParser.getTargetObject(connectedComponents[i].outerPathName);
+                            if(connectedObject !== null)
+                            {
+                                let marker = baseLayout.getMarkerFromPathName(connectedComponents[i].outerPathName, 'playerTracksLayer');
+                                    if(marker !== null)
+                                    {
+                                        marker.setStyle({color: '#00FF00'});
+                                    }
+                            }
                     }
-
-                    if(markers.length > 0)
-                    {
-                        let boundaries  = Modal_Selection.getBoundaries(baseLayout, markers);
-                        let offset      = boundaries.maxX - boundaries.centerX;
-                        let distanceY   = baseLayout.satisfactoryMap.leafletMap
-                                                    .latLngToLayerPoint(baseLayout.satisfactoryMap.unproject(currentObject.transform.translation))
-                                                    .distanceTo(baseLayout.satisfactoryMap.leafletMap.latLngToLayerPoint(baseLayout.satisfactoryMap.unproject([
-                                                        currentObject.transform.translation[0],
-                                                        currentObject.transform.translation[1] + offset
-                                                    ])));
-
-                            tooltipOptions.offset = new L.point(0, distanceY);
-                    }
+                }
             }
     }
     static unbindTooltip(baseLayout, currentObject)
     {
+        let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, 'playerTracksLayer');
+            if(marker !== null)
+            {
+                marker.setStyle({color: '#ff69b4'});
+            }
+
         let connectedComponents = Building_RailroadTrack.getConnectedComponents(baseLayout, currentObject);
             if(connectedComponents !== null)
             {
@@ -99,8 +89,7 @@ export default class Building_RailroadTrack
                                 let marker = baseLayout.getMarkerFromPathName(connectedComponents[i].outerPathName, 'playerTracksLayer');
                                     if(marker !== null)
                                     {
-                                        let buildingData = baseLayout.getBuildingDataFromClassName(connectedObject.className);
-                                            baseLayout.setBuildingMouseOutStyle(marker, buildingData, connectedObject);
+                                        marker.setStyle({color: '#ff69b4'});
                                     }
                             }
                     }

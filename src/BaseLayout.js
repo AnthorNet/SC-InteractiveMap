@@ -3416,19 +3416,12 @@ export default class BaseLayout
                     pathName    : currentObject.pathName,
                     weight      : 600,
                     color       : '#ff69b4',
-                    altitude    : currentObject.transform.translation[2]
+                    altitude    : currentObject.transform.translation[2],
+                    opacity     : 0.9
                 }
             );
 
         track.bindContextMenu(this);
-        track.on('mouseover', function(){
-            this.setStyle({color: '#bf4e87', opacity: 0.7});
-        });
-        track.on('mouseout', function(){
-            this.setStyle({color: '#ff69b4', opacity: 0.9});
-        });
-        track.fire('mouseout');
-
         this.autoBindTooltip(track);
 
         this.playerLayers.playerTracksLayer.distance += splineData.distance;
