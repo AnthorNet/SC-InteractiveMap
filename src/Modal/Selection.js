@@ -786,6 +786,23 @@ export default class Modal_Selection
                             // Search for a callback in contextmenu...
                             for(let j = 0; j < contextMenu.length; j++)
                             {
+                                if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_ColorSlot')
+                                {
+                                    let currentObject   = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
+                                        baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, 255);
+                                }
+                            }
+                        }
+                }
+
+                for(let i = 0; i < markers.length; i++)
+                {
+                    let contextMenu = baseLayout.getContextMenu(markers[i]);
+                        if(contextMenu !== false)
+                        {
+                            // Search for a callback in contextmenu...
+                            for(let j = 0; j < contextMenu.length; j++)
+                            {
                                 if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_CustomColor')
                                 {
                                     let currentObject   = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
