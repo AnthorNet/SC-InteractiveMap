@@ -356,7 +356,7 @@ export default class BaseLayout
                 return new Promise(function(resolve){
                     $('#loaderProgressBar .progress-bar').css('width', '60%');
                     $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading game data...'));
-                    setTimeout(resolve, 50);
+                    setTimeout(resolve, 1);
                 }.bind(this)).then(() => {
                     $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, function(data)
                     {
@@ -499,7 +499,7 @@ export default class BaseLayout
     {
         return new Promise(function(resolve){
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
-            setTimeout(resolve, 50);
+            setTimeout(resolve, 1);
         }.bind(this)).then(() => {
             $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, function(data)
             {
@@ -545,7 +545,7 @@ export default class BaseLayout
 
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', 0));
             console.time('renderObjects');
-            setTimeout(resolve, 50);
+            setTimeout(resolve, 1);
         }.bind(this)).then(() => {
             this.parsingObjects = this.parseObjects();
         });
@@ -858,7 +858,7 @@ export default class BaseLayout
 
                         setTimeout(() => {
                             this.parseObjects((i + 1), objectsKeys);
-                        }, 5);
+                        }, 1);
                     });
                 }
         }
@@ -1056,7 +1056,7 @@ export default class BaseLayout
                             return new Promise(function(resolve){
                                 $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
                                 $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
-                                setTimeout(resolve, 5);
+                                setTimeout(resolve, 1);
                             }.bind(this)).then(() => {
                                 this.addLayers((i + 1));
                             });
@@ -1068,7 +1068,7 @@ export default class BaseLayout
         return new Promise(function(resolve){
             $('#loaderProgressBar .progress-bar').css('width', '100%');
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Finalization of statistics and controls...'));
-            setTimeout(resolve, 25);
+            setTimeout(resolve, 1);
         }.bind(this)).then(() => {
             // Altitude slider
             this.altitudeSliderControl = L.control.sliderControl({

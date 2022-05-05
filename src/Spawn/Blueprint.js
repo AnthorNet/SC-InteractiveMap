@@ -168,7 +168,7 @@ export default class Spawn_Blueprint
                 let centerPosition = this.baseLayout.satisfactoryMap.unproject(this.centerObject.transform.translation);
                     this.baseLayout.satisfactoryMap.leafletMap.setView(centerPosition, 7);
 
-                setTimeout(resolve, 50);
+                setTimeout(resolve, 1);
             }.bind(this)).then(function(){
                 this.generatePathName();
             }.bind(this));
@@ -251,7 +251,7 @@ export default class Spawn_Blueprint
                 }
             }
 
-            setTimeout(resolve, 5);
+            setTimeout(resolve, 1);
         }.bind(this)).then(function(){
             $('#liveLoader .progress-bar').css('width', '2%');
             this.replacePathName(JSON.parse(JSON.stringify(pathNameConversion)));
@@ -437,7 +437,7 @@ export default class Spawn_Blueprint
                     }
                 }
 
-            setTimeout(resolve, 5);
+            setTimeout(resolve, 1);
         }.bind(this)).then(function(){
             $('#liveLoader .progress-bar').css('width', '3%');
             return this.handleHiddenConnections(pathNameConversion);
@@ -592,7 +592,7 @@ export default class Spawn_Blueprint
                 }
             }
 
-            setTimeout(resolve, 5);
+            setTimeout(resolve, 1);
         }.bind(this)).then(function(){
             $('#liveLoader .progress-bar').css('width', '4%');
             return this.handlePipeNetworks(pathNameConversion);
@@ -666,7 +666,7 @@ export default class Spawn_Blueprint
                 }
             }
 
-            setTimeout(resolve, 5);
+            setTimeout(resolve, 1);
         }.bind(this)).then(function(){
             $('#liveLoader .progress-bar').css('width', '5%');
 

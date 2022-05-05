@@ -157,7 +157,7 @@ export default class SCIM
 
             this.baseLayout = new BaseLayout(options);
             this.baseLayout.draw();
-        }.bind(this), 250);
+        }.bind(this), 1);
     }
 
 

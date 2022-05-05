@@ -167,7 +167,7 @@ export default class Modal_Map_Collectables
                 $(e.currentTarget).parent().html('<i class="fas fa-cog fa-spin"></i>');
                 setTimeout(() => {
                     this.reset(currentId);
-                }, 50);
+                }, 1);
         }.bind(this));
 
         $('.clearCollectables').on('click', function(e){
@@ -175,7 +175,7 @@ export default class Modal_Map_Collectables
                 $(e.currentTarget).parent().html('<i class="fas fa-cog fa-spin"></i>');
                 setTimeout(() => {
                     this.clear(currentId);
-                }, 50);
+                }, 1);
         }.bind(this));
     }
 

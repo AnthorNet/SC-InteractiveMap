@@ -175,7 +175,7 @@ export default class SaveParser_Write
 
         setTimeout(function(){
             this.streamChunks(this.generatedChunks);
-        }.bind(this), 250);
+        }.bind(this), 1);
     }
 
     streamChunks(chunks)
