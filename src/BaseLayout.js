@@ -36,6 +36,7 @@ import Modal_Schematics                         from './Modal/Schematics.js';
 import Modal_Selection                          from './Modal/Selection.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
+import Building_Beacon                          from './Building/Beacon.js';
 import Building_Conveyor                        from './Building/Conveyor.js';
 import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
@@ -932,7 +933,7 @@ export default class BaseLayout
 
         if(currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C' || currentObject.className === '/CrashSiteBeacons/BP_Beacon_Child.BP_Beacon_Child_C')
         {
-            return resolve({layer: 'playerOrientationLayer', marker: this.addPlayerBeacon(currentObject)});
+            return resolve({layer: 'playerOrientationLayer', marker: Building_Beacon.add(this, currentObject)});
         }
 
         if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
@@ -1594,46 +1595,6 @@ export default class BaseLayout
         baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
         baseLayout.deleteMarkerFromElements('playerItemsPickupLayer', marker.relatedTarget);
         baseLayout.setBadgeLayerCount('playerItemsPickupLayer');
-    }
-
-    addPlayerBeacon(currentObject)
-    {
-        this.setupSubLayer('playerOrientationLayer');
-
-        let beaconColor     = '#b3b3b3';
-            //console.log([currentObject.transform.translation[0], currentObject.transform.translation[1]]);
-
-        let mCompassColor   = this.getObjectProperty(currentObject, 'mCompassColor');
-            if(mCompassColor !== null)
-            {
-                beaconColor = 'rgb(' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.r) + ', ' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.g) + ', ' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.b) + ')';
-            }
-
-        let beacon          = L.marker(
-            this.satisfactoryMap.unproject(currentObject.transform.translation),
-            {
-                pathName        : currentObject.pathName,
-                icon            : this.getMarkerIcon('#FFFFFF', beaconColor, this.staticUrl + '/img/mapBeaconIcon.png'),
-                riseOnHover     : true,
-                zIndexOffset    : 900
-            }
-        );
-
-        beacon.bindContextMenu(this);
-        this.playerLayers.playerOrientationLayer.count++;
-        this.autoBindTooltip(beacon);
-        this.playerLayers.playerOrientationLayer.elements.push(beacon);
-
-        return beacon;
-    }
-
-    deletePlayerBeacon(marker)
-    {
-        let baseLayout = marker.baseLayout;
-            baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
-            baseLayout.deleteMarkerFromElements('playerOrientationLayer', marker.relatedTarget);
-            baseLayout.playerLayers.playerOrientationLayer.count--;
-            baseLayout.setBadgeLayerCount('playerOrientationLayer');
     }
 
     addPlayerLootCrate(currentObject)
