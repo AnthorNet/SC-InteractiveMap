@@ -353,7 +353,7 @@ export default class BaseLayout
             if(this.buildingsData === null)
             {
                 return new Promise(function(resolve){
-                    $('#loaderProgressBar .progress-bar').css('width', '47.5%');
+                    $('#loaderProgressBar .progress-bar').css('width', '60%');
                     $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading game data...'));
                     setTimeout(resolve, 50);
                 }.bind(this)).then(() => {
@@ -497,7 +497,6 @@ export default class BaseLayout
     loadDetailedModels()
     {
         return new Promise(function(resolve){
-            $('#loaderProgressBar .progress-bar').css('width', '50%');
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
             setTimeout(resolve, 50);
         }.bind(this)).then(() => {
@@ -543,7 +542,6 @@ export default class BaseLayout
 
                 $('#saveGameInformation').html('<strong>' + header.sessionName + '</strong> <em><small>(' + hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's)</small></em>');
 
-            $('#loaderProgressBar .progress-bar').css('width', '50%');
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', 0));
             console.time('renderObjects');
             setTimeout(resolve, 50);
@@ -854,7 +852,7 @@ export default class BaseLayout
                 if(progress > parseObjectsProgress)
                 {
                     return Promise.all(promises).then(() => {
-                        $('#loaderProgressBar .progress-bar').css('width', (50 + progress * 0.4) + '%');
+                        $('#loaderProgressBar .progress-bar').css('width', (60 + progress * 0.3) + '%');
                         $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', progress));
 
                         setTimeout(() => {

@@ -21,10 +21,10 @@ export default class SaveParser_Write
 
         this.currentBufferLength    = 0; // Used for writing...
 
-        return this.streamCompressedSave();
+        return this.streamSave();
     }
 
-    streamCompressedSave()
+    streamSave()
     {
         this.saveBlobArray  = [];
         this.saveBinary     = '';
@@ -1011,16 +1011,34 @@ export default class SaveParser_Write
                             property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].value);
                             break;
                         case 'StructProperty':
-                            let currentBufferStartingLength     = this.currentBufferLength;
-                            let structPropertyBufferLength      = this.currentEntityLength;
-
-                            for(let i = 0; i < currentProperty.value.values[iMapProperty].value.length; i++)
+                            if(currentProperty.name === 'mIndexMapping')
                             {
-                                property += this.writeProperty(currentProperty.value.values[iMapProperty].value[i]);
+                                if(currentProperty.value.values[iMapProperty].value.mNormalIndex !== undefined)
+                                {
+                                    property += this.writeInt(currentProperty.value.values[iMapProperty].value.mNormalIndex);
+                                }
+                                if(currentProperty.value.values[iMapProperty].value.mOverflowIndex !== undefined)
+                                {
+                                    property += this.writeInt(currentProperty.value.values[iMapProperty].value.mOverflowIndex);
+                                }
+                                if(currentProperty.value.values[iMapProperty].value.mFilterIndex !== undefined)
+                                {
+                                    property += this.writeInt(currentProperty.value.values[iMapProperty].value.mFilterIndex);
+                                }
                             }
-                            property += this.writeString('None');
+                            else
+                            {
+                                let currentBufferStartingLength     = this.currentBufferLength;
+                                let structPropertyBufferLength      = this.currentEntityLength;
 
-                            this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+                                for(let i = 0; i < currentProperty.value.values[iMapProperty].value.length; i++)
+                                {
+                                    property += this.writeProperty(currentProperty.value.values[iMapProperty].value[i]);
+                                }
+                                property += this.writeString('None');
+
+                                this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+                            }
                             break;
                         default:
                             console.log('Missing ' + currentProperty.value.type + ' in MapProperty=>' + currentProperty.name);

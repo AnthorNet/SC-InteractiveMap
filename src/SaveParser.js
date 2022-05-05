@@ -141,21 +141,27 @@ export default class SaveParser
                 return BaseLayout_Modal.alert(data.message);
             case 'alertParsing':
                 return BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+
+            case 'loaderHide':
+                window.SCIM.hideLoader();
             case 'loaderMessage':
                 return $('.loader h6').html(this.translate._(data.message, data.replace));
             case 'loaderProgress':
                 return $('#loaderProgressBar .progress-bar').css('width', data.percentage + '%');
 
-            case 'saveResult':
-                for(const [key, value] of Object.entries(data.result))
+            case 'transferData':
+                for(const [key, value] of Object.entries(data.data))
                 {
                     this[key] = value;
                 }
                 break;
+            case 'transferObject':
+                this.objects[data.pathName] = data.object;
+                break;
 
             case 'endSaveLoading':
                 console.timeEnd('loadSave');
-                this.onWorkerMessage({command: 'loaderProgress', percentage: 45});
+                this.onWorkerMessage({command: 'loaderProgress', percentage: 50});
 
                 if(this.callback !== null)
                 {
