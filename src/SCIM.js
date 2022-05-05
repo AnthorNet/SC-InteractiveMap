@@ -130,7 +130,7 @@ export default class SCIM
             this.baseLayout.reset();
         }
 
-        setTimeout(function(){
+        window.requestAnimationFrame(() => {
             options.build               = this.build;
             options.debug               = this.debug;
             options.version             = this.scriptsVERSION;
@@ -157,7 +157,7 @@ export default class SCIM
 
             this.baseLayout = new BaseLayout(options);
             this.baseLayout.draw();
-        }.bind(this), 1);
+        });
     }
 
 

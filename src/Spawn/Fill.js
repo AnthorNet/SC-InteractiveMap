@@ -150,10 +150,10 @@ export default class Spawn_Fill
                     this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
             }.bind(this)).finally(function(){
-                setTimeout(function(){
+                window.requestAnimationFrame(() => {
                     $('#liveLoader .progress-bar').css('width', Math.round((height - this.minHeight) / (this.maxHeight - this.minHeight) * 100) + '%');
                     this.loop((height + 800));
-                }.bind(this), 1);
+                });
             }.bind(this));
         }
 

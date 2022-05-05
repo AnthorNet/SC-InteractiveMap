@@ -128,10 +128,10 @@ export default class Spawn_Image
                     this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
             }.bind(this)).finally(function(){
-                setTimeout(function(){
+                window.requestAnimationFrame(() => {
                     $('#liveLoader .progress-bar').css('width', Math.round(x / this.imageWidth * 100) + '%');
                     this.loop(x+1);
-                }.bind(this), 1);
+                });
             }.bind(this));
         }
 

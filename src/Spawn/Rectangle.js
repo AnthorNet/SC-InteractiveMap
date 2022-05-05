@@ -139,10 +139,10 @@ export default class Spawn_Rectangle
                     this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
             }.bind(this)).finally(function(){
-                setTimeout(function(){
+                window.requestAnimationFrame(() => {
                     $('#liveLoader .progress-bar').css('width', Math.round((width + this.maxWidth) / (this.maxWidth * 2) * 100) + '%');
                     this.loop((width + 1));
-                }.bind(this), 1);
+                });
             }.bind(this));
         }
 

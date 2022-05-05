@@ -144,10 +144,10 @@ export default class Spawn_Polygon
                         this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                     }
                 }.bind(this)).finally(function(){
-                    setTimeout(function(){
+                    window.requestAnimationFrame(() => {
                         $('#liveLoader .progress-bar').css('width', Math.round((minSize * this.numberOfSides) / (this.maxSize * this.numberOfSides) * 100) + '%');
                         this.loop(minSize, (side + 1));
-                    }.bind(this), 1);
+                    });
                 }.bind(this));
             }
 

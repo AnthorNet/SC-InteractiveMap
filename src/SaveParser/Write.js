@@ -173,9 +173,9 @@ export default class SaveParser_Write
 
         console.log('Generated ' + this.generatedChunks.length + ' chunks...');
 
-        setTimeout(function(){
+        window.requestAnimationFrame(() => {
             this.streamChunks(this.generatedChunks);
-        }.bind(this), 1);
+        });
     }
 
     streamChunks(chunks)

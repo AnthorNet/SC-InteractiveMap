@@ -95,10 +95,10 @@ export default class Spawn_Road
                         this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                     }
                 }.bind(this)).finally(function(){
-                    setTimeout(function(){
+                    window.requestAnimationFrame(() => {
                         $('#liveLoader .progress-bar').css('width', Math.round(Math.abs(height) / Math.abs(maxHeight) * 100) + '%');
                         this.loopDown((height + step), maxHeight, step);
-                    }.bind(this), 1);
+                    });
                 }.bind(this));
         }
 
@@ -116,10 +116,10 @@ export default class Spawn_Road
                         this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                     }
                 }.bind(this)).finally(function(){
-                    setTimeout(function(){
+                    window.requestAnimationFrame(() => {
                         $('#liveLoader .progress-bar').css('width', Math.round(Math.abs(height) / Math.abs(maxHeight) * 100) + '%');
                         this.loopUp((height - step), maxHeight, step);
-                    }.bind(this), 1);
+                    });
                 }.bind(this));
         }
 

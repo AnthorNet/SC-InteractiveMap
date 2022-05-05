@@ -356,7 +356,7 @@ export default class BaseLayout
                 return new Promise(function(resolve){
                     $('#loaderProgressBar .progress-bar').css('width', '60%');
                     $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading game data...'));
-                    setTimeout(resolve, 1);
+                    window.requestAnimationFrame(resolve);
                 }.bind(this)).then(() => {
                     $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, function(data)
                     {
@@ -499,7 +499,7 @@ export default class BaseLayout
     {
         return new Promise(function(resolve){
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
-            setTimeout(resolve, 1);
+            window.requestAnimationFrame(resolve);
         }.bind(this)).then(() => {
             $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, function(data)
             {
@@ -545,7 +545,7 @@ export default class BaseLayout
 
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', 0));
             console.time('renderObjects');
-            setTimeout(resolve, 1);
+            window.requestAnimationFrame(resolve);
         }.bind(this)).then(() => {
             this.parsingObjects = this.parseObjects();
         });
@@ -855,10 +855,7 @@ export default class BaseLayout
                     return Promise.all(promises).then(() => {
                         $('#loaderProgressBar .progress-bar').css('width', (60 + progress * 0.3) + '%');
                         $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', progress));
-
-                        setTimeout(() => {
-                            this.parseObjects((i + 1), objectsKeys);
-                        }, 1);
+                        window.requestAnimationFrame(() => { this.parseObjects((i + 1), objectsKeys); });
                     });
                 }
         }
@@ -1056,7 +1053,7 @@ export default class BaseLayout
                             return new Promise(function(resolve){
                                 $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
                                 $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
-                                setTimeout(resolve, 1);
+                                window.requestAnimationFrame(resolve);
                             }.bind(this)).then(() => {
                                 this.addLayers((i + 1));
                             });
@@ -1068,7 +1065,7 @@ export default class BaseLayout
         return new Promise(function(resolve){
             $('#loaderProgressBar .progress-bar').css('width', '100%');
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Finalization of statistics and controls...'));
-            setTimeout(resolve, 1);
+            window.requestAnimationFrame(resolve);
         }.bind(this)).then(() => {
             // Altitude slider
             this.altitudeSliderControl = L.control.sliderControl({
@@ -1230,9 +1227,7 @@ export default class BaseLayout
             $('#optionsButton').show();
 
             // Delay radioactivity to avoid canvas error when map isn't fully loaded...
-            setTimeout(() => {
-                this.updateRadioactivityLayer();
-            }, 1000);
+            window.requestAnimationFrame(() => { this.updateRadioactivityLayer(); });
 
             this.history = new BaseLayout_History({
                 baseLayout      : this

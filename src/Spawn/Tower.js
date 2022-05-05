@@ -195,10 +195,10 @@ export default class Spawn_Tower
                     });
                 }
             }.bind(this)).finally(function(){
-                setTimeout(function(){
+                window.requestAnimationFrame(() => {
                     $('#liveLoader .progress-bar').css('width', Math.round(((width + this.maxWidth) * this.currentFloor) / (this.maxWidth * 2 * this.maxFloor) * 100) + '%');
                     this.loopFloor((width + 1));
-                }.bind(this), 1);
+                });
             }.bind(this));
         }
 
@@ -284,12 +284,12 @@ export default class Spawn_Tower
                     });
                 }
             }.bind(this)).finally(function(){
-                setTimeout(function(){
+                window.requestAnimationFrame(() => {
                     //$('#liveLoader .progress-bar').css('width', Math.round((width + this.maxWidth) / (this.maxWidth * 2) * 100) + '%');
                     this.currentAltitude    += this.wallHeight;
                     this.currentRotation    += this.wallRotation;
                     this.loopWall((floorHeight + 1));
-                }.bind(this), 1);
+                });
             }.bind(this));
         }
 

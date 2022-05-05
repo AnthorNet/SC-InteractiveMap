@@ -129,10 +129,10 @@ export default class Spawn_Circle
                     this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
             }.bind(this)).finally(function(){
-                setTimeout(function(){
+                window.requestAnimationFrame(() => {
                     $('#liveLoader .progress-bar').css('width', Math.round(radius / this.maxRadius * 100) + '%');
                     this.loop((radius + 1));
-                }.bind(this), 1);
+                });
             }.bind(this));
         }
 

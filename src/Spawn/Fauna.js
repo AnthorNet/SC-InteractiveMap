@@ -131,7 +131,7 @@ export default class Spawn_Fauna
             let result = this.baseLayout.addPlayerFauna(newFauna);
                 return new Promise(function(resolve){
                     $('#liveLoader .progress-bar').css('width', Math.round(currentQty / this.maxRadius * 100) + '%');
-                    setTimeout(resolve, 1);
+                    window.requestAnimationFrame(resolve);
                 }.bind(this)).then(function(){
                     this.baseLayout.addElementToLayer(result.layer, result.marker);
                     this.loop((currentQty + 1));
