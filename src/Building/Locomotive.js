@@ -105,6 +105,21 @@ export default class Building_Locomotive
         return false;
     }
 
+    static isDerailed(baseLayout, currentObject)
+    {
+        let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
+            if(trainIdentifier !== null)
+            {
+                let mIsDerailed   = baseLayout.getObjectProperty(trainIdentifier, 'mIsDerailed');
+                    if(mIsDerailed !== null && mIsDerailed === 1)
+                    {
+                        return true;
+                    }
+            }
+
+        return false;
+    }
+
     static getVelocity(baseLayout, currentObject)
     {
         let trainIdentifier = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
@@ -289,9 +304,10 @@ export default class Building_Locomotive
     /**
      * TOOLTIP
      */
-    static getTooltip(baseLayout, currentObject, buildingData)
+    static getTooltip(baseLayout, currentObject, buildingData, genericTooltipBackgroundStyle)
     {
         let content         = [];
+
         let mTrainName      = Building_Locomotive.getTrainName(baseLayout, currentObject);
             if(mTrainName !== null)
             {
@@ -309,6 +325,12 @@ export default class Building_Locomotive
                 }
 
                 content.push('<td><table class="text-left">');
+
+                let mIsDerailed     = Building_Locomotive.isDerailed(baseLayout, currentObject);
+                    if(mIsDerailed === true)
+                    {
+                        content.push('<tr><td colspan="2" class="text-center text-danger blink pb-3" style="font-size: 115%;"><i class="fas fa-engine-warning"></i> <strong>DERAILED</strong> <i class="fas fa-engine-warning"></i></td></tr>');
+                    }
 
                 let velocity = Building_Locomotive.getVelocity(baseLayout, currentObject);
                     if(velocity !== null)
@@ -347,7 +369,7 @@ export default class Building_Locomotive
 
             content.push('</tr></table>');
 
-        return '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png?v=' + baseLayout.scriptVersion + ') 25 repeat;background: #7f7f7f;margin: -7px;' + BaseLayout_Tooltip.defaultTextStyle + '">\
+        return '<div class="d-flex" style="' + genericTooltipBackgroundStyle + '">\
                     <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
                         ' + content.join('') + '\
                     </div>\
