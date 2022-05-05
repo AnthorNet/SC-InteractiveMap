@@ -155,8 +155,12 @@ export default class SaveParser
                     this[key] = value;
                 }
                 break;
-            case 'transferObject':
-                this.objects[data.pathName] = data.object;
+
+            case 'transferObjects':
+                for(const [key, value] of Object.entries(data.data))
+                {
+                    this.objects[key] = value;
+                }
                 break;
 
             case 'endSaveLoading':

@@ -200,7 +200,6 @@ export default class SaveParser_Read
 
     /*
      * Progress bar from 45 to 60%
-     * TODO: Try to batch them? Faster?
      */
     parseEntities(entitiesToObjects, i, countEntities)
     {
@@ -208,21 +207,25 @@ export default class SaveParser_Read
         this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities...', replace: new Intl.NumberFormat(this.language).format(countEntities)});
         this.worker.postMessage({command: 'loaderProgress', percentage: 40});
 
+        let objectsToFlush = {};
+
         for(i; i < countEntities; i++)
         {
             this.readEntity(entitiesToObjects[i]);
 
-            // Avoid memory error on very large save?
-            this.worker.postMessage({command: 'transferObject', pathName: entitiesToObjects[i], object: this.objects[entitiesToObjects[i]]});
+            // Avoid memory error on very large save!
+            objectsToFlush[entitiesToObjects[i]] = this.objects[entitiesToObjects[i]];
             delete this.objects[entitiesToObjects[i]];
 
             if(i % 5000 === 0)
             {
+                this.worker.postMessage({command: 'transferObjects', data: objectsToFlush});
+                objectsToFlush = {};
                 this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
             }
         }
 
-        //this.worker.postMessage({command: 'transferData', data: {objects: this.objects}});
+        this.worker.postMessage({command: 'transferObjects', data: objectsToFlush});
 
         return this.parseCollectables();
     }
