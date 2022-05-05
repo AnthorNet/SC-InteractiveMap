@@ -1,149 +1,49 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
-export default class Building_Conveyor
+export default class Building_HyperTube
 {
     static teleporter = {
         entry   : null,
         exit    : null,
     };
 
-    static get availableConveyorBelts()
-    {
-        return [
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk1/Build_ConveyorBeltMk1.Build_ConveyorBeltMk1_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk2/Build_ConveyorBeltMk2.Build_ConveyorBeltMk2_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk3/Build_ConveyorBeltMk3.Build_ConveyorBeltMk3_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk4/Build_ConveyorBeltMk4.Build_ConveyorBeltMk4_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk5/Build_ConveyorBeltMk5.Build_ConveyorBeltMk5_C'
-        ];
-    }
-
-    static get availableConveyorLifts()
-    {
-        return [
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk1/Build_ConveyorLiftMk1.Build_ConveyorLiftMk1_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk2/Build_ConveyorLiftMk2.Build_ConveyorLiftMk2_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk3/Build_ConveyorLiftMk3.Build_ConveyorLiftMk3_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk4/Build_ConveyorLiftMk4.Build_ConveyorLiftMk4_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk5/Build_ConveyorLiftMk5.Build_ConveyorLiftMk5_C'
-        ];
-    }
-
-    /*
-     * BELT LOOKUP, includes mods to avoid finding them everywhere
-     */
-    static isConveyorBelt(currentObject)
-    {
-        if(Building_Conveyor.availableConveyorBelts.includes(currentObject.className))
-        {
-            return true;
-        }
-
-        // Belts Mod
-        if(
-               (currentObject.className.startsWith('/CoveredConveyor') && currentObject.className.includes('lift') === false)
-             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
-             || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
-        )
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * CONTEXT MENU
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let haveSeparator = false;
-            if(Building_Conveyor.isConveyorBelt(currentObject))
+        let conveyorAny0 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny0');
+            if(conveyorAny0 !== null)
             {
-                haveSeparator = true;
-                contextMenu.push({
-                    icon        : 'fa-object-group',
-                    text        : 'Merge adjacent conveyor belts (Performance test)',
-                    callback    : Building_Conveyor.mergeConveyors,
-                    className   : 'Building_Conveyor_mergeConveyors'
-                });
-
-                let conveyorAny0 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny0');
-                    if(conveyorAny0 !== null)
+                let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
+                    if(mConnectedComponent === null)
                     {
-                        let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
-                            if(mConnectedComponent === null)
-                            {
-                                contextMenu.push({
-                                    icon        : 'fa-portal-exit',
-                                    text        : 'Use input as teleporter exit',
-                                    callback    : Building_Conveyor.storeTeleporterExit,
-                                    className   : 'Building_Conveyor_storeTeleporterExit'
-                                });
-                            }
-                    }
-
-                let conveyorAny1 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny1');
-                    if(conveyorAny1 !== null)
-                    {
-                        let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
-                            if(mConnectedComponent === null)
-                            {
-                                contextMenu.push({
-                                    icon        : 'fa-portal-enter',
-                                    text        : 'Use output as teleporter entry',
-                                    callback    : Building_Conveyor.storeTeleporterEntry,
-                                    className   : 'Building_Conveyor_storeTeleporterEntry'
-                                });
-                            }
+                        contextMenu.push({
+                            icon        : 'fa-portal-exit',
+                            text        : 'Use input as teleporter exit',
+                            callback    : Building_HyperTube.storeTeleporterExit,
+                            className   : 'Building_Conveyor_storeTeleporterExit'
+                        });
                     }
             }
 
-        let usePool = Building_Conveyor.availableConveyorBelts;
-            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorLift') === true)
+        let conveyorAny1 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny1');
+            if(conveyorAny1 !== null)
             {
-                usePool = Building_Conveyor.availableConveyorLifts;
+                let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
+                    if(mConnectedComponent === null)
+                    {
+                        contextMenu.push({
+                            icon        : 'fa-portal-enter',
+                            text        : 'Use output as teleporter entry',
+                            callback    : Building_HyperTube.storeTeleporterEntry,
+                            className   : 'Building_Conveyor_storeTeleporterEntry'
+                        });
+                    }
             }
 
-        let poolIndex   = usePool.indexOf(currentObject.className);
-            if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
-            {
-                haveSeparator = true;
-
-                if(poolIndex > 0)
-                {
-                    let downgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex - 1]);
-                        if(downgradeData !== null)
-                        {
-                            contextMenu.push({
-                                icon        : 'fa-level-down-alt',
-                                text        : 'Downgrade to "' + downgradeData.name + '"',
-                                callback    : Building_Conveyor.downgradeConveyor,
-                                className   : 'Building_Conveyor_downgradeConveyor'
-                            });
-                        }
-                }
-                if(poolIndex < (usePool.length - 1))
-                {
-                    let upgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex + 1]);
-                        if(upgradeData !== null)
-                        {
-                            contextMenu.push({
-                                icon        : 'fa-level-up-alt',
-                                text        : 'Upgrade to "' + upgradeData.name + '"',
-                                callback    : Building_Conveyor.upgradeConveyor,
-                                className   : 'Building_Conveyor_upgradeConveyor'
-                            });
-                        }
-                }
-            }
-
-            if(haveSeparator === true)
-            {
-                contextMenu.push('-');
-            }
+        contextMenu.push('-');
 
         return contextMenu;
     }

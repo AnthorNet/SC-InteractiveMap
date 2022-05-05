@@ -3211,15 +3211,16 @@ export default class BaseLayout
             }
         }
 
-        let belt = L.conveyor(
-                splineData.points,
-                {
-                    pathName    : currentObject.pathName,
-                    weight      : 135,
-                    opacity     : 0.9,
-                    color       : buildingData.mapColor
-                }
-        );
+        let beltOptions = {
+                pathName    : currentObject.pathName,
+                weight      : 135,
+                opacity     : 0.9
+            };
+            if(buildingData !== null)
+            {
+                beltOptions.color = buildingData.mapColor;
+            }
+        let belt = L.conveyor(splineData.points, beltOptions);
 
         belt.bindContextMenu(this);
 
@@ -3378,7 +3379,7 @@ export default class BaseLayout
             }
         }
 
-        // Pipe/Lift Floor Hole
+        //TODO: Pipe/Lift Floor Hole
         let mBottomSnappedConnection = this.getObjectProperty(currentObject, 'mBottomSnappedConnection');
             if(mBottomSnappedConnection !== null)
             {
@@ -5286,7 +5287,7 @@ export default class BaseLayout
 
         if(content !== null)
         {
-            let tooltipOptions = {sticky: true, opacity: 1};
+            let tooltipOptions = {sticky: true, opacity: 0.8};
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {
                     Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
@@ -5298,18 +5299,6 @@ export default class BaseLayout
                 if(Building_Conveyor.isConveyorBelt(currentObject))
                 {
                     Building_Conveyor.bindTooltip(this, currentObject, tooltipOptions);
-                }
-                if(
-                        currentObject.className.includes('/Build_ConveyorLiftMk')
-                     || [
-                            '/Game/FactoryGame/Buildable/Factory/CA_Splitter/Build_ConveyorAttachmentSplitter.Build_ConveyorAttachmentSplitter_C',
-                            '/Game/FactoryGame/Buildable/Factory/CA_Merger/Build_ConveyorAttachmentMerger.Build_ConveyorAttachmentMerger_C',
-                            '/Game/FactoryGame/Buildable/Factory/CA_SplitterSmart/Build_ConveyorAttachmentSplitterSmart.Build_ConveyorAttachmentSplitterSmart_C',
-                            '/Game/FactoryGame/Buildable/Factory/CA_SplitterProgrammable/Build_ConveyorAttachmentSplitterProgrammable.Build_ConveyorAttachmentSplitterProgrammable_C'
-                        ].includes(currentObject.className)
-                )
-                {
-                    tooltipOptions.opacity      = 0.8;
                 }
 
             e.target.closeTooltip.bind(this);

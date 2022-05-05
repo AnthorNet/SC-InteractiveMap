@@ -52,8 +52,7 @@ export default class Building_RailroadSwitchControl
     static bindTooltip(baseLayout, currentObject, tooltipOptions)
     {
         tooltipOptions.direction    = 'bottom';
-        tooltipOptions.opacity      = 0.8;
-
+        
         let connectedComponents = Building_RailroadSwitchControl.getConnectedComponents(baseLayout, currentObject);
             if(connectedComponents !== null)
             {

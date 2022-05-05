@@ -40,8 +40,7 @@ export default class Building_RailroadTrack
     static bindTooltip(baseLayout, currentObject, tooltipOptions)
     {
         tooltipOptions.direction    = 'bottom';
-        tooltipOptions.opacity      = 0.8;
-
+        
         let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, 'playerTracksLayer');
             if(marker !== null)
             {
