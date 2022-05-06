@@ -172,10 +172,7 @@ export default class SaveParser_Write
         }
 
         console.log('Generated ' + this.generatedChunks.length + ' chunks...');
-
-        window.requestAnimationFrame(() => {
-            this.streamChunks(this.generatedChunks);
-        });
+        this.streamChunks(this.generatedChunks);
     }
 
     streamChunks(chunks)
