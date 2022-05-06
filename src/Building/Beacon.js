@@ -58,7 +58,7 @@ export default class Building_Beacon
         baseLayout.autoBindTooltip(beacon);
         baseLayout.playerLayers.playerOrientationLayer.elements.push(beacon);
 
-        return beacon;
+        return {layer: 'playerOrientationLayer', marker: beacon};
     }
 
     static delete(marker)
@@ -193,9 +193,13 @@ export default class Building_Beacon
                             });
                         }
 
-                        baseLayout.deleteMarkerFromElements('playerOrientationLayer', marker.relatedTarget);
-                        baseLayout.playerLayers.playerOrientationLayer.count--;
-                        baseLayout.addElementToLayer('playerOrientationLayer', Building_Beacon.add(baseLayout, currentObject));
+                        new Promise(function(resolve){
+                            return baseLayout.parseObject(currentObject, resolve);
+                        }).then(function(result){
+                            baseLayout.playerLayers[result.layer].count--;
+                            baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                            baseLayout.addElementToLayer(result.layer, result.marker);
+                        });
                     }
                 }
             });

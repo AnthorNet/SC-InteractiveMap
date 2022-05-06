@@ -54,6 +54,127 @@ export default class Building_Conveyor
         return false;
     }
 
+    /*
+     * ADD/DELETE
+     */
+    static add(baseLayout, currentObject)
+    {
+        let mapLayer     = 'playerUnknownLayer';
+        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+            if(buildingData !== null)
+            {
+                mapLayer = buildingData.mapLayer;
+            }
+
+        baseLayout.setupSubLayer(mapLayer);
+        let splineData = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
+
+        if(baseLayout.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
+        {
+            let radioactiveInventory = [];
+                for(let i = 0; i < currentObject.extra.items.length; i++)
+                {
+                    let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name, false);
+                        if(currentItemData !== null)
+                        {
+                            if(currentItemData.radioactiveDecay !== undefined)
+                            {
+                                radioactiveInventory.push({position: currentObject.extra.items[i].position, radioactiveDecay: currentItemData.radioactiveDecay});
+                            }
+                        }
+                }
+
+            if(radioactiveInventory.length > 0)
+            {
+                for(let i = 0; i < radioactiveInventory.length; i++)
+                {
+                    let currentObjectPosition   = radioactiveInventory[i].position;
+                    let currentBeltDistance     = 0;
+
+                    // Loop each belt segments trying to figure if the item is in
+                    for(let s = 1; s < splineData.originalData.length; s++)
+                    {
+                        let segmentDistance = Math.sqrt(
+                            ((splineData.originalData[s][0] - splineData.originalData[s-1][0]) * (splineData.originalData[s][0] - splineData.originalData[s-1][0]))
+                          + ((splineData.originalData[s][1] - splineData.originalData[s-1][1]) * (splineData.originalData[s][1] - splineData.originalData[s-1][1]))
+                        );
+
+                        if(currentObjectPosition >= currentBeltDistance && currentObjectPosition <= (currentBeltDistance + segmentDistance))
+                        {
+                            let radioactivePointData = [
+                                splineData.originalData[s-1][0] + (splineData.originalData[s][0] - splineData.originalData[s-1][0]) * ((currentObjectPosition - currentBeltDistance) / segmentDistance),
+                                splineData.originalData[s-1][1] + (splineData.originalData[s][1] - splineData.originalData[s-1][1]) * ((currentObjectPosition - currentBeltDistance) / segmentDistance),
+                                currentObject.transform.translation[2]
+                            ];
+                            baseLayout.addRadioactivityDot({
+                                pathName: currentObject.pathName + '_' + i,
+                                transform:{translation: radioactivePointData}
+                            }, [{qty: 1, radioactiveDecay: radioactiveInventory[i].radioactiveDecay}]);
+
+                            break;
+                        }
+
+                        currentBeltDistance += segmentDistance;
+                    }
+                }
+            }
+        }
+
+        let beltOptions = {
+                pathName    : currentObject.pathName,
+                weight      : 135,
+                opacity     : 0.9
+            };
+            if(buildingData !== null)
+            {
+                beltOptions.color = buildingData.mapColor;
+            }
+        let belt = L.conveyor(splineData.points, beltOptions);
+
+        belt.bindContextMenu(baseLayout);
+
+        if(Building_Conveyor.isConveyorBelt(currentObject) === false) // Conveyor are handled with the tooltips bind
+        {
+            belt.on('mouseover', function(marker){
+                let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
+                let slotColor           = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
+
+                marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
+            });
+            belt.on('mouseout', function(marker){
+                let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
+                    if(currentObject !== null)
+                    {
+                        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+                            if(buildingData !== null)
+                            {
+                                marker.sourceTarget.setStyle({color: buildingData.mapColor});
+                            }
+                    }
+            });
+        }
+
+        baseLayout.autoBindTooltip(belt);
+
+        if(baseLayout.playerLayers[mapLayer].distance !== undefined)
+        {
+            baseLayout.playerLayers[mapLayer].distance += splineData.distance;
+        }
+
+        baseLayout.playerLayers[mapLayer].elements.push(belt);
+
+        if(baseLayout.playerLayers[mapLayer].filtersCount !== undefined)
+        {
+            if(baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className] === undefined)
+            {
+                baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className] = {distance: 0};
+            }
+            baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className].distance += splineData.distance;
+        }
+
+        return {layer: mapLayer, marker: belt};
+    }
+
     /**
      * CONTEXT MENU
      */

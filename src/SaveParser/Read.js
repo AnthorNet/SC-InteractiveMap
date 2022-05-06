@@ -189,7 +189,7 @@ export default class SaveParser_Read
                             break;
                     }
 
-                if(i % 5000 === 0)
+                if(i % 2500 === 0)
                 {
                     this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 15))});
                 }
@@ -221,6 +221,9 @@ export default class SaveParser_Read
             {
                 this.worker.postMessage({command: 'transferObjects', data: objectsToFlush});
                 objectsToFlush = {};
+            }
+            if(i % 2500 === 0)
+            {
                 this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
             }
         }
@@ -587,7 +590,7 @@ export default class SaveParser_Read
         }
 
         currentProperty.type    = this.readString();
-        
+
         this.skipBytes(4); // Length of the property, this is calculated when writing back ;)
 
         let index = this.readInt();

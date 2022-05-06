@@ -930,7 +930,7 @@ export default class BaseLayout
 
         if(currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C' || currentObject.className === '/CrashSiteBeacons/BP_Beacon_Child.BP_Beacon_Child_C')
         {
-            return resolve({layer: 'playerOrientationLayer', marker: Building_Beacon.add(this, currentObject)});
+            return resolve(Building_Beacon.add(this, currentObject));
         }
 
         if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
@@ -970,7 +970,7 @@ export default class BaseLayout
              || Building_Conveyor.isConveyorBelt(currentObject)
         )
         {
-            return resolve(this.addPlayerBelt(currentObject));
+            return resolve(Building_Conveyor.add(this, currentObject));
         }
         if(currentObject.className.includes('Train/Track/Build_RailroadTrack') || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
         {
@@ -1052,7 +1052,14 @@ export default class BaseLayout
                         let progress = Math.round(i / layersKeys.length * 100);
                             return new Promise(function(resolve){
                                 $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
-                                $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
+
+                                let layerTitle = $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title');
+                                    if(layerId === 'playerLightsHaloLayer')
+                                    {
+                                        layerTitle = 'Lights halo';
+                                    }
+                                $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', layerTitle));
+
                                 window.requestAnimationFrame(resolve);
                             }.bind(this)).then(() => {
                                 this.addLayers((i + 1));
@@ -3100,124 +3107,6 @@ export default class BaseLayout
         {
             baseLayout.updateRadioactivityLayer();
         }
-    }
-
-    addPlayerBelt(currentObject)
-    {
-        let mapLayer     = 'playerUnknownLayer';
-        let buildingData = this.getBuildingDataFromClassName(currentObject.className);
-            if(buildingData !== null)
-            {
-                mapLayer = buildingData.mapLayer;
-            }
-
-        this.setupSubLayer(mapLayer);
-        let splineData = BaseLayout_Math.extractSplineData(this, currentObject);
-
-        if(this.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
-        {
-            let radioactiveInventory = [];
-                for(let i = 0; i < currentObject.extra.items.length; i++)
-                {
-                    let currentItemData = this.getItemDataFromClassName(currentObject.extra.items[i].name, false);
-                        if(currentItemData !== null)
-                        {
-                            if(currentItemData.radioactiveDecay !== undefined)
-                            {
-                                radioactiveInventory.push({position: currentObject.extra.items[i].position, radioactiveDecay: currentItemData.radioactiveDecay});
-                            }
-                        }
-                }
-
-            if(radioactiveInventory.length > 0)
-            {
-                for(let i = 0; i < radioactiveInventory.length; i++)
-                {
-                    let currentObjectPosition   = radioactiveInventory[i].position;
-                    let currentBeltDistance     = 0;
-
-                    // Loop each belt segments trying to figure if the item is in
-                    for(let s = 1; s < splineData.originalData.length; s++)
-                    {
-                        let segmentDistance = Math.sqrt(
-                            ((splineData.originalData[s][0] - splineData.originalData[s-1][0]) * (splineData.originalData[s][0] - splineData.originalData[s-1][0]))
-                          + ((splineData.originalData[s][1] - splineData.originalData[s-1][1]) * (splineData.originalData[s][1] - splineData.originalData[s-1][1]))
-                        );
-
-                        if(currentObjectPosition >= currentBeltDistance && currentObjectPosition <= (currentBeltDistance + segmentDistance))
-                        {
-                            let radioactivePointData = [
-                                splineData.originalData[s-1][0] + (splineData.originalData[s][0] - splineData.originalData[s-1][0]) * ((currentObjectPosition - currentBeltDistance) / segmentDistance),
-                                splineData.originalData[s-1][1] + (splineData.originalData[s][1] - splineData.originalData[s-1][1]) * ((currentObjectPosition - currentBeltDistance) / segmentDistance),
-                                currentObject.transform.translation[2]
-                            ];
-                            this.addRadioactivityDot({
-                                pathName: currentObject.pathName + '_' + i,
-                                transform:{translation: radioactivePointData}
-                            }, [{qty: 1, radioactiveDecay: radioactiveInventory[i].radioactiveDecay}]);
-
-                            break;
-                        }
-
-                        currentBeltDistance += segmentDistance;
-                    }
-                }
-            }
-        }
-
-        let beltOptions = {
-                pathName    : currentObject.pathName,
-                weight      : 135,
-                opacity     : 0.9
-            };
-            if(buildingData !== null)
-            {
-                beltOptions.color = buildingData.mapColor;
-            }
-        let belt = L.conveyor(splineData.points, beltOptions);
-
-        belt.bindContextMenu(this);
-
-        if(Building_Conveyor.isConveyorBelt(currentObject) === false) // Conveyor are handled with the tooltips bind
-        {
-            belt.on('mouseover', function(marker){
-                let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-                let slotColor           = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
-
-                marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
-            }.bind(this));
-            belt.on('mouseout', function(marker){
-                let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-                    if(currentObject !== null)
-                    {
-                        let buildingData = this.getBuildingDataFromClassName(currentObject.className);
-                            if(buildingData !== null)
-                            {
-                                marker.sourceTarget.setStyle({color: buildingData.mapColor});
-                            }
-                    }
-            }.bind(this));
-        }
-
-        this.autoBindTooltip(belt);
-
-        if(this.playerLayers[mapLayer].distance !== undefined)
-        {
-            this.playerLayers[mapLayer].distance += splineData.distance;
-        }
-
-        this.playerLayers[mapLayer].elements.push(belt);
-
-        if(this.playerLayers[mapLayer].filtersCount !== undefined)
-        {
-            if(this.playerLayers[mapLayer].filtersCount[currentObject.className] === undefined)
-            {
-                this.playerLayers[mapLayer].filtersCount[currentObject.className] = {distance: 0};
-            }
-            this.playerLayers[mapLayer].filtersCount[currentObject.className].distance += splineData.distance;
-        }
-
-        return {layer: mapLayer, marker: belt};
     }
 
     unlinkObjectComponentConnection(currentObject)
