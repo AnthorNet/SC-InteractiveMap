@@ -576,7 +576,7 @@ export default class SaveParser_Read
     /*
      * Properties types
      */
-    readProperty()
+    readProperty(parentType = null)
     {
         let currentProperty         = {};
             currentProperty.name    = this.readString();
@@ -587,7 +587,7 @@ export default class SaveParser_Read
         }
 
         currentProperty.type    = this.readString();
-
+        
         this.skipBytes(4); // Length of the property, this is calculated when writing back ;)
 
         let index = this.readInt();
@@ -971,25 +971,11 @@ export default class SaveParser_Read
                                     mapPropertySubProperties = this.readObjectProperty({});
                                     break;
                                 case 'StructProperty':
-                                    if(currentProperty.name === 'mIndexMapping')
+                                    if(parentType === 'LBBalancerData')
                                     {
-                                        let availableIndexes            = ['mNormalIndex', 'mOverflowIndex', 'mFilterIndex'];
-                                            mapPropertySubProperties    = {};
-
-                                            for(let i = 0; i < availableIndexes.length; i++)
-                                            {
-                                                let IsNoneCurrentByte   = this.currentByte
-                                                let isNone              = this.readString();
-                                                    this.currentByte    = IsNoneCurrentByte;
-                                                    if(isNone === 'None')
-                                                    {
-                                                        break;
-                                                    }
-                                                    else
-                                                    {
-                                                        mapPropertySubProperties[availableIndexes[i]] = this.readInt();
-                                                    }
-                                            }
+                                        mapPropertySubProperties.mNormalIndex   = this.readInt();
+                                        mapPropertySubProperties.mOverflowIndex = this.readInt();
+                                        mapPropertySubProperties.mFilterIndex   = this.readInt();
                                     }
                                     else
                                     {
@@ -1154,7 +1140,7 @@ export default class SaveParser_Read
                             currentProperty.value.values = [];
                             while(true)
                             {
-                                let subStructProperty = this.readProperty();
+                                let subStructProperty = this.readProperty(currentProperty.value.type);
                                     if(subStructProperty === null)
                                     {
                                         break;

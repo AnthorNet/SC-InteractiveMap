@@ -520,7 +520,7 @@ export default class SaveParser_Write
         return properties;
     }
 
-    writeProperty(currentProperty)
+    writeProperty(currentProperty, parentType = null)
     {
         let propertyStart   = '';
             propertyStart  += this.writeString(currentProperty.name);
@@ -740,7 +740,7 @@ export default class SaveParser_Write
 
                         for(let i = 0; i < currentProperty.value.values.length; i++)
                         {
-                            property += this.writeProperty(currentProperty.value.values[i]);
+                            property += this.writeProperty(currentProperty.value.values[i], currentProperty.value.type);
                         }
                         property += this.writeString('None');
 
@@ -1008,20 +1008,11 @@ export default class SaveParser_Write
                             property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].value);
                             break;
                         case 'StructProperty':
-                            if(currentProperty.name === 'mIndexMapping')
+                            if(parentType === 'LBBalancerData')
                             {
-                                if(currentProperty.value.values[iMapProperty].value.mNormalIndex !== undefined)
-                                {
-                                    property += this.writeInt(currentProperty.value.values[iMapProperty].value.mNormalIndex);
-                                }
-                                if(currentProperty.value.values[iMapProperty].value.mOverflowIndex !== undefined)
-                                {
-                                    property += this.writeInt(currentProperty.value.values[iMapProperty].value.mOverflowIndex);
-                                }
-                                if(currentProperty.value.values[iMapProperty].value.mFilterIndex !== undefined)
-                                {
-                                    property += this.writeInt(currentProperty.value.values[iMapProperty].value.mFilterIndex);
-                                }
+                                property += this.writeInt(currentProperty.value.values[iMapProperty].value.mNormalIndex);
+                                property += this.writeInt(currentProperty.value.values[iMapProperty].value.mOverflowIndex);
+                                property += this.writeInt(currentProperty.value.values[iMapProperty].value.mFilterIndex);
                             }
                             else
                             {
