@@ -135,6 +135,31 @@ export default class SubSystem_Buildable
         return 0;
     }
 
+
+    setObjectDefaultColorSlot(currentObject)
+    {
+        let slotIndex = 0;
+            if(currentObject.className.includes('Foundation'))
+            {
+                slotIndex = 16;
+            }
+            if(currentObject.className.includes('_Concrete_'))
+            {
+                slotIndex = 18;
+            }
+            if(currentObject.className.includes('_ConcretePolished_'))
+            {
+                slotIndex = 18;
+            }
+            if(currentObject.className.includes('_Asphalt_'))
+            {
+                slotIndex = 18;
+            }
+
+        return this.setObjectColorSlot(currentObject, slotIndex)
+    }
+
+
     setObjectColorSlot(currentObject, slotIndex)
     {
         let mCustomizationData = this.getObjectCustomizationData(currentObject);
@@ -735,9 +760,12 @@ export default class SubSystem_Buildable
                         }
 
                     // Redraw!
-                    let result = baseLayout.parseObject(currentObject);
-                        baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-                        baseLayout.addElementToLayer(result.layer, result.marker);
+                    new Promise(function(resolve){
+                        return this.parseObject(currentObject, resolve);
+                    }.bind(baseLayout)).then(function(result){
+                        this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                        this.addElementToLayer(result.layer, result.marker);
+                    }.bind(baseLayout));
                 }
         }
     }
@@ -779,9 +807,12 @@ export default class SubSystem_Buildable
                 }
 
             // Redraw! (In case at some point we add different models ^^
-            let result = baseLayout.parseObject(currentObject);
-                baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-                baseLayout.addElementToLayer(result.layer, result.marker);
+            new Promise(function(resolve){
+                return this.parseObject(currentObject, resolve);
+            }.bind(baseLayout)).then(function(result){
+                this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                this.addElementToLayer(result.layer, result.marker);
+            }.bind(baseLayout));
         }
     }
 
@@ -824,8 +855,11 @@ export default class SubSystem_Buildable
             }
 
         // Redraw!
-        let result = baseLayout.parseObject(currentObject);
-            baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-            baseLayout.addElementToLayer(result.layer, result.marker);
+        new Promise(function(resolve){
+            return this.parseObject(currentObject, resolve);
+        }.bind(baseLayout)).then(function(result){
+            this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+            this.addElementToLayer(result.layer, result.marker);
+        }.bind(baseLayout));
     }
 }

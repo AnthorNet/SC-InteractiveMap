@@ -620,10 +620,12 @@ export default class Modal_Selection
 
                 baseLayout.buildableSubSystem.setObjectColorSlot(fakeFoundation, form.slotIndex);
 
-                baseLayout.saveGameParser.addObject(fakeFoundation);
-                let resultCenter = baseLayout.parseObject(fakeFoundation);
-                    baseLayout.addElementToLayer(resultCenter.layer, resultCenter.marker);
-
+                new Promise(function(resolve){
+                    this.saveGameParser.addObject(fakeFoundation);
+                    return this.parseObject(fakeFoundation, resolve);
+                }.bind(baseLayout)).then(function(result){
+                    this.addElementToLayer(result.layer, result.marker);
+                }.bind(baseLayout));
 
                 // Add corners...
                 let corners = [
@@ -657,10 +659,12 @@ export default class Modal_Selection
                         newFoundation.transform.translation[0]  = translationRotation[0];
                         newFoundation.transform.translation[1]  = translationRotation[1];
 
-                        baseLayout.saveGameParser.addObject(newFoundation);
-
-                        let result = baseLayout.parseObject(newFoundation);
-                            baseLayout.addElementToLayer(result.layer, result.marker);
+                        new Promise(function(resolve){
+                            this.saveGameParser.addObject(newFoundation);
+                            this.parseObject(newFoundation, resolve);
+                        }.bind(baseLayout)).then(function(result){
+                            this.addElementToLayer(result.layer, result.marker);
+                        }.bind(baseLayout));
                 }
             }
         });
@@ -772,6 +776,23 @@ export default class Modal_Selection
                 if(form === null || form.primaryColor === null || form.secondaryColor === null)
                 {
                     return;
+                }
+
+                for(let i = 0; i < markers.length; i++)
+                {
+                    let contextMenu = baseLayout.getContextMenu(markers[i]);
+                        if(contextMenu !== false)
+                        {
+                            // Search for a callback in contextmenu...
+                            for(let j = 0; j < contextMenu.length; j++)
+                            {
+                                if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_ColorSlot')
+                                {
+                                    let currentObject   = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
+                                        baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, 255);
+                                }
+                            }
+                        }
                 }
 
                 for(let i = 0; i < markers.length; i++)

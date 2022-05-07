@@ -6,6 +6,8 @@ import SubSystem_Creature                       from '../SubSystem/Creature.js';
 import SubSystem_Unlock                         from '../SubSystem/Unlock.js';
 
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
+import Building_Beacon                          from '../Building/Beacon.js';
+import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_FrackingSmasher                 from '../Building/FrackingSmasher.js';
 import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoThermal.js';
@@ -55,14 +57,7 @@ export default class BaseLayout_Tooltip
             }
             else
             {
-                if(
-                        currentObject.className.includes('/Build_ConveyorBeltMk')
-                     || currentObject.className.includes('/Build_ConveyorLiftMk')
-                     // Belts Mod
-                     || currentObject.className.startsWith('/Game/CoveredConveyor')
-                     || currentObject.className.startsWith('/CoveredConveyor')
-                     || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
-                )
+                if(Building_Conveyor.isConveyorBelt(currentObject) || currentObject.className.includes('/Build_ConveyorLiftMk'))
                 {
                     return this.setBeltTooltipContent(currentObject);
                 }
@@ -129,7 +124,7 @@ export default class BaseLayout_Tooltip
                         case '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C':
                             return this.setBuildingStorageTooltipContent(currentObject, {name: 'Loot Crate', category: 'storage'});
                         case '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C':
-                            return this.setBeaconTooltipContent(currentObject);
+                            return Building_Beacon.getTooltip(this.baseLayout, currentObject, this.genericTooltipBackgroundStyle);
                         case '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C':
                             return this.setBuildingExtractionTooltipContent(currentObject, this.baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C);
                         case '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C':
@@ -159,7 +154,7 @@ export default class BaseLayout_Tooltip
                                         case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
                                             return Building_DroneStation.getTooltip(this.baseLayout, currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
-                                            return Building_Locomotive.getTooltip(this.baseLayout, currentObject, buildingData);
+                                            return Building_Locomotive.getTooltip(this.baseLayout, currentObject, buildingData, this.genericTooltipBackgroundStyle);
                                         case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
                                             return Building_GeneratorGeoThermal.getTooltip(this.baseLayout, currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C':
@@ -194,29 +189,6 @@ export default class BaseLayout_Tooltip
         return null;
     }
 
-    setBeaconTooltipContent(currentObject)
-    {
-        let content         = [];
-        let mCompassText    = this.baseLayout.getObjectProperty(currentObject, 'mCompassText');
-            if(mCompassText !== null)
-            {
-                content.push('Beacon: <strong>' + mCompassText + '</strong>');
-            }
-            else
-            {
-                content.push('<strong>Beacon</strong>');
-            }
-
-        content.push('<div class="text-small">' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[0])) + ' / ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[1])) + '</div>');
-        content.push('<div class="text-small">Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm</div>');
-
-        return '<div class="d-flex" style="' + this.genericTooltipBackgroundStyle + '">\
-                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
-                        ' + content.join('') + '\
-                    </div>\
-                </div>';
-    }
-
     setPipelineTooltipContent(currentObject)
     {
         let content         = [];
@@ -248,37 +220,13 @@ export default class BaseLayout_Tooltip
             let currentFluid    = Math.min(maxFluid, fluidBox.value * 1000); //TODO: Until we get fluidBox method working!
 
             // Get fluid type
-            let pipeNetworkId   = null;
-
-                if(currentObject.children !== undefined)
+            let currentPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
+                if(currentPipeNetwork !== null)
                 {
-                    for(let i = 0; i < currentObject.children.length; i++)
-                    {
-                        let currentChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                            if(currentChildren !== null)
-                            {
-                                let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                                    if(mPipeNetworkID !== null)
-                                    {
-                                        pipeNetworkId = mPipeNetworkID;
-                                        break;
-                                    }
-                            }
-                    }
-                }
-
-                if(pipeNetworkId !== null && this.baseLayout.saveGamePipeNetworks[pipeNetworkId] !== undefined)
-                {
-                    let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGamePipeNetworks[pipeNetworkId]);
-                        if(currentPipeNetwork !== null)
+                    let mFluidDescriptor = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
+                        if(mFluidDescriptor !== null)
                         {
-                            for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
-                            {
-                                if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
-                                {
-                                    itemType = currentPipeNetwork.properties[n].value.pathName;
-                                }
-                            }
+                            itemType = mFluidDescriptor.pathName;
                         }
                 }
 
@@ -962,37 +910,13 @@ export default class BaseLayout_Tooltip
             currentFluid    = Math.min(maxFluid, fluidBox.value * 1000);
 
         // Get fluid type
-        let pipeNetworkId   = null;
-
-            if(currentObject.children !== undefined)
+        let currentPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
+            if(currentPipeNetwork !== null)
             {
-                for(let i = 0; i < currentObject.children.length; i++)
-                {
-                    let currentChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                        if(currentChildren !== null)
-                        {
-                            let mPipeNetworkID = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                                if(mPipeNetworkID !== null)
-                                {
-                                    pipeNetworkId = mPipeNetworkID;
-                                    break;
-                                }
-                        }
-                }
-            }
-
-            if(pipeNetworkId !== null && this.baseLayout.saveGamePipeNetworks[pipeNetworkId] !== undefined)
-            {
-                let currentPipeNetwork = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGamePipeNetworks[pipeNetworkId]);
-                    if(currentPipeNetwork !== null)
+                let mFluidDescriptor = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
+                    if(mFluidDescriptor !== null)
                     {
-                        for(let n = (currentPipeNetwork.properties.length - 1); n >= 0; n--)
-                        {
-                            if(currentPipeNetwork.properties[n].name === 'mFluidDescriptor')
-                            {
-                                itemType = currentPipeNetwork.properties[n].value.pathName;
-                            }
-                        }
+                        itemType = mFluidDescriptor.pathName;
                     }
             }
 

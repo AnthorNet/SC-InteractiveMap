@@ -1,4 +1,4 @@
-/* global gtag, L */
+/* global gtag, L, Promise */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
@@ -12,7 +12,7 @@ export default class Spawn_Fill
         this.useOwnMaterials    = options.useOwnMaterials;
 
         this.baseLayout         = options.baseLayout;
-        this.layerId            = null;
+        this.layerId            = 'playerFoundationsLayer';
 
         this.minWidth           = -1600;
         this.maxWidth           = 1600;
@@ -88,6 +88,8 @@ export default class Spawn_Fill
 
     spawn()
     {
+        console.time('spawnFill');
+
         $('#liveLoader').show()
                         .find('.progress-bar').css('width', '0%');
 
@@ -128,28 +130,30 @@ export default class Spawn_Fill
                 newFoundation.transform.translation[0]  = width;
                 newFoundation.transform.translation[1]  = height;
 
-                this.baseLayout.saveGameParser.addObject(newFoundation);
-                results.push(this.baseLayout.parseObject(newFoundation));
+                results.push(new Promise(function(resolve){
+                    this.baseLayout.saveGameParser.addObject(newFoundation);
 
-                this.history.push({
-                    pathName: newFoundation.pathName,
-                    layerId: this.layerId,
-                    callback: 'deleteGenericBuilding',
-                    properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
-                });
+                    this.history.push({
+                        pathName: newFoundation.pathName,
+                        layerId: this.layerId,
+                        callback: 'deleteGenericBuilding',
+                        properties: {fastDelete: true}
+                    });
+
+                    return this.baseLayout.parseObject(newFoundation, resolve);
+                }.bind(this)));
             }
 
-            return new Promise(function(resolve){
-                $('#liveLoader .progress-bar').css('width', Math.round((height - this.minHeight) / (this.maxHeight - this.minHeight) * 100) + '%');
-                setTimeout(resolve, 5);
-            }.bind(this)).then(function(){
+            return Promise.all(results).then(function(results){
                 for(let i = 0; i < results.length; i++)
                 {
-                    let result = results[i];
-                        this.baseLayout.addElementToLayer(result.layer, result.marker);
+                    this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
-
-                this.loop((height + 800));
+            }.bind(this)).finally(function(){
+                window.requestAnimationFrame(() => {
+                    $('#liveLoader .progress-bar').css('width', Math.round((height - this.minHeight) / (this.maxHeight - this.minHeight) * 100) + '%');
+                    this.loop((height + 800));
+                });
             }.bind(this));
         }
 
@@ -168,6 +172,8 @@ export default class Spawn_Fill
 
         Modal_Selection.cancel(this.baseLayout);
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
-        this.baseLayout.setBadgeLayerCount('playerFoundationsLayer');
+        this.baseLayout.setBadgeLayerCount(this.layerId);
+
+        console.timeEnd('spawnFill');
     }
 }

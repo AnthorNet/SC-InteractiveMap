@@ -1,8 +1,11 @@
-/* global Infinity, gtag, L */
+/* global Infinity, gtag, L, Promise */
+import SaveParser_FicsIt                        from '../SaveParser/FicsIt.js';
+
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import pako                                     from '../Lib/pako.esm.mjs';
+import saveAs                                   from '../Lib/FileSaver.js';
 
 export default class Spawn_Blueprint
 {
@@ -68,6 +71,16 @@ export default class Spawn_Blueprint
                             this.clipboard.data[i].parent.transform.translation[2] += 400;
                         }
                     }
+                }
+            }
+
+            // Apply SaveParser_FicsIt
+            for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
+            {
+                this.clipboard.data[i].parent = SaveParser_FicsIt.callADA(this.baseLayout, this.clipboard.data[i].parent, false);
+                if(this.clipboard.data[i].parent === null)
+                {
+                    this.clipboard.data.splice(i, 1);
                 }
             }
 
@@ -155,7 +168,7 @@ export default class Spawn_Blueprint
                 let centerPosition = this.baseLayout.satisfactoryMap.unproject(this.centerObject.transform.translation);
                     this.baseLayout.satisfactoryMap.leafletMap.setView(centerPosition, 7);
 
-                setTimeout(resolve, 50);
+                window.requestAnimationFrame(resolve);
             }.bind(this)).then(function(){
                 this.generatePathName();
             }.bind(this));
@@ -238,7 +251,7 @@ export default class Spawn_Blueprint
                 }
             }
 
-            setTimeout(resolve, 5);
+            window.requestAnimationFrame(resolve);
         }.bind(this)).then(function(){
             $('#liveLoader .progress-bar').css('width', '2%');
             this.replacePathName(JSON.parse(JSON.stringify(pathNameConversion)));
@@ -424,7 +437,7 @@ export default class Spawn_Blueprint
                     }
                 }
 
-            setTimeout(resolve, 5);
+            window.requestAnimationFrame(resolve);
         }.bind(this)).then(function(){
             $('#liveLoader .progress-bar').css('width', '3%');
             return this.handleHiddenConnections(pathNameConversion);
@@ -579,7 +592,7 @@ export default class Spawn_Blueprint
                 }
             }
 
-            setTimeout(resolve, 5);
+            window.requestAnimationFrame(resolve);
         }.bind(this)).then(function(){
             $('#liveLoader .progress-bar').css('width', '4%');
             return this.handlePipeNetworks(pathNameConversion);
@@ -595,8 +608,7 @@ export default class Spawn_Blueprint
             {
                 for(let pipeNetworkID in this.clipboard.pipes)
                 {
-                    let newPipeNetworkID    = Object.keys(this.baseLayout.saveGamePipeNetworks);
-                        newPipeNetworkID    = (newPipeNetworkID.length > 0) ? (parseInt(newPipeNetworkID.reduce(function(a, b){ return parseInt(a) > parseInt(b) ? parseInt(a) : parseInt(b) })) + 1) : 1;
+                    let newPipeNetworkID    = this.baseLayout.pipeNetworkSubSystem.getNextId();
                     let newPipeNetwork      = {
                         type                    : 1,
                         className               : '/Script/FactoryGame.FGPipeNetwork',
@@ -650,11 +662,11 @@ export default class Spawn_Blueprint
                     }
 
                     this.baseLayout.saveGameParser.addObject(newPipeNetwork);
-                    this.baseLayout.saveGamePipeNetworks[newPipeNetworkID] = newPipeNetwork.pathName;
+                    this.baseLayout.pipeNetworkSubSystem.add(newPipeNetwork);
                 }
             }
 
-            setTimeout(resolve, 5);
+            window.requestAnimationFrame(resolve);
         }.bind(this)).then(function(){
             $('#liveLoader .progress-bar').css('width', '5%');
 
@@ -856,86 +868,79 @@ export default class Spawn_Blueprint
             }
 
             // Update save/map
+            results.push(new Promise(function(resolve){
                 this.baseLayout.saveGameParser.addObject(newObject);
-            let result = this.baseLayout.parseObject(newObject);
-                //TODO: Use promises when we have to load a mod not yet loaded, silently pass for now...
-                if(result !== undefined) // Prevent unknown mod object from throwing error
+
+                if(currentClipboard.children !== undefined)
                 {
-                    results.push(result);
-
-                    if(this.useHistory === true && this.baseLayout.history !== null)
+                    for(let j = 0; j < currentClipboard.children.length; j++)
                     {
-                        this.historyPathName.push([newObject.pathName, result.layer]);
-                    }
+                        let newChildren     = currentClipboard.children[j];
+                        let testPathName    = newChildren.pathName.split('.');
+                                testPathName.pop();
+                                testPathName    = testPathName.join('.');
 
-                    if(currentClipboard.linkedList !== undefined)
-                    {
-                        let vehicleDataMarker = this.baseLayout.getMarkerFromPathName(newObject.pathName + '_vehicleTrackData', result.layer);
-                            if(vehicleDataMarker !== null)
+                            // Do we need to update mPipeNetworkID?
+                            if(pipesConversion[newChildren.pathName] !== undefined)
                             {
-                                vehicleDataMarker.addTo(this.baseLayout.playerLayers[result.layer].subLayer);
+                                for(let m = 0; m < newChildren.properties.length; m++)
+                                {
+                                    if(newChildren.properties[m].name === 'mPipeNetworkID')
+                                    {
+                                        newChildren.properties[m].value = pipesConversion[newChildren.pathName];
+                                        break;
+                                    }
+                                }
                             }
+                            if(pipesConversion[testPathName] !== undefined)
+                            {
+                                for(let m = 0; m < newChildren.properties.length; m++)
+                                {
+                                    if(newChildren.properties[m].name === 'mPipeNetworkID')
+                                    {
+                                        newChildren.properties[m].value = pipesConversion[testPathName];
+                                        break;
+                                    }
+                                }
+                            }
+
+                        this.baseLayout.saveGameParser.addObject(newChildren);
                     }
                 }
 
-            if(currentClipboard.children !== undefined)
-            {
-                for(let j = 0; j < currentClipboard.children.length; j++)
-                {
-                    let newChildren     = currentClipboard.children[j];
-                    let testPathName    = newChildren.pathName.split('.');
-                            testPathName.pop();
-                            testPathName    = testPathName.join('.');
-
-                        // Do we need to update mPipeNetworkID?
-                        if(pipesConversion[newChildren.pathName] !== undefined)
-                        {
-                            for(let m = 0; m < newChildren.properties.length; m++)
-                            {
-                                if(newChildren.properties[m].name === 'mPipeNetworkID')
-                                {
-                                    newChildren.properties[m].value = pipesConversion[newChildren.pathName];
-                                    break;
-                                }
-                            }
-                        }
-                        if(pipesConversion[testPathName] !== undefined)
-                        {
-                            for(let m = 0; m < newChildren.properties.length; m++)
-                            {
-                                if(newChildren.properties[m].name === 'mPipeNetworkID')
-                                {
-                                    newChildren.properties[m].value = pipesConversion[testPathName];
-                                    break;
-                                }
-                            }
-                        }
-
-                    this.baseLayout.saveGameParser.addObject(newChildren);
-                }
-            }
+                return this.baseLayout.parseObject(newObject, resolve);
+            }.bind(this)));
 
             if(i % 250 === 0 || (i + 1) === clipboardLength)
             {
-                return new Promise(function(resolve){
-                    $('#liveLoader .progress-bar').css('width',  5 + (Math.round(i / clipboardLength * 100) * 0.95) + '%');
-                    setTimeout(resolve, 5);
-                }.bind(this)).then(function(){
+                return Promise.all(results).then(function(results){
                     for(let j = 0; j < results.length; j++)
                     {
-                        let result = results[j];
-                            if(result.marker !== undefined)
+                        if(results[j] !== null)
+                        {
+                            if(this.useHistory === true && this.baseLayout.history !== null)
                             {
-                                this.baseLayout.addElementToLayer(result.layer, result.marker);
-                                this.arrangeLayers.push(result.layer);
+                                this.historyPathName.push([results[j].marker.options.pathName, results[j].layer]);
                             }
-                            else
-                            {
-                                console.log('Error in marker...');
-                            }
-                    }
 
-                    this.loop(pipesConversion, (i + 1));
+                            this.baseLayout.addElementToLayer(results[j].layer, results[j].marker);
+                            this.arrangeLayers.push(results[j].layer);
+
+                            if(results[j].layer === 'playerVehiculesLayer')
+                            {
+                                let vehicleDataMarker = this.baseLayout.getMarkerFromPathName(results[j].marker.options.pathName + '_vehicleTrackData', results[j].layer);
+                                    if(vehicleDataMarker !== null)
+                                    {
+                                        vehicleDataMarker.addTo(this.baseLayout.playerLayers[results[j].layer].subLayer);
+                                    }
+                            }
+                        }
+                    }
+                }.bind(this)).finally(function(){
+                    window.requestAnimationFrame(() => {
+                        $('#liveLoader .progress-bar').css('width',  5 + (Math.round(i / clipboardLength * 100) * 0.95) + '%');
+                        this.loop(pipesConversion, (i + 1));
+                    });
                 }.bind(this));
             }
         }
@@ -997,10 +1002,13 @@ export default class Spawn_Blueprint
 
         this.baseLayout.buildableSubSystem.setObjectColorSlot(this.centerObject, parseInt(colorSlotHelper));
 
-        // Delete and add again!
-        let resultCenter = this.baseLayout.parseObject(this.centerObject);
-            this.baseLayout.deleteMarkerFromElements(resultCenter.layer, this.marker);
-            this.baseLayout.addElementToLayer(resultCenter.layer, resultCenter.marker);
+        // Redraw!
+        new Promise(function(resolve){
+            return this.baseLayout.parseObject(this.centerObject, resolve);
+        }.bind(this)).then(function(result){
+            this.baseLayout.deleteMarkerFromElements(result.layer, this.marker);
+            this.baseLayout.addElementToLayer(result.layer, result.marker);
+        }.bind(this));
 
         let corners = [
             // TOP LEFT
@@ -1033,10 +1041,12 @@ export default class Spawn_Blueprint
                 newFoundation.transform.translation[0]  = translationRotation[0];
                 newFoundation.transform.translation[1]  = translationRotation[1];
 
+            new Promise(function(resolve){
                 this.baseLayout.saveGameParser.addObject(newFoundation);
-
-                let result = this.baseLayout.parseObject(newFoundation);
-                    this.baseLayout.addElementToLayer(result.layer, result.marker);
+                return this.baseLayout.parseObject(newFoundation, resolve);
+            }.bind(this)).then(function(result){
+                this.baseLayout.addElementToLayer(result.layer, result.marker);
+            }.bind(this));
         }
     }
 }

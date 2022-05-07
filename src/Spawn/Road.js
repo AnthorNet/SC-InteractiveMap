@@ -1,4 +1,4 @@
-/* global gtag */
+/* global gtag, Promise */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
@@ -8,7 +8,7 @@ export default class Spawn_Road
     {
         this.marker             = options.marker;
         this.baseLayout         = options.marker.baseLayout;
-        this.layerId            = null;
+        this.layerId            = 'playerFoundationsLayer';
 
         this.maxWidth           = parseInt(options.maxWidth);
         this.maxHeight          = parseInt(options.maxHeight);
@@ -33,7 +33,7 @@ export default class Spawn_Road
         let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.centerObject.className);
             if(currentObjectData !== null)
             {
-                if(currentObjectData !== null && currentObjectData.mapLayer !== undefined)
+                if(currentObjectData.mapLayer !== undefined)
                 {
                     this.layerId = currentObjectData.mapLayer;
                 }
@@ -57,6 +57,8 @@ export default class Spawn_Road
 
     spawn()
     {
+        console.time('spawnRoad');
+
         $('#liveLoader').show()
                         .find('.progress-bar').css('width', '0%');
 
@@ -86,28 +88,18 @@ export default class Spawn_Road
     {
         for(height; height <= maxHeight; height+=step)
         {
-            let results = [];
-                if(this.curvature >= 0)
-                {
-                    results = this.loopPositiveCurvature(height);
-                }
-                else
-                {
-                    results = this.loopNegativeCurvature(height);
-                }
-
-            return new Promise(function(resolve){
-                $('#liveLoader .progress-bar').css('width', Math.round(Math.abs(height) / Math.abs(maxHeight) * 100) + '%');
-                setTimeout(resolve, 5);
-            }.bind(this)).then(function(){
-                for(let i = 0; i < results.length; i++)
-                {
-                    let result = results[i];
-                        this.baseLayout.addElementToLayer(result.layer, result.marker);
-                }
-
-                this.loopDown((height + step), maxHeight, step);
-            }.bind(this));
+            let results = (this.curvature >= 0) ? this.loopPositiveCurvature(height) : this.loopNegativeCurvature(height);
+                return Promise.all(results).then(function(results){
+                    for(let i = 0; i < results.length; i++)
+                    {
+                        this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
+                    }
+                }.bind(this)).finally(function(){
+                    window.requestAnimationFrame(() => {
+                        $('#liveLoader .progress-bar').css('width', Math.round(Math.abs(height) / Math.abs(maxHeight) * 100) + '%');
+                        this.loopDown((height + step), maxHeight, step);
+                    });
+                }.bind(this));
         }
 
         return this.release();
@@ -117,28 +109,18 @@ export default class Spawn_Road
     {
         for(height; height >= maxHeight; height-=step)
         {
-            let results = [];
-                if(this.curvature >= 0)
-                {
-                    results = this.loopPositiveCurvature(height);
-                }
-                else
-                {
-                    results = this.loopNegativeCurvature(height);
-                }
-
-            return new Promise(function(resolve){
-                $('#liveLoader .progress-bar').css('width', Math.round(Math.abs(height) / Math.abs(maxHeight) * 100) + '%');
-                setTimeout(resolve, 5);
-            }.bind(this)).then(function(){
-                for(let i = 0; i < results.length; i++)
-                {
-                    let result = results[i];
-                        this.baseLayout.addElementToLayer(result.layer, result.marker);
-                }
-
-                this.loopUp((height - step), maxHeight, step);
-            }.bind(this));
+            let results = (this.curvature >= 0) ? this.loopPositiveCurvature(height) : this.loopNegativeCurvature(height);
+                return Promise.all(results).then(function(results){
+                    for(let i = 0; i < results.length; i++)
+                    {
+                        this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
+                    }
+                }.bind(this)).finally(function(){
+                    window.requestAnimationFrame(() => {
+                        $('#liveLoader .progress-bar').css('width', Math.round(Math.abs(height) / Math.abs(maxHeight) * 100) + '%');
+                        this.loopUp((height - step), maxHeight, step);
+                    });
+                }.bind(this));
         }
 
         return this.release();
@@ -436,15 +418,18 @@ export default class Spawn_Road
             newFoundation.transform.translation[2] -= height * this.centerObjectHeight;
         }
 
-        this.baseLayout.saveGameParser.addObject(newFoundation);
-        this.history.push({
-            pathName: newFoundation.pathName,
-            layerId: this.layerId,
-            callback: 'deleteGenericBuilding',
-            properties: {transform: JSON.parse(JSON.stringify(newFoundation.transform))}
-        });
+        return new Promise(function(resolve){
+            this.baseLayout.saveGameParser.addObject(newFoundation);
 
-        return this.baseLayout.parseObject(newFoundation);
+            this.history.push({
+                pathName: newFoundation.pathName,
+                layerId: this.layerId,
+                callback: 'deleteGenericBuilding',
+                properties: {fastDelete: true}
+            });
+
+            return this.baseLayout.parseObject(newFoundation, resolve);
+        }.bind(this));
     }
 
     release()
@@ -458,6 +443,8 @@ export default class Spawn_Road
         }
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
-        this.baseLayout.setBadgeLayerCount('playerFoundationsLayer');
+        this.baseLayout.setBadgeLayerCount(this.layerId);
+
+        console.timeEnd('spawnRoad');
     }
 }

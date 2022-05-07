@@ -1,5 +1,5 @@
 import BaseLayout                               from './BaseLayout.js';
-import Map                                      from './Map.js';
+import GameMap                                  from './GameMap.js';
 import SaveParser                               from './SaveParser.js';
 import Translate                                from './Translate.js';
 
@@ -47,6 +47,9 @@ export default class SCIM
             this.intervalScriptsVERSION = setInterval(this.checkVersion.bind(this), 300 * 1000);
         }
 
+        // Handle pt_BR locales
+        this.language = this.language.split('_')[0];
+
         this.translate = new Translate({
             build               : this.build,
             version             : this.scriptsVERSION,
@@ -55,7 +58,7 @@ export default class SCIM
 
             language            : this.language,
             startCallback       : function(){
-                this.map = new Map({
+                this.map = new GameMap({
                     build               : this.build,
                     version             : this.scriptsVERSION,
 
@@ -127,7 +130,7 @@ export default class SCIM
             this.baseLayout.reset();
         }
 
-        setTimeout(function(){
+        window.requestAnimationFrame(() => {
             options.build               = this.build;
             options.debug               = this.debug;
             options.version             = this.scriptsVERSION;
@@ -154,7 +157,7 @@ export default class SCIM
 
             this.baseLayout = new BaseLayout(options);
             this.baseLayout.draw();
-        }.bind(this), 250);
+        });
     }
 
 

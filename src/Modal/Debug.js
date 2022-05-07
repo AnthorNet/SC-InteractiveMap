@@ -45,6 +45,14 @@ export default class Modal_Debug
         {
             extraPathName.push('Persistent_Level:PersistentLevel.ResourceSinkSubsystem');
         }
+        if(['/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C'].includes(currentObject.className))
+        {
+            let identifier  = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
+                if(identifier !== null)
+                {
+                    extraPathName.push(identifier.pathName);
+                }
+        }
 
         let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles', 'mBottomSnappedConnection', 'mTopSnappedConnection', 'mHubTerminal', 'mWorkBench', 'mGenerators'];
             for(let i = 0; i < extraProperties.length; i++)
@@ -139,10 +147,10 @@ export default class Modal_Debug
                 }
             }
 
-            let currentObjectPipeNetworkPathName = baseLayout.getObjectPipeNetwork(currentObject);
-                if(currentObjectPipeNetworkPathName !== null)
+            let currentObjectPipeNetwork = baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
+                if(currentObjectPipeNetwork !== null)
                 {
-                    extraPathName.push(currentObjectPipeNetworkPathName.pathName);
+                    extraPathName.push(currentObjectPipeNetwork.pathName);
                 }
 
             for(let j = 0; j < extraPathName.length; j++)

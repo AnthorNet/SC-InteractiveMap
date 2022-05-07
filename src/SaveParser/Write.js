@@ -1,6 +1,8 @@
 /* global Intl, self */
 import pako                                     from '../Lib/pako.esm.mjs';
 
+import Building_Conveyor                        from '../Building/Conveyor.js';
+
 export default class SaveParser_Write
 {
     constructor(worker, options)
@@ -19,10 +21,10 @@ export default class SaveParser_Write
 
         this.currentBufferLength    = 0; // Used for writing...
 
-        return this.streamCompressedSave();
+        return this.streamSave();
     }
 
-    streamCompressedSave()
+    streamSave()
     {
         this.saveBlobArray  = [];
         this.saveBinary     = '';
@@ -170,10 +172,7 @@ export default class SaveParser_Write
         }
 
         console.log('Generated ' + this.generatedChunks.length + ' chunks...');
-
-        setTimeout(function(){
-            this.streamChunks(this.generatedChunks);
-        }.bind(this), 250);
+        this.streamChunks(this.generatedChunks);
     }
 
     streamChunks(chunks)
@@ -377,15 +376,12 @@ export default class SaveParser_Write
 
         // Extra properties!
         if(
-                currentObject.className.includes('/Build_ConveyorBeltMk')
+                Building_Conveyor.isConveyorBelt(currentObject)
              || currentObject.className.includes('/Build_ConveyorLiftMk')
-             // MODS
-             || currentObject.className.startsWith('/Conveyors_Mod/Build_BeltMk')
+             // MODS (Also have lifts)
              || currentObject.className.startsWith('/Conveyors_Mod/Build_LiftMk')
              || currentObject.className.startsWith('/Game/CoveredConveyor')
              || currentObject.className.startsWith('/CoveredConveyor')
-             || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
         )
         {
             let itemsLength  = currentObject.extra.items.length;
@@ -524,7 +520,7 @@ export default class SaveParser_Write
         return properties;
     }
 
-    writeProperty(currentProperty)
+    writeProperty(currentProperty, parentType = null)
     {
         let propertyStart   = '';
             propertyStart  += this.writeString(currentProperty.name);
@@ -744,7 +740,7 @@ export default class SaveParser_Write
 
                         for(let i = 0; i < currentProperty.value.values.length; i++)
                         {
-                            property += this.writeProperty(currentProperty.value.values[i]);
+                            property += this.writeProperty(currentProperty.value.values[i], currentProperty.value.type);
                         }
                         property += this.writeString('None');
 
@@ -1012,16 +1008,25 @@ export default class SaveParser_Write
                             property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].value);
                             break;
                         case 'StructProperty':
-                            let currentBufferStartingLength     = this.currentBufferLength;
-                            let structPropertyBufferLength      = this.currentEntityLength;
-
-                            for(let i = 0; i < currentProperty.value.values[iMapProperty].value.length; i++)
+                            if(parentType === 'LBBalancerData')
                             {
-                                property += this.writeProperty(currentProperty.value.values[iMapProperty].value[i]);
+                                property += this.writeInt(currentProperty.value.values[iMapProperty].value.mNormalIndex);
+                                property += this.writeInt(currentProperty.value.values[iMapProperty].value.mOverflowIndex);
+                                property += this.writeInt(currentProperty.value.values[iMapProperty].value.mFilterIndex);
                             }
-                            property += this.writeString('None');
+                            else
+                            {
+                                let currentBufferStartingLength     = this.currentBufferLength;
+                                let structPropertyBufferLength      = this.currentEntityLength;
 
-                            this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+                                for(let i = 0; i < currentProperty.value.values[iMapProperty].value.length; i++)
+                                {
+                                    property += this.writeProperty(currentProperty.value.values[iMapProperty].value[i]);
+                                }
+                                property += this.writeString('None');
+
+                                this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+                            }
                             break;
                         default:
                             console.log('Missing ' + currentProperty.value.type + ' in MapProperty=>' + currentProperty.name);

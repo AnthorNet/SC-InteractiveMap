@@ -11,11 +11,12 @@ import BaseLayout_Tooltip                       from './BaseLayout/Tooltip.js';
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 import SubSystem_GameState                      from './SubSystem/GameState.js';
+import SubSystem_Map                            from './SubSystem/Map.js';
+import SubSystem_PipeNetwork                    from './SubSystem/PipeNetwork.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
 import SubSystem_Railroad                       from './SubSystem/Railroad.js';
-import SubSystem_Map                            from './SubSystem/Map.js';
-import SubSystem_Unlock                         from './SubSystem/Unlock.js';
 import SubSystem_Time                           from './SubSystem/Time.js';
+import SubSystem_Unlock                         from './SubSystem/Unlock.js';
 
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
 import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
@@ -35,6 +36,8 @@ import Modal_Schematics                         from './Modal/Schematics.js';
 import Modal_Selection                          from './Modal/Selection.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
+import Building_Beacon                          from './Building/Beacon.js';
+import Building_Conveyor                        from './Building/Conveyor.js';
 import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
@@ -56,8 +59,6 @@ export default class BaseLayout
 
         this.satisfactoryMap                    = options.satisfactoryMap;
         this.saveGameParser                     = options.saveGameParser;
-
-        this.saveGamePipeNetworks               = {};
 
         this.saveGameRailVehicles               = [];
         this.frackingSmasherCores               = {};
@@ -90,7 +91,7 @@ export default class BaseLayout
         this.modsData                           = null;
         this.modsUrl                            = options.modsUrl;
 
-        this.language                           = options.language.split('_')[0]; // Handle pt_BR locales
+        this.language                           = options.language;
         this.translate                          = options.translate;
 
         this.collectedHardDrives                = new HardDrives({language: options.language});
@@ -342,19 +343,20 @@ export default class BaseLayout
 
         this.saveGameParser.load(() => {
             // Hold sub system to get better performance
-            this.buildableSubSystem = new SubSystem_Buildable({baseLayout: this});
-            this.gameStateSubSystem = new SubSystem_GameState({baseLayout: this});
-            this.railroadSubSystem  = new SubSystem_Railroad({baseLayout: this});
-            this.mapSubSystem       = new SubSystem_Map({baseLayout: this});
-            this.unlockSubSystem    = new SubSystem_Unlock({baseLayout: this});
-            this.timeSubSystem      = new SubSystem_Time({baseLayout: this});
+            this.buildableSubSystem     = new SubSystem_Buildable({baseLayout: this});
+            this.gameStateSubSystem     = new SubSystem_GameState({baseLayout: this});
+            this.mapSubSystem           = new SubSystem_Map({baseLayout: this});
+            this.pipeNetworkSubSystem   = new SubSystem_PipeNetwork({baseLayout: this});
+            this.railroadSubSystem      = new SubSystem_Railroad({baseLayout: this});
+            this.timeSubSystem          = new SubSystem_Time({baseLayout: this});
+            this.unlockSubSystem        = new SubSystem_Unlock({baseLayout: this});
 
             if(this.buildingsData === null)
             {
                 return new Promise(function(resolve){
-                    $('#loaderProgressBar .progress-bar').css('width', '47.5%');
+                    $('#loaderProgressBar .progress-bar').css('width', '60%');
                     $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading game data...'));
-                    setTimeout(resolve, 50);
+                    window.requestAnimationFrame(resolve);
                 }.bind(this)).then(() => {
                     $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, function(data)
                     {
@@ -496,9 +498,8 @@ export default class BaseLayout
     loadDetailedModels()
     {
         return new Promise(function(resolve){
-            $('#loaderProgressBar .progress-bar').css('width', '50%');
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
-            setTimeout(resolve, 50);
+            window.requestAnimationFrame(resolve);
         }.bind(this)).then(() => {
             $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, function(data)
             {
@@ -542,10 +543,9 @@ export default class BaseLayout
 
                 $('#saveGameInformation').html('<strong>' + header.sessionName + '</strong> <em><small>(' + hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's)</small></em>');
 
-            $('#loaderProgressBar .progress-bar').css('width', '50%');
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', 0));
             console.time('renderObjects');
-            setTimeout(resolve, 50);
+            window.requestAnimationFrame(resolve);
         }.bind(this)).then(() => {
             this.parsingObjects = this.parseObjects();
         });
@@ -629,13 +629,16 @@ export default class BaseLayout
                 }
                 else
                 {
-                    let haveDropPod = this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId].hasLayer(this.satisfactoryMap.collectableMarkers[currentObject.pathName]);
-                        if(haveDropPod === false)
-                        {
-                            this.satisfactoryMap.collectableMarkers[currentObject.pathName].addTo(
-                                this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId]
-                            );
-                        }
+                    if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] != undefined)
+                    {
+                        let haveDropPod = this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId].hasLayer(this.satisfactoryMap.collectableMarkers[currentObject.pathName]);
+                            if(haveDropPod === false)
+                            {
+                                this.satisfactoryMap.collectableMarkers[currentObject.pathName].addTo(
+                                    this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId]
+                                );
+                            }
+                    }
                 }
             }
 
@@ -690,35 +693,7 @@ export default class BaseLayout
 
             if(currentObject.className === '/Script/FactoryGame.FGPipeNetwork')
             {
-                let mPipeNetworkID = this.getObjectProperty(currentObject, 'mPipeNetworkID');
-                    if(mPipeNetworkID !== null)
-                    {
-                        this.saveGamePipeNetworks[mPipeNetworkID] = currentObject.pathName;
-                    }
-                    else
-                    {
-                        // IF the mPipeNetworkID don't exists, try to find it from one of the children
-                        let mFluidIntegrantScriptInterfaces = this.getObjectProperty(currentObject, 'mFluidIntegrantScriptInterfaces');
-                            mFluidIntegrantScriptInterfacesLoop:
-                            for(let j = 0; j < mFluidIntegrantScriptInterfaces.values.length; j++)
-                            {
-                                let currentInterface = this.saveGameParser.getTargetObject(mFluidIntegrantScriptInterfaces.values[j].pathName);
-                                    if(currentInterface !== null && currentInterface.children !== undefined)
-                                    {
-                                        for(let k = 0; k < currentInterface.children.length; k++)
-                                        {
-                                            let currentInterfaceChildren    = this.saveGameParser.getTargetObject(currentInterface.children[k].pathName);
-                                                mPipeNetworkID              = this.getObjectProperty(currentInterfaceChildren, 'mPipeNetworkID');
-                                                if(mPipeNetworkID !== null)
-                                                {
-                                                    this.saveGamePipeNetworks[mPipeNetworkID] = currentObject.pathName;
-                                                    break mFluidIntegrantScriptInterfacesLoop;
-                                                }
-                                        }
-                                    }
-                            }
-                    }
-
+                this.pipeNetworkSubSystem.add(currentObject);
                 continue;
             }
 
@@ -878,12 +853,9 @@ export default class BaseLayout
                 if(progress > parseObjectsProgress)
                 {
                     return Promise.all(promises).then(() => {
-                        $('#loaderProgressBar .progress-bar').css('width', (50 + progress * 0.4) + '%');
+                        $('#loaderProgressBar .progress-bar').css('width', (60 + progress * 0.3) + '%');
                         $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', progress));
-
-                        setTimeout(() => {
-                            this.parseObjects((i + 1), objectsKeys);
-                        }, 5);
+                        window.requestAnimationFrame(() => { this.parseObjects((i + 1), objectsKeys); });
                     });
                 }
         }
@@ -898,15 +870,11 @@ export default class BaseLayout
         return this.addLayers();
     }
 
-    parseObject(currentObject, resolve = false, skipMod = false)
+    parseObject(currentObject, resolve, skipMod = false)
     {
         if(currentObject === null)
         {
-            if(resolve === false)
-            {
-                return;
-            }
-            return resolve();
+            return resolve(null);
         }
 
         if(currentObject.className.startsWith('/Game/FactoryGame/') === false)
@@ -937,65 +905,37 @@ export default class BaseLayout
         // Needed when moving players
         if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C' && this.players[currentObject.pathName] !== undefined)
         {
-            let playerState = this.players[currentObject.pathName].addMarker();
-                if(resolve === false)
-                {
-                    return {layer: 'playerPositionLayer', marker: playerState};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerPositionLayer', marker: this.players[currentObject.pathName].addMarker()});
         }
 
         // Skip on pasting
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C')
         {
-            if(resolve === false)
-            {
-                return;
-            }
-            return resolve();
+            return resolve(null);
         }
 
         if(currentObject.className === '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C')
         {
-            return this.addDecoration(currentObject, resolve, skipMod);
+            return this.addDecoration(currentObject, resolve);
         }
         if(currentObject.className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
         {
-            return this.addPortableMiner(currentObject, resolve, skipMod);
+            return this.addPortableMiner(currentObject, resolve);
         }
 
         if(currentObject.className === '/Script/FactoryGame.FGItemPickup_Spawnable' || currentObject.className === '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C')
         {
-            let building = this.addItemPickup(currentObject);
-                if(resolve === false)
-                {
-                    return {layer: 'playerItemsPickupLayer', marker: building};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerItemsPickupLayer', marker: this.addItemPickup(currentObject)});
         }
 
         if(currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C' || currentObject.className === '/CrashSiteBeacons/BP_Beacon_Child.BP_Beacon_Child_C')
         {
-            let building = this.addPlayerBeacon(currentObject);
-                if(resolve === false)
-                {
-                    return {layer: 'playerOrientationLayer', marker: building};
-                }
-
-            return resolve();
+            return resolve(Building_Beacon.add(this, currentObject));
         }
 
         if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
         {
-            let building = this.addPlayerLootCrate(currentObject);
-                if(resolve === false)
-                {
-                    return {layer: 'playerCratesLayer', marker: building};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerCratesLayer', marker: this.addPlayerLootCrate(currentObject)});
         }
 
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
@@ -1015,13 +955,7 @@ export default class BaseLayout
             '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C'
         ].includes(currentObject.className))
         {
-            let building = this.addPlayerPowerLine(currentObject);
-                if(resolve === false)
-                {
-                    return {layer: 'playerPowerGridLayer', marker: building};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerPowerGridLayer', marker: this.addPlayerPowerLine(currentObject)});
         }
 
         if(
@@ -1033,50 +967,27 @@ export default class BaseLayout
              || currentObject.className === '/Game/InfiniteLogistics/Buildable/InfinitePipeHyper/Build_InfinitePipeHyper.Build_InfinitePipeHyper_C'
              || currentObject.className === '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C'
              // Belts
-             || currentObject.className.includes('/Build_ConveyorBeltMk')
-             // Belts Mod
-             || (currentObject.className.startsWith('/CoveredConveyor') && currentObject.className.includes('lift') === false)
-             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
-             || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
+             || Building_Conveyor.isConveyorBelt(currentObject)
         )
         {
-            let building = this.addPlayerBelt(currentObject);
-                if(resolve === false && building !== false)
-                {
-                    return building;
-                }
-
-            return resolve();
+            return resolve(Building_Conveyor.add(this, currentObject));
         }
         if(currentObject.className.includes('Train/Track/Build_RailroadTrack') || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
         {
-            let building = this.addPlayerTrack(currentObject);
-                if(resolve === false)
-                {
-                    return {layer: 'playerTracksLayer', marker: building};
-                }
-
-            return resolve();
+            return resolve({layer: 'playerTracksLayer', marker: this.addPlayerTrack(currentObject)});
         }
 
         // Add fauna
         if(currentObject.className.includes('/Game/FactoryGame/Character/Creature/Wildlife/') || currentObject.className.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
         {
-            let building = this.addPlayerFauna(currentObject);
-                if(resolve === false)
-                {
-                    return building;
-                }
-
-            return resolve();
+            return resolve(this.addPlayerFauna(currentObject));
         }
 
         // Add buildings data...
         let isCurrentObjectBuilding = this.getBuildingDataFromClassName(currentObject.className);
             if(isCurrentObjectBuilding !== null)
             {
-                return this.addGenericBuilding(currentObject, isCurrentObjectBuilding, resolve, skipMod);
+                return this.addGenericBuilding(currentObject, isCurrentObjectBuilding, resolve);
             }
             else
             {
@@ -1102,7 +1013,7 @@ export default class BaseLayout
                     };
                         this.buildingsData[currentObject.className] = newBuildingData;
 
-                    return this.addGenericBuilding(currentObject, newBuildingData, resolve, skipMod);
+                    return this.addGenericBuilding(currentObject, newBuildingData, resolve);
                 }
                 else
                 {
@@ -1118,10 +1029,8 @@ export default class BaseLayout
                 }
             }
 
-        if(resolve !== false)
-        {
-            return resolve();
-        }
+        // /Script/FactoryGame.***
+        return resolve(null);
     }
 
     addLayers(i = 0)
@@ -1143,8 +1052,15 @@ export default class BaseLayout
                         let progress = Math.round(i / layersKeys.length * 100);
                             return new Promise(function(resolve){
                                 $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
-                                $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title')));
-                                setTimeout(resolve, 5);
+
+                                let layerTitle = $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title');
+                                    if(layerId === 'playerLightsHaloLayer')
+                                    {
+                                        layerTitle = 'Lights halo';
+                                    }
+                                $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', layerTitle));
+
+                                window.requestAnimationFrame(resolve);
                             }.bind(this)).then(() => {
                                 this.addLayers((i + 1));
                             });
@@ -1156,7 +1072,7 @@ export default class BaseLayout
         return new Promise(function(resolve){
             $('#loaderProgressBar .progress-bar').css('width', '100%');
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Finalization of statistics and controls...'));
-            setTimeout(resolve, 25);
+            window.requestAnimationFrame(resolve);
         }.bind(this)).then(() => {
             // Altitude slider
             this.altitudeSliderControl = L.control.sliderControl({
@@ -1318,9 +1234,7 @@ export default class BaseLayout
             $('#optionsButton').show();
 
             // Delay radioactivity to avoid canvas error when map isn't fully loaded...
-            setTimeout(() => {
-                this.updateRadioactivityLayer();
-            }, 1000);
+            window.requestAnimationFrame(() => { this.updateRadioactivityLayer(); });
 
             this.history = new BaseLayout_History({
                 baseLayout      : this
@@ -1685,47 +1599,6 @@ export default class BaseLayout
         baseLayout.setBadgeLayerCount('playerItemsPickupLayer');
     }
 
-    addPlayerBeacon(currentObject)
-    {
-        this.setupSubLayer('playerOrientationLayer');
-
-        let beaconColor     = '#b3b3b3';
-            //console.log([currentObject.transform.translation[0], currentObject.transform.translation[1]]);
-
-        let mCompassColor   = this.getObjectProperty(currentObject, 'mCompassColor');
-            if(mCompassColor !== null)
-            {
-                beaconColor = 'rgb(' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.r) + ', ' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.g) + ', ' + BaseLayout_Math.linearColorToRGB(mCompassColor.values.b) + ')';
-            }
-
-        let beacon          = L.marker(
-            this.satisfactoryMap.unproject(currentObject.transform.translation),
-            {
-                pathName: currentObject.pathName,
-                icon: this.getMarkerIcon('#FFFFFF', beaconColor, this.staticUrl + '/img/mapBeaconIcon.png'),
-                riseOnHover: true,
-                zIndexOffset: 900,
-                altitude: currentObject.transform.translation[2]
-            }
-        );
-
-        beacon.bindContextMenu(this);
-        this.playerLayers.playerOrientationLayer.count++;
-        this.autoBindTooltip(beacon);
-        this.playerLayers.playerOrientationLayer.elements.push(beacon);
-
-        return beacon;
-    }
-
-    deletePlayerBeacon(marker)
-    {
-        let baseLayout = marker.baseLayout;
-            baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
-            baseLayout.deleteMarkerFromElements('playerOrientationLayer', marker.relatedTarget);
-            baseLayout.playerLayers.playerOrientationLayer.count--;
-            baseLayout.setBadgeLayerCount('playerOrientationLayer');
-    }
-
     addPlayerLootCrate(currentObject)
     {
         this.setupSubLayer('playerCratesLayer');
@@ -1733,11 +1606,10 @@ export default class BaseLayout
         let crate = L.marker(
             this.satisfactoryMap.unproject(currentObject.transform.translation),
             {
-                pathName: currentObject.pathName,
-                icon: this.getMarkerIcon('#FFFFFF', '#b3b3b3', this.staticUrl + '/img/mapLootCrateIcon.png'),
-                riseOnHover: true,
-                zIndexOffset: 900,
-                altitude: currentObject.transform.translation[2]
+                pathName        : currentObject.pathName,
+                icon            : this.getMarkerIcon('#FFFFFF', '#b3b3b3', this.staticUrl + '/img/mapLootCrateIcon.png'),
+                riseOnHover     : true,
+                zIndexOffset    : 900
             }
         );
 
@@ -1922,14 +1794,16 @@ export default class BaseLayout
         });
     }
 
-    refreshMarkerPosition(properties)
+    refreshMarkerPosition(properties, fastDelete = false)
     {
         let refreshSliderBoundaries     = (properties.transform.translation[2] !== properties.object.transform.translation[2]);
             properties.object.transform = properties.transform;
 
         // Delete and add again!
-        let result                      = this.parseObject(properties.object);
-            this.deleteMarkerFromElements(result.layer, properties.marker);
+        return new Promise(function(resolve){
+            this.parseObject(properties.object, resolve);
+        }.bind(this)).then(function(result){
+            this.deleteMarkerFromElements(result.layer, properties.marker, fastDelete);
 
             if(result.marker.options.haloMarker !== undefined)
             {
@@ -1943,34 +1817,34 @@ export default class BaseLayout
                 for(let j = 0; j < properties.object.children.length; j++)
                 {
                     let currentObjectChildren = this.saveGameParser.getTargetObject(properties.object.children[j].pathName);
-
-                    // Grab wires for redraw...
-                    for(let k = 0; k < this.availablePowerConnection.length; k++)
-                    {
-                        if(currentObjectChildren.pathName.endsWith(this.availablePowerConnection[k]))
+                        if(currentObjectChildren !== null)
                         {
-                            for(let m = 0; m < currentObjectChildren.properties.length; m++)
+                            // Grab wires for redraw...
+                            for(let k = 0; k < this.availablePowerConnection.length; k++)
                             {
-                                if(currentObjectChildren.properties[m].name === 'mWires')
+                                if(currentObjectChildren.pathName.endsWith(this.availablePowerConnection[k]))
                                 {
-                                    for(let n = 0; n < currentObjectChildren.properties[m].value.values.length; n++)
-                                    {
-                                        let currentWire     = this.saveGameParser.getTargetObject(currentObjectChildren.properties[m].value.values[n].pathName);
-                                        let result          = this.parseObject(currentWire);
-                                        let oldMarker       = this.getMarkerFromPathName(currentWire.pathName, result.layer);
-                                            this.deleteMarkerFromElements(result.layer, oldMarker);
-                                            this.addElementToLayer(result.layer, result.marker);
-                                    }
-
-                                    break;
+                                    let mWires = this.getObjectProperty(currentObjectChildren, 'mWires');
+                                        if(mWires !== null)
+                                        {
+                                            for(let n = 0; n < mWires.values.length; n++)
+                                            {
+                                                let currentWire     = this.saveGameParser.getTargetObject(mWires.values[n].pathName);
+                                                    new Promise(function(resolve){
+                                                        this.parseObject(currentWire, resolve);
+                                                    }.bind(this)).then(function(result){
+                                                        let oldMarker       = this.getMarkerFromPathName(currentWire.pathName, result.layer);
+                                                            this.deleteMarkerFromElements(result.layer, oldMarker, fastDelete);
+                                                            this.addElementToLayer(result.layer, result.marker);
+                                                    }.bind(this));
+                                            }
+                                        }
                                 }
                             }
                         }
-                    }
                 }
             }
-
-        return;
+        }.bind(this));
     }
 
     teleportPlayer(marker)
@@ -2194,7 +2068,7 @@ export default class BaseLayout
                                         let value = mInventoryStacks.values[0][0].value;
                                             if(value.itemName === '')
                                             {
-                                                let currentPipeNetwork = this.getObjectPipeNetwork(currentObject);
+                                                let currentPipeNetwork = this.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
                                                     if(currentPipeNetwork !== null)
                                                     {
                                                         let mFluidDescriptor = this.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
@@ -2325,64 +2199,6 @@ export default class BaseLayout
         }
     }
 
-    updatePipeNetworkFluid(marker)
-    {
-        let currentObject               = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let currentObjectPipeNetwork    = this.getObjectPipeNetwork(currentObject);
-
-            if(currentObjectPipeNetwork !== null)
-            {
-                let currentFluidDescriptor = this.getObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
-
-                BaseLayout_Modal.form({
-                    title       : 'Update pipe network fluid',
-                    container   : '#leafletMap',
-                    inputs      : [{
-                        name            : 'mFluidDescriptor',
-                        inputType       : 'selectPicker',
-                        inputOptions    : this.generateInventoryOptions(currentObject),
-                        value           : ((currentFluidDescriptor !== null) ? currentFluidDescriptor.pathName : 'NULL')
-                    }],
-                    callback    : function(values)
-                    {
-                        if(values !== null)
-                        {
-                            if(values.mFluidDescriptor === 'NULL')
-                            {
-                                this.deleteObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
-                            }
-                            else
-                            {
-                                this.setObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor', {levelName: "", pathName: values.mFluidDescriptor}, 'ObjectProperty');
-                            }
-                        }
-                    }.bind(this)
-                });
-            }
-    }
-
-    getObjectPipeNetwork(currentObject)
-    {
-        if(currentObject.children !== undefined)
-        {
-            for(let i = 0; i < currentObject.children.length; i++)
-            {
-                let currentChildren = this.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                    if(currentChildren !== null)
-                    {
-                        let mPipeNetworkID = this.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                            if(mPipeNetworkID !== null && this.saveGamePipeNetworks[mPipeNetworkID] !== undefined)
-                            {
-                                return this.saveGameParser.getTargetObject(this.saveGamePipeNetworks[mPipeNetworkID]);
-                            }
-                    }
-            }
-        }
-
-        return null;
-    }
-
-
     generateInventoryOptions(currentObject, addNULL = true)
     {
         let selectOptions           = [];
@@ -2453,42 +2269,35 @@ export default class BaseLayout
         return selectOptions;
     }
 
-    addDecoration(currentObject, resolve = false, skipMod = false)
+    addDecoration(currentObject, resolve)
     {
-        let mDecorationDescriptor = this.getObjectProperty(currentObject, 'mDecorationDescriptor');
+        let currentItemData         = {};
+        let mDecorationDescriptor   = this.getObjectProperty(currentObject, 'mDecorationDescriptor');
             if(mDecorationDescriptor !== null)
             {
-                let currentItemData = this.getItemDataFromClassName(mDecorationDescriptor.pathName);
-                    if(currentItemData !== null)
-                    {
-                        currentItemData.width       = 4;
-                        currentItemData.length      = 4;
-                        currentItemData.mapLayer    = 'playerStatuesLayer';
-                        return this.addGenericBuilding(currentObject, currentItemData, resolve, skipMod);
-                    }
+                currentItemData = this.getItemDataFromClassName(mDecorationDescriptor.pathName);
             }
 
-        // If not found resolve if needed...
-        if(resolve !== false)
-        {
-            return resolve();
-        }
+        // Default values?
+        currentItemData.width       = 4;
+        currentItemData.length      = 4;
+        currentItemData.mapLayer    = 'playerStatuesLayer';
+
+        return this.addGenericBuilding(currentObject, currentItemData, resolve);
     }
 
-    addPortableMiner(currentObject, resolve = false, skipMod = false)
+    addPortableMiner(currentObject, resolve)
     {
-        let currentItemData = this.getItemDataFromClassName(currentObject.className);
-            if(currentItemData !== null)
-            {
-                currentItemData.width       = 1;
-                currentItemData.length      = 1;
-                currentItemData.category    = 'extractor';
-                currentItemData.mapLayer    = 'playerMinersLayer';
-                return this.addGenericBuilding(currentObject, currentItemData, resolve, skipMod);
-            }
+        let currentItemData             = this.getItemDataFromClassName(currentObject.className);
+            currentItemData.width       = 1;
+            currentItemData.length      = 1;
+            currentItemData.category    = 'extractor';
+            currentItemData.mapLayer    = 'playerMinersLayer';
+
+        return this.addGenericBuilding(currentObject, currentItemData, resolve);
     }
 
-    addGenericBuilding(currentObject, buildingData, resolve = false, skipMod = false)
+    addGenericBuilding(currentObject, buildingData, resolve)
     {
         let layerId         = (buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerUnknownLayer';
             this.setupSubLayer(layerId);
@@ -2648,7 +2457,7 @@ export default class BaseLayout
                         // Add distance...
                         if(mTopTransform.values[i].name === 'Translation')
                         {
-                            let height      = Math.abs(mTopTransform.values[i].value.values.z) / 100;
+                            let height = Math.abs(mTopTransform.values[i].value.values.z) / 100;
                                 this.playerLayers[layerId].distance += height;
 
                                 if(this.playerLayers[layerId].filtersCount !== undefined)
@@ -2711,12 +2520,11 @@ export default class BaseLayout
                     let vehicleTrackMarker = L.polyline(
                         vehicleTrackData,
                         {
-                            pathName: currentObject.pathName + '_vehicleTrackData',
-                            originPathName: currentObject.pathName,
-                            color: '#FFC0CB',
-                            weight: 2,
-                            dashArray: '15 5',
-                            altitude: currentObject.transform.translation[2]
+                            pathName        : currentObject.pathName + '_vehicleTrackData',
+                            originPathName  : currentObject.pathName,
+                            color           : '#FFC0CB',
+                            weight          : 2,
+                            dashArray       : '15 5'
                         }
                     );
 
@@ -2829,9 +2637,11 @@ export default class BaseLayout
         let building = BaseLayout_Polygon.createBuilding(this, currentObject, markerOptions, polygonOptions);
             building.on('mouseover', function(marker){
                 this.setBuildingMouseOverStyle(marker.sourceTarget, buildingData);
+                Building_Conveyor.bindConnectedComponents(this, currentObject);
             }.bind(this));
             building.on('mouseout', function(marker){
                 this.setBuildingMouseOutStyle(marker.sourceTarget, buildingData);
+                Building_Conveyor.unbindConnectedComponents(this, currentObject);
             }.bind(this));
             this.setBuildingMouseOutStyle(building, buildingData, currentObject);
 
@@ -2841,12 +2651,7 @@ export default class BaseLayout
         }
         this.playerLayers[layerId].elements.push(building);
 
-        if(resolve === false)
-        {
-            return {layer: layerId, marker: building};
-        }
-
-        return resolve();
+        return resolve({layer: layerId, marker: building});
     }
 
     setBuildingMouseOverStyle(marker, buildingData)
@@ -3274,7 +3079,7 @@ export default class BaseLayout
         baseLayout.deleteMarkerFromElements(layerId, marker.relatedTarget, fast);
 
         // Refresh radioactivity
-        if(currentObject.className.includes('/Build_ConveyorBeltMk'))
+        if(Building_Conveyor.isConveyorBelt(currentObject))
         {
             if(baseLayout.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
             {
@@ -3302,121 +3107,6 @@ export default class BaseLayout
         {
             baseLayout.updateRadioactivityLayer();
         }
-    }
-
-    addPlayerBelt(currentObject)
-    {
-        let mapLayer     = 'playerUnknownLayer';
-        let buildingData = this.getBuildingDataFromClassName(currentObject.className);
-            if(buildingData !== null)
-            {
-                mapLayer = buildingData.mapLayer;
-            }
-
-        this.setupSubLayer(mapLayer);
-        let splineData = BaseLayout_Math.extractSplineData(this, currentObject);
-
-        if(this.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
-        {
-            let radioactiveInventory = [];
-                for(let i = 0; i < currentObject.extra.items.length; i++)
-                {
-                    let currentItemData = this.getItemDataFromClassName(currentObject.extra.items[i].name, false);
-                        if(currentItemData !== null)
-                        {
-                            if(currentItemData.radioactiveDecay !== undefined)
-                            {
-                                radioactiveInventory.push({position: currentObject.extra.items[i].position, radioactiveDecay: currentItemData.radioactiveDecay});
-                            }
-                        }
-                }
-
-            if(radioactiveInventory.length > 0)
-            {
-                for(let i = 0; i < radioactiveInventory.length; i++)
-                {
-                    let currentObjectPosition   = radioactiveInventory[i].position;
-                    let currentBeltDistance     = 0;
-
-                    // Loop each belt segments trying to figure if the item is in
-                    for(let s = 1; s < splineData.originalData.length; s++)
-                    {
-                        let segmentDistance = Math.sqrt(
-                            ((splineData.originalData[s][0] - splineData.originalData[s-1][0]) * (splineData.originalData[s][0] - splineData.originalData[s-1][0]))
-                          + ((splineData.originalData[s][1] - splineData.originalData[s-1][1]) * (splineData.originalData[s][1] - splineData.originalData[s-1][1]))
-                        );
-
-                        if(currentObjectPosition >= currentBeltDistance && currentObjectPosition <= (currentBeltDistance + segmentDistance))
-                        {
-                            let radioactivePointData = [
-                                splineData.originalData[s-1][0] + (splineData.originalData[s][0] - splineData.originalData[s-1][0]) * ((currentObjectPosition - currentBeltDistance) / segmentDistance),
-                                splineData.originalData[s-1][1] + (splineData.originalData[s][1] - splineData.originalData[s-1][1]) * ((currentObjectPosition - currentBeltDistance) / segmentDistance),
-                                currentObject.transform.translation[2]
-                            ];
-                            this.addRadioactivityDot({
-                                pathName: currentObject.pathName + '_' + i,
-                                transform:{translation: radioactivePointData}
-                            }, [{qty: 1, radioactiveDecay: radioactiveInventory[i].radioactiveDecay}]);
-
-                            break;
-                        }
-
-                        currentBeltDistance += segmentDistance;
-                    }
-                }
-            }
-        }
-
-        let belt = L.conveyor(
-                splineData.points,
-                {
-                    pathName    : currentObject.pathName,
-                    weight      : 135,
-                    altitude    : currentObject.transform.translation[2]
-                }
-        );
-
-        belt.bindContextMenu(this);
-        belt.on('mouseover', function(marker){
-            let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-            let slotColor           = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
-                marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')', opacity: 0.5});
-        }.bind(this));
-        belt.on('mouseout', function(marker){
-            let mouseOutStyle       = {opacity: 0.9};
-            let currentObject       = this.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-                if(currentObject !== null)
-                {
-                    let buildingData = this.getBuildingDataFromClassName(currentObject.className);
-                        if(buildingData !== null)
-                        {
-                            mouseOutStyle.color = buildingData.mapColor;
-                        }
-                }
-
-            marker.sourceTarget.setStyle(mouseOutStyle);
-        }.bind(this));
-        belt.fire('mouseout');
-
-        this.autoBindTooltip(belt);
-
-        if(this.playerLayers[mapLayer].distance !== undefined)
-        {
-            this.playerLayers[mapLayer].distance += splineData.distance;
-        }
-
-        this.playerLayers[mapLayer].elements.push(belt);
-
-        if(this.playerLayers[mapLayer].filtersCount !== undefined)
-        {
-            if(this.playerLayers[mapLayer].filtersCount[currentObject.className] === undefined)
-            {
-                this.playerLayers[mapLayer].filtersCount[currentObject.className] = {distance: 0};
-            }
-            this.playerLayers[mapLayer].filtersCount[currentObject.className].distance += splineData.distance;
-        }
-
-        return {layer: mapLayer, marker: belt};
     }
 
     unlinkObjectComponentConnection(currentObject)
@@ -3532,7 +3222,7 @@ export default class BaseLayout
             }
         }
 
-        // Pipe/Lift Floor Hole
+        //TODO: Pipe/Lift Floor Hole
         let mBottomSnappedConnection = this.getObjectProperty(currentObject, 'mBottomSnappedConnection');
             if(mBottomSnappedConnection !== null)
             {
@@ -3556,19 +3246,11 @@ export default class BaseLayout
                     pathName    : currentObject.pathName,
                     weight      : 600,
                     color       : '#ff69b4',
-                    altitude    : currentObject.transform.translation[2]
+                    opacity     : 0.9
                 }
             );
 
         track.bindContextMenu(this);
-        track.on('mouseover', function(){
-            this.setStyle({color: '#bf4e87', opacity: 0.7});
-        });
-        track.on('mouseout', function(){
-            this.setStyle({color: '#ff69b4', opacity: 0.9});
-        });
-        track.fire('mouseout');
-
         this.autoBindTooltip(track);
 
         this.playerLayers.playerTracksLayer.distance += splineData.distance;
@@ -3655,8 +3337,7 @@ export default class BaseLayout
                                 pathName    : currentObject.pathName,
                                 color       : ((currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff'),
                                 weight      : 1,
-                                interactive : false,
-                                altitude    : ((currentObjectSourceOuterPath.transform.translation[2] + currentObjectTargetOuterPath.transform.translation[2]) / 2)
+                                interactive : false
                             });
 
                         this.playerLayers.playerPowerGridLayer.elements.push(powerline);
@@ -3911,6 +3592,13 @@ export default class BaseLayout
                 this.satisfactoryMap.leafletMap.getPane(layerId).style.pointerEvents = 'none';
                 this.playerLayers[layerId].renderer = L.canvas({ pane: layerId });
             }
+            if(layerId === 'playerLightsHaloLayer')
+            {
+                this.satisfactoryMap.leafletMap.createPane(layerId);
+                this.satisfactoryMap.leafletMap.getPane(layerId).style.zIndex = 449;
+                this.satisfactoryMap.leafletMap.getPane(layerId).style.pointerEvents = 'none';
+                this.playerLayers[layerId].renderer = L.canvas({ pane: layerId });
+            }
         }
 
         if(this.playerLayers[layerId].subLayer === null)
@@ -4040,7 +3728,7 @@ export default class BaseLayout
                 else
                 {
                     // Redraw to keep layer order...
-                    if(isHiding === false && updateLayerId !== 'playerFogOfWar')
+                    if(isHiding === false && ['playerLightsHaloLayer', 'playerFogOfWar'].includes(updateLayerId) === false)
                     {
                         if(this.playerLayers[layerId].layerGroup.hasLayer(this.playerLayers[layerId].subLayer))
                         {
@@ -5442,7 +5130,7 @@ export default class BaseLayout
 
         if(content !== null)
         {
-            let tooltipOptions = {sticky: true, opacity: 1};
+            let tooltipOptions = {sticky: true, opacity: 0.8};
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {
                     Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
@@ -5450,6 +5138,10 @@ export default class BaseLayout
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C')
                 {
                     Building_RailroadTrack.bindTooltip(this, currentObject, tooltipOptions);
+                }
+                if(Building_Conveyor.isConveyorBelt(currentObject))
+                {
+                    Building_Conveyor.bindTooltip(this, currentObject, tooltipOptions);
                 }
 
             e.target.closeTooltip.bind(this);
@@ -5469,6 +5161,10 @@ export default class BaseLayout
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C')
                 {
                     Building_RailroadTrack.unbindTooltip(this, currentObject);
+                }
+                if(Building_Conveyor.isConveyorBelt(currentObject))
+                {
+                    Building_Conveyor.unbindTooltip(this, currentObject);
                 }
             }
 
@@ -5498,7 +5194,7 @@ export default class BaseLayout
         return null;
     }
 
-    deleteMarkerFromElements(layerId, marker, fast = false)
+    deleteMarkerFromElements(layerId, marker, fastDelete = false)
     {
         if(this.playerLayers[layerId] !== undefined)
         {
@@ -5524,7 +5220,7 @@ export default class BaseLayout
                             this.playerLayers.playerLightsHaloLayer.subLayer.removeLayer(marker.options.haloMarker);
                         }
 
-                        if(fast === false)
+                        if(fastDelete === false)
                         {
                             this.setBadgeLayerCount(layerId);
                         }
@@ -5581,7 +5277,7 @@ export default class BaseLayout
         {
             if(storages[i].options.pathName !== undefined)
             {
-                let currentStorage      = this.saveGameParser.getTargetObject(storages[i].options.pathName);
+                let currentStorage = this.saveGameParser.getTargetObject(storages[i].options.pathName);
 
                 if(currentStorage !== null)
                 {

@@ -1,4 +1,5 @@
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
+import Building_Beacon                          from '../Building/Beacon.js';
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_Door                            from '../Building/Door.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
@@ -126,20 +127,7 @@ export default class BaseLayout_ContextMenu
                         });
                         break;
                     case '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C':
-                        contextMenu.push({
-                            text        : 'Beacon'
-                        });
-                        contextMenu.push({
-                            icon        : 'fa-portal-exit',
-                            text        : 'Teleport player',
-                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
-                        });
-                        contextMenu.push('-');
-                        contextMenu.push({
-                            icon        : 'fa-trash-alt',
-                            text        : 'Delete',
-                            callback    : this.baseLayout.deletePlayerBeacon
-                        });
+                        contextMenu = Building_Beacon.addContextMenu(this.baseLayout, currentObject, contextMenu);
                         break;
                     case '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C':
                         contextMenu.push({
@@ -447,13 +435,13 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push('-');
                 }
 
-                let currentObjectPipeNetwork = this.baseLayout.getObjectPipeNetwork(currentObject);
+                let currentObjectPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
                     if(currentObjectPipeNetwork !== null)
                     {
                         contextMenu.push({
                             icon        : 'fa-water',
                             text        : 'Update pipe network fluid',
-                            callback    : this.baseLayout.updatePipeNetworkFluid.bind(this.baseLayout)
+                            callback    : this.baseLayout.pipeNetworkSubSystem.updateFluid.bind(this.baseLayout.pipeNetworkSubSystem)
                         });
                         contextMenu.push('-');
                     }

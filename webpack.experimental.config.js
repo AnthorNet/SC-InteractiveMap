@@ -38,20 +38,6 @@ module.exports = env => {
                 groups: [
                     { pattern: './Models/*/*.json', to: './detailedModels.json' }
                 ]
-            }),
-
-            // Send new release to Sentry
-            new SentryWebpackPlugin({
-                // sentry-cli configuration
-                url: env.SENTRY_URL,
-                authToken: env.SENTRY_AUTH_TOKEN,
-                org: "sentry",
-                project: "satisfactory-calculator",
-
-                // webpack specific configuration
-                validate: true,
-                include: path.resolve(__dirname, 'build'),
-                ignore: ['node_modules', 'webpack.config.js']
             })
         ]
     };

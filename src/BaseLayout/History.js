@@ -40,7 +40,7 @@ export default class BaseLayout_History
             return new Promise(function(resolve){
                     $('#liveLoader').show()
                                     .find('.progress-bar').css('width', '0%');
-                    setTimeout(resolve, 5);
+                    window.requestAnimationFrame(resolve);
                 }.bind(this)).then(() => {
                     this.undoLoop(currentOperations);
                 });
@@ -72,7 +72,7 @@ export default class BaseLayout_History
                             switch(currentOperation.callback)
                             {
                                 case 'deleteGenericBuilding':
-                                    if(currentOperation.properties.fast !== undefined && currentOperation.properties.fast === true)
+                                    if(currentOperation.properties.fastDelete !== undefined && currentOperation.properties.fastDelete === true)
                                     {
                                         this.baseLayout.deleteGenericBuilding({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker}, false, true);
                                     }
@@ -141,7 +141,7 @@ export default class BaseLayout_History
             {
                 return new Promise(function(resolve){
                     $('#liveLoader .progress-bar').css('width', Math.round(i / currentOperations.values.length * 100) + '%');
-                    setTimeout(resolve, 5);
+                    window.requestAnimationFrame(resolve);
                 }.bind(this)).then(() => {
                     this.undoLoop(currentOperations, (i + 1));
                 });

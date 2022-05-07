@@ -1,270 +1,49 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
-export default class Building_Conveyor
+export default class Building_HyperTube
 {
     static teleporter = {
         entry   : null,
         exit    : null,
     };
 
-    static get availableConveyorBelts()
-    {
-        return [
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk1/Build_ConveyorBeltMk1.Build_ConveyorBeltMk1_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk2/Build_ConveyorBeltMk2.Build_ConveyorBeltMk2_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk3/Build_ConveyorBeltMk3.Build_ConveyorBeltMk3_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk4/Build_ConveyorBeltMk4.Build_ConveyorBeltMk4_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk5/Build_ConveyorBeltMk5.Build_ConveyorBeltMk5_C'
-        ];
-    }
-
-    static get availableConveyorLifts()
-    {
-        return [
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk1/Build_ConveyorLiftMk1.Build_ConveyorLiftMk1_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk2/Build_ConveyorLiftMk2.Build_ConveyorLiftMk2_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk3/Build_ConveyorLiftMk3.Build_ConveyorLiftMk3_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk4/Build_ConveyorLiftMk4.Build_ConveyorLiftMk4_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk5/Build_ConveyorLiftMk5.Build_ConveyorLiftMk5_C'
-        ];
-    }
-
-    /*
-     * BELT LOOKUP, includes mods to avoid finding them everywhere
-     */
-    static isConveyorBelt(currentObject)
-    {
-        if(Building_Conveyor.availableConveyorBelts.includes(currentObject.className))
-        {
-            return true;
-        }
-
-        // Belts Mod
-        if(
-               (currentObject.className.startsWith('/CoveredConveyor') && currentObject.className.includes('lift') === false)
-             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
-             || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
-        )
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    /*
-     * ADD/DELETE
-     */
-    static add(baseLayout, currentObject)
-    {
-        let mapLayer     = 'playerUnknownLayer';
-        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-            if(buildingData !== null)
-            {
-                mapLayer = buildingData.mapLayer;
-            }
-
-        baseLayout.setupSubLayer(mapLayer);
-        let splineData = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
-
-        if(baseLayout.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
-        {
-            let radioactiveInventory = [];
-                for(let i = 0; i < currentObject.extra.items.length; i++)
-                {
-                    let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name, false);
-                        if(currentItemData !== null)
-                        {
-                            if(currentItemData.radioactiveDecay !== undefined)
-                            {
-                                radioactiveInventory.push({position: currentObject.extra.items[i].position, radioactiveDecay: currentItemData.radioactiveDecay});
-                            }
-                        }
-                }
-
-            if(radioactiveInventory.length > 0)
-            {
-                for(let i = 0; i < radioactiveInventory.length; i++)
-                {
-                    let currentObjectPosition   = radioactiveInventory[i].position;
-                    let currentBeltDistance     = 0;
-
-                    // Loop each belt segments trying to figure if the item is in
-                    for(let s = 1; s < splineData.originalData.length; s++)
-                    {
-                        let segmentDistance = Math.sqrt(
-                            ((splineData.originalData[s][0] - splineData.originalData[s-1][0]) * (splineData.originalData[s][0] - splineData.originalData[s-1][0]))
-                          + ((splineData.originalData[s][1] - splineData.originalData[s-1][1]) * (splineData.originalData[s][1] - splineData.originalData[s-1][1]))
-                        );
-
-                        if(currentObjectPosition >= currentBeltDistance && currentObjectPosition <= (currentBeltDistance + segmentDistance))
-                        {
-                            let radioactivePointData = [
-                                splineData.originalData[s-1][0] + (splineData.originalData[s][0] - splineData.originalData[s-1][0]) * ((currentObjectPosition - currentBeltDistance) / segmentDistance),
-                                splineData.originalData[s-1][1] + (splineData.originalData[s][1] - splineData.originalData[s-1][1]) * ((currentObjectPosition - currentBeltDistance) / segmentDistance),
-                                currentObject.transform.translation[2]
-                            ];
-                            baseLayout.addRadioactivityDot({
-                                pathName: currentObject.pathName + '_' + i,
-                                transform:{translation: radioactivePointData}
-                            }, [{qty: 1, radioactiveDecay: radioactiveInventory[i].radioactiveDecay}]);
-
-                            break;
-                        }
-
-                        currentBeltDistance += segmentDistance;
-                    }
-                }
-            }
-        }
-
-        let beltOptions = {
-                pathName    : currentObject.pathName,
-                weight      : 135,
-                opacity     : 0.9
-            };
-            if(buildingData !== null)
-            {
-                beltOptions.color = buildingData.mapColor;
-            }
-        let belt = L.conveyor(splineData.points, beltOptions);
-
-        belt.bindContextMenu(baseLayout);
-
-        if(Building_Conveyor.isConveyorBelt(currentObject) === false) // Conveyor are handled with the tooltips bind
-        {
-            belt.on('mouseover', function(marker){
-                let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-                let slotColor           = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
-
-                marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
-            });
-            belt.on('mouseout', function(marker){
-                let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-                    if(currentObject !== null)
-                    {
-                        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-                            if(buildingData !== null)
-                            {
-                                marker.sourceTarget.setStyle({color: buildingData.mapColor});
-                            }
-                    }
-            });
-        }
-
-        baseLayout.autoBindTooltip(belt);
-
-        if(baseLayout.playerLayers[mapLayer].distance !== undefined)
-        {
-            baseLayout.playerLayers[mapLayer].distance += splineData.distance;
-        }
-
-        baseLayout.playerLayers[mapLayer].elements.push(belt);
-
-        if(baseLayout.playerLayers[mapLayer].filtersCount !== undefined)
-        {
-            if(baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className] === undefined)
-            {
-                baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className] = {distance: 0};
-            }
-            baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className].distance += splineData.distance;
-        }
-
-        return {layer: mapLayer, marker: belt};
-    }
-
     /**
      * CONTEXT MENU
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let haveSeparator = false;
-            if(Building_Conveyor.isConveyorBelt(currentObject))
+        let conveyorAny0 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny0');
+            if(conveyorAny0 !== null)
             {
-                haveSeparator = true;
-                contextMenu.push({
-                    icon        : 'fa-object-group',
-                    text        : 'Merge adjacent conveyor belts (Performance test)',
-                    callback    : Building_Conveyor.mergeConveyors,
-                    className   : 'Building_Conveyor_mergeConveyors'
-                });
-
-                let conveyorAny0 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny0');
-                    if(conveyorAny0 !== null)
+                let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
+                    if(mConnectedComponent === null)
                     {
-                        let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
-                            if(mConnectedComponent === null)
-                            {
-                                contextMenu.push({
-                                    icon        : 'fa-portal-exit',
-                                    text        : 'Use input as teleporter exit',
-                                    callback    : Building_Conveyor.storeTeleporterExit,
-                                    className   : 'Building_Conveyor_storeTeleporterExit'
-                                });
-                            }
-                    }
-
-                let conveyorAny1 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny1');
-                    if(conveyorAny1 !== null)
-                    {
-                        let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
-                            if(mConnectedComponent === null)
-                            {
-                                contextMenu.push({
-                                    icon        : 'fa-portal-enter',
-                                    text        : 'Use output as teleporter entry',
-                                    callback    : Building_Conveyor.storeTeleporterEntry,
-                                    className   : 'Building_Conveyor_storeTeleporterEntry'
-                                });
-                            }
+                        contextMenu.push({
+                            icon        : 'fa-portal-exit',
+                            text        : 'Use input as teleporter exit',
+                            callback    : Building_HyperTube.storeTeleporterExit,
+                            className   : 'Building_Conveyor_storeTeleporterExit'
+                        });
                     }
             }
 
-        let usePool = Building_Conveyor.availableConveyorBelts;
-            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorLift') === true)
+        let conveyorAny1 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny1');
+            if(conveyorAny1 !== null)
             {
-                usePool = Building_Conveyor.availableConveyorLifts;
+                let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
+                    if(mConnectedComponent === null)
+                    {
+                        contextMenu.push({
+                            icon        : 'fa-portal-enter',
+                            text        : 'Use output as teleporter entry',
+                            callback    : Building_HyperTube.storeTeleporterEntry,
+                            className   : 'Building_Conveyor_storeTeleporterEntry'
+                        });
+                    }
             }
 
-        let poolIndex   = usePool.indexOf(currentObject.className);
-            if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
-            {
-                haveSeparator = true;
-
-                if(poolIndex > 0)
-                {
-                    let downgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex - 1]);
-                        if(downgradeData !== null)
-                        {
-                            contextMenu.push({
-                                icon        : 'fa-level-down-alt',
-                                text        : 'Downgrade to "' + downgradeData.name + '"',
-                                callback    : Building_Conveyor.downgradeConveyor,
-                                className   : 'Building_Conveyor_downgradeConveyor'
-                            });
-                        }
-                }
-                if(poolIndex < (usePool.length - 1))
-                {
-                    let upgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex + 1]);
-                        if(upgradeData !== null)
-                        {
-                            contextMenu.push({
-                                icon        : 'fa-level-up-alt',
-                                text        : 'Upgrade to "' + upgradeData.name + '"',
-                                callback    : Building_Conveyor.upgradeConveyor,
-                                className   : 'Building_Conveyor_upgradeConveyor'
-                            });
-                        }
-                }
-            }
-
-            if(haveSeparator === true)
-            {
-                contextMenu.push('-');
-            }
+        contextMenu.push('-');
 
         return contextMenu;
     }

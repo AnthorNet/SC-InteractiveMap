@@ -8,6 +8,7 @@ import Spawn_Image                              from '../../Spawn/Image.js';
 import Spawn_Polygon                            from '../../Spawn/Polygon.js';
 import Spawn_Rectangle                          from '../../Spawn/Rectangle.js';
 import Spawn_Road                               from '../../Spawn/Road.js';
+import Spawn_Tower                              from '../../Spawn/Tower.js';
 
 export default class Modal_Object_SpawnAround
 {
@@ -25,6 +26,7 @@ export default class Modal_Object_SpawnAround
             inputOptions.push({group: 'Geometric form', text: 'Plain regular polygon', value: 'plainPolygon'});
             inputOptions.push({group: 'Geometric form', text: 'Hollow regular polygon', value: 'hollowPolygon'});
             inputOptions.push({group: 'Geometric form', text: 'Road', value: 'road'});
+            inputOptions.push({group: 'Geometric form', text: 'Tower', value: 'tower'});
 
             inputOptions.push({group: 'Pixel Art', text: 'Import an image', value: 'importImage'});
 
@@ -182,7 +184,7 @@ export default class Modal_Object_SpawnAround
                                     label       : 'Outer width <em class="small">(Between 3 and 65)</em>',
                                     name        : 'maxWidth',
                                     inputType   : 'number',
-                                    value       : 6,
+                                    value       : 7,
                                     min         : 3,
                                     max         : 65
                                 });
@@ -190,7 +192,7 @@ export default class Modal_Object_SpawnAround
                                     label       : 'Outer length <em class="small">(Between 3 and 65)</em>',
                                     name        : 'maxHeight',
                                     inputType   : 'number',
-                                    value       : 6,
+                                    value       : 7,
                                     min         : 3,
                                     max         : 65
                                 });
@@ -415,6 +417,129 @@ export default class Modal_Object_SpawnAround
                                             direction       : values.direction,
                                             curvature       : values.curvature,
                                             useOwnMaterials : form.useOwnMaterials
+                                        });
+                                    }
+                                }
+                            });
+                            break;
+                        case 'tower':
+                            let wallTypes       = [];
+                                for(let buildingId in baseLayout.buildingsData)
+                                {
+                                    let currentBuildingOption = {
+                                            dataContent : '<img src="' + baseLayout.buildingsData[buildingId].image + '" style="width: 48px;" class="py-2 mr-1" /> ' + baseLayout.buildingsData[buildingId].name,
+                                            value       : baseLayout.buildingsData[buildingId].className,
+                                            text        : baseLayout.buildingsData[buildingId].name
+                                        }
+                                    if(baseLayout.buildingsData[buildingId].category === 'wall')
+                                    {
+                                        if(
+                                                baseLayout.buildingsData[buildingId].className.includes('_Angular_') === false
+                                             && baseLayout.buildingsData[buildingId].className.includes('_Corner_') === false
+                                             && baseLayout.buildingsData[buildingId].className.includes('_Tris_') === false
+                                             && baseLayout.buildingsData[buildingId].className.includes('_FlipTris_') === false
+                                             && baseLayout.buildingsData[buildingId].className.includes('_Conveyor_') === false
+                                             && baseLayout.buildingsData[buildingId].className.includes('_ConveyorHole_') === false
+                                             && baseLayout.buildingsData[buildingId].className.includes('Door_') === false
+                                             && baseLayout.buildingsData[buildingId].className.includes('_Gate_') === false
+                                        )
+                                        {
+                                            currentBuildingOption.group = baseLayout.buildingsData[buildingId].subCategory;
+                                            wallTypes.push(currentBuildingOption);
+                                        }
+                                    }
+                                }
+
+                            let towerOptions = [];
+                                towerOptions.push({
+                                    label       : 'Width <em class="small">(Between 3 and 65)</em>',
+                                    name        : 'maxWidth',
+                                    inputType   : 'number',
+                                    value       : 7,
+                                    min         : 3,
+                                    max         : 65
+                                });
+                                towerOptions.push({
+                                    label       : 'Length <em class="small">(Between 3 and 65)</em>',
+                                    name        : 'maxHeight',
+                                    inputType   : 'number',
+                                    value       : 7,
+                                    min         : 3,
+                                    max         : 65
+                                });
+                                towerOptions.push({
+                                    label       : 'Floors <em class="small">(Between 1 and 256)</em>',
+                                    name        : 'maxFloor',
+                                    inputType   : 'number',
+                                    value       : 3,
+                                    min         : 1,
+                                    max         : 256
+                                });
+                                towerOptions.push({
+                                    label       : 'Floor height <em class="small">(Between 1 and 24)</em>',
+                                    name        : 'floorHeight',
+                                    inputType   : 'number',
+                                    value       : 3,
+                                    min         : 1,
+                                    max         : 24
+                                });
+                                towerOptions.push({
+                                    label       : 'Foudation rotation <em class="small">(Between -30 and 30)</em>',
+                                    name        : 'foundationRotation',
+                                    inputType   : 'number',
+                                    value       : 1,
+                                    min         : -30,
+                                    max         : 30
+                                });
+
+                                towerOptions.push({
+                                    label           : 'Wall type',
+                                    name            : 'wallType',
+                                    inputType       : 'selectPicker',
+                                    inputHeight     : true,
+                                    inputOptions    : wallTypes,
+                                    value           : '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Window_Thin_8x4_02.Build_Wall_Window_Thin_8x4_02_C'
+                                });
+                                towerOptions.push({
+                                    label           : 'Wall corner type',
+                                    name            : 'wallCornerType',
+                                    inputType       : 'selectPicker',
+                                    inputHeight     : true,
+                                    inputOptions    : wallTypes,
+                                    value           : '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_8x4_01.Build_Wall_8x4_01_C'
+                                });
+                                towerOptions.push({
+                                    label       : 'Wall rotation <em class="small">(Between -30 and 30)</em>',
+                                    name        : 'wallRotation',
+                                    inputType   : 'number',
+                                    value       : 1,
+                                    min         : -30,
+                                    max         : 30
+                                });
+
+                            BaseLayout_Modal.form({
+                                title       : 'Tower options',
+                                message     : 'Floor foundation type will be the one you are spawning on.',
+                                container   : '#leafletMap',
+                                inputs      : towerOptions,
+                                callback: function(values)
+                                {
+                                    if(values !== null && values.maxWidth !== null && values.maxHeight !== null)
+                                    {
+                                        return new Spawn_Tower({
+                                            marker              : marker,
+                                            maxWidth            : values.maxWidth,
+                                            maxHeight           : values.maxHeight,
+
+                                            maxFloor            : values.maxFloor,
+                                            floorHeight         : values.floorHeight,
+
+                                            foundationRotation  : values.foundationRotation,
+                                            wallType            : values.wallType,
+                                            wallCornerType      : values.wallCornerType,
+                                            wallRotation        : values.wallRotation,
+
+                                            useOwnMaterials     : form.useOwnMaterials
                                         });
                                     }
                                 }
