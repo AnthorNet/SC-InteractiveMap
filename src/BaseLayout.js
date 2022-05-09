@@ -5064,33 +5064,36 @@ export default class BaseLayout
 
         let mapOpacity          = (buildingData !== null && buildingData.mapOpacity !== undefined) ? buildingData.mapOpacity : 0.2;
 
-        if(buildingData !== null && buildingData.mapUseSlotColor !== undefined && buildingData.mapUseSlotColor === false)
+        if(buildingData !== null)
         {
-            marker.setStyle({
-                color: buildingData.mapColor,
-                fillColor: ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
-                fillOpacity: mapOpacity
-            });
-        }
-        else
-        {
-            // Coloring is allowed but mostly for pattern!
-            if(currentObject.className.includes('AsphaltSet') || currentObject.className.includes('GripMetal'))
+            if(buildingData.mapUseSlotColor !== undefined && buildingData.mapUseSlotColor === false)
             {
                 marker.setStyle({
-                    color       : buildingData.mapColor,
-                    fillColor   : buildingData.mapColor,
-                    fillOpacity : mapOpacity
+                    color: buildingData.mapColor,
+                    fillColor: ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
+                    fillOpacity: mapOpacity
                 });
             }
             else
             {
-                let slotColor = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
+                // Coloring is allowed but mostly for pattern!
+                if(currentObject.className.includes('AsphaltSet') || currentObject.className.includes('GripMetal'))
+                {
                     marker.setStyle({
                         color       : buildingData.mapColor,
-                        fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                        fillColor   : buildingData.mapColor,
                         fillOpacity : mapOpacity
                     });
+                }
+                else
+                {
+                    let slotColor = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
+                        marker.setStyle({
+                            color       : buildingData.mapColor,
+                            fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                            fillOpacity : mapOpacity
+                        });
+                }
             }
         }
 

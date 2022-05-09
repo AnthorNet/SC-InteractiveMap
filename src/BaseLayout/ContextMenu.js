@@ -671,6 +671,34 @@ export default class BaseLayout_ContextMenu
                         }
                     }
 
+                    if(buildingData.category === 'walkway')
+                    {
+                        if(buildingData.switchMaterial.Catwalk !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Catwalk"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['walkway', 'Catwalk'],
+                                className   : 'buildableSubSystem_switchObjectMaterial'
+                            });
+                        }
+                    }
+
+                    if(buildingData.category === 'catwalk')
+                    {
+                        if(buildingData.switchMaterial.Walkway !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : 'Switch to "Walkway"',
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['catwalk', 'Walkway'],
+                                className   : 'buildableSubSystem_switchObjectMaterial'
+                            });
+                        }
+                    }
+
                     if(buildingData.switchSkin !== undefined)
                     {
                         let SkinDesc  = this.baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject, 'SkinDesc');

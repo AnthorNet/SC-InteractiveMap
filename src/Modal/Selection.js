@@ -109,6 +109,8 @@ export default class Modal_Selection
         let haveWallsMaterialsCategory          = false;
         let haveRoofsMaterialsCategory          = false;
         let havePillarsMaterialsCategory        = false;
+        let haveCatwalkMaterialsCategory        = false;
+        let haveWalkwayMaterialsCategory        = false;
         let haveSkinsCategory                   = false;
         let haveExtractionCategory              = false;
         let haveLogisticCategory                = false;
@@ -179,6 +181,14 @@ export default class Modal_Selection
                                                         if(buildingData.category === 'pillar')
                                                         {
                                                             havePillarsMaterialsCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'catwalk')
+                                                        {
+                                                            haveCatwalkMaterialsCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'walkway')
+                                                        {
+                                                            haveWalkwayMaterialsCategory = true;
                                                         }
                                                         if(buildingData.category === 'extraction')
                                                         {
@@ -311,6 +321,16 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Metal Pillar"', value: 'switchMaterial|pillar|Metal'});
                 inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Concrete Pillar"', value: 'switchMaterial|pillar|Concrete'});
                 inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Frame Pillar"', value: 'switchMaterial|pillar|Frame'});
+            }
+
+            if(haveCatwalkMaterialsCategory === true)
+            {
+                inputOptions.push({group: 'Catwalk Materials', text: 'Switch to "Walkway"', value: 'switchMaterial|catwalk|Walkway'});
+            }
+
+            if(haveWalkwayMaterialsCategory === true)
+            {
+                inputOptions.push({group: 'Walkway Materials', text: 'Switch to "Catwalk"', value: 'switchMaterial|walkway|Catwalk'});
             }
 
             if(haveSkinsCategory === true)
