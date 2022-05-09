@@ -916,16 +916,16 @@ export default class BaseLayout
 
         if(currentObject.className === '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C')
         {
-            return this.addDecoration(currentObject, resolve);
+            return resolve(this.addDecoration(currentObject));
         }
         if(currentObject.className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
         {
-            return this.addPortableMiner(currentObject, resolve);
+            return resolve(this.addPortableMiner(currentObject));
         }
 
         if(currentObject.className === '/Script/FactoryGame.FGItemPickup_Spawnable' || currentObject.className === '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C')
         {
-            return resolve({layer: 'playerItemsPickupLayer', marker: this.addItemPickup(currentObject)});
+            return resolve(this.addItemPickup(currentObject));
         }
 
         if(currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C' || currentObject.className === '/CrashSiteBeacons/BP_Beacon_Child.BP_Beacon_Child_C')
@@ -935,7 +935,7 @@ export default class BaseLayout
 
         if(currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
         {
-            return resolve({layer: 'playerCratesLayer', marker: this.addPlayerLootCrate(currentObject)});
+            return resolve(this.addPlayerLootCrate(currentObject));
         }
 
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
@@ -955,7 +955,7 @@ export default class BaseLayout
             '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C'
         ].includes(currentObject.className))
         {
-            return resolve({layer: 'playerPowerGridLayer', marker: this.addPlayerPowerLine(currentObject)});
+            return resolve(this.addPlayerPowerLine(currentObject));
         }
 
         if(
@@ -974,7 +974,7 @@ export default class BaseLayout
         }
         if(currentObject.className.includes('Train/Track/Build_RailroadTrack') || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
         {
-            return resolve({layer: 'playerTracksLayer', marker: this.addPlayerTrack(currentObject)});
+            return resolve(this.addPlayerTrack(currentObject));
         }
 
         // Add fauna
@@ -987,7 +987,7 @@ export default class BaseLayout
         let isCurrentObjectBuilding = this.getBuildingDataFromClassName(currentObject.className);
             if(isCurrentObjectBuilding !== null)
             {
-                return this.addGenericBuilding(currentObject, isCurrentObjectBuilding, resolve);
+                return resolve(this.addGenericBuilding(currentObject, isCurrentObjectBuilding));
             }
             else
             {
@@ -1013,7 +1013,7 @@ export default class BaseLayout
                     };
                         this.buildingsData[currentObject.className] = newBuildingData;
 
-                    return this.addGenericBuilding(currentObject, newBuildingData, resolve);
+                    return resolve(this.addGenericBuilding(currentObject, newBuildingData));
                 }
                 else
                 {
@@ -1573,9 +1573,11 @@ export default class BaseLayout
                         this.playerLayers.playerItemsPickupLayer.elements.push(itemMarker);
                         itemMarker.addTo(this.playerLayers.playerItemsPickupLayer.subLayer);
 
-                        return itemMarker;
+                        return {layer: 'playerItemsPickupLayer', marker: itemMarker};
                     }
             }
+
+        return null;
     }
 
     deleteItemPickUp(marker)
@@ -1618,7 +1620,7 @@ export default class BaseLayout
         this.autoBindTooltip(crate);
         this.playerLayers.playerCratesLayer.elements.push(crate);
 
-        return crate;
+        return {layer: 'playerCratesLayer', marker: crate};
     }
 
     deletePlayerLootCrate(marker)
@@ -1709,7 +1711,8 @@ export default class BaseLayout
         };
         this.saveGameParser.addObject(newLootCrateInventory);
 
-        this.addElementToLayer('playerCratesLayer', this.addPlayerLootCrate(newLootCrate));
+        let result = this.addPlayerLootCrate(newLootCrate);
+            this.addElementToLayer(result.layer, result.marker);
 
         return newLootCrateInventory;
     }
@@ -2269,7 +2272,7 @@ export default class BaseLayout
         return selectOptions;
     }
 
-    addDecoration(currentObject, resolve)
+    addDecoration(currentObject)
     {
         let currentItemData         = {};
         let mDecorationDescriptor   = this.getObjectProperty(currentObject, 'mDecorationDescriptor');
@@ -2283,10 +2286,10 @@ export default class BaseLayout
         currentItemData.length      = 4;
         currentItemData.mapLayer    = 'playerStatuesLayer';
 
-        return this.addGenericBuilding(currentObject, currentItemData, resolve);
+        return this.addGenericBuilding(currentObject, currentItemData);
     }
 
-    addPortableMiner(currentObject, resolve)
+    addPortableMiner(currentObject)
     {
         let currentItemData             = this.getItemDataFromClassName(currentObject.className);
             currentItemData.width       = 1;
@@ -2294,10 +2297,10 @@ export default class BaseLayout
             currentItemData.category    = 'extractor';
             currentItemData.mapLayer    = 'playerMinersLayer';
 
-        return this.addGenericBuilding(currentObject, currentItemData, resolve);
+        return this.addGenericBuilding(currentObject, currentItemData);
     }
 
-    addGenericBuilding(currentObject, buildingData, resolve)
+    addGenericBuilding(currentObject, buildingData)
     {
         let layerId         = (buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerUnknownLayer';
             this.setupSubLayer(layerId);
@@ -2651,7 +2654,7 @@ export default class BaseLayout
         }
         this.playerLayers[layerId].elements.push(building);
 
-        return resolve({layer: layerId, marker: building});
+        return {layer: layerId, marker: building};
     }
 
     setBuildingMouseOverStyle(marker, buildingData)
@@ -3271,7 +3274,7 @@ export default class BaseLayout
             this.playerLayers.playerTracksLayer.filtersCount[trackClassName].distance += splineData.distance;
         }
 
-        return track;
+        return {layer: 'playerTracksLayer', marker: track};
     }
 
     addPlayerPowerLine(currentObject)
@@ -3283,7 +3286,7 @@ export default class BaseLayout
         {
             console.log('Deleting orphaned power line...');
             this.deletePlayerPowerLine({options: {pathName: currentObject.pathName}});
-            return false;
+            return null;
         }
 
         let currentObjectSource = this.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
@@ -3347,11 +3350,11 @@ export default class BaseLayout
                           + ((sourceTranslation[1] - targetTranslation[1]) * (sourceTranslation[1] - targetTranslation[1]))
                         ) / 100;
 
-                        return powerline;
+                        return {layer: 'playerPowerGridLayer', marker: powerline};
                     }
-
-                    return false;
             }
+
+        return null;
     }
 
     checkPlayerWirePowerConnection(currentObject, currentWireObject)
