@@ -131,8 +131,6 @@ export default class Building_Conveyor
             }
         let belt = L.conveyor(splineData.points, beltOptions);
 
-        belt.bindContextMenu(baseLayout);
-
         if(Building_Conveyor.isConveyorBelt(currentObject) === false) // Conveyor are handled with the tooltips bind
         {
             belt.on('mouseover', function(marker){
@@ -154,7 +152,7 @@ export default class Building_Conveyor
             });
         }
 
-        baseLayout.autoBindTooltip(belt);
+        baseLayout.bindMouseEvents(belt);
 
         if(baseLayout.playerLayers[mapLayer].distance !== undefined)
         {

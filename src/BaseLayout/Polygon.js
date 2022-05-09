@@ -11,8 +11,7 @@ export default class BaseLayout_Polygon
                 BaseLayout_Polygon.generateForms(baseLayout, currentObject.transform, currentObject.className, options),
                 markerOptions
             );
-            baseLayout.autoBindTooltip(polygon);
-            polygon.bindContextMenu(baseLayout);
+            baseLayout.bindMouseEvents(polygon, true);
 
         return polygon;
     }

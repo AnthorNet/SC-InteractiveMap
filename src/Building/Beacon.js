@@ -53,9 +53,8 @@ export default class Building_Beacon
             }
         );
 
-        beacon.bindContextMenu(baseLayout);
         baseLayout.playerLayers.playerOrientationLayer.count++;
-        baseLayout.autoBindTooltip(beacon);
+        baseLayout.bindMouseEvents(beacon);
         baseLayout.playerLayers.playerOrientationLayer.elements.push(beacon);
 
         return {layer: 'playerOrientationLayer', marker: beacon};

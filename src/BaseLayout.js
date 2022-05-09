@@ -67,7 +67,6 @@ export default class BaseLayout
         this.players                            = {};
         this.buildingDataClassNameHashTable     = {};
         this.radioactivityLayerNeedsUpdate      = false;
-        this.tooltipsEnabled                    = true;
 
         this.updateAltitudeLayersIsRunning      = false;
         this.altitudeSliderControl              = null;
@@ -1355,8 +1354,7 @@ export default class BaseLayout
             );
 
         this.setupSubLayer(layerId);
-        this.autoBindTooltip(faunaMarker);
-        faunaMarker.bindContextMenu(this);
+        this.bindMouseEvents(faunaMarker);
         this.playerLayers[layerId].elements.push(faunaMarker);
 
         if(this.playerLayers[layerId].filtersCount !== undefined)
@@ -1434,8 +1432,7 @@ export default class BaseLayout
                                     icon        : this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
                                 }
                             );
-                            depositMarker.bindContextMenu(this);
-                            this.autoBindTooltip(depositMarker);
+                            this.bindMouseEvents(depositMarker);
 
                         this.playerLayers[layerId].elements.push(depositMarker);
 
@@ -1501,8 +1498,7 @@ export default class BaseLayout
                     icon: this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
                 }
             );
-            itemMarker.bindContextMenu(this);
-            this.autoBindTooltip(itemMarker);
+            this.bindMouseEvents(itemMarker);
 
         this.playerLayers.playerItemsPickupLayer.elements.push(itemMarker);
         itemMarker.addTo(this.playerLayers.playerItemsPickupLayer.subLayer);
@@ -1567,8 +1563,7 @@ export default class BaseLayout
                                     icon: this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
                                 }
                             );
-                            itemMarker.bindContextMenu(this);
-                            this.autoBindTooltip(itemMarker);
+                            this.bindMouseEvents(itemMarker);
 
                         this.playerLayers.playerItemsPickupLayer.elements.push(itemMarker);
                         itemMarker.addTo(this.playerLayers.playerItemsPickupLayer.subLayer);
@@ -1615,9 +1610,8 @@ export default class BaseLayout
             }
         );
 
-        crate.bindContextMenu(this);
         this.playerLayers.playerCratesLayer.count++;
-        this.autoBindTooltip(crate);
+        this.bindMouseEvents(crate);
         this.playerLayers.playerCratesLayer.elements.push(crate);
 
         return {layer: 'playerCratesLayer', marker: crate};
@@ -2638,14 +2632,6 @@ export default class BaseLayout
         }
 
         let building = BaseLayout_Polygon.createBuilding(this, currentObject, markerOptions, polygonOptions);
-            building.on('mouseover', function(marker){
-                this.setBuildingMouseOverStyle(marker.sourceTarget, buildingData);
-                Building_Conveyor.bindConnectedComponents(this, currentObject);
-            }.bind(this));
-            building.on('mouseout', function(marker){
-                this.setBuildingMouseOutStyle(marker.sourceTarget, buildingData);
-                Building_Conveyor.unbindConnectedComponents(this, currentObject);
-            }.bind(this));
             this.setBuildingMouseOutStyle(building, buildingData, currentObject);
 
         if(this.playerLayers[layerId].count !== undefined && buildingData.mapUseCount !== undefined && buildingData.mapUseCount === true)
@@ -2655,97 +2641,6 @@ export default class BaseLayout
         this.playerLayers[layerId].elements.push(building);
 
         return {layer: layerId, marker: building};
-    }
-
-    setBuildingMouseOverStyle(marker, buildingData)
-    {
-        marker.setStyle({
-                fillColor: '#999999',
-                fillOpacity: 0.9
-            });
-
-        if(marker.options.extraPattern !== undefined)
-        {
-            marker.options.extraPattern.setStyle({fillOpacity: 0.9});
-        }
-        if(marker.options.extraMarker !== undefined)
-        {
-            marker.options.extraMarker.setIcon(this.getMarkerIcon('#BF0020', '#b3b3b3', buildingData.mapIconImage));
-        }
-
-        if(marker.options.vehicleTrackDataPathName !== undefined)
-        {
-            let vehicleTrackDataMarker = this.getMarkerFromPathName(marker.options.vehicleTrackDataPathName, 'playerVehiculesLayer');
-                if(vehicleTrackDataMarker !== null)
-                {
-                    vehicleTrackDataMarker.setStyle({color: '#BF0020'});
-                }
-        }
-    }
-
-    setBuildingMouseOutStyle(marker, buildingData, currentObject = null)
-    {
-        if(currentObject === null)
-        {
-            currentObject = this.saveGameParser.getTargetObject(marker.options.pathName);
-            if(currentObject === null){ return; }
-        }
-
-        let mapOpacity          = (buildingData !== null && buildingData.mapOpacity !== undefined) ? buildingData.mapOpacity : 0.2;
-
-        if(buildingData !== null && buildingData.mapUseSlotColor !== undefined && buildingData.mapUseSlotColor === false)
-        {
-            marker.setStyle({
-                color: buildingData.mapColor,
-                fillColor: ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
-                fillOpacity: mapOpacity
-            });
-        }
-        else
-        {
-            // Coloring is allowed but mostly for pattern!
-            if(currentObject.className.includes('AsphaltSet') || currentObject.className.includes('GripMetal'))
-            {
-                marker.setStyle({
-                    color       : buildingData.mapColor,
-                    fillColor   : buildingData.mapColor,
-                    fillOpacity : mapOpacity
-                });
-            }
-            else
-            {
-                let slotColor = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
-                    marker.setStyle({
-                        color       : buildingData.mapColor,
-                        fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
-                        fillOpacity : mapOpacity
-                    });
-            }
-        }
-
-        if(marker.options.extraPattern !== undefined)
-        {
-            let patternColor = this.buildableSubSystem.getObjectSecondaryColor(currentObject);
-                marker.options.extraPattern.setStyle({
-                    color       : 'rgb(' + patternColor.r + ', ' + patternColor.g + ', ' + patternColor.b + ')',
-                    fillColor   : 'rgb(' + patternColor.r + ', ' + patternColor.g + ', ' + patternColor.b + ')',
-                    fillOpacity : Math.min(1, (mapOpacity + 0.3))
-                });
-        }
-
-        if(marker.options.extraMarker !== undefined)
-        {
-            marker.options.extraMarker.setIcon(this.getMarkerIcon('#FFFFFF', '#b3b3b3', buildingData.mapIconImage));
-        }
-
-        if(marker.options.vehicleTrackDataPathName !== undefined)
-        {
-            let vehicleTrackDataMarker = this.getMarkerFromPathName(marker.options.vehicleTrackDataPathName, 'playerVehiculesLayer');
-                if(vehicleTrackDataMarker !== null)
-                {
-                    vehicleTrackDataMarker.setStyle({color: '#FFC0CB'});
-                }
-        }
     }
 
     deleteGenericBuilding(marker, updateRadioactivity = true, fast = false)
@@ -3253,8 +3148,7 @@ export default class BaseLayout
                 }
             );
 
-        track.bindContextMenu(this);
-        this.autoBindTooltip(track);
+        this.bindMouseEvents(track);
 
         this.playerLayers.playerTracksLayer.distance += splineData.distance;
         this.playerLayers.playerTracksLayer.elements.push(track);
@@ -5096,16 +4990,36 @@ export default class BaseLayout
         return false;
     }
 
-
-    /*
-     * TOOLTIP FUNCTIONS
-     */
-    autoBindTooltip(marker)
+    bindMouseEvents(marker, addBuildingEvents = false)
     {
+        marker.bindContextMenu(this);
+
         if(marker.options.pathName !== undefined)
         {
-            marker.on('mouseover', this.showTooltip.bind(this));
-            marker.on('mouseout', this.closeTooltip.bind(this));
+            marker.on('mouseover', function(e){
+                this.showTooltip(e);
+
+                if(addBuildingEvents === true)
+                {
+                    let currentObject   = this.saveGameParser.getTargetObject(marker.options.pathName);
+                    let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
+
+                    this.setBuildingMouseOverStyle(marker, buildingData);
+                    Building_Conveyor.bindConnectedComponents(this, currentObject);
+                }
+            }.bind(this));
+            marker.on('mouseout', function(e){
+                this.closeTooltip(e);
+
+                if(addBuildingEvents === true)
+                {
+                    let currentObject   = this.saveGameParser.getTargetObject(marker.options.pathName);
+                    let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
+
+                    this.setBuildingMouseOutStyle(marker, buildingData, currentObject);
+                    Building_Conveyor.unbindConnectedComponents(this, currentObject);
+                }
+            }.bind(this));
 
             if(L.Browser.touch)
             {
@@ -5113,13 +5027,104 @@ export default class BaseLayout
             }
         }
     }
-    showTooltip(e)
+
+    setBuildingMouseOverStyle(marker, buildingData)
     {
-        if(this.tooltipsEnabled === false)
+        marker.setStyle({
+                fillColor: '#999999',
+                fillOpacity: 0.9
+            });
+
+        if(marker.options.extraPattern !== undefined)
         {
-            return;
+            marker.options.extraPattern.setStyle({fillOpacity: 0.9});
+        }
+        if(marker.options.extraMarker !== undefined)
+        {
+            marker.options.extraMarker.setIcon(this.getMarkerIcon('#BF0020', '#b3b3b3', buildingData.mapIconImage));
         }
 
+        if(marker.options.vehicleTrackDataPathName !== undefined)
+        {
+            let vehicleTrackDataMarker = this.getMarkerFromPathName(marker.options.vehicleTrackDataPathName, 'playerVehiculesLayer');
+                if(vehicleTrackDataMarker !== null)
+                {
+                    vehicleTrackDataMarker.setStyle({color: '#BF0020'});
+                }
+        }
+    }
+
+    setBuildingMouseOutStyle(marker, buildingData, currentObject = null)
+    {
+        if(currentObject === null)
+        {
+            currentObject = this.saveGameParser.getTargetObject(marker.options.pathName);
+            if(currentObject === null){ return; }
+        }
+
+        let mapOpacity          = (buildingData !== null && buildingData.mapOpacity !== undefined) ? buildingData.mapOpacity : 0.2;
+
+        if(buildingData !== null && buildingData.mapUseSlotColor !== undefined && buildingData.mapUseSlotColor === false)
+        {
+            marker.setStyle({
+                color: buildingData.mapColor,
+                fillColor: ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
+                fillOpacity: mapOpacity
+            });
+        }
+        else
+        {
+            // Coloring is allowed but mostly for pattern!
+            if(currentObject.className.includes('AsphaltSet') || currentObject.className.includes('GripMetal'))
+            {
+                marker.setStyle({
+                    color       : buildingData.mapColor,
+                    fillColor   : buildingData.mapColor,
+                    fillOpacity : mapOpacity
+                });
+            }
+            else
+            {
+                let slotColor = this.buildableSubSystem.getObjectPrimaryColor(currentObject);
+                    marker.setStyle({
+                        color       : buildingData.mapColor,
+                        fillColor   : 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')',
+                        fillOpacity : mapOpacity
+                    });
+            }
+        }
+
+        if(marker.options.extraPattern !== undefined)
+        {
+            let patternColor = this.buildableSubSystem.getObjectSecondaryColor(currentObject);
+                marker.options.extraPattern.setStyle({
+                    color       : 'rgb(' + patternColor.r + ', ' + patternColor.g + ', ' + patternColor.b + ')',
+                    fillColor   : 'rgb(' + patternColor.r + ', ' + patternColor.g + ', ' + patternColor.b + ')',
+                    fillOpacity : Math.min(1, (mapOpacity + 0.3))
+                });
+        }
+
+        if(marker.options.extraMarker !== undefined)
+        {
+            marker.options.extraMarker.setIcon(this.getMarkerIcon('#FFFFFF', '#b3b3b3', buildingData.mapIconImage));
+        }
+
+        if(marker.options.vehicleTrackDataPathName !== undefined)
+        {
+            let vehicleTrackDataMarker = this.getMarkerFromPathName(marker.options.vehicleTrackDataPathName, 'playerVehiculesLayer');
+                if(vehicleTrackDataMarker !== null)
+                {
+                    vehicleTrackDataMarker.setStyle({color: '#FFC0CB'});
+                }
+        }
+    }
+
+
+    /*
+     * TOOLTIP FUNCTIONS
+     */
+    showTooltip(e)
+    {
         let content         = null;
         let currentObject   = this.saveGameParser.getTargetObject(e.target.options.pathName);
             if(currentObject !== null)

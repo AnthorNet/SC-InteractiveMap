@@ -127,8 +127,7 @@ export default class SubSystem_Player
                     );
 
                 this.baseLayout.playerLayers.playerPositionLayer.elements.push(playerMarker);
-                playerMarker.bindContextMenu(this.baseLayout);
-                this.baseLayout.autoBindTooltip(playerMarker);
+                this.baseLayout.bindMouseEvents(playerMarker);
                 playerMarker.addTo(this.baseLayout.playerLayers.playerPositionLayer.subLayer);
 
                 if(this.isHost() === true)
