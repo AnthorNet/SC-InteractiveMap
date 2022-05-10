@@ -696,13 +696,25 @@ export default class GameMap
 
         $('.setBaseLayer').click(function(e){
             let layerId     = $(e.currentTarget).attr('data-id');
-                this.leafletMap.removeLayer(this.baseLayers[this.baseLayer]);
+                if(this.baseLayer !== 'greyLayer')
+                {
+                    this.leafletMap.removeLayer(this.baseLayers[this.baseLayer]);
+                }
 
             $('.setBaseLayer').removeClass(window.SCIM.outlineClass);
             this.baseLayer = layerId;
-            this.leafletMap.addLayer(this.baseLayers[layerId]);
+
+            if(layerId !== 'greyLayer')
+            {
+                this.leafletMap.addLayer(this.baseLayers[layerId]);
+            }
 
             $(e.currentTarget).addClass(window.SCIM.outlineClass);
+
+            if(layerId === 'greyLayer')
+            {
+                this.updateHash();
+            }
         }.bind(this));
 
         $('.updateLayerState').click(function(e){

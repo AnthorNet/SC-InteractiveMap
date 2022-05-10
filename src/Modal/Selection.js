@@ -1197,7 +1197,7 @@ L.Selection = L.Handler.extend({
 
     removeHooks: function()
     {
-        this._map.off('mousemove', this._doMouseMove, this );
+        //this._map.off('mousemove', this._doMouseMove, this );
         this._map.off('mousedown', this._doMouseDown, this );
         this._map.off('mouseup', this._doMouseUp, this );
         this._map._container.style.cursor = this.options.normCursor;

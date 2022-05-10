@@ -3589,7 +3589,7 @@ export default class BaseLayout
 
                         if(layerId === 'playerLightsLayer')
                         {
-                            if(this.playerLayers.playerLightsHaloLayer.layerGroup.hasLayer(this.playerLayers.playerLightsHaloLayer.subLayer))
+                            if(this.playerLayers.playerLightsHaloLayer.layerGroup !== null && this.playerLayers.playerLightsHaloLayer.layerGroup.hasLayer(this.playerLayers.playerLightsHaloLayer.subLayer))
                             {
                                 this.playerLayers.playerLightsHaloLayer.layerGroup.removeLayer(this.playerLayers.playerLightsHaloLayer.subLayer);
                                 $('.updatePlayerLayerState[data-id="playerLightsHaloLayer"] > i').removeClass('fa-light-switch-on').addClass('fa-light-switch-off');
