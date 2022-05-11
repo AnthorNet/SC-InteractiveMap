@@ -943,6 +943,11 @@ export default class SaveParser_Write
                 property += this.writeByte(0, false);
                 property += this.writeInt(currentProperty.value.modeType);
 
+                if(currentProperty.value.modeType === 2)
+                {
+                    property += this.writeString(currentProperty.value.modeUnk2);
+                    property += this.writeString(currentProperty.value.modeUnk3);
+                }
                 if(currentProperty.value.modeType === 3)
                 {
                     property += this.writeHex(currentProperty.value.modeUnk1);

@@ -894,6 +894,11 @@ export default class SaveParser_Read
                     this.skipBytes(1);
                     currentProperty.value.modeType = this.readInt();
 
+                    if(currentProperty.value.modeType === 2)
+                    {
+                        currentProperty.value.modeUnk2 = this.readString();
+                        currentProperty.value.modeUnk3 = this.readString();
+                    }
                     if(currentProperty.value.modeType === 3)
                     {
                         currentProperty.value.modeUnk1 = this.readHex(9);
@@ -974,6 +979,7 @@ export default class SaveParser_Read
                                     mapPropertySubProperties = this.readObjectProperty({});
                                     break;
                                 case 'StructProperty':
+                                    //Keysss
                                     if(parentType === 'LBBalancerData')
                                     {
                                         mapPropertySubProperties.mNormalIndex   = this.readInt();
