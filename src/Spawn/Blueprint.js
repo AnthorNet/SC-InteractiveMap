@@ -77,7 +77,7 @@ export default class Spawn_Blueprint
             // Apply SaveParser_FicsIt
             for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
             {
-                this.clipboard.data[i].parent = SaveParser_FicsIt.callADA(this.baseLayout, this.clipboard.data[i].parent, false);
+                this.clipboard.data[i].parent = SaveParser_FicsIt.callADA(this.baseLayout, this.clipboard.data[i].parent, true);
                 if(this.clipboard.data[i].parent === null)
                 {
                     this.clipboard.data.splice(i, 1);

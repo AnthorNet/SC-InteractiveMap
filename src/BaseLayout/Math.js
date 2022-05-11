@@ -1,5 +1,18 @@
 export default class BaseLayout_Math
 {
+    static getDistance(point1, point2)
+    {
+        let x1 = (point1.x !== undefined) ? point1.x : point1[0];
+        let y1 = (point1.y !== undefined) ? point1.y : point1[1];
+        let z1 = (point1.z !== undefined) ? point1.z : point1[2];
+
+        let x2 = (point2.x !== undefined) ? point2.x : point2[0];
+        let y2 = (point2.y !== undefined) ? point2.y : point2[1];
+        let z2 = (point2.z !== undefined) ? point2.z : point2[2];
+
+        return Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)) + ((z1 - z2) * (z1 - z2)));
+    }
+
     // See: https://github.com/EpicGames/UnrealEngine/blob/4.26/Engine/Source/Runtime/Core/Private/Math/UnrealMath.cpp#L598
     static getQuaternionToEuler(quaternion)
     {
@@ -346,14 +359,10 @@ export default class BaseLayout_Math
 
                                     if(oldPoint !== null)
                                     {
-                                        splineDistance += Math.sqrt(
-                                            ((newPoint.x - oldPoint.x) * (newPoint.x - oldPoint.x))
-                                          + ((newPoint.y - oldPoint.y) * (newPoint.y - oldPoint.y))
-                                          + ((newPoint.z - oldPoint.z) * (newPoint.z - oldPoint.z))
-                                        ) / 100;
+                                        splineDistance += BaseLayout_Math.getDistance(newPoint, oldPoint) / 100;
                                     }
 
-                                    oldPoint = newPoint
+                                    oldPoint = newPoint;
                             }
                         }
 
@@ -365,11 +374,7 @@ export default class BaseLayout_Math
                 }
 
                 // Straight distance is used on pipe volume calculation
-                let distanceStraight    = Math.sqrt(
-                        ((originalSplineData[splineDataLength - 1].x - originalSplineData[0].x) * (originalSplineData[splineDataLength - 1].x - originalSplineData[0].x)) // X
-                        + ((originalSplineData[splineDataLength - 1].y - originalSplineData[0].y) * (originalSplineData[splineDataLength - 1].y - originalSplineData[0].y)) // Y
-                        + ((originalSplineData[splineDataLength - 1].z - originalSplineData[0].z) * (originalSplineData[splineDataLength - 1].z - originalSplineData[0].z)) // Z
-                      ) / 100;
+                let distanceStraight    = BaseLayout_Math.getDistance(originalSplineData[splineDataLength - 1], originalSplineData[0]) / 100;
 
                 return {
                     distance            : splineDistance,

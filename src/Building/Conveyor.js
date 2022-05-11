@@ -55,7 +55,7 @@ export default class Building_Conveyor
     }
 
     /*
-     * ADD/DELETE
+     * ADD
      */
     static add(baseLayout, currentObject)
     {
@@ -94,10 +94,7 @@ export default class Building_Conveyor
                     // Loop each belt segments trying to figure if the item is in
                     for(let s = 1; s < splineData.originalData.length; s++)
                     {
-                        let segmentDistance = Math.sqrt(
-                            ((splineData.originalData[s][0] - splineData.originalData[s-1][0]) * (splineData.originalData[s][0] - splineData.originalData[s-1][0]))
-                          + ((splineData.originalData[s][1] - splineData.originalData[s-1][1]) * (splineData.originalData[s][1] - splineData.originalData[s-1][1]))
-                        );
+                        let segmentDistance = BaseLayout_Math.getDistance(splineData.originalData[s], splineData.originalData[s-1]);
 
                         if(currentObjectPosition >= currentBeltDistance && currentObjectPosition <= (currentBeltDistance + segmentDistance))
                         {

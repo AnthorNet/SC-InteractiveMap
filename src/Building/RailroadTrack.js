@@ -1,4 +1,6 @@
 /* global L */
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
+
 import Modal_Selection                          from '../Modal/Selection.js';
 
 export default class Building_RailroadTrack
@@ -34,13 +36,54 @@ export default class Building_RailroadTrack
         return null;
     }
 
+    /*
+     * ADD
+     */
+    static add(baseLayout, currentObject)
+    {
+        baseLayout.setupSubLayer('playerTracksLayer');
+
+        let splineData      = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
+        let track           = L.conveyor(
+                splineData.points,
+                {
+                    pathName    : currentObject.pathName,
+                    weight      : 600,
+                    color       : '#ff69b4',
+                    opacity     : 0.9
+                }
+            );
+
+        baseLayout.bindMouseEvents(track);
+
+        baseLayout.playerLayers.playerTracksLayer.distance += splineData.distance;
+        baseLayout.playerLayers.playerTracksLayer.elements.push(track);
+
+        if(baseLayout.playerLayers.playerTracksLayer.filtersCount !== undefined)
+        {
+            let trackClassName = currentObject.className;
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C' || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
+                {
+                    trackClassName = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C';
+                }
+
+            if(baseLayout.playerLayers.playerTracksLayer.filtersCount[trackClassName] === undefined)
+            {
+                baseLayout.playerLayers.playerTracksLayer.filtersCount[trackClassName] = {distance: 0};
+            }
+            baseLayout.playerLayers.playerTracksLayer.filtersCount[trackClassName].distance += splineData.distance;
+        }
+
+        return {layer: 'playerTracksLayer', marker: track};
+    }
+
     /**
      * TOOLTIP
      */
     static bindTooltip(baseLayout, currentObject, tooltipOptions)
     {
         tooltipOptions.direction    = 'bottom';
-        
+
         let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, 'playerTracksLayer');
             if(marker !== null)
             {

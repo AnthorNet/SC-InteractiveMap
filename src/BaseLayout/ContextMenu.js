@@ -28,8 +28,6 @@ import Modal_Object_Pattern                     from '../Modal/Object/Pattern.js
 import Modal_Object_Position                    from '../Modal/Object/Position.js';
 import Modal_Object_SpawnAround                 from '../Modal/Object/SpawnAround.js';
 
-import SubSystem_Player                         from '../SubSystem/Player.js';
-
 export default class BaseLayout_ContextMenu
 {
     constructor(options)
@@ -44,7 +42,7 @@ export default class BaseLayout_ContextMenu
 
         if(currentObject !== null)
         {
-            let faunaData   = this.baseLayout.getFaunaDataFromClassName(currentObject.className);
+            let faunaData   = this.baseLayout.faunaSubsystem.getDataFromClassName(currentObject.className);
                 if(faunaData !== null)
                 {
                     contextMenu.push({
@@ -59,7 +57,7 @@ export default class BaseLayout_ContextMenu
                     contextMenu.push({
                         icon        : 'fa-trash-alt',
                         text        : 'Delete',
-                        callback    : this.baseLayout.deleteFauna
+                        callback    : this.baseLayout.faunaSubsystem.delete
                     });
                 }
 

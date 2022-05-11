@@ -2,6 +2,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import SubSystem_Fauna                          from '../SubSystem/Fauna.js';
+
 export default class Spawn_Fauna
 {
     constructor(options)
@@ -116,9 +118,11 @@ export default class Spawn_Fauna
                 properties: [], type: 0
             });
 
-            //TODO: Ensure the creature spawner still exists in the save!
-            let newCreatureSpawnerId = "Persistent_Exploration_2:PersistentLevel.BP_CreatureSpawner432";
-                newFauna.properties.push({name: "mOwningSpawner", type: "ObjectProperty", value: {levelName: "Persistent_Exploration_2", pathName: newCreatureSpawnerId}});
+            newFauna.properties.push({
+                name    : "mOwningSpawner",
+                type    : "ObjectProperty",
+                value   : this.baseLayout.faunaSubsystem.getClosestCreatureSpawner(this.centerObject)
+            });
 
             this.baseLayout.saveGameParser.addObject(newFauna);
 
@@ -128,7 +132,7 @@ export default class Spawn_Fauna
                 callback: 'deleteFauna'
             });
 
-            let result = this.baseLayout.addPlayerFauna(newFauna);
+            let result = this.baseLayout.faunaSubsystem.add(newFauna);
                 return new Promise(function(resolve){
                     $('#liveLoader .progress-bar').css('width', Math.round(currentQty / this.maxRadius * 100) + '%');
                     window.requestAnimationFrame(resolve);

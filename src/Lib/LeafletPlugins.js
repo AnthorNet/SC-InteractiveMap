@@ -60,40 +60,43 @@ L.Control.SliderControl = L.Control.extend({
 
     startSlider: function()
     {
-        this.options.leafletSlider  = $("#leaflet-slider").slider({
-            orientation         : 'vertical',
-            reversed            : true,
-            range               : true,
-            min                 : this.options.minAltitude,
-            max                 : this.options.maxAltitude,
-            value               : [this.options.minAltitude, this.options.maxAltitude],
+        if($.fn.slider)
+        {
+            this.options.leafletSlider  = $("#leaflet-slider").slider({
+                orientation         : 'vertical',
+                reversed            : true,
+                range               : true,
+                min                 : this.options.minAltitude,
+                max                 : this.options.maxAltitude,
+                value               : [this.options.minAltitude, this.options.maxAltitude],
 
-            tooltip_split       : true,
-            tooltip_position    : 'left',
-            formatter           : function(value){
-		return 'Z: ' + Math.round(value / 100) + 'm';
-            },
+                tooltip_split       : true,
+                tooltip_position    : 'left',
+                formatter           : function(value){
+                    return 'Z: ' + Math.round(value / 100) + 'm';
+                },
 
-            step: 100
-        });
+                step: 100
+            });
 
-        this.options.leafletSlider.on('slide', function(slideEvt){
-            this.options.map.dragging.disable();
+            this.options.leafletSlider.on('slide', function(slideEvt){
+                this.options.map.dragging.disable();
 
-            if(this.options.updateAltitudeLayersIsRunning !== false)
-            {
-                clearTimeout(this.options.updateAltitudeLayersIsRunning);
-            }
+                if(this.options.updateAltitudeLayersIsRunning !== false)
+                {
+                    clearTimeout(this.options.updateAltitudeLayersIsRunning);
+                }
 
-            this.options.updateAltitudeLayersIsRunning = setTimeout(function(){
-                this.options.baseLayout.updateAltitudeLayers(slideEvt.value[0], slideEvt.value[1]);
+                this.options.updateAltitudeLayersIsRunning = setTimeout(function(){
+                    this.options.baseLayout.updateAltitudeLayers(slideEvt.value[0], slideEvt.value[1]);
 
-                $('#altitudeSliderInputs input[name=minAltitude]').val(Math.round(slideEvt.value[0] / 100));
-                $('#altitudeSliderInputs input[name=maxAltitude]').val(Math.round(slideEvt.value[1] / 100));
+                    $('#altitudeSliderInputs input[name=minAltitude]').val(Math.round(slideEvt.value[0] / 100));
+                    $('#altitudeSliderInputs input[name=maxAltitude]').val(Math.round(slideEvt.value[1] / 100));
 
-                this.options.map.dragging.enable();
-            }.bind(this), 10);
-        }.bind(this));
+                    this.options.map.dragging.enable();
+                }.bind(this), 10);
+            }.bind(this));
+        }
     },
 
     updateSliderAltitudes(minAltitude, maxAltitude)

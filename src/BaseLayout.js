@@ -10,6 +10,7 @@ import BaseLayout_Tooltip                       from './BaseLayout/Tooltip.js';
 
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
+import SubSystem_Fauna                          from './SubSystem/Fauna.js';
 import SubSystem_GameState                      from './SubSystem/GameState.js';
 import SubSystem_Map                            from './SubSystem/Map.js';
 import SubSystem_PipeNetwork                    from './SubSystem/PipeNetwork.js';
@@ -82,8 +83,6 @@ export default class BaseLayout
         this.itemsCategories                    = {};
         this.toolsData                          = null;
         this.toolsCategories                    = {};
-        this.faunaData                          = null;
-        this.faunaCategories                    = {};
         this.recipesData                        = null;
         this.schematicsData                     = null;
 
@@ -365,8 +364,12 @@ export default class BaseLayout
                         this.itemsCategories        = data.itemsCategories;
                         this.toolsData              = data.toolsData;
                         this.toolsCategories        = data.toolsCategories;
-                        this.faunaData              = data.faunaData;
-                        this.faunaCategories        = data.faunaCategories;
+
+                        this.faunaSubsystem         = new SubSystem_Fauna({
+                            baseLayout  : this,
+                            data        : data.faunaData,
+                            categories  : data.faunaCategories
+                        });
 
                         this.recipesData            = data.recipesData;
                         this.schematicsData         = data.schematicsData;
@@ -546,7 +549,7 @@ export default class BaseLayout
             console.time('renderObjects');
             window.requestAnimationFrame(resolve);
         }.bind(this)).then(() => {
-            this.parsingObjects = this.parseObjects();
+            this.parseObjects();
         });
     }
 
@@ -740,6 +743,11 @@ export default class BaseLayout
                     }
             }
 
+            if(currentObject.className === '/Game/FactoryGame/Character/Creature/BP_CreatureSpawner.BP_CreatureSpawner_C')
+            {
+                this.faunaSubsystem.creatureSpawners.push(currentObject.pathName);
+                continue;
+            }
             if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C')
             {
                 this.addResourceDeposit(currentObject);
@@ -792,7 +800,6 @@ export default class BaseLayout
                 '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C',
 
                 '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C',
-                '/Game/FactoryGame/Character/Creature/BP_CreatureSpawner.BP_CreatureSpawner_C',
 
                 // HUB PARTS
                 '/Game/FactoryGame/Buildable/Factory/WorkBench/Build_WorkBenchIntegrated.Build_WorkBenchIntegrated_C',
@@ -973,13 +980,13 @@ export default class BaseLayout
         }
         if(currentObject.className.includes('Train/Track/Build_RailroadTrack') || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
         {
-            return resolve(this.addPlayerTrack(currentObject));
+            return resolve(Building_RailroadTrack.add(this, currentObject));
         }
 
         // Add fauna
         if(currentObject.className.includes('/Game/FactoryGame/Character/Creature/Wildlife/') || currentObject.className.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
         {
-            return resolve(this.addPlayerFauna(currentObject));
+            return resolve(this.faunaSubsystem.add(currentObject));
         }
 
         // Add buildings data...
@@ -1317,82 +1324,6 @@ export default class BaseLayout
         {
             element.options.extraMarker.addTo(this.playerLayers[layerId].subLayer);
         }
-    }
-
-    addPlayerFauna(currentObject)
-    {
-        let layerId     = 'playerFaunaLayer';
-        let iconColor   = '#b34848';
-        let iconImage   = this.staticUrl + '/img/mapMonstersIcon.png';
-
-        let faunaData   = this.getFaunaDataFromClassName(currentObject.className);
-            if(faunaData !== null)
-            {
-                iconColor   = faunaData.mapColor;
-                iconImage   = faunaData.image;
-                layerId     = faunaData.mapLayer;
-
-                if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
-                {
-                    let isSpaceRabbitPersistent = this.getObjectProperty(currentObject, 'mIsPersistent');
-                        if(isSpaceRabbitPersistent !== null)
-                        {
-                            iconColor = '#b3ffb3';
-                            this.playerLayers[layerId].count++;
-                        }
-                }
-            }
-
-        let faunaMarker = L.marker(
-                this.satisfactoryMap.unproject(currentObject.transform.translation),
-                {
-                    pathName: currentObject.pathName,
-                    icon: this.getMarkerIcon('#FFFFFF', iconColor, iconImage),
-                    riseOnHover: true,
-                    zIndexOffset: 900
-                }
-            );
-
-        this.setupSubLayer(layerId);
-        this.bindMouseEvents(faunaMarker);
-        this.playerLayers[layerId].elements.push(faunaMarker);
-
-        if(this.playerLayers[layerId].filtersCount !== undefined)
-        {
-            if(this.playerLayers[layerId].filtersCount[currentObject.className] === undefined)
-            {
-                this.playerLayers[layerId].filtersCount[currentObject.className] = 0;
-            }
-            this.playerLayers[layerId].filtersCount[currentObject.className]++;
-        }
-
-        return {layer: layerId, marker: faunaMarker};
-    }
-
-    deleteFauna(marker)
-    {
-        let baseLayout      = marker.baseLayout;
-        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let layerId         = 'playerFaunaLayer';
-
-        let faunaData       = baseLayout.getFaunaDataFromClassName(currentObject.className);
-            if(faunaData !== null)
-            {
-                layerId = faunaData.mapLayer;
-
-                if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
-                {
-                    let isSpaceRabbitPersistent = baseLayout.getObjectProperty(currentObject, 'mIsPersistent');
-                        if(isSpaceRabbitPersistent !== null)
-                        {
-                            baseLayout.playerLayers.playerCratesLayer.count--;
-                        }
-                }
-            }
-
-        baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
-        baseLayout.deleteMarkerFromElements(layerId, marker.relatedTarget);
-        baseLayout.setBadgeLayerCount(layerId);
     }
 
     addResourceDeposit(currentObject)
@@ -3133,44 +3064,6 @@ export default class BaseLayout
             }
     }
 
-    addPlayerTrack(currentObject)
-    {
-        this.setupSubLayer('playerTracksLayer');
-
-        let splineData      = BaseLayout_Math.extractSplineData(this, currentObject);
-        let track           = L.conveyor(
-                splineData.points,
-                {
-                    pathName    : currentObject.pathName,
-                    weight      : 600,
-                    color       : '#ff69b4',
-                    opacity     : 0.9
-                }
-            );
-
-        this.bindMouseEvents(track);
-
-        this.playerLayers.playerTracksLayer.distance += splineData.distance;
-        this.playerLayers.playerTracksLayer.elements.push(track);
-
-        if(this.playerLayers.playerTracksLayer.filtersCount !== undefined)
-        {
-            let trackClassName = currentObject.className;
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C' || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
-                {
-                    trackClassName = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C';
-                }
-
-            if(this.playerLayers.playerTracksLayer.filtersCount[trackClassName] === undefined)
-            {
-                this.playerLayers.playerTracksLayer.filtersCount[trackClassName] = {distance: 0};
-            }
-            this.playerLayers.playerTracksLayer.filtersCount[trackClassName].distance += splineData.distance;
-        }
-
-        return {layer: 'playerTracksLayer', marker: track};
-    }
-
     addPlayerPowerLine(currentObject)
     {
         this.setupSubLayer('playerPowerGridLayer');
@@ -3201,8 +3094,8 @@ export default class BaseLayout
                         let sourceTranslation = currentObjectSourceOuterPath.transform.translation;
                             if(this.detailedModels !== null && this.detailedModels[currentObjectSourceOuterPath.className] !== undefined && this.detailedModels[currentObjectSourceOuterPath.className].powerConnection !== undefined)
                             {
-                                let currentModel = this.detailedModels[currentObjectSourceOuterPath.className];
-                                    sourceTranslation= BaseLayout_Math.getPointRotation(
+                                let currentModel        = this.detailedModels[currentObjectSourceOuterPath.className];
+                                    sourceTranslation   = BaseLayout_Math.getPointRotation(
                                         [
                                             sourceTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
                                             sourceTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
@@ -3210,12 +3103,13 @@ export default class BaseLayout
                                         sourceTranslation,
                                         currentObjectSourceOuterPath.transform.rotation
                                     );
+                                    sourceTranslation[2]    = currentObjectSourceOuterPath.transform.translation[2];
                             }
                         let targetTranslation = currentObjectTargetOuterPath.transform.translation;
                             if(this.detailedModels !== null && this.detailedModels[currentObjectTargetOuterPath.className] !== undefined && this.detailedModels[currentObjectTargetOuterPath.className].powerConnection !== undefined)
                             {
-                                let currentModel = this.detailedModels[currentObjectTargetOuterPath.className];
-                                    targetTranslation= BaseLayout_Math.getPointRotation(
+                                let currentModel        = this.detailedModels[currentObjectTargetOuterPath.className];
+                                    targetTranslation   = BaseLayout_Math.getPointRotation(
                                         [
                                             targetTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
                                             targetTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
@@ -3223,6 +3117,7 @@ export default class BaseLayout
                                         targetTranslation,
                                         currentObjectTargetOuterPath.transform.rotation
                                     );
+                                    targetTranslation[2]    = currentObjectTargetOuterPath.transform.translation[2];
                             }
 
 
@@ -3239,10 +3134,9 @@ export default class BaseLayout
 
                         this.playerLayers.playerPowerGridLayer.elements.push(powerline);
 
-                        this.playerLayers.playerPowerGridLayer.distance += Math.sqrt(
-                            ((sourceTranslation[0] - targetTranslation[0]) * (sourceTranslation[0] - targetTranslation[0]))
-                          + ((sourceTranslation[1] - targetTranslation[1]) * (sourceTranslation[1] - targetTranslation[1]))
-                        ) / 100;
+                        //TODO: Is powerline distance using building anchor or center?
+                        //this.playerLayers.playerPowerGridLayer.distance += BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
+                        this.playerLayers.playerPowerGridLayer.distance += BaseLayout_Math.getDistance(sourceTranslation, targetTranslation) / 100;
 
                         return {layer: 'playerPowerGridLayer', marker: powerline};
                     }
@@ -3342,10 +3236,7 @@ export default class BaseLayout
 
             if(currentObjectSourceOuterPath !== null && currentObjectTargetOuterPath !== null)
             {
-                this.playerLayers.playerPowerGridLayer.distance -= Math.sqrt(
-                    ((currentObjectSourceOuterPath.transform.translation[0] - currentObjectTargetOuterPath.transform.translation[0]) * (currentObjectSourceOuterPath.transform.translation[0] - currentObjectTargetOuterPath.transform.translation[0]))
-                  + ((currentObjectSourceOuterPath.transform.translation[1] - currentObjectTargetOuterPath.transform.translation[1]) * (currentObjectSourceOuterPath.transform.translation[1] - currentObjectTargetOuterPath.transform.translation[1]))
-                ) / 100;
+                this.playerLayers.playerPowerGridLayer.distance -= BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
             }
         }
 
@@ -4712,6 +4603,11 @@ export default class BaseLayout
 
     getBuildingDataFromClassName(className)
     {
+        if(this.buildingDataClassNameHashTable[className] !== undefined)
+        {
+            return this.buildingsData[this.buildingDataClassNameHashTable[className]];
+        }
+
         if(className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C'){ className = '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass.Build_GeneratorBiomass_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C'){ className = '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StoragePlayer.Build_StoragePlayer_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'){ className = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'; }
@@ -4798,49 +4694,12 @@ export default class BaseLayout
         if(className === '/Game/InfiniteLogistics/Buildable/InfinitePipeHyper/Build_InfinitePipeHyper.Build_InfinitePipeHyper_C'){ className = '/Game/FactoryGame/Buildable/Factory/PipeHyper/Build_PipeHyper.Build_PipeHyper_C'; }
         if(className === '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C'){ className = '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C'; }
 
-        if(this.buildingDataClassNameHashTable[className] !== undefined)
-        {
-            return this.buildingsData[this.buildingDataClassNameHashTable[className]];
-        }
-
         for(let i in this.buildingsData)
         {
             if(this.buildingsData[i].className !== undefined && this.buildingsData[i].className === className)
             {
                 this.buildingDataClassNameHashTable[className] = i;
                 return this.buildingsData[i];
-            }
-        }
-
-        return null;
-    }
-
-
-
-    getFaunaDataFromClassName(className)
-    {
-        if(this.faunaData[className] !== undefined)
-        {
-            return this.faunaData[className];
-        }
-
-        for(let i in this.faunaData)
-        {
-            if(this.faunaData[i].className !== undefined && this.faunaData[i].className === className)
-            {
-                this.faunaData[i].id = i;
-                return this.faunaData[i];
-            }
-        }
-
-        if(className.includes('/Game/FactoryGame/Character/Creature/Wildlife/') || className.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
-        {
-            console.log('Missing fauna className: ' + className);
-
-            if(typeof Sentry !== 'undefined')
-            {
-                Sentry.setContext('className', {className: className});
-                Sentry.captureMessage('Missing fauna className: ' + className);
             }
         }
 

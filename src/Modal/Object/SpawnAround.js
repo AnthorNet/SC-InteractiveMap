@@ -30,10 +30,15 @@ export default class Modal_Object_SpawnAround
 
             inputOptions.push({group: 'Pixel Art', text: 'Import an image', value: 'importImage'});
 
-            for(let faunaId in baseLayout.faunaData)
-            {
-                inputOptions.push({group: 'Fauna - ' + baseLayout.faunaCategories[baseLayout.faunaData[faunaId].category], text: baseLayout.faunaData[faunaId].name, value: baseLayout.faunaData[faunaId].className});
-            }
+            let faunaData = baseLayout.faunaSubsystem.data;
+                for(let faunaId in faunaData)
+                {
+                    inputOptions.push({
+                        group   : 'Fauna - ' + baseLayout.faunaSubsystem.categories[faunaData[faunaId].category],
+                        text    : faunaData[faunaId].name,
+                        value   : faunaData[faunaId].className
+                    });
+                }
 
         BaseLayout_Modal.form({
             title       : 'Spawn around "' + buildingData.name + '"',
@@ -56,7 +61,7 @@ export default class Modal_Object_SpawnAround
                 {
                     form.useOwnMaterials = parseInt(form.useOwnMaterials);
 
-                    let faunaData = baseLayout.getFaunaDataFromClassName(form.form);
+                    let faunaData = baseLayout.faunaSubsystem.getDataFromClassName(form.form);
                         if(faunaData !== null)
                         {
                             return BaseLayout_Modal.form({

@@ -2,7 +2,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
-import SubSystem_Creature                       from '../SubSystem/Creature.js';
+import SubSystem_Fauna                          from '../SubSystem/Fauna.js';
 import SubSystem_Unlock                         from '../SubSystem/Unlock.js';
 
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
@@ -46,12 +46,11 @@ export default class BaseLayout_Tooltip
 
     getTooltip(currentObject)
     {
-        let faunaData = this.baseLayout.getFaunaDataFromClassName(currentObject.className);
+        let faunaData = this.baseLayout.faunaSubsystem.getDataFromClassName(currentObject.className);
 
             if(faunaData !== null)
             {
-                let creature            = new SubSystem_Creature({baseLayout: this.baseLayout, creature: currentObject});
-                    faunaData.health    = creature.getCurrentHealth();
+                faunaData.health = this.baseLayout.faunaSubsystem.getCurrentHealth(currentObject);
 
                 return this.setBuildingTooltipContent(currentObject, faunaData);
             }

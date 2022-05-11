@@ -82,7 +82,7 @@ export default class BaseLayout_History
                                     }
                                     break;
                                 case 'deleteFauna':
-                                    this.baseLayout.deleteFauna({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker});
+                                    this.baseLayout.faunaSubsystem.delete({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker});
                                     break;
                                 case 'restoreState':
 

@@ -979,7 +979,6 @@ export default class SaveParser_Read
                                     mapPropertySubProperties = this.readObjectProperty({});
                                     break;
                                 case 'StructProperty':
-                                    //Keysss
                                     if(parentType === 'LBBalancerData')
                                     {
                                         mapPropertySubProperties.mNormalIndex   = this.readInt();
