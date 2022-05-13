@@ -95,21 +95,21 @@ export default class Building_Conveyor
                     for(let s = 1; s < splineData.originalData.length; s++)
                     {
                         let segmentDistance = BaseLayout_Math.getDistance(splineData.originalData[s], splineData.originalData[s-1]);
+                            if(currentObjectPosition >= currentBeltDistance && currentObjectPosition <= (currentBeltDistance + segmentDistance))
+                            {
+                                baseLayout.addRadioactivityDot({
+                                    pathName    : currentObject.pathName + '_' + i,
+                                    transform   : {
+                                        translation : [
+                                            currentObject.transform.translation[0] + (splineData.originalData[s-1].x + (splineData.originalData[s].x - splineData.originalData[s-1].x) * ((currentObjectPosition - currentBeltDistance) / segmentDistance)),
+                                            currentObject.transform.translation[1] + (splineData.originalData[s-1].y + (splineData.originalData[s].y - splineData.originalData[s-1].y) * ((currentObjectPosition - currentBeltDistance) / segmentDistance)),
+                                            currentObject.transform.translation[2]
+                                        ]
+                                    }
+                                }, [{qty: 1, radioactiveDecay: radioactiveInventory[i].radioactiveDecay}]);
 
-                        if(currentObjectPosition >= currentBeltDistance && currentObjectPosition <= (currentBeltDistance + segmentDistance))
-                        {
-                            let radioactivePointData = [
-                                splineData.originalData[s-1][0] + (splineData.originalData[s][0] - splineData.originalData[s-1][0]) * ((currentObjectPosition - currentBeltDistance) / segmentDistance),
-                                splineData.originalData[s-1][1] + (splineData.originalData[s][1] - splineData.originalData[s-1][1]) * ((currentObjectPosition - currentBeltDistance) / segmentDistance),
-                                currentObject.transform.translation[2]
-                            ];
-                            baseLayout.addRadioactivityDot({
-                                pathName: currentObject.pathName + '_' + i,
-                                transform:{translation: radioactivePointData}
-                            }, [{qty: 1, radioactiveDecay: radioactiveInventory[i].radioactiveDecay}]);
-
-                            break;
-                        }
+                                break;
+                            }
 
                         currentBeltDistance += segmentDistance;
                     }

@@ -349,7 +349,8 @@ export default class BaseLayout_Math
 
                                     pointsCoordinates.push([
                                         currentObject.transform.translation[0] + newPoint.x,
-                                        currentObject.transform.translation[1] + newPoint.y
+                                        currentObject.transform.translation[1] + newPoint.y,
+                                        currentObject.transform.translation[2] + newPoint.z
                                     ]);
 
                                     points.push(baseLayout.satisfactoryMap.unproject([
