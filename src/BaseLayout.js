@@ -4044,7 +4044,7 @@ export default class BaseLayout
 
     setBadgeLayerCount(layerId)
     {
-        let currentLayerLength = this.playerLayers[layerId].elements.length;
+        let currentLayerLength  = this.playerLayers[layerId].elements.length;
         let currentLayerSuffix  = '';
 
         if(this.playerLayers[layerId].count !== undefined)

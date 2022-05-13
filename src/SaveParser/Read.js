@@ -63,7 +63,7 @@ export default class SaveParser_Read
         }
         else
         {
-            this.worker.postMessage({command: 'alert', message: 'That save version isn\'t supported anymore... Please save it again in the game.'});
+            this.worker.postMessage({command: 'alert', message: 'MAP\\SAVEPARSER\\That save version isn\'t supported anymore... Please save it again in the game.'});
         }
     }
 
@@ -109,7 +109,7 @@ export default class SaveParser_Read
             }
             catch(err)
             {
-                this.worker.postMessage({command: 'alert', message: 'Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'});
+                this.worker.postMessage({command: 'alert', message: 'MAP\\SAVEPARSER\\Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('pako', pako);
@@ -121,13 +121,13 @@ export default class SaveParser_Read
             }
 
             let currentPercentage = Math.round(this.handledByte / this.maxByte * 100);
-                this.worker.postMessage({command: 'loaderMessage', message: 'Inflating save game (' + currentPercentage + '%)...'});
+                this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Inflating save game (%1$s%)...', replace: currentPercentage});
                 this.worker.postMessage({command: 'loaderProgress', percentage: (currentPercentage * 0.3)});
         }
 
         delete this.arrayBuffer;
         console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
-        this.worker.postMessage({command: 'loaderMessage', message: 'Merging inflated chunks...'});
+        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Merging inflated chunks...'});
 
         // Create the complete Uint8Array
         let newChunkLength = 0;
@@ -161,7 +161,7 @@ export default class SaveParser_Read
         let countObjects                = this.readInt();
         let entitiesToObjects           = [];
             console.log('Parsing: ' + countObjects + ' objects...');
-            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects...', replace: new Intl.NumberFormat(this.language).format(countObjects)});
+            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), 0]});
             this.worker.postMessage({command: 'loaderProgress', percentage: 30});
 
             for(let i = 0; i < countObjects; i++)
@@ -191,6 +191,7 @@ export default class SaveParser_Read
 
                 if(i % 2500 === 0)
                 {
+                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
                     this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 15))});
                 }
             }
@@ -204,7 +205,7 @@ export default class SaveParser_Read
     parseEntities(entitiesToObjects, i, countEntities)
     {
         console.log('Parsing: ' + countEntities + ' entities...');
-        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities...', replace: new Intl.NumberFormat(this.language).format(countEntities)});
+        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), 0]});
         this.worker.postMessage({command: 'loaderProgress', percentage: 40});
 
         let objectsToFlush = {};
@@ -224,6 +225,7 @@ export default class SaveParser_Read
             }
             if(i % 2500 === 0)
             {
+                this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), Math.round(i / countEntities * 100)]});
                 this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
             }
         }
