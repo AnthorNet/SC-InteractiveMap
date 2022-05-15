@@ -9,19 +9,12 @@ export default class Modal_Map_Collectables
     get()
     {
         let playerCollectables  = this.baseLayout.playerStatistics.collectables;
-            $('.updateLayerState[data-collected]').each(function(i, el){
-                let layerId = $(el).attr('data-id');
-                    if(['sporeFlowers', 'smallRocks', 'largeRocks'].includes(layerId) === false)
-                    {
-                        let total = $(el).attr('data-total');
-                            $(el).attr('data-collected', 0);
-                            $(el).find('.badge').html(new Intl.NumberFormat(this.language).format(total));
-                    }
-            }.bind(this));
-
             for(let className in playerCollectables)
             {
-                playerCollectables[className].used = 0;
+                let dataTotal                           = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-total'));
+                    playerCollectables[className].used  = 0;
+                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', 0);
+                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
 
                 if(typeof this.baseLayout.satisfactoryMap.mapOptions !== 'undefined' && this.baseLayout.satisfactoryMap.mapOptions !== undefined && this.baseLayout.satisfactoryMap.mapOptions !== null)
                 {
@@ -49,7 +42,6 @@ export default class Modal_Map_Collectables
                                                 if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                                                 {
                                                     let dataCollected   = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected'));
-                                                    let dataTotal       = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-total'));
                                                     let updatedOpacity  = 1;
                                                         if(collectedStatus === true)
                                                         {
@@ -82,7 +74,6 @@ export default class Modal_Map_Collectables
 
 
                                                             let dataCollected   = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected')) + 1;
-                                                            let dataTotal       = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-total'));
                                                                 $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', dataCollected);
                                                                 $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
                                                         }
