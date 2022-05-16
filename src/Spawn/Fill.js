@@ -130,7 +130,7 @@ export default class Spawn_Fill
                 newFoundation.transform.translation[0]  = width;
                 newFoundation.transform.translation[1]  = height;
 
-                results.push(new Promise(function(resolve){
+                results.push(new Promise((resolve) => {
                     this.baseLayout.saveGameParser.addObject(newFoundation);
 
                     this.history.push({
@@ -141,20 +141,20 @@ export default class Spawn_Fill
                     });
 
                     return this.baseLayout.parseObject(newFoundation, resolve);
-                }.bind(this)));
+                }));
             }
 
-            return Promise.all(results).then(function(results){
+            return Promise.all(results).then((results) => {
                 for(let i = 0; i < results.length; i++)
                 {
                     this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
-            }.bind(this)).finally(function(){
+            }).finally(() => {
                 window.requestAnimationFrame(() => {
                     $('#liveLoader .progress-bar').css('width', Math.round((height - this.minHeight) / (this.maxHeight - this.minHeight) * 100) + '%');
                     this.loop((height + 800));
                 });
-            }.bind(this));
+            });
         }
 
         return this.release();

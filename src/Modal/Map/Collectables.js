@@ -153,17 +153,17 @@ export default class Modal_Map_Collectables
 
         $('#statisticsModalCollectables').html(html.join(''));
 
-        $('.resetCollectables').on('click', function(e){
+        $('.resetCollectables').on('click', (e) => {
             let currentId = $(e.currentTarget).attr('data-id');
                 $(e.currentTarget).parent().html('<i class="fas fa-cog fa-spin"></i>');
                 window.requestAnimationFrame(() => { this.reset(currentId); });
-        }.bind(this));
+        });
 
-        $('.clearCollectables').on('click', function(e){
+        $('.clearCollectables').on('click', (e) => {
             let currentId = $(e.currentTarget).attr('data-id');
                 $(e.currentTarget).parent().html('<i class="fas fa-cog fa-spin"></i>');
                 window.requestAnimationFrame(() => { this.clear(currentId); });
-        }.bind(this));
+        });
     }
 
     reset(className)

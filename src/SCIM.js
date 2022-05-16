@@ -44,7 +44,7 @@ export default class SCIM
     {
         if(this.urlScriptsVERSION !== null)
         {
-            this.intervalScriptsVERSION = setInterval(this.checkVersion.bind(this), 300 * 1000);
+            this.intervalScriptsVERSION = setInterval(() => { this.checkVersion() }, 300 * 1000);
         }
 
         // Handle pt_BR locales
@@ -57,7 +57,7 @@ export default class SCIM
             dataUrl             : this.translationDataUrl,
 
             language            : this.language,
-            startCallback       : function(){
+            startCallback       : () => {
                 this.map = new GameMap({
                     build               : this.build,
                     version             : this.scriptsVERSION,
@@ -76,19 +76,19 @@ export default class SCIM
                     $('#dropSaveGame').on('drag dragstart dragend dragover dragenter dragleave drop', function(e){e.preventDefault();e.stopPropagation();})
                                       .on('dragover dragenter', function(){$('#dropSaveGame').addClass('is-dragover');})
                                       .on('dragleave dragend drop', function(){$('#dropSaveGame').removeClass('is-dragover');})
-                                      .on('drop', function(e){ this.processSaveGameFile(e.originalEvent.dataTransfer.files[0]); }.bind(this));
-                    $('#saveGameFileInput').on('change', function(e){
+                                      .on('drop', (e) => { this.processSaveGameFile(e.originalEvent.dataTransfer.files[0]); });
+                    $('#saveGameFileInput').on('change', (e) => {
                         let currentFile = $(e.currentTarget).prop('files')[0];
                             $(e.currentTarget).val('');
 
                         this.processSaveGameFile(currentFile);
-                    }.bind(this));
+                    });
                 }
                 else
                 {
                     $('#dropSaveGame').remove();
                 }
-            }.bind(this)
+            }
         });
     }
 
@@ -102,13 +102,13 @@ export default class SCIM
 
                 let reader = new FileReader();
                     reader.readAsArrayBuffer(droppedFile);
-                    reader.onload = function(){
+                    reader.onload = () => {
                         this.drawNewBaseLayout({
                             droppedFileResult       : reader.result,
                             droppedFileName         : droppedFile.name
                         });
                         delete reader.result;
-                    }.bind(this);
+                    };
             }
             else
             {
@@ -213,14 +213,14 @@ export default class SCIM
         {
             if(this.urlScriptsVERSION !== null)
             {
-                $.get(this.urlScriptsVERSION, function(data){
+                $.get(this.urlScriptsVERSION, (data) => {
                     if(data > this.scriptsVERSION)
                     {
                         BaseLayout_Modal.alert(alertMessage);
                         clearInterval(this.intervalScriptsVERSION);
                         return false;
                     }
-                }.bind(this));
+                });
             }
         }
 

@@ -92,14 +92,14 @@ export default class Modal_Map_Players
                 this.addEquipmentSlot(1);
                 this.parse();
             });
-            $('.parseStatisticsPlayerInventoryDeleteGuest').on('click', function(e){
+            $('.parseStatisticsPlayerInventoryDeleteGuest').on('click', (e) => {
                 let pathName = $(e.target).attr('data-pathName');
                     if(this.baseLayout.players[pathName] !== undefined)
                     {
                         this.baseLayout.players[pathName].delete();
                     }
                 this.parse();
-            }.bind(this));
+            });
         }
     }
 

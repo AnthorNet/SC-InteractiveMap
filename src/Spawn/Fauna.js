@@ -133,13 +133,13 @@ export default class Spawn_Fauna
             });
 
             let result = this.baseLayout.faunaSubsystem.add(newFauna);
-                return new Promise(function(resolve){
+                return new Promise((resolve) => {
                     $('#liveLoader .progress-bar').css('width', Math.round(currentQty / this.maxRadius * 100) + '%');
                     window.requestAnimationFrame(resolve);
-                }.bind(this)).then(function(){
+                }).then(() => {
                     this.baseLayout.addElementToLayer(result.layer, result.marker);
                     this.loop((currentQty + 1));
-                }.bind(this));
+                });
         }
 
         return this.release();

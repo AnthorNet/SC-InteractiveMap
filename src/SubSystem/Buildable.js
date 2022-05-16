@@ -761,11 +761,11 @@ export default class SubSystem_Buildable
 
                     // Redraw!
                     new Promise(function(resolve){
-                        return this.parseObject(currentObject, resolve);
-                    }.bind(baseLayout)).then(function(result){
-                        this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-                        this.addElementToLayer(result.layer, result.marker);
-                    }.bind(baseLayout));
+                        return baseLayout.parseObject(currentObject, resolve);
+                    }).then(function(result){
+                        baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                        baseLayout.addElementToLayer(result.layer, result.marker);
+                    });
                 }
         }
     }
@@ -808,11 +808,11 @@ export default class SubSystem_Buildable
 
             // Redraw! (In case at some point we add different models ^^
             new Promise(function(resolve){
-                return this.parseObject(currentObject, resolve);
-            }.bind(baseLayout)).then(function(result){
-                this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-                this.addElementToLayer(result.layer, result.marker);
-            }.bind(baseLayout));
+                return baseLayout.parseObject(currentObject, resolve);
+            }).then(function(result){
+                baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                baseLayout.addElementToLayer(result.layer, result.marker);
+            });
         }
     }
 
@@ -856,10 +856,10 @@ export default class SubSystem_Buildable
 
         // Redraw!
         new Promise(function(resolve){
-            return this.parseObject(currentObject, resolve);
-        }.bind(baseLayout)).then(function(result){
-            this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-            this.addElementToLayer(result.layer, result.marker);
-        }.bind(baseLayout));
+            return baseLayout.parseObject(currentObject, resolve);
+        }).then(function(result){
+            baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+            baseLayout.addElementToLayer(result.layer, result.marker);
+        });
     }
 }

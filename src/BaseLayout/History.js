@@ -38,12 +38,12 @@ export default class BaseLayout_History
                 }
 
             return new Promise(function(resolve){
-                    $('#liveLoader').show()
-                                    .find('.progress-bar').css('width', '0%');
-                    window.requestAnimationFrame(resolve);
-                }.bind(this)).then(() => {
-                    this.undoLoop(currentOperations);
-                });
+                $('#liveLoader').show()
+                                .find('.progress-bar').css('width', '0%');
+                window.requestAnimationFrame(resolve);
+            }).then(() => {
+                this.undoLoop(currentOperations);
+            });
         }
 
         return this.doneUndo();
@@ -142,7 +142,7 @@ export default class BaseLayout_History
                 return new Promise(function(resolve){
                     $('#liveLoader .progress-bar').css('width', Math.round(i / currentOperations.values.length * 100) + '%');
                     window.requestAnimationFrame(resolve);
-                }.bind(this)).then(() => {
+                }).then(() => {
                     this.undoLoop(currentOperations, (i + 1));
                 });
             }

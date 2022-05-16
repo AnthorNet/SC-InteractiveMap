@@ -740,12 +740,12 @@ if('undefined' !== typeof L) // Avoid worker error
 
             // Flow animation
             this.options.currentDashOffset  = 0;
-            this.options.dashArrayAnimation = setInterval(function(){
+            this.options.dashArrayAnimation = setInterval(() => {
                 this.options.currentDashOffset++;
                 this.setStyle({
                     dashOffset: flowDirection * this.options.currentDashOffset * (this.options.weight / 4)
                 });
-            }.bind(this), 25);
+            }, 25);
 
             return this.setStyle({dashArray: (this.options.weight * 1.5) + " " + (this.options.weight  * 1.5)});
         },

@@ -65,18 +65,15 @@ export default class Building_PowerSwitch
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
+                    if(values.mBuildingTag !== '')
                     {
-                        if(values.mBuildingTag !== '')
-                        {
-                            baseLayout.setObjectProperty(currentObject, 'mHasBuildingTag', 1, 'BoolProperty');
-                            baseLayout.setObjectProperty(currentObject, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
-                        }
-                        else
-                        {
-                            baseLayout.deleteObjectProperty(currentObject, 'mHasBuildingTag');
-                            baseLayout.deleteObjectProperty(currentObject, 'mBuildingTag');
-                        }
+                        baseLayout.setObjectProperty(currentObject, 'mHasBuildingTag', 1, 'BoolProperty');
+                        baseLayout.setObjectProperty(currentObject, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
+                    }
+                    else
+                    {
+                        baseLayout.deleteObjectProperty(currentObject, 'mHasBuildingTag');
+                        baseLayout.deleteObjectProperty(currentObject, 'mBuildingTag');
                     }
                 }
             });

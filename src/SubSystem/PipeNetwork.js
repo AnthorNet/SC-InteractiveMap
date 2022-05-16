@@ -84,62 +84,58 @@ export default class SubSystem_PipeNetwork
                         inputOptions    : this.baseLayout.generateInventoryOptions(currentObject),
                         value           : ((currentFluidDescriptor !== null) ? currentFluidDescriptor.pathName : 'NULL')
                     }],
-                    callback    : function(values)
-                    {
-                        if(values !== null)
+                    callback    : (values) => {
+                        if(values.mFluidDescriptor === 'NULL')
                         {
-                            if(values.mFluidDescriptor === 'NULL')
-                            {
-                                this.baseLayout.deleteObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
-                            }
-                            else
-                            {
-                                this.baseLayout.setObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor', {levelName: "", pathName: values.mFluidDescriptor}, 'ObjectProperty');
-                            }
-
-                            // Handle network inventories...
-                            let mFluidIntegrantScriptInterfaces = this.baseLayout.getObjectProperty(currentObjectPipeNetwork, 'mFluidIntegrantScriptInterfaces');
-                                if(mFluidIntegrantScriptInterfaces !== null)
-                                {
-                                    for(let i = 0; i < mFluidIntegrantScriptInterfaces.values.length; i++)
-                                    {
-                                        let currentObjectPathName = mFluidIntegrantScriptInterfaces.values[i].pathName.split('.');
-                                        let endWith               = '.' + currentObjectPathName.pop();
-                                            if(this.baseLayout.availablePipeConnection.includes(endWith) === false)
-                                            {
-                                                    currentObjectPathName   = currentObjectPathName.join('.');
-                                                let currentObject           = this.baseLayout.saveGameParser.getTargetObject(currentObjectPathName);
-                                                    if(currentObject !== null)
-                                                    {
-                                                        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
-                                                        {
-                                                            let mInventory = this.baseLayout.getObjectProperty(currentObject, 'mInventory');
-                                                                if(mInventory !== null)
-                                                                {
-                                                                    let currentObjectInventory = this.baseLayout.saveGameParser.getTargetObject(mInventory.pathName);
-                                                                        if(currentObjectInventory !== null)
-                                                                        {
-                                                                            let mInventoryStacks = this.baseLayout.getObjectProperty(currentObjectInventory, 'mInventoryStacks');
-                                                                                if(mInventoryStacks !== null)
-                                                                                {
-                                                                                    if(values.mFluidDescriptor === 'NULL')
-                                                                                    {
-                                                                                        mInventoryStacks.values[0][0].value.itemName = '';
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        mInventoryStacks.values[0][0].value.itemName = values.mFluidDescriptor;
-                                                                                    }
-                                                                                }
-                                                                        }
-                                                                }
-                                                        }
-                                                    }
-                                            }
-                                    }
-                                }
+                            this.baseLayout.deleteObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor');
                         }
-                    }.bind(this)
+                        else
+                        {
+                            this.baseLayout.setObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor', {levelName: "", pathName: values.mFluidDescriptor}, 'ObjectProperty');
+                        }
+
+                        // Handle network inventories...
+                        let mFluidIntegrantScriptInterfaces = this.baseLayout.getObjectProperty(currentObjectPipeNetwork, 'mFluidIntegrantScriptInterfaces');
+                            if(mFluidIntegrantScriptInterfaces !== null)
+                            {
+                                for(let i = 0; i < mFluidIntegrantScriptInterfaces.values.length; i++)
+                                {
+                                    let currentObjectPathName = mFluidIntegrantScriptInterfaces.values[i].pathName.split('.');
+                                    let endWith               = '.' + currentObjectPathName.pop();
+                                        if(this.baseLayout.availablePipeConnection.includes(endWith) === false)
+                                        {
+                                                currentObjectPathName   = currentObjectPathName.join('.');
+                                            let currentObject           = this.baseLayout.saveGameParser.getTargetObject(currentObjectPathName);
+                                                if(currentObject !== null)
+                                                {
+                                                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
+                                                    {
+                                                        let mInventory = this.baseLayout.getObjectProperty(currentObject, 'mInventory');
+                                                            if(mInventory !== null)
+                                                            {
+                                                                let currentObjectInventory = this.baseLayout.saveGameParser.getTargetObject(mInventory.pathName);
+                                                                    if(currentObjectInventory !== null)
+                                                                    {
+                                                                        let mInventoryStacks = this.baseLayout.getObjectProperty(currentObjectInventory, 'mInventoryStacks');
+                                                                            if(mInventoryStacks !== null)
+                                                                            {
+                                                                                if(values.mFluidDescriptor === 'NULL')
+                                                                                {
+                                                                                    mInventoryStacks.values[0][0].value.itemName = '';
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    mInventoryStacks.values[0][0].value.itemName = values.mFluidDescriptor;
+                                                                                }
+                                                                            }
+                                                                    }
+                                                            }
+                                                    }
+                                                }
+                                        }
+                                }
+                            }
+                    }
                 });
             }
     }

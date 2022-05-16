@@ -54,7 +54,7 @@ export default class Modal_Schematics
                     }
                 }
 
-            let schematicsDataKey = Object.keys(currentData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
+            let schematicsDataKey = Object.keys(currentData).sort((a, b) => { return a.localeCompare(b); });
 
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
@@ -114,22 +114,23 @@ export default class Modal_Schematics
 
         $('#statisticsModalSchematics').html(html.join(''));
 
-        $('#statisticsModalSchematics .updateAllAlternativeStatus').on('click', function(e){
-            $('#statisticsModalSchematics .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + '][data-tier=' + $(e.currentTarget).attr('data-tier') + ']').each(function(index, el){
-                this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
-            }.bind(this));
+        $('#statisticsModalSchematics .updateAllAlternativeStatus').on('click', (e) => {
+            $('#statisticsModalSchematics .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + '][data-tier=' + $(e.currentTarget).attr('data-tier') + ']')
+                .each((i, el) => {
+                    this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+                });
 
             // Reset status
             this.parseSchematics(parseInt($(e.currentTarget).attr('data-tier')));
-        }.bind(this)).css('cursor', 'pointer');
+        }).css('cursor', 'pointer');
 
-        $('#statisticsModalSchematics .updateAlternativeStatus').on('click', function(e){
+        $('#statisticsModalSchematics .updateAlternativeStatus').on('click', (e) => {
             this.switchSchematic($(e.currentTarget).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
 
             // Reset status
             $(e.currentTarget).find('i').tooltip('dispose');
             this.parseSchematics(parseInt($(e.currentTarget).attr('data-tier')));
-        }.bind(this)).css('cursor', 'pointer');
+        }).css('cursor', 'pointer');
     }
 
     parseAlternateRecipes()
@@ -142,9 +143,9 @@ export default class Modal_Schematics
         let total       = 0;
         let htmlData    = [];
 
-        let schematicsDataKey = Object.keys(this.baseLayout.schematicsData).sort(function(a,b){
+        let schematicsDataKey = Object.keys(this.baseLayout.schematicsData).sort((a, b) => {
                 return this.baseLayout.schematicsData[a].name.localeCompare(this.baseLayout.schematicsData[b].name);
-            }.bind(this));
+            });
 
         for(let i = 0; i < schematicsDataKey.length; i++)
         {
@@ -258,22 +259,23 @@ export default class Modal_Schematics
 
         $('#statisticsModalAlternateRecipes').html(html.join(''));
 
-        $('#statisticsModalAlternateRecipes .updateAllAlternativeStatus').on('click', function(e){
-            $('#statisticsModalAlternateRecipes .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + ']').each(function(index, el){
-                this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
-            }.bind(this));
+        $('#statisticsModalAlternateRecipes .updateAllAlternativeStatus').on('click', (e) => {
+            $('#statisticsModalAlternateRecipes .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + ']')
+                .each((i, el) => {
+                    this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+                });
 
             // Reset status
             this.parseAlternateRecipes();
-        }.bind(this)).css('cursor', 'pointer');
+        }).css('cursor', 'pointer');
 
-        $('#statisticsModalAlternateRecipes .updateAlternativeStatus').on('click', function(e){
+        $('#statisticsModalAlternateRecipes .updateAlternativeStatus').on('click', (e) => {
             this.switchSchematic($(e.currentTarget).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
 
             // Reset status
             $(e.currentTarget).find('i').tooltip('dispose');
             this.parseAlternateRecipes();
-        }.bind(this)).css('cursor', 'pointer');
+        }).css('cursor', 'pointer');
     }
 
     parseMAM(selectedCategory = null)
@@ -289,7 +291,7 @@ export default class Modal_Schematics
                     categories.push(this.baseLayout.schematicsData[schematicId].category);
                 }
             }
-            categories.sort(function(a,b){ return a.localeCompare(b); }.bind(this));
+            categories.sort((a, b) => { return a.localeCompare(b); });
             if(selectedCategory === null){ selectedCategory = categories[0]; }
 
         let html        = [];
@@ -320,7 +322,7 @@ export default class Modal_Schematics
                     }
                 }
 
-            let schematicsDataKey = Object.keys(currentData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
+            let schematicsDataKey = Object.keys(currentData).sort((a, b) => { return a.localeCompare(b); });
 
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
@@ -380,22 +382,23 @@ export default class Modal_Schematics
 
         $('#statisticsModalMAM').html(html.join(''));
 
-        $('#statisticsModalMAM .updateAllAlternativeStatus').on('click', function(e){
-            $('#statisticsModalMAM .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + '][data-tier="' + $(e.currentTarget).attr('data-tier') + '"]').each(function(index, el){
-                this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
-            }.bind(this));
+        $('#statisticsModalMAM .updateAllAlternativeStatus').on('click', (e) => {
+            $('#statisticsModalMAM .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + '][data-tier="' + $(e.currentTarget).attr('data-tier') + '"]')
+                .each((i, el) => {
+                    this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+                });
 
             // Reset status
             this.parseMAM($(e.currentTarget).attr('data-tier'));
-        }.bind(this)).css('cursor', 'pointer');
+        }).css('cursor', 'pointer');
 
-        $('#statisticsModalMAM .updateAlternativeStatus').on('click', function(e){
+        $('#statisticsModalMAM .updateAlternativeStatus').on('click', (e) => {
             this.switchSchematic($(e.currentTarget).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
 
             // Reset status
             $(e.currentTarget).find('i').tooltip('dispose');
             this.parseMAM($(e.currentTarget).attr('data-tier'));
-        }.bind(this)).css('cursor', 'pointer');
+        }).css('cursor', 'pointer');
     }
 
     parseAwesomeSink(selectedCategory = null)
@@ -411,7 +414,7 @@ export default class Modal_Schematics
                     categories.push(this.baseLayout.schematicsData[schematicId].category);
                 }
             }
-            categories.sort(function(a,b){ return a.localeCompare(b); }.bind(this));
+            categories.sort((a, b) => { return a.localeCompare(b); });
             if(selectedCategory === null){ selectedCategory = categories[0]; }
 
         let html        = [];
@@ -442,7 +445,7 @@ export default class Modal_Schematics
                     }
                 }
 
-            let schematicsDataKey = Object.keys(currentData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
+            let schematicsDataKey = Object.keys(currentData).sort((a, b) => { return a.localeCompare(b); });
 
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
@@ -502,22 +505,23 @@ export default class Modal_Schematics
 
         $('#statisticsModalAwesomeSink').html(html.join(''));
 
-        $('#statisticsModalAwesomeSink .updateAllAlternativeStatus').on('click', function(e){
-            $('#statisticsModalAwesomeSink .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + '][data-tier="' + $(e.currentTarget).attr('data-tier') + '"]').each(function(index, el){
-                this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
-            }.bind(this));
+        $('#statisticsModalAwesomeSink .updateAllAlternativeStatus').on('click', (e) => {
+            $('#statisticsModalAwesomeSink .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + '][data-tier="' + $(e.currentTarget).attr('data-tier') + '"]')
+                .each((i, el) => {
+                    this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+                });
 
             // Reset status
             this.parseAwesomeSink($(e.currentTarget).attr('data-tier'));
-        }.bind(this)).css('cursor', 'pointer');
+        }).css('cursor', 'pointer');
 
-        $('#statisticsModalAwesomeSink .updateAlternativeStatus').on('click', function(e){
+        $('#statisticsModalAwesomeSink .updateAlternativeStatus').on('click', (e) => {
             this.switchSchematic($(e.currentTarget).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
 
             // Reset status
             $(e.currentTarget).find('i').tooltip('dispose');
             this.parseAwesomeSink($(e.currentTarget).attr('data-tier'));
-        }.bind(this)).css('cursor', 'pointer');
+        }).css('cursor', 'pointer');
     }
 
     parseSpecial()
@@ -542,7 +546,7 @@ export default class Modal_Schematics
                     }
                 }
 
-            let schematicsDataKey = Object.keys(currentData).sort(function(a,b){ return a.localeCompare(b); }.bind(this));
+            let schematicsDataKey = Object.keys(currentData).sort((a, b) => { return a.localeCompare(b); });
 
             for(let j = 0; j < schematicsDataKey.length; j++)
             {
@@ -599,22 +603,23 @@ export default class Modal_Schematics
 
         $('#statisticsModalSpecial').html(html.join(''));
 
-        $('#statisticsModalSpecial .updateAllAlternativeStatus').on('click', function(e){
-            $('#statisticsModalSpecial .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + ']').each(function(index, el){
-                this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
-            }.bind(this));
+        $('#statisticsModalSpecial .updateAllAlternativeStatus').on('click', (e) => {
+            $('#statisticsModalSpecial .updateAlternativeStatus[data-status=' + $(e.currentTarget).attr('data-status') + ']')
+                .each((i, el) => {
+                    this.switchSchematic($(el).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
+                });
 
             // Reset status
             this.parseAlternateRecipes();
-        }.bind(this)).css('cursor', 'pointer');
+        }).css('cursor', 'pointer');
 
-        $('#statisticsModalSpecial .updateAlternativeStatus').on('click', function(e){
+        $('#statisticsModalSpecial .updateAlternativeStatus').on('click', (e) => {
             this.switchSchematic($(e.currentTarget).attr('data-schematic'), $(e.currentTarget).attr('data-status'));
 
             // Reset status
             $(e.currentTarget).find('i').tooltip('dispose');
             this.parseSpecial();
-        }.bind(this)).css('cursor', 'pointer');
+        }).css('cursor', 'pointer');
     }
 
     getSchematicsUnlocks(currentSchematic)

@@ -251,11 +251,11 @@ export default class BaseLayout
 
             delete this.satisfactoryMap.collectableMarkers[pathName].options.extractorPathName;
         }
-        $('.updateLayerState[data-collected]').each(function(i, el){
+        $('.updateLayerState[data-collected]').each((i, el) => {
             let total = $(el).attr('data-total');
                 $(el).attr('data-collected', 0);
                 $(el).find('.badge').html(new Intl.NumberFormat(this.language).format(total));
-        }.bind(this));
+        });
 
         for(let layerId in this.playerLayers)
         {
@@ -351,13 +351,12 @@ export default class BaseLayout
 
             if(this.buildingsData === null)
             {
-                return new Promise(function(resolve){
+                return new Promise((resolve) => {
                     $('#loaderProgressBar .progress-bar').css('width', '60%');
                     $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading game data...'));
                     window.requestAnimationFrame(resolve);
-                }.bind(this)).then(() => {
-                    $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, function(data)
-                    {
+                }).then(() => {
+                    $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, (data) => {
                         this.buildingsData          = data.buildingsData;
                         this.buildingsCategories    = data.buildingsCategories;
                         this.itemsData              = data.itemsData;
@@ -376,7 +375,7 @@ export default class BaseLayout
                         this.modsData               = data.modsData;
 
                         this.loadDetailedModels();
-                    }.bind(this));
+                    });
                 });
             }
             else
@@ -398,7 +397,7 @@ export default class BaseLayout
                 this.modsData[modId].loading = true;
                 console.time('Loading mod: ' + this.modsData[modId].name);
 
-                $.getJSON(this.modsUrl + '/id/' + modId, function(data){
+                $.getJSON(this.modsUrl + '/id/' + modId, (data) => {
                     if(data.Buildings !== undefined)
                     {
                         let layerId = 'playerMods' + modId + 'Layer';
@@ -474,7 +473,7 @@ export default class BaseLayout
 
                     console.timeEnd('Loading mod: ' + this.modsData[modId].name);
                     return resolve();
-                }.bind(this));
+                });
 
                 return;
             }
@@ -499,12 +498,11 @@ export default class BaseLayout
 
     loadDetailedModels()
     {
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
             window.requestAnimationFrame(resolve);
-        }.bind(this)).then(() => {
-            $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, function(data)
-            {
+        }).then(() => {
+            $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, (data) => {
                 for(let className in data)
                 {
                     this.detailedModels[className] = data[className];
@@ -518,7 +516,7 @@ export default class BaseLayout
                 }
 
                 this.renderObjects();
-            }.bind(this));
+            });
         });
     }
 
@@ -535,7 +533,7 @@ export default class BaseLayout
             }
         }
 
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             let header                  = this.saveGameParser.getHeader();
             let pad                     = function(num, size) { return ('000' + num).slice(size * -1); },
                 time                    = parseFloat(header.playDurationSeconds).toFixed(3),
@@ -548,7 +546,7 @@ export default class BaseLayout
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', 0));
             console.time('renderObjects');
             window.requestAnimationFrame(resolve);
-        }.bind(this)).then(() => {
+        }).then(() => {
             this.parseObjects();
         });
     }
@@ -850,9 +848,7 @@ export default class BaseLayout
                     }
             }
 
-            promises.push(new Promise(function(resolve){
-                this.parseObject(currentObject, resolve);
-            }.bind(this)));
+            promises.push(new Promise((resolve) => { this.parseObject(currentObject, resolve); }));
 
             // Wait for promise to complete before launching next batch!
             let progress    = Math.round(i / countObjects * 100);
@@ -1056,7 +1052,7 @@ export default class BaseLayout
                         this.setBadgeLayerCount(layerId);
 
                         let progress = Math.round(i / layersKeys.length * 100);
-                            return new Promise(function(resolve){
+                            return new Promise((resolve) => {
                                 $('#loaderProgressBar .progress-bar').css('width', (90 + progress * 0.1) + '%');
 
                                 let layerTitle = $('.updatePlayerLayerState[data-id=' + layerId + ']').attr('title');
@@ -1067,7 +1063,7 @@ export default class BaseLayout
                                 $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', layerTitle));
 
                                 window.requestAnimationFrame(resolve);
-                            }.bind(this)).then(() => {
+                            }).then(() => {
                                 this.addLayers((i + 1));
                             });
                     }
@@ -1075,11 +1071,11 @@ export default class BaseLayout
 
         console.timeEnd('addMapLayers');
 
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             $('#loaderProgressBar .progress-bar').css('width', '100%');
             $('.loader h6').html(this.translate._('MAP\\LOADER\\Finalization of statistics and controls...'));
             window.requestAnimationFrame(resolve);
-        }.bind(this)).then(() => {
+        }).then(() => {
             // Altitude slider
             this.altitudeSliderControl = L.control.sliderControl({
                 baseLayout  : this,
@@ -1109,7 +1105,7 @@ export default class BaseLayout
                 $('#statisticsModal .tab-content .tab-pane').html('');
             });
             // Swicth statistics tabs
-            $('#statisticsModal a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+            $('#statisticsModal a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
                 let newTab = $(e.target).attr('href');
 
                     switch(newTab)
@@ -1164,7 +1160,7 @@ export default class BaseLayout
                             }
                             break;
                     }
-            }.bind(this));
+            });
             $('#researchModal').on('show.bs.modal', () => {
                 let statisticsSchematics = new Modal_Schematics({
                         baseLayout      : this
@@ -1190,7 +1186,7 @@ export default class BaseLayout
                     modalPowerCircuits.parse();
             });
 
-            $('#optionsModal a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+            $('#optionsModal a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
                 let target = $(e.target).attr('href');
                     switch(target)
                     {
@@ -1215,7 +1211,7 @@ export default class BaseLayout
                                 mapOptions.parse();
                             break;
                     }
-            }.bind(this))
+            })
             $('#optionsModal').on('show.bs.modal', () => {
                 $('#optionsModal a.active[data-toggle="tab"]').trigger('shown.bs.tab');
             });
@@ -1249,18 +1245,18 @@ export default class BaseLayout
             // End...
             window.SCIM.hideLoader();
 
-            $('.updateTitleLayerState').css('cursor', 'pointer').on('click', function(e){
-                $(e.currentTarget).closest('div[id]').find('.updatePlayerLayerState').each(function(index, element){
-                    this.updatePlayerLayerState($(element), $(element).attr('data-id'));
-                }.bind(this));
-            }.bind(this));
-            $('.updatePlayerLayerState').on('click', function(e){
+            $('.updateTitleLayerState').css('cursor', 'pointer').on('click', (e) => {
+                $(e.currentTarget).closest('div[id]').find('.updatePlayerLayerState').each((i, el) => {
+                    this.updatePlayerLayerState($(el), $(el).attr('data-id'));
+                });
+            });
+            $('.updatePlayerLayerState').on('click', (e) => {
                 this.updatePlayerLayerState($(e.currentTarget), $(e.currentTarget).attr('data-id'));
-            }.bind(this));
-            $('.updatePlayerLayerFilter').on('click', function(e){
+            });
+            $('.updatePlayerLayerFilter').on('click', (e) => {
                 e.stopPropagation(); // Prevent update layer state...
                 this.updatePlayerLayerFilter($(e.currentTarget), $(e.currentTarget).attr('data-id'), $(e.currentTarget).attr('data-filter'));
-            }.bind(this));
+            });
 
             // Add download event
             $('#downloadSaveGame').on('click', () => {
@@ -1644,10 +1640,11 @@ export default class BaseLayout
 
     rotationPlayerFoundation(marker, angle = 90)
     {
-        let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-            if(this.history !== null)
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+            if(baseLayout.history !== null)
             {
-                this.history.add({
+                baseLayout.history.add({
                     name: 'Undo: Rotate by ' + angle + '°',
                     values: [{
                         pathName: marker.relatedTarget.options.pathName,
@@ -1659,13 +1656,14 @@ export default class BaseLayout
 
         currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, angle);
 
-        this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
+        baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
     }
 
     pivotPlayerFoundation(marker)
     {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
         BaseLayout_Modal.form({
             title       : 'Pivot "' + buildingData.name + '" from the top-left corner',
@@ -1680,45 +1678,42 @@ export default class BaseLayout
                     value       : 0,
                 }
             ],
-            callback: function(form)
+            callback: function(values)
             {
-                if(form !== null && form.angle !== null)
+                let angle  = Math.min(180, Math.max(-180, parseInt(values.angle)));
+
+                if(baseLayout.history !== null)
                 {
-                    let angle  = Math.min(180, Math.max(-180, parseInt(form.angle)));
-
-                    if(this.history !== null)
-                    {
-                        this.history.add({
-                            name: 'Undo: Pivot by ' + angle + '°',
-                            values: [{
-                                pathName: marker.relatedTarget.options.pathName,
-                                callback: 'refreshMarkerPosition',
-                                properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
-                            }]
-                        });
-                    }
-
-                    let center          = [currentObject.transform.translation[0], currentObject.transform.translation[1]];
-                    let topLeftCorner   = BaseLayout_Math.getPointRotation(
-                            [center[0] - 400, center[1] - 400],
-                            center,
-                            currentObject.transform.rotation
-                        );
-
-                    currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, angle);
-
-                    let newCenter       = BaseLayout_Math.getPointRotation(
-                            [topLeftCorner[0] + 400, topLeftCorner[1] + 400],
-                            topLeftCorner,
-                            currentObject.transform.rotation
-                        );
-
-                    currentObject.transform.translation[0] = newCenter[0];
-                    currentObject.transform.translation[1] = newCenter[1];
-
-                    this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
+                    baseLayout.history.add({
+                        name: 'Undo: Pivot by ' + angle + '°',
+                        values: [{
+                            pathName: marker.relatedTarget.options.pathName,
+                            callback: 'refreshMarkerPosition',
+                            properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
+                        }]
+                    });
                 }
-            }.bind(this)
+
+                let center          = [currentObject.transform.translation[0], currentObject.transform.translation[1]];
+                let topLeftCorner   = BaseLayout_Math.getPointRotation(
+                        [center[0] - 400, center[1] - 400],
+                        center,
+                        currentObject.transform.rotation
+                    );
+
+                currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, angle);
+
+                let newCenter       = BaseLayout_Math.getPointRotation(
+                        [topLeftCorner[0] + 400, topLeftCorner[1] + 400],
+                        topLeftCorner,
+                        currentObject.transform.rotation
+                    );
+
+                currentObject.transform.translation[0] = newCenter[0];
+                currentObject.transform.translation[1] = newCenter[1];
+
+                baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
+            }
         });
     }
 
@@ -1728,9 +1723,9 @@ export default class BaseLayout
             properties.object.transform = properties.transform;
 
         // Delete and add again!
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             this.parseObject(properties.object, resolve);
-        }.bind(this)).then(function(result){
+        }).then((result) => {
             this.deleteMarkerFromElements(result.layer, properties.marker, fastDelete);
 
             if(result.marker.options.haloMarker !== undefined)
@@ -1758,13 +1753,13 @@ export default class BaseLayout
                                             for(let n = 0; n < mWires.values.length; n++)
                                             {
                                                 let currentWire     = this.saveGameParser.getTargetObject(mWires.values[n].pathName);
-                                                    new Promise(function(resolve){
+                                                    new Promise((resolve) => {
                                                         this.parseObject(currentWire, resolve);
-                                                    }.bind(this)).then(function(result){
+                                                    }).then((result) => {
                                                         let oldMarker       = this.getMarkerFromPathName(currentWire.pathName, result.layer);
                                                             this.deleteMarkerFromElements(result.layer, oldMarker, fastDelete);
                                                             this.addElementToLayer(result.layer, result.marker);
-                                                    }.bind(this));
+                                                    });
                                             }
                                         }
                                 }
@@ -1772,26 +1767,27 @@ export default class BaseLayout
                         }
                 }
             }
-        }.bind(this));
+        });
     }
 
     teleportPlayer(marker)
     {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let newTransform    = JSON.parse(JSON.stringify(currentObject.transform));
 
         let selectOptions   = [];
-            for(let pathName in this.players)
+            for(let pathName in baseLayout.players)
             {
                 selectOptions.push({
-                    text    : this.players[pathName].getDisplayName(),
+                    text    : baseLayout.players[pathName].getDisplayName(),
                     value   : pathName
                 });
             }
 
             if(selectOptions.length === 1) // Don't ask if there is only one player on the map...
             {
-                return this.players[selectOptions[0].value].teleportTo(newTransform);
+                return baseLayout.players[selectOptions[0].value].teleportTo(newTransform);
             }
 
         BaseLayout_Modal.form({
@@ -1804,26 +1800,24 @@ export default class BaseLayout
                     inputOptions    : selectOptions
                 }
             ],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form !== null && form.playerPathName !== null)
-                {
-                    return this.players[form.playerPathName].teleportTo(newTransform);
-                }
-            }.bind(this)
+                return baseLayout.players[values.playerPathName].teleportTo(newTransform);
+            }
         });
     }
 
     editPlayerStorageBuildingInventory(marker, inventoryProperty = 'mStorageInventory')
     {
-        let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
             if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
             {
                 inventoryProperty   = 'mInventory';
             }
             if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
             {
-                let mOwnedPawn = this.players[marker.relatedTarget.options.pathName].getOwnedPawn();
+                let mOwnedPawn = baseLayout.players[marker.relatedTarget.options.pathName].getOwnedPawn();
                     if(mOwnedPawn !== null)
                     {
                         inventoryProperty   = 'mInventory';
@@ -1831,10 +1825,10 @@ export default class BaseLayout
                     }
             }
 
-        let inventory           = this.getObjectInventory(currentObject, inventoryProperty);
+        let inventory           = baseLayout.getObjectInventory(currentObject, inventoryProperty);
         let inventoryOptions    = [];
-        let selectOptions       = this.generateInventoryOptions(currentObject);
-        let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
+        let selectOptions       = baseLayout.generateInventoryOptions(currentObject);
+        let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
             if(buildingData === null)
             {
                 buildingData            = {};
@@ -1842,7 +1836,7 @@ export default class BaseLayout
 
                 if(currentObject.className === '/Game/FactoryGame/Character/Player/Char_Player.Char_Player_C')
                 {
-                    buildingData.name = this.players[marker.relatedTarget.options.pathName].getDisplayName();
+                    buildingData.name = baseLayout.players[marker.relatedTarget.options.pathName].getDisplayName();
                 }
             }
 
@@ -1875,56 +1869,54 @@ export default class BaseLayout
             inputs      : inventoryOptions,
             callback    : function(values)
             {
-                if(values !== null)
-                {
-                    let oldInventory = this.getObjectInventory(currentObject, inventoryProperty, true);
-                        for(let i = 0; i < oldInventory.properties.length; i++)
+                let oldInventory = baseLayout.getObjectInventory(currentObject, inventoryProperty, true);
+                    for(let i = 0; i < oldInventory.properties.length; i++)
+                    {
+                        if(oldInventory.properties[i].name === 'mInventoryStacks')
                         {
-                            if(oldInventory.properties[i].name === 'mInventoryStacks')
+                            oldInventory = oldInventory.properties[i].value.values;
+
+                            for(let j = 0; j < buildingData.maxSlot; j++)
                             {
-                                oldInventory = oldInventory.properties[i].value.values;
-
-                                for(let j = 0; j < buildingData.maxSlot; j++)
+                                if(oldInventory[j] !== undefined)
                                 {
-                                    if(oldInventory[j] !== undefined)
+                                    if(values['slot' + (j + 1)] === 'NULL')
                                     {
-                                        if(values['slot' + (j + 1)] === 'NULL')
-                                        {
-                                            oldInventory[j][0].value.itemName = "";
-                                            this.setObjectProperty(oldInventory[j][0].value, 'NumItems', 0, 'IntProperty');
-                                        }
-                                        else
-                                        {
-                                            oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
-                                            this.setObjectProperty(oldInventory[j][0].value, 'NumItems', Math.max(1, parseInt(values['QTY_slot' + (j + 1)])), 'IntProperty');
-                                        }
+                                        oldInventory[j][0].value.itemName = "";
+                                        baseLayout.setObjectProperty(oldInventory[j][0].value, 'NumItems', 0, 'IntProperty');
                                     }
-
+                                    else
+                                    {
+                                        oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
+                                        baseLayout.setObjectProperty(oldInventory[j][0].value, 'NumItems', Math.max(1, parseInt(values['QTY_slot' + (j + 1)])), 'IntProperty');
+                                    }
                                 }
-                                break;
-                            }
-                        }
 
-                    delete this.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
-                    this.radioactivityLayerNeedsUpdate = true;
-                    this.getObjectRadioactivity(currentObject, inventoryProperty);
-                    this.updateRadioactivityLayer();
-                }
-            }.bind(this)
+                            }
+                            break;
+                        }
+                    }
+
+                delete baseLayout.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
+                baseLayout.radioactivityLayerNeedsUpdate = true;
+                baseLayout.getObjectRadioactivity(currentObject, inventoryProperty);
+                baseLayout.updateRadioactivityLayer();
+            }
         });
     }
 
     fillPlayerStorageBuildingInventoryModal(marker)
     {
-        let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
             if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'].includes(currentObject.className))
             {
                 // Buffer only have the fluidBox, the fluid is handled with the pipe network ;)
-                return this.fillPlayerStorageBuildingInventory(currentObject, null);
+                return baseLayout.fillPlayerStorageBuildingInventory(currentObject, null);
             }
 
-        let selectOptions       = this.generateInventoryOptions(currentObject, false);
-        let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
+        let selectOptions       = baseLayout.generateInventoryOptions(currentObject, false);
+        let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
         BaseLayout_Modal.form({
             title       : 'Fill "<strong>' + buildingData.name + '</strong>" Inventory',
@@ -1936,12 +1928,9 @@ export default class BaseLayout
             }],
             callback    : function(values)
             {
-                if(values !== null)
-                {
-                    this.fillPlayerStorageBuildingInventory(currentObject, values.fillWith);
-                    this.updateRadioactivityLayer();
-                }
-            }.bind(this)
+                baseLayout.fillPlayerStorageBuildingInventory(currentObject, values.fillWith);
+                baseLayout.updateRadioactivityLayer();
+            }
         });
     }
 
@@ -2079,12 +2068,13 @@ export default class BaseLayout
 
     clearPlayerStorageBuildingInventory(marker, inventoryProperty = 'mStorageInventory')
     {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let storageObjects  = [currentObject];
             // Switch to freight wagons when locomotive was selected
             if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
             {
-                storageObjects      = Building_Locomotive.getFreightWagons(this, currentObject);
+                storageObjects      = Building_Locomotive.getFreightWagons(baseLayout, currentObject);
             }
             if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C')
             {
@@ -2099,11 +2089,11 @@ export default class BaseLayout
         {
             if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
             {
-                this.setObjectProperty(storageObjects[i], 'mFluidBox', {type: "FluidBox", value: 0}, 'StructProperty');
+                baseLayout.setObjectProperty(storageObjects[i], 'mFluidBox', {type: "FluidBox", value: 0}, 'StructProperty');
                 continue;
             }
 
-            let oldInventory    = this.getObjectInventory(storageObjects[i], inventoryProperty, true);
+            let oldInventory    = baseLayout.getObjectInventory(storageObjects[i], inventoryProperty, true);
                 if(oldInventory !== null)
                 {
                     for(let j = 0; j < oldInventory.properties.length; j++)
@@ -2114,16 +2104,16 @@ export default class BaseLayout
                                 for(let k = 0; k < mInventoryStacks.length; k++)
                                 {
                                     mInventoryStacks[k][0].value.itemName = "";
-                                    this.setObjectProperty(mInventoryStacks[k][0].value, 'NumItems', 0, 'IntProperty');
+                                    baseLayout.setObjectProperty(mInventoryStacks[k][0].value, 'NumItems', 0, 'IntProperty');
                                 }
                             break;
                         }
                     }
                 }
 
-                delete this.playerLayers.playerRadioactivityLayer.elements[storageObjects[i].pathName];
-                this.radioactivityLayerNeedsUpdate = true;
-                this.getObjectRadioactivity(storageObjects[i], inventoryProperty);
+                delete baseLayout.playerLayers.playerRadioactivityLayer.elements[storageObjects[i].pathName];
+                baseLayout.radioactivityLayerNeedsUpdate = true;
+                baseLayout.getObjectRadioactivity(storageObjects[i], inventoryProperty);
         }
     }
 
@@ -2456,14 +2446,14 @@ export default class BaseLayout
                         }
                     );
 
-                    vehicleTrackMarker.on('mouseover', function(marker){
-                        let markerSource = this.getMarkerFromPathName(marker.sourceTarget.options.originPathName);
-                            this.setBuildingMouseOverStyle(markerSource, buildingData);
-                    }.bind(this));
-                    vehicleTrackMarker.on('mouseout', function(marker){
-                        let markerSource = this.getMarkerFromPathName(marker.sourceTarget.options.originPathName);
-                            this.setBuildingMouseOutStyle(markerSource, buildingData);
-                    }.bind(this));
+                    vehicleTrackMarker.on('mouseover', (e) => {
+                        let marker = this.getMarkerFromPathName(e.sourceTarget.options.originPathName);
+                            this.setBuildingMouseOverStyle(marker, buildingData);
+                    });
+                    vehicleTrackMarker.on('mouseout', (e) => {
+                        let marker = this.getMarkerFromPathName(e.sourceTarget.options.originPathName);
+                            this.setBuildingMouseOutStyle(marker, buildingData);
+                    });
 
                     markerOptions.vehicleTrackDataPathName = currentObject.pathName + '_vehicleTrackData';
 
@@ -4161,23 +4151,24 @@ export default class BaseLayout
 
     toggleDropPodHasBeenOpened(marker)
     {
-        let currentObject   = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let layerId         = marker.relatedTarget.options.layerId;
 
         let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected'));
         let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
 
-        let hasBeenOpened   = this.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
+        let hasBeenOpened   = baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
             if(hasBeenOpened == 0)
             {
                 dataCollected++;
-                this.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'BoolProperty');
+                baseLayout.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'BoolProperty');
                 marker.relatedTarget.setOpacity(window.SCIM.collectedOpacity);
             }
             else
             {
                 dataCollected--;
-                this.deleteObjectProperty(currentObject, 'mHasBeenOpened');
+                baseLayout.deleteObjectProperty(currentObject, 'mHasBeenOpened');
                 marker.relatedTarget.setOpacity(1);
             }
 
@@ -4185,24 +4176,25 @@ export default class BaseLayout
 
         if(dataCollected === 0)
         {
-            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataTotal));
+            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(baseLayout.language).format(dataTotal));
         }
         else
         {
-            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
+            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(baseLayout.language).format(dataTotal));
         }
     }
 
     updateObjectProductionPausedStatus(marker)
     {
-        let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
-        let isProductionPaused  = this.getObjectProperty(currentObject, 'mIsProductionPaused');
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let isProductionPaused  = baseLayout.getObjectProperty(currentObject, 'mIsProductionPaused');
 
             // GENERATOR
             if(buildingData !== null && buildingData.category === 'generator' && buildingData.powerGenerated !== undefined)
             {
-                let currentObjectPowerInfo = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + '.powerInfo');
+                let currentObjectPowerInfo = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + '.powerInfo');
                     if(currentObjectPowerInfo !== null)
                     {
                         switch(currentObject.className)
@@ -4210,25 +4202,25 @@ export default class BaseLayout
                             case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
                                 if(isProductionPaused === null)
                                 {
-                                    this.setObjectProperty(currentObjectPowerInfo, 'mBaseProduction', 0, 'FloatProperty');
+                                    baseLayout.setObjectProperty(currentObjectPowerInfo, 'mBaseProduction', 0, 'FloatProperty');
                                 }
                                 else
                                 {
-                                    this.setObjectProperty(currentObjectPowerInfo, 'mBaseProduction', buildingData.powerGenerated.normal[1], 'FloatProperty');
+                                    baseLayout.setObjectProperty(currentObjectPowerInfo, 'mBaseProduction', buildingData.powerGenerated.normal[1], 'FloatProperty');
 
-                                    let resourceNode     = this.getObjectProperty(currentObject, 'mExtractableResource');
+                                    let resourceNode     = baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
                                         if(resourceNode !== null)
                                         {
-                                            if(this.satisfactoryMap.collectableMarkers !== undefined && this.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
+                                            if(baseLayout.satisfactoryMap.collectableMarkers !== undefined && baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
                                             {
-                                                if(this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity !== undefined)
+                                                if(baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity !== undefined)
                                                 {
-                                                    if(buildingData !== null && buildingData.powerGenerated[this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity] !== undefined)
+                                                    if(buildingData !== null && buildingData.powerGenerated[baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity] !== undefined)
                                                     {
-                                                        this.setObjectProperty(
+                                                        baseLayout.setObjectProperty(
                                                             currentObjectPowerInfo,
                                                             'mBaseProduction',
-                                                            (buildingData.powerGenerated[this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][1] + buildingData.powerGenerated[this.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][0]) / 2,
+                                                            (buildingData.powerGenerated[baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][1] + buildingData.powerGenerated[baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][0]) / 2,
                                                             'FloatProperty'
                                                         );
                                                     }
@@ -4240,11 +4232,11 @@ export default class BaseLayout
                             default:
                                 if(isProductionPaused === null)
                                 {
-                                    this.deleteObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity');
+                                    baseLayout.deleteObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity');
                                 }
                                 else
                                 {
-                                    this.setObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity', buildingData.powerGenerated, 'FloatProperty');
+                                    baseLayout.setObjectProperty(currentObjectPowerInfo, 'mDynamicProductionCapacity', buildingData.powerGenerated, 'FloatProperty');
                                 }
                         }
                     }
@@ -4253,16 +4245,16 @@ export default class BaseLayout
             // PRODUCTION
             if(buildingData !== null && buildingData.powerUsed !== undefined)
             {
-                let currentObjectPowerInfo  = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + '.powerInfo');
+                let currentObjectPowerInfo  = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + '.powerInfo');
                     if(currentObjectPowerInfo !== null)
                     {
                         if(isProductionPaused === null)
                         {
-                            this.setObjectProperty(currentObjectPowerInfo, 'mTargetConsumption', 0, 'FloatProperty');
+                            baseLayout.setObjectProperty(currentObjectPowerInfo, 'mTargetConsumption', 0, 'FloatProperty');
                         }
                         else
                         {
-                            this.setObjectProperty(currentObjectPowerInfo, 'mTargetConsumption', buildingData.powerUsed, 'FloatProperty');
+                            baseLayout.setObjectProperty(currentObjectPowerInfo, 'mTargetConsumption', buildingData.powerUsed, 'FloatProperty');
                         }
                     }
             }
@@ -4270,24 +4262,25 @@ export default class BaseLayout
             // STATE
             if(isProductionPaused === null)
             {
-                this.setObjectProperty(currentObject, 'mIsProductionPaused', 1, 'BoolProperty');
+                baseLayout.setObjectProperty(currentObject, 'mIsProductionPaused', 1, 'BoolProperty');
             }
             else
             {
-                this.deleteObjectProperty(currentObject, 'mIsProductionPaused');
+                baseLayout.deleteObjectProperty(currentObject, 'mIsProductionPaused');
             }
 
             // LIGHT
             if(buildingData !== null && buildingData.category === 'light')
             {
-                this.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
+                baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: currentObject.transform, object: currentObject});
             }
     }
 
     updateObjectClockSpeed(marker)
     {
-        let currentObject       = this.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let buildingData        = this.getBuildingDataFromClassName(currentObject.className);
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
         BaseLayout_Modal.form({
             title       : 'Update "<strong>' + buildingData.name + '</strong>" clock speed',
@@ -4296,7 +4289,7 @@ export default class BaseLayout
                 {
                     name        : 'clockSpeed',
                     inputType   : 'number',
-                    value       : this.getClockSpeed(currentObject) * 100,
+                    value       : baseLayout.getClockSpeed(currentObject) * 100,
                     min         : 1,
                     max         : 250
                 },
@@ -4306,64 +4299,61 @@ export default class BaseLayout
                     inputType   : 'toggle'
                 }
             ],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form !== null && form.clockSpeed !== null && form.useOwnPowershards !== null)
+                let clockSpeed          = Math.max(1, Math.min(Math.round(values.clockSpeed * 1000000) / 1000000, 250));
+                let totalPowerShards    = Math.ceil((clockSpeed - 100) / 50);
+
+                if(totalPowerShards > 0)
                 {
-                    let clockSpeed          = Math.max(1, Math.min(Math.round(form.clockSpeed * 1000000) / 1000000, 250));
-                    let totalPowerShards    = Math.ceil((clockSpeed - 100) / 50);
-
-                    if(totalPowerShards > 0)
-                    {
-                        let potentialInventory = this.getObjectInventory(currentObject, 'mInventoryPotential', true);
-                            if(potentialInventory !== null)
+                    let potentialInventory = baseLayout.getObjectInventory(currentObject, 'mInventoryPotential', true);
+                        if(potentialInventory !== null)
+                        {
+                            for(let i = 0; i < potentialInventory.properties.length; i++)
                             {
-                                for(let i = 0; i < potentialInventory.properties.length; i++)
+                                if(potentialInventory.properties[i].name === 'mInventoryStacks')
                                 {
-                                    if(potentialInventory.properties[i].name === 'mInventoryStacks')
+                                    for(let j = 0; j < totalPowerShards; j++)
                                     {
-                                        for(let j = 0; j < totalPowerShards; j++)
+                                        if(parseInt(values.useOwnPowershards) === 1)
                                         {
-                                            if(parseInt(form.useOwnPowershards) === 1)
-                                            {
-                                                let result = this.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
-                                                    if(result === false)
-                                                    {
-                                                        clockSpeed = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
-                                                        break;
-                                                    }
-                                            }
-
-                                            potentialInventory.properties[i].value.values[j][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                            this.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, 'NumItems', 1, 'IntProperty');
+                                            let result = baseLayout.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
+                                                if(result === false)
+                                                {
+                                                    clockSpeed = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
+                                                    break;
+                                                }
                                         }
+
+                                        potentialInventory.properties[i].value.values[j][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
+                                        baseLayout.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, 'NumItems', 1, 'IntProperty');
                                     }
                                 }
                             }
-                    }
-
-                    this.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
-                    this.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
-
-                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
-                    {
-                        // Update all linked extractors
-                        let satellites  = Building_FrackingSmasher.getSatellites(this, currentObject);
-                            for(let i = 0; i < satellites.length; i++)
-                            {
-                                if(satellites[i].options.extractorPathName !== undefined)
-                                {
-                                    let currentExtractor = this.saveGameParser.getTargetObject(satellites[i].options.extractorPathName);
-                                        if(currentExtractor !== null)
-                                        {
-                                            this.setObjectProperty(currentExtractor, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
-                                            this.setObjectProperty(currentExtractor, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
-                                        }
-                                }
-                            }
-                    }
+                        }
                 }
-            }.bind(this)
+
+                baseLayout.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
+                baseLayout.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
+                {
+                    // Update all linked extractors
+                    let satellites  = Building_FrackingSmasher.getSatellites(baseLayout, currentObject);
+                        for(let i = 0; i < satellites.length; i++)
+                        {
+                            if(satellites[i].options.extractorPathName !== undefined)
+                            {
+                                let currentExtractor = baseLayout.saveGameParser.getTargetObject(satellites[i].options.extractorPathName);
+                                    if(currentExtractor !== null)
+                                    {
+                                        baseLayout.setObjectProperty(currentExtractor, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
+                                        baseLayout.setObjectProperty(currentExtractor, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+                                    }
+                            }
+                        }
+                }
+            }
         });
     }
 
@@ -4839,9 +4829,9 @@ export default class BaseLayout
         {
             let currentObject   = this.saveGameParser.getTargetObject(marker.options.pathName);
             let contextMenu     = new BaseLayout_ContextMenu({
-                        baseLayout      : this,
-                        marker          : marker
-                    });
+                    baseLayout      : this,
+                    marker          : marker
+                });
 
                 return contextMenu.getContextMenu(currentObject);
         }
@@ -4855,7 +4845,7 @@ export default class BaseLayout
 
         if(marker.options.pathName !== undefined)
         {
-            marker.on('mouseover', function(e){
+            marker.on('mouseover', (e) => {
                 this.showTooltip(e);
 
                 if(addBuildingEvents === true)
@@ -4866,8 +4856,8 @@ export default class BaseLayout
                     this.setBuildingMouseOverStyle(marker, buildingData);
                     Building_Conveyor.bindConnectedComponents(this, currentObject);
                 }
-            }.bind(this));
-            marker.on('mouseout', function(e){
+            });
+            marker.on('mouseout', (e) => {
                 this.closeTooltip(e);
 
                 if(addBuildingEvents === true)
@@ -4878,11 +4868,11 @@ export default class BaseLayout
                     this.setBuildingMouseOutStyle(marker, buildingData, currentObject);
                     Building_Conveyor.unbindConnectedComponents(this, currentObject);
                 }
-            }.bind(this));
+            });
 
             if(L.Browser.touch)
             {
-                marker.on('click', this.showTooltip.bind(this));
+                marker.on('click', (e) => { this.showTooltip(e) });
             }
         }
     }

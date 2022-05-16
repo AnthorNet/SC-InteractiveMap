@@ -27,23 +27,21 @@ export default class SubSystem_Player
 
             if(this.player.eosId !== undefined)
             {
-                $.getJSON(this.baseLayout.usersUrl + '?eosId=' + this.player.eosId, function(data)
-                {
+                $.getJSON(this.baseLayout.usersUrl + '?eosId=' + this.player.eosId, (data) => {
                     if(data !== null)
                     {
                         this.displayName = data;
                     }
-                }.bind(this));
+                });
             }
             if(this.player.steamId !== undefined)
             {
-                $.getJSON(this.baseLayout.usersUrl + '?steamId=' + this.player.steamId, function(data)
-                {
+                $.getJSON(this.baseLayout.usersUrl + '?steamId=' + this.player.steamId, (data) => {
                     if(data !== null)
                     {
                         this.displayName = data;
                     }
-                }.bind(this));
+                });
             }
         }
     }

@@ -161,7 +161,7 @@ export default class Spawn_Blueprint
                 }
             }
 
-            return new Promise(function(resolve){
+            return new Promise((resolve) => {
                 $('#liveLoader .progress-bar').css('width', '1%');
 
                 // Zoom on center?
@@ -169,9 +169,9 @@ export default class Spawn_Blueprint
                     this.baseLayout.satisfactoryMap.leafletMap.setView(centerPosition, 7);
 
                 window.requestAnimationFrame(resolve);
-            }.bind(this)).then(function(){
+            }).then(() => {
                 this.generatePathName();
-            }.bind(this));
+            });
         }
     }
 
@@ -180,7 +180,7 @@ export default class Spawn_Blueprint
         let pathNameToConvert       = [];
         let pathNameConversion      = {};
 
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             // Generate proper path name...
             for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
             {
@@ -252,15 +252,15 @@ export default class Spawn_Blueprint
             }
 
             window.requestAnimationFrame(resolve);
-        }.bind(this)).then(function(){
+        }).then(() => {
             $('#liveLoader .progress-bar').css('width', '2%');
             this.replacePathName(JSON.parse(JSON.stringify(pathNameConversion)));
-        }.bind(this));
+        });
     }
 
     replacePathName(pathNameConversion)
     {
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             let clipboardLength = this.clipboard.data.length;
 
                 // Replace with new pathname...
@@ -438,10 +438,10 @@ export default class Spawn_Blueprint
                 }
 
             window.requestAnimationFrame(resolve);
-        }.bind(this)).then(function(){
+        }).then(() => {
             $('#liveLoader .progress-bar').css('width', '3%');
             return this.handleHiddenConnections(pathNameConversion);
-        }.bind(this));
+        });
     }
 
     transformPropertiesPathName(properties, pathNameConversion)
@@ -524,7 +524,7 @@ export default class Spawn_Blueprint
 
     handleHiddenConnections(pathNameConversion)
     {
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             // Add hidden connections
             if(this.clipboard.hiddenConnections !== undefined)
             {
@@ -593,17 +593,17 @@ export default class Spawn_Blueprint
             }
 
             window.requestAnimationFrame(resolve);
-        }.bind(this)).then(function(){
+        }).then(() => {
             $('#liveLoader .progress-bar').css('width', '4%');
             return this.handlePipeNetworks(pathNameConversion);
-        }.bind(this));
+        });
     }
 
     handlePipeNetworks(pathNameConversion)
     {
         let pipesConversion = {};
 
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             if(this.clipboard.pipes !== undefined)
             {
                 for(let pipeNetworkID in this.clipboard.pipes)
@@ -667,12 +667,12 @@ export default class Spawn_Blueprint
             }
 
             window.requestAnimationFrame(resolve);
-        }.bind(this)).then(function(){
+        }).then(() => {
             $('#liveLoader .progress-bar').css('width', '5%');
 
             this.arrangeLayers = [];
             this.loop(pipesConversion);
-        }.bind(this));
+        });
     }
 
     loop(pipesConversion, i = 0)
@@ -868,7 +868,7 @@ export default class Spawn_Blueprint
             }
 
             // Update save/map
-            results.push(new Promise(function(resolve){
+            results.push(new Promise((resolve) => {
                 this.baseLayout.saveGameParser.addObject(newObject);
 
                 if(currentClipboard.children !== undefined)
@@ -909,11 +909,11 @@ export default class Spawn_Blueprint
                 }
 
                 return this.baseLayout.parseObject(newObject, resolve);
-            }.bind(this)));
+            }));
 
             if(i % 250 === 0 || (i + 1) === clipboardLength)
             {
-                return Promise.all(results).then(function(results){
+                return Promise.all(results).then((results) => {
                     for(let j = 0; j < results.length; j++)
                     {
                         if(results[j] !== null)
@@ -936,12 +936,12 @@ export default class Spawn_Blueprint
                             }
                         }
                     }
-                }.bind(this)).finally(function(){
+                }).finally(() => {
                     window.requestAnimationFrame(() => {
                         $('#liveLoader .progress-bar').css('width',  5 + (Math.round(i / clipboardLength * 100) * 0.95) + '%');
                         this.loop(pipesConversion, (i + 1));
                     });
-                }.bind(this));
+                });
             }
         }
 
@@ -1003,12 +1003,12 @@ export default class Spawn_Blueprint
         this.baseLayout.buildableSubSystem.setObjectColorSlot(this.centerObject, parseInt(colorSlotHelper));
 
         // Redraw!
-        new Promise(function(resolve){
+        new Promise((resolve) => {
             return this.baseLayout.parseObject(this.centerObject, resolve);
-        }.bind(this)).then(function(result){
+        }).then((result) => {
             this.baseLayout.deleteMarkerFromElements(result.layer, this.marker);
             this.baseLayout.addElementToLayer(result.layer, result.marker);
-        }.bind(this));
+        });
 
         let corners = [
             // TOP LEFT
@@ -1041,12 +1041,12 @@ export default class Spawn_Blueprint
                 newFoundation.transform.translation[0]  = translationRotation[0];
                 newFoundation.transform.translation[1]  = translationRotation[1];
 
-            new Promise(function(resolve){
+            new Promise((resolve) => {
                 this.baseLayout.saveGameParser.addObject(newFoundation);
                 return this.baseLayout.parseObject(newFoundation, resolve);
-            }.bind(this)).then(function(result){
+            }).then((result) => {
                 this.baseLayout.addElementToLayer(result.layer, result.marker);
-            }.bind(this));
+            });
         }
     }
 }
@@ -1120,8 +1120,7 @@ L.Control.ClipboardControl = L.Control.extend({
 
         if(window.File && window.FileReader && window.FileList && window.Blob)
         {
-            let processBlueprintFile = function(droppedFile)
-            {
+            let processBlueprintFile = (droppedFile) => {
                 if(droppedFile !== undefined)
                 {
                     if(droppedFile.name.endsWith('.cbp'))
@@ -1129,7 +1128,7 @@ L.Control.ClipboardControl = L.Control.extend({
                         let reader = new FileReader();
                             reader.readAsArrayBuffer(droppedFile);
 
-                        reader.onload = function(){
+                        reader.onload = () => {
                             let restored = null;
                                 try
                                 {
@@ -1150,7 +1149,7 @@ L.Control.ClipboardControl = L.Control.extend({
                             }
 
                             $('#clipboardControlModal').modal('hide');
-                        }.bind(this);
+                        };
                     }
                     else
                     {
@@ -1161,7 +1160,7 @@ L.Control.ClipboardControl = L.Control.extend({
                 {
                     alert('Something went wrong reading your blueprint file!');
                 }
-            }.bind(this);
+            };
 
             $('#dropBlueprint').on('drag dragstart dragend dragover dragenter dragleave drop', function(e){e.preventDefault();e.stopPropagation();})
                                .on('dragover dragenter', function(){$('#dropBlueprint').addClass('is-dragover');})

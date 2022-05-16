@@ -89,17 +89,17 @@ export default class Spawn_Road
         for(height; height <= maxHeight; height+=step)
         {
             let results = (this.curvature >= 0) ? this.loopPositiveCurvature(height) : this.loopNegativeCurvature(height);
-                return Promise.all(results).then(function(results){
+                return Promise.all(results).then((results) => {
                     for(let i = 0; i < results.length; i++)
                     {
                         this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                     }
-                }.bind(this)).finally(function(){
+                }).finally(() => {
                     window.requestAnimationFrame(() => {
                         $('#liveLoader .progress-bar').css('width', Math.round(Math.abs(height) / Math.abs(maxHeight) * 100) + '%');
                         this.loopDown((height + step), maxHeight, step);
                     });
-                }.bind(this));
+                });
         }
 
         return this.release();
@@ -110,17 +110,17 @@ export default class Spawn_Road
         for(height; height >= maxHeight; height-=step)
         {
             let results = (this.curvature >= 0) ? this.loopPositiveCurvature(height) : this.loopNegativeCurvature(height);
-                return Promise.all(results).then(function(results){
+                return Promise.all(results).then((results) => {
                     for(let i = 0; i < results.length; i++)
                     {
                         this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                     }
-                }.bind(this)).finally(function(){
+                }).finally(() => {
                     window.requestAnimationFrame(() => {
                         $('#liveLoader .progress-bar').css('width', Math.round(Math.abs(height) / Math.abs(maxHeight) * 100) + '%');
                         this.loopUp((height - step), maxHeight, step);
                     });
-                }.bind(this));
+                });
         }
 
         return this.release();
@@ -418,7 +418,7 @@ export default class Spawn_Road
             newFoundation.transform.translation[2] -= height * this.centerObjectHeight;
         }
 
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             this.baseLayout.saveGameParser.addObject(newFoundation);
 
             this.history.push({
@@ -429,7 +429,7 @@ export default class Spawn_Road
             });
 
             return this.baseLayout.parseObject(newFoundation, resolve);
-        }.bind(this));
+        });
     }
 
     release()

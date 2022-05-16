@@ -262,13 +262,13 @@ export default class Modal_Buildings
                 $('#' + buildingsList[currentCategory].id + ' .tab-content > .tab-pane:eq(' + $('#' + buildingsList[currentCategory].id + ' button').index(this) + ')').addClass('show active');
             });
 
-            $('#' + buildingsList[currentCategory].id + ' .fa-search-location').on('click', function(e){
+            $('#' + buildingsList[currentCategory].id + ' .fa-search-location').on('click', (e) => {
                 let x = parseFloat($(e.currentTarget).attr('data-x'));
                 let y = parseFloat($(e.currentTarget).attr('data-y'));
 
                 let position    = this.baseLayout.satisfactoryMap.unproject([x, y]);
                     this.baseLayout.satisfactoryMap.leafletMap.setView(position, 9);
-            }.bind(this));
+            });
         }
     }
 }

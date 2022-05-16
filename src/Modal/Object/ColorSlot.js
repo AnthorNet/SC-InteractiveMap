@@ -92,11 +92,8 @@ export default class Modal_Object_ColorSlot
             }],
             callback    : function(values)
             {
-                if(values !== null)
-                {
-                    baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(values.slotIndex));
-                    marker.relatedTarget.fire('mouseout'); // Trigger a redraw
-                }
+                baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(values.slotIndex));
+                marker.relatedTarget.fire('mouseout'); // Trigger a redraw
             }
         });
     }

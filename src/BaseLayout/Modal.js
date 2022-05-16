@@ -292,10 +292,13 @@ export default class BaseLayout_Modal
 
         options.closeButton             = false;
 
-        options.buttons.cancel.callback = options.onEscape = function(){
+        options.buttons.cancel.callback = function(){
             form.find('.selectpicker').selectpicker('destroy');
 
-            return options.callback.call(this, null);
+            if(options.onEscape)
+            {
+                options.onEscape();
+            }
         };
 
         options.buttons.confirm.callback = function(){

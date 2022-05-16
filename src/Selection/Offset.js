@@ -141,7 +141,7 @@ export default class Selection_Offset
                 }
             }
 
-            Promise.all(offsetResults).then(function(){
+            Promise.all(offsetResults).then(() => {
                 if(this.useHistory === true && this.baseLayout.history !== null)
                 {
                     this.baseLayout.history.add({
@@ -156,7 +156,7 @@ export default class Selection_Offset
 
                 console.timeEnd('offsetMultipleMarkers');
                 this.baseLayout.updateRadioactivityLayer();
-            }.bind(this));
+            });
         }
 
         Modal_Selection.cancel(this.baseLayout);

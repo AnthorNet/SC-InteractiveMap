@@ -59,7 +59,7 @@ export default class Building_Production
 
         selectedRecipes.sort(function(a, b){
             return baseLayout.recipesData[a].name.localeCompare(baseLayout.recipesData[b].name);
-        }.bind(baseLayout));
+        });
 
         for(let i = 0; i < selectedRecipes.length; i++)
         {
@@ -98,28 +98,25 @@ export default class Building_Production
                     value           : ((mCurrentRecipe !== null) ? mCurrentRecipe.pathName : 'NULL')
                 }
             ],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form !== null && form.recipe !== null)
+                if(values.recipe === 'NULL')
                 {
-                    if(form.recipe === 'NULL')
+                    baseLayout.deleteObjectProperty(currentObject, 'mCurrentRecipe');
+                }
+                else
+                {
+                    if(mCurrentRecipe === null)
                     {
-                        baseLayout.deleteObjectProperty(currentObject, 'mCurrentRecipe');
+                         currentObject.properties.push({name: "mCurrentRecipe", type: "ObjectProperty", value: {levelName: "", pathName: values.recipe}});
                     }
                     else
                     {
-                        if(mCurrentRecipe === null)
-                        {
-                             currentObject.properties.push({name: "mCurrentRecipe", type: "ObjectProperty", value: {levelName: "", pathName: form.recipe}});
-                        }
-                        else
-                        {
-                            mCurrentRecipe.pathName = form.recipe;
-                        }
+                        mCurrentRecipe.pathName = values.recipe;
                     }
-
-                    Building_Production.clearInventory(marker);
                 }
+
+                Building_Production.clearInventory(marker);
             }
         });
     }

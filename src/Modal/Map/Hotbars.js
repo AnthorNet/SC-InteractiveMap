@@ -28,7 +28,7 @@ export default class Modal_Map_Hotbars
 
         $('#statisticsPlayerHotBars').html('<ul class="nav nav-tabs nav-fill">' + hotbarHeaderHtml.join('') + '</ul><div class="tab-content p-3 border border-top-0">' + hotbarHtml.join('') + '</div>');
 
-        $('#statisticsPlayerHotBars input[name="presetName"]').on('keyup click', function(e){
+        $('#statisticsPlayerHotBars input[name="presetName"]').on('keyup click', (e) => {
             let playerStatePathName = $(e.currentTarget).parent().attr('data-pathName');
             let newValue            = $(e.currentTarget).val();
             let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
@@ -53,8 +53,8 @@ export default class Modal_Map_Hotbars
                             }
                         }
                 }
-        }.bind(this));
-        $('#statisticsPlayerHotBars input[name="presetName"] + .input-group-append .btn-danger').on('click', function(e){
+        });
+        $('#statisticsPlayerHotBars input[name="presetName"] + .input-group-append .btn-danger').on('click', (e) => {
             let playerStatePathName = $(e.currentTarget).parent().parent().attr('data-pathName');
             let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
 
@@ -69,9 +69,9 @@ export default class Modal_Map_Hotbars
                             this.parse({playerState: playerStatePathName, showPresets :true});
                         }
                 }
-        }.bind(this));
+        });
 
-        $('#statisticsPlayerHotBars .btn-copy').click(function(e){
+        $('#statisticsPlayerHotBars .btn-copy').click((e) => {
             let playerStatePathName = $(e.target).closest('[data-hotbar]').attr('data-pathName');
             let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
                 if(playerState !== null)
@@ -97,8 +97,8 @@ export default class Modal_Map_Hotbars
                                 $('#statisticsPlayerHotBars .btn-pasteAll').hide();
                         }
                 }
-        }.bind(this));
-        $('#statisticsPlayerHotBars .btn-paste').click(function(e){
+        });
+        $('#statisticsPlayerHotBars .btn-paste').click((e) => {
             if(this.clipboard.length > 0)
             {
                 let playerStatePathName = $(e.target).closest('[data-hotbar]').attr('data-pathName');
@@ -122,8 +122,8 @@ export default class Modal_Map_Hotbars
                             }
                     }
             }
-        }.bind(this));
-        $('#statisticsPlayerHotBars .btn-delete').click(function(e){
+        });
+        $('#statisticsPlayerHotBars .btn-delete').click((e) => {
             if(this.clipboard.length > 0)
             {
                 let playerStatePathName = $(e.target).closest('[data-hotbar]').attr('data-pathName');
@@ -148,9 +148,9 @@ export default class Modal_Map_Hotbars
                             }
                     }
             }
-        }.bind(this));
+        });
 
-        $('#statisticsPlayerHotBars .btn-copyAll').click(function(e){
+        $('#statisticsPlayerHotBars .btn-copyAll').click((e) => {
             let playerStatePathName = $(e.target).closest('[data-pathName]').attr('data-pathName');
             let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
                 if(playerState !== null)
@@ -180,8 +180,8 @@ export default class Modal_Map_Hotbars
                                 $('#statisticsPlayerHotBars .btn-pasteAll').show();
                         }
                 }
-        }.bind(this));
-        $('#statisticsPlayerHotBars .btn-pasteAll').click(function(e){
+        });
+        $('#statisticsPlayerHotBars .btn-pasteAll').click((e) => {
             if(this.clipboard.length > 0)
             {
                 let playerStatePathName = $(e.target).closest('[data-pathName]').attr('data-pathName');
@@ -207,7 +207,7 @@ export default class Modal_Map_Hotbars
                             }
                     }
             }
-        }.bind(this));
+        });
 
         if(this.clipboard.length > 0)
         {

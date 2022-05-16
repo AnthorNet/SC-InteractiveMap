@@ -412,20 +412,14 @@ export default class Modal_Selection
                 inputType       : 'select',
                 inputOptions    : inputOptions
             }],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form === null || form.form === null)
-                {
-                    Modal_Selection.cancel(baseLayout);
-                    return;
-                }
-
-                let callbackArguments   = form.form.split('|');
+                let callbackArguments   = values.form.split('|');
                 let callbackName        = callbackArguments.shift();
                     callbackName        = 'callback' + callbackName[0].toUpperCase() + callbackName.slice(1);
 
                 // Those callback needs access to the selection!
-                if(['fillArea', 'respawnFlora'].includes(form.form) === false)
+                if(['fillArea', 'respawnFlora'].includes(values.form) === false)
                 {
                     Modal_Selection.cancel(baseLayout);
                 }
@@ -474,9 +468,6 @@ export default class Modal_Selection
         BaseLayout_Modal.confirm({
             title       : 'You have selected ' + markers.length + ' items',
             message     : 'Do you want a doggy bag with your mass-dismantling?<br /><em>(You\'ll just get a nice loot crate next to you)</em>',
-            onEscape    : function(){
-                Modal_Selection.cancel.call(null, baseLayout);
-            },
             container   : '#leafletMap',
             buttons     : { confirm: {label: 'Yes'}, cancel: {label: 'No'} },
             callback    : function(result){
@@ -496,9 +487,6 @@ export default class Modal_Selection
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
             message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
-            onEscape    : function(){
-                Modal_Selection.cancel.call(null, baseLayout);
-            },
             container   : '#leafletMap',
             inputs      : [{
                 label       : 'X',
@@ -518,19 +506,14 @@ export default class Modal_Selection
                 inputType   : 'coordinate',
                 value       : 0
             }],
-            callback: function(form)
+            callback: function(values)
             {
-                if(form === null || form.offsetX === null || form.offsetY === null || form.offsetZ === null)
-                {
-                    return;
-                }
-
                 return new Selection_Offset({
                     baseLayout  : baseLayout,
                     markers     : markers,
-                    offsetX     : form.offsetX,
-                    offsetY     : form.offsetY,
-                    offsetZ     : form.offsetZ
+                    offsetX     : values.offsetX,
+                    offsetY     : values.offsetY,
+                    offsetZ     : values.offsetZ
                 });
             }
         });
@@ -540,9 +523,6 @@ export default class Modal_Selection
     {
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
-            onEscape    : function(){
-                Modal_Selection.cancel.call(null, baseLayout);
-            },
             container   : '#leafletMap',
             inputs      : [{
                 label       : 'Rotation (Angle between 0 and 360 degrees)',
@@ -552,17 +532,12 @@ export default class Modal_Selection
                 min         : 0,
                 max         : 360
             }],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form === null || form.angle === null)
-                {
-                    return;
-                }
-
                 return new Selection_Rotate({
                     baseLayout  : baseLayout,
                     markers     : markers,
-                    angle       : form.angle
+                    angle       : values.angle
                 });
             }
         });
@@ -592,13 +567,8 @@ export default class Modal_Selection
                 inputType       : 'colorSlots',
                 inputOptions    : selectOptions
             }],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form === null || form.slotIndex === null)
-                {
-                    return;
-                }
-
                 let boundaries  = Modal_Selection.getBoundaries(baseLayout, markers);
                 let minZ        = Infinity;
 
@@ -638,14 +608,14 @@ export default class Modal_Selection
                     };
                     fakeFoundation.pathName = baseLayout.generateFastPathName(fakeFoundation);
 
-                baseLayout.buildableSubSystem.setObjectColorSlot(fakeFoundation, form.slotIndex);
+                baseLayout.buildableSubSystem.setObjectColorSlot(fakeFoundation, values.slotIndex);
 
                 new Promise(function(resolve){
-                    this.saveGameParser.addObject(fakeFoundation);
-                    return this.parseObject(fakeFoundation, resolve);
-                }.bind(baseLayout)).then(function(result){
-                    this.addElementToLayer(result.layer, result.marker);
-                }.bind(baseLayout));
+                    baseLayout.saveGameParser.addObject(fakeFoundation);
+                    return baseLayout.parseObject(fakeFoundation, resolve);
+                }).then(function(result){
+                    baseLayout.addElementToLayer(result.layer, result.marker);
+                });
 
                 // Add corners...
                 let corners = [
@@ -680,11 +650,11 @@ export default class Modal_Selection
                         newFoundation.transform.translation[1]  = translationRotation[1];
 
                         new Promise(function(resolve){
-                            this.saveGameParser.addObject(newFoundation);
-                            this.parseObject(newFoundation, resolve);
-                        }.bind(baseLayout)).then(function(result){
-                            this.addElementToLayer(result.layer, result.marker);
-                        }.bind(baseLayout));
+                            baseLayout.saveGameParser.addObject(newFoundation);
+                            baseLayout.parseObject(newFoundation, resolve);
+                        }).then(function(result){
+                            baseLayout.addElementToLayer(result.layer, result.marker);
+                        });
                 }
             }
         });
@@ -746,13 +716,8 @@ export default class Modal_Selection
                 inputType       : 'colorSlots',
                 inputOptions    : selectOptionsColors
             }],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form === null || form.slotIndex === null)
-                {
-                    return;
-                }
-
                 for(let i = 0; i < markers.length; i++)
                 {
                     let contextMenu = baseLayout.getContextMenu(markers[i]);
@@ -764,7 +729,7 @@ export default class Modal_Selection
                                 if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_ColorSlot')
                                 {
                                     let currentObject   = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                                        baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(form.slotIndex));
+                                        baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(values.slotIndex));
                                         markers[i].fire('mouseout'); // Trigger a redraw
                                 }
                             }
@@ -791,13 +756,8 @@ export default class Modal_Selection
                 inputType       : 'colorPicker',
                 value           : customColor.secondaryColor
             }],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form === null || form.primaryColor === null || form.secondaryColor === null)
-                {
-                    return;
-                }
-
                 for(let i = 0; i < markers.length; i++)
                 {
                     let contextMenu = baseLayout.getContextMenu(markers[i]);
@@ -826,7 +786,7 @@ export default class Modal_Selection
                                 if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_CustomColor')
                                 {
                                     let currentObject   = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                                        baseLayout.buildableSubSystem.setObjectCustomColor(currentObject, form.primaryColor, form.secondaryColor);
+                                        baseLayout.buildableSubSystem.setObjectCustomColor(currentObject, values.primaryColor, values.secondaryColor);
                                         markers[i].fire('mouseout'); // Trigger a redraw
                                 }
                             }
@@ -939,19 +899,13 @@ export default class Modal_Selection
                     name            : 'useOwnMaterials',
                     inputType       : 'toggle'
                 }],
-                callback: function(form)
+                callback: function(values)
                 {
-                    if(form === null || form.fillWith === null || form.z === null || form.useOwnMaterials === null)
-                    {
-                        Modal_Selection.cancel(baseLayout);
-                        return;
-                    }
-
                     return new Spawn_Fill({
                         selection       : selection,
-                        z               : form.z,
-                        fillWith        : form.fillWith,
-                        useOwnMaterials : parseInt(form.useOwnMaterials),
+                        z               : values.z,
+                        fillWith        : values.fillWith,
+                        useOwnMaterials : parseInt(values.useOwnMaterials),
 
                         baseLayout      : baseLayout
                     });
@@ -966,9 +920,6 @@ export default class Modal_Selection
     {
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
-            onEscape    : function(){
-                Modal_Selection.cancel.call(null, baseLayout);
-            },
             container   : '#leafletMap',
             inputs      : [
                 {
@@ -985,13 +936,8 @@ export default class Modal_Selection
                     inputType   : 'toggle'
                 }
             ],
-            callback: function(form)
+            callback: function(values)
             {
-                if(form === null || form.value === null || form.useOwnPowershards === null)
-                {
-                    return;
-                }
-
                 for(let i = 0; i < markers.length; i++)
                 {
                     let contextMenu = baseLayout.getContextMenu(markers[i]);
@@ -1003,7 +949,7 @@ export default class Modal_Selection
                                 {
                                     let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
                                     let currentClockSpeed   = baseLayout.getClockSpeed(currentObject) * 100;
-                                    let newClockSpeed       = parseFloat(form.value);
+                                    let newClockSpeed       = parseFloat(values.value);
                                     let clockSpeed          = Math.max(1, Math.min(newClockSpeed, 250));
 
                                     if(currentClockSpeed !== clockSpeed)
@@ -1021,7 +967,7 @@ export default class Modal_Selection
                                                             {
                                                                 for(let m = 0; m < totalPowerShards; m++)
                                                                 {
-                                                                    if(parseInt(form.useOwnPowershards) === 1)
+                                                                    if(parseInt(values.useOwnPowershards) === 1)
                                                                     {
                                                                         let result = baseLayout.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
                                                                             if(result === false)
@@ -1056,23 +1002,14 @@ export default class Modal_Selection
     {
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
-            onEscape    : function(){
-                Modal_Selection.cancel.call(null, baseLayout);
-            },
             container   : '#leafletMap',
             inputs      : [{
                 name            : 'fillWith',
                 inputType       : 'selectPicker',
                 inputOptions    : baseLayout.generateInventoryOptions({className: '/Game/FactoryGame/Buildable/Factory/StorageContainerMk1/Build_StorageContainerMk1.Build_StorageContainerMk1_C'}, false)
             }],
-            callback: function(form)
+            callback: function(values)
             {
-                if(form === null || form.fillWith === null)
-                {
-                    Modal_Selection.cancel(baseLayout);
-                    return;
-                }
-
                 for(let i = 0; i < markers.length; i++)
                 {
                     let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
@@ -1088,7 +1025,7 @@ export default class Modal_Selection
                                 continue;
                             }
 
-                            baseLayout.fillPlayerStorageBuildingInventory(currentObject, form.fillWith);
+                            baseLayout.fillPlayerStorageBuildingInventory(currentObject, values.fillWith);
                         }
                 }
                 baseLayout.updateRadioactivityLayer();
@@ -1234,12 +1171,12 @@ L.Selection = L.Handler.extend({
             this._areaGhost = null;
         }
 
-        setTimeout(function(){
+        setTimeout(() => {
             if(this._areaSelected !== null)
             {
                 this.control._toggleSelection(this._currentForm, childNode);
             }
-        }.bind(this), 100);
+        }, 100);
 
         this._map.off('mousemove', this._doMouseMove, this);
     },

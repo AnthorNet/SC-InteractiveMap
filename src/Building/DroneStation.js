@@ -137,16 +137,13 @@ export default class Building_DroneStation
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
+                    if(values.mBuildingTag !== '')
                     {
-                        if(values.mBuildingTag !== '')
-                        {
-                            let mInfo = Building_DroneStation.getInformation(baseLayout, currentObject);
-                                if(mInfo !== null)
-                                {
-                                    baseLayout.setObjectProperty(mInfo, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
-                                }
-                        }
+                        let mInfo = Building_DroneStation.getInformation(baseLayout, currentObject);
+                            if(mInfo !== null)
+                            {
+                                baseLayout.setObjectProperty(mInfo, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
+                            }
                     }
                 }
             });

@@ -42,12 +42,12 @@ export default class Modal_Vehicle_TrackData
                         .css('border-color', '#777777')
                         .css('z-index', 1)
             });
-            $('#genericModal .modal-body table tr[data-stop] .text-danger').click(function(e){
+            $('#genericModal .modal-body table tr[data-stop] .text-danger').click((e) => {
                 let stop = $(e.target).parent().parent().attr('data-stop');
                     Building_Vehicle.removeTrackDataPoint(this.baseLayout, this.vehicle, parseInt(stop));
 
                     return this.parse();
-            }.bind(this));
+            });
         }
     }
 

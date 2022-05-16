@@ -168,21 +168,21 @@ export default class Modal_Map_Presets
                     $('#presetColorInputName').val(presets[presetIndex].name);
                 });
 
-                $('#statisticsPlayerPresets .btn-delete').on('click', function(e){
+                $('#statisticsPlayerPresets .btn-delete').on('click', (e) => {
                     this.baseLayout.gameStateSubSystem.deletePlayerColorPreset(
                         parseInt($(e.target).closest('.row').find('[data-preset]').attr('data-preset'))
                     );
 
                     $(e.currentTarget).tooltip('dispose');
                     this.parse();
-                }.bind(this));
+                });
             }
             else
             {
                 $('#statisticsPlayerPresets').html('<div class="row" style="height: 492px;"><div class="col-7 align-self-center">' + addButtonHtml.join('') + '</div></div>');
             }
 
-        $('#statisticsPlayerPresets .btn-add').on('click', function(e){
+        $('#statisticsPlayerPresets .btn-add').on('click', () => {
             this.baseLayout.gameStateSubSystem.addPlayerColorPreset(
                 'New color preset',
                 {
@@ -195,6 +195,6 @@ export default class Modal_Map_Presets
 
             let presets = this.baseLayout.gameStateSubSystem.getPlayerColorPresets();
                 this.parse(presets.length - 1);
-        }.bind(this));
+        });
     }
 }

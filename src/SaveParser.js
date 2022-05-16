@@ -66,7 +66,7 @@ export default class SaveParser
         this.objects            = {};
 
         this.worker             = new Worker(this.workers.SaveParserRead, { type: "module" });
-        this.worker.onmessage   = function(e){ this.onWorkerMessage(e.data); }.bind(this);
+        this.worker.onmessage   = (e) => { this.onWorkerMessage(e.data); };
         this.worker.postMessage({
             arrayBuffer     : this.arrayBuffer,
             defaultValues   : this.defaultValues,
@@ -89,7 +89,7 @@ export default class SaveParser
             this.fixSave(baseLayout);
 
             this.worker             = new Worker(this.workers.SaveParserWrite, { type: "module" });
-            this.worker.onmessage   = function(e){ this.onWorkerMessage(e.data); }.bind(this);
+            this.worker.onmessage   = (e) => { this.onWorkerMessage(e.data); };
             this.worker.postMessage({
                 defaultValues       : this.defaultValues,
                 language            : this.language,

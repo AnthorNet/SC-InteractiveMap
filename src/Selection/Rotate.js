@@ -151,7 +151,7 @@ export default class Selection_Rotate
                 }
             }
 
-            Promise.all(rotateResults).then(function(){
+            Promise.all(rotateResults).then(() => {
                 if(this.useHistory === true && this.baseLayout.history !== null)
                 {
                     this.baseLayout.history.add({
@@ -166,7 +166,7 @@ export default class Selection_Rotate
 
                 console.timeEnd('rotateMultipleMarkers');
                 this.baseLayout.updateRadioactivityLayer();
-            }.bind(this));
+            });
         }
 
         Modal_Selection.cancel(this.baseLayout);

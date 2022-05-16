@@ -997,14 +997,11 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
-                            if(mActivePrefabLayout !== null)
-                            {
-                                mActivePrefabLayout.pathName = values.mActivePrefabLayout;
-                            }
-                    }
+                    let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
+                        if(mActivePrefabLayout !== null)
+                        {
+                            mActivePrefabLayout.pathName = values.mActivePrefabLayout;
+                        }
                 }
             });
     }
@@ -1028,19 +1025,16 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        let mBackgroundColor = baseLayout.getObjectProperty(currentObject, 'mBackgroundColor');
-                            if(mBackgroundColor !== null)
-                            {
-                                mBackgroundColor.values = {
-                                    r       : BaseLayout_Math.RGBToLinearColor(values.mBackgroundColor.r),
-                                    g       : BaseLayout_Math.RGBToLinearColor(values.mBackgroundColor.g),
-                                    b       : BaseLayout_Math.RGBToLinearColor(values.mBackgroundColor.b),
-                                    a       : 1
-                                };
-                            }
-                    }
+                    let mBackgroundColor = baseLayout.getObjectProperty(currentObject, 'mBackgroundColor');
+                        if(mBackgroundColor !== null)
+                        {
+                            mBackgroundColor.values = {
+                                r       : BaseLayout_Math.RGBToLinearColor(values.mBackgroundColor.r),
+                                g       : BaseLayout_Math.RGBToLinearColor(values.mBackgroundColor.g),
+                                b       : BaseLayout_Math.RGBToLinearColor(values.mBackgroundColor.b),
+                                a       : 1
+                            };
+                        }
                 }
             });
     }
@@ -1061,19 +1055,16 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        let mAuxilaryColor = baseLayout.getObjectProperty(currentObject, 'mAuxilaryColor');
-                            if(mAuxilaryColor !== null)
-                            {
-                                mAuxilaryColor.values = {
-                                    r       : BaseLayout_Math.RGBToLinearColor(values.mAuxilaryColor.r),
-                                    g       : BaseLayout_Math.RGBToLinearColor(values.mAuxilaryColor.g),
-                                    b       : BaseLayout_Math.RGBToLinearColor(values.mAuxilaryColor.b),
-                                    a       : 1
-                                };
-                            }
-                    }
+                    let mAuxilaryColor = baseLayout.getObjectProperty(currentObject, 'mAuxilaryColor');
+                        if(mAuxilaryColor !== null)
+                        {
+                            mAuxilaryColor.values = {
+                                r       : BaseLayout_Math.RGBToLinearColor(values.mAuxilaryColor.r),
+                                g       : BaseLayout_Math.RGBToLinearColor(values.mAuxilaryColor.g),
+                                b       : BaseLayout_Math.RGBToLinearColor(values.mAuxilaryColor.b),
+                                a       : 1
+                            };
+                        }
                 }
             });
     }
@@ -1094,19 +1085,16 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        let mForegroundColor = baseLayout.getObjectProperty(currentObject, 'mForegroundColor');
-                            if(mForegroundColor !== null)
-                            {
-                                mForegroundColor.values = {
-                                    r       : BaseLayout_Math.RGBToLinearColor(values.mForegroundColor.r),
-                                    g       : BaseLayout_Math.RGBToLinearColor(values.mForegroundColor.g),
-                                    b       : BaseLayout_Math.RGBToLinearColor(values.mForegroundColor.b),
-                                    a       : 1
-                                };
-                            }
-                    }
+                    let mForegroundColor = baseLayout.getObjectProperty(currentObject, 'mForegroundColor');
+                        if(mForegroundColor !== null)
+                        {
+                            mForegroundColor.values = {
+                                r       : BaseLayout_Math.RGBToLinearColor(values.mForegroundColor.r),
+                                g       : BaseLayout_Math.RGBToLinearColor(values.mForegroundColor.g),
+                                b       : BaseLayout_Math.RGBToLinearColor(values.mForegroundColor.b),
+                                a       : 1
+                            };
+                        }
                 }
             });
     }
@@ -1131,10 +1119,7 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Name', values.mPrefabTextElementSaveData);
-                    }
+                    return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Name', values.mPrefabTextElementSaveData);
                 }
             });
     }
@@ -1156,10 +1141,7 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Label', values.mPrefabTextElementSaveData);
-                    }
+                    return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Label', values.mPrefabTextElementSaveData);
                 }
             });
     }
@@ -1181,10 +1163,7 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_0', values.mPrefabTextElementSaveData);
-                    }
+                    return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_0', values.mPrefabTextElementSaveData);
                 }
             });
     }
@@ -1206,10 +1185,7 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_1', values.mPrefabTextElementSaveData);
-                    }
+                    return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_1', values.mPrefabTextElementSaveData);
                 }
             });
     }
@@ -1237,13 +1213,10 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
+                    baseLayout.deleteObjectProperty(currentObject, 'mEmissive');
+                    if(parseInt(values.mEmissive) !== 0)
                     {
-                        baseLayout.deleteObjectProperty(currentObject, 'mEmissive');
-                        if(parseInt(values.mEmissive) !== 0)
-                        {
-                            baseLayout.setObjectProperty(currentObject, 'mEmissive', parseInt(values.mEmissive), 'FloatProperty');
-                        }
+                        baseLayout.setObjectProperty(currentObject, 'mEmissive', parseInt(values.mEmissive), 'FloatProperty');
                     }
                 }
             });
@@ -1270,13 +1243,10 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
+                    baseLayout.deleteObjectProperty(currentObject, 'mGlossiness');
+                    if(parseInt(values.mGlossiness) !== 0)
                     {
-                        baseLayout.deleteObjectProperty(currentObject, 'mGlossiness');
-                        if(parseInt(values.mGlossiness) !== 0)
-                        {
-                            baseLayout.setObjectProperty(currentObject, 'mGlossiness', 1, 'FloatProperty');
-                        }
+                        baseLayout.setObjectProperty(currentObject, 'mGlossiness', 1, 'FloatProperty');
                     }
                 }
             });
@@ -1390,10 +1360,7 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabIconElementSaveData', 'IconID', 'Icon', parseInt(values.mPrefabIconElementSaveData));
-                    }
+                    return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabIconElementSaveData', 'IconID', 'Icon', parseInt(values.mPrefabIconElementSaveData));
                 }
             });
     }
@@ -1415,10 +1382,7 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabIconElementSaveData', 'IconID', 'Other_Icon', parseInt(values.mPrefabIconElementSaveData));
-                    }
+                    return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabIconElementSaveData', 'IconID', 'Other_Icon', parseInt(values.mPrefabIconElementSaveData));
                 }
             });
     }
@@ -1440,10 +1404,7 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabIconElementSaveData', 'IconID', '{BG}Background', parseInt(values.mPrefabIconElementSaveData));
-                    }
+                    return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabIconElementSaveData', 'IconID', '{BG}Background', parseInt(values.mPrefabIconElementSaveData));
                 }
             });
     }

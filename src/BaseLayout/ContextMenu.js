@@ -77,7 +77,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             icon    : 'fa-box',
                             text    : 'Edit inventory',
-                            callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
+                            callback: this.baseLayout.editPlayerStorageBuildingInventory
                         });
                         break;
                     case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
@@ -134,7 +134,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
                             text        : 'Teleport player',
-                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                            callback    : this.baseLayout.teleportPlayer
                         });
                         contextMenu.push('-');
                         contextMenu.push({
@@ -159,7 +159,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
                             text        : 'Teleport player',
-                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                            callback    : this.baseLayout.teleportPlayer
                         });
                         contextMenu.push('-');
                         contextMenu.push({
@@ -181,7 +181,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
                             text        : 'Teleport player',
-                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                            callback    : this.baseLayout.teleportPlayer
                         });
 
                         if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C')
@@ -204,7 +204,7 @@ export default class BaseLayout_ContextMenu
                             let hasBeenOpened = this.baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
                                 contextMenu.push({
                                     text    : ((hasBeenOpened === 1) ? '<strong class="text-danger">Close</strong>' : '<strong class="text-success">Open</strong>') + ' drop-pod',
-                                    callback: this.baseLayout.toggleDropPodHasBeenOpened.bind(this.baseLayout)
+                                    callback: this.baseLayout.toggleDropPodHasBeenOpened
                                 });
                         }
                         break;
@@ -219,13 +219,13 @@ export default class BaseLayout_ContextMenu
                     contextMenu.push({
                         icon        : 'fa-redo fa-spin',
                         text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Rotate "%1$s" by 90°', buildingData.name),
-                        callback    : this.baseLayout.rotationPlayerFoundation.bind(this.baseLayout)
+                        callback    : this.baseLayout.rotationPlayerFoundation
                     });
 
                     contextMenu.push({
                         icon        : 'fa-share',
                         text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Pivot "%1$s" from the top-left corner', buildingData.name),
-                        callback    : this.baseLayout.pivotPlayerFoundation.bind(this.baseLayout)
+                        callback    : this.baseLayout.pivotPlayerFoundation
                     });
 
                     if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal') === false && currentObject.className.includes('_Corner_') === false)
@@ -253,7 +253,7 @@ export default class BaseLayout_ContextMenu
                     contextMenu.push({
                         icon        : 'fa-portal-exit',
                         text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Teleport player on "%1$s"', buildingData.name),
-                        callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                        callback    : this.baseLayout.teleportPlayer
                     });
 
                     contextMenu.push('-');
@@ -274,7 +274,7 @@ export default class BaseLayout_ContextMenu
                         icon        : 'fa-power-off',
                         text        : 'Turn ' + ((this.baseLayout.getBuildingIsOn(currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
                         className   : 'Building_PowerSwitch_turn' + ((this.baseLayout.getBuildingIsOn(currentObject) === false) ? 'On' : 'Off'),
-                        callback    : this.baseLayout.updateObjectProductionPausedStatus.bind(this.baseLayout)
+                        callback    : this.baseLayout.updateObjectProductionPausedStatus
                     });
 
                     if(buildingData.category !== 'light' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
@@ -282,7 +282,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             icon        : 'fa-tachometer-alt-slow',
                             text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Update clock speed'),
-                            callback    : this.baseLayout.updateObjectClockSpeed.bind(this.baseLayout)
+                            callback    : this.baseLayout.updateObjectClockSpeed
                         });
                     }
 
@@ -416,19 +416,19 @@ export default class BaseLayout_ContextMenu
                             contextMenu.push({
                                 icon    : 'fa-box',
                                 text    : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Edit inventory'),
-                                callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
+                                callback: this.baseLayout.editPlayerStorageBuildingInventory
                             });
                         }
 
                         contextMenu.push({
                             icon    : ((inventoryType === 'liquid') ? 'fa-water-rise' : 'fa-box-full'),
                             text    : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Fill inventory'),
-                            callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal.bind(this.baseLayout)
+                            callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal
                         });
                         contextMenu.push({
                             icon    : ((inventoryType === 'liquid') ? 'fa-water-lower' : 'fa-box-open'),
                             text    : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Clear inventory'),
-                            callback: this.baseLayout.clearPlayerStorageBuildingInventory.bind(this.baseLayout)
+                            callback: this.baseLayout.clearPlayerStorageBuildingInventory
                         });
                         contextMenu.push('-');
                 }
@@ -843,8 +843,7 @@ L.Map.ContextMenu = L.Handler.extend({
 
     _createCallback: function(callback, context, baseLayout, argument)
     {
-        return function(e)
-        {
+        return () => {
             let data                = {};
                 data.containerPoint = this._showLocation.containerPoint;
                 data.layerPoint     = this._map.containerPointToLayerPoint(data.containerPoint);
@@ -858,7 +857,7 @@ L.Map.ContextMenu = L.Handler.extend({
             {
                 callback.call(context || this._map, data, argument);
             }
-        }.bind(this);
+        };
     },
 
     _insertElement: function(tagName, className, container)
