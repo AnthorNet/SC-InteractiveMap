@@ -22,48 +22,56 @@ export default class SaveParser_Read
     {
         this.header                      = {};
         this.header.saveHeaderType       = this.readInt();
-        this.header.saveVersion          = this.readInt();
-        this.header.buildVersion         = this.readInt();
-        this.header.mapName              = this.readString();
-        this.header.mapOptions           = this.readString();
-        this.header.sessionName          = this.readString();
-        this.header.playDurationSeconds  = this.readInt();
-        this.header.saveDateTime         = this.readLong();
-        this.header.sessionVisibility    = this.readByte();
 
-        if(this.header.saveHeaderType >= 7)
+        if(this.header.saveHeaderType <= 99)
         {
-            this.header.fEditorObjectVersion = this.readInt();
-        }
-        if(this.header.saveHeaderType >= 8)
-        {
-            this.header.modMetadata      = this.readString();
-            this.header.isModdedSave     = this.readInt();
-        }
+            this.header.saveVersion          = this.readInt();
+            this.header.buildVersion         = this.readInt();
+            this.header.mapName              = this.readString();
+            this.header.mapOptions           = this.readString();
+            this.header.sessionName          = this.readString();
+            this.header.playDurationSeconds  = this.readInt();
+            this.header.saveDateTime         = this.readLong();
+            this.header.sessionVisibility    = this.readByte();
 
-        console.log(this.header);
+            if(this.header.saveHeaderType >= 7)
+            {
+                this.header.fEditorObjectVersion = this.readInt();
+            }
+            if(this.header.saveHeaderType >= 8)
+            {
+                this.header.modMetadata      = this.readString();
+                this.header.isModdedSave     = this.readInt();
+            }
 
-        this.worker.postMessage({command: 'transferData', data: {header: this.header}});
+            console.log(this.header);
 
-        // We should now unzip the body!
-        if(this.header.saveVersion >= 21)
-        {
-            // Remove the header...
-            this.arrayBuffer        = this.arrayBuffer.slice(this.currentByte);
+            this.worker.postMessage({command: 'transferData', data: {header: this.header}});
 
-            this.handledByte        = 0;
-            this.currentByte        = 0;
-            this.maxByte            = this.arrayBuffer.byteLength;
+            // We should now unzip the body!
+            if(this.header.saveVersion >= 21)
+            {
+                // Remove the header...
+                this.arrayBuffer        = this.arrayBuffer.slice(this.currentByte);
 
-            this.PACKAGE_FILE_TAG   = null;
-            this.maxChunkSize       = null;
-            this.currentChunks      = [];
+                this.handledByte        = 0;
+                this.currentByte        = 0;
+                this.maxByte            = this.arrayBuffer.byteLength;
 
-            return this.inflateChunks();
+                this.PACKAGE_FILE_TAG   = null;
+                this.maxChunkSize       = null;
+                this.currentChunks      = [];
+
+                return this.inflateChunks();
+            }
+            else
+            {
+                this.worker.postMessage({command: 'alert', message: 'MAP\\SAVEPARSER\\That save version isn\'t supported anymore... Please save it again in the game.'});
+            }
         }
         else
         {
-            this.worker.postMessage({command: 'alert', message: 'MAP\\SAVEPARSER\\That save version isn\'t supported anymore... Please save it again in the game.'});
+            this.worker.postMessage({command: 'alert', message: 'That save version isn\'t supported! Are you sure this is a proper save file???'});
         }
     }
 
