@@ -14,6 +14,7 @@ import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoTh
 import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
+import Building_RadarTower                      from '../Building/RadarTower.js';
 import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
@@ -152,14 +153,16 @@ export default class BaseLayout_Tooltip
                                             return this.setBuildingFrackerExtractorTooltipContent(currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
                                             return Building_DroneStation.getTooltip(this.baseLayout, currentObject, buildingData);
-                                        case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
-                                            return Building_Locomotive.getTooltip(this.baseLayout, currentObject, buildingData, this.genericTooltipBackgroundStyle);
                                         case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
                                             return Building_GeneratorGeoThermal.getTooltip(this.baseLayout, currentObject, buildingData);
-                                        case '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C':
-                                            return Building_SpaceElevator.getTooltip(this.baseLayout, currentObject, buildingData);
+                                        case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
+                                            return Building_Locomotive.getTooltip(this.baseLayout, currentObject, buildingData, this.genericTooltipBackgroundStyle);
+                                        case '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C':
+                                            return Building_RadarTower.getTooltip(this.baseLayout, currentObject, buildingData);
                                         case '/Game/FactoryGame/Buildable/Factory/ResourceSink/Build_ResourceSink.Build_ResourceSink_C':
                                             return Building_AwesomeSink.getTooltip(this.baseLayout, currentObject, buildingData);
+                                        case '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C':
+                                            return Building_SpaceElevator.getTooltip(this.baseLayout, currentObject, buildingData);
                                     }
                                     switch(buildingData.category)
                                     {
@@ -1683,21 +1686,6 @@ export default class BaseLayout_Tooltip
                 {
                     content.push('<div>Status: <strong class="text-warning">Automatic</strong></div>');
                 }
-        }
-
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
-        {
-            for(let j = 0; j < currentObject.properties.length; j++)
-            {
-                if(currentObject.properties[j].name === 'mMapText')
-                {
-                    if(currentObject.properties[j].historyType === 3)
-                    {
-                        let mapText     = currentObject.properties[j].sourceFmt.value;
-                            content.push(mapText.replace('{Name}', currentObject.properties[j].arguments[0].argumentValue.value));
-                    }
-                }
-            }
         }
 
         if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'wall' || buildingData.category === 'roof' || buildingData.category === 'walkway')

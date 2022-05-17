@@ -43,6 +43,7 @@ import Building_FrackingExtractor               from './Building/FrackingExtract
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_Light                           from './Building/Light.js';
+import Building_RadarTower                      from './Building/RadarTower.js';
 import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
@@ -4008,11 +4009,16 @@ export default class BaseLayout
         let itemQty         = (inventory.qty !== undefined) ? inventory.qty : null;
         let itemUnits       = '';
         let itemStyle       = 'border-radius: 5px;';
+        let itemBackground  = '#FFFFFF';
             if(itemQty !== null && inventory.category !== undefined && (inventory.category === 'liquid' || inventory.category === 'gas'))
             {
                 itemQty     = Math.round(Math.round(itemQty) / 1000);
                 itemUnits   = 'm³';
                 itemStyle   = 'border-radius: 50%;';
+            }
+            if(inventory.backgroundColor !== undefined)
+            {
+                itemBackground = inventory.backgroundColor;
             }
 
 
@@ -4023,7 +4029,7 @@ export default class BaseLayout
             }
 
         let html = '';
-            html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;' + isActiveStyle + itemStyle + 'background-color: #FFFFFF;"';
+            html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;' + isActiveStyle + itemStyle + 'background-color: ' + itemBackground + ';"';
 
             if(inventory.name !== undefined)
             {
@@ -4370,14 +4376,25 @@ export default class BaseLayout
     {
         if(currentObject!== null && currentObject.properties !== undefined)
         {
-            let currentObjectPropertiesLength   = currentObject.properties.length;
-            for(let j = 0; j < currentObjectPropertiesLength; j++)
-            {
-                if(currentObject.properties[j].name === propertyName)
+            let currentObjectPropertiesLength = currentObject.properties.length;
+                for(let i = 0; i < currentObjectPropertiesLength; i++)
                 {
-                    return currentObject.properties[j].value;
+                    if(currentObject.properties[i].name === propertyName)
+                    {
+                        if(currentObject.properties[i].value === undefined && currentObject.properties[i].sourceFmt !== undefined)
+                        {
+                            let value = currentObject.properties[i].sourceFmt.value;
+                                for(let j = 0; j < currentObject.properties[i].arguments.length; j++)
+                                {
+                                    value = value.replace('{' + currentObject.properties[i].arguments[j].name + '}', currentObject.properties[i].arguments[j].argumentValue.value)
+                                }
+
+                            return value;
+                        }
+
+                        return currentObject.properties[i].value;
+                    }
                 }
-            }
         }
 
         return defaultPropertyValue;
@@ -4489,6 +4506,17 @@ export default class BaseLayout
 
     getItemDataFromClassName(className, debugToConsole = true)
     {
+        if(className === '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C'){ className = '/Game/FactoryGame/Resource/Environment/Nut/Desc_Nut.Desc_Nut_C'; }
+        if(className === '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C'){ className = '/Game/FactoryGame/Resource/Environment/Berry/Desc_Berry.Desc_Berry_C'; }
+        if(className === '/Game/FactoryGame/World/Benefit/Mushroom/BP_Shroom_01.BP_Shroom_01_C'){ className = '/Game/FactoryGame/Resource/Environment/DesertShroom/Desc_Shroom.Desc_Shroom_C'; }
+
+        if(className === '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C'){ className = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_Crystal.Desc_Crystal_C'; }
+        if(className === '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C'){ className = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_Crystal_mk2.Desc_Crystal_mk2_C'; }
+        if(className === '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C'){ className = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_Crystal_mk3.Desc_Crystal_mk3_C'; }
+
+        if(className === '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C'){ className = '/Game/FactoryGame/Prototype/WAT/Desc_WAT1.Desc_WAT1_C'; }
+        if(className === '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C'){ className = '/Game/FactoryGame/Prototype/WAT/Desc_WAT2.Desc_WAT2_C'; }
+
         if(className === '/Game/FactoryGame/Resource/RawResources/CrudeOil/Desc_CrudeOil.Desc_CrudeOil_C'){ className = '/Game/FactoryGame/Resource/RawResources/CrudeOil/Desc_LiquidOil.Desc_LiquidOil_C'; }
         if(className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'){ className = '/Game/FactoryGame/Resource/Equipment/PortableMiner/BP_ItemDescriptorPortableMiner.BP_ItemDescriptorPortableMiner_C'; }
         if(className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C'){ className = '/Game/FactoryGame/Resource/Parts/AnimalParts/Desc_SpitterParts.Desc_SpitterParts_C'; }
@@ -5000,6 +5028,10 @@ export default class BaseLayout
         if(content !== null)
         {
             let tooltipOptions = {sticky: true, opacity: 0.8};
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
+                {
+                    Building_RadarTower.bindTooltip(this, currentObject, tooltipOptions);
+                }
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {
                     Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
@@ -5023,6 +5055,10 @@ export default class BaseLayout
         let currentObject   = this.saveGameParser.getTargetObject(e.target.options.pathName);
             if(currentObject !== null)
             {
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
+                {
+                    Building_RadarTower.unbindTooltip(this, currentObject);
+                }
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {
                     Building_RailroadSwitchControl.unbindTooltip(this, currentObject);

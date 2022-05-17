@@ -11,6 +11,7 @@ import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 import Building_Production                      from '../Building/Production.js';
+import Building_RadarTower                      from '../Building/RadarTower.js';
 import Building_RailroadSwitchControl           from '../Building/RailroadSwitchControl.js';
 import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
@@ -214,6 +215,11 @@ export default class BaseLayout_ContextMenu
             {
                 contextMenu.push({text: buildingData.name, icon: buildingData.image});
 
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
+                {
+                    contextMenu = Building_RadarTower.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                }
+                
                 if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof')
                 {
                     contextMenu.push({
@@ -261,7 +267,8 @@ export default class BaseLayout_ContextMenu
 
                 if(
                       (buildingData.category === 'generator' || (buildingData.powerUsed !== undefined && buildingData.powerUsed > 0) || currentObject.className === '/Game/FactoryGame/Buildable/Factory/HadronCollider/Build_HadronCollider.Build_HadronCollider_C')
-                    && buildingData.category !== 'pad' && buildingData.category !== 'tower' && buildingData.category !== 'logistic' && buildingData.category !== 'dockstation' && buildingData.category !== 'vehicle'
+                    && buildingData.category !== 'pad'
+                    && buildingData.category !== 'logistic' && buildingData.category !== 'dockstation' && buildingData.category !== 'vehicle'
                     && buildingData.category !== 'pipe'
                     && buildingData.category !== 'hyperTube'
                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/CeilingLight/Build_CeilingLight.Build_CeilingLight_C'
@@ -277,7 +284,7 @@ export default class BaseLayout_ContextMenu
                         callback    : this.baseLayout.updateObjectProductionPausedStatus
                     });
 
-                    if(buildingData.category !== 'light' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
+                    if(buildingData.category !== 'light' && buildingData.category !== 'tower' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
                     {
                         contextMenu.push({
                             icon        : 'fa-tachometer-alt-slow',

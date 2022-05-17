@@ -1058,7 +1058,7 @@ export default class Modal_Selection
     {
         for(let i = 0; i < markers.length; i++)
         {
-            baseLayout.clearPlayerStorageBuildingInventory({relatedTarget: markers[i]});
+            baseLayout.clearPlayerStorageBuildingInventory({baseLayout: baseLayout, relatedTarget: markers[i]});
         }
         baseLayout.updateRadioactivityLayer();
     }

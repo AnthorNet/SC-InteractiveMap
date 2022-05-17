@@ -1,31 +1,8 @@
 /* global Intl */
-
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 export default class Building_AwesomeSink
 {
-    /*
-     * 0:
-name: "mTotalResourceSinkPoints"
-type: "Int64Property"
-value: 652395655
-[[Prototype]]: Object
-1:
-name: "mCurrentPointLevel"
-type: "IntProperty"
-value: 329
-[[Prototype]]: Object
-2:
-name: "mNumResourceSinkCoupons"
-type: "IntProperty"
-value: 182
-[[Prototype]]: Object
-3: {name: 'mGlobalPointHistory', type: 'ArrayProperty', value: {…}}
-        value:
-    type: "IntProperty"
-    values: (10) [103310, 115960, 115140, 116675, 102325, 116535, 115945, 116020, 116385, 116400]
-     */
-
     static getResourceSinkSubsystem(baseLayout)
     {
         return baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.ResourceSinkSubsystem');
