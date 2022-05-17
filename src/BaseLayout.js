@@ -2248,29 +2248,38 @@ export default class BaseLayout
         if(buildingData.mapHaveHorizontal !== undefined && buildingData.mapHaveHorizontal === true)
         {
             let objectAngle = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
-                if(Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 90 || Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 270)
+                // Handle signs on beams
+                if(buildingData.category === 'sign' && (Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.roll)) === 90 || Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.roll)) === 270))
                 {
-                    polygonOptions.width     = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
+                    polygonOptions.length    = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
                     polygonOptions.useOnly2D = true;
-
-                    if(currentObject.className.includes('Build_PowerPoleWall_') || currentObject.className.includes('Build_PowerPoleWall_'))
-                    {
-                        polygonOptions.width                = polygonOptions.length = 60; // Make it square
-                        polygonOptions.skipDetailedModel    = true;
-                    }
                 }
                 else
                 {
-                    // Beam length?
-                    //TODO: Calculate length based on proper pitch angle...
-                    if(buildingData.category === 'beam' && Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 0)
+                    if(Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 90 || Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 270)
                     {
-                        let mLength = this.getObjectProperty(currentObject, 'mLength');
-                            if(mLength !== null)
-                            {
-                                polygonOptions.width    = mLength;
-                                polygonOptions.xShift   = -mLength / 2;
-                            }
+                        polygonOptions.width     = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
+                        polygonOptions.useOnly2D = true;
+
+                        if(currentObject.className.includes('Build_PowerPoleWall_') || currentObject.className.includes('Build_PowerPoleWall_'))
+                        {
+                            polygonOptions.width                = polygonOptions.length = 60; // Make it square
+                            polygonOptions.skipDetailedModel    = true;
+                        }
+                    }
+                    else
+                    {
+                        // Beam length?
+                        //TODO: Calculate length based on proper pitch angle...
+                        if(buildingData.category === 'beam' && Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 0)
+                        {
+                            let mLength = this.getObjectProperty(currentObject, 'mLength');
+                                if(mLength !== null)
+                                {
+                                    polygonOptions.width    = mLength;
+                                    polygonOptions.xShift   = -mLength / 2;
+                                }
+                        }
                     }
                 }
         }
