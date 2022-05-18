@@ -152,7 +152,7 @@ export default class Building_RadarTower
                 inputs      : [{
                     name        : 'mMapText',
                     inputType   : 'text',
-                    value       : mMapText.replace('Radar Tower: ', '')
+                    value       : ((mMapText !== null) ? mMapText.replace('Radar Tower: ', '') : '')
                 }],
                 callback    : function(values)
                 {

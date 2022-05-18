@@ -2748,73 +2748,68 @@ export default class BaseLayout
         // Delete vehicles waypoints
         if(buildingData !== null && buildingData.category === 'vehicle')
         {
-            let mTargetList = baseLayout.getObjectProperty(currentObject, 'mTargetList'); // Update 5
-                if(mTargetList === null) //TODO:OLD
+            let mTargetList = baseLayout.getObjectProperty(currentObject, 'mTargetList');
+                if(mTargetList !== null)
                 {
-                    mTargetList = baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
-                }
-
-            if(mTargetList !== null)
-            {
-                let targetNode = baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
-                    if(targetNode !== null && targetNode.properties.length > 0)
-                    {
-                        let firstNode   = null;
-                        let lastNode    = null;
-
-                        for(let j = 0; j < targetNode.properties.length; j++)
+                    let targetNode = baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);
+                        if(targetNode !== null && targetNode.properties.length > 0)
                         {
-                            if(targetNode.properties[j].name === 'mFirst')
+                            let firstNode   = null;
+                            let lastNode    = null;
+
+                            for(let j = 0; j < targetNode.properties.length; j++)
                             {
-                                firstNode = baseLayout.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
+                                if(targetNode.properties[j].name === 'mFirst')
+                                {
+                                    firstNode = baseLayout.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
+                                }
+                                if(targetNode.properties[j].name === 'mLast')
+                                {
+                                    lastNode = baseLayout.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
+                                }
+                                if(firstNode !== null && lastNode !== null)
+                                {
+                                    break;
+                                }
                             }
-                            if(targetNode.properties[j].name === 'mLast')
-                            {
-                                lastNode = baseLayout.saveGameParser.getTargetObject(targetNode.properties[j].value.pathName);
-                            }
+
                             if(firstNode !== null && lastNode !== null)
                             {
-                                break;
-                            }
-                        }
+                                let checkCurrentNode = firstNode;
 
-                        if(firstNode !== null && lastNode !== null)
-                        {
-                            let checkCurrentNode = firstNode;
-
-                            while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
-                            {
-                                let checkCurrentNodeProperties  = checkCurrentNode.properties;
-                                    baseLayout.saveGameParser.deleteObject(checkCurrentNode.pathName);
-                                    checkCurrentNode            = null;
-
-                                for(let k = 0; k < checkCurrentNodeProperties.length; k++)
+                                while(checkCurrentNode !== null && checkCurrentNode.pathName !== lastNode.pathName)
                                 {
-                                    if(checkCurrentNodeProperties[k].name === 'mNext')
+                                    let checkCurrentNodeProperties  = checkCurrentNode.properties;
+                                        baseLayout.saveGameParser.deleteObject(checkCurrentNode.pathName);
+                                        checkCurrentNode            = null;
+
+                                    for(let k = 0; k < checkCurrentNodeProperties.length; k++)
                                     {
-                                        checkCurrentNode = baseLayout.saveGameParser.getTargetObject(checkCurrentNodeProperties[k].value.pathName);
-                                        break;
+                                        if(checkCurrentNodeProperties[k].name === 'mNext')
+                                        {
+                                            checkCurrentNode = baseLayout.saveGameParser.getTargetObject(checkCurrentNodeProperties[k].value.pathName);
+                                            break;
+                                        }
                                     }
                                 }
+
+                                baseLayout.saveGameParser.deleteObject(lastNode.pathName);
                             }
 
-                            baseLayout.saveGameParser.deleteObject(lastNode.pathName);
-                        }
-
-                        let vehicleTrackData = baseLayout.getMarkerFromPathName(marker.relatedTarget.options.pathName + '_vehicleTrackData', 'playerVehiculesLayer');
-                            if(vehicleTrackData !== null)
-                            {
-                                baseLayout.deleteMarkerFromElements('playerVehiculesLayer', vehicleTrackData, fast);
-
-                                baseLayout.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData']--;
-
-                                if(baseLayout.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData'] === 0)
+                            let vehicleTrackData = baseLayout.getMarkerFromPathName(marker.relatedTarget.options.pathName + '_vehicleTrackData', 'playerVehiculesLayer');
+                                if(vehicleTrackData !== null)
                                 {
-                                    $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="/Game/SCIM/Buildable/Vehicle/TrackData"]').hide();
+                                    baseLayout.deleteMarkerFromElements('playerVehiculesLayer', vehicleTrackData, fast);
+
+                                    baseLayout.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData']--;
+
+                                    if(baseLayout.playerLayers[layerId].filtersCount['/Game/SCIM/Buildable/Vehicle/TrackData'] === 0)
+                                    {
+                                        $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="/Game/SCIM/Buildable/Vehicle/TrackData"]').hide();
+                                    }
                                 }
-                            }
-                    }
-            }
+                        }
+                }
 
             for(let n = (baseLayout.saveGameRailVehicles.length - 1); n >= 0; n--)
             {

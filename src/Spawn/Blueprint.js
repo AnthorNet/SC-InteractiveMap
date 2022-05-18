@@ -694,13 +694,6 @@ export default class Spawn_Blueprint
                             newLinkedList.pathName  = this.baseLayout.generateFastPathName(newLinkedList);
                             mTargetList.pathName    = newLinkedList.pathName;
                         }
-                    //TODO:OLD
-                    let mTargetNodeLinkedList = this.baseLayout.getObjectProperty(currentClipboard.parent, 'mTargetNodeLinkedList');
-                        if(mTargetNodeLinkedList !== null)
-                        {
-                            newLinkedList.pathName          = currentClipboard.parent.pathName + '.LinkedList';
-                            mTargetNodeLinkedList.pathName  = newLinkedList.pathName;
-                        }
 
                 let firstNode               = this.baseLayout.getObjectProperty(newLinkedList, 'mFirst');
                 let lastNode                = this.baseLayout.getObjectProperty(newLinkedList, 'mLast');

@@ -161,10 +161,6 @@ export default class Selection_Copy
 
                 // Does vehicle have a list of waypoints?
                 let mTargetList = this.baseLayout.getObjectProperty(currentObject, 'mTargetList'); // Update 5
-                    if(mTargetList === null) //TODO:OLD
-                    {
-                        mTargetList = this.baseLayout.getObjectProperty(currentObject, 'mTargetNodeLinkedList');
-                    }
                     if(mTargetList !== null)
                     {
                         let linkedList = this.baseLayout.saveGameParser.getTargetObject(mTargetList.pathName);

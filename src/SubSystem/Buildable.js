@@ -114,13 +114,6 @@ export default class SubSystem_Buildable
                     }
             }
 
-        //TODO:OLD
-        let colorSlot = this.baseLayout.getObjectProperty(currentObject, 'mColorSlot');
-            if(colorSlot !== null)
-            {
-                return parseInt(colorSlot.value);
-            }
-
         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C')
         {
             return 17;
@@ -211,14 +204,6 @@ export default class SubSystem_Buildable
                         this.setObjectCustomColor(currentObject, customColor.primaryColor, customColor.secondaryColor);
                 }
             }
-
-        //TODO:OLD
-        this.baseLayout.deleteObjectProperty(currentObject, 'mColorSlot');
-        currentObject.properties.push({
-            name    : 'mColorSlot',
-            type    : 'ByteProperty',
-            value   : {enumName: 'None', value: parseInt(slotIndex)}
-        });
     }
 
     setObjectCustomColor(currentObject, primaryColor, secondaryColor)
@@ -508,32 +493,6 @@ export default class SubSystem_Buildable
                 }
             }
 
-        //TODO:OLD
-        let mColorSlotsPrimary_Linear = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsPrimary_Linear');
-            if(mColorSlotsPrimary_Linear !== null)
-            {
-                if(mColorSlotsPrimary_Linear.values[slotIndex] === undefined)
-                {
-                    mColorSlotsPrimary_Linear.values[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)));
-                }
-
-                mColorSlotsPrimary_Linear.values[slotIndex].r   = primaryColor.r;
-                mColorSlotsPrimary_Linear.values[slotIndex].g   = primaryColor.g;
-                mColorSlotsPrimary_Linear.values[slotIndex].b   = primaryColor.b;
-            }
-        let mColorSlotsSecondary_Linear = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsSecondary_Linear');
-            if(mColorSlotsSecondary_Linear !== null)
-            {
-                if(mColorSlotsSecondary_Linear.values[slotIndex] === undefined)
-                {
-                    mColorSlotsSecondary_Linear.values[slotIndex] = JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)));
-                }
-
-                mColorSlotsSecondary_Linear.values[slotIndex].r = secondaryColor.r;
-                mColorSlotsSecondary_Linear.values[slotIndex].g = secondaryColor.g;
-                mColorSlotsSecondary_Linear.values[slotIndex].b = secondaryColor.b;
-            }
-
         this.playerColorSlots = null;
     }
 
@@ -596,37 +555,6 @@ export default class SubSystem_Buildable
             return data;
         }
 
-        //TODO:OLD
-        let mColorSlotsPrimary_Linear = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsPrimary_Linear');
-            if(mColorSlotsPrimary_Linear === null && this.buildableSubSystem !== null)
-            {
-                console.log('Creating missing mColorSlotsPrimary_Linear');
-
-                mColorSlotsPrimary_Linear = {
-                    name                    : 'mColorSlotsPrimary_Linear',
-                    structureName           : 'mColorSlotsPrimary_Linear',
-                    structureSubType        : 'LinearColor',
-                    structureType           : 'StructProperty',
-                    type                    : 'ArrayProperty',
-                    value                   : {type: 'StructProperty', values: []}
-                };
-
-                for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
-                {
-                    mColorSlotsPrimary_Linear.value.values.push(
-                        JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))
-                    );
-                }
-
-                this.buildableSubSystem.properties.push(mColorSlotsPrimary_Linear);
-                return this.getPrimaryColorSlots();
-            }
-
-        if(mColorSlotsPrimary_Linear !== null)
-        {
-            return mColorSlotsPrimary_Linear.values;
-        }
-
         return SubSystem_Buildable.primaryColors;
     }
 
@@ -665,37 +593,6 @@ export default class SubSystem_Buildable
                     }
                 return data;
             }
-
-        //TODO:OLD
-        let mColorSlotsSecondary_Linear = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlotsSecondary_Linear');
-            if(mColorSlotsSecondary_Linear === null && this.buildableSubSystem !== null)
-            {
-                console.log('Creating missing mColorSlotsPrimary_Linear');
-
-                mColorSlotsSecondary_Linear = {
-                    name                    : 'mColorSlotsSecondary_Linear',
-                    structureName           : 'mColorSlotsSecondary_Linear',
-                    structureSubType        : 'LinearColor',
-                    structureType           : 'StructProperty',
-                    type                    : 'ArrayProperty',
-                    value                   : {type: 'StructProperty', values: []}
-                };
-
-                for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
-                {
-                    mColorSlotsSecondary_Linear.value.values.push(
-                        JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))
-                    );
-                }
-
-                this.buildableSubSystem.properties.push(mColorSlotsSecondary_Linear);
-                return this.getSecondaryColorSlots();
-            }
-
-        if(mColorSlotsSecondary_Linear !== null)
-        {
-            return mColorSlotsSecondary_Linear.values;
-        }
 
         return SubSystem_Buildable.secondaryColors;
     }
