@@ -733,6 +733,10 @@ export default class SaveParser_Write
                     case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
                         property += this.writeFINLuaProcessorStateStorage(currentProperty.value.values);
                         break;
+                    case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
+                        property += this.writeLong(currentProperty.value.begin);
+                        property += this.writeLong(currentProperty.value.end);
+                        break;
 
                     default:
                         let currentBufferStartingLength     = this.currentBufferLength;

@@ -1151,6 +1151,10 @@ export default class SaveParser_Read
                     case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
                         currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
                         break;
+                    case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
+                        currentProperty.value.begin         = this.readLong();
+                        currentProperty.value.end           = this.readLong();
+                        break;
 
                     default: // Try normalised structure, then throw Error if not working...
                         try
