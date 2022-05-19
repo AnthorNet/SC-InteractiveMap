@@ -67,7 +67,7 @@ export default class Building_PowerLine
 
 
                         // Add the power line!
-                        let powerline = L.polyline([
+                        let powerline = L.powerLine([
                                 baseLayout.satisfactoryMap.unproject(sourceTranslation),
                                 baseLayout.satisfactoryMap.unproject(targetTranslation)
                             ], {
@@ -193,4 +193,132 @@ export default class Building_PowerLine
                 }
             }
     }
+
+    /**
+     * TOOLTIP
+     */
+    static bindConnectedComponents(baseLayout, currentObject)
+    {
+        if(currentObject.children === undefined)
+        {
+            return;
+        }
+
+        // Loop children to find power connections
+        for(let i = 0; i < currentObject.children.length; i++)
+        {
+            let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                if(currentChildren !== null)
+                {
+                    let mWires = baseLayout.getObjectProperty(currentChildren, 'mWires');
+                        if(mWires !== null)
+                        {
+                            for(let i = 0; i < mWires.values.length; i++)
+                            {
+                                let currentWire = baseLayout.saveGameParser.getTargetObject(mWires.values[i].pathName);
+                                    if(currentWire !== null)
+                                    {
+                                        let connectedMarker     = baseLayout.getMarkerFromPathName(currentWire.pathName, 'playerPowerGridLayer');
+                                            if(connectedMarker !== null)
+                                            {
+                                                connectedMarker.setStyle({color: '#FF0000'});
+                                                connectedMarker.setDashArray(baseLayout);
+                                            }
+                                    }
+                            }
+                        }
+                }
+        }
+    }
+
+    static unbindConnectedComponents(baseLayout, currentObject)
+    {
+        if(currentObject.children === undefined)
+        {
+            return;
+        }
+
+        // Loop children to find power connections
+        for(let i = 0; i < currentObject.children.length; i++)
+        {
+            let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                if(currentChildren !== null)
+                {
+                    let mWires = baseLayout.getObjectProperty(currentChildren, 'mWires');
+                        if(mWires !== null)
+                        {
+                            for(let i = 0; i < mWires.values.length; i++)
+                            {
+                                let currentWire = baseLayout.saveGameParser.getTargetObject(mWires.values[i].pathName);
+                                    if(currentWire !== null)
+                                    {
+                                        let connectedMarker     = baseLayout.getMarkerFromPathName(currentWire.pathName, 'playerPowerGridLayer');
+                                            if(connectedMarker !== null)
+                                            {
+                                                connectedMarker.setStyle({
+                                                    color: ((currentWire.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff')
+                                                });
+                                                connectedMarker.removeDashArray();
+                                            }
+                                    }
+                            }
+                        }
+                }
+        }
+    }
+}
+
+if('undefined' !== typeof L) // Avoid worker error
+{
+    L.PowerLine = L.Polyline.extend({
+        setDashArray(baseLayout)
+        {
+            let currentObject   = baseLayout.saveGameParser.getTargetObject(this.options.pathName);
+
+            // Check powerline direction
+            let flowDirection   = 1;
+
+            /*
+            let source          = currentObject.extra.source.pathName.split('.');
+                source.pop();
+            let sourceObject    = baseLayout.saveGameParser.getTargetObject(source.join('.'));
+            */
+
+            let target          = currentObject.extra.target.pathName.split('.');
+                target.pop();
+            let targetObject    = baseLayout.saveGameParser.getTargetObject(target.join('.'));
+
+
+            if(targetObject !== null)
+            {
+                let targetBuildingData = baseLayout.getBuildingDataFromClassName(targetObject.className);
+                    if(targetBuildingData !== null && targetBuildingData.category !== 'generator' && targetBuildingData.category !== 'powerPole')
+                    {
+                        flowDirection = -1;
+                    }
+            }
+
+            // Flow animation
+            this.options.currentDashOffset  = 0;
+            this.options.dashArrayAnimation = setInterval(() => {
+                this.options.currentDashOffset++;
+                this.setStyle({
+                    dashOffset: flowDirection * this.options.currentDashOffset * (this.options.weight)
+                });
+            }, 25);
+
+            return this.setStyle({dashArray: (this.options.weight * 10) + " " + (this.options.weight  * 10)});
+        },
+
+        removeDashArray()
+        {
+            clearInterval(this.options.dashArrayAnimation);
+            return this.setStyle({dashArray: null});
+        }
+    });
+
+    L.powerLine = function(latlngs, options)
+    {
+        return new L.PowerLine(latlngs, options);
+    };
 }

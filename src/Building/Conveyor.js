@@ -760,9 +760,7 @@ if('undefined' !== typeof L) // Avoid worker error
 
         _updateWeight: function(map)
         {
-            let currentWeight   = this._getWeight(map, this.weight);
-
-            return this.setStyle({weight: currentWeight});
+            return this.setStyle({weight: this._getWeight(map, this.weight)});
         },
 
         _getWeight: function(map, weight)

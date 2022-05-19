@@ -4692,6 +4692,7 @@ export default class BaseLayout
 
                     this.setBuildingMouseOverStyle(marker, buildingData);
                     Building_Conveyor.bindConnectedComponents(this, currentObject);
+                    Building_PowerLine.bindConnectedComponents(this, currentObject);
                 }
             });
             marker.on('mouseout', (e) => {
@@ -4704,6 +4705,7 @@ export default class BaseLayout
 
                     this.setBuildingMouseOutStyle(marker, buildingData, currentObject);
                     Building_Conveyor.unbindConnectedComponents(this, currentObject);
+                    Building_PowerLine.unbindConnectedComponents(this, currentObject);
                 }
             });
 
