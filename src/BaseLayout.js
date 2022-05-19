@@ -1,4 +1,4 @@
-/* global L, Promise, Infinity, Intl, Sentry, parseFloat */
+/* global L, Promise, Intl, Sentry, parseFloat */
 import SaveParser_FicsIt                        from './SaveParser/FicsIt.js';
 
 import BaseLayout_ContextMenu                   from './BaseLayout/ContextMenu.js';
@@ -43,6 +43,7 @@ import Building_FrackingExtractor               from './Building/FrackingExtract
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_Light                           from './Building/Light.js';
+import Building_PowerLine                       from './Building/PowerLine.js';
 import Building_RadarTower                      from './Building/RadarTower.js';
 import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
@@ -110,13 +111,6 @@ export default class BaseLayout
         this.useRadioactivity                   = (this.localStorage !== null && this.localStorage.getItem('mapUseRadioactivity') !== null) ? (this.localStorage.getItem('mapUseRadioactivity') === 'true') : true;
         this.useFogOfWar                        = (this.localStorage !== null && this.localStorage.getItem('mapUseFogOfWar') !== null) ? (this.localStorage.getItem('mapUseFogOfWar') === 'true') : true;
         this.mapModelsQuality                   = (this.localStorage !== null && this.localStorage.getItem('mapModelsQuality') !== null) ? this.localStorage.getItem('mapModelsQuality') : 'high';
-
-        this.availablePowerConnection           = ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.FGPowerConnection1', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection'];
-        this.availableBeltConnection            = ['.ConveyorAny0', '.ConveyorAny1', '.Input0', '.Input1', '.Input2', '.Input3', '.InPut3', '.Input4', '.Input5', '.Input6', '.Output0', '.Output1', '.Output2', '.Output3'];
-        this.availableRailwayConnection         = ['.TrackConnection0', '.TrackConnection1'];
-        this.availablePlatformConnection        = ['.PlatformConnection0', '.PlatformConnection1'];
-        this.availablePipeConnection            = ['.PipeInputFactory', '.PipeOutputFactory', '.PipelineConnection0', '.PipelineConnection1', '.FGPipeConnectionFactory', '.Connection0', '.Connection1', '.Connection2', '.Connection3', '.ConnectionAny0', '.ConnectionAny1'];
-        this.availableHyperPipeConnection       = ['.PipeHyperConnection0', '.PipeHyperConnection1', '.PipeHyperStartConnection'];
 
         this.detailedModels                     = {};
 
@@ -958,7 +952,7 @@ export default class BaseLayout
             '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C'
         ].includes(currentObject.className))
         {
-            return resolve(this.addPlayerPowerLine(currentObject));
+            return resolve(Building_PowerLine.add(this, currentObject));
         }
 
         if(
@@ -1740,13 +1734,14 @@ export default class BaseLayout
             {
                 for(let j = 0; j < properties.object.children.length; j++)
                 {
-                    let currentObjectChildren = this.saveGameParser.getTargetObject(properties.object.children[j].pathName);
+                    let currentObjectChildren   = this.saveGameParser.getTargetObject(properties.object.children[j].pathName);
+                    let availableConnections    = Building_PowerLine.availableConnections;
                         if(currentObjectChildren !== null)
                         {
                             // Grab wires for redraw...
-                            for(let k = 0; k < this.availablePowerConnection.length; k++)
+                            for(let k = 0; k < availableConnections.length; k++)
                             {
-                                if(currentObjectChildren.pathName.endsWith(this.availablePowerConnection[k]))
+                                if(currentObjectChildren.pathName.endsWith(availableConnections[k]))
                                 {
                                     let mWires = this.getObjectProperty(currentObjectChildren, 'mWires');
                                         if(mWires !== null)
@@ -2620,7 +2615,7 @@ export default class BaseLayout
                 let childrenPathName    = currentObject.children[i].pathName;
                 let childrenType        = '.' + childrenPathName.split('.').pop();
 
-                if(baseLayout.availablePowerConnection.indexOf(childrenType) !== -1)
+                if(Building_PowerLine.availableConnections.indexOf(childrenType) !== -1)
                 {
                     let currentObjectChildren = baseLayout.saveGameParser.getTargetObject(pathName + childrenType);
                         if(currentObjectChildren !== null)
@@ -3059,125 +3054,6 @@ export default class BaseLayout
             }
     }
 
-    addPlayerPowerLine(currentObject)
-    {
-        this.setupSubLayer('playerPowerGridLayer');
-
-        // Orphaned power lines (Most likely when mods are removed)
-        if(currentObject.extra.source.pathName === '' || currentObject.extra.target.pathName === '')
-        {
-            console.log('Deleting orphaned power line...');
-            this.deletePlayerPowerLine({options: {pathName: currentObject.pathName}});
-            return null;
-        }
-
-        let currentObjectSource = this.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
-        let currentObjectTarget = this.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
-
-            if(currentObjectSource !== null && currentObjectTarget !== null)
-            {
-                let currentObjectSourceOuterPath    = this.saveGameParser.getTargetObject(currentObjectSource.outerPathName);
-                let currentObjectTargetOuterPath    = this.saveGameParser.getTargetObject(currentObjectTarget.outerPathName);
-
-                    if(currentObjectSourceOuterPath !== null && currentObjectSourceOuterPath.transform !== undefined && currentObjectTargetOuterPath !== null && currentObjectTargetOuterPath.transform !== undefined)
-                    {
-                        // Check if source and target have the proper wire connection?
-                        this.checkPlayerWirePowerConnection(currentObjectSource, currentObject);
-                        this.checkPlayerWirePowerConnection(currentObjectTarget, currentObject);
-
-                        // Does source or target have a connection anchor?
-                        let sourceTranslation = currentObjectSourceOuterPath.transform.translation;
-                            if(this.detailedModels !== null && this.detailedModels[currentObjectSourceOuterPath.className] !== undefined && this.detailedModels[currentObjectSourceOuterPath.className].powerConnection !== undefined)
-                            {
-                                let currentModel        = this.detailedModels[currentObjectSourceOuterPath.className];
-                                    sourceTranslation   = BaseLayout_Math.getPointRotation(
-                                        [
-                                            sourceTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
-                                            sourceTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
-                                        ],
-                                        sourceTranslation,
-                                        currentObjectSourceOuterPath.transform.rotation
-                                    );
-                                    sourceTranslation[2]    = currentObjectSourceOuterPath.transform.translation[2];
-                            }
-                        let targetTranslation = currentObjectTargetOuterPath.transform.translation;
-                            if(this.detailedModels !== null && this.detailedModels[currentObjectTargetOuterPath.className] !== undefined && this.detailedModels[currentObjectTargetOuterPath.className].powerConnection !== undefined)
-                            {
-                                let currentModel        = this.detailedModels[currentObjectTargetOuterPath.className];
-                                    targetTranslation   = BaseLayout_Math.getPointRotation(
-                                        [
-                                            targetTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
-                                            targetTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
-                                        ],
-                                        targetTranslation,
-                                        currentObjectTargetOuterPath.transform.rotation
-                                    );
-                                    targetTranslation[2]    = currentObjectTargetOuterPath.transform.translation[2];
-                            }
-
-
-                        // Add the power line!
-                        let powerline = L.polyline([
-                                this.satisfactoryMap.unproject(sourceTranslation),
-                                this.satisfactoryMap.unproject(targetTranslation)
-                            ], {
-                                pathName    : currentObject.pathName,
-                                color       : ((currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff'),
-                                weight      : 1,
-                                interactive : false
-                            });
-
-                        this.playerLayers.playerPowerGridLayer.elements.push(powerline);
-
-                        //TODO: Is powerline distance using building anchor or center?
-                        //this.playerLayers.playerPowerGridLayer.distance += BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
-                        this.playerLayers.playerPowerGridLayer.distance += BaseLayout_Math.getDistance(sourceTranslation, targetTranslation) / 100;
-
-                        return {layer: 'playerPowerGridLayer', marker: powerline};
-                    }
-            }
-
-        return null;
-    }
-
-    checkPlayerWirePowerConnection(currentObject, currentWireObject)
-    {
-        let mWires = this.getObjectProperty(currentObject, 'mWires');
-
-            // Create the missing property...
-            if(mWires === null)
-            {
-                currentObject.properties.push({
-                    name    : "mWires",
-                    type    : "ArrayProperty",
-                    value   : {
-                        type    : "ObjectProperty",
-                        values  : [{
-                            levelName   : ((currentWireObject.levelName !== undefined) ? currentWireObject.levelName : 'Persistent_Level'),
-                            pathName    : currentWireObject.pathName
-                        }]
-                    }
-                });
-
-                return;
-            }
-
-            // Check if wire is properly connected...
-            for(let i = 0; i < mWires.values.length; i++)
-            {
-                if(mWires.values[i].pathName === currentWireObject.pathName)
-                {
-                    return;
-                }
-            }
-
-            // Wasn't found, add it!
-            mWires.values.push({
-                levelName   : ((currentWireObject.levelName !== undefined) ? currentWireObject.levelName : 'Persistent_Level'),
-                pathName    : currentWireObject.pathName
-            });
-    }
-
     deletePlayerWiresFromPowerConnection(currentObjectPowerConnection)
     {
         let currentObjectWires              = this.getObjectProperty(currentObjectPowerConnection, 'mWires');
@@ -3188,7 +3064,8 @@ export default class BaseLayout
 
             for(let i = 0; i < currentObjectWires.values.length; i++)
             {
-                let wireMarker = this.getMarkerFromPathName(currentObjectWires.values[i].pathName, 'playerPowerGridLayer');
+                let wireMarker              = this.getMarkerFromPathName(currentObjectWires.values[i].pathName, 'playerPowerGridLayer');
+                    wireMarker.baseLayout   = this;
 
                 if(wireMarker !== null)
                 {
@@ -3200,81 +3077,8 @@ export default class BaseLayout
             {
                 for(let i = 0; i < wires.length; i++)
                 {
-                    this.deletePlayerPowerLine(wires[i]);
+                    Building_PowerLine.delete(wires[i]);
                 }
-            }
-        }
-    }
-
-    deletePlayerPowerLine(marker)
-    {
-        let currentObject       = this.saveGameParser.getTargetObject(marker.options.pathName);
-        let currentObjectSource = this.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
-
-        // Unlink source power connection
-        if(currentObjectSource !== null)
-        {
-            this.unlinkPowerConnection(currentObjectSource, currentObject);
-        }
-
-        // Unlink target power connection
-        let currentObjectTarget = this.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
-        if(currentObjectTarget !== null)
-        {
-            this.unlinkPowerConnection(currentObjectTarget, currentObject);
-        }
-
-        if(currentObjectSource !== null && currentObjectTarget !== null)
-        {
-            let currentObjectSourceOuterPath    = this.saveGameParser.getTargetObject(currentObjectSource.outerPathName);
-            let currentObjectTargetOuterPath    = this.saveGameParser.getTargetObject(currentObjectTarget.outerPathName);
-
-            if(currentObjectSourceOuterPath !== null && currentObjectTargetOuterPath !== null)
-            {
-                this.playerLayers.playerPowerGridLayer.distance -= BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
-            }
-        }
-
-        // Delete
-        this.saveGameParser.deleteObject(marker.options.pathName);
-        this.deleteMarkerFromElements('playerPowerGridLayer', marker);
-    }
-
-    unlinkPowerConnection(currentObjectPowerConnection, targetObject)
-    {
-        let connectedWires  = Infinity;
-        let keepCircuitId   = false;
-
-        for(let i = 0; i < currentObjectPowerConnection.properties.length; i++)
-        {
-            if(currentObjectPowerConnection.properties[i].name === 'mWires')
-            {
-                for(let j = 0; j < currentObjectPowerConnection.properties[i].value.values.length; j++)
-                {
-                    if(currentObjectPowerConnection.properties[i].value.values[j].pathName === targetObject.pathName)
-                    {
-                        currentObjectPowerConnection.properties[i].value.values.splice(j, 1);
-                        break;
-                    }
-                }
-
-                connectedWires = currentObjectPowerConnection.properties[i].value.values.length;
-            }
-
-            if(currentObjectPowerConnection.properties[i].name === 'mHiddenConnections')
-            {
-                keepCircuitId = true;
-            }
-        }
-
-        // Empty properties...
-        if(connectedWires <= 0)
-        {
-            currentObjectPowerConnection.properties = currentObjectPowerConnection.properties.filter(property => property.name !== 'mWires');
-
-            if(keepCircuitId === false) // Train station have "mHiddenConnections" property so we need to keep "mCircuitID"
-            {
-                currentObjectPowerConnection.properties = [];
             }
         }
     }
@@ -4791,10 +4595,11 @@ export default class BaseLayout
         {
             for(let i = 0; i < currentObject.children.length; i++)
             {
-                let currentChildren = currentObject.children[i];
-                    for(let k = 0; k < this.availablePowerConnection.length; k++)
+                let currentChildren         = currentObject.children[i];
+                let availableConnections    = Building_PowerLine.availableConnections;
+                    for(let k = 0; k < availableConnections.length; k++)
                     {
-                        if(currentChildren.pathName.endsWith(this.availablePowerConnection[k]))
+                        if(currentChildren.pathName.endsWith(availableConnections[k]))
                         {
                             currentChildren = this.saveGameParser.getTargetObject(currentChildren.pathName);
 

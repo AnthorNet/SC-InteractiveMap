@@ -8,6 +8,8 @@ export default class Building_Conveyor
         exit    : null,
     };
 
+    static get availableConnections(){ return ['.ConveyorAny0', '.ConveyorAny1', '.Input0', '.Input1', '.Input2', '.Input3', '.InPut3', '.Input4', '.Input5', '.Input6', '.Output0', '.Output1', '.Output2', '.Output3']; }
+
     static get availableConveyorBelts()
     {
         return [
@@ -420,7 +422,7 @@ export default class Building_Conveyor
                         if(mConnectedComponent !== null)
                         {
                             let endsWith = '.' + mConnectedComponent.pathName.split('.').pop();
-                                if(baseLayout.availableBeltConnection.includes(endsWith))
+                                if(Building_Conveyor.availableConnections.includes(endsWith))
                                 {
                                     let connectedComponent  = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName.replace(endsWith, ''));
                                         if(connectedComponent !== null)
@@ -488,7 +490,7 @@ export default class Building_Conveyor
                         if(mConnectedComponent !== null)
                         {
                             let endsWith = '.' + mConnectedComponent.pathName.split('.').pop();
-                                if(baseLayout.availableBeltConnection.includes(endsWith))
+                                if(Building_Conveyor.availableConnections.includes(endsWith))
                                 {
                                     let connectedComponent  = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName.replace(endsWith, ''));
                                         if(connectedComponent !== null)

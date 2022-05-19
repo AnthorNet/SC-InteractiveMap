@@ -410,7 +410,7 @@ export default class GameMap
 
                                     if(option.layerId === 'spawn')
                                     {
-                                        L.circle(this.unproject([marker.x, marker.y]), {radius: marker.radius})
+                                        L.circle(this.unproject([marker.x, marker.y]), {radius: marker.radius / 6000})
                                          .addTo(this.availableLayers[option.layerId]);
                                         continue;
                                     }

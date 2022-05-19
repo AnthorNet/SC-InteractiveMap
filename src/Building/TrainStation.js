@@ -4,6 +4,8 @@ import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 export default class Building_TrainStation
 {
+    static get availableConnections(){ return ['.PlatformConnection0', '.PlatformConnection1']; }
+
     static getCompleteTrainStation(baseLayout, currentObject)
     {
         let includedPathName    = [currentObject.pathName];

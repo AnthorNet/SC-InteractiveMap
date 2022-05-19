@@ -1,5 +1,7 @@
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import Building_Pipeline                        from '../Building/Pipeline.js';
+
 export default class SubSystem_PipeNetwork
 {
     constructor(options)
@@ -102,7 +104,7 @@ export default class SubSystem_PipeNetwork
                                 {
                                     let currentObjectPathName = mFluidIntegrantScriptInterfaces.values[i].pathName.split('.');
                                     let endWith               = '.' + currentObjectPathName.pop();
-                                        if(this.baseLayout.availablePipeConnection.includes(endWith) === false)
+                                        if(Building_Pipeline.availableConnections.includes(endWith) === false)
                                         {
                                                 currentObjectPathName   = currentObjectPathName.join('.');
                                             let currentObject           = this.baseLayout.saveGameParser.getTargetObject(currentObjectPathName);

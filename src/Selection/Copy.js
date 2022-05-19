@@ -1,6 +1,13 @@
 /* global gtag */
 import Modal_Selection                          from '../Modal/Selection.js';
 
+import Building_Conveyor                        from '../Building/Conveyor.js';
+import Building_HyperTube                       from '../Building/HyperTube.js';
+import Building_Pipeline                        from '../Building/Pipeline.js';
+import Building_PowerLine                       from '../Building/PowerLine.js';
+import Building_RailroadTrack                   from '../Building/RailroadTrack.js';
+import Building_TrainStation                    from '../Building/TrainStation.js';
+
 export default class Selection_Copy
 {
     constructor(options)
@@ -257,7 +264,7 @@ export default class Selection_Copy
                             if(mConnectedComponent !== null)
                             {
                                 // Remove belt/hyper pipe connection for objects that aren't in the loop...
-                                if(this.baseLayout.availableBeltConnection.includes(endWith) || this.baseLayout.availableHyperPipeConnection.includes(endWith))
+                                if(Building_Conveyor.availableConnections.includes(endWith) || Building_HyperTube.availableConnections.includes(endWith))
                                 {
                                     let testPathName    = mConnectedComponent.pathName.split('.');
                                         testPathName.pop();
@@ -270,7 +277,7 @@ export default class Selection_Copy
                                 }
 
                                 // Handle pipes circuits
-                                if(this.baseLayout.availablePipeConnection.includes(endWith))
+                                if(Building_Pipeline.availableConnections.includes(endWith))
                                 {
                                     let testPathName    = mConnectedComponent.pathName.split('.');
                                         testPathName.pop();
@@ -332,7 +339,7 @@ export default class Selection_Copy
 
                         // Remove railway connection for objects that aren't in the loop...
                         let mConnectedComponents = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedComponents');
-                            if(mConnectedComponents !== null && this.baseLayout.availableRailwayConnection.includes(endWith))
+                            if(mConnectedComponents !== null && Building_RailroadTrack.availableConnections.includes(endWith))
                             {
                                 for(let n = (mConnectedComponents.values.length - 1); n >= 0; n--)
                                 {
@@ -349,7 +356,7 @@ export default class Selection_Copy
 
                         // Remove platform connection for objects that aren't in the loop...
                         let mConnectedTo = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedTo');
-                            if(mConnectedTo !== null && this.baseLayout.availablePlatformConnection.includes(endWith))
+                            if(mConnectedTo !== null && Building_TrainStation.availableConnections.includes(endWith))
                             {
                                 let testPathName    = mConnectedTo.pathName.split('.');
                                     testPathName.pop();
@@ -371,10 +378,11 @@ export default class Selection_Copy
                 {
                     for(let j = 0; j < this.clipboard.data[i].children.length; j++)
                     {
-                        let currentChildren = this.clipboard.data[i].children[j];
-                            for(let k = 0; k < this.baseLayout.availablePowerConnection.length; k++)
+                        let currentChildren         = this.clipboard.data[i].children[j];
+                        let availableConnections    = Building_PowerLine.availableConnections;
+                            for(let k = 0; k < availableConnections.length; k++)
                             {
-                                if(currentChildren.pathName.endsWith(this.baseLayout.availablePowerConnection[k]))
+                                if(currentChildren.pathName.endsWith(availableConnections[k]))
                                 {
                                     let mWires = this.baseLayout.getObjectProperty(currentChildren, 'mWires');
                                         if(mWires !== null)

@@ -5,6 +5,8 @@ import Modal_Selection                          from '../Modal/Selection.js';
 
 export default class Building_RailroadTrack
 {
+    static get availableConnections(){ return ['.TrackConnection0', '.TrackConnection1']; }
+
     static getConnectedComponents(baseLayout, currentObject)
     {
         if(currentObject.children !== undefined)

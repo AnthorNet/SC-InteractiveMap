@@ -221,16 +221,19 @@ export default class Building_Light
 
     static getHaloRadius(currentObject)
     {
-        switch(currentObject.className)
-        {
-            case '/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightPole.Build_FloodlightPole_C':
-                return 0.4;
-            case '/Game/FactoryGame/Buildable/Factory/CeilingLight/Build_CeilingLight.Build_CeilingLight_C':
-            case '/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightWall.Build_FloodlightWall_C':
-                return 0.25;
-        }
+        let radius = 800;
+            switch(currentObject.className)
+            {
+                case '/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightPole.Build_FloodlightPole_C':
+                    radius = 2400;
+                    break;
+                case '/Game/FactoryGame/Buildable/Factory/CeilingLight/Build_CeilingLight.Build_CeilingLight_C':
+                case '/Game/FactoryGame/Buildable/Factory/Floodlight/Build_FloodlightWall.Build_FloodlightWall_C':
+                    radius = 1600;
+                    break;
+            }
 
-        return 0.12;
+        return radius / 6000;
     }
 
     static getHaloCoordinates(baseLayout, currentObject)
@@ -518,14 +521,13 @@ L.Canvas.include({
     {
         if (!this._drawing || layer._empty()) { return; }
 
-        var p   = layer._point,
-            ctx = this._ctx,
+        let p   = layer._point,
             r   = Math.max(Math.round(layer._radius), 1);
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, r, 0, Math.PI * 2, false);
+        this._ctx.beginPath();
+        this._ctx.arc(p.x, p.y, r, 0, Math.PI * 2, false);
 
-        let gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+        let gradient = this._ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
             if(layer.options.gradient !== undefined)
             {
                 for(let stop in layer.options.gradient)
@@ -538,8 +540,8 @@ L.Canvas.include({
                 gradient.addColorStop(0, 'white');
                 gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
             }
-        ctx.fillStyle = gradient;
-        ctx.fill();
+        this._ctx.fillStyle = gradient;
+        this._ctx.fill();
     }
 });
 L.HaloCircle = L.Circle.extend({

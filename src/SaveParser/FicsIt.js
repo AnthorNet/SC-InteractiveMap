@@ -4,9 +4,9 @@ import Building_TrainStation                    from '../Building/TrainStation.j
 
 export default class SaveParser_FicsIt
 {
-    static callADA(baseLayout, currentObject, fullFix = true)
+    static callADA(baseLayout, currentObject, pastingBlueprint = false)
     {
-        if(fullFix === true)
+        if(pastingBlueprint === false)
         {
             switch(currentObject.className)
             {
@@ -31,6 +31,24 @@ export default class SaveParser_FicsIt
                     return SaveParser_FicsIt.checkDroneTransport(baseLayout, currentObject);
             }
         }
+
+        /*
+        if(pastingBlueprint === true)
+        {
+            // Fix old translation Array to object
+            if(currentObject.transform !== undefined)
+            {
+                if(currentObject.transform.translation !== undefined && currentObject.transform.translation.x === undefined)
+                {
+                    currentObject.transform.translation = {
+                        x: currentObject.transform.translation[0],
+                        y: currentObject.transform.translation[1],
+                        z: currentObject.transform.translation[2]
+                    };
+                }
+            }
+        }
+        /**/
 
         switch(currentObject.className)
         {

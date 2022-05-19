@@ -1,5 +1,7 @@
 export default class Building_Pipeline
 {
+    static get availableConnections(){ return ['.PipeInputFactory', '.PipeOutputFactory', '.PipelineConnection0', '.PipelineConnection1', '.FGPipeConnectionFactory', '.Connection0', '.Connection1', '.Connection2', '.Connection3', '.ConnectionAny0', '.ConnectionAny1']; }
+
     static get availablePipelines()
     {
         return [

@@ -1,0 +1,196 @@
+/* global Infinity */
+
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
+
+export default class Building_PowerLine
+{
+    static get availableConnections(){ return ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.FGPowerConnection1', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection']; }
+
+    /*
+     * ADD/DELETE
+     */
+    static add(baseLayout, currentObject)
+    {
+        baseLayout.setupSubLayer('playerPowerGridLayer');
+
+        // Orphaned power lines (Most likely when mods are removed)
+        if(currentObject.extra.source.pathName === '' || currentObject.extra.target.pathName === '')
+        {
+            console.log('Deleting orphaned power line...');
+            Building_PowerLine.delete({baseLayout: baseLayout, options: {pathName: currentObject.pathName}});
+            return null;
+        }
+
+        let currentObjectSource = baseLayout.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
+        let currentObjectTarget = baseLayout.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
+
+            if(currentObjectSource !== null && currentObjectTarget !== null)
+            {
+                let currentObjectSourceOuterPath    = baseLayout.saveGameParser.getTargetObject(currentObjectSource.outerPathName);
+                let currentObjectTargetOuterPath    = baseLayout.saveGameParser.getTargetObject(currentObjectTarget.outerPathName);
+
+                    if(currentObjectSourceOuterPath !== null && currentObjectSourceOuterPath.transform !== undefined && currentObjectTargetOuterPath !== null && currentObjectTargetOuterPath.transform !== undefined)
+                    {
+                        // Check if source and target have the proper wire connection?
+                        Building_PowerLine.checkWirePowerConnection(baseLayout, currentObjectSource, currentObject);
+                        Building_PowerLine.checkWirePowerConnection(baseLayout, currentObjectTarget, currentObject);
+
+                        // Does source or target have a connection anchor?
+                        let sourceTranslation = currentObjectSourceOuterPath.transform.translation;
+                            if(baseLayout.detailedModels !== null && baseLayout.detailedModels[currentObjectSourceOuterPath.className] !== undefined && baseLayout.detailedModels[currentObjectSourceOuterPath.className].powerConnection !== undefined)
+                            {
+                                let currentModel        = baseLayout.detailedModels[currentObjectSourceOuterPath.className];
+                                    sourceTranslation   = BaseLayout_Math.getPointRotation(
+                                        [
+                                            sourceTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
+                                            sourceTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
+                                        ],
+                                        sourceTranslation,
+                                        currentObjectSourceOuterPath.transform.rotation
+                                    );
+                                    sourceTranslation[2]    = currentObjectSourceOuterPath.transform.translation[2];
+                            }
+                        let targetTranslation = currentObjectTargetOuterPath.transform.translation;
+                            if(baseLayout.detailedModels !== null && baseLayout.detailedModels[currentObjectTargetOuterPath.className] !== undefined && baseLayout.detailedModels[currentObjectTargetOuterPath.className].powerConnection !== undefined)
+                            {
+                                let currentModel        = baseLayout.detailedModels[currentObjectTargetOuterPath.className];
+                                    targetTranslation   = BaseLayout_Math.getPointRotation(
+                                        [
+                                            targetTranslation[0] + (currentModel.powerConnection[0] * currentModel.scale) + ((currentModel.xOffset !== undefined) ? currentModel.xOffset : 0),
+                                            targetTranslation[1] + (currentModel.powerConnection[1] * currentModel.scale) + ((currentModel.yOffset !== undefined) ? currentModel.yOffset : 0)
+                                        ],
+                                        targetTranslation,
+                                        currentObjectTargetOuterPath.transform.rotation
+                                    );
+                                    targetTranslation[2]    = currentObjectTargetOuterPath.transform.translation[2];
+                            }
+
+
+                        // Add the power line!
+                        let powerline = L.polyline([
+                                baseLayout.satisfactoryMap.unproject(sourceTranslation),
+                                baseLayout.satisfactoryMap.unproject(targetTranslation)
+                            ], {
+                                pathName    : currentObject.pathName,
+                                color       : ((currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff'),
+                                weight      : 1,
+                                interactive : false
+                            });
+
+                        baseLayout.playerLayers.playerPowerGridLayer.elements.push(powerline);
+
+                        //TODO: Is powerline distance using building anchor or center?
+                        //baseLayout.playerLayers.playerPowerGridLayer.distance += BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
+                        baseLayout.playerLayers.playerPowerGridLayer.distance += BaseLayout_Math.getDistance(sourceTranslation, targetTranslation) / 100;
+
+                        return {layer: 'playerPowerGridLayer', marker: powerline};
+                    }
+            }
+
+        return null;
+    }
+
+    static delete(marker)
+    {
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.options.pathName);
+        let currentObjectSource = baseLayout.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
+
+        // Unlink source power connection
+        if(currentObjectSource !== null)
+        {
+            Building_PowerLine.unlinkPowerConnection(baseLayout, currentObjectSource, currentObject);
+        }
+
+        // Unlink target power connection
+        let currentObjectTarget = baseLayout.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
+        if(currentObjectTarget !== null)
+        {
+            Building_PowerLine.unlinkPowerConnection(baseLayout, currentObjectTarget, currentObject);
+        }
+
+        if(currentObjectSource !== null && currentObjectTarget !== null)
+        {
+            let currentObjectSourceOuterPath    = baseLayout.saveGameParser.getTargetObject(currentObjectSource.outerPathName);
+            let currentObjectTargetOuterPath    = baseLayout.saveGameParser.getTargetObject(currentObjectTarget.outerPathName);
+
+            if(currentObjectSourceOuterPath !== null && currentObjectTargetOuterPath !== null)
+            {
+                baseLayout.playerLayers.playerPowerGridLayer.distance -= BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
+            }
+        }
+
+        // Delete
+        baseLayout.saveGameParser.deleteObject(marker.options.pathName);
+        baseLayout.deleteMarkerFromElements('playerPowerGridLayer', marker);
+    }
+
+    /*
+     * UTILITIES
+     */
+    static checkWirePowerConnection(baseLayout, currentObject, currentWireObject)
+    {
+        let mWires = baseLayout.getObjectProperty(currentObject, 'mWires');
+
+            // Create the missing property...
+            if(mWires === null)
+            {
+                currentObject.properties.push({
+                    name    : "mWires",
+                    type    : "ArrayProperty",
+                    value   : {
+                        type    : "ObjectProperty",
+                        values  : [{
+                            levelName   : ((currentWireObject.levelName !== undefined) ? currentWireObject.levelName : 'Persistent_Level'),
+                            pathName    : currentWireObject.pathName
+                        }]
+                    }
+                });
+
+                return;
+            }
+
+            // Check if wire is properly connected...
+            for(let i = 0; i < mWires.values.length; i++)
+            {
+                if(mWires.values[i].pathName === currentWireObject.pathName)
+                {
+                    return;
+                }
+            }
+
+            // Wasn't found, add it!
+            mWires.values.push({
+                levelName   : ((currentWireObject.levelName !== undefined) ? currentWireObject.levelName : 'Persistent_Level'),
+                pathName    : currentWireObject.pathName
+            });
+    }
+
+    static unlinkPowerConnection(baseLayout, currentObjectPowerConnection, targetObject)
+    {
+        let mWires              = baseLayout.getObjectProperty(currentObjectPowerConnection, 'mWires');
+            if(mWires !== null)
+            {
+                for(let j = 0; j < mWires.values.length; j++)
+                {
+                    if(mWires.values[j].pathName === targetObject.pathName)
+                    {
+                        mWires.values.splice(j, 1);
+                        break;
+                    }
+                }
+
+                // Empty properties...
+                if(mWires.values.length <= 0)
+                {
+                    currentObjectPowerConnection.properties = currentObjectPowerConnection.properties.filter(property => property.name !== 'mWires');
+
+                    let mHiddenConnections  = baseLayout.getObjectProperty(currentObjectPowerConnection, 'mHiddenConnections');
+                        if(mHiddenConnections === null) // Train station have "mHiddenConnections" property so we need to keep "mCircuitID"
+                        {
+                            currentObjectPowerConnection.properties = [];
+                        }
+                }
+            }
+    }
+}
