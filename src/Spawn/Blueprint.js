@@ -1,6 +1,8 @@
 /* global Infinity, gtag, L, Promise */
 import SaveParser_FicsIt                        from '../SaveParser/FicsIt.js';
 
+import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
+
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
@@ -664,6 +666,46 @@ export default class Spawn_Blueprint
                     this.baseLayout.saveGameParser.addObject(newPipeNetwork);
                     this.baseLayout.pipeNetworkSubSystem.add(newPipeNetwork);
                 }
+            }
+
+            window.requestAnimationFrame(resolve);
+        }).then(() => {
+            $('#liveLoader .progress-bar').css('width', '4.5%');
+            return this.handlePowerCircuits(pathNameConversion, pipesConversion);
+        });
+    }
+
+    handlePowerCircuits(pathNameConversion, pipesConversion)
+    {
+        return new Promise((resolve) => {
+            if(this.clipboard.powerCircuits !== undefined)
+            {
+                let circuitSubSystem = new SubSystem_Circuit({baseLayout: this.baseLayout});
+                    for(let powerCircuitPathName in this.clipboard.powerCircuits)
+                    {
+                        let newPowerCircuit             = JSON.parse(JSON.stringify(this.clipboard.powerCircuits[powerCircuitPathName]));
+                            newPowerCircuit.pathName    = this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.CircuitSubsystem.FGPowerCircuit_XXX'});
+                            this.baseLayout.setObjectProperty(newPowerCircuit, 'mCircuitID', circuitSubSystem.getNextId(), 'IntProperty');
+
+                        let mComponents                 = this.baseLayout.getObjectProperty(newPowerCircuit, 'mComponents');
+                            if(mComponents !== null)
+                            {
+                                for(let i = 0; i < mComponents.values.length; i++)
+                                {
+                                    let testPathName    = mComponents.values[i].pathName.split('.');
+                                    let extraPart       = testPathName.pop();
+                                        testPathName    = testPathName.join('.');
+
+                                    if(pathNameConversion[testPathName] !== undefined)
+                                    {
+                                        mComponents.values[i].pathName = pathNameConversion[testPathName] + '.' + extraPart;
+                                    }
+                                }
+                            }
+
+                            this.baseLayout.saveGameParser.addObject(newPowerCircuit);
+                            circuitSubSystem.add(newPowerCircuit);
+                    }
             }
 
             window.requestAnimationFrame(resolve);

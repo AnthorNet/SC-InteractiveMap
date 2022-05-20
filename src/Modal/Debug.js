@@ -96,8 +96,8 @@ export default class Modal_Debug
             {
                 for(let i = 0; i < currentObject.children.length; i++)
                 {
-                    let endWith = currentObject.children[i].pathName.split('.').pop();
-                        if(Building_PowerLine.availableConnections.includes('.' + endWith))
+                    let endWith = '.' + currentObject.children[i].pathName.split('.').pop();
+                        if(Building_PowerLine.availableConnections.includes(endWith))
                         {
                             let objectCircuit = circuitSubSystem.getObjectCircuit(currentObject, endWith);
                                 if(objectCircuit !== null && extraPathName.includes(objectCircuit.pathName) === false)

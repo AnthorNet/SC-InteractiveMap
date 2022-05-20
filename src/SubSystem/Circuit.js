@@ -9,7 +9,37 @@ export default class SubSystem_Circuit
         this.circuitSubSystem   = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.CircuitSubsystem');
     }
 
-    getObjectCircuit(currentObject, powerConnection = 'PowerConnection')
+
+
+    add(currentObject)
+    {
+        let mCircuitID = this.baseLayout.getObjectProperty(currentObject, 'mCircuitID');
+            if(mCircuitID !== null)
+            {
+                this.circuitSubSystem.extra.circuits.push({
+                    circuitId   : mCircuitID,
+                    levelName   : ((currentObject.levelName !== undefined) ? currentObject.levelName : 'Persistent_Level'),
+                    pathName    : currentObject.pathName
+                });
+            }
+    }
+
+
+
+    getNextId()
+    {
+        let maxId = 0;
+            for(let i = 0; i < this.circuitSubSystem.extra.circuits.length; i++)
+            {
+                maxId = Math.max(maxId, this.circuitSubSystem.extra.circuits[i].circuitId);
+            }
+
+        return maxId + 1;
+    }
+
+
+
+    getObjectCircuit(currentObject, powerConnection = '.PowerConnection')
     {
         if(this.circuitSubSystem !== null && this.circuitSubSystem.extra.circuits !== undefined)
         {
@@ -28,7 +58,7 @@ export default class SubSystem_Circuit
                                         {
                                             return this.circuitSubSystem.extra.circuits[i];
                                         }
-                                        if(mComponents.values[j].pathName === currentObject.pathName + '.' + powerConnection)
+                                        if(mComponents.values[j].pathName === currentObject.pathName + powerConnection)
                                         {
                                             return this.circuitSubSystem.extra.circuits[i];
                                         }
@@ -36,7 +66,7 @@ export default class SubSystem_Circuit
                                         componentsArray.push(mComponents.values[j].pathName);
                                     }
 
-                                    if(currentObject.children !== undefined && powerConnection === 'PowerConnection')
+                                    if(currentObject.children !== undefined && powerConnection === '.PowerConnection')
                                     {
                                         for(let j = 0; j < currentObject.children.length; j++)
                                         {
@@ -97,8 +127,8 @@ export default class SubSystem_Circuit
                                                     let mIsSwitchOn      = Building_PowerSwitch.isOn(this.baseLayout, currentSwitch);
                                                         if(mIsSwitchOn === true)
                                                         {
-                                                            let usedPowerConnection         = currentComponentPowerConnection.pathName.split('.').pop();
-                                                            let currentSwitchOtherCircuit   = this.getObjectCircuit(currentSwitch, ((usedPowerConnection === 'PowerConnection1') ? 'PowerConnection2' : 'PowerConnection1'));
+                                                            let usedPowerConnection         = '.' + currentComponentPowerConnection.pathName.split('.').pop();
+                                                            let currentSwitchOtherCircuit   = this.getObjectCircuit(currentSwitch, ((usedPowerConnection === '.PowerConnection1') ? '.PowerConnection2' : '.PowerConnection1'));
 
                                                                 if(currentSwitchOtherCircuit !== null)
                                                                 {

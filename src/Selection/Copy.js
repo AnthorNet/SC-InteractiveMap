@@ -1,6 +1,8 @@
 /* global gtag */
 import Modal_Selection                          from '../Modal/Selection.js';
 
+import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
+
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_HyperTube                       from '../Building/HyperTube.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
@@ -14,6 +16,7 @@ export default class Selection_Copy
     {
         this.baseLayout         = options.baseLayout;
         this.markers            = options.markers;
+        this.circuitSubSystem   = new SubSystem_Circuit({baseLayout: this.baseLayout});
 
         let header              = this.baseLayout.saveGameParser.getHeader();
             this.clipboard      = {
@@ -21,6 +24,7 @@ export default class Selection_Copy
                 buildVersion            : header.buildVersion,
                 data                    : [],
                 pipes                   : {},
+                powerCircuits           : {},
                 hiddenConnections       : {}
             };
             this.baseLayout.clipboard = null;
@@ -259,6 +263,34 @@ export default class Selection_Copy
                     {
                         let currentChildren     = this.clipboard.data[i].children[j];
                         let endWith             = '.' + currentChildren.pathName.split('.').pop();
+
+                        // Handle power circuits
+                        if(Building_PowerLine.availableConnections.includes(endWith))
+                        {
+                            let objectCircuit = this.circuitSubSystem.getObjectCircuit(this.clipboard.data[i].parent, endWith);
+                                if(objectCircuit !== null && this.clipboard.powerCircuits[objectCircuit.pathName] === undefined)
+                                {
+                                    let newPowerCircuit = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(objectCircuit.pathName)));
+                                    let mComponents     = this.baseLayout.getObjectProperty(newPowerCircuit, 'mComponents');
+                                        if(mComponents !== null)
+                                        {
+                                            for(let k = (mComponents.values.length - 1); k >= 0; k--)
+                                            {
+                                                //TODO: Handle Persistent_Level:PersistentLevel.RailroadSubsystem.FGPowerConnectionComponent_XXX (Train hidden connections)
+                                                let testPathName    = mComponents.values[k].pathName.split('.');
+                                                    testPathName.pop();
+                                                    testPathName    = testPathName.join('.');
+
+                                                if(availablePathName.includes(testPathName) === false)
+                                                {
+                                                    mComponents.values.splice(k, 1);
+                                                }
+                                            }
+                                        }
+
+                                    this.clipboard.powerCircuits[objectCircuit.pathName] = newPowerCircuit;
+                                }
+                        }
 
                         let mConnectedComponent = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedComponent');
                             if(mConnectedComponent !== null)
