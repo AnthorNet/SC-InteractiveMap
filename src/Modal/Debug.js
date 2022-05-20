@@ -1,5 +1,7 @@
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 
+import Building_PowerLine                       from '../Building/PowerLine.js';
+
 export default class Modal_Debug
 {
     static getHTML(marker)
@@ -89,27 +91,21 @@ export default class Modal_Debug
                     }
             }
 
-        let circuitSubSystem    = new SubSystem_Circuit({baseLayout: baseLayout});
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
+        let circuitSubSystem        = new SubSystem_Circuit({baseLayout: baseLayout});
+            if(currentObject.children !== undefined)
             {
-                let objectCircuitA       = circuitSubSystem.getObjectCircuit(currentObject, 'PowerConnection1');
-                    if(objectCircuitA !== null)
-                    {
-                        extraPathName.push(objectCircuitA.pathName);
-                    }
-                let objectCircuitB       = circuitSubSystem.getObjectCircuit(currentObject, 'PowerConnection2');
-                    if(objectCircuitB !== null)
-                    {
-                        extraPathName.push(objectCircuitB.pathName);
-                    }
-            }
-            else
-            {
-                let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
-                    if(objectCircuit !== null)
-                    {
-                        extraPathName.push(objectCircuit.pathName);
-                    }
+                for(let i = 0; i < currentObject.children.length; i++)
+                {
+                    let endWith = currentObject.children[i].pathName.split('.').pop();
+                        if(Building_PowerLine.availableConnections.includes('.' + endWith))
+                        {
+                            let objectCircuit = circuitSubSystem.getObjectCircuit(currentObject, endWith);
+                                if(objectCircuit !== null && extraPathName.includes(objectCircuit.pathName) === false)
+                                {
+                                    extraPathName.push(objectCircuit.pathName);
+                                }
+                        }
+                }
             }
 
             html.push('<ul class="nav nav-tabs nav-fill">');
