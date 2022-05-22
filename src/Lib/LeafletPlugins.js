@@ -114,3 +114,183 @@ L.control.sliderControl = function(options)
 {
     return new L.Control.SliderControl(options);
 };
+
+L.TileLayer.include({
+    renderToCanvas: function(callback) {
+        // Defer until we're done loading tiles
+        if (this._loading) {
+            return this.once('load', () => {
+                this.renderToCanvas(callback);
+            });
+        }
+
+        const map = this._map;
+        if (!map) {
+            return callback(new Error('Unable to render to canvas: No map!'));
+        }
+
+        if (this._tileZoom === undefined) {
+            return callback(new Error('Unable to render to canvas: Zoom out of range!'));;
+        }
+
+        const zoom = this._clampZoom(map.getZoom());
+        const layerScale = map.getZoomScale(zoom, this._tileZoom);
+        const level = this._levels[this._tileZoom];
+        const pixelOrigin = map._getNewPixelOrigin(map.getCenter(), zoom);
+        const layerTranslate = level.origin.multiplyBy(layerScale).subtract(pixelOrigin);
+        const mapTranslate = map.layerPointToContainerPoint([0, 0]);
+        const tileSize = this.getTileSize();
+        const scaledSize = tileSize.multiplyBy(layerScale);
+        const canvasDimensions = map.getSize();
+
+        // This canvas is the size of all the tiles that are currently visible, partial or otherwise:
+        const canvas = document.createElement('canvas');
+        canvas.width = canvasDimensions.x;
+        canvas.height = canvasDimensions.y;
+        const context = canvas.getContext('2d');
+
+        // render all the tiles into the canvas:
+        for (const key in this._tiles) {
+            const tile = this._tiles[key];
+            if (!tile.current) {
+                console.warn(`Missing tile ${tile.coords}`, tile);
+                continue;
+            } else {
+                const offset = this._getTilePos(tile.coords).multiplyBy(layerScale).add(layerTranslate).add(mapTranslate);
+                context.drawImage(tile.el, 0, 0, tileSize.x, tileSize.y, offset.x, offset.y, scaledSize.x, scaledSize.y);
+            }
+        }
+
+        return callback(null, canvas);
+    }
+});
+
+const eachAsync = (arr, callback, done) => {
+    let i = 0;
+    const len = arr.length;
+    let next = (err) => {
+        if (err) {
+            return done(err);
+        }
+
+        if (i < len) {
+            callback(arr[i], () => {
+                i++;
+                requestAnimationFrame(() => next());
+            });
+        } else {
+            done();
+        }
+    };
+
+    return next();
+}
+
+L.Map.include({
+    _renderOverlay: function() {
+        if (!this._panes) {
+            return null;
+        }
+
+        const overlay = this._panes.overlayPane.getElementsByTagName('canvas').item(0);
+        if (!overlay) {
+            return null;
+        }
+
+        const dimensions = this.getSize();
+        const bounds = this.getPixelBounds(),
+            origin = this.getPixelOrigin(),
+            canvas = document.createElement('canvas');
+        canvas.width = dimensions.x;
+        canvas.height = dimensions.y;
+        var ctx = canvas.getContext('2d');
+        var pos = L.DomUtil.getPosition(overlay).subtract(bounds.min).add(origin);
+        try {
+            ctx.drawImage(overlay, pos.x, pos.y, canvas.width - (pos.x * 2), canvas.height - (pos.y * 2));
+            return canvas;
+        } catch(e) {
+            console.error('Element could not be drawn on canvas', canvas); // eslint-disable-line no-console
+        }
+        return null;
+    },
+
+    renderToCanvas: function(callback) {
+        const layers = [];
+        const tileLayers = Object.values(this._layers).filter(l => l instanceof L.TileLayer);
+        eachAsync(tileLayers, (layer, next) => {
+            layer.renderToCanvas((err, canvas) => {
+                if (err) {
+                    return next(err);
+                }
+                layers.push(canvas);
+                next();
+            });
+        }, (err) => {
+            if (err) {
+                return callback(err);
+            }
+
+            const overlay = this._renderOverlay();
+            // if we have an overlay layer, draw it last
+            if (overlay) {
+                layers.push(overlay);
+            }
+
+            const dimensions = this.getSize();
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = dimensions.x;
+            finalCanvas.height = dimensions.y;
+            const ctx = finalCanvas.getContext('2d');
+
+            // composite the layers in order
+            layers.forEach((layer) => {
+                ctx.drawImage(layer, 0, 0);
+            });
+
+            callback(null, finalCanvas);
+        });
+    }
+});
+
+L.Control.ExportControl = L.Control.extend({
+    options: {
+        position: 'topleft',
+    },
+
+    initialize: function(options)
+    {
+        L.Util.setOptions(this, options);
+    },
+
+    onAdd: function(map)
+    {
+        this.options.map = map;
+        const className = 'leaflet-control-zoom leaflet-bar';
+        const container = L.DomUtil.create('div', className);
+
+        const button = L.DomUtil.create('a', 'leaflet-control-selection leaflet-bar-part', container);
+        button.innerHTML = '<i class="far fa-camera"></i>';
+        button.href = '#';
+        button.title = 'Export current view as image';
+        button.dataset.hover = 'tooltip';
+        button.dataset.placement = 'right';
+
+        L.DomEvent
+            .on(button, 'click', L.DomEvent.stopPropagation)
+            .on(button, 'click', L.DomEvent.preventDefault)
+            .on(button, 'click', this._exportImage, this)
+            .on(button, 'dbclick', L.DomEvent.stopPropagation);
+
+        return container;
+    },
+
+    onRemove: function(){},
+
+    _exportImage: function() {
+        window.SCIM.exportImage();
+    }
+});
+
+L.control.exportControl = function(options) {
+    return new L.Control.ExportControl(options);
+};

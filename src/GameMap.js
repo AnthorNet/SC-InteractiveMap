@@ -233,7 +233,8 @@ export default class GameMap
             noWrap              : true,
             bounds              : this.getBounds(),
             maxZoom             : (this.maxTileZoom + 4),
-            maxNativeZoom       : this.maxTileZoom
+            maxNativeZoom       : this.maxTileZoom,
+            crossOrigin         : true,
         };
 
         this.baseLayer                  = 'gameLayer';
@@ -243,6 +244,9 @@ export default class GameMap
         // Constrain map
         this.leafletMap.setMaxBounds(this.getBounds());
         this.leafletMap.fitBounds(this.getBounds());
+
+        this.exportControl = L.control.exportControl({});
+        this.leafletMap.addControl(this.exportControl);
 
         // Trigger initial hash to load previous layers...
         this.formatHash();
