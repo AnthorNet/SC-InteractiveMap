@@ -1,4 +1,3 @@
-/* global L */
 import BaseLayout                               from './BaseLayout.js';
 import GameMap                                  from './GameMap.js';
 import SaveParser                               from './SaveParser.js';
@@ -229,7 +228,12 @@ export default class SCIM
         return true;
     };
 
-    // Export map as image
+    /**
+     * Export the current viewport as a png.  If there is a save game loaded, this png will have the same name as the save game file.
+     * If not, it will be named `export.png`
+     * @async
+     * @returns {void}
+     */
     exportImage() {
         // no map?
         if (!this.map) {

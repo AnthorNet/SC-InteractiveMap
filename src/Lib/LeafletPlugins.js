@@ -116,6 +116,11 @@ L.control.sliderControl = function(options)
 };
 
 L.TileLayer.include({
+    /**
+     * Render the tile layer to a canvas with the same dimensions as the map's viewport.
+     * @param {Function} callback A callback called when rendering to the canvas is complete.  Standard callback of `Function(err?, canvas?)` signature
+     * @returns {void}
+     */
     renderToCanvas: function(callback) {
         // Defer until we're done loading tiles
         if (this._loading) {
@@ -133,6 +138,16 @@ L.TileLayer.include({
             return callback(new Error('Unable to render to canvas: Zoom out of range!'));;
         }
 
+        // There's a lot of information we need from the map to understand where a tile should be rendered
+        // This approach cheats a little bit: instead of trying to figure out which tiles need to be rendered,
+        // we assume they all already are loaded and rendered correctly.  This lets us sidestep a handful of steps
+        // So, starting from the list of loaded and active tiles, we need to create a canvas with the same dimensions
+        // as the map viewport, and then render into each each tile.
+        // This is complicated by the way `leaflet` works: not only do we have to understand where a tile exists
+        // with respect to the layer, we also have to understand where that layer exists with respect to the map
+        // and whether or not that layer has had any zoom transformations applied.
+        // Once we have all that information, we can apply the necessary transformations to the tile to place
+        // it in the correct location.
         const zoom = this._clampZoom(map.getZoom());
         const layerScale = map.getZoomScale(zoom, this._tileZoom);
         const level = this._levels[this._tileZoom];
@@ -143,7 +158,7 @@ L.TileLayer.include({
         const scaledSize = tileSize.multiplyBy(layerScale);
         const canvasDimensions = map.getSize();
 
-        // This canvas is the size of all the tiles that are currently visible, partial or otherwise:
+        // This canvas should be the same size as the map's viewport:
         const canvas = document.createElement('canvas');
         canvas.width = canvasDimensions.x;
         canvas.height = canvasDimensions.y;
@@ -156,6 +171,11 @@ L.TileLayer.include({
                 console.warn(`Missing tile ${tile.coords}`, tile);
                 continue;
             } else {
+                // We can get the tile's position with respect to the layer with `_getTilePos`, but
+                // we also need to scale/translate it according to the tile container's transformations,
+                // and then the map pane's translation
+                // We take advantage of the 2d context's ability to do the scaling for us.
+                // Note: this may not be precise: see the hack at the end of `GameMap.js`
                 const offset = this._getTilePos(tile.coords).multiplyBy(layerScale).add(layerTranslate).add(mapTranslate);
                 context.drawImage(tile.el, 0, 0, tileSize.x, tileSize.y, offset.x, offset.y, scaledSize.x, scaledSize.y);
             }
@@ -165,6 +185,14 @@ L.TileLayer.include({
     }
 });
 
+/**
+ * Iterate over an array in an asynchronous way.  The item callback will be provided with a `next` callback, to be called when
+ * time to move on to the next item.  Call `next` with an error to abort iteration early. `done` will receive this error.
+ * @param {Array<any>} arr The array to iterate over
+ * @param {Function} callback The callback to execute on each item.  Called with two arguments: the current item, and `next`, to be called when done
+ * @param {Function} done A callback to be called at the end of iteration.  Receives two arg
+ * @returns {void}
+ */
 const eachAsync = (arr, callback, done) => {
     let i = 0;
     const len = arr.length;
@@ -176,6 +204,7 @@ const eachAsync = (arr, callback, done) => {
         if (i < len) {
             callback(arr[i], () => {
                 i++;
+                // We use requestAnimationFrame to break out of the call stack.  Probably overkill here.
                 requestAnimationFrame(() => next());
             });
         } else {
@@ -187,6 +216,10 @@ const eachAsync = (arr, callback, done) => {
 }
 
 L.Map.include({
+    /**
+     * If we have an overlay pane, render it to a canvas
+     * @returns {null|HTMLCanvasElement}
+     */
     _renderOverlay: function() {
         if (!this._panes) {
             return null;
@@ -197,6 +230,7 @@ L.Map.include({
             return null;
         }
 
+        // This is taken from the `leaflet-image` plugin, with some small modifications
         const dimensions = this.getSize();
         const bounds = this.getPixelBounds(),
             origin = this.getPixelOrigin(),
@@ -214,10 +248,17 @@ L.Map.include({
         return null;
     },
 
+    /**
+     * Render the entire map to a canvas.  This canvas can then be saved as an image with something like
+     * FileSaver.js
+     * @param {Function} callback Callback that receives (err?, canvas?) when done generating the image
+     */
     renderToCanvas: function(callback) {
         const layers = [];
+        // Right now, we only support rendering `TileLayer` layers and the overlay pane.
         const tileLayers = Object.values(this._layers).filter(l => l instanceof L.TileLayer);
         eachAsync(tileLayers, (layer, next) => {
+            // We'll render each layer to a separate canvas, then composite them at the end.
             layer.renderToCanvas((err, canvas) => {
                 if (err) {
                     return next(err);
@@ -230,6 +271,7 @@ L.Map.include({
                 return callback(err);
             }
 
+            // If we have an overlay, let's render it out to a canvas, as well.
             const overlay = this._renderOverlay();
             // if we have an overlay layer, draw it last
             if (overlay) {
@@ -257,13 +299,11 @@ L.Control.ExportControl = L.Control.extend({
         position: 'topleft',
     },
 
-    initialize: function(options)
-    {
+    initialize: function(options) {
         L.Util.setOptions(this, options);
     },
 
-    onAdd: function(map)
-    {
+    onAdd: function(map) {
         this.options.map = map;
         const className = 'leaflet-control-zoom leaflet-bar';
         const container = L.DomUtil.create('div', className);
@@ -287,6 +327,7 @@ L.Control.ExportControl = L.Control.extend({
     onRemove: function(){},
 
     _exportImage: function() {
+        // This seems janky, since this control is added via `GameMap`...
         window.SCIM.exportImage();
     }
 });

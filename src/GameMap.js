@@ -234,7 +234,7 @@ export default class GameMap
             bounds              : this.getBounds(),
             maxZoom             : (this.maxTileZoom + 4),
             maxNativeZoom       : this.maxTileZoom,
-            crossOrigin         : true,
+            crossOrigin         : true,    // We need this in order to be able to render tiles to a canvas.  Otherwise, we'd need to re-fetch all the tiles.
         };
 
         this.baseLayer                  = 'gameLayer';
@@ -245,6 +245,7 @@ export default class GameMap
         this.leafletMap.setMaxBounds(this.getBounds());
         this.leafletMap.fitBounds(this.getBounds());
 
+        // Add a button to export the current viewport as an image and then download it.
         this.exportControl = L.control.exportControl({});
         this.leafletMap.addControl(this.exportControl);
 
