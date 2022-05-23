@@ -22,7 +22,6 @@ import SubSystem_Unlock                         from './SubSystem/Unlock.js';
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
 import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
 import Modal_Map_Players                        from './Modal/Map/Players.js';
-import Modal_Map_Presets                        from './Modal/Map/Presets.js';
 import Modal_Map_Options                        from './Modal/Map/Options.js';
 
 import Modal_Statistics_Game                    from './Modal/Statistics/Game.js';
@@ -1197,16 +1196,12 @@ export default class BaseLayout
                             let statisticsCollectables = new Modal_Map_Collectables({baseLayout: this});
                                 statisticsCollectables.parse();
                             break;
-                        case '#statisticsPlayerPresets':
-                            let statisticsPresets = new Modal_Map_Presets({baseLayout: this});
-                                statisticsPresets.parse();
-                            break;
                         case '#statisticsModalOptions':
                             let mapOptions = new Modal_Map_Options({baseLayout: this});
                                 mapOptions.parse();
                             break;
                     }
-            })
+            });
             $('#optionsModal').on('show.bs.modal', () => {
                 $('#optionsModal a.active[data-toggle="tab"]').trigger('shown.bs.tab');
             });
