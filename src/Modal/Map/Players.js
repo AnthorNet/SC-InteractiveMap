@@ -19,6 +19,8 @@ export default class Modal_Map_Players
                 let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
                 let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
 
+                console.log(this.unlockSubSystem)
+
                 updateSizeHtml.push('<div class="row">');
                 updateSizeHtml.push('<div class="col-6">');
                     updateSizeHtml.push('<div class="input-group mt-3"><div class="input-group-prepend"><span class="input-group-text">Total Inventory Slots</span><button class="btn btn-outline-secondary text-white" type="button" id="parseStatisticsPlayerInventoryRemoveInventory">-</button></div><input type="text" class="form-control text-center" value="' + ((mNumTotalInventorySlots !== null) ? mNumTotalInventorySlots : 22) + '" readonly><div class="input-group-append"><button class="btn btn-outline-secondary text-white" type="button" id="parseStatisticsPlayerInventoryAddInventory">+</button></div></div>');
@@ -44,19 +46,42 @@ export default class Modal_Map_Players
 
                             inventoryHtml.push('<div class="row">');
 
-                                inventoryHtml.push('<div class="col-6" style="padding-left: 10px;padding-right: 10px;">');
-                                inventoryHtml.push(this.baseLayout.setInventoryTableSlot(inventory, null, 64));
+                                inventoryHtml.push('<div class="col-7" style="padding-left: 10px;padding-right: 10px;">');
+                                inventoryHtml.push(this.baseLayout.setInventoryTableSlot(inventory, null, 64, '', null, 9));
                                 inventoryHtml.push('</div>');
 
-                                inventoryHtml.push('<div class="col-6">');
-                                    inventoryHtml.push('<div style="position: relative;padding-top: 100%;background: url(' + this.baseLayout.staticUrl + '/img/charSilhouette.png) center no-repeat #666;background-size: contain;border: 1px solid #000; border-radius: 5px;">');
+                                inventoryHtml.push('<div class="col-5">');
+                                    inventoryHtml.push('<div style="position: relative;padding-top: 100%;background: url(' + this.baseLayout.staticUrl + '/img/charSilhouette.png) center no-repeat #666;background-size: contain;border: 1px solid #000; border-radius: 5px;min-height: 512px;">');
 
+                                    let headSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.HeadSlot');
+                                        inventoryHtml.push('<div style="position: absolute;margin-top: -25px;top: 10%;left: 10%;">');
+                                        inventoryHtml.push('<strong>HEAD</strong>');
+                                        inventoryHtml.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(headSlot), 1, 64));
+                                        inventoryHtml.push('</div>');
+
+                                    let bodySlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.BodySlot');
+                                        inventoryHtml.push('<div style="position: absolute;margin-top: -25px;top: 10%;right: 10%;text-align: right;">');
+                                        inventoryHtml.push('<strong>BODY</strong>');
+                                        inventoryHtml.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(bodySlot), 1, 64));
+                                        inventoryHtml.push('</div>');
 
                                     let armSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.ArmSlot');
-                                        inventoryHtml.push('<div style="position: absolute;margin-top: -100%;padding-top: 50%;padding-left: 5%;">' + this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(armSlot), null, 64, '', null, 4) + '</div>');
+                                        inventoryHtml.push('<div style="position: absolute;margin-top: -78px;top: 50%;left: 10%;">');
+                                        inventoryHtml.push('<strong>HANDS</strong>');
+                                        inventoryHtml.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(armSlot), null, 64, '', null, 3));
+                                        inventoryHtml.push('</div>');
 
                                     let backSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.BackSlot');
-                                        inventoryHtml.push('<div style="position: absolute;margin-top: -100%;padding-top: 25%;padding-left: 5%;">' + this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(backSlot), null, 64) + '</div>');
+                                        inventoryHtml.push('<div style="position: absolute;margin-top: -25px;top: 50%;right: 10%;text-align: right;">');
+                                        inventoryHtml.push('<strong>BACK</strong>');
+                                        inventoryHtml.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(backSlot), 1, 64));
+                                        inventoryHtml.push('</div>');
+
+                                    let legSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.LegSlot');
+                                        inventoryHtml.push('<div style="position: absolute;margin-bottom: -25px;bottom: 10%;left: 10%;">');
+                                        inventoryHtml.push('<strong>LEG</strong>');
+                                        inventoryHtml.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(legSlot), 1, 64));
+                                        inventoryHtml.push('</div>');
 
                                     inventoryHtml.push('</div>');
 
