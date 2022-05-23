@@ -22,6 +22,7 @@ import SubSystem_Unlock                         from './SubSystem/Unlock.js';
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
 import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
 import Modal_Map_Players                        from './Modal/Map/Players.js';
+import Modal_Map_Todo                           from './Modal/Map/Todo.js';
 import Modal_Map_Options                        from './Modal/Map/Options.js';
 
 import Modal_Statistics_Game                    from './Modal/Statistics/Game.js';
@@ -1195,6 +1196,10 @@ export default class BaseLayout
                         case '#statisticsModalCollectables':
                             let statisticsCollectables = new Modal_Map_Collectables({baseLayout: this});
                                 statisticsCollectables.parse();
+                            break;
+                        case '#statisticsPlayerTodo':
+                            let mapTodos = new Modal_Map_Todo({baseLayout: this});
+                                mapTodos.parse();
                             break;
                         case '#statisticsModalOptions':
                             let mapOptions = new Modal_Map_Options({baseLayout: this});
@@ -4249,7 +4254,7 @@ export default class BaseLayout
                 }
                 else
                 {
-                    let fromClassName =  this.getItemDataFromRecipeClassName(recipe.pathName);
+                    let fromClassName =  this.getRecipeFromClassName(recipe.pathName);
                         if(fromClassName !== null)
                         {
                             return fromClassName;
@@ -4277,7 +4282,7 @@ export default class BaseLayout
         return null;
     }
 
-    getItemDataFromRecipeClassName(className)
+    getRecipeFromClassName(className)
     {
         for(let recipeId in this.recipesData)
         {

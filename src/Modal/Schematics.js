@@ -159,7 +159,7 @@ export default class Modal_Schematics
 
                 if(currentSchematic.recipes !== undefined)
                 {
-                    let currentRecipe       = this.baseLayout.getItemDataFromRecipeClassName(currentSchematic.recipes[0]);
+                    let currentRecipe       = this.baseLayout.getRecipeFromClassName(currentSchematic.recipes[0]);
 
                         if(currentRecipe !== null)
                         {
@@ -634,7 +634,7 @@ export default class Modal_Schematics
                          && currentSchematic.recipes[k] !== '/Game/FactoryGame/Schematics/ResourceSink/Patterns/CBG_PatternRemoval.CBG_PatternRemoval_C'
                     )
                     {
-                        let currentRecipe = this.baseLayout.getItemDataFromRecipeClassName(currentSchematic.recipes[k]);
+                        let currentRecipe = this.baseLayout.getRecipeFromClassName(currentSchematic.recipes[k]);
                             if(currentRecipe !== null)
                             {
                                 unlocks.push(currentRecipe.name);
