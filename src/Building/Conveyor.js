@@ -69,8 +69,58 @@ export default class Building_Conveyor
             }
 
         baseLayout.setupSubLayer(mapLayer);
-        let splineData = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
+        let splineData  = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
+        let beltOptions = {
+                pathName    : currentObject.pathName,
+                weight      : 135,
+                opacity     : 0.9
+            };
+            if(buildingData !== null)
+            {
+                beltOptions.color = buildingData.mapColor;
+            }
+        let belt        = L.conveyor(splineData.points, beltOptions);
 
+        if(Building_Conveyor.isConveyorBelt(currentObject) === false) // Conveyor are handled with the tooltips bind
+        {
+            belt.on('mouseover', function(marker){
+                let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
+                let slotColor           = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
+
+                marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
+            });
+            belt.on('mouseout', function(marker){
+                let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
+                    if(currentObject !== null)
+                    {
+                        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+                            if(buildingData !== null)
+                            {
+                                marker.sourceTarget.setStyle({color: buildingData.mapColor});
+                            }
+                    }
+            });
+        }
+
+        baseLayout.bindMouseEvents(belt);
+
+        if(baseLayout.playerLayers[mapLayer].distance !== undefined)
+        {
+            baseLayout.playerLayers[mapLayer].distance += splineData.distance;
+        }
+
+        baseLayout.playerLayers[mapLayer].elements.push(belt);
+
+        if(baseLayout.playerLayers[mapLayer].filtersCount !== undefined)
+        {
+            if(baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className] === undefined)
+            {
+                baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className] = {distance: 0};
+            }
+            baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className].distance += splineData.distance;
+        }
+
+        // RADIOACTIVITY
         if(baseLayout.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
         {
             let radioactiveInventory = [];
@@ -119,56 +169,6 @@ export default class Building_Conveyor
             }
         }
 
-        let beltOptions = {
-                pathName    : currentObject.pathName,
-                weight      : 135,
-                opacity     : 0.9
-            };
-            if(buildingData !== null)
-            {
-                beltOptions.color = buildingData.mapColor;
-            }
-        let belt = L.conveyor(splineData.points, beltOptions);
-
-        if(Building_Conveyor.isConveyorBelt(currentObject) === false) // Conveyor are handled with the tooltips bind
-        {
-            belt.on('mouseover', function(marker){
-                let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-                let slotColor           = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
-
-                marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
-            });
-            belt.on('mouseout', function(marker){
-                let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-                    if(currentObject !== null)
-                    {
-                        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-                            if(buildingData !== null)
-                            {
-                                marker.sourceTarget.setStyle({color: buildingData.mapColor});
-                            }
-                    }
-            });
-        }
-
-        baseLayout.bindMouseEvents(belt);
-
-        if(baseLayout.playerLayers[mapLayer].distance !== undefined)
-        {
-            baseLayout.playerLayers[mapLayer].distance += splineData.distance;
-        }
-
-        baseLayout.playerLayers[mapLayer].elements.push(belt);
-
-        if(baseLayout.playerLayers[mapLayer].filtersCount !== undefined)
-        {
-            if(baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className] === undefined)
-            {
-                baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className] = {distance: 0};
-            }
-            baseLayout.playerLayers[mapLayer].filtersCount[currentObject.className].distance += splineData.distance;
-        }
-
         return {layer: mapLayer, marker: belt};
     }
 
@@ -177,47 +177,45 @@ export default class Building_Conveyor
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let haveSeparator = false;
-            if(Building_Conveyor.isConveyorBelt(currentObject))
-            {
-                haveSeparator = true;
-                contextMenu.push({
-                    icon        : 'fa-object-group',
-                    text        : 'Merge adjacent conveyor belts (Performance test)',
-                    callback    : Building_Conveyor.mergeConveyors,
-                    className   : 'Building_Conveyor_mergeConveyors'
-                });
+        if(Building_Conveyor.isConveyorBelt(currentObject))
+        {
+            contextMenu.push({
+                icon        : 'fa-object-group',
+                text        : 'Merge adjacent conveyor belts (Performance test)',
+                callback    : Building_Conveyor.mergeConveyors,
+                className   : 'Building_Conveyor_mergeConveyors'
+            });
 
-                let conveyorAny0 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny0');
-                    if(conveyorAny0 !== null)
-                    {
-                        let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
-                            if(mConnectedComponent === null)
-                            {
-                                contextMenu.push({
-                                    icon        : 'fa-portal-exit',
-                                    text        : 'Use input as teleporter exit',
-                                    callback    : Building_Conveyor.storeTeleporterExit,
-                                    className   : 'Building_Conveyor_storeTeleporterExit'
-                                });
-                            }
-                    }
+            let conveyorAny0 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny0');
+                if(conveyorAny0 !== null)
+                {
+                    let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
+                        if(mConnectedComponent === null)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-portal-exit',
+                                text        : 'Use input as teleporter exit',
+                                callback    : Building_Conveyor.storeTeleporterExit,
+                                className   : 'Building_Conveyor_storeTeleporterExit'
+                            });
+                        }
+                }
 
-                let conveyorAny1 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny1');
-                    if(conveyorAny1 !== null)
-                    {
-                        let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
-                            if(mConnectedComponent === null)
-                            {
-                                contextMenu.push({
-                                    icon        : 'fa-portal-enter',
-                                    text        : 'Use output as teleporter entry',
-                                    callback    : Building_Conveyor.storeTeleporterEntry,
-                                    className   : 'Building_Conveyor_storeTeleporterEntry'
-                                });
-                            }
-                    }
-            }
+            let conveyorAny1 = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.ConveyorAny1');
+                if(conveyorAny1 !== null)
+                {
+                    let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
+                        if(mConnectedComponent === null)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-portal-enter',
+                                text        : 'Use output as teleporter entry',
+                                callback    : Building_Conveyor.storeTeleporterEntry,
+                                className   : 'Building_Conveyor_storeTeleporterEntry'
+                            });
+                        }
+                }
+        }
 
         let usePool = Building_Conveyor.availableConveyorBelts;
             if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/ConveyorLift') === true)
@@ -228,8 +226,6 @@ export default class Building_Conveyor
         let poolIndex   = usePool.indexOf(currentObject.className);
             if(poolIndex !== -1 && (poolIndex > 0 || poolIndex < (usePool.length - 1)))
             {
-                haveSeparator = true;
-
                 if(poolIndex > 0)
                 {
                     let downgradeData = baseLayout.getBuildingDataFromClassName(usePool[poolIndex - 1]);
@@ -258,10 +254,14 @@ export default class Building_Conveyor
                 }
             }
 
-            if(haveSeparator === true)
-            {
-                contextMenu.push('-');
-            }
+            contextMenu.push({
+                icon        : 'fa-box-open',
+                text        : baseLayout.translate._('MAP\\CONTEXTMENU\\Clear inventory'),
+                callback    : Building_Conveyor.clearInventory,
+                className   : 'Building_Conveyor_clearInventory'
+            });
+
+            contextMenu.push('-');
 
         return contextMenu;
     }
@@ -377,6 +377,47 @@ export default class Building_Conveyor
                 currentObject.className = usePool[poolIndex + 1];
                 baseLayout.updateBuiltWithRecipe(currentObject);
             }
+    }
+
+    static clearInventory(marker, updateRadioactivityLayer = true)
+    {
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+
+        // RADIOACTIVITY
+        if(currentObject.extra !== undefined && currentObject.extra.items.length > 0)
+        {
+            let radioactiveInventory = [];
+                for(let i = 0; i < currentObject.extra.items.length; i++)
+                {
+                    let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name, false);
+                        if(currentItemData !== null)
+                        {
+                            if(currentItemData.radioactiveDecay !== undefined)
+                            {
+                                radioactiveInventory.push(currentObject.extra.items[i].name);
+                            }
+                        }
+                }
+
+            currentObject.extra.items = [];
+
+            if(radioactiveInventory.length > 0)
+            {
+                for(let i = 0; i < radioactiveInventory.length; i++)
+                {
+                    delete baseLayout.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName + '_' + i];
+                }
+            }
+        }
+
+        baseLayout.radioactivityLayerNeedsUpdate = true;
+        baseLayout.updateRadioactivityLayer();
+
+        if(updateRadioactivityLayer === true)
+        {
+            baseLayout.updateRadioactivityLayer();
+        }
     }
 
 

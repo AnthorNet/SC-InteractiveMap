@@ -341,8 +341,15 @@ export default class Modal_Selection
 
             if(haveLogisticCategory === true)
             {
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected belts/lifts', value: 'Building_Conveyor_downgradeConveyor'});
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected belts/lifts', value: 'Building_Conveyor_upgradeConveyor'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected conveyor belts/lifts', value: 'Building_Conveyor_downgradeConveyor'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected conveyor belts/lifts', value: 'Building_Conveyor_upgradeConveyor'});
+                inputOptions.push({group: 'Inventory', text: 'Clear selected conveyor belts/lifts inventories', value: 'Building_Conveyor_clearInventory'});
+
+                if(haveConveyorsBelts)
+                {
+
+                    inputOptions.push({group: 'Performance Test', text: 'Merge adjacent conveyor belts', value: 'Building_Conveyor_mergeConveyors'});
+                }
             }
 
             if(havePowerPoleCategory === true)
@@ -382,11 +389,6 @@ export default class Modal_Selection
                 }
 
                 inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorage'});
-            }
-
-            if(haveConveyorsBelts)
-            {
-                inputOptions.push({group: 'Performance Test', text: 'Merge adjacent conveyor belts', value: 'Building_Conveyor_mergeConveyors'});
             }
 
             if(markers !== null && markers.length > 0)

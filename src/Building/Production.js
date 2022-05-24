@@ -18,7 +18,7 @@ export default class Building_Production
             {
                 contextMenu.push({
                     icon        : 'fa-box-full',
-                    text        : 'Fill inventory',
+                    text        : baseLayout.translate._('MAP\\CONTEXTMENU\\Fill inventory'),
                     callback    : Building_Production.fillInventory,
                     className   : 'Building_Production_fillInventory'
                 });
@@ -26,7 +26,7 @@ export default class Building_Production
 
         contextMenu.push({
             icon        : 'fa-box-open',
-            text        : 'Clear inventory',
+            text        : baseLayout.translate._('MAP\\CONTEXTMENU\\Clear inventory'),
             callback    : Building_Production.clearInventory,
             className   : 'Building_Production_clearInventory'
         });
@@ -247,8 +247,6 @@ export default class Building_Production
 
         delete baseLayout.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
         baseLayout.radioactivityLayerNeedsUpdate = true;
-        baseLayout.getObjectRadioactivity(currentObject, 'mInputInventory');
-        baseLayout.getObjectRadioactivity(currentObject, 'mOutputInventory');
         baseLayout.updateRadioactivityLayer();
 
         if(updateRadioactivityLayer === true)
