@@ -360,6 +360,8 @@ export default class Modal_Selection
 
             if(havePipelineCategory === true)
             {
+                inputOptions.push({group: 'Inventory', text: 'Fill selected pipelines inventory', value: 'Building_Pipeline_fillInventory'});
+                inputOptions.push({group: 'Inventory', text: 'Clear selected pipelines inventory', value: 'Building_Pipeline_clearInventory'});
                 inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected pipelines/pumps', value: 'Building_Pipeline_downgradePipeline'});
                 inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'Building_Pipeline_upgradePipeline'});
             }

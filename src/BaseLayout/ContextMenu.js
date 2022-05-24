@@ -219,7 +219,7 @@ export default class BaseLayout_ContextMenu
                 {
                     contextMenu = Building_RadarTower.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
-                
+
                 if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof')
                 {
                     contextMenu.push({
@@ -437,7 +437,11 @@ export default class BaseLayout_ContextMenu
                             text    : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Clear inventory'),
                             callback: this.baseLayout.clearPlayerStorageBuildingInventory
                         });
-                        contextMenu.push('-');
+
+                        if(inventoryType !== 'liquid')
+                        {
+                            contextMenu.push('-');
+                        }
                 }
 
                 let currentObjectPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);

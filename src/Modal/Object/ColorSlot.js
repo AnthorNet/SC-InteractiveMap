@@ -1,6 +1,8 @@
 import BaseLayout_Math                          from '../../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../../BaseLayout/Modal.js';
 
+import Building_Pipeline                        from '../../Building/Pipeline.js';
+
 import SubSystem_Buildable                      from '../../SubSystem/Buildable.js';
 
 export default class Modal_Object_ColorSlot
@@ -53,7 +55,7 @@ export default class Modal_Object_ColorSlot
                 text            : 'Concrete Structure'
             });
         }
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C')
+        if(Building_Pipeline.isPipeline(currentObject))
         {
             selectOptions.push({
                 fullWidth       : true,

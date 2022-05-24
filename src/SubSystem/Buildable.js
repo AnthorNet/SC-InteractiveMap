@@ -1,5 +1,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import Building_Pipeline                        from '../Building/Pipeline.js';
+
 export default class SubSystem_Buildable
 {
     static get totalColorSlots(){ return 16; }
@@ -114,7 +116,7 @@ export default class SubSystem_Buildable
                     }
             }
 
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C')
+        if(Building_Pipeline.isPipeline(currentObject))
         {
             return 17;
         }

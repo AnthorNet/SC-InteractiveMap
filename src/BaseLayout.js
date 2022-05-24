@@ -42,6 +42,7 @@ import Building_Conveyor                        from './Building/Conveyor.js';
 import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
+import Building_Pipeline                        from './Building/Pipeline.js';
 import Building_Light                           from './Building/Light.js';
 import Building_PowerLine                       from './Building/PowerLine.js';
 import Building_RadarTower                      from './Building/RadarTower.js';
@@ -956,15 +957,10 @@ export default class BaseLayout
         }
 
         if(
-             // Pipes
-                currentObject.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C'
-             || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C'
+                Building_Conveyor.isConveyorBelt(currentObject) || Building_Pipeline.isPipeline(currentObject)
+             // Hyper tubes
              || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipeHyper/Build_PipeHyper.Build_PipeHyper_C'
-             // Pipe Mods
              || currentObject.className === '/Game/InfiniteLogistics/Buildable/InfinitePipeHyper/Build_InfinitePipeHyper.Build_InfinitePipeHyper_C'
-             || currentObject.className === '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C'
-             // Belts
-             || Building_Conveyor.isConveyorBelt(currentObject)
         )
         {
             return resolve(Building_Conveyor.add(this, currentObject));
@@ -2124,7 +2120,11 @@ export default class BaseLayout
 
         if(currentObject !== null)
         {
-            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'].includes(currentObject.className) === false)
+            if(Building_Pipeline.isPipeline === false && [
+                '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C',
+                '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C',
+                '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'
+            ].includes(currentObject.className) === false)
             {
                 isFluidInventory = false;
                 delete itemsCategories.liquid;
