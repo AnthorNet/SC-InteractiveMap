@@ -2120,7 +2120,7 @@ export default class BaseLayout
 
         if(currentObject !== null)
         {
-            if(Building_Pipeline.isPipeline === false && [
+            if(Building_Pipeline.isPipeline(currentObject) === false && [
                 '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C',
                 '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C',
                 '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'
