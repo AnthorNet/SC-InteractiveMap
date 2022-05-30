@@ -3,10 +3,7 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class Building_Conveyor
 {
-    static teleporter = {
-        entry   : null,
-        exit    : null,
-    };
+    static clipboard = {entry: null, exit: null};
 
     static get availableConnections(){ return ['.ConveyorAny0', '.ConveyorAny1', '.Input0', '.Input1', '.Input2', '.Input3', '.InPut3', '.Input4', '.Input5', '.Input6', '.Output0', '.Output1', '.Output2', '.Output3']; }
 
@@ -269,7 +266,6 @@ export default class Building_Conveyor
     /**
      * TELEPORT
      */
-
     static storeTeleporterEntry(marker)
     {
         let baseLayout      = marker.baseLayout;
@@ -279,11 +275,11 @@ export default class Building_Conveyor
                 let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
                     if(mConnectedComponent === null)
                     {
-                        Building_Conveyor.teleporter.entry = marker.relatedTarget.options.pathName + '.ConveyorAny1';
+                        Building_Conveyor.clipboard.entry = marker.relatedTarget.options.pathName + '.ConveyorAny1';
                     }
             }
 
-        if(Building_Conveyor.teleporter.entry !== null && Building_Conveyor.teleporter.exit !== null)
+        if(Building_Conveyor.clipboard.entry !== null && Building_Conveyor.clipboard.exit !== null)
         {
             Building_Conveyor.validateTeleporter(baseLayout);
         }
@@ -298,11 +294,11 @@ export default class Building_Conveyor
                 let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
                     if(mConnectedComponent === null)
                     {
-                        Building_Conveyor.teleporter.exit = marker.relatedTarget.options.pathName + '.ConveyorAny0';
+                        Building_Conveyor.clipboard.exit = marker.relatedTarget.options.pathName + '.ConveyorAny0';
                     }
             }
 
-        if(Building_Conveyor.teleporter.entry !== null && Building_Conveyor.teleporter.exit !== null)
+        if(Building_Conveyor.clipboard.entry !== null && Building_Conveyor.clipboard.exit !== null)
         {
             Building_Conveyor.validateTeleporter(baseLayout);
         }
@@ -310,23 +306,23 @@ export default class Building_Conveyor
 
     static validateTeleporter(baseLayout)
     {
-        let conveyorAny0    = baseLayout.saveGameParser.getTargetObject(Building_Conveyor.teleporter.exit);
+        let conveyorAny0    = baseLayout.saveGameParser.getTargetObject(Building_Conveyor.clipboard.exit);
             if(conveyorAny0 !== null)
             {
                 let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
                     if(mConnectedComponent === null)
                     {
-                        baseLayout.setObjectProperty(conveyorAny0, 'mConnectedComponent', {pathName: Building_Conveyor.teleporter.entry}, 'ObjectProperty');
+                        baseLayout.setObjectProperty(conveyorAny0, 'mConnectedComponent', {pathName: Building_Conveyor.clipboard.entry}, 'ObjectProperty');
                     }
             }
 
-        let conveyorAny1    = baseLayout.saveGameParser.getTargetObject(Building_Conveyor.teleporter.entry);
+        let conveyorAny1    = baseLayout.saveGameParser.getTargetObject(Building_Conveyor.clipboard.entry);
             if(conveyorAny1 !== null)
             {
                 let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
                     if(mConnectedComponent === null)
                     {
-                        baseLayout.setObjectProperty(conveyorAny1, 'mConnectedComponent', {pathName: Building_Conveyor.teleporter.exit}, 'ObjectProperty');
+                        baseLayout.setObjectProperty(conveyorAny1, 'mConnectedComponent', {pathName: Building_Conveyor.clipboard.exit}, 'ObjectProperty');
                     }
             }
 
@@ -334,8 +330,8 @@ export default class Building_Conveyor
             message: 'Conveyor belts teleporter added!'
         });
 
-        Building_Conveyor.teleporter.entry  = null;
-        Building_Conveyor.teleporter.exit   = null;
+        Building_Conveyor.clipboard.entry   = null;
+        Building_Conveyor.clipboard.exit    = null;
     }
 
     /**

@@ -1,9 +1,11 @@
 /* global Infinity */
-
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class Building_PowerLine
 {
+    static clipboard = {source: null, target: null};
+
     static get availableConnections(){ return ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.FGPowerConnection1', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection']; }
 
     /*
@@ -123,6 +125,106 @@ export default class Building_PowerLine
         // Delete
         baseLayout.saveGameParser.deleteObject(marker.options.pathName);
         baseLayout.deleteMarkerFromElements('playerPowerGridLayer', marker);
+    }
+
+    /*
+     * DAISY CHAINS!!!
+     */
+    static storeNewWireSource(marker, powerConnectionType = '.PowerConnection')
+    {
+        let baseLayout      = marker.baseLayout;
+        let powerConnection = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + powerConnectionType);
+            if(powerConnection !== null)
+            {
+                Building_PowerLine.clipboard.source = marker.relatedTarget.options.pathName + powerConnectionType;
+            }
+
+        if(Building_PowerLine.clipboard.source !== null && Building_PowerLine.clipboard.target !== null)
+        {
+            Building_PowerLine.validateNewWire(baseLayout);
+        }
+    }
+
+    static storeNewWireTarget(marker, powerConnectionType = '.PowerConnection')
+    {
+        let baseLayout      = marker.baseLayout;
+        let powerConnection = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName + powerConnectionType);
+            if(powerConnection !== null)
+            {
+                Building_PowerLine.clipboard.target = marker.relatedTarget.options.pathName + powerConnectionType;
+            }
+
+        if(Building_PowerLine.clipboard.source !== null && Building_PowerLine.clipboard.target !== null)
+        {
+            Building_PowerLine.validateNewWire(baseLayout);
+        }
+    }
+
+    static validateNewWire(baseLayout)
+    {
+        let powerConnectionSource = baseLayout.saveGameParser.getTargetObject(Building_PowerLine.clipboard.source);
+        let powerConnectionTarget = baseLayout.saveGameParser.getTargetObject(Building_PowerLine.clipboard.target);
+            if(powerConnectionSource !== null && powerConnectionTarget !== null)
+            {
+                let mWiresSource    = baseLayout.getObjectProperty(powerConnectionSource, 'mWires');
+                    if(mWiresSource === null)
+                    {
+                        powerConnectionSource.properties.push({
+                            name    : 'mWires',
+                            type    : 'ArrayProperty',
+                            value   : {type: 'ObjectProperty', values: []}
+                        });
+
+                        mWiresSource = baseLayout.getObjectProperty(powerConnectionSource, 'mWires');
+                    }
+
+                let mWiresTarget    = baseLayout.getObjectProperty(powerConnectionTarget, 'mWires');
+                    if(mWiresTarget === null)
+                    {
+                        powerConnectionTarget.properties.push({
+                            name    : 'mWires',
+                            type    : 'ArrayProperty',
+                            value   : {type: 'ObjectProperty', values: []}
+                        });
+
+                        mWiresTarget = baseLayout.getObjectProperty(powerConnectionTarget, 'mWires');
+                    }
+
+                let newWire = {
+                    type            : 1,
+                    className       : '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C',
+                    pathName        : baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.Build_PowerLine_C_XXX'}),
+                    needTransform   : 1,
+                    transform       : {
+                        rotation        : baseLayout.saveGameParser.defaultValues.rotation,
+                        translation     : baseLayout.saveGameParser.defaultValues.translation
+                    },
+                    entity          : {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'},
+                    properties      : [],
+                    extra           : {
+                        count           : 0,
+                        source          : {pathName: Building_PowerLine.clipboard.source},
+                        target          : {pathName: Building_PowerLine.clipboard.target}
+                    }
+                };
+
+                mWiresSource.values.push({pathName: newWire.pathName});
+                mWiresTarget.values.push({pathName: newWire.pathName});
+
+                baseLayout.saveGameParser.addObject(newWire);
+                new Promise((resolve) => {
+                    baseLayout.parseObject(newWire, resolve);
+                }).then((result) => {
+                    baseLayout.addElementToLayer(result.layer, result.marker);
+
+                    BaseLayout_Modal.notification({
+                        message: 'New wire added!'
+                    });
+                });
+            }
+
+        Building_PowerLine.clipboard.source = null;
+        Building_PowerLine.clipboard.target = null;
     }
 
     /*

@@ -7,6 +7,7 @@ import Building_Light                           from '../Building/Light.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_Miner                           from '../Building/Miner.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
+import Building_PowerLine                       from '../Building/PowerLine.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
@@ -455,7 +456,30 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push('-');
                     }
 
+                if(
+                        buildingData.category === 'generator' || (buildingData.powerUsed !== undefined && buildingData.powerUsed > 0) || buildingData.category === 'powerPole'
+                     || currentObject.className === '/Game/FactoryGame/Buildable/Factory/HadronCollider/Build_HadronCollider.Build_HadronCollider_C'
+                )
+                {
+                    contextMenu.push({
+                        icon        : 'fa-plug',
+                        text        : 'Use input as wire source',
+                        callback    : Building_PowerLine.storeNewWireSource,
+                        className   : 'Building_PowerLine_storeNewWireSource'
+                    });
 
+                    if(Building_PowerLine.clipboard.source !== null)
+                    {
+                        contextMenu.push({
+                            icon        : 'fa-plug',
+                            text        : 'Use input as wire target',
+                            callback    : Building_PowerLine.storeNewWireTarget,
+                            className   : 'Building_PowerLine_storeNewWireTarget'
+                        });
+                    }
+
+                    contextMenu.push('-');
+                }
 
                 if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
                 {
