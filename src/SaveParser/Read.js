@@ -12,7 +12,8 @@ export default class SaveParser_Read
         this.language           = options.language;
 
         this.arrayBuffer        = options.arrayBuffer;
-        this.bufferView         = new DataView(this.arrayBuffer, 0, 1024); // Still used for header...
+        // Still used for header try not to shrink it too much as modMetadata can be longer than anticipated...
+        this.bufferView         = new DataView(this.arrayBuffer, 0, 102400);
         this.currentByte        = 0;
 
         this.parseSave();
@@ -43,8 +44,6 @@ export default class SaveParser_Read
                 this.header.modMetadata      = this.readString();
                 this.header.isModdedSave     = this.readInt();
             }
-
-            console.log(this.header);
 
             this.worker.postMessage({command: 'transferData', data: {header: this.header}});
 

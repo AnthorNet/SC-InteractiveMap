@@ -381,6 +381,58 @@ export default class BaseLayout
         });
     }
 
+    loadDetailedModels()
+    {
+        return new Promise((resolve) => {
+            $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
+            window.requestAnimationFrame(resolve);
+        }).then(() => {
+            $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, (data) => {
+                for(let className in data)
+                {
+                    this.detailedModels[className] = data[className];
+
+                    // Special case
+                    if(className === '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C')
+                    {
+                        this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']         = JSON.parse(JSON.stringify(data[className]));
+                        this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].scale   = 2.3;
+                    }
+                }
+
+                // Preload mods
+                if(this.saveGameParser.header.modMetadata !== undefined && this.saveGameParser.header.modMetadata !== '' && this.saveGameParser.header.modMetadata !== 'INVALID_METADATA')
+                {
+                    this.preloadMods();
+                }
+                else
+                {
+                    this.renderObjects();
+                }
+            });
+        });
+    }
+
+    preloadMods()
+    {
+        let promises        = [];
+        let availableMods   = JSON.parse(this.saveGameParser.header.modMetadata);
+            if(availableMods.Mods !== undefined && availableMods.Mods.length > 0)
+            {
+                for(let i = 0; i < availableMods.Mods.length; i++)
+                {
+                    if(this.modsData[availableMods.Mods[i].Reference] !== undefined)
+                    {
+                        promises.push(new Promise((resolve) => { this.loadMod(availableMods.Mods[i].Reference, resolve); }));
+                    }
+                }
+            }
+
+        return Promise.all(promises).then(() => {
+            window.requestAnimationFrame(() => { this.renderObjects(); });
+        });
+    }
+
     loadMod(modId, resolve)
     {
         if(modId === 'KLib'){ modId = 'SatisfactoryPlus'; }
@@ -490,30 +542,6 @@ export default class BaseLayout
         }
 
         return resolve();
-    }
-
-    loadDetailedModels()
-    {
-        return new Promise((resolve) => {
-            $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
-            window.requestAnimationFrame(resolve);
-        }).then(() => {
-            $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, (data) => {
-                for(let className in data)
-                {
-                    this.detailedModels[className] = data[className];
-
-                    // Special case
-                    if(className === '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C')
-                    {
-                        this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C']         = JSON.parse(JSON.stringify(data[className]));
-                        this.detailedModels['/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].scale   = 2.3;
-                    }
-                }
-
-                this.renderObjects();
-            });
-        });
     }
 
     renderObjects()
