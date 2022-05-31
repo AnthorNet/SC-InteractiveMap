@@ -41,7 +41,7 @@ export default class Building_Conveyor
 
         // Belts Mod
         if(
-               (currentObject.className.startsWith('/CoveredConveyor') && currentObject.className.includes('lift') === false)
+                currentObject.className.startsWith('/Conveyors_Mod/Build_BeltMk')
              || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
              || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
              || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')

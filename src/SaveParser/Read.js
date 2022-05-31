@@ -1,6 +1,8 @@
 /* global Sentry, Intl, self */
 import pako                                     from '../Lib/pako.esm.mjs';
 
+import Building_Conveyor                        from '../Building/Conveyor.js';
+
 export default class SaveParser_Read
 {
     constructor(worker, options)
@@ -44,6 +46,8 @@ export default class SaveParser_Read
                 this.header.modMetadata      = this.readString();
                 this.header.isModdedSave     = this.readInt();
             }
+
+            console.log(this.header);
 
             this.worker.postMessage({command: 'transferData', data: {header: this.header}});
 
@@ -394,15 +398,13 @@ export default class SaveParser_Read
 
         // Read Conveyor missing bytes
         if(
-                this.objects[objectKey].className.includes('/Build_ConveyorBeltMk')
+                Building_Conveyor.isConveyorBelt(this.objects[objectKey])
              || this.objects[objectKey].className.includes('/Build_ConveyorLiftMk')
-             // MODS
-             || this.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_BeltMk')
+             // MODS (Also have lifts)
+             || this.objects[objectKey].className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
              || this.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')
              || this.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
-             || this.objects[objectKey].className.startsWith('/CoveredConveyor/')
-             || this.objects[objectKey].className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || this.objects[objectKey].className.startsWith('/FlexSplines/Conveyor/Build_Belt')
+             || this.objects[objectKey].className.startsWith('/CoveredConveyor')
         )
         {
             this.objects[objectKey].extra   = {count: this.readInt(), items: []};

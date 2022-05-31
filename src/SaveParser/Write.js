@@ -379,6 +379,7 @@ export default class SaveParser_Write
                 Building_Conveyor.isConveyorBelt(currentObject)
              || currentObject.className.includes('/Build_ConveyorLiftMk')
              // MODS (Also have lifts)
+             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
              || currentObject.className.startsWith('/Conveyors_Mod/Build_LiftMk')
              || currentObject.className.startsWith('/Game/CoveredConveyor')
              || currentObject.className.startsWith('/CoveredConveyor')
