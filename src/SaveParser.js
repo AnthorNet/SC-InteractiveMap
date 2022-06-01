@@ -17,44 +17,12 @@ export default class SaveParser
         this.PACKAGE_FILE_TAG       = null;
         this.maxChunkSize           = null;
 
+        this.levels                 = null;
         this.objects                = null;
         this.collectables           = null;
 
         this.gameStatePathName      = null;
         this.playerHostPathName     = null;
-
-        // Holds some default values to reduce memory usage...
-        this.defaultValues          = {
-            rotation                    : [0, 0, 0, 1],
-            translation                 : [0, 0, 0],
-
-            mPrimaryColor               : {
-                name: "mPrimaryColor",
-                type: "StructProperty",
-                value: {
-                    type: "LinearColor",
-                    values: {
-                        a: 1,
-                        b: 0.15631400048732758,
-                        g: 0.44070500135421753,
-                        r: 1
-                    }
-                }
-            },
-            mSecondaryColor             : {
-                name: "mSecondaryColor",
-                type: "StructProperty",
-                value: {
-                    type: "LinearColor",
-                    values: {
-                        a: 1,
-                        b: 0.26225098967552185,
-                        g: 0.13286800682544708,
-                        r: 0.11697100102901459
-                    }
-                }
-            }
-        };
     }
 
     load(callback = null)
@@ -63,13 +31,13 @@ export default class SaveParser
 
         this.callback           = callback;
         this.header             = null;
+        this.levels             = [];
         this.objects            = {};
 
         this.worker             = new Worker(this.workers.SaveParserRead, { type: "module" });
         this.worker.onmessage   = (e) => { this.onWorkerMessage(e.data); };
         this.worker.postMessage({
             arrayBuffer     : this.arrayBuffer,
-            defaultValues   : this.defaultValues,
             language        : this.language
         });
 
@@ -91,11 +59,11 @@ export default class SaveParser
             this.worker             = new Worker(this.workers.SaveParserWrite, { type: "module" });
             this.worker.onmessage   = (e) => { this.onWorkerMessage(e.data); };
             this.worker.postMessage({
-                defaultValues       : this.defaultValues,
                 language            : this.language,
 
                 header              : this.header,
                 objects             : this.objects,
+                levels              : this.levels,
                 collectables        : this.collectables,
 
                 maxChunkSize        : this.maxChunkSize,
@@ -152,14 +120,14 @@ export default class SaveParser
             case 'transferData':
                 for(const [key, value] of Object.entries(data.data))
                 {
-                    this[key] = value;
-                }
-                break;
-
-            case 'transferObjects':
-                for(const [key, value] of Object.entries(data.data))
-                {
-                    this.objects[key] = value;
+                    if(data.key !== undefined)
+                    {
+                        this[data.key][key] = value;
+                    }
+                    else
+                    {
+                        this[key] = value;
+                    }
                 }
                 break;
 

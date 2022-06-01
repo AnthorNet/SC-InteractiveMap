@@ -10,7 +10,6 @@ export default class SaveParser_Read
         this.worker             = worker;
         this.objects            = {};
 
-        this.defaultValues      = options.defaultValues;
         this.language           = options.language;
 
         this.arrayBuffer        = options.arrayBuffer;
@@ -161,6 +160,111 @@ export default class SaveParser_Read
         this.maxByte            = tempChunk.buffer.byteLength;
         this.bufferView         = new DataView(tempChunk.buffer);
 
+        if(this.header.saveVersion >= 29)
+        {
+            let collectables    = [];
+            let nbLevels        = this.readInt();
+            let levels          = [];
+
+            for(let j = 0; j <= nbLevels; j++)
+            {
+                let levelName           = (j === nbLevels) ? 'Level Persistent_Level' : this.readString();
+                    levels.push(levelName);
+                    this.readInt();//let objectsLength       = this.readInt();
+                let countObjects        = this.readInt();
+                let entitiesToObjects   = [];
+
+                for(let i = 0; i < countObjects; i++)
+                {
+                    let objectType = this.readInt();
+                        switch(objectType)
+                        {
+                            case 0:
+                                let object                          = this.readObject();
+                                    this.objects[object.pathName]   = object;
+                                    entitiesToObjects[i]            = object.pathName;
+                                break;
+                            case 1:
+                                let actor                           = this.readActor();
+                                    this.objects[actor.pathName]    = actor;
+                                    entitiesToObjects[i]            = actor.pathName;
+
+                                    if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                                    {
+                                        this.worker.postMessage({command: 'transferData', data: {gameStatePathName: actor.pathName}});
+                                    }
+                                break;
+                            default:
+                                console.log('Unknown object type', objectType);
+                                break;
+                        }
+
+                    // Only show progress for the main level
+                    if(i % 2500 === 0 && levelName === 'Level Persistent_Level')
+                    {
+                        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
+                        this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 15))});
+                    }
+                }
+
+                let countCollected = this.readInt();
+                    if(countCollected > 0)
+                    {
+                        for(let i = 0; i < countCollected; i++)
+                        {
+                            let collectable = this.readObjectProperty({});
+                                collectables.push(collectable);
+                                //console.log(collectable, this.objects[collectable.pathName])
+                        }
+                    }
+
+                    this.readInt();//let entitiesLength      = this.readInt();
+                let countEntities       = this.readInt();
+                let objectsToFlush      = {};
+
+                //console.log(levelName, countObjects, entitiesLength);
+
+                for(let i = 0; i < countEntities; i++)
+                {
+                    this.readEntity(entitiesToObjects[i]);
+
+                    // Avoid memory error on very large save!
+                    objectsToFlush[entitiesToObjects[i]] = this.objects[entitiesToObjects[i]];
+                    delete this.objects[entitiesToObjects[i]];
+
+                    if(i % 5000 === 0)
+                    {
+                        this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
+                        objectsToFlush = {};
+                    }
+
+                    // Only show progress for the main level
+                    if(i % 2500 === 0 && levelName === 'Level Persistent_Level')
+                    {
+                        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), Math.round(i / countEntities * 100)]});
+                        this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
+                    }
+                }
+
+                // Twice but we need to handle them in order to fetch the next level...
+                countCollected = this.readInt();
+                if(countCollected > 0)
+                {
+                    for(let i = 0; i < countCollected; i++)
+                    {
+                        this.readObjectProperty({});
+                    }
+                }
+
+                this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
+            }
+
+            this.worker.postMessage({command: 'transferData', data: {collectables: collectables}});
+            this.worker.postMessage({command: 'transferData', data: {levels: levels}});
+            this.worker.postMessage({command: 'endSaveLoading'});
+            return;
+        }
+
         return this.parseObjects();
     }
 
@@ -231,7 +335,7 @@ export default class SaveParser_Read
 
             if(i % 5000 === 0)
             {
-                this.worker.postMessage({command: 'transferObjects', data: objectsToFlush});
+                this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
                 objectsToFlush = {};
             }
             if(i % 2500 === 0)
@@ -241,7 +345,7 @@ export default class SaveParser_Read
             }
         }
 
-        this.worker.postMessage({command: 'transferObjects', data: objectsToFlush});
+        this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
 
         return this.parseCollectables();
     }
@@ -250,17 +354,14 @@ export default class SaveParser_Read
     {
         let collectables    = [];
         let countCollected  = this.readInt();
-            console.log('Parsing: ' + countCollected + ' collectables...');
-            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(countCollected)});
-
             for(let i = 0; i < countCollected; i++)
             {
                 collectables.push(this.readObjectProperty({}));
             }
 
-        delete this.bufferView;
-
         this.worker.postMessage({command: 'transferData', data: {collectables: collectables}});
+
+        delete this.bufferView;
         this.worker.postMessage({command: 'endSaveLoading'});
     }
 
@@ -290,39 +391,10 @@ export default class SaveParser_Read
             }
 
             // {rotation: [0, 0, 0, 1], translation: [0, 0, 0], scale3d: [1, 1, 1]}
-        let rotation            = [this.readFloat(), this.readFloat(), this.readFloat(), this.readFloat()];
-        let translation         = [this.readFloat(), this.readFloat(), this.readFloat()];
-        let scale3d             = [this.readFloat(), this.readFloat(), this.readFloat()];
-
-            actor.transform     = {};
-
-            if(
-                    rotation[0] === this.defaultValues.rotation[0]
-                 && rotation[1] === this.defaultValues.rotation[1]
-                 && rotation[2] === this.defaultValues.rotation[2]
-                 && rotation[3] === this.defaultValues.rotation[3]
-            )
-            {
-                actor.transform.rotation    = this.defaultValues.rotation;
-            }
-            else
-            {
-                actor.transform.rotation    = rotation;
-            }
-
-            if(
-                    translation[0] === this.defaultValues.translation[0]
-                 && translation[1] === this.defaultValues.translation[1]
-                 && translation[2] === this.defaultValues.translation[2]
-            )
-            {
-                actor.transform.translation = this.defaultValues.translation;
-            }
-            else
-            {
-
-                actor.transform.translation = translation;
-            }
+            actor.transform     = {
+                rotation            : [this.readFloat(), this.readFloat(), this.readFloat(), this.readFloat()],
+                translation         : [this.readFloat(), this.readFloat(), this.readFloat()]
+            };
 
             // Enforce bounding on the map to avoid the game from skipping physics!
             if(actor.transform.translation[0] < -500000 || actor.transform.translation[0] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000)
@@ -337,15 +409,16 @@ export default class SaveParser_Read
                 console.log('NaN translation', actor.pathName);
             }
 
-            if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[2] !== 1)
-            {
-                if(actor.transform === undefined)
+            let scale3d = [this.readFloat(), this.readFloat(), this.readFloat()];
+                if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[2] !== 1)
                 {
-                    actor.transform = {};
-                }
+                    if(actor.transform === undefined)
+                    {
+                        actor.transform = {};
+                    }
 
-                actor.transform.scale3d = scale3d
-            }
+                    actor.transform.scale3d = scale3d
+                }
 
         let wasPlacedInLevel       = this.readInt();
             if(wasPlacedInLevel !== 0) //TODO: Switch to 1?
@@ -387,7 +460,7 @@ export default class SaveParser_Read
         this.objects[objectKey].properties       = [];
         while(true)
         {
-            let property = this.readProperty();
+            let property = this.readProperty(this.objects[objectKey].className);
                 if(property === null)
                 {
                     break;
@@ -1049,21 +1122,6 @@ export default class SaveParser_Read
                             b           : this.readFloat(),
                             a           : this.readFloat()
                         };
-
-                        // We use default values to avoid memory consumption
-                        if(currentProperty.name === 'mPrimaryColor' || currentProperty.name === 'mSecondaryColor')
-                        {
-                            if(
-                                   currentProperty.value.values.r === this.defaultValues[currentProperty.name].value.values.r
-                                && currentProperty.value.values.g === this.defaultValues[currentProperty.name].value.values.g
-                                && currentProperty.value.values.b === this.defaultValues[currentProperty.name].value.values.b
-                                && currentProperty.value.values.a === this.defaultValues[currentProperty.name].value.values.a
-                            )
-                            {
-                                currentProperty = this.defaultValues[currentProperty.name];
-                            }
-                        }
-
                         break;
 
                     case 'Vector':
@@ -1202,7 +1260,17 @@ export default class SaveParser_Read
                         case 'ObjectProperty': // MOD: Efficiency Checker
                             currentProperty.value.values.push(this.readObjectProperty({}));
                             break;
-                        case 'StructProperty': // MOD: FicsIt-Networks
+                        case 'StructProperty':
+                            if(this.header.saveVersion >= 29 && parentType === '/Script/FactoryGame.FGFoliageRemoval')
+                            {
+                                currentProperty.value.values.push({
+                                    x: this.readFloat(),
+                                    y: this.readFloat(),
+                                    z: this.readFloat()
+                                });
+                                break;
+                            }
+                            // MOD: FicsIt-Networks
                             currentProperty.value.values.push(this.readFINNetworkTrace());
                             break;
                         case 'NameProperty':  // MOD: Sweet Transportal
