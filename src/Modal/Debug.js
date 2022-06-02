@@ -13,8 +13,6 @@ export default class Modal_Debug
         let childrenPathName    = [];
         let extraPathName       = [];
 
-        //html.push('<div class="alert alert-danger">Be aware that manually editing the save can lead to unexpected errors.</div>');
-
         if(currentObject.children !== undefined)
         {
             for(let i = 0; i < currentObject.children.length; i++)
@@ -175,6 +173,11 @@ export default class Modal_Debug
         $('#genericModal .modal-title').empty().html('Advanced Debug - ' + marker.relatedTarget.options.pathName);
         $('#genericModal .modal-body').empty().html(html.join(''));
 
+        $('#genericModal .modal-body .copyJsonObject').on('click', function(){
+            let json = $(this).next('textarea').val();
+                navigator.clipboard.writeText(json);
+        });
+
         $('#genericModal .modal-body .json-document').find('.json-toggle').click(function(){
             let target = $(this).toggleClass('collapsed').siblings('ul.json-dict, ol.json-array');
                 target.toggle();
@@ -211,9 +214,11 @@ export default class Modal_Debug
     static getJsonViewer(json)
     {
         let html = [];
-            html.push('<div class="json-document" style="height: 75vh;overflow-y: scroll;">');
+            html.push('<div class="json-document" style="height: 74vh;overflow-y: scroll;">');
             html.push(Modal_Debug.jsonToHTML(json));
             html.push('</div>');
+
+            html.push('<div><button class="btn btn-info w-100 copyJsonObject">Copy JSON object</button><textarea style="display:none;">' + JSON.stringify(json) + '</textarea></div>');
 
             return html.join('');
     }
