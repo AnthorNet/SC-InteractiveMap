@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Cart.PatternDesc_Icon_Cart_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_FactoryCartStencil_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_FactoryCartStencil_256.png",
         "patternName"   : "Factory Cart Icon",
         "patternGroup"  : "Icons",
 

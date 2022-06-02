@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_DottedSplit.PatternDesc_DottedSplit_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_SplitDottedLine_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_SplitDottedLine_256.png",
         "patternName"   : "Split Dotted Line",
         "patternGroup"  : "Lines",
 

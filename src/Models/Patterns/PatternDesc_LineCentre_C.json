@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_LineCentre.PatternDesc_LineCentre_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_StraightLine_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_StraightLine_256.png",
         "patternName"   : "Centre Line",
         "patternGroup"  : "Lines",
 

@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Pathways/PatternDesc_PathSplit.PatternDesc_PathSplit_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_SplitPath_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_SplitPath_256.png",
         "patternName"   : "Split Path",
         "patternGroup"  : "Paths",
 

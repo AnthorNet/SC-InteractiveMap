@@ -196,8 +196,8 @@ export default class Building_PowerLine
                     pathName        : baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.Build_PowerLine_C_XXX'}),
                     needTransform   : 1,
                     transform       : {
-                        rotation        : baseLayout.saveGameParser.defaultValues.rotation,
-                        translation     : baseLayout.saveGameParser.defaultValues.translation
+                        rotation        : [0, 0, 0, 1],
+                        translation     : [0, 0, 0]
                     },
                     entity          : {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'},
                     properties      : [],

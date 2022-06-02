@@ -73,13 +73,13 @@ export default class BaseLayout_Tooltip
                         if(this.baseLayout.players[currentObject.pathName] !== undefined)
                         {
                             let emotes = [
-                                    '/img/patternIcons/IconDesc_EmoteWave_256.png', '/img/patternIcons/IconDesc_EmoteScissors_256.png', '/img/patternIcons/IconDesc_EmoteRock_256.png', '/img/patternIcons/IconDesc_EmotePoint_256.png',
-                                    '/img/patternIcons/IconDesc_EmotePaper_256.png', '/img/patternIcons/IconDesc_EmoteHeart_256.png', '/img/patternIcons/IconDesc_EmoteFingerGuns_256.png', '/img/patternIcons/IconDesc_EmoteFacepalm_256.png',
-                                    '/img/patternIcons/Emote_Clap_256.png', '/img/patternIcons/Emote_BuildGunSpin_256.png'
+                                    '/img/signIcons/IconDesc_EmoteWave_256.png', '/img/signIcons/IconDesc_EmoteScissors_256.png', '/img/signIcons/IconDesc_EmoteRock_256.png', '/img/signIcons/IconDesc_EmotePoint_256.png',
+                                    '/img/signIcons/IconDesc_EmotePaper_256.png', '/img/signIcons/IconDesc_EmoteHeart_256.png', '/img/signIcons/IconDesc_EmoteFingerGuns_256.png', '/img/signIcons/IconDesc_EmoteFacepalm_256.png',
+                                    '/img/signIcons/Emote_Clap_256.png', '/img/signIcons/Emote_BuildGunSpin_256.png'
                                 ];
                                 return this.setBuildingTooltipContent(currentObject, {
                                     name    : this.baseLayout.players[currentObject.pathName].getDisplayName(),
-                                    image   : emotes[Math.floor(Math.random() * emotes.length)],
+                                    image   : this.baseLayout.staticUrl + emotes[Math.floor(Math.random() * emotes.length)],
                                     health  : this.baseLayout.players[currentObject.pathName].getCurrentHealth()
                                 });
                         }

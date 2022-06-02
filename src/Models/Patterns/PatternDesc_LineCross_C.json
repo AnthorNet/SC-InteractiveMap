@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_LineCross.PatternDesc_LineCross_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_CrossLine_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_CrossLine_256.png",
         "patternName"   : "Cross Line",
         "patternGroup"  : "Lines",
 

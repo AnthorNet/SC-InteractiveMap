@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Pathways/PatternDesc_PathCart.PatternDesc_PathCart_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_CartPath_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_CartPath_256.png",
         "patternName"   : "Cart Path",
         "patternGroup"  : "Paths",
 

@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Arrows/PatternDesc_ArrowLeft.PatternDesc_ArrowLeft_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_ArrowLeft_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_ArrowLeft_256.png",
         "patternName"   : "Left Arrow",
         "patternGroup"  : "Arrows",
 

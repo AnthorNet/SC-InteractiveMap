@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_NO_Parking.PatternDesc_NO_Parking_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_NoParkingStencil_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_NoParkingStencil_256.png",
         "patternName"   : "NO! Parking Icon",
         "patternGroup"  : "Icons",
 

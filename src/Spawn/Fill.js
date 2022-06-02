@@ -60,7 +60,7 @@ export default class Spawn_Fill
             pathName        : 'Persistent_Level:PersistentLevel.' + extractPathName + '_XXX',
             needTransform   : 1,
             transform       : {
-                rotation        : this.baseLayout.saveGameParser.defaultValues.rotation,
+                rotation        : [0, 0, 0, 1],
                 translation     : this.center
             },
             entity          : {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"},

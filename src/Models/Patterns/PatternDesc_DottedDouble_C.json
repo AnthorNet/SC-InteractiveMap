@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_DottedDouble.PatternDesc_DottedDouble_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_DoubleDottedLine_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_DoubleDottedLine_256.png",
         "patternName"   : "Double Dotted Line",
         "patternGroup"  : "Lines",
 

@@ -17,96 +17,96 @@ export default class Building_Sign
 
     static get getOtherIcons(){
         return {
-            599: ['Emote Build Gun Spin', '/img/patternIcons/Emote_BuildGunSpin_256.png'],
-            600: ['Emote Clap', '/img/patternIcons/Emote_Clap_256.png'],
-            601: ['Emote Face Palm', '/img/patternIcons/IconDesc_EmoteFacepalm_256.png'],
-            602: ['Emote Heart', '/img/patternIcons/IconDesc_EmoteHeart_256.png'],
-            603: ['Emote Paper', '/img/patternIcons/IconDesc_EmotePaper_256.png'],
-            604: ['Emote Rock', '/img/patternIcons/IconDesc_EmoteRock_256.png'],
-            605: ['Emote Scissors', '/img/patternIcons/IconDesc_EmoteScissors_256.png'],
-            606: ['Emote Point', '/img/patternIcons/IconDesc_EmotePoint_256.png'],
-            607: ['Emote Wave', '/img/patternIcons/IconDesc_EmoteWave_256.png'],
+            599: ['Emote Build Gun Spin', '/img/signIcons/Emote_BuildGunSpin_256.png'],
+            600: ['Emote Clap', '/img/signIcons/Emote_Clap_256.png'],
+            601: ['Emote Face Palm', '/img/signIcons/IconDesc_EmoteFacepalm_256.png'],
+            602: ['Emote Heart', '/img/signIcons/IconDesc_EmoteHeart_256.png'],
+            603: ['Emote Paper', '/img/signIcons/IconDesc_EmotePaper_256.png'],
+            604: ['Emote Rock', '/img/signIcons/IconDesc_EmoteRock_256.png'],
+            605: ['Emote Scissors', '/img/signIcons/IconDesc_EmoteScissors_256.png'],
+            606: ['Emote Point', '/img/signIcons/IconDesc_EmotePoint_256.png'],
+            607: ['Emote Wave', '/img/signIcons/IconDesc_EmoteWave_256.png'],
 
-            608: ['Checkit', '/img/patternIcons/TXUI_Checkit_256.png'],
-            609: ['Lizard Doggo', '/img/patternIcons/TXUI_LizardDoggo_256.png'],
+            608: ['Checkit', '/img/signIcons/TXUI_Checkit_256.png'],
+            609: ['Lizard Doggo', '/img/signIcons/TXUI_LizardDoggo_256.png'],
 
-            614: ['FICMAS Berries', '/img/patternIcons/TXUI_Ficsmas_Berries.png'],
-            615: ['FICMAS Check', '/img/patternIcons/TXUI_Ficsmas_Check.png'],
-            616: ['FICMAS Checkit', '/img/patternIcons/TXUI_Ficsmas_Checkit.png'],
-            617: ['FICMAS Gift', '/img/patternIcons/TXUI_FicsMas_Present.png']
+            614: ['FICMAS Berries', '/img/signIcons/TXUI_Ficsmas_Berries.png'],
+            615: ['FICMAS Check', '/img/signIcons/TXUI_Ficsmas_Check.png'],
+            616: ['FICMAS Checkit', '/img/signIcons/TXUI_Ficsmas_Checkit.png'],
+            617: ['FICMAS Gift', '/img/signIcons/TXUI_FicsMas_Present.png']
         };
     }
 
     static get getMonochromeIcons(){
         return {
-            329: ['Arrow Down', '/img/patternIcons/TXUI_MIcon_Arrow_Down.png'],
-            330: ['Arrow Down Left', '/img/patternIcons/TXUI_MIcon_Arrow_DownLeft.png'],
-            331: ['Arrow Down Right', '/img/patternIcons/TXUI_MIcon_Arrow_DownRight.png'],
-            332: ['Arrow Left', '/img/patternIcons/TXUI_MIcon_Arrow_Left.png'],
-            333: ['Arrow Up Left', '/img/patternIcons/TXUI_MIcon_Arrow_UpLeft.png'],
-            334: ['Arrow Up', '/img/patternIcons/TXUI_MIcon_Arrow_Up.png'],
-            335: ['Arrow Up Right', '/img/patternIcons/TXUI_MIcon_Arrow_UpRight.png'],
-            336: ['Arrow Right', '/img/patternIcons/TXUI_MIcon_Arrow_Right.png'],
+            329: ['Arrow Down', '/img/signIcons/TXUI_MIcon_Arrow_Down.png'],
+            330: ['Arrow Down Left', '/img/signIcons/TXUI_MIcon_Arrow_DownLeft.png'],
+            331: ['Arrow Down Right', '/img/signIcons/TXUI_MIcon_Arrow_DownRight.png'],
+            332: ['Arrow Left', '/img/signIcons/TXUI_MIcon_Arrow_Left.png'],
+            333: ['Arrow Up Left', '/img/signIcons/TXUI_MIcon_Arrow_UpLeft.png'],
+            334: ['Arrow Up', '/img/signIcons/TXUI_MIcon_Arrow_Up.png'],
+            335: ['Arrow Up Right', '/img/signIcons/TXUI_MIcon_Arrow_UpRight.png'],
+            336: ['Arrow Right', '/img/signIcons/TXUI_MIcon_Arrow_Right.png'],
 
-            337: ['Drop', '/img/patternIcons/TXUI_MIcon_Drop.png'],
-            338: ['Radiation', '/img/patternIcons/TXUI_MIcon_Radiation.png'],
-            339: ['Thumb Up', '/img/patternIcons/TXUI_MIcon_ThumbUp.png'],
-            340: ['Thumb Down', '/img/patternIcons/TXUI_MIcon_ThumbDown.png'],
-            341: ['Stop X', '/img/patternIcons/TXUI_MIcon_Stop_X.png'],
+            337: ['Drop', '/img/signIcons/TXUI_MIcon_Drop.png'],
+            338: ['Radiation', '/img/signIcons/TXUI_MIcon_Radiation.png'],
+            339: ['Thumb Up', '/img/signIcons/TXUI_MIcon_ThumbUp.png'],
+            340: ['Thumb Down', '/img/signIcons/TXUI_MIcon_ThumbDown.png'],
+            341: ['Stop X', '/img/signIcons/TXUI_MIcon_Stop_X.png'],
 
-            342: ['Road Arrow Down', '/img/patternIcons/TXUI_MIcon_RoadArrow_Down.png'],
-            343: ['Road Arrow Turn Around', '/img/patternIcons/TXUI_MIcon_RoadArrow_TurnAround.png'],
-            344: ['Road Arrow Turn Left', '/img/patternIcons/TXUI_MIcon_RoadArrow_TurnLeft.png'],
-            345: ['Road Arrow Turn Right', '/img/patternIcons/TXUI_MIcon_RoadArrow_TurnRight.png'],
-            346: ['Road Arrow Up', '/img/patternIcons/TXUI_MIcon_RoadArrow_Up.png'],
+            342: ['Road Arrow Down', '/img/signIcons/TXUI_MIcon_RoadArrow_Down.png'],
+            343: ['Road Arrow Turn Around', '/img/signIcons/TXUI_MIcon_RoadArrow_TurnAround.png'],
+            344: ['Road Arrow Turn Left', '/img/signIcons/TXUI_MIcon_RoadArrow_TurnLeft.png'],
+            345: ['Road Arrow Turn Right', '/img/signIcons/TXUI_MIcon_RoadArrow_TurnRight.png'],
+            346: ['Road Arrow Up', '/img/signIcons/TXUI_MIcon_RoadArrow_Up.png'],
 
-            347: ['Storage Crate', '/img/patternIcons/TXUI_MIcon_Crate.png'],
-            348: ['Exit Door', '/img/patternIcons/TXUI_MIcon_Exit.png'],
-            349: ['Factory', '/img/patternIcons/TXUI_MIcon_Factory.png'],
-            350: ['Home House', '/img/patternIcons/TXUI_MIcon_Home.png'],
-            351: ['Player Pioneer', '/img/patternIcons/TXUI_MIcon_Pioneer.png'],
-            352: ['Power', '/img/patternIcons/TXUI_MIcon_Power.png'],
+            347: ['Storage Crate', '/img/signIcons/TXUI_MIcon_Crate.png'],
+            348: ['Exit Door', '/img/signIcons/TXUI_MIcon_Exit.png'],
+            349: ['Factory', '/img/signIcons/TXUI_MIcon_Factory.png'],
+            350: ['Home House', '/img/signIcons/TXUI_MIcon_Home.png'],
+            351: ['Player Pioneer', '/img/signIcons/TXUI_MIcon_Pioneer.png'],
+            352: ['Power', '/img/signIcons/TXUI_MIcon_Power.png'],
 
-            353: ['Vehicle Tractor', '/img/patternIcons/TXUI_MIcon_Tractor.png'],
-            354: ['Vehicle Explorer', '/img/patternIcons/TXUI_MIcon_Explorer.png'],
-            355: ['Vehicle Truck', '/img/patternIcons/TXUI_MIcon_Truck.png'],
-            356: ['Vehicle Train', '/img/patternIcons/TXUI_MIcon_Train.png'],
-            357: ['Vehicle Factory Cart', '/img/patternIcons/TXUI_MIcon_FactoryCart.png'],
-            358: ['Vehicle Drone', '/img/patternIcons/TXUI_MIcon_Drone.png'],
+            353: ['Vehicle Tractor', '/img/signIcons/TXUI_MIcon_Tractor.png'],
+            354: ['Vehicle Explorer', '/img/signIcons/TXUI_MIcon_Explorer.png'],
+            355: ['Vehicle Truck', '/img/signIcons/TXUI_MIcon_Truck.png'],
+            356: ['Vehicle Train', '/img/signIcons/TXUI_MIcon_Train.png'],
+            357: ['Vehicle Factory Cart', '/img/signIcons/TXUI_MIcon_FactoryCart.png'],
+            358: ['Vehicle Drone', '/img/signIcons/TXUI_MIcon_Drone.png'],
 
-            362: ['Warning', '/img/patternIcons/TXUI_MIcon_Warning.png'],
+            362: ['Warning', '/img/signIcons/TXUI_MIcon_Warning.png'],
 
-            598: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png'],
+            598: ['FICSIT Check Mark', '/img/signIcons/ficsit_checkmark_64.png'],
 
-            644: ['Recycle', '/img/patternIcons/TXUI_MIcon_Recycle.png'],
-            645: ['Trash', '/img/patternIcons/TXUI_MIcon_Trash.png']
+            644: ['Recycle', '/img/signIcons/TXUI_MIcon_Recycle.png'],
+            645: ['Trash', '/img/signIcons/TXUI_MIcon_Trash.png']
         };
     }
 
     static get getBackgroundIcons(){
         return {
-            363: ['Background Blueprint Grid', '/img/patternIcons/TXUI_MIcon_BG_BlueprintGrid.png'],
-            364: ['Background Grid', '/img/patternIcons/TXUI_MIcon_BG_Grid.png'],
-            365: ['Background Checkered', '/img/patternIcons/TXUI_MIcon_BG_Checkered.png'],
-            366: ['Background Diagonal Lines', '/img/patternIcons/TXUI_MIcon_BG_DiagonalLines.png'],
-            367: ['Background Dots', '/img/patternIcons/TXUI_MIcon_BG_Dots.png'],
-            368: ['Background Rectangles', '/img/patternIcons/TXUI_MIcon_BG_Rectangles.png'],
+            363: ['Background Blueprint Grid', '/img/signIcons/TXUI_MIcon_BG_BlueprintGrid.png'],
+            364: ['Background Grid', '/img/signIcons/TXUI_MIcon_BG_Grid.png'],
+            365: ['Background Checkered', '/img/signIcons/TXUI_MIcon_BG_Checkered.png'],
+            366: ['Background Diagonal Lines', '/img/signIcons/TXUI_MIcon_BG_DiagonalLines.png'],
+            367: ['Background Dots', '/img/signIcons/TXUI_MIcon_BG_Dots.png'],
+            368: ['Background Rectangles', '/img/signIcons/TXUI_MIcon_BG_Rectangles.png'],
 
-            369: ['None', '/img/patternIcons/TXUI_MIcon_None.png'],
+            369: ['None', '/img/signIcons/TXUI_MIcon_None.png'],
 
-            370: ['Radial Gradient', '/img/patternIcons/radialGradient.png'],
-            371: ['Waves', '/img/patternIcons/waves.png'],
-            372: ['Vertical Gradient', '/img/patternIcons/verticalGradient.png'],
-            373: ['Horizontal Gradient', '/img/patternIcons/horizontalGradient.png'],
+            370: ['Radial Gradient', '/img/signIcons/radialGradient.png'],
+            371: ['Waves', '/img/signIcons/waves.png'],
+            372: ['Vertical Gradient', '/img/signIcons/verticalGradient.png'],
+            373: ['Horizontal Gradient', '/img/signIcons/horizontalGradient.png'],
 
-            374: ['FICSIT Check Mark', '/img/patternIcons/ficsit_checkmark_64.png'],
-            375: ['FICSIT', '/img/patternIcons/Ficsit_Monochrome_Logo.png'],
+            374: ['FICSIT Check Mark', '/img/signIcons/ficsit_checkmark_64.png'],
+            375: ['FICSIT', '/img/signIcons/Ficsit_Monochrome_Logo.png'],
 
-            610: ['FICMAS Logo', '/img/patternIcons/TXUI_Ficsmas_Logo.png'],
-            611: ['FICMAS Snowflake', '/img/patternIcons/TXUI_Ficsmas_Snowflake.png'],
-            612: ['FICSIT Check Snowflake', '/img/patternIcons/TXUI_Ficsmas_Snowflakes.png'],
-            613: ['FICMAS Wraping Paper', '/img/patternIcons/TXUI_Ficsmas_WrappingPaper.png'],
-            618: ['FICMAS Ugly Sweater', '/img/patternIcons/TXUI_Ficsmas_UglySweater.png'],
+            610: ['FICMAS Logo', '/img/signIcons/TXUI_Ficsmas_Logo.png'],
+            611: ['FICMAS Snowflake', '/img/signIcons/TXUI_Ficsmas_Snowflake.png'],
+            612: ['FICSIT Check Snowflake', '/img/signIcons/TXUI_Ficsmas_Snowflakes.png'],
+            613: ['FICMAS Wraping Paper', '/img/signIcons/TXUI_Ficsmas_WrappingPaper.png'],
+            618: ['FICMAS Ugly Sweater', '/img/signIcons/TXUI_Ficsmas_UglySweater.png'],
         };
     }
 

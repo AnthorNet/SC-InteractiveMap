@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Pioneer.PatternDesc_Icon_Pioneer_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_PioneerStencil_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_PioneerStencil_256.png",
         "patternName"   : "Pioneer Icon",
         "patternGroup"  : "Icons",
 

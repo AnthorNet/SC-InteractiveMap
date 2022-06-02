@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Power.PatternDesc_Icon_Power_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_PowerStencil_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_PowerStencil_256.png",
         "patternName"   : "Power Icon",
         "patternGroup"  : "Icons",
 

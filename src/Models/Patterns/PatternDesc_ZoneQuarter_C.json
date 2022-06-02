@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Zones/PatternDesc_ZoneQuarter.PatternDesc_ZoneQuarter_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_QuarterFactoryZone_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_QuarterFactoryZone_256.png",
         "patternName"   : "Quarter Factory Zone",
         "patternGroup"  : "Zones",
 
