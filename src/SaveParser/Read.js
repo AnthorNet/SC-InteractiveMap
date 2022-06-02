@@ -1,5 +1,5 @@
 /* global Sentry, Intl, self */
-import pako                                     from '../Lib/pako.esm.mjs';
+import pako                                     from '../Lib/pako.esm.js';
 
 import Building_Conveyor                        from '../Building/Conveyor.js';
 

@@ -6,7 +6,7 @@ import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
-import pako                                     from '../Lib/pako.esm.mjs';
+import pako                                     from '../Lib/pako.esm.js';
 import saveAs                                   from '../Lib/FileSaver.js';
 
 export default class Spawn_Blueprint
