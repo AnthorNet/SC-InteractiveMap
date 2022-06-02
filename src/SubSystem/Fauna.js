@@ -112,8 +112,8 @@ export default class SubSystem_Fauna
 
                 if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
                 {
-                    let isSpaceRabbitPersistent = this.baseLayout.getObjectProperty(currentObject, 'mIsPersistent');
-                        if(isSpaceRabbitPersistent !== null)
+                    let mFriendActor = this.baseLayout.getObjectProperty(currentObject, 'mFriendActor');
+                        if(mFriendActor !== null)
                         {
                             iconColor = '#b3ffb3';
                             this.baseLayout.playerLayers[layerId].count++;
@@ -157,15 +157,42 @@ export default class SubSystem_Fauna
             if(faunaData !== null)
             {
                 layerId = faunaData.mapLayer;
+            }
 
-                if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
+        if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
+        {
+            let mFriendActor = baseLayout.getObjectProperty(currentObject, 'mFriendActor');
+                if(mFriendActor !== null)
                 {
-                    let isSpaceRabbitPersistent = baseLayout.getObjectProperty(currentObject, 'mIsPersistent');
-                        if(isSpaceRabbitPersistent !== null)
-                        {
-                            baseLayout.playerLayers.playerCratesLayer.count--;
-                        }
+                    baseLayout.playerLayers[layerId].count--;
                 }
+        }
+
+        let mOwningSpawner = baseLayout.getObjectProperty(currentObject, 'mOwningSpawner');
+            if(mOwningSpawner !== null)
+            {
+                let creatureSpawner = baseLayout.saveGameParser.getTargetObject(mOwningSpawner.pathName);
+                    if(creatureSpawner !== null)
+                    {
+                        let mSpawnData = baseLayout.getObjectProperty(creatureSpawner, 'mSpawnData');
+                            if(mSpawnData !== null)
+                            {
+                                for(let i = (mSpawnData.values.length - 1); i >= 0; i--)
+                                {
+                                    for(let j = 0; j < mSpawnData.values[i].length; j++)
+                                    {
+                                        if(mSpawnData.values[i][j].name === 'creature')
+                                        {
+                                            if(mSpawnData.values[i][j].value.pathName === '' || mSpawnData.values[i][j].value.pathName === currentObject.pathName)
+                                            {
+                                                mSpawnData.values.splice(i, 1);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                    }
             }
 
         baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
