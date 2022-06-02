@@ -12,6 +12,11 @@ export default class SubSystem_GameState
         this.gameState              = this.baseLayout.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
     }
 
+    getPublicTodoList()
+    {
+        return this.baseLayout.getObjectProperty(this.gameState, 'mPublicTodoList');
+    }
+
     /**
      * COLOR PRESETS
      */
