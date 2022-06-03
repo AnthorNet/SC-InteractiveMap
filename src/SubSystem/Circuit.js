@@ -239,7 +239,8 @@ export default class SubSystem_Circuit
                         // MAX CONSUMPTION
                         if(buildingData !== null && buildingData.powerUsed !== undefined)
                         {
-                            statistics.maxConsumption += buildingData.powerUsed;
+                            let clockSpeed                  = this.baseLayout.getClockSpeed(currentComponent);
+                                statistics.maxConsumption  += buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
                         }
 
                         // POWER STORAGE
