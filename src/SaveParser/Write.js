@@ -174,7 +174,7 @@ export default class SaveParser_Write
                         // Only show progress for the main level
                         if(i % 2500 === 0 && j === (this.levels.length - 1))
                         {
-                            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
+                            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
                             this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (i / countObjects * 100) * 0.48)});
                         }
                     }
@@ -984,6 +984,13 @@ export default class SaveParser_Write
                                 break;
                             default:
                                 property += this.writeBytesArray(currentProperty.value.values);
+                        }
+                        break;
+
+                    case 'BoolProperty':
+                        for(let i = 0; i < currentArrayPropertyCount; i++)
+                        {
+                            property += this.writeByte(currentProperty.value.values[i]);
                         }
                         break;
 
