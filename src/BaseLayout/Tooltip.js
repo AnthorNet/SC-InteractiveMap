@@ -1079,15 +1079,15 @@ export default class BaseLayout_Tooltip
             }
         }
 
-        content.push('<i class="fas fa-battery-full"></i><br /><span class="small">Stored Charge</span><br />' + (Math.floor(storedCharge * 10) / 10) + ' / ' + capacityCharge + ' MW<br /><br />');
+        content.push('<i class="fas fa-battery-full"></i><br /><span class="small">Stored Charge</span><br />' + (Math.floor(storedCharge * 10) / 10) + ' / ' + capacityCharge + ' MWh<br /><br />');
 
         if(chargeRate > 0 && percentageCharge < 100)
         {
-            content.push('<i class="fas fa-tachometer-alt-fast"></i><br /><span class="small">Charge Rate</span><br />' + (Math.floor(chargeRate * 10) / 10) + ' MWh');
+            content.push('<i class="fas fa-tachometer-alt-fast"></i><br /><span class="small">Charge Rate</span><br />' + (Math.floor(chargeRate * 10) / 10) + ' MW');
         }
         if(circuitStatistics.powerStorageDrainRate > 0)
         {
-            content.push('<i class="fas fa-tachometer-alt-fast"></i><br /><span class="small">Drain Rate</span><br />' + (Math.floor(circuitStatistics.powerStorageDrainRate * 10) / 10) + ' MWh');
+            content.push('<i class="fas fa-tachometer-alt-fast"></i><br /><span class="small">Drain Rate</span><br />' + (Math.floor(circuitStatistics.powerStorageDrainRate * 10) / 10) + ' MW');
         }
 
 
