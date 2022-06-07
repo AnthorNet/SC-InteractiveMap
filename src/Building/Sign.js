@@ -1343,11 +1343,12 @@ export default class Building_Sign
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let options         = Building_Sign.generateIconOptions(baseLayout);
-
+            /*
             if(baseLayout.useDebug === true)
             {
-                options.push({value: 642, text: 'TEST ICON ID'});
+                options.push({value: 184, text: 'TEST ICON ID'});
             }
+            /**/
 
             BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" icon',

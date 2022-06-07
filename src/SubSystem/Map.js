@@ -1,5 +1,7 @@
 /* global Intl, Infinity */
 
+import Building_MapMarker                       from '../Building/MapMarker.js';
+
 export default class SubSystem_Map
 {
     constructor(options)
@@ -14,6 +16,8 @@ export default class SubSystem_Map
         {
             this.addFogOfWar();
         }
+
+        this.addMapMarkers();
     }
 
     getFogOfWar()
@@ -22,6 +26,17 @@ export default class SubSystem_Map
             if(mFogOfWarRawData !== null)
             {
                 return mFogOfWarRawData.values;
+            }
+
+        return [];
+    }
+
+    getMapMarkers()
+    {
+        let mMapMarkers = this.baseLayout.getObjectProperty(this.mapSubSystem, 'mMapMarkers');
+            if(mMapMarkers !== null)
+            {
+                return mMapMarkers.values;
             }
 
         return [];
@@ -167,6 +182,17 @@ export default class SubSystem_Map
                     this.baseLayout.playerLayers.playerFogOfWar.elements = [];
                 }
         }
+    }
+
+
+
+    addMapMarkers()
+    {
+        let mapMarkers = this.getMapMarkers();
+            for(let i = 0; i < mapMarkers.length; i++)
+            {
+                Building_MapMarker.add(this.baseLayout, mapMarkers[i]);
+            }
     }
 
 

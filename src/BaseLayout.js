@@ -42,6 +42,7 @@ import Building_Conveyor                        from './Building/Conveyor.js';
 import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
+import Building_MapMarker                       from './Building/MapMarker.js';
 import Building_Pipeline                        from './Building/Pipeline.js';
 import Building_Light                           from './Building/Light.js';
 import Building_PowerLine                       from './Building/PowerLine.js';
@@ -620,7 +621,27 @@ export default class BaseLayout
                 '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleLargeRock.BP_DestructibleLargeRock_C'
             ].includes(currentObject.className))
             {
-                //console.log(this.satisfactoryMap.collectableMarkers);
+                /**/
+                if(this.useDebug === true) //TODO: Find a way to extract them properly now
+                {
+                    if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] === undefined)
+                    {
+                        let oldCollectableLevels = ['Persistent_Exploration', 'Persistent_Exploration_2'];
+                            for(let j = 0; j < oldCollectableLevels.length; j++)
+                            {
+                                let collectableLevel    = oldCollectableLevels[j];
+                                let testPathName        = collectableLevel + ':' + currentObject.pathName.split(':').pop();
+
+                                    if(this.satisfactoryMap.collectableMarkers[testPathName] !== undefined)
+                                    {
+                                        console.log('Collectable needs to be renamed...', currentObject.pathName.split(':').shift(), currentObject.pathName.split('.').pop(), currentObject.transform.translation[0]);
+                                        break;
+                                    }
+                            }
+                    }
+                }
+                /**/
+
                 if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
                 {
                     this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName = currentObject.pathName;
@@ -794,6 +815,27 @@ export default class BaseLayout
                 '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C'
             ].includes(currentObject.className))
             {
+                /**/
+                if(this.useDebug === true) //TODO: Find a way to extract them properly now
+                {
+                    if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] === undefined)
+                    {
+                        let oldCollectableLevels = ['Persistent_Exploration', 'Persistent_Exploration_2'];
+                            for(let j = 0; j < oldCollectableLevels.length; j++)
+                            {
+                                let collectableLevel    = oldCollectableLevels[j];
+                                let testPathName        = collectableLevel + ':' + currentObject.pathName.split(':').pop();
+
+                                    if(this.satisfactoryMap.collectableMarkers[testPathName] !== undefined)
+                                    {
+                                        console.log('Collectable needs to be renamed...', currentObject.pathName.split(':').shift(), currentObject.pathName.split('.').pop(), currentObject.transform.translation[0]);
+                                        break;
+                                    }
+                            }
+                    }
+                }
+                /**/
+
                 this.playerStatistics.collectables[currentObject.className].items.push(currentObject.pathName);
                 continue;
             }
@@ -4463,6 +4505,10 @@ export default class BaseLayout
 
     getBuildingDataFromClassName(className)
     {
+        if(className === null)
+        {
+            return null;
+        }
         if(this.buildingDataClassNameHashTable[className] !== undefined)
         {
             return this.buildingsData[this.buildingDataClassNameHashTable[className]];
@@ -4591,6 +4637,9 @@ export default class BaseLayout
             }
         }
 
+        // Removed icons
+        if(iconId === 184){ return this.staticUrl + '/img/gameUpdate6/IconDesc_ColorGun_256.png'; }
+
         console.log('Missing iconID: ' + iconId);
         if(typeof Sentry !== 'undefined')
         {
@@ -4696,15 +4745,22 @@ export default class BaseLayout
     // CONTEXT MENU
     getContextMenu(marker)
     {
-        if(marker.options.pathName !== undefined)
+        if(marker.options.pathName !== undefined || marker.options.mapMarkerId !== undefined)
         {
-            let currentObject   = this.saveGameParser.getTargetObject(marker.options.pathName);
             let contextMenu     = new BaseLayout_ContextMenu({
                     baseLayout      : this,
                     marker          : marker
                 });
 
-                return contextMenu.getContextMenu(currentObject);
+            if(marker.options.pathName !== undefined)
+            {
+                let currentObject   = this.saveGameParser.getTargetObject(marker.options.pathName);
+                    return contextMenu.getContextMenu(currentObject);
+            }
+            if(marker.options.mapMarkerId !== undefined)
+            {
+                return contextMenu.getContextMenu(marker.mapMarkerId);
+            }
         }
 
         return false;
@@ -4714,7 +4770,7 @@ export default class BaseLayout
     {
         marker.bindContextMenu(this);
 
-        if(marker.options.pathName !== undefined)
+        if(marker.options.pathName !== undefined || marker.options.mapMarkerId !== undefined)
         {
             marker.on('mouseover', (e) => {
                 this.showTooltip(e);
@@ -4724,9 +4780,9 @@ export default class BaseLayout
                     let currentObject   = this.saveGameParser.getTargetObject(marker.options.pathName);
                     let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
 
-                    this.setBuildingMouseOverStyle(marker, buildingData);
-                    Building_Conveyor.bindConnectedComponents(this, currentObject);
-                    Building_PowerLine.bindConnectedComponents(this, currentObject);
+                        this.setBuildingMouseOverStyle(marker, buildingData);
+                        Building_Conveyor.bindConnectedComponents(this, currentObject);
+                        Building_PowerLine.bindConnectedComponents(this, currentObject);
                 }
             });
             marker.on('mouseout', (e) => {
@@ -4737,9 +4793,9 @@ export default class BaseLayout
                     let currentObject   = this.saveGameParser.getTargetObject(marker.options.pathName);
                     let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
 
-                    this.setBuildingMouseOutStyle(marker, buildingData, currentObject);
-                    Building_Conveyor.unbindConnectedComponents(this, currentObject);
-                    Building_PowerLine.unbindConnectedComponents(this, currentObject);
+                        this.setBuildingMouseOutStyle(marker, buildingData, currentObject);
+                        Building_Conveyor.unbindConnectedComponents(this, currentObject);
+                        Building_PowerLine.unbindConnectedComponents(this, currentObject);
                 }
             });
 
@@ -4851,36 +4907,44 @@ export default class BaseLayout
     showTooltip(e)
     {
         let content         = null;
-        let currentObject   = this.saveGameParser.getTargetObject(e.target.options.pathName);
-            if(currentObject !== null)
-            {
-                let tooltip = new BaseLayout_Tooltip({
-                    baseLayout      : this,
-                    target          : e.target
-                });
+        let tooltip         = new BaseLayout_Tooltip({baseLayout: this, target: e.target});
+        let tooltipOptions  = {sticky: true, opacity: 0.8};
+
+        if(e.target.options.mapMarkerId !== undefined)
+        {
+            content = Building_MapMarker.getTooltip(this, e.target.options.mapMarkerId, tooltip.genericTooltipBackgroundStyle);
+        }
+        else
+        {
+            let currentObject   = this.saveGameParser.getTargetObject(e.target.options.pathName);
+                if(currentObject !== null)
+                {
                     content = tooltip.getTooltip(currentObject);
-            }
+
+                    if(content !== null)
+                    {
+                        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
+                        {
+                            Building_RadarTower.bindTooltip(this, currentObject, tooltipOptions);
+                        }
+                        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
+                        {
+                            Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
+                        }
+                        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C')
+                        {
+                            Building_RailroadTrack.bindTooltip(this, currentObject, tooltipOptions);
+                        }
+                        if(Building_Conveyor.isConveyorBelt(currentObject))
+                        {
+                            Building_Conveyor.bindTooltip(this, currentObject, tooltipOptions);
+                        }
+                    }
+                }
+        }
 
         if(content !== null)
         {
-            let tooltipOptions = {sticky: true, opacity: 0.8};
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
-                {
-                    Building_RadarTower.bindTooltip(this, currentObject, tooltipOptions);
-                }
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
-                {
-                    Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
-                }
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C')
-                {
-                    Building_RailroadTrack.bindTooltip(this, currentObject, tooltipOptions);
-                }
-                if(Building_Conveyor.isConveyorBelt(currentObject))
-                {
-                    Building_Conveyor.bindTooltip(this, currentObject, tooltipOptions);
-                }
-
             e.target.closeTooltip.bind(this);
             e.target.bindTooltip(content, tooltipOptions);
             e.target.openTooltip();

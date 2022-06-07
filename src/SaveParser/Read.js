@@ -412,11 +412,6 @@ export default class SaveParser_Read
             let scale3d = [this.readFloat(), this.readFloat(), this.readFloat()];
                 if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[2] !== 1)
                 {
-                    if(actor.transform === undefined)
-                    {
-                        actor.transform = {};
-                    }
-
                     actor.transform.scale3d = scale3d
                 }
 
@@ -757,7 +752,7 @@ export default class SaveParser_Read
 
             case 'ByteProperty':
                 let enumName = this.readString(); //TODO
-                this.skipBytes();
+                    this.skipBytes();
 
                 if(enumName === 'None')
                 {
@@ -1263,7 +1258,7 @@ export default class SaveParser_Read
                 {
                     switch(currentProperty.value.type)
                     {
-                        case 'ObjectProperty': // MOD: Efficiency Checker
+                        case 'ObjectProperty':
                             currentProperty.value.values.push(this.readObjectProperty({}));
                             break;
                         case 'StructProperty':

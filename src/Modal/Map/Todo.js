@@ -28,13 +28,13 @@ export default class Modal_Map_Todo
                             let mPublicTodoList = this.baseLayout.gameStateSubSystem.getPublicTodoList();
                                 if(mPublicTodoList !== null)
                                 {
-                                    todoHtml.push(marked.parse(mPublicTodoList));
+                                    todoHtml.push(marked.parse(mPublicTodoList).replace(/(?:\r\n|\r|\n)/g, '<br>'));
                                 }
                         todoHtml.push('<h5 class="border-bottom border-warning mt-3">Private Notes</h5>');
                             let mPrivateTodoList = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mPrivateTodoList');
                                 if(mPrivateTodoList !== null)
                                 {
-                                    todoHtml.push(marked.parse(mPrivateTodoList));
+                                    todoHtml.push(marked.parse(mPrivateTodoList).replace(/(?:\r\n|\r|\n)/g, '<br>'));
                                 }
                     todoHtml.push('</div>');
                     todoHtml.push('<div class="col-8">');

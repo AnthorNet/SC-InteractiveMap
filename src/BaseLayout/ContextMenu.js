@@ -5,6 +5,7 @@ import Building_Door                            from '../Building/Door.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_Light                           from '../Building/Light.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
+import Building_MapMarker                       from '../Building/MapMarker.js';
 import Building_Miner                           from '../Building/Miner.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerLine                       from '../Building/PowerLine.js';
@@ -41,6 +42,11 @@ export default class BaseLayout_ContextMenu
     getContextMenu(currentObject)
     {
         let contextMenu = [];
+
+        if(this.marker.options.mapMarkerId !== undefined)
+        {
+            return Building_MapMarker.addContextMenu(this.baseLayout, this.marker.options.mapMarkerId, contextMenu);
+        }
 
         if(currentObject !== null)
         {

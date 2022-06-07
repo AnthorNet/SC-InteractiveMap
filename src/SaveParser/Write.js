@@ -929,7 +929,7 @@ export default class SaveParser_Write
                 {
                     switch(currentProperty.value.type)
                     {
-                        case 'ObjectProperty': // MOD: Efficiency Checker
+                        case 'ObjectProperty':
                             property += this.writeObjectProperty(currentProperty.value.values[iSetProperty]);
                             break;
                         case 'StructProperty':
