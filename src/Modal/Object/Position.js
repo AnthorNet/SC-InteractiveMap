@@ -128,7 +128,7 @@ export default class Modal_Object_Position
                 }
                 else
                 {
-                    baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: JSON.parse(JSON.stringify(newTransform)), object: currentObject});
+                    baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: newTransform, object: currentObject});
                     baseLayout.updateRadioactivityLayer();
                 }
             }

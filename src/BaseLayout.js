@@ -624,7 +624,7 @@ export default class BaseLayout
                 /**/
                 if(this.useDebug === true) //TODO: Find a way to extract them properly now
                 {
-                    if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] === undefined)
+                    if(this.saveGameParser.header.saveVersion >= 29 && this.satisfactoryMap.collectableMarkers[currentObject.pathName] === undefined)
                     {
                         let oldCollectableLevels = ['Persistent_Exploration', 'Persistent_Exploration_2'];
                             for(let j = 0; j < oldCollectableLevels.length; j++)
@@ -818,7 +818,7 @@ export default class BaseLayout
                 /**/
                 if(this.useDebug === true) //TODO: Find a way to extract them properly now
                 {
-                    if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] === undefined)
+                    if(this.saveGameParser.header.saveVersion >= 29 && this.satisfactoryMap.collectableMarkers[currentObject.pathName] === undefined)
                     {
                         let oldCollectableLevels = ['Persistent_Exploration', 'Persistent_Exploration_2'];
                             for(let j = 0; j < oldCollectableLevels.length; j++)
@@ -1782,7 +1782,65 @@ export default class BaseLayout
     refreshMarkerPosition(properties, fastDelete = false)
     {
         let refreshSliderBoundaries     = (properties.transform.translation[2] !== properties.object.transform.translation[2]);
-            properties.object.transform = properties.transform;
+
+        // Move extra properties
+        let extraPropertiesPathName     = [];
+        let mHubTerminal    = this.getObjectProperty(properties.object, 'mHubTerminal');
+            if(mHubTerminal !== null)
+            {
+                extraPropertiesPathName.push(mHubTerminal.pathName);
+            }
+        let mWorkBench      = this.getObjectProperty(properties.object, 'mWorkBench');
+            if(mWorkBench !== null)
+            {
+                extraPropertiesPathName.push(mWorkBench.pathName);
+            }
+        let mSignPoles = this.getObjectProperty(properties.object, 'mSignPoles');
+            if(mSignPoles !== null)
+            {
+                for(let j = 0; j < mSignPoles.values.length; j++)
+                {
+                    extraPropertiesPathName.push(mSignPoles.values[j].pathName);
+                }
+            }
+        let mFlowIndicator = this.getObjectProperty(properties.object, 'mFlowIndicator');
+            if(mFlowIndicator !== null)
+            {
+                extraPropertiesPathName.push(mFlowIndicator.pathName);
+            }
+
+        for(let i = 0; i < extraPropertiesPathName.length; i++)
+        {
+            let extraObject = this.saveGameParser.getTargetObject(extraPropertiesPathName[i]);
+                if(extraObject !== null)
+                {
+                    let newExtraTransform                   = JSON.parse(JSON.stringify(properties.transform));
+                    let angleOffset                         = BaseLayout_Math.getQuaternionToEuler(properties.transform.rotation).yaw - BaseLayout_Math.getQuaternionToEuler(extraObject.transform.rotation).yaw;
+                    let xOffset                             = properties.object.transform.translation[0] - extraObject.transform.translation[0];
+                    let yOffset                             = properties.object.transform.translation[1] - extraObject.transform.translation[1];
+                        if(xOffset !== 0 || yOffset !== 0 || angleOffset !== 0)
+                        {
+                            let translationRotation = BaseLayout_Math.getPointRotation(
+                                    [newExtraTransform.translation[0] - xOffset, newExtraTransform.translation[1] - yOffset],
+                                    newExtraTransform.translation,
+                                    BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], angleOffset)
+                                );
+                                newExtraTransform.translation[0]  = translationRotation[0];
+                                newExtraTransform.translation[1]  = translationRotation[1];
+                        }
+                        else
+                        {
+                            newExtraTransform.translation[0]   -= xOffset;
+                            newExtraTransform.translation[1]   -= yOffset;
+                        }
+
+                        newExtraTransform.translation[2]   -= properties.object.transform.translation[2] - extraObject.transform.translation[2];
+
+                    extraObject.transform = newExtraTransform;
+                }
+        }
+
+        properties.object.transform = JSON.parse(JSON.stringify(properties.transform));
 
         // Delete and add again!
         return new Promise((resolve) => {

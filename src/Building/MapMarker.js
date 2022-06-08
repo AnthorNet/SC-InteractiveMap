@@ -421,6 +421,7 @@ export default class Building_MapMarker
 
                 let location    = Building_MapMarker.getProperty(mapMarker, 'Location');
                     content.push('<div class="text-small">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(location.values[0].value)) + ' / ' + new Intl.NumberFormat(baseLayout.language).format(Math.round(location.values[1].value)) + '</div>');
+                    content.push('<div class="text-small">Altitude: ' + new Intl.NumberFormat(baseLayout.language).format(Math.round(location.values[2].value / 100)) + 'm</div>');
 
                 return '<div class="d-flex" style="' + genericTooltipBackgroundStyle + '">\
                             <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
