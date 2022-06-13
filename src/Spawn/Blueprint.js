@@ -393,32 +393,35 @@ export default class Spawn_Blueprint
                     {
                         for(let j = 0; j < this.clipboard.data[i].children.length; j++)
                         {
-                            let childrenPathName    = this.clipboard.data[i].children[j].pathName.split('.');
-                            let extraPart           = childrenPathName.pop();
-                                childrenPathName    = childrenPathName.join('.');
-
-                            if(pathNameConversion[childrenPathName] !== undefined)
+                            if(this.clipboard.data[i].children[j] !== null)
                             {
-                                for(let k = 0; k < this.clipboard.data[i].parent.children.length; k++)
+                                let childrenPathName    = this.clipboard.data[i].children[j].pathName.split('.');
+                                let extraPart           = childrenPathName.pop();
+                                    childrenPathName    = childrenPathName.join('.');
+
+                                if(pathNameConversion[childrenPathName] !== undefined)
                                 {
-                                    if(this.clipboard.data[i].parent.children[k].pathName === this.clipboard.data[i].children[j].pathName)
+                                    for(let k = 0; k < this.clipboard.data[i].parent.children.length; k++)
                                     {
-                                        this.clipboard.data[i].parent.children[k].pathName = pathNameConversion[childrenPathName] + '.' + extraPart;
-                                        break;
+                                        if(this.clipboard.data[i].parent.children[k].pathName === this.clipboard.data[i].children[j].pathName)
+                                        {
+                                            this.clipboard.data[i].parent.children[k].pathName = pathNameConversion[childrenPathName] + '.' + extraPart;
+                                            break;
+                                        }
                                     }
+
+                                    this.clipboard.data[i].children[j].pathName = pathNameConversion[childrenPathName] + '.' + extraPart;
                                 }
 
-                                this.clipboard.data[i].children[j].pathName = pathNameConversion[childrenPathName] + '.' + extraPart;
-                            }
+                                if(this.clipboard.data[i].children[j].outerPathName !== undefined && pathNameConversion[this.clipboard.data[i].children[j].outerPathName] !== undefined)
+                                {
+                                    this.clipboard.data[i].children[j].outerPathName = pathNameConversion[this.clipboard.data[i].children[j].outerPathName];
+                                }
 
-                            if(this.clipboard.data[i].children[j].outerPathName !== undefined && pathNameConversion[this.clipboard.data[i].children[j].outerPathName] !== undefined)
-                            {
-                                this.clipboard.data[i].children[j].outerPathName = pathNameConversion[this.clipboard.data[i].children[j].outerPathName];
-                            }
-
-                            if(this.clipboard.data[i].children[j].properties !== undefined && this.clipboard.data[i].children[j].properties.length > 0)
-                            {
-                                this.clipboard.data[i].children[j].properties = this.transformPropertiesPathName(this.clipboard.data[i].children[j].properties, pathNameConversion);
+                                if(this.clipboard.data[i].children[j].properties !== undefined && this.clipboard.data[i].children[j].properties.length > 0)
+                                {
+                                    this.clipboard.data[i].children[j].properties = this.transformPropertiesPathName(this.clipboard.data[i].children[j].properties, pathNameConversion);
+                                }
                             }
                         }
                     }
@@ -911,35 +914,38 @@ export default class Spawn_Blueprint
                     for(let j = 0; j < currentClipboard.children.length; j++)
                     {
                         let newChildren     = currentClipboard.children[j];
-                        let testPathName    = newChildren.pathName.split('.');
-                                testPathName.pop();
-                                testPathName    = testPathName.join('.');
-
-                            // Do we need to update mPipeNetworkID?
-                            if(pipesConversion[newChildren.pathName] !== undefined)
+                            if(newChildren !== null)
                             {
-                                for(let m = 0; m < newChildren.properties.length; m++)
-                                {
-                                    if(newChildren.properties[m].name === 'mPipeNetworkID')
-                                    {
-                                        newChildren.properties[m].value = pipesConversion[newChildren.pathName];
-                                        break;
-                                    }
-                                }
-                            }
-                            if(pipesConversion[testPathName] !== undefined)
-                            {
-                                for(let m = 0; m < newChildren.properties.length; m++)
-                                {
-                                    if(newChildren.properties[m].name === 'mPipeNetworkID')
-                                    {
-                                        newChildren.properties[m].value = pipesConversion[testPathName];
-                                        break;
-                                    }
-                                }
-                            }
+                                let testPathName    = newChildren.pathName.split('.');
+                                        testPathName.pop();
+                                        testPathName    = testPathName.join('.');
 
-                        this.baseLayout.saveGameParser.addObject(newChildren);
+                                    // Do we need to update mPipeNetworkID?
+                                    if(pipesConversion[newChildren.pathName] !== undefined)
+                                    {
+                                        for(let m = 0; m < newChildren.properties.length; m++)
+                                        {
+                                            if(newChildren.properties[m].name === 'mPipeNetworkID')
+                                            {
+                                                newChildren.properties[m].value = pipesConversion[newChildren.pathName];
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if(pipesConversion[testPathName] !== undefined)
+                                    {
+                                        for(let m = 0; m < newChildren.properties.length; m++)
+                                        {
+                                            if(newChildren.properties[m].name === 'mPipeNetworkID')
+                                            {
+                                                newChildren.properties[m].value = pipesConversion[testPathName];
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                this.baseLayout.saveGameParser.addObject(newChildren);
+                            }
                     }
                 }
 

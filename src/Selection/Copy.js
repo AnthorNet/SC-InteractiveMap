@@ -106,8 +106,11 @@ export default class Selection_Copy
                 {
                     for(let j = 0; j < currentObject.children.length; j++)
                     {
-                        let newObjectChildren = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName)));
-                            newDataObject.children.push(newObjectChildren);
+                        let newObjectChildren = this.baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName);
+                            if(newObjectChildren !== null)
+                            {
+                                newDataObject.children.push(JSON.parse(JSON.stringify(newObjectChildren)));
+                            }
                     }
                 }
 
@@ -262,142 +265,145 @@ export default class Selection_Copy
                     for(let j = 0; j < this.clipboard.data[i].children.length; j++)
                     {
                         let currentChildren     = this.clipboard.data[i].children[j];
-                        let endWith             = '.' + currentChildren.pathName.split('.').pop();
+                            if(currentChildren !== null)
+                            {
+                                let endWith             = '.' + currentChildren.pathName.split('.').pop();
 
-                        // Handle power circuits
-                        if(Building_PowerLine.availableConnections.includes(endWith))
-                        {
-                            let objectCircuit = this.circuitSubSystem.getObjectCircuit(this.clipboard.data[i].parent, endWith);
-                                if(objectCircuit !== null && this.clipboard.powerCircuits[objectCircuit.pathName] === undefined)
+                                // Handle power circuits
+                                if(Building_PowerLine.availableConnections.includes(endWith))
                                 {
-                                    let newPowerCircuit = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(objectCircuit.pathName)));
-                                    let mComponents     = this.baseLayout.getObjectProperty(newPowerCircuit, 'mComponents');
-                                        if(mComponents !== null)
+                                    let objectCircuit = this.circuitSubSystem.getObjectCircuit(this.clipboard.data[i].parent, endWith);
+                                        if(objectCircuit !== null && this.clipboard.powerCircuits[objectCircuit.pathName] === undefined)
                                         {
-                                            for(let k = (mComponents.values.length - 1); k >= 0; k--)
+                                            let newPowerCircuit = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(objectCircuit.pathName)));
+                                            let mComponents     = this.baseLayout.getObjectProperty(newPowerCircuit, 'mComponents');
+                                                if(mComponents !== null)
+                                                {
+                                                    for(let k = (mComponents.values.length - 1); k >= 0; k--)
+                                                    {
+                                                        //TODO: Handle Persistent_Level:PersistentLevel.RailroadSubsystem.FGPowerConnectionComponent_XXX (Train hidden connections)
+                                                        let testPathName    = mComponents.values[k].pathName.split('.');
+                                                            testPathName.pop();
+                                                            testPathName    = testPathName.join('.');
+
+                                                        if(availablePathName.includes(testPathName) === false)
+                                                        {
+                                                            mComponents.values.splice(k, 1);
+                                                        }
+                                                    }
+                                                }
+
+                                            this.clipboard.powerCircuits[objectCircuit.pathName] = newPowerCircuit;
+                                        }
+                                }
+
+                                let mConnectedComponent = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedComponent');
+                                    if(mConnectedComponent !== null)
+                                    {
+                                        // Remove belt/hyper pipe connection for objects that aren't in the loop...
+                                        if(Building_Conveyor.availableConnections.includes(endWith) || Building_HyperTube.availableConnections.includes(endWith))
+                                        {
+                                            let testPathName    = mConnectedComponent.pathName.split('.');
+                                                testPathName.pop();
+                                                testPathName    = testPathName.join('.');
+
+                                            if(availablePathName.includes(testPathName) === false)
                                             {
-                                                //TODO: Handle Persistent_Level:PersistentLevel.RailroadSubsystem.FGPowerConnectionComponent_XXX (Train hidden connections)
-                                                let testPathName    = mComponents.values[k].pathName.split('.');
-                                                    testPathName.pop();
-                                                    testPathName    = testPathName.join('.');
+                                                this.baseLayout.deleteObjectProperty(currentChildren, 'mConnectedComponent');
+                                            }
+                                        }
+
+                                        // Handle pipes circuits
+                                        if(Building_Pipeline.availableConnections.includes(endWith))
+                                        {
+                                            let testPathName    = mConnectedComponent.pathName.split('.');
+                                                testPathName.pop();
+                                                testPathName    = testPathName.join('.');
 
                                                 if(availablePathName.includes(testPathName) === false)
                                                 {
-                                                    mComponents.values.splice(k, 1);
+                                                    this.baseLayout.deleteObjectProperty(currentChildren, 'mConnectedComponent');
+
+                                                    if(currentChildren.className === '/Script/FactoryGame.FGPipeConnectionFactory')
+                                                    {
+                                                        this.baseLayout.deleteObjectProperty(currentChildren, 'mPipeNetworkID');
+                                                    }
                                                 }
-                                            }
-                                        }
-
-                                    this.clipboard.powerCircuits[objectCircuit.pathName] = newPowerCircuit;
-                                }
-                        }
-
-                        let mConnectedComponent = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedComponent');
-                            if(mConnectedComponent !== null)
-                            {
-                                // Remove belt/hyper pipe connection for objects that aren't in the loop...
-                                if(Building_Conveyor.availableConnections.includes(endWith) || Building_HyperTube.availableConnections.includes(endWith))
-                                {
-                                    let testPathName    = mConnectedComponent.pathName.split('.');
-                                        testPathName.pop();
-                                        testPathName    = testPathName.join('.');
-
-                                    if(availablePathName.includes(testPathName) === false)
-                                    {
-                                        this.baseLayout.deleteObjectProperty(currentChildren, 'mConnectedComponent');
-                                    }
-                                }
-
-                                // Handle pipes circuits
-                                if(Building_Pipeline.availableConnections.includes(endWith))
-                                {
-                                    let testPathName    = mConnectedComponent.pathName.split('.');
-                                        testPathName.pop();
-                                        testPathName    = testPathName.join('.');
-
-                                        if(availablePathName.includes(testPathName) === false)
-                                        {
-                                            this.baseLayout.deleteObjectProperty(currentChildren, 'mConnectedComponent');
-
-                                            if(currentChildren.className === '/Script/FactoryGame.FGPipeConnectionFactory')
-                                            {
-                                                this.baseLayout.deleteObjectProperty(currentChildren, 'mPipeNetworkID');
-                                            }
-                                        }
-                                        else // mPipeNetworkID
-                                        {
-                                            let pipeNetworkId = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
-                                                if(pipeNetworkId !== null)
+                                                else // mPipeNetworkID
                                                 {
-                                                    let currentPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(this.clipboard.data[i].parent);
-                                                        if(currentPipeNetwork !== null)
+                                                    let pipeNetworkId = this.baseLayout.getObjectProperty(currentChildren, 'mPipeNetworkID');
+                                                        if(pipeNetworkId !== null)
                                                         {
-                                                            if(this.clipboard.pipes[pipeNetworkId] === undefined)
-                                                            {
-                                                                 this.clipboard.pipes[pipeNetworkId] = {
-                                                                     fluid      : this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor'),
-                                                                     interface  : []
-                                                                 };
-                                                            }
-
-                                                            // Check if that pathName is in the current pipe network
-                                                            let mFluidIntegrantScriptInterfaces = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidIntegrantScriptInterfaces');
-                                                                if(mFluidIntegrantScriptInterfaces !== null)
+                                                            let currentPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(this.clipboard.data[i].parent);
+                                                                if(currentPipeNetwork !== null)
                                                                 {
-                                                                    for(let o = 0; o < mFluidIntegrantScriptInterfaces.values.length; o++)
+                                                                    if(this.clipboard.pipes[pipeNetworkId] === undefined)
                                                                     {
-                                                                        if(mFluidIntegrantScriptInterfaces.values[o].pathName === currentChildren.pathName && this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.pathName) === false)
-                                                                        {
-                                                                            this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.pathName);
-                                                                        }
-
-                                                                        if(mFluidIntegrantScriptInterfaces.values[o].pathName === currentChildren.outerPathName && this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.outerPathName) === false)
-                                                                        {
-                                                                            this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.outerPathName);
-                                                                        }
-
-                                                                        if(mFluidIntegrantScriptInterfaces.values[o].pathName === mConnectedComponent.pathName && this.clipboard.pipes[pipeNetworkId].interface.includes(mConnectedComponent.pathName) === false)
-                                                                        {
-                                                                            this.clipboard.pipes[pipeNetworkId].interface.push(mConnectedComponent.pathName);
-                                                                        }
+                                                                         this.clipboard.pipes[pipeNetworkId] = {
+                                                                             fluid      : this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor'),
+                                                                             interface  : []
+                                                                         };
                                                                     }
+
+                                                                    // Check if that pathName is in the current pipe network
+                                                                    let mFluidIntegrantScriptInterfaces = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidIntegrantScriptInterfaces');
+                                                                        if(mFluidIntegrantScriptInterfaces !== null)
+                                                                        {
+                                                                            for(let o = 0; o < mFluidIntegrantScriptInterfaces.values.length; o++)
+                                                                            {
+                                                                                if(mFluidIntegrantScriptInterfaces.values[o].pathName === currentChildren.pathName && this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.pathName) === false)
+                                                                                {
+                                                                                    this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.pathName);
+                                                                                }
+
+                                                                                if(mFluidIntegrantScriptInterfaces.values[o].pathName === currentChildren.outerPathName && this.clipboard.pipes[pipeNetworkId].interface.includes(currentChildren.outerPathName) === false)
+                                                                                {
+                                                                                    this.clipboard.pipes[pipeNetworkId].interface.push(currentChildren.outerPathName);
+                                                                                }
+
+                                                                                if(mFluidIntegrantScriptInterfaces.values[o].pathName === mConnectedComponent.pathName && this.clipboard.pipes[pipeNetworkId].interface.includes(mConnectedComponent.pathName) === false)
+                                                                                {
+                                                                                    this.clipboard.pipes[pipeNetworkId].interface.push(mConnectedComponent.pathName);
+                                                                                }
+                                                                            }
+                                                                        }
                                                                 }
                                                         }
                                                 }
                                         }
-                                }
-                            }
-
-
-                        // Remove railway connection for objects that aren't in the loop...
-                        let mConnectedComponents = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedComponents');
-                            if(mConnectedComponents !== null && Building_RailroadTrack.availableConnections.includes(endWith))
-                            {
-                                for(let n = (mConnectedComponents.values.length - 1); n >= 0; n--)
-                                {
-                                    let testPathName    = mConnectedComponents.values[n].pathName.split('.');
-                                        testPathName.pop();
-                                        testPathName    = testPathName.join('.');
-
-                                    if(availablePathName.includes(testPathName) === false)
-                                    {
-                                        mConnectedComponents.values.splice(n, 1);
                                     }
-                                }
-                            }
 
-                        // Remove platform connection for objects that aren't in the loop...
-                        let mConnectedTo = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedTo');
-                            if(mConnectedTo !== null && Building_TrainStation.availableConnections.includes(endWith))
-                            {
-                                let testPathName    = mConnectedTo.pathName.split('.');
-                                    testPathName.pop();
-                                    testPathName    = testPathName.join('.');
 
-                                if(availablePathName.includes(testPathName) === false)
-                                {
-                                    this.baseLayout.deleteObjectProperty(currentChildren, 'mConnectedTo');
-                                }
+                                // Remove railway connection for objects that aren't in the loop...
+                                let mConnectedComponents = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedComponents');
+                                    if(mConnectedComponents !== null && Building_RailroadTrack.availableConnections.includes(endWith))
+                                    {
+                                        for(let n = (mConnectedComponents.values.length - 1); n >= 0; n--)
+                                        {
+                                            let testPathName    = mConnectedComponents.values[n].pathName.split('.');
+                                                testPathName.pop();
+                                                testPathName    = testPathName.join('.');
+
+                                            if(availablePathName.includes(testPathName) === false)
+                                            {
+                                                mConnectedComponents.values.splice(n, 1);
+                                            }
+                                        }
+                                    }
+
+                                // Remove platform connection for objects that aren't in the loop...
+                                let mConnectedTo = this.baseLayout.getObjectProperty(currentChildren, 'mConnectedTo');
+                                    if(mConnectedTo !== null && Building_TrainStation.availableConnections.includes(endWith))
+                                    {
+                                        let testPathName    = mConnectedTo.pathName.split('.');
+                                            testPathName.pop();
+                                            testPathName    = testPathName.join('.');
+
+                                        if(availablePathName.includes(testPathName) === false)
+                                        {
+                                            this.baseLayout.deleteObjectProperty(currentChildren, 'mConnectedTo');
+                                        }
+                                    }
                             }
                     }
                 }
@@ -411,101 +417,104 @@ export default class Selection_Copy
                     for(let j = 0; j < this.clipboard.data[i].children.length; j++)
                     {
                         let currentChildren         = this.clipboard.data[i].children[j];
-                        let availableConnections    = Building_PowerLine.availableConnections;
-                            for(let k = 0; k < availableConnections.length; k++)
+                            if(currentChildren !== null)
                             {
-                                if(currentChildren.pathName.endsWith(availableConnections[k]))
-                                {
-                                    let mWires = this.baseLayout.getObjectProperty(currentChildren, 'mWires');
-                                        if(mWires !== null)
+                                let availableConnections    = Building_PowerLine.availableConnections;
+                                    for(let k = 0; k < availableConnections.length; k++)
+                                    {
+                                        if(currentChildren.pathName.endsWith(availableConnections[k]))
                                         {
-                                            for(let m = (mWires.values.length - 1); m >= 0; m--)
-                                            {
-                                                let keepPowerLine    = true;
-                                                let currentPowerline = this.baseLayout.saveGameParser.getTargetObject(mWires.values[m].pathName);
-
-                                                    if(currentPowerline !== null && currentPowerline.extra !== undefined)
+                                            let mWires = this.baseLayout.getObjectProperty(currentChildren, 'mWires');
+                                                if(mWires !== null)
+                                                {
+                                                    for(let m = (mWires.values.length - 1); m >= 0; m--)
                                                     {
-                                                        let testSourcePathName  = currentPowerline.extra.source.pathName.split('.');
-                                                            testSourcePathName.pop();
-                                                            testSourcePathName  = testSourcePathName.join('.');
+                                                        let keepPowerLine    = true;
+                                                        let currentPowerline = this.baseLayout.saveGameParser.getTargetObject(mWires.values[m].pathName);
 
-                                                        if(availablePathName.includes(testSourcePathName) === false)
-                                                        {
-                                                            keepPowerLine = false;
-                                                        }
-
-                                                        let testTargetPathName  = currentPowerline.extra.target.pathName.split('.');
-                                                            testTargetPathName.pop();
-                                                            testTargetPathName  = testTargetPathName.join('.');
-
-                                                        if(availablePathName.includes(testTargetPathName) === false)
-                                                        {
-                                                            keepPowerLine = false;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        keepPowerLine = false;
-                                                    }
-
-                                                    if(keepPowerLine === false)
-                                                    {
-                                                        mWires.values.splice(m, 1);
-                                                    }
-                                                    else
-                                                    {
-                                                        if(availablePathName.includes(currentPowerline.pathName) === false)
-                                                        {
-                                                            this.clipboard.data.push({parent: currentPowerline, children: []});
-                                                            availablePathName.push(currentPowerline.pathName);
-                                                        }
-                                                    }
-                                            }
-                                        }
-
-                                    let mHiddenConnections = this.baseLayout.getObjectProperty(currentChildren, 'mHiddenConnections');
-                                        if(mHiddenConnections !== null)
-                                        {
-                                            for(let m = (mHiddenConnections.values.length - 1); m >= 0; m--)
-                                            {
-                                                let currentHiddenConnection = this.baseLayout.saveGameParser.getTargetObject(mHiddenConnections.values[m].pathName);
-                                                    if(currentHiddenConnection !== null)
-                                                    {
-                                                            currentHiddenConnection     = JSON.parse(JSON.stringify(currentHiddenConnection));
-                                                        let mCurrentHiddenConnections   = this.baseLayout.getObjectProperty(currentHiddenConnection, 'mHiddenConnections');
-
-                                                            if(mCurrentHiddenConnections !== null)
+                                                            if(currentPowerline !== null && currentPowerline.extra !== undefined)
                                                             {
-                                                                for(let n = (mCurrentHiddenConnections.values.length - 1); n >= 0; n--)
-                                                                {
-                                                                    let testSourcePathName  = mCurrentHiddenConnections.values[n].pathName.split('.');
-                                                                        testSourcePathName.pop();
-                                                                        testSourcePathName  = testSourcePathName.join('.');
+                                                                let testSourcePathName  = currentPowerline.extra.source.pathName.split('.');
+                                                                    testSourcePathName.pop();
+                                                                    testSourcePathName  = testSourcePathName.join('.');
 
-                                                                        if(availablePathName.includes(testSourcePathName) === false)
+                                                                if(availablePathName.includes(testSourcePathName) === false)
+                                                                {
+                                                                    keepPowerLine = false;
+                                                                }
+
+                                                                let testTargetPathName  = currentPowerline.extra.target.pathName.split('.');
+                                                                    testTargetPathName.pop();
+                                                                    testTargetPathName  = testTargetPathName.join('.');
+
+                                                                if(availablePathName.includes(testTargetPathName) === false)
+                                                                {
+                                                                    keepPowerLine = false;
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                keepPowerLine = false;
+                                                            }
+
+                                                            if(keepPowerLine === false)
+                                                            {
+                                                                mWires.values.splice(m, 1);
+                                                            }
+                                                            else
+                                                            {
+                                                                if(availablePathName.includes(currentPowerline.pathName) === false)
+                                                                {
+                                                                    this.clipboard.data.push({parent: currentPowerline, children: []});
+                                                                    availablePathName.push(currentPowerline.pathName);
+                                                                }
+                                                            }
+                                                    }
+                                                }
+
+                                            let mHiddenConnections = this.baseLayout.getObjectProperty(currentChildren, 'mHiddenConnections');
+                                                if(mHiddenConnections !== null)
+                                                {
+                                                    for(let m = (mHiddenConnections.values.length - 1); m >= 0; m--)
+                                                    {
+                                                        let currentHiddenConnection = this.baseLayout.saveGameParser.getTargetObject(mHiddenConnections.values[m].pathName);
+                                                            if(currentHiddenConnection !== null)
+                                                            {
+                                                                    currentHiddenConnection     = JSON.parse(JSON.stringify(currentHiddenConnection));
+                                                                let mCurrentHiddenConnections   = this.baseLayout.getObjectProperty(currentHiddenConnection, 'mHiddenConnections');
+
+                                                                    if(mCurrentHiddenConnections !== null)
+                                                                    {
+                                                                        for(let n = (mCurrentHiddenConnections.values.length - 1); n >= 0; n--)
                                                                         {
-                                                                            mCurrentHiddenConnections.values.splice(n, 1);
+                                                                            let testSourcePathName  = mCurrentHiddenConnections.values[n].pathName.split('.');
+                                                                                testSourcePathName.pop();
+                                                                                testSourcePathName  = testSourcePathName.join('.');
+
+                                                                                if(availablePathName.includes(testSourcePathName) === false)
+                                                                                {
+                                                                                    mCurrentHiddenConnections.values.splice(n, 1);
+                                                                                }
+                                                                        }
+                                                                    }
+
+                                                                if(this.clipboard.hiddenConnections[currentHiddenConnection.pathName] === undefined)
+                                                                {
+                                                                    let isFromParent = currentHiddenConnection.pathName.split('.');
+                                                                        isFromParent.pop();
+                                                                        isFromParent = isFromParent.join('.');
+
+                                                                        // Avoid pushing hiddenConnection when they are already available as a child (Double Power Pole)
+                                                                        if(isFromParent !== this.clipboard.data[i].parent.pathName)
+                                                                        {
+                                                                            this.clipboard.hiddenConnections[currentHiddenConnection.pathName] = currentHiddenConnection;
                                                                         }
                                                                 }
                                                             }
-
-                                                        if(this.clipboard.hiddenConnections[currentHiddenConnection.pathName] === undefined)
-                                                        {
-                                                            let isFromParent = currentHiddenConnection.pathName.split('.');
-                                                                isFromParent.pop();
-                                                                isFromParent = isFromParent.join('.');
-
-                                                                // Avoid pushing hiddenConnection when they are already available as a child (Double Power Pole)
-                                                                if(isFromParent !== this.clipboard.data[i].parent.pathName)
-                                                                {
-                                                                    this.clipboard.hiddenConnections[currentHiddenConnection.pathName] = currentHiddenConnection;
-                                                                }
-                                                        }
                                                     }
-                                            }
+                                                }
                                         }
-                                }
+                                    }
                             }
                     }
                 }
