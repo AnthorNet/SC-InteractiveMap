@@ -1,7 +1,8 @@
 /* global L, gtag */
+import Selection_Delete                         from '../Selection/Delete.js';
+import Selection_MoveTo                         from '../Selection/MoveTo.js';
 import Selection_Offset                         from '../Selection/Offset.js';
 import Selection_Rotate                         from '../Selection/Rotate.js';
-import Selection_Delete                         from '../Selection/Delete.js';
 
 export default class BaseLayout_History
 {
@@ -129,6 +130,9 @@ export default class BaseLayout_History
                                     break;
                                 case 'Selection_Offset':
                                     new Selection_Offset(currentOperation.properties);
+                                    break;
+                                case 'Selection_MoveTo':
+                                    new Selection_MoveTo(currentOperation.properties);
                                     break;
                                 case 'Selection_Rotate':
                                     new Selection_Rotate(currentOperation.properties);

@@ -3,22 +3,24 @@ import Modal_Selection                          from '../Modal/Selection.js';
 
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
-export default class Selection_Offset
+export default class Selection_MoveTo
 {
     constructor(options)
     {
         this.baseLayout             = options.baseLayout;
         this.markers                = options.markers;
+        this.boundaries             = options.boundaries;
 
-        this.offsetX                = parseFloat(options.offsetX);
-        this.offsetY                = parseFloat(options.offsetY);
-        this.offsetZ                = parseFloat(options.offsetZ);
-        
+        this.moveToX                = parseFloat(options.moveToX);
+        this.moveToY                = parseFloat(options.moveToY);
+        this.moveToZ                = parseFloat(options.moveToZ);
+
+
         this.useHistory             = (options.history !== undefined) ? options.history : true;
 
         if(typeof gtag === 'function')
         {
-            gtag('event', 'Offset', {event_category: 'Selection'});
+            gtag('event', 'MoveTo', {event_category: 'Selection'});
         }
 
         return this.offset();
@@ -28,8 +30,8 @@ export default class Selection_Offset
     {
         if(this.markers)
         {
-            console.time('offsetMultipleMarkers');
-            let offsetResults   = [];
+            console.time('moveToMultipleMarkers');
+            let moveToResults   = [];
             let historyPathName = [];
 
             for(let i = 0; i < this.markers.length; i++)
@@ -63,56 +65,56 @@ export default class Selection_Offset
                                             let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
                                                 if(currentObjectTarget !== null)
                                                 {
-                                                    if(isNaN(this.offsetX) === false)
+                                                    if(isNaN(this.moveToX) === false)
                                                     {
-                                                        currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
+                                                        currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + (this.moveToX - this.boundaries.centerX);
                                                     }
-                                                    if(isNaN(this.offsetY) === false)
+                                                    if(isNaN(this.moveToY) === false)
                                                     {
-                                                        currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
+                                                        currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + (this.moveToY - this.boundaries.centerY);
                                                     }
-                                                    if(isNaN(this.offsetZ) === false)
+                                                    if(isNaN(this.moveToZ) === false)
                                                     {
-                                                        currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
+                                                        currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + (this.moveToZ - this.boundaries.centerZ);
                                                     }
                                                 }
                                         }
                                     break;
                                 default:
-                                    if(isNaN(this.offsetX) === false)
+                                    if(isNaN(this.moveToX) === false)
                                     {
-                                        newTransform.translation[0] = currentObject.transform.translation[0] + this.offsetX;
+                                        newTransform.translation[0] = currentObject.transform.translation[0] + (this.moveToX - this.boundaries.centerX);
                                     }
-                                    if(isNaN(this.offsetY) === false)
+                                    if(isNaN(this.moveToY) === false)
                                     {
-                                        newTransform.translation[1] = currentObject.transform.translation[1] + this.offsetY;
+                                        newTransform.translation[1] = currentObject.transform.translation[1] + (this.moveToY - this.boundaries.centerY);
                                     }
-                                    if(isNaN(this.offsetZ) === false)
+                                    if(isNaN(this.moveToZ) === false)
                                     {
-                                        newTransform.translation[2] = currentObject.transform.translation[2] + this.offsetZ;
+                                        newTransform.translation[2] = currentObject.transform.translation[2] + (this.moveToZ - this.boundaries.centerZ);
                                     }
                                     break;
                             }
 
-                            offsetResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: newTransform, object: currentObject}, true));
+                            moveToResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: newTransform, object: currentObject}, true));
                         }
                 }
             }
 
-            Promise.all(offsetResults).then(() => {
+            Promise.all(moveToResults).then(() => {
                 if(this.useHistory === true && this.baseLayout.history !== null)
                 {
                     this.baseLayout.history.add({
-                        name: 'Undo: Offset selection',
+                        name: 'Undo: Move To selection',
                         values: [{
                             pathNameArray: historyPathName,
-                            callback: 'Selection_Offset',
-                            properties: {offsetX: -this.offsetX, offsetY: -this.offsetY, offsetZ: -this.offsetZ}
+                            callback: 'Selection_MoveTo',
+                            properties: {moveToX: this.boundaries.centerX, moveToY: this.boundaries.centerY, moveToZ: this.boundaries.centerZ, boundaries: {centerX : this.moveToX, centerY : this.moveToY, centerZ : this.moveToZ}}
                         }]
                     });
                 }
 
-                console.timeEnd('offsetMultipleMarkers');
+                console.timeEnd('moveToMultipleMarkers');
                 this.baseLayout.updateRadioactivityLayer();
             });
         }

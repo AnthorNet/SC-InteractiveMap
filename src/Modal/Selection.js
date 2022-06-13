@@ -7,10 +7,11 @@ import Modal_Statistics_Storage                 from '../Modal/Statistics/Storag
 
 import Modal_PowerCircuits                      from '../Modal/PowerCircuits.js';
 
+import Selection_Copy                           from '../Selection/Copy.js';
+import Selection_Delete                         from '../Selection/Delete.js';
+import Selection_MoveTo                         from '../Selection/MoveTo.js';
 import Selection_Offset                         from '../Selection/Offset.js';
 import Selection_Rotate                         from '../Selection/Rotate.js';
-import Selection_Delete                         from '../Selection/Delete.js';
-import Selection_Copy                           from '../Selection/Copy.js';
 
 import Spawn_Fill                               from '../Spawn/Fill.js';
 
@@ -32,70 +33,86 @@ export default class Modal_Selection
         let maxX            = -Infinity;
         let minY            = Infinity;
         let maxY            = -Infinity;
-            for(let i = 0; i < markers.length; i++)
-            {
-                let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                    if([
-                        '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C',
-                        '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C',
-                        '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'
-                    ].includes(currentObject.className))
-                    {
-                        continue;
-                    }
+        let minZ            = Infinity;
+        let maxZ            = -Infinity;
 
-                let mSplineData = baseLayout.getObjectProperty(currentObject, 'mSplineData');
-                    if(mSplineData !== null)
-                    {
-                        let splineMinX = Infinity;
-                        let splineMaxX = -Infinity;
-                        let splineMinY = Infinity;
-                        let splineMaxY = -Infinity;
+        for(let i = 0; i < markers.length; i++)
+        {
+            let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
+                if([
+                    '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C',
+                    '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C',
+                    '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'
+                ].includes(currentObject.className))
+                {
+                    continue;
+                }
 
-                        for(let j = 0; j < mSplineData.values.length; j++)
+            let mSplineData = baseLayout.getObjectProperty(currentObject, 'mSplineData');
+                if(mSplineData !== null)
+                {
+                    let splineMinX = Infinity;
+                    let splineMaxX = -Infinity;
+                    let splineMinY = Infinity;
+                    let splineMaxY = -Infinity;
+
+                    for(let j = 0; j < mSplineData.values.length; j++)
+                    {
+                        for(let k = 0; k < mSplineData.values[j].length; k++)
                         {
-                            for(let k = 0; k < mSplineData.values[j].length; k++)
-                            {
-                                let currentValue = mSplineData.values[j][k];
-                                    if(currentValue.name === 'Location')
-                                    {
-                                        splineMinX  = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMaxX  = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMinY  = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                        splineMaxY  = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                    }
-                            }
+                            let currentValue = mSplineData.values[j][k];
+                                if(currentValue.name === 'Location')
+                                {
+                                    splineMinX  = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
+                                    splineMaxX  = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
+                                    splineMinY  = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
+                                    splineMaxY  = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
+                                }
                         }
-
-                        minX    = Math.min(minX, ((splineMinX + splineMaxX) / 2));
-                        maxX    = Math.max(maxX, ((splineMinX + splineMaxX) / 2));
-                        minY    = Math.min(minY, ((splineMinY + splineMaxY) / 2));
-                        maxY    = Math.max(maxY, ((splineMinY + splineMaxY) / 2));
-
-                        continue;
                     }
 
-                let objectOffset    = 0;
-                let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-                    if(buildingData !== null && (buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof'))
-                    {
-                        objectOffset = 400;
-                    }
+                    minX    = Math.min(minX, ((splineMinX + splineMaxX) / 2));
+                    maxX    = Math.max(maxX, ((splineMinX + splineMaxX) / 2));
+                    minY    = Math.min(minY, ((splineMinY + splineMaxY) / 2));
+                    maxY    = Math.max(maxY, ((splineMinY + splineMaxY) / 2));
 
-                    minX            = Math.min(minX, currentObject.transform.translation[0] - objectOffset);
-                    maxX            = Math.max(maxX, currentObject.transform.translation[0] + objectOffset);
-                    minY            = Math.min(minY, currentObject.transform.translation[1] - objectOffset);
-                    maxY            = Math.max(maxY, currentObject.transform.translation[1] + objectOffset);
-                    maxObjectOffset = Math.max(objectOffset, maxObjectOffset);
-            }
+                    continue;
+                }
+
+            let objectOffset    = 0;
+            let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+                if(buildingData !== null && (buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof'))
+                {
+                    objectOffset    = 400;
+
+                    // GROUND BUILDING USE HALF AS CENTER
+                    minZ            = Math.min(minZ, currentObject.transform.translation[2] - (buildingData.height * 100 / 2));
+                    maxZ            = Math.max(maxZ, currentObject.transform.translation[2] - (buildingData.height * 100 / 2));
+                }
+                else
+                {
+                    // OTHER ARE PLACED FROM BOTTOM
+                    minZ            = Math.min(minZ, currentObject.transform.translation[2]);
+                    maxZ            = Math.max(maxZ, currentObject.transform.translation[2]);
+                }
+
+                minX            = Math.min(minX, currentObject.transform.translation[0] - objectOffset);
+                maxX            = Math.max(maxX, currentObject.transform.translation[0] + objectOffset);
+                minY            = Math.min(minY, currentObject.transform.translation[1] - objectOffset);
+                maxY            = Math.max(maxY, currentObject.transform.translation[1] + objectOffset);
+                maxObjectOffset = Math.max(objectOffset, maxObjectOffset);
+        }
 
         return {
             minX    : minX + maxObjectOffset,
             maxX    : maxX - maxObjectOffset,
             minY    : minY + maxObjectOffset,
             maxY    : maxY - maxObjectOffset,
+            minZ    : minZ,
+            maxZ    : maxZ,
             centerX : (minX + maxX) / 2,
-            centerY : (minY + maxY) / 2
+            centerY : (minY + maxY) / 2,
+            centerZ : (minZ + maxZ) / 2
         };
     }
 
@@ -277,6 +294,7 @@ export default class Modal_Selection
                 inputOptions.push({text: 'Update selected buildings color slot', value: 'colorSlot'});
                 inputOptions.push({text: 'Update selected buildings custom color', value: 'customColor'});
 
+                inputOptions.push({group: 'Positioning', text: 'Move selected items position', value: 'moveTo'});
                 inputOptions.push({group: 'Positioning', text: 'Offset selected items position', value: 'offset'});
                 inputOptions.push({group: 'Positioning', text: 'Rotate selected items position', value: 'rotate'});
 
@@ -523,6 +541,46 @@ export default class Modal_Selection
         });
     }
 
+    static callbackMoveTo(baseLayout, markers)
+    {
+        let boundaries = Modal_Selection.getBoundaries(baseLayout, markers);
+
+        BaseLayout_Modal.form({
+            title       : 'You have selected ' + markers.length + ' items',
+            message     : 'Coordinates are based on the selection center.',
+            container   : '#leafletMap',
+            inputs      : [{
+                label       : 'X',
+                name        : 'moveToX',
+                inputType   : 'coordinate',
+                value       : boundaries.centerX
+            },
+            {
+                label       : 'Y',
+                name        : 'moveToY',
+                inputType   : 'coordinate',
+                value       : boundaries.centerY
+            },
+            {
+                label       : 'Z',
+                name        : 'moveToZ',
+                inputType   : 'coordinate',
+                value       : boundaries.centerZ
+            }],
+            callback: function(values)
+            {
+                return new Selection_MoveTo({
+                    baseLayout  : baseLayout,
+                    markers     : markers,
+                    boundaries  : boundaries,
+                    moveToX     : values.moveToX,
+                    moveToY     : values.moveToY,
+                    moveToZ     : values.moveToZ
+                });
+            }
+        });
+    }
+
     static callbackRotate(baseLayout, markers)
     {
         BaseLayout_Modal.form({
@@ -573,36 +631,15 @@ export default class Modal_Selection
             }],
             callback    : function(values)
             {
-                let boundaries  = Modal_Selection.getBoundaries(baseLayout, markers);
-                let minZ        = Infinity;
-
-                    // Try to find the minZ
-                    for(let i = 0; i < markers.length; i++)
-                    {
-                        let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                        let currentObjectData   = baseLayout.getBuildingDataFromClassName(currentObject.className);
-
-                            if(currentObjectData !== null && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && currentObject.className !== '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
-                            {
-                                if(currentObjectData.category === 'frame' || currentObjectData.category === 'foundation' || currentObjectData.category === 'roof')
-                                {
-                                    minZ = Math.min(minZ, currentObject.transform.translation[2] - (currentObjectData.height * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
-                                }
-                                else
-                                {
-                                    minZ = Math.min(minZ, currentObject.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
-                                }
-                            }
-                    }
-
                 // Add center
+                let boundaries      = Modal_Selection.getBoundaries(baseLayout, markers);
                 let fakeFoundation  = {
                         type            : 1,
                         className       : "/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x2_01.Build_Foundation_8x2_01_C",
                         pathName        : "Persistent_Level:PersistentLevel.Build_Foundation_8x2_01_C_XXX",
                         transform       : {
                             rotation        : [0, 0, 0, 1],
-                            translation     : [boundaries.centerX, boundaries.centerY, minZ + 100]
+                            translation     : [boundaries.centerX, boundaries.centerY, boundaries.minZ + 100]
                         },
                         properties      : [
                             { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
