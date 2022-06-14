@@ -740,7 +740,13 @@ export default class Modal_Schematics
                                     let schematicId = mPurchasedSchematics.values[i].pathName.split('.').pop();
                                         if(
                                                this.baseLayout.schematicsData[schematicId] === undefined
-                                            && ['Research_HardDrive_0_C', 'Research_FlowerPetals_1_C', 'Research_FlowerPetals_2_C', 'Research_FlowerPetals_3_C'].includes(schematicId) === false
+                                            && [
+                                                    'Research_HardDrive_0_C',
+                                                    'Research_FlowerPetals_1_C', 'Research_FlowerPetals_2_C', 'Research_FlowerPetals_3_C',
+                                                    'Research_Sulfur_4_2_1_C', 'Research_Sulfur_3_2_1_C', 'Research_Sulfur_2_C',
+                                                    'Research_Quartz_3_C', 'Research_Quartz_3_3_C', 'Research_Quartz_3_2_C',
+                                                    'Research_AOrgans_1_C', 'Research_AOrgans_0_C', 'Research_AOrganisms_1_C', 'Research_AOrgans_0_C', 'Research_AOrganisms_1_C', 'Research_ACarapace_2_1_C', 'Research_ACarapace_1_C', 'Research_ACarapace_0_C'
+                                                ].includes(schematicId) === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Customizer_Background/') === false
