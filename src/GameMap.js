@@ -1,4 +1,4 @@
-/* global L, Intl */
+        /* global L, Intl */
 import BaseLayout_Modal                         from './BaseLayout/Modal.js';
 
 export default class GameMap
@@ -33,150 +33,151 @@ export default class GameMap
         this.mappingBoundNorth          = -375000;
         this.mappingBoundSouth          = 375000;
 
+        //See: https://static.wikia.nocookie.net/satisfactory_gamepedia_en/images/3/31/Biome_Map.jpg/revision/latest?cb=20210806163120
         this.biomes                     = {
             1: {
-                1: 'Paradise Island',
-                2: 'Paradise Island',
-                2: 'Paradise Island',
-                4: 'Grass Fields',
-                5: 'Grass Fields',
-                6: 'Grass Fields',
-                8: 'Blue Crater',
-                9: 'Blue Crater'
+                 1: 'Paradise Island',
+                 2: 'Paradise Island',
+                 3: 'Paradise Island',
+                 4: 'Grass Fields',
+                 5: 'Grass Fields',
+                 6: 'Grass Fields',
+                 8: 'Blue Crater',
+                 9: 'Blue Crater'
             },
             2: {
-                3: 'Grass Fields',
-                4: 'Grass Fields',
-                5: 'Grass Fields',
-                6: 'Southern Forest',
-                7: 'Southern Forest',
-                8: 'Blue Crater',
-                9: 'Blue Crater',
+                 3: 'Grass Fields',
+                 4: 'Grass Fields',
+                 5: 'Grass Fields',
+                 6: 'Southern Forest',
+                 7: 'Southern Forest',
+                 8: 'Blue Crater',
+                 9: 'Blue Crater',
                 10: 'Abyss Cliffs'
             },
             3: {
-                2: 'Dangle Spires',
-                3: 'Dangle Spires',
-                4: 'Snaketree Forest',
-                5: 'Snaketree Forest',
-                6: 'Grass Fields',
-                7: 'Southern Forest',
-                8: 'Blue Crater',
-                9: 'Blue Crater',
+                 2: 'Dangle Spires',
+                 3: 'Dangle Spires',
+                 4: 'Snaketree Forest',
+                 5: 'Snaketree Forest',
+                 6: 'Grass Fields',
+                 7: 'Southern Forest',
+                 8: 'Blue Crater',
+                 9: 'Blue Crater',
                 10: 'Abyss Cliffs'
             },
             4: {
-                1: 'Islands',
-                2: 'Dangle Spires',
-                3: 'Dangle Spires',
-                4: 'Western Dune Forest',
-                5: 'Western Dune Forest',
-                6: 'Eastern Dune Forest',
-                7: 'Eastern Dune Forest',
-                8: 'Eastern Dune Forest',
-                9: 'Eastern Dune Forest',
+                 1: 'Islands',
+                 2: 'Dangle Spires',
+                 3: 'Dangle Spires',
+                 4: 'Western Dune Forest',
+                 5: 'Western Dune Forest',
+                 6: 'Eastern Dune Forest',
+                 7: 'Eastern Dune Forest',
+                 8: 'Eastern Dune Forest',
+                 9: 'Eastern Dune Forest',
                 10: 'Abyss Cliffs'
             },
             5: {
-                1: 'Islands',
-                2: 'Dangle Spires',
-                3: 'Western Dune Forest',
-                4: 'Red Jungle',
-                5: 'Red Bamboo Fields',
-                6: 'Red Bamboo Fields',
-                7: 'Eastern Dune Forest',
-                8: 'Titan Forest',
-                9: 'Eastern Dune Forest',
+                 1: 'Islands',
+                 2: 'Dangle Spires',
+                 3: 'Western Dune Forest',
+                 4: 'Red Jungle',
+                 5: 'Red Bamboo Fields',
+                 6: 'Red Bamboo Fields',
+                 7: 'Eastern Dune Forest',
+                 8: 'Titan Forest',
+                 9: 'Eastern Dune Forest',
                 10: 'Swamp',
                 11: 'Swamp'
             },
             6: {
-                1: 'Red Jungle',
-                2: 'Red Jungle',
-                3: 'Red Jungle',
-                4: 'Red Jungle',
-                5: 'Red Bamboo Fields',
-                6: 'Red Bamboo Fields',
-                7: 'Titan Forest',
-                8: 'Titan Forest',
-                9: 'Titan Forest',
+                 1: 'Red Jungle',
+                 2: 'Red Jungle',
+                 3: 'Red Jungle',
+                 4: 'Red Jungle',
+                 5: 'Red Bamboo Fields',
+                 6: 'Red Bamboo Fields',
+                 7: 'Titan Forest',
+                 8: 'Titan Forest',
+                 9: 'Titan Forest',
                 10: 'Swamp',
                 11: 'Swamp'
             },
             7: {
-                0: 'Rocky Desert',
-                1: 'Rocky Desert',
-                2: 'Rocky Desert',
-                3: 'Rocky Desert',
-                4: 'Crater Lake',
-                5: 'Crater Lake',
-                6: 'Lake Forest',
-                7: 'Lake Forest',
-                8: 'Maze Canyon',
-                9: 'Titan Forest',
+                 0: 'Rocky Desert',
+                 1: 'Rocky Desert',
+                 2: 'Rocky Desert',
+                 3: 'Rocky Desert',
+                 4: 'Crater Lake',
+                 5: 'Crater Lake',
+                 6: 'Lake Forest',
+                 7: 'Lake Forest',
+                 8: 'Maze Canyon',
+                 9: 'Titan Forest',
                 10: 'Titan Forest',
                 11: 'Titan Forest',
                 12: 'Swamp',
                 13: 'Dune Desert'
             },
             8: {
-                0: 'Rocky Desert',
-                1: 'Rocky Desert',
-                2: 'Rocky Desert',
-                3: 'Rocky Desert',
-                4: 'Crater Lake',
-                5: 'Crater Lake',
-                6: 'Northern Forest',
-                7: 'Northern Forest',
-                8: 'Maze Canyon',
-                9: 'Desert Canyons',
+                 0: 'Rocky Desert',
+                 1: 'Rocky Desert',
+                 2: 'Rocky Desert',
+                 3: 'Rocky Desert',
+                 4: 'Crater Lake',
+                 5: 'Crater Lake',
+                 6: 'Northern Forest',
+                 7: 'Northern Forest',
+                 8: 'Maze Canyon',
+                 9: 'Desert Canyons',
                 10: 'Dune Desert',
                 11: 'Dune Desert',
                 12: 'Dune Desert',
                 13: 'Dune Desert'
             },
             9: {
-                0: 'Rocky Desert',
-                1: 'Rocky Desert',
-                2: 'Rocky Desert',
-                3: 'Rocky Desert',
-                4: 'Rocky Desert',
-                5: 'Northern Forest',
-                6: 'Northern Forest',
-                7: 'Northern Forest',
-                8: 'Desert Canyons',
-                9: 'Desert Canyons',
+                 0: 'Rocky Desert',
+                 1: 'Rocky Desert',
+                 2: 'Rocky Desert',
+                 3: 'Rocky Desert',
+                 4: 'Rocky Desert',
+                 5: 'Northern Forest',
+                 6: 'Northern Forest',
+                 7: 'Northern Forest',
+                 8: 'Desert Canyons',
+                 9: 'Desert Canyons',
                 10: 'Dune Desert',
                 11: 'Dune Desert',
                 12: 'Dune Desert',
                 13: 'Dune Desert'
             },
             10: {
-                0: 'Rocky Desert',
-                1: 'Rocky Desert',
-                2: 'Rocky Desert',
-                3: 'Rocky Desert',
-                4: 'Rocky Desert',
-                5: 'Desert Canyons',
-                6: 'Spire Coast',
-                7: 'Spire Coast',
-                8: 'Spire Coast',
-                9: 'Spire Coast',
+                 0: 'Rocky Desert',
+                 1: 'Rocky Desert',
+                 2: 'Rocky Desert',
+                 3: 'Rocky Desert',
+                 4: 'Rocky Desert',
+                 5: 'Desert Canyons',
+                 6: 'Spire Coast',
+                 7: 'Spire Coast',
+                 8: 'Spire Coast',
+                 9: 'Spire Coast',
                 10: 'Spire Coast',
                 11: 'Dune Desert',
                 12: 'Dune Desert',
                 13: 'Dune Desert'
             },
             11: {
-                8: 'Spire Coast',
-                9: 'Spire Coast',
+                 8: 'Spire Coast',
+                 9: 'Spire Coast',
                 10: 'Spire Coast',
                 11: 'Dune Desert',
                 12: 'Dune Desert',
                 13: 'Dune Desert'
             },
             12: {
-                9: 'Spire Coast',
+                 9: 'Spire Coast',
                 10: 'Spire Coast',
                 11: 'Dune Desert',
                 12: 'Dune Desert',
@@ -251,7 +252,7 @@ export default class GameMap
 
     loadInitialData()
     {
-        $.getJSON(this.dataUrl, function(data){
+        $.getJSON(this.dataUrl, (data) => {
             if(data !== undefined)
             {
                 this.mapOptions     = data.options;
@@ -304,19 +305,19 @@ export default class GameMap
                                 {
                                     for(let caveId in option.markers)
                                     {
-                                        let cavePosition = option.markers[caveId].points.map(function(value){
-                                                return this.unproject(value);
-                                            }.bind(this));
-                                            L.polygon(cavePosition, {color: 'yellow', weight: 1, interactive: false})
-                                             .addTo(this.availableLayers[option.layerId]);
+                                        L.polygon(
+                                            option.markers[caveId].points.map((value) => { return this.unproject(value); }),
+                                            {color: 'yellow', weight: 1, interactive: false}
+                                        ).addTo(this.availableLayers[option.layerId]);
 
                                         if(option.markers[caveId].entrances !== undefined)
                                         {
                                             for(let l = 0; l < option.markers[caveId].entrances.length; l++)
                                             {
-                                                let currentEntrance     = L.polyline(option.markers[caveId].entrances[l].map(function(value){
-                                                                              return this.unproject(value);
-                                                                          }.bind(this)), {color: 'yellow', weight: 3, dashArray: '10 10'});
+                                                let currentEntrance     = L.polyline(
+                                                                              option.markers[caveId].entrances[l].map((value) => { return this.unproject(value); }),
+                                                                              {color: 'yellow', weight: 3, dashArray: '10 10'}
+                                                                          );
                                                 let entranceHeight      = 0;
                                                 let haveEntranceHeight  = false;
 
@@ -351,13 +352,13 @@ export default class GameMap
                                 {
                                     for(let roadId in option.markers)
                                     {
-                                        let roadPosition = option.markers[roadId].points.map(function(value){
-                                                return this.unproject(value);
-                                            }.bind(this));
-                                        let road = L.conveyor(roadPosition, {
-                                                weight      : ((option.markers[roadId].corridor !== undefined) ? option.markers[roadId].corridor : 2500),
-                                                color       : 'purple'
-                                            });
+                                        let road = L.conveyor(
+                                                       option.markers[roadId].points.map((value) => { return this.unproject(value); }),
+                                                       {
+                                                           weight   : ((option.markers[roadId].corridor !== undefined) ? option.markers[roadId].corridor : 2500),
+                                                           color    : 'purple'
+                                                       }
+                                                   );
 
                                             if(option.markers[roadId].name !== undefined)
                                             {
@@ -410,7 +411,7 @@ export default class GameMap
 
                                     if(option.layerId === 'spawn')
                                     {
-                                        L.circle(this.unproject([marker.x, marker.y]), {radius: marker.radius})
+                                        L.circle(this.unproject([marker.x, marker.y]), {radius: marker.radius / 6000})
                                          .addTo(this.availableLayers[option.layerId]);
                                         continue;
                                     }
@@ -611,7 +612,7 @@ export default class GameMap
                     }
                 }
             }
-        }.bind(this)).done(() => {
+        }).done(() => {
             // Hash Default
             this.leafletMap.addLayer(this.baseLayers[this.baseLayer]);
             $('.setBaseLayer[data-id=' + this.baseLayer + ']').addClass(window.SCIM.outlineClass);
@@ -674,7 +675,7 @@ export default class GameMap
         this.leafletMap.on('layeradd', this.updateHash, this);
         this.leafletMap.on('layerremove', this.updateHash, this);
 
-        L.DomEvent.addListener(window, "hashchange", this._throttle(function(e){return this.onHashChange()}.bind(this), 100, {leading: true, trailing: true}));
+        L.DomEvent.addListener(window, "hashchange", this._throttle(() => { return this.onHashChange(); }, 100, {leading: true, trailing: true}));
 
         // Dynamic coordinates
         this.leafletMap.on('mousemove', this._throttle(function(e){
@@ -694,18 +695,30 @@ export default class GameMap
             $('.mouseMoveBiome').html(biome);
         }, 100, {leading: true, trailing: true}), this);
 
-        $('.setBaseLayer').click(function(e){
+        $('.setBaseLayer').click((e) => {
             let layerId     = $(e.currentTarget).attr('data-id');
-                this.leafletMap.removeLayer(this.baseLayers[this.baseLayer]);
+                if(this.baseLayer !== 'greyLayer')
+                {
+                    this.leafletMap.removeLayer(this.baseLayers[this.baseLayer]);
+                }
 
             $('.setBaseLayer').removeClass(window.SCIM.outlineClass);
             this.baseLayer = layerId;
-            this.leafletMap.addLayer(this.baseLayers[layerId]);
+
+            if(layerId !== 'greyLayer')
+            {
+                this.leafletMap.addLayer(this.baseLayers[layerId]);
+            }
 
             $(e.currentTarget).addClass(window.SCIM.outlineClass);
-        }.bind(this));
 
-        $('.updateLayerState').click(function(e){
+            if(layerId === 'greyLayer')
+            {
+                this.updateHash();
+            }
+        });
+
+        $('.updateLayerState').click((e) => {
             let layerId     = $(e.currentTarget).attr('data-id');
                 if(this.availableLayers[layerId] !== undefined)
                 {
@@ -722,7 +735,7 @@ export default class GameMap
                         $(e.currentTarget).addClass(window.SCIM.outlineClass);
                     }
                 }
-        }.bind(this));
+        });
 
         $('#unselectAll').click(() => {
             for(let layerId in this.availableLayers)
@@ -739,10 +752,10 @@ export default class GameMap
             }
         });
 
-        $('.selectPurity').click(function(e){
+        $('.selectPurity').click((e) => {
             let neededPurity    = $(e.currentTarget).attr('data-purity');
 
-            $('.updateLayerState').each(function(key, el){
+            $('.updateLayerState').each((i, el) => {
                 let havePurity  = $(el).attr('data-purity');
                 let layerId     = $(el).attr('data-id');
                 let hide        = true;
@@ -772,13 +785,13 @@ export default class GameMap
                         }
                     }
                 }
-            }.bind(this));
-        }.bind(this));
+            });
+        });
 
-        $('.togglePurity').click(function(e){
+        $('.togglePurity').click((e) => {
             let neededPurity    = $(e.currentTarget).attr('data-purity');
 
-            $('.updateLayerState').each(function(key, el){
+            $('.updateLayerState').each((i, el) => {
                 let havePurity  = $(el).attr('data-purity');
                 let layerId     = $(el).attr('data-id');
 
@@ -797,13 +810,13 @@ export default class GameMap
                         $(el).addClass(window.SCIM.outlineClass);
                     }
                 }
-            }.bind(this));
-        }.bind(this));
+            });
+        });
 
-        $('.toggleType').click(function(e){
+        $('.toggleType').click((e) => {
             let neededType    = $(e.currentTarget).attr('data-type');
 
-            $('.updateLayerState').each(function(key, el){
+            $('.updateLayerState').each((i, el) => {
                 let haveType    = $(el).attr('data-type');
                 let layerId     = $(el).attr('data-id');
 
@@ -822,10 +835,10 @@ export default class GameMap
                         $(el).addClass(window.SCIM.outlineClass);
                     }
                 }
-            }.bind(this));
-        }.bind(this));
+            });
+        });
 
-        $('#resetPreviousCollected button').click(function(e){
+        $('#resetPreviousCollected button').click((e) => {
             let showCollected   = (this.localStorage !== null && this.localStorage.getItem('mapShowCollected') !== null) ? (this.localStorage.getItem('mapShowCollected') === 'true') : false;
             let collected       = this.collectedHardDrives.getCollectedHardDrives();
 
@@ -860,7 +873,7 @@ export default class GameMap
                 this.collectedHardDrives.resetCollected();
                 $('#resetPreviousCollected').hide();
 
-        }.bind(this));
+        });
     }
 
     addActiveLayer(layerId)

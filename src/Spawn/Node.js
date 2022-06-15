@@ -133,11 +133,11 @@ export default class Spawn_Node
             fakeBuilding.transform.translation[1]   = rotation[1];
 
         // Insert building
-        new Promise(function(resolve){
+        new Promise((resolve) => {
             this.baseLayout.saveGameParser.addObject(fakeBuilding);
 
             return this.baseLayout.parseObject(fakeBuilding, resolve);
-        }.bind(this)).then(function(result){
+        }).then((result) => {
             this.history.push({
                 pathName: fakeBuilding.pathName,
                 layerId: result.layer,
@@ -147,7 +147,7 @@ export default class Spawn_Node
 
             this.baseLayout.addElementToLayer(result.layer, result.marker);
             this.baseLayout.setBadgeLayerCount(result.layer);
-        }.bind(this));
+        });
 
         return true;
     }

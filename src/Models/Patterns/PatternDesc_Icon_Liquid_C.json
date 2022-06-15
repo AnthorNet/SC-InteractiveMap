@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Liquid.PatternDesc_Icon_Liquid_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_LiquidStencil_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_LiquidStencil_256.png",
         "patternName"   : "Liquid Icon",
         "patternGroup"  : "Icons",
 

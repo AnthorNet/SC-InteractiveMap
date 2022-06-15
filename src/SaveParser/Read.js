@@ -1,5 +1,7 @@
 /* global Sentry, Intl, self */
-import pako                                     from '../Lib/pako.esm.mjs';
+import pako                                     from '../Lib/pako.esm.js';
+
+import Building_Conveyor                        from '../Building/Conveyor.js';
 
 export default class SaveParser_Read
 {
@@ -8,11 +10,11 @@ export default class SaveParser_Read
         this.worker             = worker;
         this.objects            = {};
 
-        this.defaultValues      = options.defaultValues;
         this.language           = options.language;
 
         this.arrayBuffer        = options.arrayBuffer;
-        this.bufferView         = new DataView(this.arrayBuffer, 0, 1024); // Still used for header...
+        // Still used for header try not to shrink it too much as modMetadata can be longer than anticipated...
+        this.bufferView         = new DataView(this.arrayBuffer, 0, 102400);
         this.currentByte        = 0;
 
         this.parseSave();
@@ -22,48 +24,56 @@ export default class SaveParser_Read
     {
         this.header                      = {};
         this.header.saveHeaderType       = this.readInt();
-        this.header.saveVersion          = this.readInt();
-        this.header.buildVersion         = this.readInt();
-        this.header.mapName              = this.readString();
-        this.header.mapOptions           = this.readString();
-        this.header.sessionName          = this.readString();
-        this.header.playDurationSeconds  = this.readInt();
-        this.header.saveDateTime         = this.readLong();
-        this.header.sessionVisibility    = this.readByte();
 
-        if(this.header.saveHeaderType >= 7)
+        if(this.header.saveHeaderType <= 99)
         {
-            this.header.fEditorObjectVersion = this.readInt();
-        }
-        if(this.header.saveHeaderType >= 8)
-        {
-            this.header.modMetadata      = this.readString();
-            this.header.isModdedSave     = this.readInt();
-        }
+            this.header.saveVersion          = this.readInt();
+            this.header.buildVersion         = this.readInt();
+            this.header.mapName              = this.readString();
+            this.header.mapOptions           = this.readString();
+            this.header.sessionName          = this.readString();
+            this.header.playDurationSeconds  = this.readInt();
+            this.header.saveDateTime         = this.readLong();
+            this.header.sessionVisibility    = this.readByte();
 
-        console.log(this.header);
+            if(this.header.saveHeaderType >= 7)
+            {
+                this.header.fEditorObjectVersion = this.readInt();
+            }
+            if(this.header.saveHeaderType >= 8)
+            {
+                this.header.modMetadata      = this.readString();
+                this.header.isModdedSave     = this.readInt();
+            }
 
-        this.worker.postMessage({command: 'transferData', data: {header: this.header}});
+            console.log(this.header);
 
-        // We should now unzip the body!
-        if(this.header.saveVersion >= 21)
-        {
-            // Remove the header...
-            this.arrayBuffer        = this.arrayBuffer.slice(this.currentByte);
+            this.worker.postMessage({command: 'transferData', data: {header: this.header}});
 
-            this.handledByte        = 0;
-            this.currentByte        = 0;
-            this.maxByte            = this.arrayBuffer.byteLength;
+            // We should now unzip the body!
+            if(this.header.saveVersion >= 21)
+            {
+                // Remove the header...
+                this.arrayBuffer        = this.arrayBuffer.slice(this.currentByte);
 
-            this.PACKAGE_FILE_TAG   = null;
-            this.maxChunkSize       = null;
-            this.currentChunks      = [];
+                this.handledByte        = 0;
+                this.currentByte        = 0;
+                this.maxByte            = this.arrayBuffer.byteLength;
 
-            return this.inflateChunks();
+                this.PACKAGE_FILE_TAG   = null;
+                this.maxChunkSize       = null;
+                this.currentChunks      = [];
+
+                return this.inflateChunks();
+            }
+            else
+            {
+                this.worker.postMessage({command: 'alert', message: 'MAP\\SAVEPARSER\\That save version isn\'t supported anymore... Please save it again in the game.'});
+            }
         }
         else
         {
-            this.worker.postMessage({command: 'alert', message: 'That save version isn\'t supported anymore... Please save it again in the game.'});
+            this.worker.postMessage({command: 'alert', message: 'That save version isn\'t supported! Are you sure this is a proper save file???'});
         }
     }
 
@@ -109,7 +119,7 @@ export default class SaveParser_Read
             }
             catch(err)
             {
-                this.worker.postMessage({command: 'alert', message: 'Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'});
+                this.worker.postMessage({command: 'alert', message: 'MAP\\SAVEPARSER\\Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('pako', pako);
@@ -121,13 +131,13 @@ export default class SaveParser_Read
             }
 
             let currentPercentage = Math.round(this.handledByte / this.maxByte * 100);
-                this.worker.postMessage({command: 'loaderMessage', message: 'Inflating save game (' + currentPercentage + '%)...'});
+                this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Inflating save game (%1$s%)...', replace: currentPercentage});
                 this.worker.postMessage({command: 'loaderProgress', percentage: (currentPercentage * 0.3)});
         }
 
         delete this.arrayBuffer;
         console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
-        this.worker.postMessage({command: 'loaderMessage', message: 'Merging inflated chunks...'});
+        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Merging inflated chunks...'});
 
         // Create the complete Uint8Array
         let newChunkLength = 0;
@@ -150,6 +160,111 @@ export default class SaveParser_Read
         this.maxByte            = tempChunk.buffer.byteLength;
         this.bufferView         = new DataView(tempChunk.buffer);
 
+        if(this.header.saveVersion >= 29)
+        {
+            let collectables    = [];
+            let nbLevels        = this.readInt();
+            let levels          = [];
+
+            for(let j = 0; j <= nbLevels; j++)
+            {
+                let levelName           = (j === nbLevels) ? 'Level Persistent_Level' : this.readString();
+                    levels.push(levelName);
+                    this.readInt();//let objectsLength       = this.readInt();
+                let countObjects        = this.readInt();
+                let entitiesToObjects   = [];
+
+                for(let i = 0; i < countObjects; i++)
+                {
+                    let objectType = this.readInt();
+                        switch(objectType)
+                        {
+                            case 0:
+                                let object                          = this.readObject();
+                                    this.objects[object.pathName]   = object;
+                                    entitiesToObjects[i]            = object.pathName;
+                                break;
+                            case 1:
+                                let actor                           = this.readActor();
+                                    this.objects[actor.pathName]    = actor;
+                                    entitiesToObjects[i]            = actor.pathName;
+
+                                    if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                                    {
+                                        this.worker.postMessage({command: 'transferData', data: {gameStatePathName: actor.pathName}});
+                                    }
+                                break;
+                            default:
+                                console.log('Unknown object type', objectType);
+                                break;
+                        }
+
+                    // Only show progress for the main level
+                    if(i % 2500 === 0 && levelName === 'Level Persistent_Level')
+                    {
+                        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
+                        this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 15))});
+                    }
+                }
+
+                let countCollected = this.readInt();
+                    if(countCollected > 0)
+                    {
+                        for(let i = 0; i < countCollected; i++)
+                        {
+                            let collectable = this.readObjectProperty({});
+                                collectables.push(collectable);
+                                //console.log(collectable, this.objects[collectable.pathName])
+                        }
+                    }
+
+                    this.readInt();//let entitiesLength      = this.readInt();
+                let countEntities       = this.readInt();
+                let objectsToFlush      = {};
+
+                //console.log(levelName, countObjects, entitiesLength);
+
+                for(let i = 0; i < countEntities; i++)
+                {
+                    this.readEntity(entitiesToObjects[i]);
+
+                    // Avoid memory error on very large save!
+                    objectsToFlush[entitiesToObjects[i]] = this.objects[entitiesToObjects[i]];
+                    delete this.objects[entitiesToObjects[i]];
+
+                    if(i % 5000 === 0)
+                    {
+                        this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
+                        objectsToFlush = {};
+                    }
+
+                    // Only show progress for the main level
+                    if(i % 2500 === 0 && levelName === 'Level Persistent_Level')
+                    {
+                        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), Math.round(i / countEntities * 100)]});
+                        this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
+                    }
+                }
+
+                // Twice but we need to handle them in order to fetch the next level...
+                countCollected = this.readInt();
+                if(countCollected > 0)
+                {
+                    for(let i = 0; i < countCollected; i++)
+                    {
+                        this.readObjectProperty({});
+                    }
+                }
+
+                this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
+            }
+
+            this.worker.postMessage({command: 'transferData', data: {collectables: collectables}});
+            this.worker.postMessage({command: 'transferData', data: {levels: levels}});
+            this.worker.postMessage({command: 'endSaveLoading'});
+            return;
+        }
+
         return this.parseObjects();
     }
 
@@ -161,7 +276,7 @@ export default class SaveParser_Read
         let countObjects                = this.readInt();
         let entitiesToObjects           = [];
             console.log('Parsing: ' + countObjects + ' objects...');
-            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects...', replace: new Intl.NumberFormat(this.language).format(countObjects)});
+            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), 0]});
             this.worker.postMessage({command: 'loaderProgress', percentage: 30});
 
             for(let i = 0; i < countObjects; i++)
@@ -191,6 +306,7 @@ export default class SaveParser_Read
 
                 if(i % 2500 === 0)
                 {
+                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
                     this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 15))});
                 }
             }
@@ -204,7 +320,7 @@ export default class SaveParser_Read
     parseEntities(entitiesToObjects, i, countEntities)
     {
         console.log('Parsing: ' + countEntities + ' entities...');
-        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities...', replace: new Intl.NumberFormat(this.language).format(countEntities)});
+        this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), 0]});
         this.worker.postMessage({command: 'loaderProgress', percentage: 40});
 
         let objectsToFlush = {};
@@ -219,16 +335,17 @@ export default class SaveParser_Read
 
             if(i % 5000 === 0)
             {
-                this.worker.postMessage({command: 'transferObjects', data: objectsToFlush});
+                this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
                 objectsToFlush = {};
             }
             if(i % 2500 === 0)
             {
+                this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), Math.round(i / countEntities * 100)]});
                 this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
             }
         }
 
-        this.worker.postMessage({command: 'transferObjects', data: objectsToFlush});
+        this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
 
         return this.parseCollectables();
     }
@@ -237,17 +354,14 @@ export default class SaveParser_Read
     {
         let collectables    = [];
         let countCollected  = this.readInt();
-            console.log('Parsing: ' + countCollected + ' collectables...');
-            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s collectables...', replace: new Intl.NumberFormat(this.language).format(countCollected)});
-
             for(let i = 0; i < countCollected; i++)
             {
                 collectables.push(this.readObjectProperty({}));
             }
 
-        delete this.bufferView;
-
         this.worker.postMessage({command: 'transferData', data: {collectables: collectables}});
+
+        delete this.bufferView;
         this.worker.postMessage({command: 'endSaveLoading'});
     }
 
@@ -277,39 +391,10 @@ export default class SaveParser_Read
             }
 
             // {rotation: [0, 0, 0, 1], translation: [0, 0, 0], scale3d: [1, 1, 1]}
-        let rotation            = [this.readFloat(), this.readFloat(), this.readFloat(), this.readFloat()];
-        let translation         = [this.readFloat(), this.readFloat(), this.readFloat()];
-        let scale3d             = [this.readFloat(), this.readFloat(), this.readFloat()];
-
-            actor.transform     = {};
-
-            if(
-                    rotation[0] === this.defaultValues.rotation[0]
-                 && rotation[1] === this.defaultValues.rotation[1]
-                 && rotation[2] === this.defaultValues.rotation[2]
-                 && rotation[3] === this.defaultValues.rotation[3]
-            )
-            {
-                actor.transform.rotation    = this.defaultValues.rotation;
-            }
-            else
-            {
-                actor.transform.rotation    = rotation;
-            }
-
-            if(
-                    translation[0] === this.defaultValues.translation[0]
-                 && translation[1] === this.defaultValues.translation[1]
-                 && translation[2] === this.defaultValues.translation[2]
-            )
-            {
-                actor.transform.translation = this.defaultValues.translation;
-            }
-            else
-            {
-
-                actor.transform.translation = translation;
-            }
+            actor.transform     = {
+                rotation            : [this.readFloat(), this.readFloat(), this.readFloat(), this.readFloat()],
+                translation         : [this.readFloat(), this.readFloat(), this.readFloat()]
+            };
 
             // Enforce bounding on the map to avoid the game from skipping physics!
             if(actor.transform.translation[0] < -500000 || actor.transform.translation[0] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000)
@@ -324,15 +409,11 @@ export default class SaveParser_Read
                 console.log('NaN translation', actor.pathName);
             }
 
-            if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[2] !== 1)
-            {
-                if(actor.transform === undefined)
+            let scale3d = [this.readFloat(), this.readFloat(), this.readFloat()];
+                if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[2] !== 1)
                 {
-                    actor.transform = {};
+                    actor.transform.scale3d = scale3d
                 }
-
-                actor.transform.scale3d = scale3d
-            }
 
         let wasPlacedInLevel       = this.readInt();
             if(wasPlacedInLevel !== 0) //TODO: Switch to 1?
@@ -374,7 +455,7 @@ export default class SaveParser_Read
         this.objects[objectKey].properties       = [];
         while(true)
         {
-            let property = this.readProperty();
+            let property = this.readProperty(this.objects[objectKey].className);
                 if(property === null)
                 {
                     break;
@@ -385,15 +466,13 @@ export default class SaveParser_Read
 
         // Read Conveyor missing bytes
         if(
-                this.objects[objectKey].className.includes('/Build_ConveyorBeltMk')
+                Building_Conveyor.isConveyorBelt(this.objects[objectKey])
              || this.objects[objectKey].className.includes('/Build_ConveyorLiftMk')
-             // MODS
-             || this.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_BeltMk')
+             // MODS (Also have lifts)
+             || this.objects[objectKey].className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
              || this.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')
              || this.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
-             || this.objects[objectKey].className.startsWith('/CoveredConveyor/')
-             || this.objects[objectKey].className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || this.objects[objectKey].className.startsWith('/FlexSplines/Conveyor/Build_Belt')
+             || this.objects[objectKey].className.startsWith('/CoveredConveyor')
         )
         {
             this.objects[objectKey].extra   = {count: this.readInt(), items: []};
@@ -673,7 +752,7 @@ export default class SaveParser_Read
 
             case 'ByteProperty':
                 let enumName = this.readString(); //TODO
-                this.skipBytes();
+                    this.skipBytes();
 
                 if(enumName === 'None')
                 {
@@ -724,6 +803,12 @@ export default class SaveParser_Read
                                 }
                         }
                         break;
+
+                    case 'BoolProperty':
+                        for(let i = 0; i < currentArrayPropertyCount; i++)
+                        {
+                            currentProperty.value.values.push(this.readByte());
+                        }
 
                     case 'IntProperty':
                         for(let i = 0; i < currentArrayPropertyCount; i++)
@@ -894,6 +979,11 @@ export default class SaveParser_Read
                     this.skipBytes(1);
                     currentProperty.value.modeType = this.readInt();
 
+                    if(currentProperty.value.modeType === 2)
+                    {
+                        currentProperty.value.modeUnk2 = this.readString();
+                        currentProperty.value.modeUnk3 = this.readString();
+                    }
                     if(currentProperty.value.modeType === 3)
                     {
                         currentProperty.value.modeUnk1 = this.readHex(9);
@@ -1033,21 +1123,6 @@ export default class SaveParser_Read
                             b           : this.readFloat(),
                             a           : this.readFloat()
                         };
-
-                        // We use default values to avoid memory consumption
-                        if(currentProperty.name === 'mPrimaryColor' || currentProperty.name === 'mSecondaryColor')
-                        {
-                            if(
-                                   currentProperty.value.values.r === this.defaultValues[currentProperty.name].value.values.r
-                                && currentProperty.value.values.g === this.defaultValues[currentProperty.name].value.values.g
-                                && currentProperty.value.values.b === this.defaultValues[currentProperty.name].value.values.b
-                                && currentProperty.value.values.a === this.defaultValues[currentProperty.name].value.values.a
-                            )
-                            {
-                                currentProperty = this.defaultValues[currentProperty.name];
-                            }
-                        }
-
                         break;
 
                     case 'Vector':
@@ -1136,6 +1211,10 @@ export default class SaveParser_Read
                     case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
                         currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
                         break;
+                    case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
+                        currentProperty.value.begin         = this.readLong();
+                        currentProperty.value.end           = this.readLong();
+                        break;
 
                     default: // Try normalised structure, then throw Error if not working...
                         try
@@ -1179,10 +1258,20 @@ export default class SaveParser_Read
                 {
                     switch(currentProperty.value.type)
                     {
-                        case 'ObjectProperty': // MOD: Efficiency Checker
+                        case 'ObjectProperty':
                             currentProperty.value.values.push(this.readObjectProperty({}));
                             break;
-                        case 'StructProperty': // MOD: FicsIt-Networks
+                        case 'StructProperty':
+                            if(this.header.saveVersion >= 29 && parentType === '/Script/FactoryGame.FGFoliageRemoval')
+                            {
+                                currentProperty.value.values.push({
+                                    x: this.readFloat(),
+                                    y: this.readFloat(),
+                                    z: this.readFloat()
+                                });
+                                break;
+                            }
+                            // MOD: FicsIt-Networks
                             currentProperty.value.values.push(this.readFINNetworkTrace());
                             break;
                         case 'NameProperty':  // MOD: Sweet Transportal

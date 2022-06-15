@@ -26,11 +26,8 @@ export default class Modal_Object_CustomColor
             }],
             callback    : function(values)
             {
-                if(values !== null)
-                {
-                    baseLayout.buildableSubSystem.setObjectCustomColor(currentObject, values.primaryColor, values.secondaryColor);
-                    marker.relatedTarget.fire('mouseout'); // Trigger a redraw
-                }
+                baseLayout.buildableSubSystem.setObjectCustomColor(currentObject, values.primaryColor, values.secondaryColor);
+                marker.relatedTarget.fire('mouseout'); // Trigger a redraw
             }
         });
     }

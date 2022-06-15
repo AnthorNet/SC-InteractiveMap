@@ -44,17 +44,14 @@ export default class Building_Door
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        baseLayout.deleteObjectProperty(currentObject, 'mDoorConfiguration');
+                    baseLayout.deleteObjectProperty(currentObject, 'mDoorConfiguration');
 
-                        if(values.mDoorConfiguration !== 'Automatic')
-                        {
-                            currentObject.properties.push({
-                                name: "mDoorConfiguration", type: "EnumProperty",
-                                value: { name: "EDoorConfiguration", value: values.mDoorConfiguration}
-                            });
-                        }
+                    if(values.mDoorConfiguration !== 'Automatic')
+                    {
+                        currentObject.properties.push({
+                            name: "mDoorConfiguration", type: "EnumProperty",
+                            value: { name: "EDoorConfiguration", value: values.mDoorConfiguration}
+                        });
                     }
                 }
             });

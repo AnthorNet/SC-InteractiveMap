@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_LineDouble.PatternDesc_LineDouble_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_DoubleLine_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_DoubleLine_256.png",
         "patternName"   : "Double Line",
         "patternGroup"  : "Lines",
 

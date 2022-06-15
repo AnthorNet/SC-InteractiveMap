@@ -67,20 +67,17 @@ export default class Modal_Node_SpawnAround
                     inputType       : 'toggle'
                 }
             ],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form !== null && form.foundationType !== null && form.minerType !== null && form.yaw !== null && form.useOwnMaterials !== null)
-                {
-                    return new Spawn_Node({
-                        baseLayout          : baseLayout,
-                        marker              : marker,
+                return new Spawn_Node({
+                    baseLayout          : baseLayout,
+                    marker              : marker,
 
-                        foundationType      : form.foundationType,
-                        minerType           : form.minerType,
+                    foundationType      : values.foundationType,
+                    minerType           : values.minerType,
 
-                        rotation            : parseFloat(form.rotation)
-                    });
-                }
+                    rotation            : parseFloat(values.rotation)
+                });
             }
         });
     }

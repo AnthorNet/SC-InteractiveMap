@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Lines/PatternDesc_DottedCentre.PatternDesc_DottedCentre_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_CenterDottedLine_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_CenterDottedLine_256.png",
         "patternName"   : "Centre Dotted Line",
         "patternGroup"  : "Lines",
 

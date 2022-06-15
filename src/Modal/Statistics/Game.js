@@ -57,7 +57,7 @@ export default class Modal_Statistics_Game
                     html.push('<div class="row">');
                     for(let i = 0; i < sorted.length; i++)
                     {
-                        let currentFauna = this.baseLayout.getFaunaDataFromClassName(sorted[i]);
+                        let currentFauna = this.baseLayout.faunaSubsystem.getDataFromClassName(sorted[i]);
                             if(currentFauna !== null)
                             {
                                 let total       = creatures[sorted[i]];

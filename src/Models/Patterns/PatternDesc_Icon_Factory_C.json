@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Icons/PatternDesc_Icon_Factory.PatternDesc_Icon_Factory_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_FactoryStencil_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_FactoryStencil_256.png",
         "patternName"   : "Factory Icon",
         "patternGroup"  : "Icons",
 

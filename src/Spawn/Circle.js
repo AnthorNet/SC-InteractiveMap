@@ -108,7 +108,7 @@ export default class Spawn_Circle
 
                             newFoundation.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, angle - this.centerYaw);
 
-                        results.push(new Promise(function(resolve){
+                        results.push(new Promise((resolve) => {
                             this.baseLayout.saveGameParser.addObject(newFoundation);
 
                             this.history.push({
@@ -119,21 +119,21 @@ export default class Spawn_Circle
                             });
 
                             return this.baseLayout.parseObject(newFoundation, resolve);
-                        }.bind(this)));
+                        }));
                     }
             }
 
-            return Promise.all(results).then(function(results){
+            return Promise.all(results).then((results) => {
                 for(let i = 0; i < results.length; i++)
                 {
                     this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
-            }.bind(this)).finally(function(){
+            }).finally(() => {
                 window.requestAnimationFrame(() => {
                     $('#liveLoader .progress-bar').css('width', Math.round(radius / this.maxRadius * 100) + '%');
                     this.loop((radius + 1));
                 });
-            }.bind(this));
+            });
         }
 
         return this.release();

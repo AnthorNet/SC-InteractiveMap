@@ -11,7 +11,7 @@ export default class Modal_Object_Pattern
 
         let availablePatterns       = [];
             availablePatterns.push({
-                dataContent : '<img src="/img/gameUpdate5/IconDesc_PatternRemover_256.png" style="width: 64px;height: 64px;" class="my-2 mr-1" /> No pattern',
+                dataContent : '<img src="' + baseLayout.staticUrl + '/img/patternIcons/IconDesc_PatternRemover_256.png" style="width: 64px;height: 64px;" class="my-2 mr-1" /> No pattern',
                 value       : 'NULL',
                 text        : 'No pattern'
             });
@@ -44,35 +44,32 @@ export default class Modal_Object_Pattern
             }],
             callback    : function(values)
             {
-                if(values !== null)
-                {
-                    let mCustomizationData      = baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject);
-                        if(mCustomizationData !== null)
+                let mCustomizationData      = baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject);
+                    if(mCustomizationData !== null)
+                    {
+                        // Delete
+                        for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
                         {
-                            // Delete
-                            for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
+                            if(mCustomizationData.values[i].name === 'PatternDesc')
                             {
-                                if(mCustomizationData.values[i].name === 'PatternDesc')
-                                {
-                                    mCustomizationData.values.splice(i, 1);
-                                }
-                            }
-
-                            // Push
-                            if(values.PatternDesc !== 'NULL')
-                            {
-                                mCustomizationData.values.push({name: 'PatternDesc', type: 'ObjectProperty', value: {levelName: '', pathName: values.PatternDesc}});
+                                mCustomizationData.values.splice(i, 1);
                             }
                         }
 
-                    // Redraw!
-                    new Promise(function(resolve){
-                        return this.parseObject(currentObject, resolve);
-                    }.bind(baseLayout)).then(function(result){
-                        this.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-                        this.addElementToLayer(result.layer, result.marker);
-                    }.bind(baseLayout));
-                }
+                        // Push
+                        if(values.PatternDesc !== 'NULL')
+                        {
+                            mCustomizationData.values.push({name: 'PatternDesc', type: 'ObjectProperty', value: {levelName: '', pathName: values.PatternDesc}});
+                        }
+                    }
+
+                // Redraw!
+                new Promise(function(resolve){
+                    return baseLayout.parseObject(currentObject, resolve);
+                }).then(function(result){
+                    baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                    baseLayout.addElementToLayer(result.layer, result.marker);
+                });
             }
         });
     }

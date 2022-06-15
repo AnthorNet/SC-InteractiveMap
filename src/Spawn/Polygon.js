@@ -124,7 +124,7 @@ export default class Spawn_Polygon
                             }
                         }
 
-                    results.push(new Promise(function(resolve){
+                    results.push(new Promise((resolve) => {
                         this.baseLayout.saveGameParser.addObject(newFoundation);
 
                         this.history.push({
@@ -135,20 +135,20 @@ export default class Spawn_Polygon
                         });
 
                         return this.baseLayout.parseObject(newFoundation, resolve);
-                    }.bind(this)));
+                    }));
                 }
 
-                return Promise.all(results).then(function(results){
+                return Promise.all(results).then((results) => {
                     for(let i = 0; i < results.length; i++)
                     {
                         this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                     }
-                }.bind(this)).finally(function(){
+                }).finally(() => {
                     window.requestAnimationFrame(() => {
                         $('#liveLoader .progress-bar').css('width', Math.round((minSize * this.numberOfSides) / (this.maxSize * this.numberOfSides) * 100) + '%');
                         this.loop(minSize, (side + 1));
                     });
-                }.bind(this));
+                });
             }
 
             return this.loop((minSize + 1));

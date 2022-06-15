@@ -16,12 +16,7 @@ export default class Translate
 
     loadInitialData()
     {
-        $.getJSON(this.dataUrl, function(data){
-            if(data !== undefined)
-            {
-                this.translations = data;
-            }
-        }.bind(this)).done(() => {
+        $.getJSON(this.dataUrl, (data) => { this.translations = data; }).done(() => {
             if(this.startCallback !== null)
             {
                 this.startCallback();

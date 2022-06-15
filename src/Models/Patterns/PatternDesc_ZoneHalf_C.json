@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Zones/PatternDesc_ZoneHalf.PatternDesc_ZoneHalf_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_HalfFactoryZone_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_HalfFactoryZone_256.png",
         "patternName"   : "Half Factory Zone",
         "patternGroup"  : "Zones",
 

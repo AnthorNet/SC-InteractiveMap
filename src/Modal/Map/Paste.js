@@ -60,19 +60,16 @@ export default class Modal_Map_Paste
             ],
             callback    : function(values)
             {
-                if(values !== null && values.xOffset !== null && values.yOffset !== null && values.colorSlotHelper !== null)
-                {
-                    return new Spawn_Blueprint({
-                        baseLayout          : baseLayout,
-                        marker              : marker,
-                        clipboard           : baseLayout.clipboard,
-                        xOffset             : parseFloat(values.xOffset),
-                        yOffset             : parseFloat(values.yOffset),
-                        zOffset             : parseFloat(values.zOffset),
-                        pasteOn             : values.pasteOn,
-                        colorSlotHelper     : values.colorSlotHelper
-                    });
-                }
+                return new Spawn_Blueprint({
+                    baseLayout          : baseLayout,
+                    marker              : marker,
+                    clipboard           : baseLayout.clipboard,
+                    xOffset             : parseFloat(values.xOffset),
+                    yOffset             : parseFloat(values.yOffset),
+                    zOffset             : parseFloat(values.zOffset),
+                    pasteOn             : values.pasteOn,
+                    colorSlotHelper     : values.colorSlotHelper
+                });
             }
         });
     }

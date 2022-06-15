@@ -252,30 +252,27 @@ export default class Building_Locomotive
                         }],
                         callback    : function(values)
                         {
-                            if(values !== null)
+                            if(values.mTrainName !== '')
                             {
-                                if(values.mTrainName !== '')
+                                if(mTrainName !== null)
                                 {
-                                    if(mTrainName !== null)
-                                    {
-                                        baseLayout.setObjectProperty(trainIdentifier, 'mTrainName', values.mTrainName);
-                                    }
-                                    else
-                                    {
-                                        trainIdentifier.properties.push({
-                                            flags                       : 18,
-                                            hasCultureInvariantString   : 1,
-                                            historyType                 : 255,
-                                            name                        : "mTrainName",
-                                            type                        : "TextProperty",
-                                            value                       : values.mTrainName
-                                        });
-                                    }
+                                    baseLayout.setObjectProperty(trainIdentifier, 'mTrainName', values.mTrainName);
                                 }
                                 else
                                 {
-                                    baseLayout.deleteObjectProperty(trainIdentifier, 'mTrainName');
+                                    trainIdentifier.properties.push({
+                                        flags                       : 18,
+                                        hasCultureInvariantString   : 1,
+                                        historyType                 : 255,
+                                        name                        : "mTrainName",
+                                        type                        : "TextProperty",
+                                        value                       : values.mTrainName
+                                    });
                                 }
+                            }
+                            else
+                            {
+                                baseLayout.deleteObjectProperty(trainIdentifier, 'mTrainName');
                             }
                         }
                     });

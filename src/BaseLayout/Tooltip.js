@@ -2,7 +2,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
-import SubSystem_Creature                       from '../SubSystem/Creature.js';
+import SubSystem_Fauna                          from '../SubSystem/Fauna.js';
 import SubSystem_Unlock                         from '../SubSystem/Unlock.js';
 
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
@@ -12,8 +12,10 @@ import Building_DroneStation                    from '../Building/DroneStation.j
 import Building_FrackingSmasher                 from '../Building/FrackingSmasher.js';
 import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoThermal.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
+import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
+import Building_RadarTower                      from '../Building/RadarTower.js';
 import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
@@ -46,12 +48,11 @@ export default class BaseLayout_Tooltip
 
     getTooltip(currentObject)
     {
-        let faunaData = this.baseLayout.getFaunaDataFromClassName(currentObject.className);
+        let faunaData = this.baseLayout.faunaSubsystem.getDataFromClassName(currentObject.className);
 
             if(faunaData !== null)
             {
-                let creature            = new SubSystem_Creature({baseLayout: this.baseLayout, creature: currentObject});
-                    faunaData.health    = creature.getCurrentHealth();
+                faunaData.health = this.baseLayout.faunaSubsystem.getCurrentHealth(currentObject);
 
                 return this.setBuildingTooltipContent(currentObject, faunaData);
             }
@@ -61,223 +62,132 @@ export default class BaseLayout_Tooltip
                 {
                     return this.setBeltTooltipContent(currentObject);
                 }
-                else
+                if(Building_Pipeline.isPipeline(currentObject))
                 {
-                    switch(currentObject.className)
-                    {
-                        case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                            if(this.baseLayout.players[currentObject.pathName] !== undefined)
-                            {
-                                let emotes = [
-                                        '/img/patternIcons/IconDesc_EmoteWave_256.png', '/img/patternIcons/IconDesc_EmoteScissors_256.png', '/img/patternIcons/IconDesc_EmoteRock_256.png', '/img/patternIcons/IconDesc_EmotePoint_256.png',
-                                        '/img/patternIcons/IconDesc_EmotePaper_256.png', '/img/patternIcons/IconDesc_EmoteHeart_256.png', '/img/patternIcons/IconDesc_EmoteFingerGuns_256.png', '/img/patternIcons/IconDesc_EmoteFacepalm_256.png',
-                                        '/img/patternIcons/Emote_Clap_256.png', '/img/patternIcons/Emote_BuildGunSpin_256.png'
-                                    ];
-                                    return this.setBuildingTooltipContent(currentObject, {
-                                        name    : this.baseLayout.players[currentObject.pathName].getDisplayName(),
-                                        image   : emotes[Math.floor(Math.random() * emotes.length)],
-                                        health  : this.baseLayout.players[currentObject.pathName].getCurrentHealth()
-                                    });
-                            }
-                            break;
-                        case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
-                            let mDecorationDescriptor = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
-                                if(mDecorationDescriptor !== null)
-                                {
-                                    let currentItemData = this.baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
-                                        if(currentItemData !== null)
-                                        {
-                                            return this.setBuildingTooltipContent(currentObject, currentItemData);
-                                        }
-                                }
-                            break;
-                        case '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C':
-                        case '/Script/FactoryGame.FGItemPickup_Spawnable':
-                        case '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C':
-                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_SpitterParts.BP_SpitterParts_C':
-                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C':
-                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_HogParts.BP_HogParts_C':
-                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_CrabEggParts.BP_CrabEggParts_C':
-                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaHogParts.BP_AlphaHogParts_C':
-                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C':
-                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C':
-                        case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_EliteStingerParts.BP_EliteStingerParts_C':
-                            let currentItemData = null;
-                                if(this.baseLayout.itemsData[this.target.options.itemId] !== undefined)
-                                {
-                                    currentItemData = JSON.parse(JSON.stringify(this.baseLayout.itemsData[this.target.options.itemId]));
-                                }
-                                if(this.baseLayout.toolsData[this.target.options.itemId] !== undefined)
-                                {
-                                    currentItemData = JSON.parse(JSON.stringify(this.baseLayout.toolsData[this.target.options.itemId]));
-                                }
-                                if(currentItemData !== null && currentItemData !== undefined)
-                                {
-                                    let currentContent  = '';
-                                        currentContent += new Intl.NumberFormat(this.baseLayout.language).format(this.target.options.itemQty) + 'x ' + currentItemData.name + '<br />';
-                                        currentContent += 'Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm';
-                                        currentItemData.name = currentContent;
+                    return Building_Pipeline.getTooltip(this.baseLayout, this, currentObject);
+                }
 
+                switch(currentObject.className)
+                {
+                    case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
+                        if(this.baseLayout.players[currentObject.pathName] !== undefined)
+                        {
+                            let emotes = [
+                                    '/img/signIcons/IconDesc_EmoteWave_256.png', '/img/signIcons/IconDesc_EmoteScissors_256.png', '/img/signIcons/IconDesc_EmoteRock_256.png', '/img/signIcons/IconDesc_EmotePoint_256.png',
+                                    '/img/signIcons/IconDesc_EmotePaper_256.png', '/img/signIcons/IconDesc_EmoteHeart_256.png', '/img/signIcons/IconDesc_EmoteFingerGuns_256.png', '/img/signIcons/IconDesc_EmoteFacepalm_256.png',
+                                    '/img/signIcons/Emote_Clap_256.png', '/img/signIcons/Emote_BuildGunSpin_256.png'
+                                ];
+                                return this.setBuildingTooltipContent(currentObject, {
+                                    name    : this.baseLayout.players[currentObject.pathName].getDisplayName(),
+                                    image   : this.baseLayout.staticUrl + emotes[Math.floor(Math.random() * emotes.length)],
+                                    health  : this.baseLayout.players[currentObject.pathName].getCurrentHealth()
+                                });
+                        }
+                        break;
+                    case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
+                        let mDecorationDescriptor = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
+                            if(mDecorationDescriptor !== null)
+                            {
+                                let currentItemData = this.baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
+                                    if(currentItemData !== null)
+                                    {
                                         return this.setBuildingTooltipContent(currentObject, currentItemData);
-                                }
-                            break;
-                        case '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C':
-                            return this.setBuildingStorageTooltipContent(currentObject, {name: 'Loot Crate', category: 'storage'});
-                        case '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C':
-                            return Building_Beacon.getTooltip(this.baseLayout, currentObject, this.genericTooltipBackgroundStyle);
-                        case '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C':
-                            return this.setBuildingExtractionTooltipContent(currentObject, this.baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C);
-                        case '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C':
-                        case '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C':
-                        case '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C':
-                            return this.setPipelineTooltipContent(currentObject);
-                        case '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C':
-                            return this.setBuildingPowerSwitchTooltipContent(currentObject);
-                        default:
-                            let buildingData = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
-                                if(buildingData !== null)
+                                    }
+                            }
+                        break;
+                    case '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C':
+                    case '/Script/FactoryGame.FGItemPickup_Spawnable':
+                    case '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C':
+                    case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_SpitterParts.BP_SpitterParts_C':
+                    case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C':
+                    case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_HogParts.BP_HogParts_C':
+                    case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_CrabEggParts.BP_CrabEggParts_C':
+                    case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaHogParts.BP_AlphaHogParts_C':
+                    case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C':
+                    case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C':
+                    case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_EliteStingerParts.BP_EliteStingerParts_C':
+                        let currentItemData = null;
+                            if(this.baseLayout.itemsData[this.target.options.itemId] !== undefined)
+                            {
+                                currentItemData = JSON.parse(JSON.stringify(this.baseLayout.itemsData[this.target.options.itemId]));
+                            }
+                            if(this.baseLayout.toolsData[this.target.options.itemId] !== undefined)
+                            {
+                                currentItemData = JSON.parse(JSON.stringify(this.baseLayout.toolsData[this.target.options.itemId]));
+                            }
+                            if(currentItemData !== null && currentItemData !== undefined)
+                            {
+                                let currentContent  = '';
+                                    currentContent += new Intl.NumberFormat(this.baseLayout.language).format(this.target.options.itemQty) + 'x ' + currentItemData.name + '<br />';
+                                    currentContent += 'Altitude: ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentObject.transform.translation[2] / 100)) + 'm';
+                                    currentItemData.name = currentContent;
+
+                                    return this.setBuildingTooltipContent(currentObject, currentItemData);
+                            }
+                        break;
+                    case '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C':
+                        return this.setBuildingStorageTooltipContent(currentObject, {name: 'Loot Crate', category: 'storage'});
+                    case '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C':
+                        return Building_Beacon.getTooltip(this.baseLayout, currentObject, this.genericTooltipBackgroundStyle);
+                    case '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C':
+                        return this.setBuildingExtractionTooltipContent(currentObject, this.baseLayout.toolsData.BP_ItemDescriptorPortableMiner_C);
+                    case '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C':
+                        return this.setBuildingPowerSwitchTooltipContent(currentObject);
+                    default:
+                        let buildingData = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
+                            if(buildingData !== null)
+                            {
+                                switch(currentObject.className)
                                 {
-                                    switch(currentObject.className)
-                                    {
-                                        case '/Game/FactoryGame/Buildable/Factory/OilPump/Build_OilPump.Build_OilPump_C':
-                                        case '/Game/FactoryGame/Buildable/Factory/WaterPump/Build_WaterPump.Build_WaterPump_C':
-                                            return this.setBuildingPumpTooltipContent(currentObject, buildingData);
-                                        case '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C':
-                                        case '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C':
-                                            return this.setBuildingFluidStorageTooltipContent(currentObject, buildingData);
-                                        case '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C':
-                                            return this.setBuildingPowerStorageTooltipContent(currentObject, buildingData);
-                                        case '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C':
-                                            return this.setBuildingFrackerSmasherTooltipContent(currentObject, buildingData);
-                                        case '/Game/FactoryGame/Buildable/Factory/FrackingExtractor/Build_FrackingExtractor.Build_FrackingExtractor_C':
-                                            return this.setBuildingFrackerExtractorTooltipContent(currentObject, buildingData);
-                                        case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
-                                            return Building_DroneStation.getTooltip(this.baseLayout, currentObject, buildingData);
-                                        case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
-                                            return Building_Locomotive.getTooltip(this.baseLayout, currentObject, buildingData, this.genericTooltipBackgroundStyle);
-                                        case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
-                                            return Building_GeneratorGeoThermal.getTooltip(this.baseLayout, currentObject, buildingData);
-                                        case '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C':
-                                            return Building_SpaceElevator.getTooltip(this.baseLayout, currentObject, buildingData);
-                                        case '/Game/FactoryGame/Buildable/Factory/ResourceSink/Build_ResourceSink.Build_ResourceSink_C':
-                                            return Building_AwesomeSink.getTooltip(this.baseLayout, currentObject, buildingData);
-                                    }
-                                    switch(buildingData.category)
-                                    {
-                                        case 'powerPole':
-                                            return this.setPowerPoleTooltipContent(currentObject, buildingData);
-                                        case 'sign':
-                                            return Building_Sign.getTooltip(this.baseLayout, currentObject, buildingData);;
-                                        case 'extraction':
-                                            return this.setBuildingExtractionTooltipContent(currentObject, buildingData);
-                                        case 'production':
-                                            return this.setBuildingProductionTooltipContent(currentObject, buildingData);
-                                        case 'generator':
-                                            return this.setBuildingGeneratorTooltipContent(currentObject, buildingData);
-                                        case 'storage':
-                                        case 'dockstation':
-                                        case 'vehicle':
-                                            return this.setBuildingStorageTooltipContent(currentObject, buildingData);
-                                        default:
-                                            return this.setBuildingTooltipContent(currentObject, buildingData);
-                                    }
+                                    case '/Game/FactoryGame/Buildable/Factory/OilPump/Build_OilPump.Build_OilPump_C':
+                                    case '/Game/FactoryGame/Buildable/Factory/WaterPump/Build_WaterPump.Build_WaterPump_C':
+                                        return this.setBuildingPumpTooltipContent(currentObject, buildingData);
+                                    case '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C':
+                                    case '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C':
+                                        return this.setBuildingFluidStorageTooltipContent(currentObject, buildingData);
+                                    case '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C':
+                                        return this.setBuildingPowerStorageTooltipContent(currentObject, buildingData);
+                                    case '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C':
+                                        return this.setBuildingFrackerSmasherTooltipContent(currentObject, buildingData);
+                                    case '/Game/FactoryGame/Buildable/Factory/FrackingExtractor/Build_FrackingExtractor.Build_FrackingExtractor_C':
+                                        return this.setBuildingFrackerExtractorTooltipContent(currentObject, buildingData);
+                                    case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
+                                        return Building_DroneStation.getTooltip(this.baseLayout, currentObject, buildingData);
+                                    case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
+                                        return Building_GeneratorGeoThermal.getTooltip(this.baseLayout, currentObject, buildingData);
+                                    case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
+                                        return Building_Locomotive.getTooltip(this.baseLayout, currentObject, buildingData, this.genericTooltipBackgroundStyle);
+                                    case '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C':
+                                        return Building_RadarTower.getTooltip(this.baseLayout, currentObject, buildingData);
+                                    case '/Game/FactoryGame/Buildable/Factory/ResourceSink/Build_ResourceSink.Build_ResourceSink_C':
+                                        return Building_AwesomeSink.getTooltip(this.baseLayout, currentObject, buildingData);
+                                    case '/Game/FactoryGame/Buildable/Factory/SpaceElevator/Build_SpaceElevator.Build_SpaceElevator_C':
+                                        return Building_SpaceElevator.getTooltip(this.baseLayout, currentObject, buildingData);
                                 }
-                    }
+                                switch(buildingData.category)
+                                {
+                                    case 'powerPole':
+                                        return this.setPowerPoleTooltipContent(currentObject, buildingData);
+                                    case 'sign':
+                                        return Building_Sign.getTooltip(this.baseLayout, currentObject, buildingData);;
+                                    case 'extraction':
+                                        return this.setBuildingExtractionTooltipContent(currentObject, buildingData);
+                                    case 'production':
+                                        return this.setBuildingProductionTooltipContent(currentObject, buildingData);
+                                    case 'generator':
+                                        return this.setBuildingGeneratorTooltipContent(currentObject, buildingData);
+                                    case 'storage':
+                                    case 'dockstation':
+                                    case 'vehicle':
+                                        return this.setBuildingStorageTooltipContent(currentObject, buildingData);
+                                    default:
+                                        return this.setBuildingTooltipContent(currentObject, buildingData);
+                                }
+                            }
                 }
             }
 
         return null;
-    }
-
-    setPipelineTooltipContent(currentObject)
-    {
-        let content         = [];
-        let distance        = '';
-        let pipelineData    = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
-
-        if(pipelineData !== null)
-        {
-            let splineData      = BaseLayout_Math.extractSplineData(this.baseLayout, currentObject);
-                if(splineData !== null)
-                {
-                    distance = ' (' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(splineData.distance * 10) / 10) + 'm)';
-                }
-
-            // HEADER
-            content.push('<div style="position: absolute;margin-top: 5px;width: 350px;' + BaseLayout_Tooltip.defaultTextStyle + 'text-align: center;">');
-            content.push('<strong class="small">' + pipelineData.name + distance + '</strong>');
-            content.push('</div>');
-
-            // VOLUME
-            let maxFluid        = 3.1415926535897932 * Math.pow((1.3 / 2), 2) * splineData.distanceStraight * 1000; // Use straigth calculation
-            let itemType        = null;
-
-            let fluidBox        = this.baseLayout.getObjectProperty(currentObject, 'mFluidBox');
-                if(fluidBox === null)
-                {
-                    fluidBox = {value: 0};
-                }
-            let currentFluid    = Math.min(maxFluid, fluidBox.value * 1000); //TODO: Until we get fluidBox method working!
-
-            // Get fluid type
-            let currentPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
-                if(currentPipeNetwork !== null)
-                {
-                    let mFluidDescriptor = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
-                        if(mFluidDescriptor !== null)
-                        {
-                            itemType = mFluidDescriptor.pathName;
-                        }
-                }
-
-            if(itemType !== null)
-            {
-                itemType = this.baseLayout.getItemDataFromClassName(itemType);
-
-                if(itemType !== null && itemType.color !== undefined)
-                {
-                    content.push('<div style="position: absolute;margin-top: 31px;margin-left: 187px;">');
-                        if(itemType.category === 'gas')
-                        {
-                            content.push(this.setGasDome(140, currentFluid, maxFluid, itemType.color));
-                        }
-                        else
-                        {
-                            content.push(this.setLiquidDome(140, currentFluid, maxFluid, itemType.color));
-                        }
-                    content.push('</div>');
-                }
-
-                if(itemType !== null && itemType.color !== undefined)
-                {
-                    content.push('<div style="position: absolute;margin-top: 185px;margin-left: 11px;width: 160px;color: #5b5b5b;text-align: center;font-size: 13px;">');
-                    content.push('<strong>' + itemType.name + '</strong>');
-                    content.push('</div>');
-                }
-            }
-
-            // AMOUNT
-            content.push('<div style="position: absolute;margin-top: 200px;margin-left: 200px;width: 120px;color: #FFFFFF;text-align: center;font-size: 13px;">');
-            content.push('<span class="small">Current amount:</span><br /><strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(currentFluid / 100) / 10) + ' / ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(maxFluid / 100) / 10) + 'm³</strong>');
-            content.push('</div>');
-
-            if(pipelineData.maxFlowRate !== undefined)
-            {
-                content.push('<div style="position: absolute;margin-top: 205px;margin-left: 11px;width: 80px;text-align: center;font-size: 11px;color: #5b5b5b;">');
-                content.push('<span class="small">Flow Rate</span><br /><i class="fas fa-chevron-right"></i><br /><strong><strong class="text-info">???</strong> m³/min</strong>');
-                content.push('</div>');
-                content.push('<div style="position: absolute;margin-top: 205px;margin-left: 93px;width: 80px;text-align: center;font-size: 11px;color: #5b5b5b;border-left: 1px solid #5b5b5b;">');
-                content.push('<span class="small">Max Flow Rate</span><br /><i class="fas fa-chevron-double-right"></i><br /><strong><strong class="text-info">' + pipelineData.maxFlowRate / 1000 + '</strong> m³/min</strong>');
-                content.push('</div>');
-            }
-
-            // Flow indicator
-            content.push('<div style="position: absolute;margin-top: 42px;margin-left: 32px;width: 118px;height: 118px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/flowIndicator.png?v=' + this.baseLayout.scriptVersion + '" style="width: 118px;height: 118px;transform: rotate(-135deg);" /></div>');
-            content.push('<div style="position: absolute;margin-top: 42px;margin-left: 32px;width: 118px;height: 118px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/flowGlass.png?v=' + this.baseLayout.scriptVersion + '" style="width: 118px;height: 118px;" /></div>');
-
-        }
-
-        return '<div style="position: relative;width: 350px;height: 270px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_PipeInspector_BG.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;">' + content.join('') + '</div>';
     }
 
     setBeltTooltipContent(currentObject)
@@ -391,7 +301,12 @@ export default class BaseLayout_Tooltip
         if(currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
         {
             clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
-            powerUsed           = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+            powerUsed           = buildingData.powerUsed * clockSpeed;
+                //if(this.baseLayout.saveGameParser.header.saveVersion < 29)
+                //{
+                    powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+                //}
+
             extractionRate     *= clockSpeed;
         }
 
@@ -460,7 +375,11 @@ export default class BaseLayout_Tooltip
     setBuildingFrackerSmasherTooltipContent(currentObject, buildingData)
     {
         let clockSpeed  = this.baseLayout.getClockSpeed(currentObject);
-        let powerUsed   = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+        let powerUsed   = buildingData.powerUsed * clockSpeed;
+            //if(this.baseLayout.saveGameParser.header.saveVersion < 29)
+            //{
+                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+            //}
 
         let satellites  = Building_FrackingSmasher.getSatellites(this.baseLayout, currentObject);
         let potential   = 0;
@@ -670,7 +589,11 @@ export default class BaseLayout_Tooltip
 
         let craftingTime        = 60 / buildingData.extractionRate[purity];
         let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
-        let powerUsed           = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+        let powerUsed           = buildingData.powerUsed * clockSpeed;
+            //if(this.baseLayout.saveGameParser.header.saveVersion < 29)
+            //{
+                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+            //}
         let productionRatio     = buildingData.extractionRate[purity] * clockSpeed;
 
         // VOLUME
@@ -1079,15 +1002,15 @@ export default class BaseLayout_Tooltip
             }
         }
 
-        content.push('<i class="fas fa-battery-full"></i><br /><span class="small">Stored Charge</span><br />' + (Math.floor(storedCharge * 10) / 10) + ' / ' + capacityCharge + ' MW<br /><br />');
+        content.push('<i class="fas fa-battery-full"></i><br /><span class="small">Stored Charge</span><br />' + (Math.floor(storedCharge * 10) / 10) + ' / ' + capacityCharge + ' MWh<br /><br />');
 
         if(chargeRate > 0 && percentageCharge < 100)
         {
-            content.push('<i class="fas fa-tachometer-alt-fast"></i><br /><span class="small">Charge Rate</span><br />' + (Math.floor(chargeRate * 10) / 10) + ' MWh');
+            content.push('<i class="fas fa-tachometer-alt-fast"></i><br /><span class="small">Charge Rate</span><br />' + (Math.floor(chargeRate * 10) / 10) + ' MW');
         }
         if(circuitStatistics.powerStorageDrainRate > 0)
         {
-            content.push('<i class="fas fa-tachometer-alt-fast"></i><br /><span class="small">Drain Rate</span><br />' + (Math.floor(circuitStatistics.powerStorageDrainRate * 10) / 10) + ' MWh');
+            content.push('<i class="fas fa-tachometer-alt-fast"></i><br /><span class="small">Drain Rate</span><br />' + (Math.floor(circuitStatistics.powerStorageDrainRate * 10) / 10) + ' MW');
         }
 
 
@@ -1265,7 +1188,11 @@ export default class BaseLayout_Tooltip
         let powerUsed           = 0;
             if(buildingData.powerUsed !== undefined)
             {
-                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6)
+                powerUsed = buildingData.powerUsed * clockSpeed;
+                //if(this.baseLayout.saveGameParser.header.saveVersion < 29)
+                //{
+                    powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+                //}
             }
             else
             {
@@ -1684,21 +1611,6 @@ export default class BaseLayout_Tooltip
                 {
                     content.push('<div>Status: <strong class="text-warning">Automatic</strong></div>');
                 }
-        }
-
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
-        {
-            for(let j = 0; j < currentObject.properties.length; j++)
-            {
-                if(currentObject.properties[j].name === 'mMapText')
-                {
-                    if(currentObject.properties[j].historyType === 3)
-                    {
-                        let mapText     = currentObject.properties[j].sourceFmt.value;
-                            content.push(mapText.replace('{Name}', currentObject.properties[j].arguments[0].argumentValue.value));
-                    }
-                }
-            }
         }
 
         if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'wall' || buildingData.category === 'roof' || buildingData.category === 'walkway')

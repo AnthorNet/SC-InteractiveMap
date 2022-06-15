@@ -7,10 +7,11 @@ import Modal_Statistics_Storage                 from '../Modal/Statistics/Storag
 
 import Modal_PowerCircuits                      from '../Modal/PowerCircuits.js';
 
+import Selection_Copy                           from '../Selection/Copy.js';
+import Selection_Delete                         from '../Selection/Delete.js';
+import Selection_MoveTo                         from '../Selection/MoveTo.js';
 import Selection_Offset                         from '../Selection/Offset.js';
 import Selection_Rotate                         from '../Selection/Rotate.js';
-import Selection_Delete                         from '../Selection/Delete.js';
-import Selection_Copy                           from '../Selection/Copy.js';
 
 import Spawn_Fill                               from '../Spawn/Fill.js';
 
@@ -32,70 +33,86 @@ export default class Modal_Selection
         let maxX            = -Infinity;
         let minY            = Infinity;
         let maxY            = -Infinity;
-            for(let i = 0; i < markers.length; i++)
-            {
-                let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                    if([
-                        '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C',
-                        '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C',
-                        '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'
-                    ].includes(currentObject.className))
-                    {
-                        continue;
-                    }
+        let minZ            = Infinity;
+        let maxZ            = -Infinity;
 
-                let mSplineData = baseLayout.getObjectProperty(currentObject, 'mSplineData');
-                    if(mSplineData !== null)
-                    {
-                        let splineMinX = Infinity;
-                        let splineMaxX = -Infinity;
-                        let splineMinY = Infinity;
-                        let splineMaxY = -Infinity;
+        for(let i = 0; i < markers.length; i++)
+        {
+            let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
+                if([
+                    '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C',
+                    '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C',
+                    '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'
+                ].includes(currentObject.className))
+                {
+                    continue;
+                }
 
-                        for(let j = 0; j < mSplineData.values.length; j++)
+            let mSplineData = baseLayout.getObjectProperty(currentObject, 'mSplineData');
+                if(mSplineData !== null)
+                {
+                    let splineMinX = Infinity;
+                    let splineMaxX = -Infinity;
+                    let splineMinY = Infinity;
+                    let splineMaxY = -Infinity;
+
+                    for(let j = 0; j < mSplineData.values.length; j++)
+                    {
+                        for(let k = 0; k < mSplineData.values[j].length; k++)
                         {
-                            for(let k = 0; k < mSplineData.values[j].length; k++)
-                            {
-                                let currentValue = mSplineData.values[j][k];
-                                    if(currentValue.name === 'Location')
-                                    {
-                                        splineMinX  = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMaxX  = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
-                                        splineMinY  = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                        splineMaxY  = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
-                                    }
-                            }
+                            let currentValue = mSplineData.values[j][k];
+                                if(currentValue.name === 'Location')
+                                {
+                                    splineMinX  = Math.min(splineMinX, currentObject.transform.translation[0] + currentValue.value.values.x);
+                                    splineMaxX  = Math.max(splineMaxX, currentObject.transform.translation[0] + currentValue.value.values.x);
+                                    splineMinY  = Math.min(splineMinY, currentObject.transform.translation[1] + currentValue.value.values.y);
+                                    splineMaxY  = Math.max(splineMaxY, currentObject.transform.translation[1] + currentValue.value.values.y);
+                                }
                         }
-
-                        minX    = Math.min(minX, ((splineMinX + splineMaxX) / 2));
-                        maxX    = Math.max(maxX, ((splineMinX + splineMaxX) / 2));
-                        minY    = Math.min(minY, ((splineMinY + splineMaxY) / 2));
-                        maxY    = Math.max(maxY, ((splineMinY + splineMaxY) / 2));
-
-                        continue;
                     }
 
-                let objectOffset    = 0;
-                let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-                    if(buildingData !== null && (buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof'))
-                    {
-                        objectOffset = 400;
-                    }
+                    minX    = Math.min(minX, ((splineMinX + splineMaxX) / 2));
+                    maxX    = Math.max(maxX, ((splineMinX + splineMaxX) / 2));
+                    minY    = Math.min(minY, ((splineMinY + splineMaxY) / 2));
+                    maxY    = Math.max(maxY, ((splineMinY + splineMaxY) / 2));
 
-                    minX            = Math.min(minX, currentObject.transform.translation[0] - objectOffset);
-                    maxX            = Math.max(maxX, currentObject.transform.translation[0] + objectOffset);
-                    minY            = Math.min(minY, currentObject.transform.translation[1] - objectOffset);
-                    maxY            = Math.max(maxY, currentObject.transform.translation[1] + objectOffset);
-                    maxObjectOffset = Math.max(objectOffset, maxObjectOffset);
-            }
+                    continue;
+                }
+
+            let objectOffset    = 0;
+            let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
+                if(buildingData !== null && (buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof'))
+                {
+                    objectOffset    = 400;
+
+                    // GROUND BUILDING USE HALF AS CENTER
+                    minZ            = Math.min(minZ, currentObject.transform.translation[2] - (buildingData.height * 100 / 2));
+                    maxZ            = Math.max(maxZ, currentObject.transform.translation[2] - (buildingData.height * 100 / 2));
+                }
+                else
+                {
+                    // OTHER ARE PLACED FROM BOTTOM
+                    minZ            = Math.min(minZ, currentObject.transform.translation[2]);
+                    maxZ            = Math.max(maxZ, currentObject.transform.translation[2]);
+                }
+
+                minX            = Math.min(minX, currentObject.transform.translation[0] - objectOffset);
+                maxX            = Math.max(maxX, currentObject.transform.translation[0] + objectOffset);
+                minY            = Math.min(minY, currentObject.transform.translation[1] - objectOffset);
+                maxY            = Math.max(maxY, currentObject.transform.translation[1] + objectOffset);
+                maxObjectOffset = Math.max(objectOffset, maxObjectOffset);
+        }
 
         return {
             minX    : minX + maxObjectOffset,
             maxX    : maxX - maxObjectOffset,
             minY    : minY + maxObjectOffset,
             maxY    : maxY - maxObjectOffset,
+            minZ    : minZ,
+            maxZ    : maxZ,
             centerX : (minX + maxX) / 2,
-            centerY : (minY + maxY) / 2
+            centerY : (minY + maxY) / 2,
+            centerZ : (minZ + maxZ) / 2
         };
     }
 
@@ -109,6 +126,8 @@ export default class Modal_Selection
         let haveWallsMaterialsCategory          = false;
         let haveRoofsMaterialsCategory          = false;
         let havePillarsMaterialsCategory        = false;
+        let haveCatwalkMaterialsCategory        = false;
+        let haveWalkwayMaterialsCategory        = false;
         let haveSkinsCategory                   = false;
         let haveExtractionCategory              = false;
         let haveLogisticCategory                = false;
@@ -179,6 +198,14 @@ export default class Modal_Selection
                                                         if(buildingData.category === 'pillar')
                                                         {
                                                             havePillarsMaterialsCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'catwalk')
+                                                        {
+                                                            haveCatwalkMaterialsCategory = true;
+                                                        }
+                                                        if(buildingData.category === 'walkway')
+                                                        {
+                                                            haveWalkwayMaterialsCategory = true;
                                                         }
                                                         if(buildingData.category === 'extraction')
                                                         {
@@ -267,6 +294,7 @@ export default class Modal_Selection
                 inputOptions.push({text: 'Update selected buildings color slot', value: 'colorSlot'});
                 inputOptions.push({text: 'Update selected buildings custom color', value: 'customColor'});
 
+                inputOptions.push({group: 'Positioning', text: 'Move selected items position', value: 'moveTo'});
                 inputOptions.push({group: 'Positioning', text: 'Offset selected items position', value: 'offset'});
                 inputOptions.push({group: 'Positioning', text: 'Rotate selected items position', value: 'rotate'});
 
@@ -313,6 +341,16 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Frame Pillar"', value: 'switchMaterial|pillar|Frame'});
             }
 
+            if(haveCatwalkMaterialsCategory === true)
+            {
+                inputOptions.push({group: 'Catwalk Materials', text: 'Switch to "Walkway"', value: 'switchMaterial|catwalk|Walkway'});
+            }
+
+            if(haveWalkwayMaterialsCategory === true)
+            {
+                inputOptions.push({group: 'Walkway Materials', text: 'Switch to "Catwalk"', value: 'switchMaterial|walkway|Catwalk'});
+            }
+
             if(haveSkinsCategory === true)
             {
                 inputOptions.push({group: 'Skins', text: 'Switch to "Default" skin', value: 'switchSkin|Default'});
@@ -321,8 +359,15 @@ export default class Modal_Selection
 
             if(haveLogisticCategory === true)
             {
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected belts/lifts', value: 'Building_Conveyor_downgradeConveyor'});
-                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected belts/lifts', value: 'Building_Conveyor_upgradeConveyor'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected conveyor belts/lifts', value: 'Building_Conveyor_downgradeConveyor'});
+                inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected conveyor belts/lifts', value: 'Building_Conveyor_upgradeConveyor'});
+                inputOptions.push({group: 'Inventory', text: 'Clear selected conveyor belts/lifts inventories', value: 'Building_Conveyor_clearInventory'});
+
+                if(haveConveyorsBelts)
+                {
+
+                    inputOptions.push({group: 'Performance Test', text: 'Merge adjacent conveyor belts', value: 'Building_Conveyor_mergeConveyors'});
+                }
             }
 
             if(havePowerPoleCategory === true)
@@ -333,6 +378,8 @@ export default class Modal_Selection
 
             if(havePipelineCategory === true)
             {
+                inputOptions.push({group: 'Inventory', text: 'Fill selected pipelines inventory', value: 'Building_Pipeline_fillInventory'});
+                inputOptions.push({group: 'Inventory', text: 'Clear selected pipelines inventory', value: 'Building_Pipeline_clearInventory'});
                 inputOptions.push({group: 'Downgrade/Upgrade', text: 'Downgrade selected pipelines/pumps', value: 'Building_Pipeline_downgradePipeline'});
                 inputOptions.push({group: 'Downgrade/Upgrade', text: 'Upgrade selected pipelines/pumps', value: 'Building_Pipeline_upgradePipeline'});
             }
@@ -364,11 +411,6 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Inventory', text: 'Clear selected storages inventories', value: 'clearStorage'});
             }
 
-            if(haveConveyorsBelts)
-            {
-                inputOptions.push({group: 'Performance Test', text: 'Merge adjacent conveyor belts', value: 'Building_Conveyor_mergeConveyors'});
-            }
-
             if(markers !== null && markers.length > 0)
             {
                 inputOptions.push({group: 'Statistics', text: 'Show selected items production statistics', value: 'modalProductionStatistics'});
@@ -392,20 +434,14 @@ export default class Modal_Selection
                 inputType       : 'select',
                 inputOptions    : inputOptions
             }],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form === null || form.form === null)
-                {
-                    Modal_Selection.cancel(baseLayout);
-                    return;
-                }
-
-                let callbackArguments   = form.form.split('|');
+                let callbackArguments   = values.form.split('|');
                 let callbackName        = callbackArguments.shift();
                     callbackName        = 'callback' + callbackName[0].toUpperCase() + callbackName.slice(1);
 
                 // Those callback needs access to the selection!
-                if(['fillArea', 'respawnFlora'].includes(form.form) === false)
+                if(['fillArea', 'respawnFlora'].includes(values.form) === false)
                 {
                     Modal_Selection.cancel(baseLayout);
                 }
@@ -454,9 +490,6 @@ export default class Modal_Selection
         BaseLayout_Modal.confirm({
             title       : 'You have selected ' + markers.length + ' items',
             message     : 'Do you want a doggy bag with your mass-dismantling?<br /><em>(You\'ll just get a nice loot crate next to you)</em>',
-            onEscape    : function(){
-                Modal_Selection.cancel.call(null, baseLayout);
-            },
             container   : '#leafletMap',
             buttons     : { confirm: {label: 'Yes'}, cancel: {label: 'No'} },
             callback    : function(result){
@@ -476,9 +509,6 @@ export default class Modal_Selection
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
             message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
-            onEscape    : function(){
-                Modal_Selection.cancel.call(null, baseLayout);
-            },
             container   : '#leafletMap',
             inputs      : [{
                 label       : 'X',
@@ -498,19 +528,54 @@ export default class Modal_Selection
                 inputType   : 'coordinate',
                 value       : 0
             }],
-            callback: function(form)
+            callback: function(values)
             {
-                if(form === null || form.offsetX === null || form.offsetY === null || form.offsetZ === null)
-                {
-                    return;
-                }
-
                 return new Selection_Offset({
                     baseLayout  : baseLayout,
                     markers     : markers,
-                    offsetX     : form.offsetX,
-                    offsetY     : form.offsetY,
-                    offsetZ     : form.offsetZ
+                    offsetX     : values.offsetX,
+                    offsetY     : values.offsetY,
+                    offsetZ     : values.offsetZ
+                });
+            }
+        });
+    }
+
+    static callbackMoveTo(baseLayout, markers)
+    {
+        let boundaries = Modal_Selection.getBoundaries(baseLayout, markers);
+
+        BaseLayout_Modal.form({
+            title       : 'You have selected ' + markers.length + ' items',
+            message     : 'Coordinates are based on the selection center.',
+            container   : '#leafletMap',
+            inputs      : [{
+                label       : 'X',
+                name        : 'moveToX',
+                inputType   : 'coordinate',
+                value       : boundaries.centerX
+            },
+            {
+                label       : 'Y',
+                name        : 'moveToY',
+                inputType   : 'coordinate',
+                value       : boundaries.centerY
+            },
+            {
+                label       : 'Z',
+                name        : 'moveToZ',
+                inputType   : 'coordinate',
+                value       : boundaries.centerZ
+            }],
+            callback: function(values)
+            {
+                return new Selection_MoveTo({
+                    baseLayout  : baseLayout,
+                    markers     : markers,
+                    boundaries  : boundaries,
+                    moveToX     : values.moveToX,
+                    moveToY     : values.moveToY,
+                    moveToZ     : values.moveToZ
                 });
             }
         });
@@ -520,9 +585,6 @@ export default class Modal_Selection
     {
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
-            onEscape    : function(){
-                Modal_Selection.cancel.call(null, baseLayout);
-            },
             container   : '#leafletMap',
             inputs      : [{
                 label       : 'Rotation (Angle between 0 and 360 degrees)',
@@ -532,17 +594,12 @@ export default class Modal_Selection
                 min         : 0,
                 max         : 360
             }],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form === null || form.angle === null)
-                {
-                    return;
-                }
-
                 return new Selection_Rotate({
                     baseLayout  : baseLayout,
                     markers     : markers,
-                    angle       : form.angle
+                    angle       : values.angle
                 });
             }
         });
@@ -572,43 +629,17 @@ export default class Modal_Selection
                 inputType       : 'colorSlots',
                 inputOptions    : selectOptions
             }],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form === null || form.slotIndex === null)
-                {
-                    return;
-                }
-
-                let boundaries  = Modal_Selection.getBoundaries(baseLayout, markers);
-                let minZ        = Infinity;
-
-                    // Try to find the minZ
-                    for(let i = 0; i < markers.length; i++)
-                    {
-                        let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                        let currentObjectData   = baseLayout.getBuildingDataFromClassName(currentObject.className);
-
-                            if(currentObjectData !== null && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C' && currentObject.className !== '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C')
-                            {
-                                if(currentObjectData.category === 'frame' || currentObjectData.category === 'foundation' || currentObjectData.category === 'roof')
-                                {
-                                    minZ = Math.min(minZ, currentObject.transform.translation[2] - (currentObjectData.height * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
-                                }
-                                else
-                                {
-                                    minZ = Math.min(minZ, currentObject.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
-                                }
-                            }
-                    }
-
                 // Add center
+                let boundaries      = Modal_Selection.getBoundaries(baseLayout, markers);
                 let fakeFoundation  = {
                         type            : 1,
                         className       : "/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x2_01.Build_Foundation_8x2_01_C",
                         pathName        : "Persistent_Level:PersistentLevel.Build_Foundation_8x2_01_C_XXX",
                         transform       : {
                             rotation        : [0, 0, 0, 1],
-                            translation     : [boundaries.centerX, boundaries.centerY, minZ + 100]
+                            translation     : [boundaries.centerX, boundaries.centerY, boundaries.minZ + 100]
                         },
                         properties      : [
                             { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
@@ -618,14 +649,14 @@ export default class Modal_Selection
                     };
                     fakeFoundation.pathName = baseLayout.generateFastPathName(fakeFoundation);
 
-                baseLayout.buildableSubSystem.setObjectColorSlot(fakeFoundation, form.slotIndex);
+                baseLayout.buildableSubSystem.setObjectColorSlot(fakeFoundation, values.slotIndex);
 
                 new Promise(function(resolve){
-                    this.saveGameParser.addObject(fakeFoundation);
-                    return this.parseObject(fakeFoundation, resolve);
-                }.bind(baseLayout)).then(function(result){
-                    this.addElementToLayer(result.layer, result.marker);
-                }.bind(baseLayout));
+                    baseLayout.saveGameParser.addObject(fakeFoundation);
+                    return baseLayout.parseObject(fakeFoundation, resolve);
+                }).then(function(result){
+                    baseLayout.addElementToLayer(result.layer, result.marker);
+                });
 
                 // Add corners...
                 let corners = [
@@ -660,11 +691,11 @@ export default class Modal_Selection
                         newFoundation.transform.translation[1]  = translationRotation[1];
 
                         new Promise(function(resolve){
-                            this.saveGameParser.addObject(newFoundation);
-                            this.parseObject(newFoundation, resolve);
-                        }.bind(baseLayout)).then(function(result){
-                            this.addElementToLayer(result.layer, result.marker);
-                        }.bind(baseLayout));
+                            baseLayout.saveGameParser.addObject(newFoundation);
+                            baseLayout.parseObject(newFoundation, resolve);
+                        }).then(function(result){
+                            baseLayout.addElementToLayer(result.layer, result.marker);
+                        });
                 }
             }
         });
@@ -726,13 +757,8 @@ export default class Modal_Selection
                 inputType       : 'colorSlots',
                 inputOptions    : selectOptionsColors
             }],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form === null || form.slotIndex === null)
-                {
-                    return;
-                }
-
                 for(let i = 0; i < markers.length; i++)
                 {
                     let contextMenu = baseLayout.getContextMenu(markers[i]);
@@ -744,7 +770,7 @@ export default class Modal_Selection
                                 if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_ColorSlot')
                                 {
                                     let currentObject   = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                                        baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(form.slotIndex));
+                                        baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(values.slotIndex));
                                         markers[i].fire('mouseout'); // Trigger a redraw
                                 }
                             }
@@ -771,13 +797,8 @@ export default class Modal_Selection
                 inputType       : 'colorPicker',
                 value           : customColor.secondaryColor
             }],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form === null || form.primaryColor === null || form.secondaryColor === null)
-                {
-                    return;
-                }
-
                 for(let i = 0; i < markers.length; i++)
                 {
                     let contextMenu = baseLayout.getContextMenu(markers[i]);
@@ -806,7 +827,7 @@ export default class Modal_Selection
                                 if(contextMenu[j].className !== undefined && contextMenu[j].className === 'Modal_Object_CustomColor')
                                 {
                                     let currentObject   = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                                        baseLayout.buildableSubSystem.setObjectCustomColor(currentObject, form.primaryColor, form.secondaryColor);
+                                        baseLayout.buildableSubSystem.setObjectCustomColor(currentObject, values.primaryColor, values.secondaryColor);
                                         markers[i].fire('mouseout'); // Trigger a redraw
                                 }
                             }
@@ -919,19 +940,13 @@ export default class Modal_Selection
                     name            : 'useOwnMaterials',
                     inputType       : 'toggle'
                 }],
-                callback: function(form)
+                callback: function(values)
                 {
-                    if(form === null || form.fillWith === null || form.z === null || form.useOwnMaterials === null)
-                    {
-                        Modal_Selection.cancel(baseLayout);
-                        return;
-                    }
-
                     return new Spawn_Fill({
                         selection       : selection,
-                        z               : form.z,
-                        fillWith        : form.fillWith,
-                        useOwnMaterials : parseInt(form.useOwnMaterials),
+                        z               : values.z,
+                        fillWith        : values.fillWith,
+                        useOwnMaterials : parseInt(values.useOwnMaterials),
 
                         baseLayout      : baseLayout
                     });
@@ -946,9 +961,6 @@ export default class Modal_Selection
     {
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
-            onEscape    : function(){
-                Modal_Selection.cancel.call(null, baseLayout);
-            },
             container   : '#leafletMap',
             inputs      : [
                 {
@@ -965,13 +977,8 @@ export default class Modal_Selection
                     inputType   : 'toggle'
                 }
             ],
-            callback: function(form)
+            callback: function(values)
             {
-                if(form === null || form.value === null || form.useOwnPowershards === null)
-                {
-                    return;
-                }
-
                 for(let i = 0; i < markers.length; i++)
                 {
                     let contextMenu = baseLayout.getContextMenu(markers[i]);
@@ -983,7 +990,7 @@ export default class Modal_Selection
                                 {
                                     let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
                                     let currentClockSpeed   = baseLayout.getClockSpeed(currentObject) * 100;
-                                    let newClockSpeed       = parseFloat(form.value);
+                                    let newClockSpeed       = parseFloat(values.value);
                                     let clockSpeed          = Math.max(1, Math.min(newClockSpeed, 250));
 
                                     if(currentClockSpeed !== clockSpeed)
@@ -1001,7 +1008,7 @@ export default class Modal_Selection
                                                             {
                                                                 for(let m = 0; m < totalPowerShards; m++)
                                                                 {
-                                                                    if(parseInt(form.useOwnPowershards) === 1)
+                                                                    if(parseInt(values.useOwnPowershards) === 1)
                                                                     {
                                                                         let result = baseLayout.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
                                                                             if(result === false)
@@ -1036,23 +1043,14 @@ export default class Modal_Selection
     {
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
-            onEscape    : function(){
-                Modal_Selection.cancel.call(null, baseLayout);
-            },
             container   : '#leafletMap',
             inputs      : [{
                 name            : 'fillWith',
                 inputType       : 'selectPicker',
                 inputOptions    : baseLayout.generateInventoryOptions({className: '/Game/FactoryGame/Buildable/Factory/StorageContainerMk1/Build_StorageContainerMk1.Build_StorageContainerMk1_C'}, false)
             }],
-            callback: function(form)
+            callback: function(values)
             {
-                if(form === null || form.fillWith === null)
-                {
-                    Modal_Selection.cancel(baseLayout);
-                    return;
-                }
-
                 for(let i = 0; i < markers.length; i++)
                 {
                     let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
@@ -1068,7 +1066,7 @@ export default class Modal_Selection
                                 continue;
                             }
 
-                            baseLayout.fillPlayerStorageBuildingInventory(currentObject, form.fillWith);
+                            baseLayout.fillPlayerStorageBuildingInventory(currentObject, values.fillWith);
                         }
                 }
                 baseLayout.updateRadioactivityLayer();
@@ -1101,7 +1099,7 @@ export default class Modal_Selection
     {
         for(let i = 0; i < markers.length; i++)
         {
-            baseLayout.clearPlayerStorageBuildingInventory({relatedTarget: markers[i]});
+            baseLayout.clearPlayerStorageBuildingInventory({baseLayout: baseLayout, relatedTarget: markers[i]});
         }
         baseLayout.updateRadioactivityLayer();
     }
@@ -1177,7 +1175,7 @@ L.Selection = L.Handler.extend({
 
     removeHooks: function()
     {
-        this._map.off('mousemove', this._doMouseMove, this );
+        //this._map.off('mousemove', this._doMouseMove, this );
         this._map.off('mousedown', this._doMouseDown, this );
         this._map.off('mouseup', this._doMouseUp, this );
         this._map._container.style.cursor = this.options.normCursor;
@@ -1214,12 +1212,12 @@ L.Selection = L.Handler.extend({
             this._areaGhost = null;
         }
 
-        setTimeout(function(){
+        setTimeout(() => {
             if(this._areaSelected !== null)
             {
                 this.control._toggleSelection(this._currentForm, childNode);
             }
-        }.bind(this), 100);
+        }, 100);
 
         this._map.off('mousemove', this._doMouseMove, this);
     },

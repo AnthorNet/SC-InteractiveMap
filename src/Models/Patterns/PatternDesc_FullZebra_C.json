@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Pathways/PatternDesc_FullZebra.PatternDesc_FullZebra_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_LargeCrosswalk_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_LargeCrosswalk_256.png",
         "patternName"   : "Large Crosswalk",
         "patternGroup"  : "Paths",
 

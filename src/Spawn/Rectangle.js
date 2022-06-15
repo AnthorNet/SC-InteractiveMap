@@ -119,7 +119,7 @@ export default class Spawn_Rectangle
                         newFoundation.transform.translation[2] -= height * this.centerObjectHeight;
                     }
 
-                results.push(new Promise(function(resolve){
+                results.push(new Promise((resolve) => {
                     this.baseLayout.saveGameParser.addObject(newFoundation);
 
                     this.history.push({
@@ -130,20 +130,20 @@ export default class Spawn_Rectangle
                     });
 
                     return this.baseLayout.parseObject(newFoundation, resolve);
-                }.bind(this)));
+                }));
             }
 
-            return Promise.all(results).then(function(results){
+            return Promise.all(results).then((results) => {
                 for(let i = 0; i < results.length; i++)
                 {
                     this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
-            }.bind(this)).finally(function(){
+            }).finally(() => {
                 window.requestAnimationFrame(() => {
                     $('#liveLoader .progress-bar').css('width', Math.round((width + this.maxWidth) / (this.maxWidth * 2) * 100) + '%');
                     this.loop((width + 1));
                 });
-            }.bind(this));
+            });
         }
 
         return this.release();

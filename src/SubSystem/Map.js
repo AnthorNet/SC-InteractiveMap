@@ -1,5 +1,7 @@
 /* global Intl, Infinity */
 
+import Building_MapMarker                       from '../Building/MapMarker.js';
+
 export default class SubSystem_Map
 {
     constructor(options)
@@ -14,6 +16,8 @@ export default class SubSystem_Map
         {
             this.addFogOfWar();
         }
+
+        this.addMapMarkers();
     }
 
     getFogOfWar()
@@ -27,13 +31,24 @@ export default class SubSystem_Map
         return [];
     }
 
+    getMapMarkers()
+    {
+        let mMapMarkers = this.baseLayout.getObjectProperty(this.mapSubSystem, 'mMapMarkers');
+            if(mMapMarkers !== null)
+            {
+                return mMapMarkers.values;
+            }
+
+        return [];
+    }
+
     addFogOfWar()
     {
             console.time('fogOfWar');
         let data = this.getFogOfWar();
             if(data.length > 0)
             {
-                $.getJSON(this.baseLayout.staticUrl + '/img/depthMap' + this.baseLayout.useBuild + '.json', function(depthMapData){
+                $.getJSON(this.baseLayout.staticUrl + '/img/depthMap' + this.baseLayout.useBuild + '.json', (depthMapData) => {
                     let polygonPositions    = [];
                     let dataIndex           = 0;
 
@@ -52,8 +67,8 @@ export default class SubSystem_Map
                         {
                             polygonPositions.push([
                                 topLeft,
-                                this.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter - (fogSize / 2)]),
-                                this.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter + (fogSize / 2)]),
+                                this.baseLayout.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter - (fogSize / 2)]),
+                                this.baseLayout.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter + (fogSize / 2)]),
                                 bottomLeft
                             ]);
 
@@ -61,22 +76,22 @@ export default class SubSystem_Map
                             bottomLeft  = null;
                         }
 
-                        rowCenter   = (row * fogSize) + (fogSize / 2) + this.satisfactoryMap.mappingBoundNorth + this.satisfactoryMap.northOffset;
+                        rowCenter   = (row * fogSize) + (fogSize / 2) + this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset;
 
                         for(let column = 0; column < maxColumn; column++)
                         {
-                            columnCenter    = (column * fogSize) + (fogSize / 2) + this.satisfactoryMap.mappingBoundWest + this.satisfactoryMap.westOffset;
+                            columnCenter    = (column * fogSize) + (fogSize / 2) + this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset;
 
                             //alpha = mSavedData[pixel].b >= mDepthMap[pixel] ? 255 : 0;
                             if(data[dataIndex] < depthMapData[dataIndex])
                             {
                                 if(topLeft === null)
                                 {
-                                    topLeft = this.satisfactoryMap.unproject([columnCenter - (fogSize / 2), rowCenter - (fogSize / 2)]);
+                                    topLeft = this.baseLayout.satisfactoryMap.unproject([columnCenter - (fogSize / 2), rowCenter - (fogSize / 2)]);
                                 }
                                 if(bottomLeft === null)
                                 {
-                                    bottomLeft = this.satisfactoryMap.unproject([columnCenter - (fogSize / 2), rowCenter + (fogSize / 2)]);
+                                    bottomLeft = this.baseLayout.satisfactoryMap.unproject([columnCenter - (fogSize / 2), rowCenter + (fogSize / 2)]);
                                 }
                             }
                             else
@@ -85,8 +100,8 @@ export default class SubSystem_Map
                                 {
                                     polygonPositions.push([
                                         topLeft,
-                                        this.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter - (fogSize / 2)]),
-                                        this.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter + (fogSize / 2)]),
+                                        this.baseLayout.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter - (fogSize / 2)]),
+                                        this.baseLayout.satisfactoryMap.unproject([columnCenter + (fogSize / 2), rowCenter + (fogSize / 2)]),
                                         bottomLeft
                                     ]);
 
@@ -105,14 +120,14 @@ export default class SubSystem_Map
                             fillOpacity     : 1,
                             weight          : 0,
                             interactive     : false,
-                            renderer        : this.playerLayers.playerFogOfWar.renderer
+                            renderer        : this.baseLayout.playerLayers.playerFogOfWar.renderer
                         });
 
-                    this.playerLayers.playerFogOfWar.elements.push(fogOfWarPolygon);
-                    fogOfWarPolygon.addTo(this.playerLayers.playerFogOfWar.subLayer);
+                    this.baseLayout.playerLayers.playerFogOfWar.elements.push(fogOfWarPolygon);
+                    fogOfWarPolygon.addTo(this.baseLayout.playerLayers.playerFogOfWar.subLayer);
 
                     console.timeEnd('fogOfWar');
-                }.bind(this.baseLayout));
+                });
             }
     }
 
@@ -167,6 +182,17 @@ export default class SubSystem_Map
                     this.baseLayout.playerLayers.playerFogOfWar.elements = [];
                 }
         }
+    }
+
+
+
+    addMapMarkers()
+    {
+        let mapMarkers = this.getMapMarkers();
+            for(let i = 0; i < mapMarkers.length; i++)
+            {
+                Building_MapMarker.add(this.baseLayout, mapMarkers[i]);
+            }
     }
 
 

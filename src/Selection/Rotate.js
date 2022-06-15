@@ -57,101 +57,68 @@ export default class Selection_Rotate
                                     }
                             }
 
-                            switch(currentObject.className)
-                            {
-                                case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                                    let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
-                                        if(mOwnedPawn !== null)
-                                        {
-                                            let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-                                                if(currentObjectTarget !== null)
-                                                {
-                                                    let translationRotation = BaseLayout_Math.getPointRotation(
-                                                        currentObjectTarget.transform.translation,
-                                                        [this.selectionBoundaries.centerX, this.selectionBoundaries.centerY],
-                                                        BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
-                                                    );
-                                                    currentObjectTarget.transform.translation[0]  = translationRotation[0];
-                                                    currentObjectTarget.transform.translation[1]  = translationRotation[1];
-                                                    currentObjectTarget.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(currentObjectTarget.transform.rotation, this.angle);
-                                                }
-                                        }
-                                    break;
-                                case '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C':
-                                    // HUB should also move hidden objects
-                                    let mHubTerminal    = this.baseLayout.getObjectProperty(currentObject, 'mHubTerminal');
-                                        if(mHubTerminal !== null)
-                                        {
-                                            let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mHubTerminal.pathName);
-                                                if(currentObjectTarget !== null)
-                                                {
-                                                    let translationRotation = BaseLayout_Math.getPointRotation(
-                                                        currentObjectTarget.transform.translation,
-                                                        [this.selectionBoundaries.centerX, this.selectionBoundaries.centerY],
-                                                        BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
-                                                    );
-                                                    currentObjectTarget.transform.translation[0]  = translationRotation[0];
-                                                    currentObjectTarget.transform.translation[1]  = translationRotation[1];
-                                                    currentObjectTarget.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(currentObjectTarget.transform.rotation, this.angle);
-                                                }
-                                        }
-                                    let mWorkBench      = this.baseLayout.getObjectProperty(currentObject, 'mWorkBench');
-                                        if(mWorkBench !== null)
-                                        {
-                                            let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mWorkBench.pathName);
-                                                if(currentObjectTarget !== null)
-                                                {
-                                                    let translationRotation = BaseLayout_Math.getPointRotation(
-                                                        currentObjectTarget.transform.translation,
-                                                        [this.selectionBoundaries.centerX, this.selectionBoundaries.centerY],
-                                                        BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
-                                                    );
-                                                    currentObjectTarget.transform.translation[0]  = translationRotation[0];
-                                                    currentObjectTarget.transform.translation[1]  = translationRotation[1];
-                                                    currentObjectTarget.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(currentObjectTarget.transform.rotation, this.angle);
-                                                }
-                                        }
-                                default:
-                                    let translationRotation = BaseLayout_Math.getPointRotation(
-                                            currentObject.transform.translation,
-                                            [this.selectionBoundaries.centerX, this.selectionBoundaries.centerY],
-                                            BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
-                                        );
-                                        currentObject.transform.translation[0]  = translationRotation[0];
-                                        currentObject.transform.translation[1]  = translationRotation[1];
-
-                                    // Rotate all spline data and tangeant!
-                                    let mSplineData                      = this.baseLayout.getObjectProperty(currentObject, 'mSplineData');
-                                        if(mSplineData !== null)
-                                        {
-                                            for(let j = 0; j < mSplineData.values.length; j++)
+                            let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
+                                switch(currentObject.className)
+                                {
+                                    case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
+                                        let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
+                                            if(mOwnedPawn !== null)
                                             {
-                                                for(let k = 0; k < mSplineData.values[j].length; k++)
-                                                {
-                                                    let currentValue    = mSplineData.values[j][k];
-                                                    let splineRotation  = BaseLayout_Math.getPointRotation(
-                                                        [currentValue.value.values.x, currentValue.value.values.y],
-                                                        [0, 0],
-                                                        BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
-                                                    );
+                                                let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                                                    if(currentObjectTarget !== null)
+                                                    {
+                                                        let translationRotation = BaseLayout_Math.getPointRotation(
+                                                            currentObjectTarget.transform.translation,
+                                                            [this.selectionBoundaries.centerX, this.selectionBoundaries.centerY],
+                                                            BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
+                                                        );
+                                                        currentObjectTarget.transform.translation[0]  = translationRotation[0];
+                                                        currentObjectTarget.transform.translation[1]  = translationRotation[1];
+                                                        currentObjectTarget.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(currentObjectTarget.transform.rotation, this.angle);
+                                                    }
+                                            }
+                                        break;
+                                    default:
+                                        let translationRotation = BaseLayout_Math.getPointRotation(
+                                                newTransform.translation,
+                                                [this.selectionBoundaries.centerX, this.selectionBoundaries.centerY],
+                                                BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
+                                            );
+                                            newTransform.translation[0]  = translationRotation[0];
+                                            newTransform.translation[1]  = translationRotation[1];
 
-                                                    currentValue.value.values.x = splineRotation[0];
-                                                    currentValue.value.values.y = splineRotation[1];
+                                        // Rotate all spline data and tangeant!
+                                        let mSplineData                      = this.baseLayout.getObjectProperty(currentObject, 'mSplineData');
+                                            if(mSplineData !== null)
+                                            {
+                                                for(let j = 0; j < mSplineData.values.length; j++)
+                                                {
+                                                    for(let k = 0; k < mSplineData.values[j].length; k++)
+                                                    {
+                                                        let currentValue    = mSplineData.values[j][k];
+                                                        let splineRotation  = BaseLayout_Math.getPointRotation(
+                                                            [currentValue.value.values.x, currentValue.value.values.y],
+                                                            [0, 0],
+                                                            BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
+                                                        );
+
+                                                        currentValue.value.values.x = splineRotation[0];
+                                                        currentValue.value.values.y = splineRotation[1];
+                                                    }
                                                 }
                                             }
-                                        }
-                                        else
-                                        {
-                                            currentObject.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, this.angle);
-                                        }
-                            }
+                                            else
+                                            {
+                                                newTransform.rotation        = BaseLayout_Math.getNewQuaternionRotate(newTransform.rotation, this.angle);
+                                            }
+                                }
 
-                            rotateResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: currentObject.transform, object: currentObject}, true));
+                            rotateResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: newTransform, object: currentObject}, true));
                         }
                 }
             }
 
-            Promise.all(rotateResults).then(function(){
+            Promise.all(rotateResults).then(() => {
                 if(this.useHistory === true && this.baseLayout.history !== null)
                 {
                     this.baseLayout.history.add({
@@ -166,7 +133,7 @@ export default class Selection_Rotate
 
                 console.timeEnd('rotateMultipleMarkers');
                 this.baseLayout.updateRadioactivityLayer();
-            }.bind(this));
+            });
         }
 
         Modal_Selection.cancel(this.baseLayout);

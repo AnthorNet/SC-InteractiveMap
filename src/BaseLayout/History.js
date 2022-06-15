@@ -1,7 +1,8 @@
 /* global L, gtag */
+import Selection_Delete                         from '../Selection/Delete.js';
+import Selection_MoveTo                         from '../Selection/MoveTo.js';
 import Selection_Offset                         from '../Selection/Offset.js';
 import Selection_Rotate                         from '../Selection/Rotate.js';
-import Selection_Delete                         from '../Selection/Delete.js';
 
 export default class BaseLayout_History
 {
@@ -38,12 +39,12 @@ export default class BaseLayout_History
                 }
 
             return new Promise(function(resolve){
-                    $('#liveLoader').show()
-                                    .find('.progress-bar').css('width', '0%');
-                    window.requestAnimationFrame(resolve);
-                }.bind(this)).then(() => {
-                    this.undoLoop(currentOperations);
-                });
+                $('#liveLoader').show()
+                                .find('.progress-bar').css('width', '0%');
+                window.requestAnimationFrame(resolve);
+            }).then(() => {
+                this.undoLoop(currentOperations);
+            });
         }
 
         return this.doneUndo();
@@ -82,7 +83,7 @@ export default class BaseLayout_History
                                     }
                                     break;
                                 case 'deleteFauna':
-                                    this.baseLayout.deleteFauna({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker});
+                                    this.baseLayout.faunaSubsystem.delete({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker});
                                     break;
                                 case 'restoreState':
 
@@ -130,6 +131,9 @@ export default class BaseLayout_History
                                 case 'Selection_Offset':
                                     new Selection_Offset(currentOperation.properties);
                                     break;
+                                case 'Selection_MoveTo':
+                                    new Selection_MoveTo(currentOperation.properties);
+                                    break;
                                 case 'Selection_Rotate':
                                     new Selection_Rotate(currentOperation.properties);
                                     break;
@@ -142,7 +146,7 @@ export default class BaseLayout_History
                 return new Promise(function(resolve){
                     $('#liveLoader .progress-bar').css('width', Math.round(i / currentOperations.values.length * 100) + '%');
                     window.requestAnimationFrame(resolve);
-                }.bind(this)).then(() => {
+                }).then(() => {
                     this.undoLoop(currentOperations, (i + 1));
                 });
             }

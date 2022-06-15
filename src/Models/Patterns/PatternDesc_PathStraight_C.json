@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Pathways/PatternDesc_PathStraight.PatternDesc_PathStraight_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_StraightPath_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_StraightPath_256.png",
         "patternName"   : "Straight Path",
         "patternGroup"  : "Paths",
 

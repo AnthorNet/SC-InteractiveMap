@@ -60,13 +60,13 @@ export default class Modal_Trains
         }
 
         $('#statisticsModalTrains').empty().html(html.join(''));
-        $('#statisticsModalTrains .fa-search-location').on('click', function(e){
-                let x = parseFloat($(e.currentTarget).attr('data-x'));
-                let y = parseFloat($(e.currentTarget).attr('data-y'));
+        $('#statisticsModalTrains .fa-search-location').on('click', (e) => {
+            let x = parseFloat($(e.currentTarget).attr('data-x'));
+            let y = parseFloat($(e.currentTarget).attr('data-y'));
 
-                let position    = this.baseLayout.satisfactoryMap.unproject([x, y]);
-                    this.baseLayout.satisfactoryMap.leafletMap.setView(position, 9);
-            }.bind(this));
+            let position    = this.baseLayout.satisfactoryMap.unproject([x, y]);
+                this.baseLayout.satisfactoryMap.leafletMap.setView(position, 9);
+        });
     }
 
     getCurrentTrainFromIdentifier(currentIdentifier)

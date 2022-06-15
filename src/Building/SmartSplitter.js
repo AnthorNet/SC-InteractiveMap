@@ -155,32 +155,29 @@ export default class Building_SmartSplitter
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
-                    {
-                        baseLayout.deleteObjectProperty(currentObject, 'mSortRules');
+                    baseLayout.deleteObjectProperty(currentObject, 'mSortRules');
 
-                        let mSortRules = {
-                                name: "mSortRules", type: "ArrayProperty", value: {type: "StructProperty", values: []},
-                                structureName: "mSortRules", structureType: "StructProperty", structureSubType: "SplitterSortRule"
-                            };
-                            for(let outputIndex in values)
+                    let mSortRules = {
+                            name: "mSortRules", type: "ArrayProperty", value: {type: "StructProperty", values: []},
+                            structureName: "mSortRules", structureType: "StructProperty", structureSubType: "SplitterSortRule"
+                        };
+                        for(let outputIndex in values)
+                        {
+                            if(Array.isArray(values[outputIndex]) === false)
                             {
-                                if(Array.isArray(values[outputIndex]) === false)
-                                {
-                                    values[outputIndex] = [values[outputIndex]];
-                                }
-
-                                for(let i = 0; i < values[outputIndex].length; i++)
-                                {
-                                    mSortRules.value.values.push([
-                                        {name: "ItemClass", type: "ObjectProperty", value: {levelName: "", pathName: values[outputIndex][i]}},
-                                        {name: "OutputIndex", type: "IntProperty", value: parseInt(outputIndex)}
-                                    ]);
-                                }
+                                values[outputIndex] = [values[outputIndex]];
                             }
 
-                            currentObject.properties.push(mSortRules);
-                    }
+                            for(let i = 0; i < values[outputIndex].length; i++)
+                            {
+                                mSortRules.value.values.push([
+                                    {name: "ItemClass", type: "ObjectProperty", value: {levelName: "", pathName: values[outputIndex][i]}},
+                                    {name: "OutputIndex", type: "IntProperty", value: parseInt(outputIndex)}
+                                ]);
+                            }
+                        }
+
+                        currentObject.properties.push(mSortRules);
                 }
             });
     }

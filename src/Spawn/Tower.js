@@ -176,14 +176,14 @@ export default class Spawn_Tower
                     newFoundation.transform.translation[1]  = rotation[1];
                     newFoundation.transform.translation[2]  = JSON.parse(JSON.stringify(this.currentAltitude));
 
-                results.push(new Promise(function(resolve){
+                results.push(new Promise((resolve) => {
                     this.baseLayout.saveGameParser.addObject(newFoundation);
 
                     return this.baseLayout.parseObject(newFoundation, resolve);
-                }.bind(this)));
+                }));
             }
 
-            return Promise.all(results).then(function(results){
+            return Promise.all(results).then((results) => {
                 for(let i = 0; i < results.length; i++)
                 {
                     this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
@@ -194,12 +194,12 @@ export default class Spawn_Tower
                         properties: {fastDelete: true}
                     });
                 }
-            }.bind(this)).finally(function(){
+            }).finally(() => {
                 window.requestAnimationFrame(() => {
                     $('#liveLoader .progress-bar').css('width', Math.round(((width + this.maxWidth) * this.currentFloor) / (this.maxWidth * 2 * this.maxFloor) * 100) + '%');
                     this.loopFloor((width + 1));
                 });
-            }.bind(this));
+            });
         }
 
         // Raise wall!
@@ -272,7 +272,7 @@ export default class Spawn_Tower
                     }
                 }
 
-            return Promise.all(results).then(function(results){
+            return Promise.all(results).then((results) => {
                 for(let i = 0; i < results.length; i++)
                 {
                     this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
@@ -283,14 +283,14 @@ export default class Spawn_Tower
                         properties: {fastDelete: true}
                     });
                 }
-            }.bind(this)).finally(function(){
+            }).finally(() => {
                 window.requestAnimationFrame(() => {
                     //$('#liveLoader .progress-bar').css('width', Math.round((width + this.maxWidth) / (this.maxWidth * 2) * 100) + '%');
                     this.currentAltitude    += this.wallHeight;
                     this.currentRotation    += this.wallRotation;
                     this.loopWall((floorHeight + 1));
                 });
-            }.bind(this));
+            });
         }
 
         // Raise floor!
@@ -349,11 +349,11 @@ export default class Spawn_Tower
             newWall.transform.translation[1]  = pointRotation[1];
             newWall.transform.translation[2]  = JSON.parse(JSON.stringify(this.currentAltitude));
 
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             this.baseLayout.saveGameParser.addObject(newWall);
 
             return this.baseLayout.parseObject(newWall, resolve);
-        }.bind(this));
+        });
     }
 
     release()

@@ -2,6 +2,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import SubSystem_Fauna                          from '../SubSystem/Fauna.js';
+
 export default class Spawn_Fauna
 {
     constructor(options)
@@ -53,7 +55,10 @@ export default class Spawn_Fauna
                 className           : this.faunaClassName,
                 pathName            : pathName,
                 entity              : {levelName: '', pathName: ''},
-                properties          : [{name: 'mHealthComponent', type: 'ObjectProperty', value: {pathName: pathName + '.HealthComponent'}}],
+                properties          : [
+                    {name: 'mHealthComponent', type: 'ObjectProperty', value: {pathName: pathName + '.HealthComponent'}},
+                    {name: 'mIsPersistent', type: 'BoolProperty', value: 1} // Just in case CSS allow to push Zoos ;)
+                ],
                 transform           : {
                     rotation            : [0, -0, this.centerObject.transform.rotation[2], this.centerObject.transform.rotation[3]],
                     translation         : [
@@ -74,7 +79,6 @@ export default class Spawn_Fauna
                 newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {pathName: mOwnedPawn.pathName}});
                 newFauna.properties.push({name: 'mLootTableIndex', type: 'IntProperty', value: 0});
                 newFauna.properties.push({name: 'mLootTimerHandle', type: 'StructProperty', value: {handle: 'None', type: 'TimerHandle'}});
-                newFauna.properties.push({name: 'mIsPersistent', type: 'BoolProperty', value: 1});
 
                 let newSpaceRabbitInventory     = {
                     type            : 0,
@@ -116,11 +120,39 @@ export default class Spawn_Fauna
                 properties: [], type: 0
             });
 
-            //TODO: Ensure the creature spawner still exists in the save!
-            let newCreatureSpawnerId = "Persistent_Exploration_2:PersistentLevel.BP_CreatureSpawner432";
-                newFauna.properties.push({name: "mOwningSpawner", type: "ObjectProperty", value: {levelName: "Persistent_Exploration_2", pathName: newCreatureSpawnerId}});
+            let closestCreatureSpawner = this.baseLayout.faunaSubsystem.getClosestCreatureSpawner(this.centerObject);
+                newFauna.properties.push({
+                    name    : "mOwningSpawner",
+                    type    : "ObjectProperty",
+                    value   : closestCreatureSpawner
+                });
+                this.baseLayout.saveGameParser.addObject(newFauna);
 
-            this.baseLayout.saveGameParser.addObject(newFauna);
+            let creatureSpawner = this.baseLayout.saveGameParser.getTargetObject(closestCreatureSpawner.pathName);
+                if(creatureSpawner !== null)
+                {
+                    let mSpawnData = this.baseLayout.getObjectProperty(creatureSpawner, 'mSpawnData');
+                        if(mSpawnData !== null)
+                        {
+                            mSpawnData.values.push([
+                                {
+                                    name    : "SpawnLocation",
+                                    type    : "StructProperty",
+                                    value   : {
+                                        type    : "Vector",
+                                        values  : {
+                                            x       : newFauna.transform.translation[0],
+                                            y       : newFauna.transform.translation[1],
+                                            z       : newFauna.transform.translation[2]
+                                        }
+                                    }
+                                },
+                                {name: "creature", type: "ObjectProperty", value: {pathName: newFauna.pathName}},
+                                {name: "WasKilled", type: "BoolProperty", value: 0},
+                                {name: "KilledOnDayNr", type: "IntProperty", value: -1}
+                            ]);
+                        }
+                }
 
             this.history.push({
                 pathName: newFauna.pathName,
@@ -128,14 +160,14 @@ export default class Spawn_Fauna
                 callback: 'deleteFauna'
             });
 
-            let result = this.baseLayout.addPlayerFauna(newFauna);
-                return new Promise(function(resolve){
+            let result = this.baseLayout.faunaSubsystem.add(newFauna);
+                return new Promise((resolve) => {
                     $('#liveLoader .progress-bar').css('width', Math.round(currentQty / this.maxRadius * 100) + '%');
                     window.requestAnimationFrame(resolve);
-                }.bind(this)).then(function(){
+                }).then(() => {
                     this.baseLayout.addElementToLayer(result.layer, result.marker);
                     this.loop((currentQty + 1));
-                }.bind(this));
+                });
         }
 
         return this.release();

@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Pathways/PatternDesc_PathPioneer.PatternDesc_PathPioneer_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_PioneerPath_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_PioneerPath_256.png",
         "patternName"   : "Pioneer Path",
         "patternGroup"  : "Paths",
 

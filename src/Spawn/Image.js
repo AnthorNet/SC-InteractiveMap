@@ -26,11 +26,11 @@ export default class Spawn_Image
 
             let reader              = new FileReader();
                 reader.readAsDataURL(options.imageFile);
-                reader.onload       = function(evt){
+                reader.onload       = (evt) => {
                     if(evt.target.readyState === FileReader.DONE)
                     {
                         this.image.src      = evt.target.result;
-                        this.image.onload   = function(e){
+                        this.image.onload   = (e) => {
                             this.imageWidth         = e.target.naturalWidth;
                             this.imageHeight        = e.target.naturalHeight;
 
@@ -73,9 +73,9 @@ export default class Spawn_Image
                                 }
 
                             return this.spawn();
-                        }.bind(this);
+                        };
                     }
-                }.bind(this);
+                };
 
                 return;
         }
@@ -122,17 +122,17 @@ export default class Spawn_Image
                         }
                 }
 
-            return Promise.all(results).then(function(results){
+            return Promise.all(results).then((results) => {
                 for(let i = 0; i < results.length; i++)
                 {
                     this.baseLayout.addElementToLayer(results[i].layer, results[i].marker);
                 }
-            }.bind(this)).finally(function(){
+            }).finally(() => {
                 window.requestAnimationFrame(() => {
                     $('#liveLoader .progress-bar').css('width', Math.round(x / this.imageWidth * 100) + '%');
                     this.loop(x+1);
                 });
-            }.bind(this));
+            });
         }
 
         return this.release();
@@ -245,7 +245,7 @@ export default class Spawn_Image
             newSupport.transform.translation[1]  = rotation[1];
             newSupport.transform.translation[2]  = this.centerObject.transform.translation[2] + (this.imageHeight * this.supportSize) - (y * this.supportSize) + this.centerObjectHeight - (this.supportSize / 2);
 
-        return new Promise(function(resolve){
+        return new Promise((resolve) => {
             this.baseLayout.saveGameParser.addObject(newSupport);
 
             this.history.push({
@@ -256,7 +256,7 @@ export default class Spawn_Image
             });
 
             return this.baseLayout.parseObject(newSupport, resolve);
-        }.bind(this));
+        });
     }
 
     release()

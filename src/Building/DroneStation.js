@@ -1,4 +1,5 @@
 /* global Intl, parseFloat */
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
@@ -78,11 +79,7 @@ export default class Building_DroneStation
                         let mStationObject  = baseLayout.saveGameParser.getTargetObject(mStation.pathName);
                             if(mStationObject !== null)
                             {
-                                return Math.sqrt(
-                                    ((mStationObject.transform.translation[0] - currentObject.transform.translation[0]) * (mStationObject.transform.translation[0] - currentObject.transform.translation[0])) // X
-                                    + ((mStationObject.transform.translation[1] - currentObject.transform.translation[1]) * (mStationObject.transform.translation[1] - currentObject.transform.translation[1])) // Y
-                                    + ((mStationObject.transform.translation[2] - currentObject.transform.translation[2]) * (mStationObject.transform.translation[2] - currentObject.transform.translation[2])) // Z
-                                  ) / 100;
+                                return BaseLayout_Math.getDistance(mStationObject.transform.translation, currentObject.transform.translation) / 100;
                             }
                     }
             }
@@ -140,16 +137,13 @@ export default class Building_DroneStation
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
+                    if(values.mBuildingTag !== '')
                     {
-                        if(values.mBuildingTag !== '')
-                        {
-                            let mInfo = Building_DroneStation.getInformation(baseLayout, currentObject);
-                                if(mInfo !== null)
-                                {
-                                    baseLayout.setObjectProperty(mInfo, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
-                                }
-                        }
+                        let mInfo = Building_DroneStation.getInformation(baseLayout, currentObject);
+                            if(mInfo !== null)
+                            {
+                                baseLayout.setObjectProperty(mInfo, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
+                            }
                     }
                 }
             });

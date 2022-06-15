@@ -53,9 +53,8 @@ export default class Building_Beacon
             }
         );
 
-        beacon.bindContextMenu(baseLayout);
         baseLayout.playerLayers.playerOrientationLayer.count++;
-        baseLayout.autoBindTooltip(beacon);
+        baseLayout.bindMouseEvents(beacon);
         baseLayout.playerLayers.playerOrientationLayer.elements.push(beacon);
 
         return {layer: 'playerOrientationLayer', marker: beacon};
@@ -94,7 +93,7 @@ export default class Building_Beacon
         contextMenu.push({
             icon        : 'fa-portal-exit',
             text        : 'Teleport player',
-            callback    : baseLayout.teleportPlayer.bind(baseLayout)
+            callback    : baseLayout.teleportPlayer
         });
         contextMenu.push('-');
         contextMenu.push({
@@ -125,30 +124,27 @@ export default class Building_Beacon
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
+                    if(values.mCompassText !== '')
                     {
-                        if(values.mCompassText !== '')
+                        if(mCompassText !== null)
                         {
-                            if(mCompassText !== null)
-                            {
-                                baseLayout.setObjectProperty(currentObject, 'mCompassText', values.mCompassText);
-                            }
-                            else
-                            {
-                                currentObject.properties.push({
-                                    flags                       : 18,
-                                    hasCultureInvariantString   : 1,
-                                    historyType                 : 255,
-                                    name                        : "mCompassText",
-                                    type                        : "TextProperty",
-                                    value                       : values.mCompassText
-                                });
-                            }
+                            baseLayout.setObjectProperty(currentObject, 'mCompassText', values.mCompassText);
                         }
                         else
                         {
-                            baseLayout.deleteObjectProperty(currentObject, 'mCompassText');
+                            currentObject.properties.push({
+                                flags                       : 18,
+                                hasCultureInvariantString   : 1,
+                                historyType                 : 255,
+                                name                        : "mCompassText",
+                                type                        : "TextProperty",
+                                value                       : values.mCompassText
+                            });
                         }
+                    }
+                    else
+                    {
+                        baseLayout.deleteObjectProperty(currentObject, 'mCompassText');
                     }
                 }
             });
@@ -171,36 +167,33 @@ export default class Building_Beacon
                 }],
                 callback    : function(values)
                 {
-                    if(values !== null)
+                    let newCompassColor = {
+                            r       : BaseLayout_Math.RGBToLinearColor(values.mCompassColor.r),
+                            g       : BaseLayout_Math.RGBToLinearColor(values.mCompassColor.g),
+                            b       : BaseLayout_Math.RGBToLinearColor(values.mCompassColor.b),
+                            a       : 1
+                        };
+
+                    if(mCompassColor !== null)
                     {
-                        let newCompassColor = {
-                                r       : BaseLayout_Math.RGBToLinearColor(values.mCompassColor.r),
-                                g       : BaseLayout_Math.RGBToLinearColor(values.mCompassColor.g),
-                                b       : BaseLayout_Math.RGBToLinearColor(values.mCompassColor.b),
-                                a       : 1
-                            };
-
-                        if(mCompassColor !== null)
-                        {
-                            baseLayout.setObjectProperty(currentObject, 'mCompassColor', {type: 'LinearColor', values: newCompassColor});
-                        }
-                        else
-                        {
-                            currentObject.properties.push({
-                                name                        : "mCompassColor",
-                                type                        : "StructProperty",
-                                value                       : {type: 'LinearColor', values: newCompassColor}
-                            });
-                        }
-
-                        new Promise(function(resolve){
-                            return baseLayout.parseObject(currentObject, resolve);
-                        }).then(function(result){
-                            baseLayout.playerLayers[result.layer].count--;
-                            baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-                            baseLayout.addElementToLayer(result.layer, result.marker);
+                        baseLayout.setObjectProperty(currentObject, 'mCompassColor', {type: 'LinearColor', values: newCompassColor});
+                    }
+                    else
+                    {
+                        currentObject.properties.push({
+                            name                        : "mCompassColor",
+                            type                        : "StructProperty",
+                            value                       : {type: 'LinearColor', values: newCompassColor}
                         });
                     }
+
+                    new Promise(function(resolve){
+                        return baseLayout.parseObject(currentObject, resolve);
+                    }).then(function(result){
+                        baseLayout.playerLayers[result.layer].count--;
+                        baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                        baseLayout.addElementToLayer(result.layer, result.marker);
+                    });
                 }
             });
     }

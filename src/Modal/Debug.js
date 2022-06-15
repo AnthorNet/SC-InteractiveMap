@@ -1,5 +1,7 @@
 import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 
+import Building_PowerLine                       from '../Building/PowerLine.js';
+
 export default class Modal_Debug
 {
     static getHTML(marker)
@@ -10,8 +12,6 @@ export default class Modal_Debug
         let htmlChildren        = [];
         let childrenPathName    = [];
         let extraPathName       = [];
-
-        //html.push('<div class="alert alert-danger">Be aware that manually editing the save can lead to unexpected errors.</div>');
 
         if(currentObject.children !== undefined)
         {
@@ -54,7 +54,7 @@ export default class Modal_Debug
                 }
         }
 
-        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles', 'mBottomSnappedConnection', 'mTopSnappedConnection', 'mHubTerminal', 'mWorkBench', 'mGenerators'];
+        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles', 'mFlowIndicator', 'mBottomSnappedConnection', 'mTopSnappedConnection', 'mHubTerminal', 'mWorkBench', 'mGenerators'];
             for(let i = 0; i < extraProperties.length; i++)
             {
                 let extraProperty = baseLayout.getObjectProperty(currentObject, extraProperties[i]);
@@ -89,27 +89,21 @@ export default class Modal_Debug
                     }
             }
 
-        let circuitSubSystem    = new SubSystem_Circuit({baseLayout: baseLayout});
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
+        let circuitSubSystem        = new SubSystem_Circuit({baseLayout: baseLayout});
+            if(currentObject.children !== undefined)
             {
-                let objectCircuitA       = circuitSubSystem.getObjectCircuit(currentObject, 'PowerConnection1');
-                    if(objectCircuitA !== null)
-                    {
-                        extraPathName.push(objectCircuitA.pathName);
-                    }
-                let objectCircuitB       = circuitSubSystem.getObjectCircuit(currentObject, 'PowerConnection2');
-                    if(objectCircuitB !== null)
-                    {
-                        extraPathName.push(objectCircuitB.pathName);
-                    }
-            }
-            else
-            {
-                let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
-                    if(objectCircuit !== null)
-                    {
-                        extraPathName.push(objectCircuit.pathName);
-                    }
+                for(let i = 0; i < currentObject.children.length; i++)
+                {
+                    let endWith = '.' + currentObject.children[i].pathName.split('.').pop();
+                        if(Building_PowerLine.availableConnections.includes(endWith))
+                        {
+                            let objectCircuit = circuitSubSystem.getObjectCircuit(currentObject, endWith);
+                                if(objectCircuit !== null && extraPathName.includes(objectCircuit.pathName) === false)
+                                {
+                                    extraPathName.push(objectCircuit.pathName);
+                                }
+                        }
+                }
             }
 
             html.push('<ul class="nav nav-tabs nav-fill">');
@@ -179,6 +173,11 @@ export default class Modal_Debug
         $('#genericModal .modal-title').empty().html('Advanced Debug - ' + marker.relatedTarget.options.pathName);
         $('#genericModal .modal-body').empty().html(html.join(''));
 
+        $('#genericModal .modal-body .copyJsonObject').on('click', function(){
+            let json = $(this).next('textarea').val();
+                navigator.clipboard.writeText(json);
+        });
+
         $('#genericModal .modal-body .json-document').find('.json-toggle').click(function(){
             let target = $(this).toggleClass('collapsed').siblings('ul.json-dict, ol.json-array');
                 target.toggle();
@@ -215,9 +214,11 @@ export default class Modal_Debug
     static getJsonViewer(json)
     {
         let html = [];
-            html.push('<div class="json-document" style="height: 75vh;overflow-y: scroll;">');
+            html.push('<div class="json-document" style="height: 74vh;overflow-y: scroll;">');
             html.push(Modal_Debug.jsonToHTML(json));
             html.push('</div>');
+
+            html.push('<div><button class="btn btn-info w-100 copyJsonObject">Copy JSON object</button><textarea style="display:none;">' + JSON.stringify(json) + '</textarea></div>');
 
             return html.join('');
     }

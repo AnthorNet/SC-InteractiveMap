@@ -13,8 +13,7 @@ export default class Selection_Offset
         this.offsetX                = parseFloat(options.offsetX);
         this.offsetY                = parseFloat(options.offsetY);
         this.offsetZ                = parseFloat(options.offsetZ);
-
-        this.selectionBoundaries    = (options.selectionBoundaries !== undefined) ? options.selectionBoundaries : null;
+        
         this.useHistory             = (options.history !== undefined) ? options.history : true;
 
         if(typeof gtag === 'function')
@@ -53,6 +52,7 @@ export default class Selection_Offset
                                     }
                             }
 
+                        let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
                             switch(currentObject.className)
                             {
                                 case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
@@ -78,70 +78,28 @@ export default class Selection_Offset
                                                 }
                                         }
                                     break;
-                                case '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C':
-                                    // HUB should also move hidden objects
-                                    let mHubTerminal    = this.baseLayout.getObjectProperty(currentObject, 'mHubTerminal');
-                                        if(mHubTerminal !== null)
-                                        {
-                                            let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mHubTerminal.pathName);
-                                                if(currentObjectTarget !== null)
-                                                {
-                                                    if(isNaN(this.offsetX) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
-                                                    }
-                                                    if(isNaN(this.offsetY) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
-                                                    }
-                                                    if(isNaN(this.offsetZ) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
-                                                    }
-                                                }
-                                        }
-                                    let mWorkBench      = this.baseLayout.getObjectProperty(currentObject, 'mWorkBench');
-                                        if(mWorkBench !== null)
-                                        {
-                                            let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mWorkBench.pathName);
-                                                if(currentObjectTarget !== null)
-                                                {
-                                                    if(isNaN(this.offsetX) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
-                                                    }
-                                                    if(isNaN(this.offsetY) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
-                                                    }
-                                                    if(isNaN(this.offsetZ) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
-                                                    }
-                                                }
-                                        }
                                 default:
                                     if(isNaN(this.offsetX) === false)
                                     {
-                                        currentObject.transform.translation[0] = currentObject.transform.translation[0] + this.offsetX;
+                                        newTransform.translation[0] = currentObject.transform.translation[0] + this.offsetX;
                                     }
                                     if(isNaN(this.offsetY) === false)
                                     {
-                                        currentObject.transform.translation[1] = currentObject.transform.translation[1] + this.offsetY;
+                                        newTransform.translation[1] = currentObject.transform.translation[1] + this.offsetY;
                                     }
                                     if(isNaN(this.offsetZ) === false)
                                     {
-                                        currentObject.transform.translation[2] = currentObject.transform.translation[2] + this.offsetZ;
+                                        newTransform.translation[2] = currentObject.transform.translation[2] + this.offsetZ;
                                     }
                                     break;
                             }
 
-                            offsetResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: currentObject.transform, object: currentObject}, true));
+                            offsetResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: newTransform, object: currentObject}, true));
                         }
                 }
             }
 
-            Promise.all(offsetResults).then(function(){
+            Promise.all(offsetResults).then(() => {
                 if(this.useHistory === true && this.baseLayout.history !== null)
                 {
                     this.baseLayout.history.add({
@@ -156,7 +114,7 @@ export default class Selection_Offset
 
                 console.timeEnd('offsetMultipleMarkers');
                 this.baseLayout.updateRadioactivityLayer();
-            }.bind(this));
+            });
         }
 
         Modal_Selection.cancel(this.baseLayout);

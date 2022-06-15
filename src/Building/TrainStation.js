@@ -4,6 +4,8 @@ import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 export default class Building_TrainStation
 {
+    static get availableConnections(){ return ['.PlatformConnection0', '.PlatformConnection1']; }
+
     static getCompleteTrainStation(baseLayout, currentObject)
     {
         let includedPathName    = [currentObject.pathName];
@@ -94,25 +96,22 @@ export default class Building_TrainStation
                         }],
                         callback    : function(values)
                         {
-                            if(values !== null)
+                            if(values.mStationName !== '')
                             {
-                                if(values.mStationName !== '')
+                                if(mStationName !== null)
                                 {
-                                    if(mStationName !== null)
-                                    {
-                                        baseLayout.setObjectProperty(trainStationIdentifier, 'mStationName', values.mStationName);
-                                    }
-                                    else
-                                    {
-                                        trainStationIdentifier.properties.push({
-                                            flags                       : 18,
-                                            hasCultureInvariantString   : 1,
-                                            historyType                 : 255,
-                                            name                        : "mStationName",
-                                            type                        : "TextProperty",
-                                            value                       : values.mStationName
-                                        });
-                                    }
+                                    baseLayout.setObjectProperty(trainStationIdentifier, 'mStationName', values.mStationName);
+                                }
+                                else
+                                {
+                                    trainStationIdentifier.properties.push({
+                                        flags                       : 18,
+                                        hasCultureInvariantString   : 1,
+                                        historyType                 : 255,
+                                        name                        : "mStationName",
+                                        type                        : "TextProperty",
+                                        value                       : values.mStationName
+                                    });
                                 }
                             }
                         }

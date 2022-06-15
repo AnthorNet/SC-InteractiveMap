@@ -77,62 +77,59 @@ export default class Modal_Object_Position
                     value       : currentRotationYaw
                 }
             ],
-            callback    : function(form)
+            callback    : function(values)
             {
-                if(form !== null && form.x !== null && form.y !== null && form.z !== null && form.pitch !== null && form.roll !== null && form.yaw !== null)
+                values.x        = parseFloat(values.x);
+                values.y        = parseFloat(values.y);
+                values.z        = parseFloat(values.z);
+                values.pitch    = parseFloat(values.pitch);
+                values.roll     = parseFloat(values.roll);
+                values.yaw      = parseFloat(values.yaw);
+
+                if(buildingData !== null && buildingData.mapCorrectedAngle !== undefined)
                 {
-                    form.x                                  = parseFloat(form.x);
-                    form.y                                  = parseFloat(form.y);
-                    form.z                                  = parseFloat(form.z);
-                    form.pitch                              = parseFloat(form.pitch);
-                    form.roll                               = parseFloat(form.roll);
-                    form.yaw                                = parseFloat(form.yaw);
+                    values.yaw -= buildingData.mapCorrectedAngle;
+                    values.yaw  = BaseLayout_Math.clampEulerAxis(values.yaw);
+                }
 
-                    if(buildingData !== null && buildingData.mapCorrectedAngle !== undefined)
-                    {
-                        form.yaw -= buildingData.mapCorrectedAngle;
-                        form.yaw  = BaseLayout_Math.clampEulerAxis(form.yaw);
-                    }
+                if(baseLayout.history !== null)
+                {
+                    baseLayout.history.add({
+                        name: 'Undo: Update position',
+                        values: [{
+                            pathName: marker.relatedTarget.options.pathName,
+                            callback: 'refreshMarkerPosition',
+                            properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
+                        }]
+                    });
+                }
 
-                    if(baseLayout.history !== null)
-                    {
-                        baseLayout.history.add({
-                            name: 'Undo: Update position',
-                            values: [{
-                                pathName: marker.relatedTarget.options.pathName,
-                                callback: 'refreshMarkerPosition',
-                                properties: {transform: JSON.parse(JSON.stringify(currentObject.transform))}
-                            }]
-                        });
-                    }
+                    let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
+                        if(isNaN(values.x) === false)
+                        {
+                            newTransform.translation[0] = values.x;
+                        }
+                        if(isNaN(values.y) === false)
+                        {
+                            newTransform.translation[1] = values.y;
+                        }
+                        if(isNaN(values.z) === false)
+                        {
+                            newTransform.translation[2] = values.z;
+                        }
+                        if(isNaN(values.roll) === false && isNaN(values.pitch) === false && isNaN(values.yaw) === false)
+                        {
+                            newTransform.rotation = BaseLayout_Math.getEulerToQuaternion({roll: values.roll, pitch: values.pitch, yaw: values.yaw});
+                        }
 
-                        let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
-                            if(isNaN(form.x) === false)
-                            {
-                                newTransform.translation[0] = form.x;
-                            }
-                            if(isNaN(form.y) === false)
-                            {
-                                newTransform.translation[1] = form.y;
-                            }
-                            if(isNaN(form.z) === false)
-                            {
-                                newTransform.translation[2] = form.z;
-                            }
-                            if(isNaN(form.roll) === false && isNaN(form.pitch) === false && isNaN(form.yaw) === false)
-                            {
-                                newTransform.rotation = BaseLayout_Math.getEulerToQuaternion({roll: form.roll, pitch: form.pitch, yaw: form.yaw});
-                            }
-
-                    if(teleportPlayer !== false)
-                    {
-                        baseLayout.players[marker.relatedTarget.options.pathName].teleportTo(newTransform, 0);
-                    }
-                    else
-                    {
-                        baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: JSON.parse(JSON.stringify(newTransform)), object: currentObject});
-                        baseLayout.updateRadioactivityLayer();
-                    }
+                if(teleportPlayer !== false)
+                {
+                    baseLayout.players[marker.relatedTarget.options.pathName].teleportTo(newTransform, 0);
+                }
+                else
+                {
+                    baseLayout.refreshMarkerPosition({marker: marker.relatedTarget, transform: newTransform, object: currentObject});
+                    baseLayout.updateRadioactivityLayer();
                 }
             }
         });

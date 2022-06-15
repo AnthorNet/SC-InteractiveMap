@@ -1,6 +1,6 @@
 {
     "/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/Arrows/PatternDesc_NO_ArrowStraight.PatternDesc_NO_ArrowStraight_C": {
-        "patternImage"  : "/img/gameUpdate5/IconDesc_NoStraightArrow_256.png",
+        "patternImage"  : "/img/patternIcons/IconDesc_NoStraightArrow_256.png",
         "patternName"   : "NO! Straight Arrow",
         "patternGroup"  : "Arrows",
 

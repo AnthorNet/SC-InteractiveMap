@@ -5,12 +5,15 @@ import Building_Door                            from '../Building/Door.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_Light                           from '../Building/Light.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
+import Building_MapMarker                       from '../Building/MapMarker.js';
 import Building_Miner                           from '../Building/Miner.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
+import Building_PowerLine                       from '../Building/PowerLine.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 import Building_Production                      from '../Building/Production.js';
+import Building_RadarTower                      from '../Building/RadarTower.js';
 import Building_RailroadSwitchControl           from '../Building/RailroadSwitchControl.js';
 import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
@@ -28,8 +31,6 @@ import Modal_Object_Pattern                     from '../Modal/Object/Pattern.js
 import Modal_Object_Position                    from '../Modal/Object/Position.js';
 import Modal_Object_SpawnAround                 from '../Modal/Object/SpawnAround.js';
 
-import SubSystem_Player                         from '../SubSystem/Player.js';
-
 export default class BaseLayout_ContextMenu
 {
     constructor(options)
@@ -42,9 +43,14 @@ export default class BaseLayout_ContextMenu
     {
         let contextMenu = [];
 
+        if(this.marker.options.mapMarkerId !== undefined)
+        {
+            return Building_MapMarker.addContextMenu(this.baseLayout, this.marker.options.mapMarkerId, contextMenu);
+        }
+
         if(currentObject !== null)
         {
-            let faunaData   = this.baseLayout.getFaunaDataFromClassName(currentObject.className);
+            let faunaData   = this.baseLayout.faunaSubsystem.getDataFromClassName(currentObject.className);
                 if(faunaData !== null)
                 {
                     contextMenu.push({
@@ -53,13 +59,13 @@ export default class BaseLayout_ContextMenu
                     });
                     contextMenu.push({
                         icon        : 'fa-arrows-alt',
-                        text        : 'Update position',
+                        text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Update position'),
                         callback    : Modal_Object_Position.getHTML});
                     contextMenu.push('-');
                     contextMenu.push({
                         icon        : 'fa-trash-alt',
                         text        : 'Delete',
-                        callback    : this.baseLayout.deleteFauna
+                        callback    : this.baseLayout.faunaSubsystem.delete
                     });
                 }
 
@@ -72,14 +78,14 @@ export default class BaseLayout_ContextMenu
                         });
                         contextMenu.push({
                             icon        : 'fa-arrows-alt',
-                            text        : 'Update position',
+                            text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Update position'),
                             callback    : Modal_Object_Position.getHTML
                         });
                         contextMenu.push('-');
                         contextMenu.push({
                             icon    : 'fa-box',
                             text    : 'Edit inventory',
-                            callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
+                            callback: this.baseLayout.editPlayerStorageBuildingInventory
                         });
                         break;
                     case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
@@ -110,7 +116,7 @@ export default class BaseLayout_ContextMenu
                         });
                         contextMenu.push({
                             icon        : 'fa-arrows-alt',
-                            text        : 'Update position',
+                            text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Update position'),
                             callback    : Modal_Object_Position.getHTML
                         });
                         /*
@@ -136,7 +142,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
                             text        : 'Teleport player',
-                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                            callback    : this.baseLayout.teleportPlayer
                         });
                         contextMenu.push('-');
                         contextMenu.push({
@@ -161,7 +167,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
                             text        : 'Teleport player',
-                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                            callback    : this.baseLayout.teleportPlayer
                         });
                         contextMenu.push('-');
                         contextMenu.push({
@@ -183,7 +189,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
                             text        : 'Teleport player',
-                            callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                            callback    : this.baseLayout.teleportPlayer
                         });
 
                         if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C')
@@ -206,7 +212,7 @@ export default class BaseLayout_ContextMenu
                             let hasBeenOpened = this.baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
                                 contextMenu.push({
                                     text    : ((hasBeenOpened === 1) ? '<strong class="text-danger">Close</strong>' : '<strong class="text-success">Open</strong>') + ' drop-pod',
-                                    callback: this.baseLayout.toggleDropPodHasBeenOpened.bind(this.baseLayout)
+                                    callback: this.baseLayout.toggleDropPodHasBeenOpened
                                 });
                         }
                         break;
@@ -216,18 +222,23 @@ export default class BaseLayout_ContextMenu
             {
                 contextMenu.push({text: buildingData.name, icon: buildingData.image});
 
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
+                {
+                    contextMenu = Building_RadarTower.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                }
+
                 if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof')
                 {
                     contextMenu.push({
                         icon        : 'fa-redo fa-spin',
-                        text        : 'Rotate "' + buildingData.name + '" by 90°',
-                        callback    : this.baseLayout.rotationPlayerFoundation.bind(this.baseLayout)
+                        text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Rotate "%1$s" by 90°', buildingData.name),
+                        callback    : this.baseLayout.rotationPlayerFoundation
                     });
 
                     contextMenu.push({
                         icon        : 'fa-share',
-                        text        : 'Pivot "' + buildingData.name + '" from the top-left corner',
-                        callback    : this.baseLayout.pivotPlayerFoundation.bind(this.baseLayout)
+                        text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Pivot "%1$s" from the top-left corner', buildingData.name),
+                        callback    : this.baseLayout.pivotPlayerFoundation
                     });
 
                     if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Building/Ramp/Build_Ramp_Diagonal') === false && currentObject.className.includes('_Corner_') === false)
@@ -236,7 +247,7 @@ export default class BaseLayout_ContextMenu
 
                         contextMenu.push({
                             icon        : 'fa-building',
-                            text        : 'Spawn around "' + buildingData.name + '"',
+                            text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Spawn around "%1$s"', buildingData.name),
                             callback    : Modal_Object_SpawnAround.getHTML
                         });
 
@@ -244,7 +255,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-paste',
-                                text        : 'Paste ' + this.baseLayout.clipboard.data.length + ' items',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Paste %1$s items', this.baseLayout.clipboard.data.length),
                                 callback    : Modal_Map_Paste.getHTML
                             });
                         }
@@ -254,8 +265,8 @@ export default class BaseLayout_ContextMenu
 
                     contextMenu.push({
                         icon        : 'fa-portal-exit',
-                        text        : 'Teleport player on "' + buildingData.name + '"',
-                        callback    : this.baseLayout.teleportPlayer.bind(this.baseLayout)
+                        text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Teleport player on "%1$s"', buildingData.name),
+                        callback    : this.baseLayout.teleportPlayer
                     });
 
                     contextMenu.push('-');
@@ -263,7 +274,8 @@ export default class BaseLayout_ContextMenu
 
                 if(
                       (buildingData.category === 'generator' || (buildingData.powerUsed !== undefined && buildingData.powerUsed > 0) || currentObject.className === '/Game/FactoryGame/Buildable/Factory/HadronCollider/Build_HadronCollider.Build_HadronCollider_C')
-                    && buildingData.category !== 'pad' && buildingData.category !== 'tower' && buildingData.category !== 'logistic' && buildingData.category !== 'dockstation' && buildingData.category !== 'vehicle'
+                    && buildingData.category !== 'pad'
+                    && buildingData.category !== 'logistic' && buildingData.category !== 'dockstation' && buildingData.category !== 'vehicle'
                     && buildingData.category !== 'pipe'
                     && buildingData.category !== 'hyperTube'
                     && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/CeilingLight/Build_CeilingLight.Build_CeilingLight_C'
@@ -276,15 +288,15 @@ export default class BaseLayout_ContextMenu
                         icon        : 'fa-power-off',
                         text        : 'Turn ' + ((this.baseLayout.getBuildingIsOn(currentObject) === false) ? '<strong class="text-success">On' : '<strong class="text-danger">Off</strong>'),
                         className   : 'Building_PowerSwitch_turn' + ((this.baseLayout.getBuildingIsOn(currentObject) === false) ? 'On' : 'Off'),
-                        callback    : this.baseLayout.updateObjectProductionPausedStatus.bind(this.baseLayout)
+                        callback    : this.baseLayout.updateObjectProductionPausedStatus
                     });
 
-                    if(buildingData.category !== 'light' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
+                    if(buildingData.category !== 'light' && buildingData.category !== 'tower' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
                     {
                         contextMenu.push({
                             icon        : 'fa-tachometer-alt-slow',
-                            text        : 'Update clock speed',
-                            callback    : this.baseLayout.updateObjectClockSpeed.bind(this.baseLayout)
+                            text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Update clock speed'),
+                            callback    : this.baseLayout.updateObjectClockSpeed
                         });
                     }
 
@@ -417,22 +429,26 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon    : 'fa-box',
-                                text    : 'Edit inventory',
-                                callback: this.baseLayout.editPlayerStorageBuildingInventory.bind(this.baseLayout)
+                                text    : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Edit inventory'),
+                                callback: this.baseLayout.editPlayerStorageBuildingInventory
                             });
                         }
 
                         contextMenu.push({
                             icon    : ((inventoryType === 'liquid') ? 'fa-water-rise' : 'fa-box-full'),
-                            text    : 'Fill inventory',
-                            callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal.bind(this.baseLayout)
+                            text    : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Fill inventory'),
+                            callback: this.baseLayout.fillPlayerStorageBuildingInventoryModal
                         });
                         contextMenu.push({
                             icon    : ((inventoryType === 'liquid') ? 'fa-water-lower' : 'fa-box-open'),
-                            text    : 'Clear inventory',
-                            callback: this.baseLayout.clearPlayerStorageBuildingInventory.bind(this.baseLayout)
+                            text    : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Clear inventory'),
+                            callback: this.baseLayout.clearPlayerStorageBuildingInventory
                         });
-                        contextMenu.push('-');
+
+                        if(inventoryType !== 'liquid')
+                        {
+                            contextMenu.push('-');
+                        }
                 }
 
                 let currentObjectPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
@@ -440,19 +456,42 @@ export default class BaseLayout_ContextMenu
                     {
                         contextMenu.push({
                             icon        : 'fa-water',
-                            text        : 'Update pipe network fluid',
+                            text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Update pipe network fluid'),
                             callback    : this.baseLayout.pipeNetworkSubSystem.updateFluid.bind(this.baseLayout.pipeNetworkSubSystem)
                         });
                         contextMenu.push('-');
                     }
 
+                if(
+                        buildingData.category === 'generator' || (buildingData.powerUsed !== undefined && buildingData.powerUsed > 0) || buildingData.category === 'powerPole'
+                     || currentObject.className === '/Game/FactoryGame/Buildable/Factory/HadronCollider/Build_HadronCollider.Build_HadronCollider_C'
+                )
+                {
+                    contextMenu.push({
+                        icon        : 'fa-plug',
+                        text        : 'Use input as wire source',
+                        callback    : Building_PowerLine.storeNewWireSource,
+                        className   : 'Building_PowerLine_storeNewWireSource'
+                    });
 
+                    if(Building_PowerLine.clipboard.source !== null)
+                    {
+                        contextMenu.push({
+                            icon        : 'fa-plug',
+                            text        : 'Use input as wire target',
+                            callback    : Building_PowerLine.storeNewWireTarget,
+                            className   : 'Building_PowerLine_storeNewWireTarget'
+                        });
+                    }
+
+                    contextMenu.push('-');
+                }
 
                 if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
                 {
                     contextMenu.push({
                         icon        : 'fa-arrows-alt',
-                        text        : 'Update position',
+                        text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Update position'),
                         callback    : Modal_Object_Position.getHTML
                     });
                 }
@@ -463,7 +502,7 @@ export default class BaseLayout_ContextMenu
 
                     contextMenu.push({
                         icon        : 'fa-palette',
-                        text        : 'Update color swatch',
+                        text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Update color swatch'),
                         callback    : Modal_Object_ColorSlot.getHTML,
                         className   : 'Modal_Object_ColorSlot'
                     });
@@ -473,7 +512,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-paint-brush',
-                                text        : 'Update custom color',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Update custom color'),
                                 callback    : Modal_Object_CustomColor.getHTML,
                                 className   : 'Modal_Object_CustomColor'
                             });
@@ -485,7 +524,7 @@ export default class BaseLayout_ContextMenu
                     contextMenu.push('-');
                     contextMenu.push({
                         icon        : 'fa-shapes',
-                        text        : 'Update pattern',
+                        text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Update pattern'),
                         callback    : Modal_Object_Pattern.getHTML,
                         className   : 'Modal_Object_Pattern'
                     });
@@ -495,7 +534,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-shapes fa-spin',
-                                text        : 'Rotate pattern by 90°',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Rotate pattern by 90°'),
                                 callback    : this.baseLayout.buildableSubSystem.rotateObjectPattern
                             });
                         }
@@ -511,7 +550,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "FICSIT Foundation"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'FICSIT Foundation'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'Ficsit'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -521,7 +560,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Concrete Foundation"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Concrete Foundation'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'Concrete'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -531,7 +570,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Grip Metal Foundation"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Grip Metal Foundation'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'GripMetal'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -541,7 +580,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Coated Concrete Foundation"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Coated Concrete Foundation'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'ConcretePolished'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -551,7 +590,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Asphalt Foundation"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Asphalt Foundation'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'Asphalt'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -565,7 +604,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "FICSIT Wall"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'FICSIT Wall'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['wall', 'Ficsit'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -575,7 +614,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Concrete Wall"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Concrete Wall'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['wall', 'Concrete'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -585,7 +624,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Steel Wall"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Steel Wall'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['wall', 'Steel'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -599,7 +638,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "FICSIT Roof"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'FICSIT Roof'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['roof', 'Ficsit'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -609,7 +648,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Tar Roof"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Tar Roof'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['roof', 'Tar'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -619,7 +658,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Metal Roof"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Metal Roof'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['roof', 'Metal'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -629,7 +668,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Glass Roof"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Glass Roof'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['roof', 'Glass'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -643,7 +682,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Metal Pillar"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Metal Pillar'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['pillar', 'Metal'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -653,7 +692,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Concrete Pillar"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Concrete Pillar'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['pillar', 'Concrete'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -663,9 +702,37 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : 'Switch to "Frame Pillar"',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Frame Pillar'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['pillar', 'Frame'],
+                                className   : 'buildableSubSystem_switchObjectMaterial'
+                            });
+                        }
+                    }
+
+                    if(buildingData.category === 'walkway')
+                    {
+                        if(buildingData.switchMaterial.Catwalk !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Catwalk'),
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['walkway', 'Catwalk'],
+                                className   : 'buildableSubSystem_switchObjectMaterial'
+                            });
+                        }
+                    }
+
+                    if(buildingData.category === 'catwalk')
+                    {
+                        if(buildingData.switchMaterial.Walkway !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s"', 'Walkway'),
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['catwalk', 'Walkway'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
@@ -678,7 +745,7 @@ export default class BaseLayout_ContextMenu
                             {
                                 contextMenu.push({
                                     icon        : 'fa-magic',
-                                    text        : 'Switch to "Default" skin',
+                                    text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s" skin', 'Default'),
                                     callback    : this.baseLayout.buildableSubSystem.switchObjectSkin,
                                     argument    : 'Default',
                                     className   : 'buildableSubSystem_switchObjectSkin'
@@ -690,7 +757,7 @@ export default class BaseLayout_ContextMenu
                                 {
                                     contextMenu.push({
                                         icon        : 'fa-magic',
-                                        text        : 'Switch to "FICS*MAS" skin',
+                                        text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Switch to "%1$s" skin', 'FICS*MAS'),
                                         callback    : this.baseLayout.buildableSubSystem.switchObjectSkin,
                                         argument    : 'Ficsmas',
                                         className   : 'buildableSubSystem_switchObjectSkin'
@@ -706,7 +773,7 @@ export default class BaseLayout_ContextMenu
                     contextMenu.push('-');
                     contextMenu.push({
                         icon        : 'fa-trash-alt',
-                        text        : 'Delete',
+                        text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Delete building'),
                         callback    : this.baseLayout.deleteGenericBuilding
                     });
                 }
@@ -719,7 +786,7 @@ export default class BaseLayout_ContextMenu
         }
         contextMenu.push({
             icon        : 'fa-terminal',
-            text        : 'Advanced Debug',
+            text        : this.baseLayout.translate._('MAP\\CONTEXTMENU\\Advanced Debug'),
             callback    : Modal_Debug.getHTML
         });
 
@@ -817,8 +884,7 @@ L.Map.ContextMenu = L.Handler.extend({
 
     _createCallback: function(callback, context, baseLayout, argument)
     {
-        return function(e)
-        {
+        return () => {
             let data                = {};
                 data.containerPoint = this._showLocation.containerPoint;
                 data.layerPoint     = this._map.containerPointToLayerPoint(data.containerPoint);
@@ -832,7 +898,7 @@ L.Map.ContextMenu = L.Handler.extend({
             {
                 callback.call(context || this._map, data, argument);
             }
-        }.bind(this);
+        };
     },
 
     _insertElement: function(tagName, className, container)
