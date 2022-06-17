@@ -221,7 +221,6 @@ export default class SaveParser_Write
         // Save current level entities
         this.saveBinary        += this.generateCollectablesChunks(collectables);
 
-
         this.saveBinaryValues[currentLevel + '-entitiesSaveBinaryLength'] = tempSaveBinaryLength;
         this.pushSaveToChunk();
 
@@ -234,6 +233,7 @@ export default class SaveParser_Write
             console.log('Saved ' + objectKeys.length + ' entities...');
         }
 
+        this.pushSaveToChunk();
         return this.finalizeChunks();
     }
 
@@ -270,7 +270,6 @@ export default class SaveParser_Write
         }
 
         let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
-
             if(objectKeySpliced.length > 0)
             {
                 return this.postWorkerMessage({command: 'requestObjects', objectKeys: objectKeySpliced}).then((objects) => {
@@ -346,6 +345,7 @@ export default class SaveParser_Write
 
         this.postWorkerMessage({command: 'requestCollectables', levelName: currentLevel}).then((collectables) => {
             this.saveBinary  += this.generateCollectablesChunks(collectables);
+            this.pushSaveToChunk();
             return this.finalizeChunks();
         });
     }
