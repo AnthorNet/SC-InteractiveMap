@@ -3,84 +3,6 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import Building_Sign                            from './Sign.js';
-/*
-{
-    "name": "MarkerID",
-    "type": "ByteProperty",
-    "value": {
-        "enumName": "None",
-        "value": 0
-    }
-},
-{
-    "name": "Location",
-    "type": "StructProperty",
-    "value": {
-        "type": "Vector_NetQuantize",
-        "values": [
-            {
-                "name": "X",
-                "type": "FloatProperty",
-                "value": -8390.9775390625
-            },
-            {
-                "name": "Y",
-                "type": "FloatProperty",
-                "value": -25127.109375
-            },
-            {
-                "name": "Z",
-                "type": "FloatProperty",
-                "value": 60200
-            }
-        ]
-    }
-},
-{
-    "name": "Name",
-    "type": "StrProperty",
-    "value": "Beacon Test!"
-},
-{
-    "name": "MapMarkerType",
-    "type": "EnumProperty",
-    "value": {
-        "name": "ERepresentationType",
-        "value": "ERepresentationType::RT_MapMarker"
-    }
-},
-{
-    "name": "IconID",
-    "type": "IntProperty",
-    "value": 661
-},
-{
-    "name": "Color",
-    "type": "StructProperty",
-    "value": {
-        "type": "LinearColor",
-        "values": {
-            "r": 1,
-            "g": 4.76837158203125e-7,
-            "b": 0,
-            "a": 1
-        }
-    }
-},
-{
-    "name": "Scale",
-    "type": "FloatProperty",
-    "value": 1
-},
-{
-    "name": "CompassViewDistance",
-    "type": "EnumProperty",
-    "value": {
-        "name": "ECompassViewDistance",
-        "value": "ECompassViewDistance::CVD_Far"
-    }
-}
-*/
 
 export default class Building_MapMarker
 {
@@ -153,13 +75,7 @@ export default class Building_MapMarker
                 return [baseLayout.staticUrl + Building_MapMarker.getStampsIcons[iconId][1]];
             }
 
-        console.log('Missing iconID: ' + iconId);
-        if(typeof Sentry !== 'undefined')
-        {
-            Sentry.captureMessage('Missing iconID: ' + iconId);
-        }
-
-        return baseLayout.staticUrl + '/img/mapMarkerIcons/TXUI_QMark_Map.png';
+        return baseLayout.getIconSrcFromId(iconId, baseLayout.staticUrl + '/img/mapMarkerIcons/TXUI_QMark_Map.png');
     }
 
     /*

@@ -4671,7 +4671,7 @@ export default class BaseLayout
     }
 
 
-    getIconSrcFromId(iconId)
+    getIconSrcFromId(iconId, defaultIcon = null)
     {
         for(let i in this.itemsData)
         {
@@ -4702,6 +4702,11 @@ export default class BaseLayout
         if(typeof Sentry !== 'undefined')
         {
             Sentry.captureMessage('Missing iconID: ' + iconId);
+        }
+
+        if(defaultIcon !== null)
+        {
+            return defaultIcon;
         }
 
         return this.itemsData.Desc_IronIngot_C.image;
