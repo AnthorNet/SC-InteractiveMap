@@ -46,8 +46,6 @@ export default class SaveParser_Read
                 this.header.isModdedSave     = this.readInt();
             }
 
-            console.log(this.header);
-
             this.worker.postMessage({command: 'transferData', data: {header: this.header}});
 
             // We should now unzip the body!
@@ -170,7 +168,7 @@ export default class SaveParser_Read
             {
                 let levelName           = (j === nbLevels) ? 'Level Persistent_Level' : this.readString();
                     levels.push(levelName);
-                    this.readInt();//let objectsLength       = this.readInt();
+                    this.readInt(); // objectsBinaryLength
                 let countObjects        = this.readInt();
                 let entitiesToObjects   = [];
 
@@ -218,11 +216,9 @@ export default class SaveParser_Read
                         }
                     }
 
-                    this.readInt();//let entitiesLength      = this.readInt();
+                    this.readInt(); // entitiesBinaryLength
                 let countEntities       = this.readInt();
                 let objectsToFlush      = {};
-
-                //console.log(levelName, countObjects, entitiesLength);
 
                 for(let i = 0; i < countEntities; i++)
                 {
@@ -258,6 +254,8 @@ export default class SaveParser_Read
 
                 this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
             }
+
+            // SKIP LAST COLLECTED - They represent old actor not exisiting in game anymore
 
             this.worker.postMessage({command: 'transferData', data: {collectables: collectables}});
             this.worker.postMessage({command: 'transferData', data: {levels: levels}});

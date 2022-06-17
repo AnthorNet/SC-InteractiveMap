@@ -1,4 +1,4 @@
-/* global Intl, self */
+/* global Intl, self, Promise */
 import pako                                     from '../Lib/pako.esm.js';
 
 import Building_Conveyor                        from '../Building/Conveyor.js';
@@ -8,14 +8,21 @@ export default class SaveParser_Write
     constructor(worker, options)
     {
         this.worker                 = worker;
+        this.worker.messageIds      = 0;
+        this.worker.callbacks       = [];
+        this.worker.saveParserWrite = this;
 
         this.header                 = options.header;
         this.maxChunkSize           = options.maxChunkSize;
         this.PACKAGE_FILE_TAG       = options.PACKAGE_FILE_TAG;
 
         this.levels                 = options.levels;
-        this.objects                = options.objects;
-        this.collectables           = options.collectables;
+        this.availableLevels        = options.availableLevels;
+
+        this.stepsLength            = 5000;
+        this.saveBinaryReplacer     = [];
+        this.saveBinaryValues       = {};
+        this.countObjects           = options.countObjects;
 
         this.gameStatePathName      = options.gameStatePathName;
         this.playerHostPathName     = options.playerHostPathName;
@@ -29,288 +36,332 @@ export default class SaveParser_Write
         return this.streamSave();
     }
 
+    handleWorkerMessage(data)
+    {
+        let callback = this.worker.callbacks[data.messageId];
+            if(!callback){ return; }
+
+        delete this.worker.callbacks[data.messageId];
+        delete data.messageId;
+        return callback(data.data);
+    }
+    postWorkerMessage(data)
+    {
+        data.messageId = this.worker.messageIds++;
+
+        return new Promise((resolve) => {
+            this.worker.callbacks[data.messageId] = function(data){
+                return resolve(data);
+            };
+
+            this.worker.postMessage(data);
+        });
+    }
+
     streamSave()
     {
-        this.saveBlobArray  = [];
-        this.saveBinary     = '';
+        this.generatedChunks    = [];
+        this.saveBlobArray      = [];
+        this.saveBinary         = '';
 
         this.writeHeader();
         this.saveBlobArray.push(this.flushToUint8Array());
 
-        if(this.header.saveVersion >= 29)
-        {
-                this.generatedChunks    = [];
-            let objectsKeys             = Object.keys(this.objects);
-            let countTotalObjects       = objectsKeys.length;
-
-            this.saveBinary += this.writeInt(0, false); // This is a reservation for the inflated length ;)
-            this.saveBinary += this.writeInt((this.levels.length - 1), false);
-
-            let availableLevels = [];
-                for(let j = 0; j < (this.levels.length - 1); j++)
-                {
-                    let currentLevelName = this.levels[j].replace('Level ', '').split(':');
-                        currentLevelName.pop();
-                        currentLevelName = currentLevelName[0].split('.').pop();
-
-                    availableLevels.push(currentLevelName);
-                }
-
-            for(let j = 0; j < this.levels.length; j++)
-            {
-                let currentLevelName = this.levels[j].replace('Level ', '');
-                    if(j < (this.levels.length - 1)) // Do not write Persistent_Level
-                    {
-                        this.saveBinary += this.writeString(this.levels[j], false);
-
-                        currentLevelName = currentLevelName.split(':');
-                        currentLevelName.pop();
-                        currentLevelName = currentLevelName[0].split('.').pop();
-                    }
-
-                let currentLevelObjects = [];
-                    for(let i = 0; i < countTotalObjects; i++)
-                    {
-                        if(this.objects[objectsKeys[i]] !== undefined)
-                        {
-                            if(this.objects[objectsKeys[i]].levelName !== undefined && this.objects[objectsKeys[i]].levelName === currentLevelName)
-                            {
-                                currentLevelObjects.push(this.objects[objectsKeys[i]]);
-                                continue;
-                            }
-                            if(currentLevelName === 'Persistent_Level')
-                            {
-                                if(this.objects[objectsKeys[i]].levelName !== undefined && availableLevels.includes(this.objects[objectsKeys[i]].levelName) === false)
-                                {
-                                    currentLevelObjects.push(this.objects[objectsKeys[i]]);
-                                    continue;
-                                }
-                                if(this.objects[objectsKeys[i]].levelName === undefined)
-                                {
-                                    currentLevelObjects.push(this.objects[objectsKeys[i]]);
-                                    continue;
-                                }
-                            }
-                        }
-
-                    }
-                let currentLevelCollectables = [];
-                    for(let i = 0; i < this.collectables.length; i++)
-                    {
-                        if(this.collectables[i].levelName !== undefined && this.collectables[i].levelName === currentLevelName)
-                        {
-                            currentLevelCollectables.push(this.collectables[i]);
-                            continue;
-                        }
-                        if(currentLevelName === 'Persistent_Level')
-                        {
-                            if(this.collectables[i].levelName !== undefined && availableLevels.includes(this.collectables[i].levelName) === false)
-                            {
-                                currentLevelCollectables.push(this.collectables[i]);
-                                continue;
-                            }
-                            if(this.collectables[i].levelName === undefined)
-                            {
-                                currentLevelCollectables.push(this.collectables[i]);
-                                continue;
-                            }
-                        }
-                    }
-
-                let tempSaveBinaryObjects       = '';
-                let countObjects                = currentLevelObjects.length;
-                    this.currentEntityLength    = 0;
-                    for(let i = 0; i < countObjects; i++)
-                    {
-                        if(currentLevelObjects !== undefined)
-                        {
-                            if(currentLevelObjects[i].type === 0)
-                            {
-                                tempSaveBinaryObjects += this.writeObject(currentLevelObjects[i]);
-                            }
-                            if(currentLevelObjects[i].type === 1)
-                            {
-                                tempSaveBinaryObjects += this.writeActor(currentLevelObjects[i]);
-                            }
-                        }
-
-                        // Only show progress for the main level
-                        if(i % 2500 === 0 && j === (this.levels.length - 1))
-                        {
-                            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
-                            this.worker.postMessage({command: 'loaderProgress', percentage: ((i / countObjects * 100) * 0.48)});
-                        }
-                    }
-
-                tempSaveBinaryObjects += this.writeInt(currentLevelCollectables.length, false);
-                for(let i = 0; i < currentLevelCollectables.length; i++)
-                {
-                    tempSaveBinaryObjects += this.writeObjectProperty(currentLevelCollectables[i], false);
-                }
-
-                this.currentEntityLength += 4; // countObjects
-
-                //console.log('OBJECTS', this.levels[j], this.currentEntityLength, countObjects);
-
-                this.saveBinary += this.writeInt(this.currentEntityLength, false);
-                this.saveBinary += this.writeInt(countObjects, false);
-                this.saveBinary += this.writeHex(tempSaveBinaryObjects, false);
-
-                if(this.saveBinary.length >= this.maxChunkSize)
-                {
-                    this.pushSaveToChunk();
-                }
-
-                let tempSaveBinaryEntities      = '';
-                let entityLength                = 0;
-                    for(let i = 0; i < countObjects; i++)
-                    {
-                        if(currentLevelObjects !== undefined)
-                        {
-                            tempSaveBinaryEntities  += this.writeEntity(currentLevelObjects[i]);
-                            entityLength            += this.currentEntityLength;
-                        }
-
-                        // Only show progress for the main level
-                        if(i % 2500 === 0 && j === (this.levels.length - 1))
-                        {
-                            this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
-                            this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (i / countObjects * 100) * 0.48)});
-                        }
-                    }
-
-                this.currentEntityLength = 0;
-                tempSaveBinaryEntities += this.writeInt(currentLevelCollectables.length, false);
-                for(let i = 0; i < currentLevelCollectables.length; i++)
-                {
-                    tempSaveBinaryEntities += this.writeObjectProperty(currentLevelCollectables[i], false);
-                }
-                //entityLength += this.currentEntityLength;
-                entityLength += 4;
-                //console.log('ENTITIES', this.levels[j], entityLength, countObjects);
-                this.saveBinary += this.writeInt(entityLength, false);
-                this.saveBinary += this.writeInt(countObjects, false);
-                this.saveBinary += this.writeHex(tempSaveBinaryEntities, false);
-
-                if(this.saveBinary.length >= this.maxChunkSize)
-                {
-                    this.pushSaveToChunk();
-                }
-            }
-
-            return this.finalizeChunks();
-        }
+        this.saveBinary        += this.writeInt(0, false); // This is a reservation for the inflated length ;)
 
         return this.generateChunks();
     }
 
     generateChunks()
     {
-            this.generatedChunks    = [];
-        let objectsKeys             = Object.keys(this.objects);
-        let countObjects            = objectsKeys.length;
+        if(this.header.saveVersion >= 29)
+        {
+            return this.generateLevelChunks();
+        }
 
-            this.saveBinary += this.writeInt(0, false); // This is a reservation for the inflated length ;)
-            this.saveBinary += this.writeInt(countObjects, false);
-
-        return this.generateObjectsChunks(objectsKeys);
+        return this.generateOldChunks();
     }
 
-    generateObjectsChunks(objectsKeys)
-    {
-        let countObjects = objectsKeys.length;
-            for(let i = 0; i < countObjects; i++)
-            {
-                if(this.objects[objectsKeys[i]] !== undefined)
-                {
-                    if(this.objects[objectsKeys[i]].type === 0)
-                    {
-                        this.saveBinary += this.writeObject(this.objects[objectsKeys[i]]);
-                    }
-                    if(this.objects[objectsKeys[i]].type === 1)
-                    {
-                        this.saveBinary += this.writeActor(this.objects[objectsKeys[i]]);
-                    }
-                }
 
-                if(i % 2500 === 0)
-                {
-                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s/%2$s objects...', replace: [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]});
-                    this.worker.postMessage({command: 'loaderProgress', percentage: ((i / countObjects * 100) * 0.48)});
-                }
+    /*
+     * VERSION 29
+     */
+    generateLevelChunks(currentLevel = 0)
+    {
+        if(currentLevel === 0)
+        {
+            this.saveBinary += this.writeInt((this.levels.length - 1), false);
+        }
+
+        let currentLevelName = this.levels[currentLevel].replace('Level ', '');
+            if(currentLevel < (this.levels.length - 1)) // Do not write Persistent_Level
+            {
+                this.saveBinary += this.writeString(this.levels[currentLevel], false);
+
+                currentLevelName = currentLevelName.split(':');
+                currentLevelName.pop();
+                currentLevelName = currentLevelName[0].split('.').pop();
             }
 
+        this.postWorkerMessage({command: 'requestObjectKeys', levelName: currentLevelName}).then((objectKeys) => {
+            this.postWorkerMessage({command: 'requestCollectables', levelName: currentLevelName}).then((collectables) => {
+                return this.generateObjectsChunks(currentLevel, objectKeys, collectables);
+            });
+        });
+    }
+
+    generateObjectsChunks(currentLevel, objectKeys, collectables, step = 0, tempSaveBinaryLength = 0)
+    {
+        if(step === 0)
+        {
+            this.saveBinaryReplacer.push({
+                key     : currentLevel + '-objectsSaveBinaryLength',
+                location: this.saveBinary.length,
+            });
+
+            this.saveBinary            += this.writeInt(0, false);
+            this.saveBinary            += this.writeInt(objectKeys.length, false);
+            tempSaveBinaryLength       += 4; // countObjects
+        }
+
+        let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
+            if(objectKeySpliced.length > 0)
+            {
+                return this.postWorkerMessage({command: 'requestObjects', objectKeys: objectKeySpliced}).then((objects) => {
+                    let countObjects = objects.length;
+                        for(let i = 0; i < countObjects; i++)
+                        {
+                            if(objects[i].type === 0)
+                            {
+                                this.saveBinary        += this.writeObject(objects[i]);
+                                tempSaveBinaryLength   += this.currentEntityLength;
+                            }
+                            if(objects[i].type === 1)
+                            {
+                                this.saveBinary        += this.writeActor(objects[i]);
+                                tempSaveBinaryLength   += this.currentEntityLength;
+                            }
+
+                            // Only show progress for the main level
+                            if(i % 1000 === 0 && currentLevel === (this.levels.length - 1))
+                            {
+                                let progress = step / objectKeys.length * 100;
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.48)});
+
+                                this.pushSaveToChunk();
+                            }
+                        }
+
+                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, (step + this.stepsLength), tempSaveBinaryLength);
+                });
+            }
+
+
+        this.currentEntityLength    = 0;
+        this.saveBinary            += this.generateCollectablesChunks(collectables);
+        tempSaveBinaryLength       += this.currentEntityLength;
+
+        this.saveBinaryValues[currentLevel + '-objectsSaveBinaryLength'] = tempSaveBinaryLength;
         this.pushSaveToChunk();
-        console.log('Saved ' + countObjects + ' objects...');
 
-        this.saveBinary += this.writeInt(countObjects, false);
-        return this.generateEntitiesChunks(objectsKeys);
+        if(currentLevel === (this.levels.length - 1))
+        {
+            console.log('Saved ' + objectKeys.length + ' objects...');
+        }
+
+        return this.generateEntitiesChunks(currentLevel, objectKeys, collectables);
     }
 
-    generateEntitiesChunks(objectsKeys)
+    generateEntitiesChunks(currentLevel, objectKeys, collectables, step = 0, tempSaveBinaryLength = 0)
     {
-        let countObjects = objectsKeys.length;
-            for(let i = 0; i < countObjects; i++)
-            {
-                if(this.objects[objectsKeys[i]] !== undefined)
-                {
-                    this.saveBinary += this.writeEntity(this.objects[objectsKeys[i]]);
-                }
+        if(step === 0)
+        {
+            this.saveBinaryReplacer.push({
+                key     : currentLevel + '-entitiesSaveBinaryLength',
+                location: this.saveBinary.length,
+            });
 
-                if(i % 2500 === 0)
-                {
-                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s/%2$s entities...', replace: [new Intl.NumberFormat(this.language).format(i), new Intl.NumberFormat(this.language).format(countObjects)]});
-                    this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (i / countObjects * 100) * 0.48)});
-                }
+            this.saveBinary            += this.writeInt(0, false);
+            this.saveBinary            += this.writeInt(objectKeys.length, false);
+            tempSaveBinaryLength       += 4; // countObjects
+        }
+
+        let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
+            if(objectKeySpliced.length > 0)
+            {
+                return this.postWorkerMessage({command: 'requestObjects', objectKeys: objectKeySpliced}).then((objects) => {
+                    let countObjects = objects.length;
+                        for(let i = 0; i < countObjects; i++)
+                        {
+                            this.saveBinary            += this.writeEntity(objects[i]);
+                            tempSaveBinaryLength       += this.currentEntityLength;
+
+                            // Force big entities to deflate to avoid memory error (Mainly foliage removal...)
+                            if(this.currentEntityLength >= this.maxChunkSize)
+                            {
+                                this.pushSaveToChunk();
+                            }
+
+                            // Only show progress for the main level
+                            if(i % 1000 === 0 && currentLevel === (this.levels.length - 1))
+                            {
+                                let progress = step / objectKeys.length * 100;
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (progress * 0.48))});
+
+                                this.pushSaveToChunk();
+                            }
+                        }
+
+                    return this.generateEntitiesChunks(currentLevel, objectKeys, collectables, (step + this.stepsLength), tempSaveBinaryLength);
+                });
             }
 
+        // Save current level entities
+        this.saveBinary        += this.generateCollectablesChunks(collectables);
+
+
+        this.saveBinaryValues[currentLevel + '-entitiesSaveBinaryLength'] = tempSaveBinaryLength;
         this.pushSaveToChunk();
-        console.log('Saved ' + countObjects + ' entities...');
 
-        return this.generateCollectablesChunks();
-    }
-
-    generateCollectablesChunks()
-    {
-        let countCollectables = this.collectables.length;
-            this.saveBinary  += this.writeInt(countCollectables, false);
-            for(let i = 0; i < countCollectables; i++)
-            {
-                this.saveBinary += this.writeObjectProperty(this.collectables[i], false);
-
-                if(this.saveBinary.length >= this.maxChunkSize)
-                {
-                    this.pushSaveToChunk();
-                }
-            }
+        if(currentLevel < (this.levels.length - 1))
+        {
+            return this.generateLevelChunks(currentLevel + 1);
+        }
+        if(currentLevel === (this.levels.length - 1))
+        {
+            console.log('Saved ' + objectKeys.length + ' entities...');
+        }
 
         return this.finalizeChunks();
     }
 
+    generateCollectablesChunks(collectables)
+    {
+        let tempSaveBinary  = '';
+            tempSaveBinary += this.writeInt(collectables.length, false);
+            for(let i = 0; i < collectables.length; i++)
+            {
+                tempSaveBinary += this.writeObjectProperty(collectables[i], false);
+            }
+
+        return tempSaveBinary;
+    }
+
+
+    /*
+     * VERSION 28
+     */
+    generateOldChunks()
+    {
+        let currentLevel = 'Persistent_Level';
+
+        this.postWorkerMessage({command: 'requestObjectKeys', levelName: currentLevel}).then((objectKeys) => {
+            return this.generateOldObjectsChunks(currentLevel, objectKeys);
+        });
+    }
+
+    generateOldObjectsChunks(currentLevel, objectKeys, step = 0)
+    {
+        if(step === 0)
+        {
+            this.saveBinary += this.writeInt(objectKeys.length, false);
+        }
+
+        let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
+
+            if(objectKeySpliced.length > 0)
+            {
+                return this.postWorkerMessage({command: 'requestObjects', objectKeys: objectKeySpliced}).then((objects) => {
+                    let countObjects = objects.length;
+                        for(let i = 0; i < countObjects; i++)
+                        {
+                            if(objects[i].type === 0)
+                            {
+                                this.saveBinary += this.writeObject(objects[i]);
+                            }
+                            if(objects[i].type === 1)
+                            {
+                                this.saveBinary += this.writeActor(objects[i]);
+                            }
+
+                            if(i % 1000 === 0)
+                            {
+                                let progress = step / objectKeys.length * 100;
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.48)});
+
+                                this.pushSaveToChunk();
+                            }
+                        }
+
+                    return this.generateOldObjectsChunks(currentLevel, objectKeys, (step + this.stepsLength));
+                });
+            }
+
+        this.pushSaveToChunk();
+        console.log('Saved ' + objectKeys.length + ' objects...');
+        return this.generateOldEntitiesChunks(currentLevel, objectKeys);
+    }
+
+    generateOldEntitiesChunks(currentLevel, objectKeys, step = 0)
+    {
+        if(step === 0)
+        {
+            this.saveBinary += this.writeInt(objectKeys.length, false);
+        }
+
+        let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
+            if(objectKeySpliced.length > 0)
+            {
+                return this.postWorkerMessage({command: 'requestObjects', objectKeys: objectKeySpliced}).then((objects) => {
+                    let countObjects = objects.length;
+                        for(let i = 0; i < countObjects; i++)
+                        {
+                            this.saveBinary += this.writeEntity(objects[i]);
+
+                            // Force big entities to deflate to avoid memory error (Mainly foliage removal...)
+                            if(this.currentEntityLength >= this.maxChunkSize)
+                            {
+                                this.pushSaveToChunk();
+                            }
+
+                            if(i % 1000 === 0)
+                            {
+                                let progress = step / objectKeys.length * 100;
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (progress * 0.48))});
+
+                                this.pushSaveToChunk();
+                            }
+                        }
+
+                    return this.generateOldEntitiesChunks(currentLevel, objectKeys, (step + this.stepsLength));
+                });
+            }
+
+        this.pushSaveToChunk();
+        console.log('Saved ' + objectKeys.length + ' entities...');
+
+        this.postWorkerMessage({command: 'requestCollectables', levelName: currentLevel}).then((collectables) => {
+            this.saveBinary  += this.generateCollectablesChunks(collectables);
+            return this.finalizeChunks();
+        });
+    }
+
+    /*
+     * CHUNKS HANDLING
+     */
     pushSaveToChunk()
     {
-        //$('.loader h6').html('Deflate chunk ' + this.generatedChunks.length + ' (' + this.saveBinary.length + ' / ' + this.maxChunkSize + ')...');
         while(this.saveBinary.length >= this.maxChunkSize)
         {
             // Extract extra to be processed later...
             let tempSaveBinary  = this.saveBinary.slice(this.maxChunkSize);
                 this.saveBinary = this.saveBinary.slice(0, this.maxChunkSize);
-
-            // Add a new chunk!
-            if(this.generatedChunks.length > 0)
-            {
-                this.generatedChunks.push(this.deflateChunk());
-            }
-            else
-            {
-                let input = this.flushToUint8Array();
-                    this.generatedChunks.push({
-                        uncompressedLength  : input.byteLength,
-                        output              : input
-                    });
-            }
-
-            this.saveBinary = tempSaveBinary;
+                this.createChunk();
+                this.saveBinary = tempSaveBinary;
         }
     }
 
@@ -318,45 +369,112 @@ export default class SaveParser_Write
     {
         if(this.saveBinary.length > 0)
         {
-            // Add last chunk!
-            if(this.generatedChunks.length > 0)
-            {
-                this.generatedChunks.push(this.deflateChunk());
-            }
-            else
-            {
-                let input = this.flushToUint8Array();
-                this.generatedChunks.push({
-                    uncompressedLength  : input.byteLength,
-                    output              : input
-                });
-            }
+            this.createChunk();
         }
 
         console.log('Generated ' + this.generatedChunks.length + ' chunks...');
-        this.streamChunks(this.generatedChunks);
+        this.streamChunks();
     }
 
-    streamChunks(chunks)
+    createChunk()
+    {
+        // Check if we need to replace values afterward...
+        let havePlaceholders = [];
+            if(this.saveBinaryReplacer.length > 0)
+            {
+                for(let i = (this.saveBinaryReplacer.length - 1); i >= 0; i--)
+                {
+                    if(this.saveBinaryReplacer[i].location <= this.saveBinary.length)
+                    {
+                        havePlaceholders.push(this.saveBinaryReplacer[i]);
+                        this.saveBinaryReplacer.splice(i, 1);
+                    }
+                    else
+                    {
+                        this.saveBinaryReplacer[i].location -= this.saveBinary.length;
+                    }
+                }
+            }
+
+        let input                       = this.flushToUint8Array();
+        let chunk                       = {};
+            chunk.uncompressedLength    = input.byteLength;
+
+            if(havePlaceholders.length > 0)
+            {
+                chunk.toReplace = havePlaceholders;
+            }
+
+            // First chunk is not deflated yet as we need to add the total deflated length
+            if(this.generatedChunks.length === 0 || chunk.toReplace !== undefined)
+            {
+                chunk.output = input;
+
+                if(this.generatedChunks.length === 0)
+                {
+                    chunk.isFirstChunk = true;
+                }
+            }
+            else
+            {
+                let output = pako.deflate(input);
+                    chunk.output            = output;
+                    chunk.compressedLength  = output.byteLength;
+            }
+
+        this.generatedChunks.push(chunk);
+    }
+
+    flushToUint8Array()
+    {
+        let slice       = this.saveBinary.length;
+        let buffer      = new Uint8Array(slice);
+            for(let j = 0; j < slice; j++)
+            {
+                buffer[j] = this.saveBinary.charCodeAt(j) & 0xFF;
+            }
+
+        this.saveBinary = '';
+
+        return buffer;
+    }
+
+    streamChunks()
     {
         this.worker.postMessage({command: 'loaderMessage', message: 'Generating save file...'});
 
-        while(chunks.length > 0)
+        while(this.generatedChunks.length > 0)
         {
-            let currentChunk = chunks.shift();
+            let currentChunk = this.generatedChunks.shift();
                 if(currentChunk.compressedLength === undefined)
                 {
-                    // Update first chunk inflated size
-                    let totalInflated = currentChunk.uncompressedLength - 4;
-                        for(let i = 0; i < chunks.length; i++)
-                        {
-                            totalInflated += chunks[i].uncompressedLength;
-                        }
+                    if(currentChunk.isFirstChunk !== undefined)
+                    {
+                        // Update first chunk inflated size
+                        let totalInflated = currentChunk.uncompressedLength - 4;
+                            for(let i = 0; i < this.generatedChunks.length; i++)
+                            {
+                                totalInflated += this.generatedChunks[i].uncompressedLength;
+                            }
 
-                    currentChunk.output[3] = (totalInflated >>> 24);
-                    currentChunk.output[2] = (totalInflated >>> 16);
-                    currentChunk.output[1] = (totalInflated >>> 8);
-                    currentChunk.output[0] = (totalInflated & 0xff);
+                        currentChunk.output[3]          = (totalInflated >>> 24);
+                        currentChunk.output[2]          = (totalInflated >>> 16);
+                        currentChunk.output[1]          = (totalInflated >>> 8);
+                        currentChunk.output[0]          = (totalInflated & 0xff);
+                    }
+
+                    if(currentChunk.toReplace !== undefined)
+                    {
+                        for(let i = 0; i < currentChunk.toReplace.length; i++)
+                        {
+                            let replaceValue                            = this.saveBinaryValues[currentChunk.toReplace[i].key];
+                            let replacePosition                         = currentChunk.toReplace[i].location;
+                                currentChunk.output[replacePosition+3]  = (replaceValue >>> 24);
+                                currentChunk.output[replacePosition+2]  = (replaceValue >>> 16);
+                                currentChunk.output[replacePosition+1]  = (replaceValue >>> 8);
+                                currentChunk.output[replacePosition]    = (replaceValue & 0xff);
+                        }
+                    }
 
                     currentChunk.output             = pako.deflate(currentChunk.output);
                     currentChunk.compressedLength   = currentChunk.output.byteLength;
@@ -382,32 +500,6 @@ export default class SaveParser_Write
         }
 
         this.worker.postMessage({command: 'endSaveWriting', blobArray: this.saveBlobArray});
-    }
-
-    deflateChunk()
-    {
-        let input   = this.flushToUint8Array();
-        let output  = pako.deflate(input);
-
-        return {
-            compressedLength    : output.byteLength,
-            uncompressedLength  : input.byteLength,
-            output              : output
-        };
-    }
-
-    flushToUint8Array()
-    {
-        let slice       = this.saveBinary.length;
-        let buffer      = new Uint8Array(slice);
-            for(let j = 0; j < slice; j++)
-            {
-                buffer[j]   = this.saveBinary.charCodeAt(j) & 0xFF;
-            }
-
-        this.saveBinary     = '';
-
-        return buffer;
     }
 
 
@@ -440,19 +532,21 @@ export default class SaveParser_Write
 
     writeObject(currentObject)
     {
-        let object  = this.writeInt(0, false);
-            object += this.writeString(currentObject.className, false);
-            object += this.writeObjectProperty(currentObject, false);
-            object += this.writeString(currentObject.outerPathName, false);
+        this.currentEntityLength    = 0;
+        let object                  = this.writeInt(0, false);
+            object                 += this.writeString(currentObject.className, false);
+            object                 += this.writeObjectProperty(currentObject, false);
+            object                 += this.writeString(currentObject.outerPathName, false);
 
         return object;
     }
 
     writeActor(currentActor)
     {
-        let actor  = this.writeInt(1, false);
-            actor += this.writeString(currentActor.className, false);
-            actor += this.writeObjectProperty(currentActor, false);
+        this.currentEntityLength    = 0;
+        let actor                   = this.writeInt(1, false);
+            actor                  += this.writeString(currentActor.className, false);
+            actor                  += this.writeObjectProperty(currentActor, false);
 
             if(currentActor.needTransform !== undefined)
             {
@@ -1602,5 +1696,12 @@ export default class SaveParser_Write
 };
 
 self.onmessage = function(e){
-    return new SaveParser_Write(self, e.data);
+    if(e.data.command !== undefined)
+    {
+        self.saveParserWrite.handleWorkerMessage(e.data);
+    }
+    else
+    {
+        return new SaveParser_Write(self, e.data);
+    }
 };
