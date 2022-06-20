@@ -823,8 +823,8 @@ export default class Building_Sign
 
                 // Create if don't exists
                 mPropertyName.values.push([
-                    {name: 'ElementName', type: 'StrProperty', value: elementName},
-                    {name: elementKey, type: 'StrProperty', value: value}
+                    {name: 'ElementName', type: 'Str', value: elementName},
+                    {name: elementKey, type: 'Str', value: value}
                 ])
             }
     }
@@ -1216,7 +1216,7 @@ export default class Building_Sign
                     baseLayout.deleteObjectProperty(currentObject, 'mEmissive');
                     if(parseInt(values.mEmissive) !== 0)
                     {
-                        baseLayout.setObjectProperty(currentObject, 'mEmissive', parseInt(values.mEmissive), 'FloatProperty');
+                        baseLayout.setObjectProperty(currentObject, 'mEmissive', parseInt(values.mEmissive), 'Float');
                     }
                 }
             });
@@ -1246,7 +1246,7 @@ export default class Building_Sign
                     baseLayout.deleteObjectProperty(currentObject, 'mGlossiness');
                     if(parseInt(values.mGlossiness) !== 0)
                     {
-                        baseLayout.setObjectProperty(currentObject, 'mGlossiness', 1, 'FloatProperty');
+                        baseLayout.setObjectProperty(currentObject, 'mGlossiness', 1, 'Float');
                     }
                 }
             });

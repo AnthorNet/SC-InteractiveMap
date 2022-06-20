@@ -67,8 +67,8 @@ export default class Building_PowerSwitch
                 {
                     if(values.mBuildingTag !== '')
                     {
-                        baseLayout.setObjectProperty(currentObject, 'mHasBuildingTag', 1, 'BoolProperty');
-                        baseLayout.setObjectProperty(currentObject, 'mBuildingTag', values.mBuildingTag, 'StrProperty');
+                        baseLayout.setObjectProperty(currentObject, 'mHasBuildingTag', 1, 'Bool');
+                        baseLayout.setObjectProperty(currentObject, 'mBuildingTag', values.mBuildingTag, 'Str');
                     }
                     else
                     {
@@ -91,7 +91,7 @@ export default class Building_PowerSwitch
             }
             else
             {
-                baseLayout.setObjectProperty(currentObject, 'mIsSwitchOn', 1, 'BoolProperty');
+                baseLayout.setObjectProperty(currentObject, 'mIsSwitchOn', 1, 'Bool');
             }
     }
 }

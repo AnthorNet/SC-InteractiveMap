@@ -170,7 +170,7 @@ export default class Building_RailroadTrack
 
                             if(connectedComponents.length > 1)
                             {
-                                baseLayout.setObjectProperty(trackConnection1, 'mSwitchPosition', ((mSwitchPosition === 0) ? 1 : 0), 'IntProperty');
+                                baseLayout.setObjectProperty(trackConnection1, 'mSwitchPosition', ((mSwitchPosition === 0) ? 1 : 0), 'Int');
                             }
                     }
             }

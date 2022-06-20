@@ -15,11 +15,11 @@ export default class Building_MAM
 
                     if(mUnlockedResearchTrees === null)
                     {
-                        baseLayout.setObjectProperty(researchManager, 'mUnlockedResearchTrees', {type: 'ObjectProperty', values: []}, 'ArrayProperty');
+                        baseLayout.setObjectProperty(researchManager, 'mUnlockedResearchTrees', {type: 'Object', values: []}, 'Array');
                     }
                     if(mIsActivated === null)
                     {
-                        baseLayout.setObjectProperty(researchManager, 'mIsActivated', 1, 'BoolProperty');
+                        baseLayout.setObjectProperty(researchManager, 'mIsActivated', 1, 'Bool');
                     }
             }
     }

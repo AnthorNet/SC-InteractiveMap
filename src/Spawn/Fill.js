@@ -63,19 +63,19 @@ export default class Spawn_Fill
                 rotation        : [0, 0, 0, 1],
                 translation     : this.center
             },
-            entity          : {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"},
+            entity          : {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'},
             properties      : [
                 {
-                    name        : "mBuiltWithRecipe",
-                    type        : "ObjectProperty",
+                    name        : 'mBuiltWithRecipe',
+                    type        : 'Object',
                     value       : {
-                        levelName   : "",
-                        pathName    : "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x4_01.Recipe_Foundation_8x4_01_C"
+                        levelName   : '',
+                        pathName    : '/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x4_01.Recipe_Foundation_8x4_01_C'
                     }
                 },
                 {
-                    name        : "mBuildTimeStamp",
-                    type        : "FloatProperty",
+                    name        : 'mBuildTimeStamp',
+                    type        : 'Float',
                     value       : 0
                 }
             ]

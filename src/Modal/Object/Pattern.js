@@ -59,7 +59,7 @@ export default class Modal_Object_Pattern
                         // Push
                         if(values.PatternDesc !== 'NULL')
                         {
-                            mCustomizationData.values.push({name: 'PatternDesc', type: 'ObjectProperty', value: {levelName: '', pathName: values.PatternDesc}});
+                            mCustomizationData.values.push({name: 'PatternDesc', type: 'Object', value: {levelName: '', pathName: values.PatternDesc}});
                         }
                     }
 

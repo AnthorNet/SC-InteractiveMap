@@ -171,8 +171,8 @@ export default class Building_PowerLine
                     {
                         powerConnectionSource.properties.push({
                             name    : 'mWires',
-                            type    : 'ArrayProperty',
-                            value   : {type: 'ObjectProperty', values: []}
+                            type    : 'Array',
+                            value   : {type: 'Object', values: []}
                         });
 
                         mWiresSource = baseLayout.getObjectProperty(powerConnectionSource, 'mWires');
@@ -183,8 +183,8 @@ export default class Building_PowerLine
                     {
                         powerConnectionTarget.properties.push({
                             name    : 'mWires',
-                            type    : 'ArrayProperty',
-                            value   : {type: 'ObjectProperty', values: []}
+                            type    : 'Array',
+                            value   : {type: 'Object', values: []}
                         });
 
                         mWiresTarget = baseLayout.getObjectProperty(powerConnectionTarget, 'mWires');
@@ -238,10 +238,10 @@ export default class Building_PowerLine
             if(mWires === null)
             {
                 currentObject.properties.push({
-                    name    : "mWires",
-                    type    : "ArrayProperty",
+                    name    : 'mWires',
+                    type    : 'Array',
                     value   : {
-                        type    : "ObjectProperty",
+                        type    : 'Object',
                         values  : [{
                             levelName   : ((currentWireObject.levelName !== undefined) ? currentWireObject.levelName : 'Persistent_Level'),
                             pathName    : currentWireObject.pathName

@@ -458,7 +458,6 @@ export default class SaveParser_Read
                 {
                     break;
                 }
-
                 this.objects[objectKey].properties.push(property);
         }
 
@@ -666,7 +665,7 @@ export default class SaveParser_Read
             return null;
         }
 
-        currentProperty.type    = this.readString();
+        currentProperty.type    = this.readString().replace('Property', '');
 
         this.skipBytes(4); // Length of the property, this is calculated when writing back ;)
 
@@ -678,77 +677,68 @@ export default class SaveParser_Read
 
         switch(currentProperty.type)
         {
-            case 'BoolProperty':
-                currentProperty.value = this.readByte();
-
-                let unkBoolByte = this.readByte();
+            case 'Bool':
+                    currentProperty.value   = this.readByte();
+                let unkBoolByte             = this.readByte();
                     if(unkBoolByte === 1)
                     {
                         currentProperty.unkBool = this.readHex(16);
                     }
-
                 break;
 
-            case 'Int8Property':
+            case 'Int8':
                 this.skipBytes();
                 currentProperty.value = this.readInt8();
-
                 break;
 
-            case 'IntProperty':
-            case 'UInt32Property': // Mod?
+            case 'Int':
+            case 'UInt32': // Mod?
                 let unkIntByte = this.readByte();
                     if(unkIntByte === 1)
                     {
                         currentProperty.unkInt = this.readHex(16);
                     }
                 currentProperty.value = this.readInt();
-
                 break;
 
-            case 'Int64Property':
-            case 'UInt64Property':
+            case 'Int64':
+            case 'UInt64':
                 this.skipBytes();
                 currentProperty.value = this.readLong();
-
                 break;
 
-            case 'FloatProperty':
+            case 'Float':
                 this.skipBytes();
                 currentProperty.value = this.readFloat();
-
                 break;
 
-            case 'DoubleProperty':
+            case 'Double':
                 this.skipBytes();
                 currentProperty.value = this.readDouble();
-
                 break;
 
-            case 'StrProperty':
-            case 'NameProperty':
+            case 'Str':
+            case 'Name':
                 this.skipBytes();
                 currentProperty.value = this.readString();
-
                 break;
 
-            case 'ObjectProperty':
-            case 'InterfaceProperty':
+            case 'Object':
+            case 'Interface':
                 this.skipBytes();
                 currentProperty.value = this.readObjectProperty({});
                 break;
 
-            case 'EnumProperty':
-                let enumPropertyName = this.readString();
-                this.skipBytes();
-                currentProperty.value = {
-                    name: enumPropertyName,
-                    value: this.readString()
-                };
-
+            case 'Enum':
+                let enumPropertyName        = this.readString();
+                    this.skipBytes();
+                    currentProperty.value   = {
+                        name    : enumPropertyName,
+                        value   : this.readString()
+                    };
                 break;
 
-            case 'ByteProperty':
+            case 'Byte':
                 let enumName = this.readString(); //TODO
                     this.skipBytes();
 
@@ -766,531 +756,27 @@ export default class SaveParser_Read
                         valueName: this.readString()
                     };
                 }
-
                 break;
 
-            case 'TextProperty':
+            case 'Text':
                 this.skipBytes();
-                currentProperty             = this.readTextProperty(currentProperty);
-
+                currentProperty = this.readTextProperty(currentProperty);
                 break;
 
-            case 'ArrayProperty':
-                    currentProperty.value       = {type    : this.readString(), values  : []};
-                    this.skipBytes();
-                let currentArrayPropertyCount   = this.readInt();
-
-                switch(currentProperty.value.type)
-                {
-                    case 'ByteProperty':
-                        switch(currentProperty.name)
-                        {
-                            case 'mFogOfWarRawData':
-                                for(let i = 0; i < (currentArrayPropertyCount / 4); i++)
-                                {
-                                    this.readByte(); // 0
-                                    this.readByte(); // 0
-                                    currentProperty.value.values.push(this.readByte());
-                                    this.readByte(); // 255
-                                }
-                                break;
-                            default:
-                                for(let i = 0; i < currentArrayPropertyCount; i++)
-                                {
-                                    currentProperty.value.values.push(this.readByte());
-                                }
-                        }
-                        break;
-
-                    case 'BoolProperty':
-                        for(let i = 0; i < currentArrayPropertyCount; i++)
-                        {
-                            currentProperty.value.values.push(this.readByte());
-                        }
-
-                    case 'IntProperty':
-                        for(let i = 0; i < currentArrayPropertyCount; i++)
-                        {
-                            currentProperty.value.values.push(this.readInt());
-                        }
-                        break;
-
-                    case 'FloatProperty':
-                        for(let i = 0; i < currentArrayPropertyCount; i++)
-                        {
-                            currentProperty.value.values.push(this.readFloat());
-                        }
-                        break;
-
-                    case 'EnumProperty':
-                        for(let i = 0; i < currentArrayPropertyCount; i++)
-                        {
-                            currentProperty.value.values.push({name: this.readString()});
-                        }
-                        break;
-                    case 'StrProperty':
-                        for(let i = 0; i < currentArrayPropertyCount; i++)
-                        {
-                            currentProperty.value.values.push(this.readString());
-                        }
-                        break;
-                    case 'TextProperty': // ???
-                        for(let i = 0; i < currentArrayPropertyCount; i++)
-                        {
-                            currentProperty.value.values.push(this.readTextProperty({}));
-                        }
-                        break;
-
-                    case 'ObjectProperty':
-                    case 'InterfaceProperty':
-                        for(let i = 0; i < currentArrayPropertyCount; i++)
-                        {
-                            currentProperty.value.values.push(this.readObjectProperty({}));
-                        }
-                        break;
-
-                    case 'StructProperty':
-                        currentProperty.structureName       = this.readString();
-                        currentProperty.structureType       = this.readString();
-
-                        this.readInt(); // structureSize
-                        this.readInt(); // 0
-
-                        currentProperty.structureSubType    = this.readString();
-
-                        let propertyGuid1 = this.readInt();
-                        let propertyGuid2 = this.readInt();
-                        let propertyGuid3 = this.readInt();
-                        let propertyGuid4 = this.readInt();
-                            if(propertyGuid1 !== 0)
-                            {
-                                currentProperty.propertyGuid1 = propertyGuid1;
-                            }
-                            if(propertyGuid2 !== 0)
-                            {
-                                currentProperty.propertyGuid2 = propertyGuid2;
-                            }
-                            if(propertyGuid3 !== 0)
-                            {
-                                currentProperty.propertyGuid3 = propertyGuid3;
-                            }
-                            if(propertyGuid4 !== 0)
-                            {
-                                currentProperty.propertyGuid4 = propertyGuid4;
-                            }
-
-                        this.skipBytes(1);
-
-                        for(let i = 0; i < currentArrayPropertyCount; i++)
-                        {
-                            switch(currentProperty.structureSubType)
-                            {
-                                case 'InventoryItem': // MOD: FicsItNetworks
-                                    currentProperty.value.values.push({
-                                        unk1          : this.readInt(),
-                                        itemName      : this.readString(),
-                                        levelName     : this.readString(),
-                                        pathName      : this.readString()
-                                    });
-                                    break;
-
-                                case 'Guid':
-                                    currentProperty.value.values.push(this.readHex(16));
-                                    break;
-
-                                case 'FINNetworkTrace': // MOD: FicsIt-Networks
-                                    currentProperty.value.values.push(this.readFINNetworkTrace());
-                                    break;
-
-                                case 'Vector':
-                                    currentProperty.value.values.push({
-                                        x           : this.readFloat(),
-                                        y           : this.readFloat(),
-                                        z           : this.readFloat()
-                                    });
-                                    break;
-
-                                case 'LinearColor':
-                                    currentProperty.value.values.push({
-                                        r : this.readFloat(),
-                                        g : this.readFloat(),
-                                        b : this.readFloat(),
-                                        a : this.readFloat()
-                                    });
-                                    break;
-
-                                // MOD: FicsIt-Networks
-                                // See: https://github.com/CoderDE/FicsIt-Networks/blob/3472a437bcd684deb7096ede8f03a7e338b4a43d/Source/FicsItNetworks/Computer/FINComputerGPUT1.h#L42
-                                case 'FINGPUT1BufferPixel':
-                                    currentProperty.value.values.push(this.readFINGPUT1BufferPixel());
-                                    break;
-
-                                default: // Try normalised structure, then throw Error if not working...
-                                    try
-                                    {
-                                        let subStructProperties = [];
-                                            while(true)
-                                            {
-                                                let subStructProperty = this.readProperty();
-
-                                                    if(subStructProperty === null)
-                                                    {
-                                                        break;
-                                                    }
-
-                                                subStructProperties.push(subStructProperty);
-                                            }
-                                        currentProperty.value.values.push(subStructProperties);
-                                    }
-                                    catch(error)
-                                    {
-                                        this.worker.postMessage({command: 'alertParsing'});
-                                        if(typeof Sentry !== 'undefined')
-                                        {
-                                            Sentry.setContext('currentProperty', currentProperty);
-                                        }
-                                        throw new Error('Unimplemented key structureSubType `' + currentProperty.structureSubType + '` in ArrayProperty `' + currentProperty.name + '`');
-                                    }
-                            }
-                        }
-
-                        break;
-
-                    default:
-                        this.worker.postMessage({command: 'alertParsing'});
-                        if(typeof Sentry !== 'undefined')
-                        {
-                            Sentry.setContext('currentProperty', currentProperty);
-                        }
-                        throw new Error('Unimplemented type `' + currentProperty.value.type + '` in ArrayProperty `' + currentProperty.name + '`');
-                }
-
+            case 'Array':
+                currentProperty = this.readArrayProperty(currentProperty, parentType);
                 break;
 
-            case 'MapProperty':
-                currentProperty.value = {
-                    keyType         : this.readString(),
-                    valueType       : this.readString(),
-                    values          : []
-                };
-
-                    this.skipBytes(1);
-                    currentProperty.value.modeType = this.readInt();
-
-                    if(currentProperty.value.modeType === 2)
-                    {
-                        currentProperty.value.modeUnk2 = this.readString();
-                        currentProperty.value.modeUnk3 = this.readString();
-                    }
-                    if(currentProperty.value.modeType === 3)
-                    {
-                        currentProperty.value.modeUnk1 = this.readHex(9);
-                        currentProperty.value.modeUnk2 = this.readString();
-                        currentProperty.value.modeUnk3 = this.readString();
-                    }
-
-                let currentMapPropertyCount = this.readInt();
-                    for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
-                    {
-                        let mapPropertyKey;
-                        let mapPropertySubProperties    = [];
-
-                            switch(currentProperty.value.keyType)
-                            {
-                                case 'IntProperty':
-                                    mapPropertyKey = this.readInt();
-                                    break;
-                                case 'Int64Property':
-                                    mapPropertyKey = this.readLong();
-                                    break;
-                                case 'NameProperty':
-                                case 'StrProperty':
-                                    mapPropertyKey = this.readString();
-                                    break;
-                                case 'ObjectProperty':
-                                    mapPropertyKey = this.readObjectProperty({});
-                                    break;
-                                case 'EnumProperty':
-                                    mapPropertyKey = {
-                                        name        : this.readString()
-                                    };
-                                    break;
-                                case 'StructProperty':
-                                    mapPropertyKey = [];
-                                    while(true)
-                                    {
-                                        let subMapPropertyValue = this.readProperty();
-                                            if(subMapPropertyValue === null)
-                                            {
-                                                break;
-                                            }
-
-                                        mapPropertyKey.push(subMapPropertyValue);
-                                    }
-                                    break;
-                                default:
-                                    this.worker.postMessage({command: 'alertParsing'});
-                                    if(typeof Sentry !== 'undefined')
-                                    {
-                                        Sentry.setContext('currentProperty', currentProperty);
-                                    }
-                                    throw new Error('Unimplemented key type `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
-                            }
-
-                            switch(currentProperty.value.valueType)
-                            {
-                                case 'ByteProperty':
-                                    if(currentProperty.value.keyType === 'StrProperty')
-                                    {
-                                        mapPropertySubProperties = this.readString();
-                                    }
-                                    else
-                                    {
-                                        mapPropertySubProperties = this.readByte();
-                                    }
-                                    break;
-                                case 'BoolProperty':
-                                    mapPropertySubProperties = this.readByte();
-                                    break;
-                                case 'IntProperty':
-                                    mapPropertySubProperties = this.readInt();
-                                    break;
-                                case 'StrProperty':
-                                    mapPropertySubProperties = this.readString();
-                                    break;
-                                case 'ObjectProperty':
-                                    mapPropertySubProperties = this.readObjectProperty({});
-                                    break;
-                                case 'StructProperty':
-                                    if(parentType === 'LBBalancerData')
-                                    {
-                                        mapPropertySubProperties.mNormalIndex   = this.readInt();
-                                        mapPropertySubProperties.mOverflowIndex = this.readInt();
-                                        mapPropertySubProperties.mFilterIndex   = this.readInt();
-                                    }
-                                    else
-                                    {
-                                        while(true)
-                                        {
-                                            let subMapProperty = this.readProperty();
-                                                if(subMapProperty === null)
-                                                {
-                                                    break;
-                                                }
-
-                                            mapPropertySubProperties.push(subMapProperty);
-                                        }
-                                    }
-                                    break;
-                                default:
-                                    this.worker.postMessage({command: 'alertParsing'});
-                                    if(typeof Sentry !== 'undefined')
-                                    {
-                                        Sentry.setContext('currentProperty', currentProperty);
-                                    }
-                                    throw new Error('Unimplemented value type `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
-                            }
-
-                        currentProperty.value.values[iMapProperty]    = {
-                            key     : mapPropertyKey,
-                            value   : mapPropertySubProperties
-                        };
-                    }
+            case 'Map':
+                currentProperty = this.readMapProperty(currentProperty, parentType);
                 break;
 
-            case 'StructProperty':
-                currentProperty.value = {type: this.readString()};
-                this.skipBytes(17); // 0 0 0 0 + skipByte(1)
-
-                switch(currentProperty.value.type)
-                {
-                    case 'Color':
-                        currentProperty.value.values = {
-                            b           : this.readByte(),
-                            g           : this.readByte(),
-                            r           : this.readByte(),
-                            a           : this.readByte()
-                        };
-
-                        break;
-
-                    case 'LinearColor':
-                        currentProperty.value.values ={
-                            r           : this.readFloat(),
-                            g           : this.readFloat(),
-                            b           : this.readFloat(),
-                            a           : this.readFloat()
-                        };
-                        break;
-
-                    case 'Vector':
-                    case 'Rotator':
-                        currentProperty.value.values = {
-                            x           : this.readFloat(),
-                            y           : this.readFloat(),
-                            z           : this.readFloat()
-                        };
-
-                        break;
-
-                    case 'Vector2D': // Mod?
-                        currentProperty.value.values = {
-                            x           : this.readFloat(),
-                            y           : this.readFloat()
-                        };
-
-                        break;
-
-                    case 'Quat':
-                    case 'Vector4':
-                        currentProperty.value.values = {
-                            a           : this.readFloat(),
-                            b           : this.readFloat(),
-                            c           : this.readFloat(),
-                            d           : this.readFloat()
-                        };
-
-                        break;
-
-                    case 'Box':
-                        currentProperty.value.min = {
-                            x           : this.readFloat(),
-                            y           : this.readFloat(),
-                            z           : this.readFloat()
-                        };
-                        currentProperty.value.max = {
-                            x           : this.readFloat(),
-                            y           : this.readFloat(),
-                            z           : this.readFloat()
-                        };
-                        currentProperty.value.isValid = this.readByte();
-
-                        break;
-
-                    case 'RailroadTrackPosition':
-                        currentProperty.value               = this.readObjectProperty(currentProperty.value);
-                        currentProperty.value.offset        = this.readFloat();
-                        currentProperty.value.forward       = this.readFloat();
-
-                        break;
-
-                    case 'TimerHandle':
-                        currentProperty.value.handle        = this.readString();
-
-                        break;
-
-                    case 'Guid': // MOD?
-                        currentProperty.value.guid          = this.readHex(16);
-                        break;
-
-                    case 'InventoryItem':
-                        currentProperty.value.unk1          = this.readInt();
-                        currentProperty.value.itemName      = this.readString();
-                        currentProperty.value               = this.readObjectProperty(currentProperty.value);
-                        currentProperty.value.properties    = [];
-                        currentProperty.value.properties.push(this.readProperty());
-                        break;
-
-                    case 'FluidBox':
-                        currentProperty.value.value         = this.readFloat();
-                        break;
-
-                    case 'SlateBrush': // MOD?
-                        currentProperty.value.unk1          = this.readString();
-                        break;
-
-                    case 'DateTime': // MOD: Power Suit
-                        currentProperty.value.dateTime      = this.readLong();
-                        break;
-
-                    case 'FINNetworkTrace': // MOD: FicsIt-Networks
-                        currentProperty.value.values        = this.readFINNetworkTrace();
-                        break;
-                    case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
-                        currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
-                        break;
-                    case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
-                        currentProperty.value.begin         = this.readLong();
-                        currentProperty.value.end           = this.readLong();
-                        break;
-
-                    default: // Try normalised structure, then throw Error if not working...
-                        try
-                        {
-                            currentProperty.value.values = [];
-                            while(true)
-                            {
-                                let subStructProperty = this.readProperty(currentProperty.value.type);
-                                    if(subStructProperty === null)
-                                    {
-                                        break;
-                                    }
-
-                                currentProperty.value.values.push(subStructProperty);
-
-                                if(subStructProperty.value !== undefined && subStructProperty.value.properties !== undefined && subStructProperty.value.properties.length === 1 && subStructProperty.value.properties[0] === null)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        catch(error)
-                        {
-                            this.worker.postMessage({command: 'alertParsing'});
-                            if(typeof Sentry !== 'undefined')
-                            {
-                                Sentry.setContext('currentProperty', currentProperty);
-                            }
-                            throw new Error('Unimplemented type `' + currentProperty.value.type + '` in StructProperty `' + currentProperty.name + '`');
-                        }
-                }
-
+            case 'Set':
+                currentProperty = this.readSetProperty(currentProperty, parentType);
                 break;
 
-            case 'SetProperty':
-                currentProperty.value = {type: this.readString(), values: []};
-                this.skipBytes(5); // skipByte(1) + 0
-
-                let setPropertyLength = this.readInt();
-                for(let iSetProperty = 0; iSetProperty < setPropertyLength; iSetProperty++)
-                {
-                    switch(currentProperty.value.type)
-                    {
-                        case 'ObjectProperty':
-                            currentProperty.value.values.push(this.readObjectProperty({}));
-                            break;
-                        case 'StructProperty':
-                            if(this.header.saveVersion >= 29 && parentType === '/Script/FactoryGame.FGFoliageRemoval')
-                            {
-                                currentProperty.value.values.push({
-                                    x: this.readFloat(),
-                                    y: this.readFloat(),
-                                    z: this.readFloat()
-                                });
-                                break;
-                            }
-                            // MOD: FicsIt-Networks
-                            currentProperty.value.values.push(this.readFINNetworkTrace());
-                            break;
-                        case 'NameProperty':  // MOD: Sweet Transportal
-                            currentProperty.value.values.push({name: this.readString()});
-                            break;
-                        case 'IntProperty':  // MOD: ???
-                            currentProperty.value.values.push({int: this.readInt()});
-                            break;
-                        default:
-                            let rewind = this.lastStrRead + 128;
-                                this.currentByte -= rewind;
-                            console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                            this.worker.postMessage({command: 'alertParsing'});
-                            if(typeof Sentry !== 'undefined')
-                            {
-                                Sentry.setContext('currentProperty', currentProperty);
-                            }
-                            throw new Error('Unimplemented type `' + currentProperty.value.type + '` in SetProperty `' + currentProperty.name + '` (' + this.currentByte + ')');
-                    }
-                }
-
+            case 'Struct':
+                currentProperty = this.readStructProperty(currentProperty, parentType);
                 break;
 
             default:
@@ -1303,6 +789,533 @@ export default class SaveParser_Read
                     Sentry.setContext('currentProperty', currentProperty);
                 }
                 throw new Error('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.currentByte + ')');
+        }
+
+        return currentProperty;
+    }
+
+    readArrayProperty(currentProperty, parentType)
+    {
+            currentProperty.value       = {type: this.readString().replace('Property', ''), values: []};
+            this.skipBytes();
+        let currentArrayPropertyCount   = this.readInt();
+
+        switch(currentProperty.value.type)
+        {
+            case 'Byte':
+                switch(currentProperty.name)
+                {
+                    case 'mFogOfWarRawData':
+                        for(let i = 0; i < (currentArrayPropertyCount / 4); i++)
+                        {
+                            this.readByte(); // 0
+                            this.readByte(); // 0
+                            currentProperty.value.values.push(this.readByte());
+                            this.readByte(); // 255
+                        }
+                        break;
+                    default:
+                        for(let i = 0; i < currentArrayPropertyCount; i++)
+                        {
+                            currentProperty.value.values.push(this.readByte());
+                        }
+                }
+                break;
+
+            case 'Bool':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    currentProperty.value.values.push(this.readByte());
+                }
+
+            case 'Int':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    currentProperty.value.values.push(this.readInt());
+                }
+                break;
+
+            case 'Float':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    currentProperty.value.values.push(this.readFloat());
+                }
+                break;
+
+            case 'Enum':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    currentProperty.value.values.push({name: this.readString()});
+                }
+                break;
+            case 'Str':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    currentProperty.value.values.push(this.readString());
+                }
+                break;
+            case 'Text':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    currentProperty.value.values.push(this.readTextProperty({}));
+                }
+                break;
+
+            case 'Object':
+            case 'Interface':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    currentProperty.value.values.push(this.readObjectProperty({}));
+                }
+                break;
+
+            case 'Struct':
+                this.readString(); // Same as currentProperty.name
+                this.readString(); // StructProperty
+
+                this.readInt(); // structureSize
+                this.readInt(); // 0
+
+                currentProperty.structureSubType    = this.readString();
+
+                let propertyGuid1 = this.readInt();
+                let propertyGuid2 = this.readInt();
+                let propertyGuid3 = this.readInt();
+                let propertyGuid4 = this.readInt();
+                    if(propertyGuid1 !== 0)
+                    {
+                        currentProperty.propertyGuid1 = propertyGuid1;
+                    }
+                    if(propertyGuid2 !== 0)
+                    {
+                        currentProperty.propertyGuid2 = propertyGuid2;
+                    }
+                    if(propertyGuid3 !== 0)
+                    {
+                        currentProperty.propertyGuid3 = propertyGuid3;
+                    }
+                    if(propertyGuid4 !== 0)
+                    {
+                        currentProperty.propertyGuid4 = propertyGuid4;
+                    }
+
+                this.skipBytes(1);
+
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    switch(currentProperty.structureSubType)
+                    {
+                        case 'InventoryItem': // MOD: FicsItNetworks
+                            currentProperty.value.values.push({
+                                unk1          : this.readInt(),
+                                itemName      : this.readString(),
+                                levelName     : this.readString(),
+                                pathName      : this.readString()
+                            });
+                            break;
+
+                        case 'Guid':
+                            currentProperty.value.values.push(this.readHex(16));
+                            break;
+
+                        case 'FINNetworkTrace': // MOD: FicsIt-Networks
+                            currentProperty.value.values.push(this.readFINNetworkTrace());
+                            break;
+
+                        case 'Vector':
+                            currentProperty.value.values.push({
+                                x           : this.readFloat(),
+                                y           : this.readFloat(),
+                                z           : this.readFloat()
+                            });
+                            break;
+
+                        case 'LinearColor':
+                            currentProperty.value.values.push({
+                                r : this.readFloat(),
+                                g : this.readFloat(),
+                                b : this.readFloat(),
+                                a : this.readFloat()
+                            });
+                            break;
+
+                        // MOD: FicsIt-Networks
+                        // See: https://github.com/CoderDE/FicsIt-Networks/blob/3472a437bcd684deb7096ede8f03a7e338b4a43d/Source/FicsItNetworks/Computer/FINComputerGPUT1.h#L42
+                        case 'FINGPUT1BufferPixel':
+                            currentProperty.value.values.push(this.readFINGPUT1BufferPixel());
+                            break;
+
+                        default: // Try normalised structure, then throw Error if not working...
+                            try
+                            {
+                                let subStructProperties = [];
+                                    while(true)
+                                    {
+                                        let subStructProperty = this.readProperty();
+
+                                            if(subStructProperty === null)
+                                            {
+                                                break;
+                                            }
+
+                                        subStructProperties.push(subStructProperty);
+                                    }
+                                currentProperty.value.values.push(subStructProperties);
+                            }
+                            catch(error)
+                            {
+                                this.worker.postMessage({command: 'alertParsing'});
+                                if(typeof Sentry !== 'undefined')
+                                {
+                                    Sentry.setContext('currentProperty', currentProperty);
+                                }
+                                throw new Error('Unimplemented key structureSubType `' + currentProperty.structureSubType + '` in ArrayProperty `' + currentProperty.name + '`');
+                            }
+                    }
+                }
+
+                break;
+
+            default:
+                this.worker.postMessage({command: 'alertParsing'});
+                if(typeof Sentry !== 'undefined')
+                {
+                    Sentry.setContext('currentProperty', currentProperty);
+                }
+                throw new Error('Unimplemented type `' + currentProperty.value.type + '` in ArrayProperty `' + currentProperty.name + '`');
+        }
+
+        return currentProperty;
+    }
+
+    readMapProperty(currentProperty, parentType)
+    {
+        currentProperty.value = {
+            keyType         : this.readString().replace('Property', ''),
+            valueType       : this.readString().replace('Property', ''),
+            values          : []
+        };
+
+        this.skipBytes(1);
+        currentProperty.value.modeType = this.readInt();
+
+        if(currentProperty.value.modeType === 2)
+        {
+            currentProperty.value.modeUnk2 = this.readString();
+            currentProperty.value.modeUnk3 = this.readString();
+        }
+        if(currentProperty.value.modeType === 3)
+        {
+            currentProperty.value.modeUnk1 = this.readHex(9);
+            currentProperty.value.modeUnk2 = this.readString();
+            currentProperty.value.modeUnk3 = this.readString();
+        }
+
+        let currentMapPropertyCount = this.readInt();
+            for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
+            {
+                let mapPropertyKey;
+                let mapPropertySubProperties    = [];
+
+                    switch(currentProperty.value.keyType)
+                    {
+                        case 'Int':
+                            mapPropertyKey = this.readInt();
+                            break;
+                        case 'Int64':
+                            mapPropertyKey = this.readLong();
+                            break;
+                        case 'Name':
+                        case 'Str':
+                            mapPropertyKey = this.readString();
+                            break;
+                        case 'Object':
+                            mapPropertyKey = this.readObjectProperty({});
+                            break;
+                        case 'Enum':
+                            mapPropertyKey = {
+                                name        : this.readString()
+                            };
+                            break;
+                        case 'Struct':
+                            mapPropertyKey = [];
+                            while(true)
+                            {
+                                let subMapPropertyValue = this.readProperty();
+                                    if(subMapPropertyValue === null)
+                                    {
+                                        break;
+                                    }
+
+                                mapPropertyKey.push(subMapPropertyValue);
+                            }
+                            break;
+                        default:
+                            this.worker.postMessage({command: 'alertParsing'});
+                            if(typeof Sentry !== 'undefined')
+                            {
+                                Sentry.setContext('currentProperty', currentProperty);
+                            }
+                            throw new Error('Unimplemented key type `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
+                    }
+
+                    switch(currentProperty.value.valueType)
+                    {
+                        case 'Byte':
+                            if(currentProperty.value.keyType === 'Str')
+                            {
+                                mapPropertySubProperties = this.readString();
+                            }
+                            else
+                            {
+                                mapPropertySubProperties = this.readByte();
+                            }
+                            break;
+                        case 'Bool':
+                            mapPropertySubProperties = this.readByte();
+                            break;
+                        case 'Int':
+                            mapPropertySubProperties = this.readInt();
+                            break;
+                        case 'Str':
+                            mapPropertySubProperties = this.readString();
+                            break;
+                        case 'Object':
+                            mapPropertySubProperties = this.readObjectProperty({});
+                            break;
+                        case 'Struct':
+                            if(parentType === 'LBBalancerData')
+                            {
+                                mapPropertySubProperties.mNormalIndex   = this.readInt();
+                                mapPropertySubProperties.mOverflowIndex = this.readInt();
+                                mapPropertySubProperties.mFilterIndex   = this.readInt();
+                            }
+                            else
+                            {
+                                while(true)
+                                {
+                                    let subMapProperty = this.readProperty();
+                                        if(subMapProperty === null)
+                                        {
+                                            break;
+                                        }
+
+                                    mapPropertySubProperties.push(subMapProperty);
+                                }
+                            }
+                            break;
+                        default:
+                            this.worker.postMessage({command: 'alertParsing'});
+                            if(typeof Sentry !== 'undefined')
+                            {
+                                Sentry.setContext('currentProperty', currentProperty);
+                            }
+                            throw new Error('Unimplemented value type `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
+                    }
+
+                currentProperty.value.values[iMapProperty]    = {
+                    key     : mapPropertyKey,
+                    value   : mapPropertySubProperties
+                };
+            }
+
+        return currentProperty;
+    }
+
+    readSetProperty(currentProperty, parentType)
+    {
+        currentProperty.value = {type: this.readString().replace('Property', ''), values: []};
+        this.skipBytes(5); // skipByte(1) + 0
+
+        let setPropertyLength = this.readInt();
+            for(let iSetProperty = 0; iSetProperty < setPropertyLength; iSetProperty++)
+            {
+                switch(currentProperty.value.type)
+                {
+                    case 'Object':
+                        currentProperty.value.values.push(this.readObjectProperty({}));
+                        break;
+                    case 'Struct':
+                        if(this.header.saveVersion >= 29 && parentType === '/Script/FactoryGame.FGFoliageRemoval')
+                        {
+                            currentProperty.value.values.push({
+                                x: this.readFloat(),
+                                y: this.readFloat(),
+                                z: this.readFloat()
+                            });
+                            break;
+                        }
+                        // MOD: FicsIt-Networks
+                        currentProperty.value.values.push(this.readFINNetworkTrace());
+                        break;
+                    case 'Name':  // MOD: Sweet Transportal
+                        currentProperty.value.values.push({name: this.readString()});
+                        break;
+                    case 'Int':  // MOD: ???
+                        currentProperty.value.values.push({int: this.readInt()});
+                        break;
+                    default:
+                        let rewind = this.lastStrRead + 128;
+                            this.currentByte -= rewind;
+                        console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
+                        this.worker.postMessage({command: 'alertParsing'});
+                        if(typeof Sentry !== 'undefined')
+                        {
+                            Sentry.setContext('currentProperty', currentProperty);
+                        }
+                        throw new Error('Unimplemented type `' + currentProperty.value.type + '` in SetProperty `' + currentProperty.name + '` (' + this.currentByte + ')');
+                }
+            }
+
+        return currentProperty;
+    }
+
+    readStructProperty(currentProperty, parentType)
+    {
+        currentProperty.value = {type: this.readString()};
+        this.skipBytes(17); // 0 0 0 0 + skipByte(1)
+
+        switch(currentProperty.value.type)
+        {
+            case 'Color':
+                currentProperty.value.values = {
+                    b           : this.readByte(),
+                    g           : this.readByte(),
+                    r           : this.readByte(),
+                    a           : this.readByte()
+                };
+
+                break;
+
+            case 'LinearColor':
+                currentProperty.value.values ={
+                    r           : this.readFloat(),
+                    g           : this.readFloat(),
+                    b           : this.readFloat(),
+                    a           : this.readFloat()
+                };
+                break;
+
+            case 'Vector':
+            case 'Rotator':
+                currentProperty.value.values = {
+                    x           : this.readFloat(),
+                    y           : this.readFloat(),
+                    z           : this.readFloat()
+                };
+
+                break;
+
+            case 'Vector2D': // Mod?
+                currentProperty.value.values = {
+                    x           : this.readFloat(),
+                    y           : this.readFloat()
+                };
+
+                break;
+
+            case 'Quat':
+            case 'Vector4':
+                currentProperty.value.values = {
+                    a           : this.readFloat(),
+                    b           : this.readFloat(),
+                    c           : this.readFloat(),
+                    d           : this.readFloat()
+                };
+
+                break;
+
+            case 'Box':
+                currentProperty.value.min = {
+                    x           : this.readFloat(),
+                    y           : this.readFloat(),
+                    z           : this.readFloat()
+                };
+                currentProperty.value.max = {
+                    x           : this.readFloat(),
+                    y           : this.readFloat(),
+                    z           : this.readFloat()
+                };
+                currentProperty.value.isValid = this.readByte();
+
+                break;
+
+            case 'RailroadTrackPosition':
+                currentProperty.value               = this.readObjectProperty(currentProperty.value);
+                currentProperty.value.offset        = this.readFloat();
+                currentProperty.value.forward       = this.readFloat();
+
+                break;
+
+            case 'TimerHandle':
+                currentProperty.value.handle        = this.readString();
+
+                break;
+
+            case 'Guid': // MOD?
+                currentProperty.value.guid          = this.readHex(16);
+                break;
+
+            case 'InventoryItem':
+                currentProperty.value.unk1          = this.readInt();
+                currentProperty.value.itemName      = this.readString();
+                currentProperty.value               = this.readObjectProperty(currentProperty.value);
+                currentProperty.value.properties    = [];
+                currentProperty.value.properties.push(this.readProperty());
+                break;
+
+            case 'FluidBox':
+                currentProperty.value.value         = this.readFloat();
+                break;
+
+            case 'SlateBrush': // MOD?
+                currentProperty.value.unk1          = this.readString();
+                break;
+
+            case 'DateTime': // MOD: Power Suit
+                currentProperty.value.dateTime      = this.readLong();
+                break;
+
+            case 'FINNetworkTrace': // MOD: FicsIt-Networks
+                currentProperty.value.values        = this.readFINNetworkTrace();
+                break;
+            case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
+                currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
+                break;
+            case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
+                currentProperty.value.begin         = this.readLong();
+                currentProperty.value.end           = this.readLong();
+                break;
+
+            default: // Try normalised structure, then throw Error if not working...
+                try
+                {
+                    currentProperty.value.values = [];
+                    while(true)
+                    {
+                        let subStructProperty = this.readProperty(currentProperty.value.type);
+                            if(subStructProperty === null)
+                            {
+                                break;
+                            }
+
+                        currentProperty.value.values.push(subStructProperty);
+
+                        if(subStructProperty.value !== undefined && subStructProperty.value.properties !== undefined && subStructProperty.value.properties.length === 1 && subStructProperty.value.properties[0] === null)
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch(error)
+                {
+                    this.worker.postMessage({command: 'alertParsing'});
+                    if(typeof Sentry !== 'undefined')
+                    {
+                        Sentry.setContext('currentProperty', currentProperty);
+                    }
+                    throw new Error('Unimplemented type `' + currentProperty.value.type + '` in StructProperty `' + currentProperty.name + '`');
+                }
         }
 
         return currentProperty;
@@ -1408,6 +1421,7 @@ export default class SaveParser_Read
 
         return currentProperty;
     }
+
     readObjectProperty(currentProperty)
     {
         let levelName   = this.readString();

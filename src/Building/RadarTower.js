@@ -120,8 +120,8 @@ export default class Building_RadarTower
                     if(values.mMapText !== '')
                     {
                         currentObject.properties.push({
-                            name                        : "mMapText",
-                            type                        : "TextProperty",
+                            name                        : 'mMapText',
+                            type                        : 'Text',
                             flags                       : 18,
                             historyType                 : 255,
                             hasCultureInvariantString   : 1,

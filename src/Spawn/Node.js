@@ -97,10 +97,10 @@ export default class Spawn_Node
                                 translation     : [options.x, options.y, options.z]
                             },
                             properties      : [
-                                { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "" } },
-                                { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
+                                { name: 'mBuiltWithRecipe', type: 'Object', value: { levelName: '', pathName: '' } },
+                                { name: 'mBuildTimeStamp', type: 'Float', value: 0 }
                             ],
-                            entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
+                            entity: {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'}
                         };
 
                         this.baseLayout.buildableSubSystem.setObjectDefaultColorSlot(fakeBuilding);
@@ -111,7 +111,7 @@ export default class Spawn_Node
         {
             fakeBuilding.properties.push({
                 name    : 'mExtractableResource',
-                type    : 'ObjectProperty',
+                type    : 'Object',
                 value   : {pathName: this.centerObject.pathName}
             });
         }
@@ -122,7 +122,7 @@ export default class Spawn_Node
             let result = this.baseLayout.removeFromStorage(fakeBuilding);
                 if(result === false)
                 {
-                    BaseLayout_Modal.alert("We could not find enough materials and stopped your construction!");
+                    BaseLayout_Modal.alert('We could not find enough materials and stopped your construction!');
                     return false; // Don't have materials, stop it...
                 }
         }

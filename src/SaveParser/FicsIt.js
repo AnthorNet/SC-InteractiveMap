@@ -32,6 +32,25 @@ export default class SaveParser_FicsIt
             }
         }
 
+        // Removes old properties types ending with Property
+        if(pastingBlueprint === true)
+        {
+            for(let i = 0; i < currentObject.properties.length; i++)
+            {
+                currentObject.properties[i].type = currentObject.properties[i].type.replace('Property', '');
+
+                if(currentObject.properties[i].type === 'Array' || currentObject.properties[i].type === 'Set')
+                {
+                    currentObject.properties[i].value.type = currentObject.properties[i].value.type.replace('Property', '');
+                }
+                if(currentObject.properties[i].type === 'Map')
+                {
+                    currentObject.properties[i].value.keyType   = currentObject.properties[i].value.keyType.replace('Property', '');
+                    currentObject.properties[i].value.valueType = currentObject.properties[i].value.valueType.replace('Property', '');
+                }
+            }
+        }
+
         /*
         if(pastingBlueprint === true)
         {
@@ -209,7 +228,7 @@ export default class SaveParser_FicsIt
                 currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 90);
                 currentObject.properties.push({
                     name    : 'mBuiltWithRecipe',
-                    type    : 'ObjectProperty',
+                    type    : 'Object',
                     value   : {levelName: '', pathName: newRecipe}
                 });
             }

@@ -136,8 +136,8 @@ export default class Building_Beacon
                                 flags                       : 18,
                                 hasCultureInvariantString   : 1,
                                 historyType                 : 255,
-                                name                        : "mCompassText",
-                                type                        : "TextProperty",
+                                name                        : 'mCompassText',
+                                type                        : 'Text',
                                 value                       : values.mCompassText
                             });
                         }
@@ -181,8 +181,8 @@ export default class Building_Beacon
                     else
                     {
                         currentObject.properties.push({
-                            name                        : "mCompassColor",
-                            type                        : "StructProperty",
+                            name                        : 'mCompassColor',
+                            type                        : 'Struct',
                             value                       : {type: 'LinearColor', values: newCompassColor}
                         });
                     }

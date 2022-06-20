@@ -173,31 +173,31 @@ export default class Spawn_Image
                 },
                 entity              : {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'},
                 properties          : [
-                    {name: 'mDidFirstTimeUse', type: 'BoolProperty', value: 1},
-                    {name: 'mBuiltWithRecipe', type: 'ObjectProperty', value: {levelName: '', pathName: ''}},
-                    {name: 'mBuildTimeStamp', type: 'FloatProperty', value: 0}
+                    {name: 'mDidFirstTimeUse', type: 'Bool', value: 1},
+                    {name: 'mBuiltWithRecipe', type: 'Object', value: {levelName: '', pathName: ''}},
+                    {name: 'mBuildTimeStamp', type: 'Float', value: 0}
                  ]
             };
 
             if(this.supportId === 'Build_Beam_Painted_C')
             {
-                newSupport.properties.push({name: 'mLength', type: 'FloatProperty', value: this.supportSize});
-                newSupport.properties.push({name: 'mCustomizationData', type: 'StructProperty', value: {
+                newSupport.properties.push({name: 'mLength', type: 'Float', value: this.supportSize});
+                newSupport.properties.push({name: 'mCustomizationData', type: 'Struct', value: {
                     type    : 'FactoryCustomizationData',
                     values  : [
                         {
                             name    : 'SwatchDesc',
-                            type    : 'ObjectProperty',
+                            type    : 'Object',
                             value   : {levelName: '', pathName: '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C'}
                         },
                         {
                             name    : 'OverrideColorData',
-                            type    : 'StructProperty',
+                            type    : 'Struct',
                             value   : {
                                 type    : 'FactoryCustomizationColorSlot',
                                 values  : [{
                                     name    : 'PrimaryColor',
-                                    type    : 'StructProperty',
+                                    type    : 'Struct',
                                     value   : linearColor
                                 }]
                             }
@@ -207,15 +207,15 @@ export default class Spawn_Image
             }
             else
             {
-                newSupport.properties.push({name: 'mActivePrefabLayout', type: 'ObjectProperty', value: {levelName: '', pathName: '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C'}});
-                newSupport.properties.push({name: 'mPrefabTextElementSaveData', type: 'ArrayProperty', value: {
-                    type    : 'StructProperty',
+                newSupport.properties.push({name: 'mActivePrefabLayout', type: 'Object', value: {levelName: '', pathName: '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C'}});
+                newSupport.properties.push({name: 'mPrefabTextElementSaveData', type: 'Array', value: {
+                    type    : 'Struct',
                     values  : [[
-                        {name: 'ElementName', type: 'StrProperty', value: 'Name'},
-                        {name: 'Text', type: 'StrProperty', value: ''},
+                        {name: 'ElementName', type: 'Str', value: 'Name'},
+                        {name: 'Text', type: 'Str', value: ''},
                     ]]
-                }, structureName: 'mPrefabTextElementSaveData', structureType: 'StructProperty', structureSubType: 'PrefabTextElementSaveData'});
-                newSupport.properties.push({name: 'mBackgroundColor', type: 'StructProperty', value: linearColor});
+                }, structureSubType: 'PrefabTextElementSaveData'});
+                newSupport.properties.push({name: 'mBackgroundColor', type: 'Struct', value: linearColor});
             }
 
             newSupport.pathName    = this.baseLayout.generateFastPathName(newSupport);

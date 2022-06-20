@@ -49,7 +49,7 @@ export default class Building_Door
                     if(values.mDoorConfiguration !== 'Automatic')
                     {
                         currentObject.properties.push({
-                            name: "mDoorConfiguration", type: "EnumProperty",
+                            name: "mDoorConfiguration", type: 'Enum',
                             value: { name: "EDoorConfiguration", value: values.mDoorConfiguration}
                         });
                     }

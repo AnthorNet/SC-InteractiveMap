@@ -150,18 +150,18 @@ export default class Selection_Copy
                                                 if(extraPropertyNewObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
                                                 {
                                                     this.baseLayout.setObjectProperty(extraPropertyNewObject.parent, 'mCurrentDockingState', {
-                                                        type    : "DroneDockingStateInfo",
+                                                        type    : 'DroneDockingStateInfo',
                                                         values  : [
                                                             {
-                                                                name    : "State",
-                                                                type    : "EnumProperty",
+                                                                name    : 'State',
+                                                                type    : 'Enum',
                                                                 value   : {
-                                                                    name    : "EDroneDockingState",
-                                                                    value   : "EDroneDockingState::DS_DOCKED"
+                                                                    name    : 'EDroneDockingState',
+                                                                    value   : 'EDroneDockingState::DS_DOCKED'
                                                                 }
                                                             }
                                                         ]
-                                                    }, 'StructProperty');
+                                                    }, 'Struct');
                                                     this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mCurrentAction');
                                                     this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mActionsToExecute');
                                                 }

@@ -52,12 +52,12 @@ export default class Modal_Map_Todo
 
                                     for(let j = 0; j < mShoppingList.values[i].length; j++)
                                     {
-                                        if(mShoppingList.values[i][j].type === 'ObjectProperty')
+                                        if(mShoppingList.values[i][j].type === 'Object')
                                         {
                                             currentRecipe = this.baseLayout.getRecipeFromClassName(mShoppingList.values[i][j].value.pathName);
                                             //console.log(currentRecipe);
                                         }
-                                        if(mShoppingList.values[i][j].type === 'IntProperty')
+                                        if(mShoppingList.values[i][j].type === 'Int')
                                         {
                                             currentAmount = mShoppingList.values[i][j].value;
                                         }

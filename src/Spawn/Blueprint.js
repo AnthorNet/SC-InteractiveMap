@@ -455,7 +455,7 @@ export default class Spawn_Blueprint
         {
             let currentProperty = properties[j];
 
-                if(currentProperty.type === 'ArrayProperty' && currentProperty.value.values !== undefined)
+                if(currentProperty.type === 'Array' && currentProperty.value.values !== undefined)
                 {
                     for(let k = 0; k < currentProperty.value.values.length; k++)
                     {
@@ -620,13 +620,13 @@ export default class Spawn_Blueprint
                         pathName                : this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.FGPipeNetwork_XXX'}),
                         transform               : {rotation: [0, 0, 0, 1], translation: [0, 0, 0]},
                         children                : [],
-                        properties              : [{name: "mPipeNetworkID", type: "IntProperty", value: newPipeNetworkID}],
+                        properties              : [{name: 'mPipeNetworkID', type: 'Int', value: newPipeNetworkID}],
                         entity                  : {levelName: '', pathName: ''}
                     };
 
                     if(this.clipboard.pipes[pipeNetworkID].fluid !== null)
                     {
-                        let newmFluidDescriptor = {name: "mFluidDescriptor", type: "ObjectProperty"};
+                        let newmFluidDescriptor = {name: 'mFluidDescriptor', type: 'Object'};
                             if(this.clipboard.pipes[pipeNetworkID].fluid.pathName !== undefined)
                             {
                                 newmFluidDescriptor.value = this.clipboard.pipes[pipeNetworkID].fluid;
@@ -641,7 +641,7 @@ export default class Spawn_Blueprint
 
                     if(this.clipboard.pipes[pipeNetworkID].interface.length > 0)
                     {
-                        let mFluidIntegrantScriptInterfaces = {name: "mFluidIntegrantScriptInterfaces", type: "ArrayProperty", value: {type: "InterfaceProperty", values: []}};
+                        let mFluidIntegrantScriptInterfaces = {name: 'mFluidIntegrantScriptInterfaces', type: 'Array', value: {type: 'Interface', values: []}};
 
                             for(let i = 0; i < this.clipboard.pipes[pipeNetworkID].interface.length; i++)
                             {
@@ -688,7 +688,7 @@ export default class Spawn_Blueprint
                     {
                         let newPowerCircuit             = JSON.parse(JSON.stringify(this.clipboard.powerCircuits[powerCircuitPathName]));
                             newPowerCircuit.pathName    = this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.CircuitSubsystem.FGPowerCircuit_XXX'});
-                            this.baseLayout.setObjectProperty(newPowerCircuit, 'mCircuitID', circuitSubSystem.getNextId(), 'IntProperty');
+                            this.baseLayout.setObjectProperty(newPowerCircuit, 'mCircuitID', circuitSubSystem.getNextId(), 'Int');
 
                         let mComponents                 = this.baseLayout.getObjectProperty(newPowerCircuit, 'mComponents');
                             if(mComponents !== null)

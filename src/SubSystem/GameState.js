@@ -90,12 +90,10 @@ export default class SubSystem_GameState
             if(mPlayerGlobalColorPresets === null)
             {
                 this.gameState.properties.push({
-                    name                : "mPlayerGlobalColorPresets",
-                    structureName       : "mPlayerGlobalColorPresets",
-                    structureSubType    : "GlobalColorPreset",
-                    structureType       : "StructProperty",
-                    type                : "ArrayProperty",
-                    value               : {type: 'StructProperty', values: []}
+                    name                : 'mPlayerGlobalColorPresets',
+                    structureSubType    : 'GlobalColorPreset',
+                    type                : 'Array',
+                    value               : {type: 'Struct', values: []}
                 });
 
                 return this.addPlayerColorPreset(name, primaryColor);
@@ -106,15 +104,15 @@ export default class SubSystem_GameState
                     flags                       : 18,
                     hasCultureInvariantString   : 1,
                     historyType                 : 255,
-                    name                        : "PresetName",
-                    type                        : "TextProperty",
+                    name                        : 'PresetName',
+                    type                        : 'Text',
                     value                       : name
                 },
                 {
-                    name                        : "Color",
-                    type                        : "StructProperty",
+                    name                        : 'Color',
+                    type                        : 'Struct',
                     value                       : {
-                        type                        : "LinearColor",
+                        type                        : 'LinearColor',
                         values                      : primaryColor
                     }
                 }
@@ -164,12 +162,10 @@ export default class SubSystem_GameState
                 if(mBuildableLightColorSlots === null)
                 {
                     mBuildableLightColorSlots = {
-                        name                : "mBuildableLightColorSlots",
-                        structureName       : "mBuildableLightColorSlots",
-                        structureSubType    : "LinearColor",
-                        structureType       : "StructProperty",
-                        type                : "ArrayProperty",
-                        value: {type: "StructProperty", values: []}
+                        name                : 'mBuildableLightColorSlots',
+                        structureSubType    : 'LinearColor',
+                        type                : 'Array',
+                        value               : {type: 'Struct', values: []}
                     };
                     for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
                     {

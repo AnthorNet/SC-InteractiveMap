@@ -193,9 +193,9 @@ export default class Building_SpaceElevator
                                 if(mGamePhase === null)
                                 {
                                     phaseManager.properties.push({
-                                        name: "mGamePhase",
-                                        type: "ByteProperty",
-                                        value: {enumName    : "EGamePhase", valueName: values.mGamePhase}
+                                        name    : 'mGamePhase',
+                                        type    : 'Byte',
+                                        value   : {enumName    : 'EGamePhase', valueName: values.mGamePhase}
                                     });
                                 }
                                 else
@@ -226,39 +226,35 @@ export default class Building_SpaceElevator
                                         for(let itemClass in availablePhases[phaseId].cost)
                                         {
                                             currentPhaseCost.push([
-                                                {name: "ItemClass", type: "ObjectProperty", value: {levelName: "", pathName: itemClass}},
-                                                {name: "amount", type: "IntProperty", value: availablePhases[phaseId].cost[itemClass]}
+                                                {name: 'ItemClass', type: 'Object', value: {levelName: '', pathName: itemClass}},
+                                                {name: 'amount', type: 'Int', value: availablePhases[phaseId].cost[itemClass]}
                                             ]);
                                         }
 
                                     phaseCostValues.push([
                                         {
-                                            name    : "gamePhase",
-                                            type    : "ByteProperty",
-                                            value   : {enumName: "EGamePhase", valueName: phaseId}
+                                            name    : 'gamePhase',
+                                            type    : 'Byte',
+                                            value   : {enumName: 'EGamePhase', valueName: phaseId}
                                         },
                                         {
-                                            name                : "Cost",
-                                            type                : "ArrayProperty",
-                                            value               : {type: "StructProperty", values: currentPhaseCost},
-                                            structureName       : "Cost",
-                                            structureType       : "StructProperty",
-                                            structureSubType    : "ItemAmount"
+                                            name                : 'Cost',
+                                            type                : 'Array',
+                                            value               : {type: 'Struct', values: currentPhaseCost},
+                                            structureSubType    : 'ItemAmount'
                                         }
                                     ]);
                                 }
                             }
 
                         phaseManager.properties.push({
-                            name                : "mGamePhaseCosts",
-                            type                : "ArrayProperty",
+                            name                : 'mGamePhaseCosts',
+                            type                : 'Array',
                             value               : {
-                                type    : "StructProperty",
+                                type    : 'Struct',
                                 values  : phaseCostValues
                             },
-                            structureName       : "mGamePhaseCosts",
-                            structureType       : "StructProperty",
-                            structureSubType    : "PhaseCost"
+                            structureSubType    : 'PhaseCost'
                         })
                     }
             }
