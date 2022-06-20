@@ -1120,6 +1120,16 @@ export default class BaseLayout
                     if(layerId !== 'playerRadioactivityLayer' && layerId !== 'playerFogOfWar' && layerId !== 'playerPositionLayer' && this.playerLayers[layerId].elements !== undefined)
                     {
                         let currentLayerLength = this.playerLayers[layerId].elements.length;
+                            // Remove from map if too much objects?
+                            if(['playerFoundationsLayer', 'playerRoofsLayer', 'playerWallsLayer'].includes(layerId) && currentLayerLength > 250000)
+                            {
+                                if(this.playerLayers[layerId].layerGroup.hasLayer(this.playerLayers[layerId].subLayer))
+                                {
+                                    this.playerLayers[layerId].layerGroup.removeLayer(this.playerLayers[layerId].subLayer);
+                                    $('.updatePlayerLayerState[data-id=' + layerId + ']').removeClass(window.SCIM.outlineClass);
+                                }
+                            }
+
                             for(let j = 0; j < currentLayerLength; j++)
                             {
                                 this.addElementToLayer(layerId, this.playerLayers[layerId].elements[j]);
