@@ -751,6 +751,20 @@ export default class BaseLayout
             {
                 //console.log('BP_PlayerState_C', currentObject);
                 this.players[currentObject.pathName] = new SubSystem_Player({baseLayout: this, player: currentObject});
+
+                // Moving view before rendering objects...
+                if(this.saveGameParser.playerHostPathName === currentObject.pathName)
+                {
+                    let mOwnedPawn  = this.getObjectProperty(currentObject, 'mOwnedPawn');
+                        if(mOwnedPawn !== null)
+                        {
+                            let targetPlayer = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                                if(targetPlayer !== null)
+                                {
+                                    this.satisfactoryMap.leafletMap.setView(this.satisfactoryMap.unproject(targetPlayer.transform.translation), 7);
+                                }
+                        }
+                }
                 continue;
             }
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')

@@ -128,10 +128,10 @@ export default class SubSystem_Player
                 this.baseLayout.bindMouseEvents(playerMarker);
                 playerMarker.addTo(this.baseLayout.playerLayers.playerPositionLayer.subLayer);
 
-                if(this.isHost() === true)
-                {
-                    this.baseLayout.satisfactoryMap.leafletMap.setView(position, 7);
-                }
+                //if(this.isHost() === true)
+                //{
+                //    this.baseLayout.satisfactoryMap.leafletMap.setView(position, 7);
+                //}
 
                 return playerMarker;
             }
