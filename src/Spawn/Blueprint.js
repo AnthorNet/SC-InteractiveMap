@@ -385,7 +385,7 @@ export default class Spawn_Blueprint
                     // Properties
                     if(this.clipboard.data[i].parent.properties !== undefined && this.clipboard.data[i].parent.properties.length > 0)
                     {
-                        this.clipboard.data[i].parent.properties = this.transformPropertiesPathName(this.clipboard.data[i].parent.properties, pathNameConversion);
+                        this.clipboard.data[i].parent.properties = this.transformProperties(this.clipboard.data[i].parent.properties, pathNameConversion);
                     }
 
                     // Children
@@ -420,7 +420,7 @@ export default class Spawn_Blueprint
 
                                 if(this.clipboard.data[i].children[j].properties !== undefined && this.clipboard.data[i].children[j].properties.length > 0)
                                 {
-                                    this.clipboard.data[i].children[j].properties = this.transformPropertiesPathName(this.clipboard.data[i].children[j].properties, pathNameConversion);
+                                    this.clipboard.data[i].children[j].properties = this.transformProperties(this.clipboard.data[i].children[j].properties, pathNameConversion);
                                 }
                             }
                         }
@@ -449,56 +449,67 @@ export default class Spawn_Blueprint
         });
     }
 
-    transformPropertiesPathName(properties, pathNameConversion)
+    transformProperties(properties, pathNameConversion)
     {
         for(let j = 0; j < properties.length; j++)
         {
             let currentProperty = properties[j];
 
-                if(currentProperty.type === 'Array' && currentProperty.value.values !== undefined)
+                // Fix old blueprints
+                if(currentProperty.type !== undefined)
                 {
+                    currentProperty.type = currentProperty.type.replace('Property', '');
+
+                    if(currentProperty.type === 'Map')
+                    {
+                        currentProperty.value.keyType   = currentProperty.value.keyType.replace('Property', '');
+                        currentProperty.value.valueType = currentProperty.value.valueType.replace('Property', '');
+                    }
+                }
+
+                if(currentProperty.structureName !== undefined)
+                {
+                    delete currentProperty.structureName;
+                }
+                if(currentProperty.structureType !== undefined)
+                {
+                    delete currentProperty.structureType;
+                }
+
+                if(currentProperty.value !== undefined)
+                {
+                    if(currentProperty.value.type !== undefined)
+                    {
+                        currentProperty.value.type = currentProperty.value.type.replace('Property', '');
+                    }
+
+                    if(currentProperty.value.properties !== undefined)
+                    {
+                        currentProperty.value.properties = this.transformProperties(currentProperty.value.properties, pathNameConversion);
+                    }
+                }
+
+                // Traverse pathNames
+                if(currentProperty.value !== undefined && currentProperty.value.values !== undefined)
+                {
+                    currentProperty.value.values = this.transformProperties(currentProperty.value.values, pathNameConversion);
+
                     for(let k = 0; k < currentProperty.value.values.length; k++)
                     {
                         if(currentProperty.value.values[k].pathName !== undefined && currentProperty.value.values[k].pathName !== '')
                         {
-                            if(pathNameConversion[currentProperty.value.values[k].pathName] !== undefined)
-                            {
-                                currentProperty.value.values[k].pathName = pathNameConversion[currentProperty.value.values[k].pathName];
-                            }
-                            else
-                            {
-                                let testPathName    = currentProperty.value.values[k].pathName.split('.');
-                                let extraPart       = testPathName.pop();
-                                    testPathName    = testPathName.join('.');
-
-                                if(pathNameConversion[testPathName] !== undefined)
-                                {
-                                    currentProperty.value.values[k].pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                                }
-                            }
+                            currentProperty.value.values[k] = this.transformValue(currentProperty.value.values[k], pathNameConversion);
                         }
 
                         if(Array.isArray(currentProperty.value.values[k]))
                         {
+                            currentProperty.value.values[k] = this.transformProperties(currentProperty.value.values[k], pathNameConversion);
+
                             for(let i = 0; i < currentProperty.value.values[k].length; i++)
                             {
                                 if(currentProperty.value.values[k][i].value !== undefined && currentProperty.value.values[k][i].value.pathName !== undefined && currentProperty.value.values[k][i].value.pathName !== '')
                                 {
-                                    if(pathNameConversion[currentProperty.value.values[k][i].value.pathName] !== undefined)
-                                    {
-                                        currentProperty.value.values[k][i].value.pathName = pathNameConversion[currentProperty.value.values[k][i].value.pathName];
-                                    }
-                                    else
-                                    {
-                                        let testPathName    = currentProperty.value.values[k][i].value.pathName.split('.');
-                                        let extraPart       = testPathName.pop();
-                                            testPathName    = testPathName.join('.');
-
-                                        if(pathNameConversion[testPathName] !== undefined)
-                                        {
-                                            currentProperty.value.values[k][i].value.pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                                        }
-                                    }
+                                    currentProperty.value.values[k][i].value = this.transformValue(currentProperty.value.values[k][i].value, pathNameConversion);
                                 }
                             }
                         }
@@ -506,25 +517,32 @@ export default class Spawn_Blueprint
                 }
                 if(currentProperty.value !== undefined && currentProperty.value.pathName !== undefined)
                 {
-                    if(pathNameConversion[currentProperty.value.pathName] !== undefined)
-                    {
-                        currentProperty.value.pathName = pathNameConversion[currentProperty.value.pathName];
-                    }
-                    else
-                    {
-                        let testPathName    = currentProperty.value.pathName.split('.');
-                        let extraPart       = testPathName.pop();
-                            testPathName    = testPathName.join('.');
-
-                        if(pathNameConversion[testPathName] !== undefined)
-                        {
-                            currentProperty.value.pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                        }
-                    }
+                    currentProperty.value = this.transformValue(currentProperty.value, pathNameConversion);
                 }
         }
 
         return properties;
+    }
+
+    transformValue(value, pathNameConversion)
+    {
+        if(pathNameConversion[value.pathName] !== undefined)
+        {
+            value.pathName = pathNameConversion[value.pathName];
+        }
+        else
+        {
+            let testPathName    = value.pathName.split('.');
+            let extraPart       = testPathName.pop();
+                testPathName    = testPathName.join('.');
+
+            if(pathNameConversion[testPathName] !== undefined)
+            {
+                value.pathName = pathNameConversion[testPathName] + '.' + extraPart;
+            }
+        }
+
+        return value;
     }
 
     handleHiddenConnections(pathNameConversion)
@@ -561,24 +579,7 @@ export default class Spawn_Blueprint
                         currentHiddenConnections.outerPathName = pathNameConversion[currentHiddenConnections.outerPathName];
                     }
 
-                    let mHiddenConnections = this.baseLayout.getObjectProperty(currentHiddenConnections, 'mHiddenConnections');
-                        if(mHiddenConnections !== null)
-                        {
-                            for(let j = 0; j < mHiddenConnections.values.length; j++)
-                            {
-                                if(pathNameConversion[mHiddenConnections.values[j].pathName] !== undefined)
-                                {
-                                    mHiddenConnections.values[j].pathName = pathNameConversion[mHiddenConnections.values[j].pathName];
-                                }
-                                else
-                                {
-                                    for(let oldPathName in pathNameConversion)
-                                    {
-                                        mHiddenConnections.values[j].pathName = mHiddenConnections.values[j].pathName.split(oldPathName + '.').join(pathNameConversion[oldPathName] + '.');
-                                    }
-                                }
-                            }
-                        }
+                    currentHiddenConnections.properties = this.transformProperties(currentHiddenConnections.properties, pathNameConversion);
 
                     this.baseLayout.saveGameParser.addObject(currentHiddenConnections);
 
@@ -633,7 +634,7 @@ export default class Spawn_Blueprint
                             }
                             else
                             {
-                                newmFluidDescriptor.value = {levelName: "", pathName: this.clipboard.pipes[pipeNetworkID].fluid};
+                                newmFluidDescriptor.value = {levelName: '', pathName: this.clipboard.pipes[pipeNetworkID].fluid};
                             }
 
                             newPipeNetwork.properties.push(newmFluidDescriptor);
@@ -645,21 +646,8 @@ export default class Spawn_Blueprint
 
                             for(let i = 0; i < this.clipboard.pipes[pipeNetworkID].interface.length; i++)
                             {
-                                let newPipeNetworkPathName = this.clipboard.pipes[pipeNetworkID].interface[i];
-
-                                    if(pathNameConversion[newPipeNetworkPathName] !== undefined)
-                                    {
-                                        newPipeNetworkPathName = pathNameConversion[newPipeNetworkPathName];
-                                    }
-                                    else
-                                    {
-                                        for(let oldPathName in pathNameConversion)
-                                        {
-                                            newPipeNetworkPathName = newPipeNetworkPathName.split(oldPathName + '.').join(pathNameConversion[oldPathName] + '.');
-                                        }
-                                    }
-
-                                    mFluidIntegrantScriptInterfaces.value.values.push({pathName: newPipeNetworkPathName});
+                                let newPipeNetworkPathName = this.transformValue({pathName: this.clipboard.pipes[pipeNetworkID].interface[i]}, pathNameConversion);
+                                    mFluidIntegrantScriptInterfaces.value.values.push(newPipeNetworkPathName);
                                     pipesConversion[newPipeNetworkPathName] = newPipeNetworkID;
                             }
 
@@ -688,23 +676,8 @@ export default class Spawn_Blueprint
                     {
                         let newPowerCircuit             = JSON.parse(JSON.stringify(this.clipboard.powerCircuits[powerCircuitPathName]));
                             newPowerCircuit.pathName    = this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.CircuitSubsystem.FGPowerCircuit_XXX'});
+                            newPowerCircuit.properties  = this.transformProperties(newPowerCircuit.properties, pathNameConversion);
                             this.baseLayout.setObjectProperty(newPowerCircuit, 'mCircuitID', circuitSubSystem.getNextId(), 'Int');
-
-                        let mComponents                 = this.baseLayout.getObjectProperty(newPowerCircuit, 'mComponents');
-                            if(mComponents !== null)
-                            {
-                                for(let i = 0; i < mComponents.values.length; i++)
-                                {
-                                    let testPathName    = mComponents.values[i].pathName.split('.');
-                                    let extraPart       = testPathName.pop();
-                                        testPathName    = testPathName.join('.');
-
-                                    if(pathNameConversion[testPathName] !== undefined)
-                                    {
-                                        mComponents.values[i].pathName = pathNameConversion[testPathName] + '.' + extraPart;
-                                    }
-                                }
-                            }
 
                             this.baseLayout.saveGameParser.addObject(newPowerCircuit);
                             circuitSubSystem.add(newPowerCircuit);
