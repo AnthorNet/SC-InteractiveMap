@@ -10,6 +10,7 @@ export default class Spawn_Fill
     {
         this.selection          = options.selection;
         this.useOwnMaterials    = options.useOwnMaterials;
+        this.useWorldGrid       = options.useWorldGrid;
 
         this.baseLayout         = options.baseLayout;
         this.layerId            = 'playerFoundationsLayer';
@@ -46,6 +47,13 @@ export default class Spawn_Fill
             parseFloat(options.z)   // Z
         ];
 
+        if(this.useWorldGrid === 1)
+        {
+            this.center[0]  = Math.round(this.center[0] / 800) * 800;
+            this.center[1]  = Math.round(this.center[1] / 800) * 800;
+            this.center[2]  = Math.round(this.center[2] / 100) * 100;
+        }
+
         this.minWidth           = this.center[0] - ((Math.floor((ne[0] - sw[0]) / 800) * 800) / 2);
         this.maxWidth           = this.center[0] + ((Math.floor((ne[0] - sw[0]) / 800) * 800) / 2);
         this.minHeight          = this.center[1] - ((Math.floor((sw[1] - ne[1]) / 800) * 800) / 2);
@@ -63,19 +71,19 @@ export default class Spawn_Fill
                 rotation        : [0, 0, 0, 1],
                 translation     : this.center
             },
-            entity          : {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"},
+            entity          : {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'},
             properties      : [
                 {
-                    name        : "mBuiltWithRecipe",
-                    type        : "ObjectProperty",
+                    name        : 'mBuiltWithRecipe',
+                    type        : 'Object',
                     value       : {
-                        levelName   : "",
-                        pathName    : "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x4_01.Recipe_Foundation_8x4_01_C"
+                        levelName   : '',
+                        pathName    : '/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x4_01.Recipe_Foundation_8x4_01_C'
                     }
                 },
                 {
-                    name        : "mBuildTimeStamp",
-                    type        : "FloatProperty",
+                    name        : 'mBuildTimeStamp',
+                    type        : 'Float',
                     value       : 0
                 }
             ]

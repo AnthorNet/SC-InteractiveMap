@@ -52,7 +52,7 @@ export default class Building_RailroadSwitchControl
     static bindTooltip(baseLayout, currentObject, tooltipOptions)
     {
         tooltipOptions.direction    = 'bottom';
-        
+
         let connectedComponents = Building_RailroadSwitchControl.getConnectedComponents(baseLayout, currentObject);
             if(connectedComponents !== null)
             {
@@ -125,7 +125,7 @@ export default class Building_RailroadSwitchControl
 
                             if(connectedComponents.length > 1)
                             {
-                                baseLayout.setObjectProperty(trackConnection1, 'mSwitchPosition', ((mSwitchPosition === 0) ? 1 : 0), 'IntProperty');
+                                baseLayout.setObjectProperty(trackConnection1, 'mSwitchPosition', ((mSwitchPosition === 0) ? 1 : 0), 'Int');
                             }
                     }
             }

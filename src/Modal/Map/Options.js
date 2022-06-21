@@ -320,18 +320,18 @@ export default class Modal_Map_Options
 
                 for(let i = 0; i < this.baseLayout.gameMode.length; i++)
                 {
-                    this.baseLayout.setObjectProperty(this.baseLayout.gameMode[i], 'mSaveSessionName', newSessionName, 'StrProperty');
+                    this.baseLayout.setObjectProperty(this.baseLayout.gameMode[i], 'mSaveSessionName', newSessionName, 'Str');
                 }
             }
 
             if(isValidNewSessionName === true)
             {
-                this.baseLayout.setObjectProperty(gameState, 'mReplicatedSessionName', newSessionName, 'StrProperty');
+                this.baseLayout.setObjectProperty(gameState, 'mReplicatedSessionName', newSessionName, 'Str');
             }
 
             if($('#inputCheatNoCost').is(':checked') === true)
             {
-                this.baseLayout.setObjectProperty(gameState, 'mCheatNoCost', 1, 'BoolProperty');
+                this.baseLayout.setObjectProperty(gameState, 'mCheatNoCost', 1, 'Bool');
             }
             else
             {
@@ -340,7 +340,7 @@ export default class Modal_Map_Options
 
             if($('#inputCheatNoPower').is(':checked') === true)
             {
-                this.baseLayout.setObjectProperty(gameState, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+                this.baseLayout.setObjectProperty(gameState, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'Bool');
             }
             else
             {
@@ -349,20 +349,20 @@ export default class Modal_Map_Options
 
             if($('#inputCheatNoFuel').is(':checked') === true)
             {
-                this.baseLayout.setObjectProperty(gameState, 'mCheatNoFuel', (($('#inputCheatNoFuel').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+                this.baseLayout.setObjectProperty(gameState, 'mCheatNoFuel', (($('#inputCheatNoFuel').is(':checked') === true) ? 1 : 0), 'Bool');
             }
             else
             {
                 this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoFuel');
             }
 
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', (($('#inputBuildingOverclockUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', (($('#inputGameStateMapUnlocked').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
+            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', (($('#inputBuildingOverclockUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
+            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', (($('#inputGameStateMapUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
 
             if($('#inputCheatNoCost').is(':checked') === true)
             {
-                this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoCost', (($('#inputCheatNoCost').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+                this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoCost', (($('#inputCheatNoCost').is(':checked') === true) ? 1 : 0), 'Bool');
             }
             else
             {
@@ -371,7 +371,7 @@ export default class Modal_Map_Options
 
             if($('#inputCheatNoPower').is(':checked') === true)
             {
-                this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'BoolProperty');
+                this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'Bool');
             }
             else
             {
@@ -394,11 +394,11 @@ export default class Modal_Map_Options
             setTimeout(() => {
                 if(unlockSubSystem !== null)
                 {
-                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', 0, 'BoolProperty');
-                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0, 'BoolProperty');
-                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', 0, 'BoolProperty');
+                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', 0, 'Bool');
+                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0, 'Bool');
+                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', 0, 'Bool');
 
-                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mNumTotalInventorySlots', 22, 'IntProperty');
+                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mNumTotalInventorySlots', 22, 'Int');
                     this.baseLayout.deleteObjectProperty(unlockSubSystem, 'mNumTotalArmEquipmentSlots');
 
                     let scannableResources = this.baseLayout.getObjectProperty(unlockSubSystem, 'mScannableResources');
@@ -466,9 +466,9 @@ export default class Modal_Map_Options
                     if(tutorialIntroManager !== null)
                     {
                         tutorialIntroManager.properties = [];
-                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroTutorial", type: "BoolProperty", value: 1});
-                        tutorialIntroManager.properties.push({name: "mHasCompletedIntroSequence", type: "BoolProperty", value: 1});
-                        tutorialIntroManager.properties.push({name: "mTradingPostLevel", type: "IntProperty", value: 6});
+                        tutorialIntroManager.properties.push({name: 'mHasCompletedIntroTutorial', type: 'Bool', value: 1});
+                        tutorialIntroManager.properties.push({name: 'mHasCompletedIntroSequence', type: 'Bool', value: 1});
+                        tutorialIntroManager.properties.push({name: 'mTradingPostLevel', type: 'Int', value: 6});
                     }
 
                 // Reset players tutorials

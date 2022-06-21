@@ -193,15 +193,15 @@ export default class Modal_Map_Collectables
                                 if(playerCollectables[className].markers[m].defaultValue !== undefined)
                                 {
                                     this.baseLayout.setObjectProperty(currentObject, 'mPickupItems', {
-                                        type: "InventoryStack",
-                                        values: [
+                                        type    : 'InventoryStack',
+                                        values  : [
                                             {
-                                                name: "NumItems",
-                                                type: "IntProperty",
-                                                value: playerCollectables[className].markers[m].defaultValue
+                                                name    : 'NumItems',
+                                                type    : 'Int',
+                                                value   : playerCollectables[className].markers[m].defaultValue
                                             }
                                         ]
-                                    }, 'StructProperty');
+                                    }, 'Struct');
                                 }
                                 else
                                 {
@@ -242,20 +242,20 @@ export default class Modal_Map_Collectables
                         {
                             if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                             {
-                                this.baseLayout.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'BoolProperty');
+                                this.baseLayout.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'Bool');
                             }
                             else
                             {
                                 this.baseLayout.setObjectProperty(currentObject, 'mPickupItems', {
-                                    type: "InventoryStack",
-                                    values: [
+                                    type    : 'InventoryStack',
+                                    values  : [
                                         {
-                                            name: "NumItems",
-                                            type: "IntProperty",
-                                            value: 0
+                                            name    : 'NumItems',
+                                            type    : 'Int',
+                                            value   : 0
                                         }
                                     ]
-                                }, 'StructProperty');
+                                }, 'Struct');
                             }
                         }
                         else
@@ -314,10 +314,10 @@ export default class Modal_Map_Collectables
 
                         switch(currentObject.properties[n].value.values[0].type)
                         {
-                            case 'IntProperty':
+                            case 'Int':
                                 intValue = currentObject.properties[n].value.values[0].value;
                                 break;
-                            case 'StructProperty':
+                            case 'Struct':
                                 if(currentObject.properties[n].value.values[0].value.properties[0] === null)
                                 {
                                     intValue = 0;

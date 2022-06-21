@@ -162,12 +162,12 @@ export default class SubSystem_Buildable
             {
                 currentObject.properties.push({
                     name    : 'mCustomizationData',
-                    type    : 'StructProperty',
+                    type    : 'Struct',
                     value   : {
                         type    : 'FactoryCustomizationData',
                         values  : [{
                             name    : 'SwatchDesc',
-                            type    : 'ObjectProperty',
+                            type    : 'Object',
                             value   : {levelName : '', pathName: '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot0.SwatchDesc_Slot0_C'}
                         }]
                     }
@@ -225,12 +225,12 @@ export default class SubSystem_Buildable
 
                 mCustomizationData.values.push( {
                     name    : 'OverrideColorData',
-                    type    : 'StructProperty',
+                    type    : 'Struct',
                     value   : {
                         type    : 'FactoryCustomizationColorSlot',
                         values  : [
                             {
-                                name    : 'PrimaryColor', type: 'StructProperty',
+                                name    : 'PrimaryColor', type: 'Struct',
                                 value   : {
                                     type    : 'LinearColor',
                                     values  : {
@@ -242,7 +242,7 @@ export default class SubSystem_Buildable
                                 }
                             },
                             {
-                                name    : 'SecondaryColor', type: 'StructProperty',
+                                name    : 'SecondaryColor', type: 'Struct',
                                 value   : {
                                     type    : 'LinearColor',
                                     values  : {
@@ -465,16 +465,16 @@ export default class SubSystem_Buildable
                     mColorSlots_Data.values[slotIndex] = [
                         {
                             name    : 'PrimaryColor',
-                            type    : 'StructProperty',
+                            type    : 'Struct',
                             value   : {type: 'LinearColor', values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))}
                         },
                         {
                             name    : 'SecondaryColor',
-                            type    : 'StructProperty',
+                            type    : 'Struct',
                             value   : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
                         },
-                        {name: 'Metallic', type: 'FloatProperty', value: 0},
-                        {name: 'Roughness', type: 'FloatProperty', value: 0}
+                        {name: 'Metallic', type: 'Float', value: 0},
+                        {name: 'Roughness', type: 'Float', value: 0}
                     ];
                 }
 
@@ -511,11 +511,9 @@ export default class SubSystem_Buildable
 
                     mColorSlots_Data = {
                         name                : 'mColorSlots_Data',
-                        structureName       : 'mColorSlots_Data',
-                        structureType       : 'StructProperty',
                         structureSubType    : 'FactoryCustomizationColorSlot',
-                        type                : 'ArrayProperty',
-                        value               : {type: 'StructProperty', values: []}
+                        type                : 'Array',
+                        value               : {type: 'Struct', values: []}
                     };
 
                     for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
@@ -523,16 +521,16 @@ export default class SubSystem_Buildable
                         mColorSlots_Data.value.values.push([
                             {
                                 name    : 'PrimaryColor',
-                                type    : 'StructProperty',
+                                type    : 'Struct',
                                 value   : {type: 'LinearColor', values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))}
                             },
                             {
                                 name    : 'SecondaryColor',
-                                type    : 'StructProperty',
+                                type    : 'Struct',
                                 value   : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
                             },
-                            {name: 'Metallic', type: 'FloatProperty', value: 0},
-                            {name: 'Roughness', type: 'FloatProperty', value: 0}
+                            {name: 'Metallic', type: 'Float', value: 0},
+                            {name: 'Roughness', type: 'Float', value: 0}
                         ]);
                     }
 
@@ -696,7 +694,7 @@ export default class SubSystem_Buildable
                     {
                         mCustomizationData.values.push({
                             name    : 'SkinDesc',
-                            type    : 'ObjectProperty',
+                            type    : 'Object',
                             value   : {
                                 levelName   : '',
                                 pathName    : buildingData.switchSkin[skin]
@@ -740,16 +738,16 @@ export default class SubSystem_Buildable
             switch(currentPatternRotation.value.value)
             {
                 case 1: // 180° => -90°
-                    mCustomizationData.values.push({name: 'PatternRotation', type: 'ByteProperty', value: {enumName: 'None', value: 0}});
+                    mCustomizationData.values.push({name: 'PatternRotation', type: 'Byte', value: {enumName: 'None', value: 0}});
                     break;
                 case 2: // 90° => 180°
-                    mCustomizationData.values.push({name: 'PatternRotation', type: 'ByteProperty', value: {enumName: 'None', value: 1}});
+                    mCustomizationData.values.push({name: 'PatternRotation', type: 'Byte', value: {enumName: 'None', value: 1}});
                     break;
                 case 3: // 0° => 90°
-                    mCustomizationData.values.push({name: 'PatternRotation', type: 'ByteProperty', value: {enumName: 'None', value: 2}});
+                    mCustomizationData.values.push({name: 'PatternRotation', type: 'Byte', value: {enumName: 'None', value: 2}});
                     break;
                 default: // -90° => 0°
-                    mCustomizationData.values.push({name: 'PatternRotation', type: 'ByteProperty', value: {enumName: 'None', value: 3}});
+                    mCustomizationData.values.push({name: 'PatternRotation', type: 'Byte', value: {enumName: 'None', value: 3}});
                     break;
             }
 

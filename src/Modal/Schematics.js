@@ -720,10 +720,10 @@ export default class Modal_Schematics
                         if(mPurchasedSchematics === null)
                         {
                             schematicManager.properties.push({
-                                name    : "mPurchasedSchematics",
-                                type    : "ArrayProperty",
+                                name    : 'mPurchasedSchematics',
+                                type    : 'Array',
                                 value   : {
-                                    type    : "ObjectProperty",
+                                    type    : 'Object',
                                     values  : [],
                                 }
                             });

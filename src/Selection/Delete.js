@@ -151,15 +151,15 @@ export default class Selection_Delete
                     }
 
                     let newItem = [{
-                        name: "Item",
-                        type: "StructProperty",
-                        value: {
-                            type: "InventoryItem",
-                            unk1: 0,
-                            itemName: tempCrate[i].className,
-                            levelName: "",
-                            pathName: "",
-                            properties: [{name: "NumItems", type: "IntProperty", value: tempCrate[i].amount}]
+                        name    : 'Item',
+                        type    : 'Struct',
+                        value   : {
+                            type        : 'InventoryItem',
+                            unk1        : 0,
+                            itemName    : tempCrate[i].className,
+                            levelName   : '',
+                            pathName    : '',
+                            properties  : [{name: 'NumItems', type: 'Int', value: tempCrate[i].amount}]
                         }
                     }];
 

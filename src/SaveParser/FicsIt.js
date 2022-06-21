@@ -209,7 +209,7 @@ export default class SaveParser_FicsIt
                 currentObject.transform.rotation    = BaseLayout_Math.getNewQuaternionRotate(currentObject.transform.rotation, 90);
                 currentObject.properties.push({
                     name    : 'mBuiltWithRecipe',
-                    type    : 'ObjectProperty',
+                    type    : 'Object',
                     value   : {levelName: '', pathName: newRecipe}
                 });
             }

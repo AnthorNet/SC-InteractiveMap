@@ -132,7 +132,7 @@ export default class Modal_Map_Players
         {
             let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
             let newCount                    = Math.max(1, Math.min(9, ((mNumTotalArmEquipmentSlots !== null) ? mNumTotalArmEquipmentSlots : 1) + parseInt(count)));
-                this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots', newCount, 'IntProperty');
+                this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots', newCount, 'Int');
                 count                        = newCount - mNumTotalArmEquipmentSlots;
 
             for(let pathName in this.baseLayout.players)
@@ -148,15 +148,15 @@ export default class Modal_Map_Players
                                     for(let k = 0; k < count; k++)
                                     {
                                         armSlot.properties[j].value.values.push([{
-                                            name: "Item",
-                                            type: "StructProperty",
-                                            value: {
-                                                itemName: "",
-                                                levelName: "",
-                                                pathName: "",
-                                                type: "InventoryItem",
-                                                unk1: 0,
-                                                properties: [{name: "NumItems", type: "IntProperty", value: 0}]
+                                            name    : 'Item',
+                                            type    : 'Struct',
+                                            value   : {
+                                                itemName    : '',
+                                                levelName   : '',
+                                                pathName    : '',
+                                                type        : 'InventoryItem',
+                                                unk1        : 0,
+                                                properties  : [{name: 'NumItems', type: 'Int', value: 0}]
                                             }
                                         }]);
                                     }
@@ -187,7 +187,7 @@ export default class Modal_Map_Players
         {
             let mNumTotalArmEquipmentSlots  = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots');
             let newCount                    = Math.max(1, Math.min(9, ((mNumTotalArmEquipmentSlots !== null) ? mNumTotalArmEquipmentSlots : 1) - parseInt(count)));
-                this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots', newCount, 'IntProperty');
+                this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalArmEquipmentSlots', newCount, 'Int');
 
             for(let pathName in this.baseLayout.players)
             {
@@ -217,7 +217,7 @@ export default class Modal_Map_Players
         {
             let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
             let newCount                    = Math.max(22, Math.min(500, ((mNumTotalInventorySlots !== null) ? mNumTotalInventorySlots : 22) + parseInt(count)));
-               this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots', newCount, 'IntProperty');
+               this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots', newCount, 'Int');
                count                        = newCount - mNumTotalInventorySlots;
 
             for(let pathName in this.baseLayout.players)
@@ -233,15 +233,15 @@ export default class Modal_Map_Players
                                     for(let k = 0; k < count; k++)
                                     {
                                         inventory.properties[j].value.values.push([{
-                                            name: "Item",
-                                            type: "StructProperty",
-                                            value: {
-                                                itemName: "",
-                                                levelName: "",
-                                                pathName: "",
-                                                type: "InventoryItem",
-                                                unk1: 0,
-                                                properties: [{name: "NumItems", type: "IntProperty", value: 0}]
+                                            name    : 'Item',
+                                            type    : 'Struct',
+                                            value   : {
+                                                itemName    : '',
+                                                levelName   : '',
+                                                pathName    : '',
+                                                type        : 'InventoryItem',
+                                                unk1        : 0,
+                                                properties  : [{name: 'NumItems', type: 'Int', value: 0}]
                                             }
                                         }]);
                                     }
@@ -272,7 +272,7 @@ export default class Modal_Map_Players
         {
             let mNumTotalInventorySlots     = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots');
             let newCount                    = Math.max(22, Math.min(500, ((mNumTotalInventorySlots !== null) ? mNumTotalInventorySlots : 22) - parseInt(count)));
-               this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots', newCount, 'IntProperty');
+               this.baseLayout.setObjectProperty(this.unlockSubSystem, 'mNumTotalInventorySlots', newCount, 'Int');
 
             for(let pathName in this.baseLayout.players)
             {

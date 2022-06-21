@@ -312,7 +312,7 @@ export default class Building_Conveyor
                 let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny0, 'mConnectedComponent');
                     if(mConnectedComponent === null)
                     {
-                        baseLayout.setObjectProperty(conveyorAny0, 'mConnectedComponent', {pathName: Building_Conveyor.clipboard.entry}, 'ObjectProperty');
+                        baseLayout.setObjectProperty(conveyorAny0, 'mConnectedComponent', {pathName: Building_Conveyor.clipboard.entry}, 'Object');
                     }
             }
 
@@ -322,7 +322,7 @@ export default class Building_Conveyor
                 let mConnectedComponent = baseLayout.getObjectProperty(conveyorAny1, 'mConnectedComponent');
                     if(mConnectedComponent === null)
                     {
-                        baseLayout.setObjectProperty(conveyorAny1, 'mConnectedComponent', {pathName: Building_Conveyor.clipboard.exit}, 'ObjectProperty');
+                        baseLayout.setObjectProperty(conveyorAny1, 'mConnectedComponent', {pathName: Building_Conveyor.clipboard.exit}, 'Object');
                     }
             }
 

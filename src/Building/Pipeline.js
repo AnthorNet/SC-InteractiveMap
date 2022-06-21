@@ -253,7 +253,7 @@ export default class Building_Pipeline
             baseLayout.setObjectProperty(currentObject, 'mFluidBox', {
                 type    : 'FluidBox',
                 value   : maxFluid
-            }, 'StructProperty');
+            }, 'Struct');
     }
 
     static clearInventory(marker)

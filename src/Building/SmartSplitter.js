@@ -158,8 +158,10 @@ export default class Building_SmartSplitter
                     baseLayout.deleteObjectProperty(currentObject, 'mSortRules');
 
                     let mSortRules = {
-                            name: "mSortRules", type: "ArrayProperty", value: {type: "StructProperty", values: []},
-                            structureName: "mSortRules", structureType: "StructProperty", structureSubType: "SplitterSortRule"
+                            name            : 'mSortRules',
+                            type            : 'Array',
+                            value           : {type: 'Struct', values: []},
+                            structureSubType: 'SplitterSortRule'
                         };
                         for(let outputIndex in values)
                         {
@@ -171,8 +173,8 @@ export default class Building_SmartSplitter
                             for(let i = 0; i < values[outputIndex].length; i++)
                             {
                                 mSortRules.value.values.push([
-                                    {name: "ItemClass", type: "ObjectProperty", value: {levelName: "", pathName: values[outputIndex][i]}},
-                                    {name: "OutputIndex", type: "IntProperty", value: parseInt(outputIndex)}
+                                    {name: 'ItemClass', type: 'Object', value: {levelName: '', pathName: values[outputIndex][i]}},
+                                    {name: 'OutputIndex', type: 'Int', value: parseInt(outputIndex)}
                                 ]);
                             }
                         }

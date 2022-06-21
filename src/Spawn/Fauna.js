@@ -56,8 +56,8 @@ export default class Spawn_Fauna
                 pathName            : pathName,
                 entity              : {levelName: '', pathName: ''},
                 properties          : [
-                    {name: 'mHealthComponent', type: 'ObjectProperty', value: {pathName: pathName + '.HealthComponent'}},
-                    {name: 'mIsPersistent', type: 'BoolProperty', value: 1} // Just in case CSS allow to push Zoos ;)
+                    {name: 'mHealthComponent', type: 'Object', value: {pathName: pathName + '.HealthComponent'}},
+                    {name: 'mIsPersistent', type: 'Bool', value: 1} // Just in case CSS allow to push Zoos ;)
                 ],
                 transform           : {
                     rotation            : [0, -0, this.centerObject.transform.rotation[2], this.centerObject.transform.rotation[3]],
@@ -76,9 +76,9 @@ export default class Spawn_Fauna
                 let currentPlayerObject = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGameParser.playerHostPathName);
                 let mOwnedPawn          = this.baseLayout.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
 
-                newFauna.properties.push({name: 'mFriendActor', type: 'ObjectProperty', value: {pathName: mOwnedPawn.pathName}});
-                newFauna.properties.push({name: 'mLootTableIndex', type: 'IntProperty', value: 0});
-                newFauna.properties.push({name: 'mLootTimerHandle', type: 'StructProperty', value: {handle: 'None', type: 'TimerHandle'}});
+                newFauna.properties.push({name: 'mFriendActor', type: 'Object', value: {pathName: mOwnedPawn.pathName}});
+                newFauna.properties.push({name: 'mLootTableIndex', type: 'Int', value: 0});
+                newFauna.properties.push({name: 'mLootTimerHandle', type: 'Struct', value: {handle: 'None', type: 'TimerHandle'}});
 
                 let newSpaceRabbitInventory     = {
                     type            : 0,
@@ -87,27 +87,25 @@ export default class Spawn_Fauna
                     outerPathName   : pathName, pathName: pathName + '.mInventory',
                     properties      : [
                         {
-                            name: "mInventoryStacks",
-                            structureName: "mInventoryStacks",
-                            structureSubType: "InventoryStack",
-                            structureType: "StructProperty",
-                            type: "ArrayProperty",
-                            value: {
-                                type: "StructProperty",
-                                values: [[{
-                                    name: "Item",
-                                    type: "StructProperty",
-                                    value: {
-                                        itemName: "", levelName: "", pathName: "",
-                                        type: "InventoryItem",
-                                        unk1: 0,
-                                        properties: [{name: "NumItems", type: "IntProperty", value: 0}]
+                            name                : 'mInventoryStacks',
+                            structureSubType    : 'InventoryStack',
+                            type                : 'Array',
+                            value               : {
+                                type    : 'Struct',
+                                values  : [[{
+                                    name    : 'Item',
+                                    type    : 'Struct',
+                                    value   : {
+                                        itemName    : '', levelName: '', pathName: '',
+                                        type        : 'InventoryItem',
+                                        unk1        : 0,
+                                        properties  : [{name: 'NumItems', type: 'Int', value: 0}]
                                     }
                                 }]]
                             }
                         },
-                        { name: '"mArbitrarySlotSizes', type: 'ArrayProperty', value: {type: 'IntProperty', values: [0]} },
-                        { name: 'mAllowedItemDescriptors', type: 'ArrayProperty', value: {type: 'ObjectProperty', values: [{levelName: '', pathName: ''}]} }
+                        { name: 'mArbitrarySlotSizes', type: 'Array', value: {type: 'Int', values: [0]} },
+                        { name: 'mAllowedItemDescriptors', type: 'Array', value: {type: 'Object', values: [{levelName: '', pathName: ''}]} }
                     ]
                 };
 
@@ -122,8 +120,8 @@ export default class Spawn_Fauna
 
             let closestCreatureSpawner = this.baseLayout.faunaSubsystem.getClosestCreatureSpawner(this.centerObject);
                 newFauna.properties.push({
-                    name    : "mOwningSpawner",
-                    type    : "ObjectProperty",
+                    name    : 'mOwningSpawner',
+                    type    : 'Object',
                     value   : closestCreatureSpawner
                 });
                 this.baseLayout.saveGameParser.addObject(newFauna);
@@ -136,10 +134,10 @@ export default class Spawn_Fauna
                         {
                             mSpawnData.values.push([
                                 {
-                                    name    : "SpawnLocation",
-                                    type    : "StructProperty",
+                                    name    : 'SpawnLocation',
+                                    type    : 'Struct',
                                     value   : {
-                                        type    : "Vector",
+                                        type    : 'Vector',
                                         values  : {
                                             x       : newFauna.transform.translation[0],
                                             y       : newFauna.transform.translation[1],
@@ -147,9 +145,9 @@ export default class Spawn_Fauna
                                         }
                                     }
                                 },
-                                {name: "creature", type: "ObjectProperty", value: {pathName: newFauna.pathName}},
-                                {name: "WasKilled", type: "BoolProperty", value: 0},
-                                {name: "KilledOnDayNr", type: "IntProperty", value: -1}
+                                {name: 'creature', type: 'Object', value: {pathName: newFauna.pathName}},
+                                {name: 'WasKilled', type: 'Bool', value: 0},
+                                {name: 'KilledOnDayNr', type: 'Int', value: -1}
                             ]);
                         }
                 }

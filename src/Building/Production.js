@@ -108,7 +108,7 @@ export default class Building_Production
                 {
                     if(mCurrentRecipe === null)
                     {
-                         currentObject.properties.push({name: "mCurrentRecipe", type: "ObjectProperty", value: {levelName: "", pathName: values.recipe}});
+                         currentObject.properties.push({name: 'mCurrentRecipe', type: 'Object', value: {levelName: '', pathName: values.recipe}});
                     }
                     else
                     {

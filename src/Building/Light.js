@@ -16,9 +16,9 @@ export default class Building_Light
             if(mLightControlData === null)
             {
                 currentObject.properties.push({
-                    name    : "mLightControlData",
-                    type    : "StructProperty",
-                    value   : { type: "LightSourceControlData", values: [] }
+                    name    : 'mLightControlData',
+                    type    : 'Struct',
+                    value   : { type: 'LightSourceControlData', values: [] }
                 });
 
                 mLightControlData = baseLayout.getObjectProperty(currentObject, 'mLightControlData');
@@ -367,7 +367,7 @@ export default class Building_Light
 
                                 if(slotIndex === 0)
                                 {
-                                    mLightControlData.values.push({name: "ColorSlotIndex", type: "IntProperty", value: newSlotIndex});
+                                    mLightControlData.values.push({name: 'ColorSlotIndex', type: 'Int', value: newSlotIndex});
                                 }
                                 else
                                 {
@@ -438,7 +438,7 @@ export default class Building_Light
 
                                     if(intensity === 50)
                                     {
-                                        mLightControlData.values.push({name: "Intensity", type: "FloatProperty", value: (newIntensity / 5)});
+                                        mLightControlData.values.push({name: 'Intensity', type: 'Float', value: (newIntensity / 5)});
                                     }
                                     else
                                     {
@@ -493,7 +493,7 @@ export default class Building_Light
                     {
                         if(isTimeOfDayAware === false)
                         {
-                            mLightControlData.values.push({name: "IsTimeOfDayAware", type: "BoolProperty", value: 1});
+                            mLightControlData.values.push({name: 'IsTimeOfDayAware', type: 'Bool', value: 1});
                         }
                         else
                         {

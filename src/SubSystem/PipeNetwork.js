@@ -93,7 +93,7 @@ export default class SubSystem_PipeNetwork
                         }
                         else
                         {
-                            this.baseLayout.setObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor', {levelName: "", pathName: values.mFluidDescriptor}, 'ObjectProperty');
+                            this.baseLayout.setObjectProperty(currentObjectPipeNetwork, 'mFluidDescriptor', {levelName: "", pathName: values.mFluidDescriptor}, 'Object');
                         }
 
                         // Handle network inventories...

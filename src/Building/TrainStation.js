@@ -108,8 +108,8 @@ export default class Building_TrainStation
                                         flags                       : 18,
                                         hasCultureInvariantString   : 1,
                                         historyType                 : 255,
-                                        name                        : "mStationName",
-                                        type                        : "TextProperty",
+                                        name                        : 'mStationName',
+                                        type                        : 'Text',
                                         value                       : values.mStationName
                                     });
                                 }

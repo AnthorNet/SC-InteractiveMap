@@ -635,17 +635,17 @@ export default class Modal_Selection
                 let boundaries      = Modal_Selection.getBoundaries(baseLayout, markers);
                 let fakeFoundation  = {
                         type            : 1,
-                        className       : "/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x2_01.Build_Foundation_8x2_01_C",
-                        pathName        : "Persistent_Level:PersistentLevel.Build_Foundation_8x2_01_C_XXX",
+                        className       : '/Game/FactoryGame/Buildable/Building/Foundation/Build_Foundation_8x2_01.Build_Foundation_8x2_01_C',
+                        pathName        : 'Persistent_Level:PersistentLevel.Build_Foundation_8x2_01_C_XXX',
                         transform       : {
                             rotation        : [0, 0, 0, 1],
                             translation     : [boundaries.centerX, boundaries.centerY, boundaries.minZ + 100]
                         },
                         properties      : [
-                            { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C" } },
-                            { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
+                            { name: 'mBuiltWithRecipe', type: 'Object', value: { levelName: '', pathName: '/Game/FactoryGame/Recipes/Buildings/Foundations/Recipe_Foundation_8x2_01.Recipe_Foundation_8x2_01_C' } },
+                            { name: 'mBuildTimeStamp', type: 'Float', value: 0 }
                         ],
-                        entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
+                        entity: {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'}
                     };
                     fakeFoundation.pathName = baseLayout.generateFastPathName(fakeFoundation);
 
@@ -936,6 +936,12 @@ export default class Modal_Selection
                     value           : 0,
                 },
                 {
+                    label           : 'Use world grid center?',
+                    name            : 'useWorldGrid',
+                    inputType       : 'toggle',
+                    value           : 1,
+                },
+                {
                     label           : 'Use materials from your containers?',
                     name            : 'useOwnMaterials',
                     inputType       : 'toggle'
@@ -946,6 +952,7 @@ export default class Modal_Selection
                         selection       : selection,
                         z               : values.z,
                         fillWith        : values.fillWith,
+                        useWorldGrid    : parseInt(values.useWorldGrid),
                         useOwnMaterials : parseInt(values.useOwnMaterials),
 
                         baseLayout      : baseLayout
@@ -1019,15 +1026,15 @@ export default class Modal_Selection
                                                                     }
 
                                                                     potentialInventory.properties[k].value.values[m][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                                                    baseLayout.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, 'NumItems', 1, 'IntProperty');
+                                                                    baseLayout.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, 'NumItems', 1, 'Int');
                                                                 }
                                                             }
                                                         }
                                                     }
                                             }
 
-                                        baseLayout.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'FloatProperty');
-                                        baseLayout.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'FloatProperty');
+                                        baseLayout.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'Float');
+                                        baseLayout.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'Float');
                                     }
                                 }
                             }

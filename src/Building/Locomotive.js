@@ -264,8 +264,8 @@ export default class Building_Locomotive
                                         flags                       : 18,
                                         hasCultureInvariantString   : 1,
                                         historyType                 : 255,
-                                        name                        : "mTrainName",
-                                        type                        : "TextProperty",
+                                        name                        : 'mTrainName',
+                                        type                        : 'Text',
                                         value                       : values.mTrainName
                                     });
                                 }
@@ -293,7 +293,7 @@ export default class Building_Locomotive
                     }
                     else
                     {
-                        baseLayout.setObjectProperty(trainIdentifier, 'mIsSelfDrivingEnabled', 1, 'BoolProperty');
+                        baseLayout.setObjectProperty(trainIdentifier, 'mIsSelfDrivingEnabled', 1, 'Bool');
                     }
             }
     }

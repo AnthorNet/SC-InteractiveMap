@@ -142,10 +142,10 @@ export default class Spawn_Tower
                             translation     : JSON.parse(JSON.stringify(this.centerObject.transform.translation))
                         },
                         properties      : [
-                            { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "" } },
-                            { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
+                            { name: 'mBuiltWithRecipe', type: 'Object', value: { levelName: '', pathName: '' } },
+                            { name: 'mBuildTimeStamp', type: 'Float', value: 0 }
                         ],
-                        entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
+                        entity: {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'}
                     };
 
                 this.baseLayout.buildableSubSystem.setObjectDefaultColorSlot(newFoundation);
@@ -315,10 +315,10 @@ export default class Spawn_Tower
                     translation     : JSON.parse(JSON.stringify(this.centerObject.transform.translation))
                 },
                 properties      : [
-                    { name: "mBuiltWithRecipe", type: "ObjectProperty", value: { levelName: "", pathName: "" } },
-                    { name: "mBuildTimeStamp", type: "FloatProperty", value: 0 }
+                    { name: 'mBuiltWithRecipe', type: 'Object', value: { levelName: '', pathName: '' } },
+                    { name: 'mBuildTimeStamp', type: 'Float', value: 0 }
                 ],
-                entity: {pathName: "Persistent_Level:PersistentLevel.BuildableSubsystem"}
+                entity: {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'}
             };
 
             this.baseLayout.buildableSubSystem.setObjectDefaultColorSlot(newWall);
@@ -331,7 +331,7 @@ export default class Spawn_Tower
             let result = this.baseLayout.removeFromStorage(newWall);
                 if(result === false)
                 {
-                    BaseLayout_Modal.alert("We could not find enough materials and stopped your construction!");
+                    BaseLayout_Modal.alert('We could not find enough materials and stopped your construction!');
                     return false; // Don't have materials, stop it...
                 }
         }

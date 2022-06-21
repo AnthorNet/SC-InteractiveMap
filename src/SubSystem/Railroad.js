@@ -162,10 +162,10 @@ export default class SubSystem_Railroad
                         this.railroadSubSystem,
                         'mTrains',
                         {
-                            type    : 'ObjectProperty',
+                            type    : 'Object',
                             values  : [{pathName: currentIdentifier.pathName}]
                         },
-                        'ArrayProperty'
+                        'Array'
                     );
                 }
         }
@@ -189,10 +189,10 @@ export default class SubSystem_Railroad
                         this.railroadSubSystem,
                         'mTrainStationIdentifiers',
                         {
-                            type    : 'ObjectProperty',
+                            type    : 'Object',
                             values  : [{pathName: currentIdentifier.pathName}]
                         },
-                        'ArrayProperty'
+                        'Array'
                     );
                 }
         }
