@@ -936,6 +936,12 @@ export default class Modal_Selection
                     value           : 0,
                 },
                 {
+                    label           : 'Use world grid center?',
+                    name            : 'useWorldGrid',
+                    inputType       : 'toggle',
+                    value           : 1,
+                },
+                {
                     label           : 'Use materials from your containers?',
                     name            : 'useOwnMaterials',
                     inputType       : 'toggle'
@@ -946,6 +952,7 @@ export default class Modal_Selection
                         selection       : selection,
                         z               : values.z,
                         fillWith        : values.fillWith,
+                        useWorldGrid    : parseInt(values.useWorldGrid),
                         useOwnMaterials : parseInt(values.useOwnMaterials),
 
                         baseLayout      : baseLayout

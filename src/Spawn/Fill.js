@@ -10,6 +10,7 @@ export default class Spawn_Fill
     {
         this.selection          = options.selection;
         this.useOwnMaterials    = options.useOwnMaterials;
+        this.useWorldGrid       = options.useWorldGrid;
 
         this.baseLayout         = options.baseLayout;
         this.layerId            = 'playerFoundationsLayer';
@@ -45,6 +46,13 @@ export default class Spawn_Fill
             ((ne[1] + sw[1]) / 2),  // Y
             parseFloat(options.z)   // Z
         ];
+
+        if(this.useWorldGrid === 1)
+        {
+            this.center[0]  = Math.round(this.center[0] / 800) * 800;
+            this.center[1]  = Math.round(this.center[1] / 800) * 800;
+            this.center[2]  = Math.round(this.center[2] / 100) * 100;
+        }
 
         this.minWidth           = this.center[0] - ((Math.floor((ne[0] - sw[0]) / 800) * 800) / 2);
         this.maxWidth           = this.center[0] + ((Math.floor((ne[0] - sw[0]) / 800) * 800) / 2);
