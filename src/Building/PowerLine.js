@@ -96,31 +96,33 @@ export default class Building_PowerLine
     {
         let baseLayout          = marker.baseLayout;
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.options.pathName);
-        let currentObjectSource = baseLayout.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
-
-        // Unlink source power connection
-        if(currentObjectSource !== null)
-        {
-            Building_PowerLine.unlinkPowerConnection(baseLayout, currentObjectSource, currentObject);
-        }
-
-        // Unlink target power connection
-        let currentObjectTarget = baseLayout.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
-        if(currentObjectTarget !== null)
-        {
-            Building_PowerLine.unlinkPowerConnection(baseLayout, currentObjectTarget, currentObject);
-        }
-
-        if(currentObjectSource !== null && currentObjectTarget !== null)
-        {
-            let currentObjectSourceOuterPath    = baseLayout.saveGameParser.getTargetObject(currentObjectSource.outerPathName);
-            let currentObjectTargetOuterPath    = baseLayout.saveGameParser.getTargetObject(currentObjectTarget.outerPathName);
-
-            if(currentObjectSourceOuterPath !== null && currentObjectTargetOuterPath !== null)
+            if(currentObject !== null)
             {
-                baseLayout.playerLayers.playerPowerGridLayer.distance -= BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
+                // Unlink source power connection
+                let currentObjectSource = baseLayout.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
+                    if(currentObjectSource !== null)
+                    {
+                        Building_PowerLine.unlinkPowerConnection(baseLayout, currentObjectSource, currentObject);
+                    }
+
+                // Unlink target power connection
+                let currentObjectTarget = baseLayout.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
+                    if(currentObjectTarget !== null)
+                    {
+                        Building_PowerLine.unlinkPowerConnection(baseLayout, currentObjectTarget, currentObject);
+                    }
+
+                if(currentObjectSource !== null && currentObjectTarget !== null)
+                {
+                    let currentObjectSourceOuterPath    = baseLayout.saveGameParser.getTargetObject(currentObjectSource.outerPathName);
+                    let currentObjectTargetOuterPath    = baseLayout.saveGameParser.getTargetObject(currentObjectTarget.outerPathName);
+
+                    if(currentObjectSourceOuterPath !== null && currentObjectTargetOuterPath !== null)
+                    {
+                        baseLayout.playerLayers.playerPowerGridLayer.distance -= BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
+                    }
+                }
             }
-        }
 
         // Delete
         baseLayout.saveGameParser.deleteObject(marker.options.pathName);

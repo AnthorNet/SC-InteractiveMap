@@ -802,6 +802,7 @@ export default class BaseLayout
 
             if(currentObject.className === '/Game/FactoryGame/Character/Creature/BP_CreatureSpawner.BP_CreatureSpawner_C')
             {
+                //console.log(currentObject)
                 this.faunaSubsystem.creatureSpawners.push(currentObject.pathName);
                 continue;
             }
@@ -3212,31 +3213,29 @@ export default class BaseLayout
 
     deletePlayerWiresFromPowerConnection(currentObjectPowerConnection)
     {
-        let currentObjectWires              = this.getObjectProperty(currentObjectPowerConnection, 'mWires');
-
-        if(currentObjectWires !== null)
-        {
-            let wires = [];
-
-            for(let i = 0; i < currentObjectWires.values.length; i++)
+        let currentObjectWires = this.getObjectProperty(currentObjectPowerConnection, 'mWires');
+            if(currentObjectWires !== null)
             {
-                let wireMarker              = this.getMarkerFromPathName(currentObjectWires.values[i].pathName, 'playerPowerGridLayer');
-                    wireMarker.baseLayout   = this;
+                let wires = [];
+                    for(let i = 0; i < currentObjectWires.values.length; i++)
+                    {
+                        let wireMarker              = this.getMarkerFromPathName(currentObjectWires.values[i].pathName, 'playerPowerGridLayer');
+                            wireMarker.baseLayout   = this;
 
-                if(wireMarker !== null)
+                        if(wireMarker !== null)
+                        {
+                            wires.push(wireMarker);
+                        }
+                    }
+
+                if(wires.length > 0)
                 {
-                    wires.push(wireMarker);
+                    for(let i = 0; i < wires.length; i++)
+                    {
+                        Building_PowerLine.delete(wires[i]);
+                    }
                 }
             }
-
-            if(wires.length > 0)
-            {
-                for(let i = 0; i < wires.length; i++)
-                {
-                    Building_PowerLine.delete(wires[i]);
-                }
-            }
-        }
     }
 
     addRadioactivityDot(currentObject, radioactivityItems)
