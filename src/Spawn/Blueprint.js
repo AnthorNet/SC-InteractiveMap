@@ -648,7 +648,7 @@ export default class Spawn_Blueprint
                             {
                                 let newPipeNetworkPathName = this.transformValue({pathName: this.clipboard.pipes[pipeNetworkID].interface[i]}, pathNameConversion);
                                     mFluidIntegrantScriptInterfaces.value.values.push(newPipeNetworkPathName);
-                                    pipesConversion[newPipeNetworkPathName] = newPipeNetworkID;
+                                    pipesConversion[newPipeNetworkPathName.pathName] = newPipeNetworkID;
                             }
 
                         newPipeNetwork.properties.push(mFluidIntegrantScriptInterfaces);
