@@ -51,6 +51,7 @@ export default class Selection_Copy
                 let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
 
                 // We use that to actually map the caves
+                // TODO: Beacons are a thing of the past...
                 if(this.baseLayout.useDebug === true && currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C')
                 {
                     console.log([Math.round(currentObject.transform.translation[0]), Math.round(currentObject.transform.translation[1])]);
@@ -116,7 +117,7 @@ export default class Selection_Copy
 
                 // Need some extra linked properties?
                 //TODO: Check mPairedStation?
-                let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone', 'mSignPoles'];
+                let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone', 'mSignPoles', 'mFlowIndicator'];
                     for(let j = 0; j < extraProperties.length; j++)
                     {
                         let extraProperty   = this.baseLayout.getObjectProperty(currentObject, extraProperties[j]);
