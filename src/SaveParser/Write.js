@@ -94,7 +94,7 @@ export default class SaveParser_Write
         }
 
         let currentLevelName = this.levels[currentLevel].replace('Level ', '');
-            if(currentLevel < (this.levels.length - 1)) // Do not write Persistent_Level
+            if(currentLevel < (this.levels.length - 1)) // Do not write the level mapName
             {
                 this.saveBinary += this.writeString(this.levels[currentLevel], false);
 
@@ -131,12 +131,12 @@ export default class SaveParser_Write
                     let countObjects = objects.length;
                         for(let i = 0; i < countObjects; i++)
                         {
-                            if(objects[i].type === 0)
+                            if(objects[i].outerPathName !== undefined)
                             {
                                 this.saveBinary        += this.writeObject(objects[i]);
                                 tempSaveBinaryLength   += this.currentEntityLength;
                             }
-                            if(objects[i].type === 1)
+                            else
                             {
                                 this.saveBinary        += this.writeActor(objects[i]);
                                 tempSaveBinaryLength   += this.currentEntityLength;
@@ -255,7 +255,7 @@ export default class SaveParser_Write
      */
     generateOldChunks()
     {
-        let currentLevel = 'Persistent_Level';
+        let currentLevel = this.header.mapName;
 
         this.postWorkerMessage({command: 'requestObjectKeys', levelName: currentLevel}).then((objectKeys) => {
             return this.generateOldObjectsChunks(currentLevel, objectKeys);
@@ -276,13 +276,13 @@ export default class SaveParser_Write
                     let countObjects = objects.length;
                         for(let i = 0; i < countObjects; i++)
                         {
-                            if(objects[i].type === 0)
-                            {
-                                this.saveBinary += this.writeObject(objects[i]);
-                            }
-                            if(objects[i].type === 1)
+                            if(objects[i].outerPathName === undefined)
                             {
                                 this.saveBinary += this.writeActor(objects[i]);
+                            }
+                            else
+                            {
+                                this.saveBinary += this.writeObject(objects[i]);
                             }
 
                             if(i % 1000 === 0)
@@ -603,7 +603,7 @@ export default class SaveParser_Write
         this.currentEntityLength    = 0;
         let entity                  = '';
 
-        if(currentObject.type === 1)
+        if(currentObject.outerPathName === undefined)
         {
             entity += this.writeObjectProperty(currentObject.entity);
 
@@ -1402,16 +1402,17 @@ export default class SaveParser_Write
     writeObjectProperty(value, count = true)
     {
         let property = '';
-            if(value.levelName !== undefined)
+            if(value.levelName !== undefined && value.levelName !== this.header.mapName)
             {
                 property += this.writeString(value.levelName, count);
+                property += this.writeString(value.pathName, count);
             }
             else
             {
-                property += this.writeString('Persistent_Level', count);
+                property += this.writeString(this.header.mapName, count);
+                property += this.writeString(value.pathName, count);
+                //property += this.writeString(this.header.mapName + ':' + value.pathName, count);
             }
-
-            property += this.writeString(value.pathName, count);
 
         return property;
     }

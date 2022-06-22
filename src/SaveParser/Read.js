@@ -166,7 +166,7 @@ export default class SaveParser_Read
 
             for(let j = 0; j <= nbLevels; j++)
             {
-                let levelName           = (j === nbLevels) ? 'Level Persistent_Level' : this.readString();
+                let levelName           = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
                     levels.push(levelName);
                     this.readInt(); // objectsBinaryLength
                 let countObjects        = this.readInt();
@@ -198,7 +198,7 @@ export default class SaveParser_Read
                         }
 
                     // Only show progress for the main level
-                    if(i % 2500 === 0 && levelName === 'Level Persistent_Level')
+                    if(i % 2500 === 0 && levelName === 'Level ' + this.header.mapName)
                     {
                         this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
                         this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 15))});
@@ -212,7 +212,6 @@ export default class SaveParser_Read
                         {
                             let collectable = this.readObjectProperty({});
                                 collectables.push(collectable);
-                                //console.log(collectable, this.objects[collectable.pathName])
                         }
                     }
 
@@ -235,7 +234,7 @@ export default class SaveParser_Read
                     }
 
                     // Only show progress for the main level
-                    if(i % 2500 === 0 && levelName === 'Level Persistent_Level')
+                    if(i % 2500 === 0 && levelName === 'Level ' + this.header.mapName)
                     {
                         this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), Math.round(i / countEntities * 100)]});
                         this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
@@ -368,7 +367,7 @@ export default class SaveParser_Read
      */
     readObject()
     {
-        let object                  = {type : 0};
+        let object                  = {};
             object.className        = this.readString();
             object                  = this.readObjectProperty(object);
             object.outerPathName    = this.readString();
@@ -378,7 +377,7 @@ export default class SaveParser_Read
 
     readActor()
     {
-        let actor               = {type : 1};
+        let actor               = {};
             actor.className     = this.readString();
             actor               = this.readObjectProperty(actor);
 
@@ -427,7 +426,7 @@ export default class SaveParser_Read
         let entityLength                            = this.readInt();
         let startByte                               = this.currentByte;
 
-        if(this.objects[objectKey].type === 1)
+        if(this.objects[objectKey].outerPathName === undefined)
         {
             this.objects[objectKey].entity = this.readObjectProperty({});
 
@@ -1425,11 +1424,16 @@ export default class SaveParser_Read
     readObjectProperty(currentProperty)
     {
         let levelName   = this.readString();
-            if(levelName !== 'Persistent_Level')
+            if(levelName !== this.header.mapName)
             {
-                currentProperty.levelName = levelName;
+                currentProperty.levelName   = levelName;
+                currentProperty.pathName    = this.readString();
             }
-        currentProperty.pathName  = this.readString();
+            else
+            {
+                currentProperty.pathName    = this.readString();
+                //currentProperty.pathName    = this.readString().replace(this.header.mapName + ':', '');
+            }
 
         return currentProperty;
     }

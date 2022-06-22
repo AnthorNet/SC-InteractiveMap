@@ -190,7 +190,7 @@ export default class SaveParser
                                 currentObjectKeys.push(this.objectsKeys[i]);
                                 continue;
                             }
-                            if(data.levelName === 'Persistent_Level')
+                            if(data.levelName === this.header.mapName)
                             {
                                 if(this.objects[this.objectsKeys[i]].levelName !== undefined && this.availableLevels.includes(this.objects[this.objectsKeys[i]].levelName) === false)
                                 {
@@ -240,7 +240,7 @@ export default class SaveParser
                             currentLevelCollectables.push(this.collectables[i]);
                             continue;
                         }
-                        if(data.levelName === 'Persistent_Level')
+                        if(data.levelName === this.header.mapName)
                         {
                             if(this.collectables[i].levelName !== undefined && this.availableLevels.includes(this.collectables[i].levelName) === false)
                             {
@@ -323,6 +323,13 @@ export default class SaveParser
         {
             return this.objects[pathName];
         }
+        // Mainly to handle outerPathName requests
+        /*
+        if(this.objects[pathName.replace(this.header.mapName + ':', '')] !== undefined)
+        {
+            return this.objects[pathName.replace(this.header.mapName + ':', '')];
+        }
+        */
 
         return null;
     }
