@@ -1,5 +1,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
+import BaseLayout_Polygon                       from '../BaseLayout/Polygon.js';
+
+import Building_Pipeline                        from '../Building/Pipeline.js';
 
 export default class Building_Conveyor
 {
@@ -76,28 +79,63 @@ export default class Building_Conveyor
             {
                 beltOptions.color = buildingData.mapColor;
             }
-        let belt        = L.conveyor(splineData.points, beltOptions);
 
-        if(Building_Conveyor.isConveyorBelt(currentObject) === false) // Conveyor are handled with the tooltips bind
-        {
-            belt.on('mouseover', function(marker){
-                let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-                let slotColor           = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
-
-                marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
-            });
-            belt.on('mouseout', function(marker){
-                let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
-                    if(currentObject !== null)
+        // Pipeline indicator...
+        let mFlowIndicator = baseLayout.getObjectProperty(currentObject, 'mFlowIndicator');
+            if(mFlowIndicator !== null)
+            {
+                let flowIndicatorObject = baseLayout.saveGameParser.getTargetObject(mFlowIndicator.pathName);
+                    if(flowIndicatorObject !== null)
                     {
-                        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
-                            if(buildingData !== null)
+                        let fluidColor  = beltOptions.color;
+                        let fluidType   = Building_Pipeline.getFluidItem(baseLayout, currentObject);
+                            if(fluidType !== null && fluidType.color !== undefined)
                             {
-                                marker.sourceTarget.setStyle({color: buildingData.mapColor});
+                                fluidColor = fluidType.color;
                             }
+
+                        beltOptions.extraPattern = L.polygon(BaseLayout_Polygon.generateForms(
+                            baseLayout,
+                            flowIndicatorObject.transform,
+                            mFlowIndicator.pathName,
+                            {
+                                width: 220,
+                                length: 140,
+                                offset: 0,
+                                xShift: 0
+                            }),
+                            {
+                                originPathName  : currentObject.pathName,
+                                fillColor       : fluidColor,
+                                fillOpacity     : 1,
+                                color           : '#999999',
+                                interactive     : false
+                            }
+                        );
                     }
-            });
-        }
+            }
+
+        let belt = L.conveyor(splineData.points, beltOptions);
+            if(Building_Conveyor.isConveyorBelt(currentObject) === false) // Conveyor are handled with the tooltips bind
+            {
+                belt.on('mouseover', function(marker){
+                    let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
+                    let slotColor           = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
+
+                    marker.sourceTarget.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
+                });
+                belt.on('mouseout', function(marker){
+                    let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.sourceTarget.options.pathName);
+                        if(currentObject !== null)
+                        {
+                            let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+                                if(buildingData !== null)
+                                {
+                                    marker.sourceTarget.setStyle({color: buildingData.mapColor});
+                                }
+                        }
+                });
+            }
 
         baseLayout.bindMouseEvents(belt);
 

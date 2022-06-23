@@ -1805,6 +1805,8 @@ export default class BaseLayout
     refreshMarkerPosition(properties, fastDelete = false)
     {
         let refreshSliderBoundaries     = (properties.transform.translation[2] !== properties.object.transform.translation[2]);
+        let mSplineData                 = this.getObjectProperty(properties.object, 'mSplineData');
+        let splineRotation              = (properties.splineRotation !== undefined) ? properties.splineRotation : 0;
 
         // Move extra properties
         let extraPropertiesPathName     = [];
@@ -1837,11 +1839,25 @@ export default class BaseLayout
             let extraObject = this.saveGameParser.getTargetObject(extraPropertiesPathName[i]);
                 if(extraObject !== null)
                 {
-                    let newExtraTransform                   = JSON.parse(JSON.stringify(properties.transform));
-                    let angleOffset                         = BaseLayout_Math.getQuaternionToEuler(properties.transform.rotation).yaw - BaseLayout_Math.getQuaternionToEuler(extraObject.transform.rotation).yaw;
-                    let xOffset                             = properties.object.transform.translation[0] - extraObject.transform.translation[0];
-                    let yOffset                             = properties.object.transform.translation[1] - extraObject.transform.translation[1];
-                        if(xOffset !== 0 || yOffset !== 0 || angleOffset !== 0)
+                    let newExtraTransform   = JSON.parse(JSON.stringify(properties.transform));
+                    let angleOffset         = BaseLayout_Math.getQuaternionToEuler(properties.transform.rotation).yaw - BaseLayout_Math.getQuaternionToEuler(extraObject.transform.rotation).yaw;
+                    let xOffset             = properties.object.transform.translation[0] - extraObject.transform.translation[0];
+                    let yOffset             = properties.object.transform.translation[1] - extraObject.transform.translation[1];
+                        if(mSplineData !== null)
+                        {
+                            if(splineRotation !== 0)
+                            {
+                                angleOffset                 = splineRotation;
+                                newExtraTransform.rotation  = BaseLayout_Math.getNewQuaternionRotate(extraObject.transform.rotation, angleOffset);
+                            }
+                            else
+                            {
+                                angleOffset                 = 0;
+                                newExtraTransform.rotation  = extraObject.transform.rotation;
+                            }
+                        }
+
+                        if((xOffset !== 0 || yOffset !== 0) && angleOffset !== 0)
                         {
                             let translationRotation = BaseLayout_Math.getPointRotation(
                                     [newExtraTransform.translation[0] - xOffset, newExtraTransform.translation[1] - yOffset],

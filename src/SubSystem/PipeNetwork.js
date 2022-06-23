@@ -104,36 +104,51 @@ export default class SubSystem_PipeNetwork
                                 {
                                     let currentObjectPathName = mFluidIntegrantScriptInterfaces.values[i].pathName.split('.');
                                     let endWith               = '.' + currentObjectPathName.pop();
-                                        if(Building_Pipeline.availableConnections.includes(endWith) === false)
+                                        if(Building_Pipeline.availableConnections.includes(endWith) === true)
                                         {
-                                                currentObjectPathName   = currentObjectPathName.join('.');
-                                            let currentObject           = this.baseLayout.saveGameParser.getTargetObject(currentObjectPathName);
-                                                if(currentObject !== null)
-                                                {
-                                                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
+                                            currentObjectPathName = currentObjectPathName.join('.');
+                                        }
+                                        else
+                                        {
+                                            currentObjectPathName = currentObjectPathName.join('.') + endWith;
+                                        }
+
+                                    let currentObject           = this.baseLayout.saveGameParser.getTargetObject(currentObjectPathName);
+                                        if(currentObject !== null)
+                                        {
+                                            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
+                                            {
+                                                let mInventory = this.baseLayout.getObjectProperty(currentObject, 'mInventory');
+                                                    if(mInventory !== null)
                                                     {
-                                                        let mInventory = this.baseLayout.getObjectProperty(currentObject, 'mInventory');
-                                                            if(mInventory !== null)
+                                                        let currentObjectInventory = this.baseLayout.saveGameParser.getTargetObject(mInventory.pathName);
+                                                            if(currentObjectInventory !== null)
                                                             {
-                                                                let currentObjectInventory = this.baseLayout.saveGameParser.getTargetObject(mInventory.pathName);
-                                                                    if(currentObjectInventory !== null)
+                                                                let mInventoryStacks = this.baseLayout.getObjectProperty(currentObjectInventory, 'mInventoryStacks');
+                                                                    if(mInventoryStacks !== null)
                                                                     {
-                                                                        let mInventoryStacks = this.baseLayout.getObjectProperty(currentObjectInventory, 'mInventoryStacks');
-                                                                            if(mInventoryStacks !== null)
-                                                                            {
-                                                                                if(values.mFluidDescriptor === 'NULL')
-                                                                                {
-                                                                                    mInventoryStacks.values[0][0].value.itemName = '';
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    mInventoryStacks.values[0][0].value.itemName = values.mFluidDescriptor;
-                                                                                }
-                                                                            }
+                                                                        if(values.mFluidDescriptor === 'NULL')
+                                                                        {
+                                                                            mInventoryStacks.values[0][0].value.itemName = '';
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            mInventoryStacks.values[0][0].value.itemName = values.mFluidDescriptor;
+                                                                        }
                                                                     }
                                                             }
                                                     }
-                                                }
+                                            }
+
+                                            if(Building_Pipeline.isPipeline(currentObject) === true)
+                                            {
+                                                new Promise((resolve) => {
+                                                    return this.baseLayout.parseObject(currentObject, resolve);
+                                                }).then((result) => {
+                                                    this.baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                                                    this.baseLayout.addElementToLayer(result.layer, result.marker);
+                                                });
+                                            }
                                         }
                                 }
                             }

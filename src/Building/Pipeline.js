@@ -4,7 +4,16 @@ import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 export default class Building_Pipeline
 {
-    static get availableConnections(){ return ['.PipeInputFactory', '.PipeOutputFactory', '.PipelineConnection0', '.PipelineConnection1', '.FGPipeConnectionFactory', '.Connection0', '.Connection1', '.Connection2', '.Connection3', '.ConnectionAny0', '.ConnectionAny1']; }
+    static get availableConnections(){
+        return [
+            '.PipeInputFactory', '.PipeFactoryInput0', '.PipeFactoryInput1',
+            '.PipeOutputFactory', '.PipeFactoryOutput0', '.PipeFactoryOutput1',
+            '.PipelineConnection0', '.PipelineConnection1',
+            '.FGPipeConnectionFactory',
+            '.Connection0', '.Connection1', '.Connection2', '.Connection3',
+            '.ConnectionAny0', '.ConnectionAny1'
+        ];
+    }
 
     static get availablePipelines()
     {
@@ -41,6 +50,21 @@ export default class Building_Pipeline
         }
 
         return false;
+    }
+
+    static getFluidItem(baseLayout, currentObject)
+    {
+        let currentPipeNetwork = baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
+            if(currentPipeNetwork !== null)
+            {
+                let mFluidDescriptor = baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
+                    if(mFluidDescriptor !== null)
+                    {
+                        return baseLayout.getItemDataFromClassName(mFluidDescriptor.pathName);
+                    }
+            }
+
+        return null;
     }
 
     /**
@@ -131,8 +155,6 @@ export default class Building_Pipeline
 
             // VOLUME
             let maxFluid        = 3.1415926535897932 * Math.pow((1.3 / 2), 2) * splineData.distanceStraight * 1000; // Use straigth calculation
-            let itemType        = null;
-
             let fluidBox        = baseLayout.getObjectProperty(currentObject, 'mFluidBox');
                 if(fluidBox === null)
                 {
@@ -140,42 +162,27 @@ export default class Building_Pipeline
                 }
             let currentFluid    = Math.min(maxFluid, fluidBox.value * 1000); //TODO: Until we get fluidBox method working!
 
-            // Get fluid type
-            let currentPipeNetwork = baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
-                if(currentPipeNetwork !== null)
+            let fluidType       = Building_Pipeline.getFluidItem(baseLayout, currentObject);
+                if(fluidType !== null)
                 {
-                    let mFluidDescriptor = baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
-                        if(mFluidDescriptor !== null)
-                        {
-                            itemType = mFluidDescriptor.pathName;
-                        }
-                }
+                    if(fluidType.color !== undefined)
+                    {
+                        content.push('<div style="position: absolute;margin-top: 31px;margin-left: 187px;">');
+                            if(fluidType.category === 'gas')
+                            {
+                                content.push(tooltip.setGasDome(140, currentFluid, maxFluid, fluidType.color));
+                            }
+                            else
+                            {
+                                content.push(tooltip.setLiquidDome(140, currentFluid, maxFluid, fluidType.color));
+                            }
+                        content.push('</div>');
+                    }
 
-            if(itemType !== null)
-            {
-                itemType = baseLayout.getItemDataFromClassName(itemType);
-
-                if(itemType !== null && itemType.color !== undefined)
-                {
-                    content.push('<div style="position: absolute;margin-top: 31px;margin-left: 187px;">');
-                        if(itemType.category === 'gas')
-                        {
-                            content.push(tooltip.setGasDome(140, currentFluid, maxFluid, itemType.color));
-                        }
-                        else
-                        {
-                            content.push(tooltip.setLiquidDome(140, currentFluid, maxFluid, itemType.color));
-                        }
-                    content.push('</div>');
-                }
-
-                if(itemType !== null && itemType.color !== undefined)
-                {
                     content.push('<div style="position: absolute;margin-top: 185px;margin-left: 11px;width: 160px;color: #5b5b5b;text-align: center;font-size: 13px;">');
-                    content.push('<strong>' + itemType.name + '</strong>');
+                    content.push('<strong>' + fluidType.name + '</strong>');
                     content.push('</div>');
                 }
-            }
 
             // AMOUNT
             content.push('<div style="position: absolute;margin-top: 200px;margin-left: 200px;width: 120px;color: #FFFFFF;text-align: center;font-size: 13px;">');

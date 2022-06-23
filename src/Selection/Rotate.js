@@ -57,7 +57,7 @@ export default class Selection_Rotate
                                     }
                             }
 
-                            let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
+                            let refreshProperties = {marker: this.markers[i], transform: JSON.parse(JSON.stringify(currentObject.transform)), object: currentObject};
                                 switch(currentObject.className)
                                 {
                                     case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
@@ -80,15 +80,15 @@ export default class Selection_Rotate
                                         break;
                                     default:
                                         let translationRotation = BaseLayout_Math.getPointRotation(
-                                                newTransform.translation,
+                                                refreshProperties.transform.translation,
                                                 [this.selectionBoundaries.centerX, this.selectionBoundaries.centerY],
                                                 BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.angle)
                                             );
-                                            newTransform.translation[0]  = translationRotation[0];
-                                            newTransform.translation[1]  = translationRotation[1];
+                                            refreshProperties.transform.translation[0]  = translationRotation[0];
+                                            refreshProperties.transform.translation[1]  = translationRotation[1];
 
                                         // Rotate all spline data and tangeant!
-                                        let mSplineData                      = this.baseLayout.getObjectProperty(currentObject, 'mSplineData');
+                                        let mSplineData = this.baseLayout.getObjectProperty(currentObject, 'mSplineData');
                                             if(mSplineData !== null)
                                             {
                                                 for(let j = 0; j < mSplineData.values.length; j++)
@@ -106,14 +106,16 @@ export default class Selection_Rotate
                                                         currentValue.value.values.y = splineRotation[1];
                                                     }
                                                 }
+
+                                                refreshProperties.splineRotation    = this.angle;
                                             }
                                             else
                                             {
-                                                newTransform.rotation        = BaseLayout_Math.getNewQuaternionRotate(newTransform.rotation, this.angle);
+                                                refreshProperties.transform.rotation = BaseLayout_Math.getNewQuaternionRotate(refreshProperties.transform.rotation, this.angle);
                                             }
                                 }
 
-                            rotateResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: newTransform, object: currentObject}, true));
+                            rotateResults.push(this.baseLayout.refreshMarkerPosition(refreshProperties, true));
                         }
                 }
             }

@@ -823,7 +823,6 @@ export default class BaseLayout_Tooltip
         // VOLUME
         let maxFluid        = buildingData.maxFluid; // Use straigth calculation
         let currentFluid    = maxFluid; //TODO: Until we get fluidBox method working!
-        let itemType        = null;
 
         let fluidBox        = this.baseLayout.getObjectProperty(currentObject, 'mFluidBox');
             if(fluidBox === null)
@@ -832,42 +831,27 @@ export default class BaseLayout_Tooltip
             }
             currentFluid    = Math.min(maxFluid, fluidBox.value * 1000);
 
-        // Get fluid type
-        let currentPipeNetwork = this.baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
-            if(currentPipeNetwork !== null)
+        let fluidType       = Building_Pipeline.getFluidItem(this.baseLayout, currentObject);
+            if(fluidType !== null)
             {
-                let mFluidDescriptor = this.baseLayout.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
-                    if(mFluidDescriptor !== null)
-                    {
-                        itemType = mFluidDescriptor.pathName;
-                    }
-            }
+                if(fluidType.color !== undefined)
+                {
+                    content.push('<div style="position: absolute;margin-top: 25px;margin-left: 20px;">');
+                        if(fluidType.category === 'gas')
+                        {
+                            content.push(this.setGasDome(230, currentFluid, maxFluid, fluidType.color));
+                        }
+                        else
+                        {
+                            content.push(this.setLiquidDome(230, currentFluid, maxFluid, fluidType.color));
+                        }
+                    content.push('</div>');
+                }
 
-        if(itemType !== null)
-        {
-            itemType = this.baseLayout.getItemDataFromClassName(itemType);
-
-            if(itemType !== null && itemType.color !== undefined)
-            {
-                content.push('<div style="position: absolute;margin-top: 25px;margin-left: 20px;">');
-                    if(itemType.category === 'gas')
-                    {
-                        content.push(this.setGasDome(230, currentFluid, maxFluid, itemType.color));
-                    }
-                    else
-                    {
-                        content.push(this.setLiquidDome(230, currentFluid, maxFluid, itemType.color));
-                    }
-                content.push('</div>');
-            }
-
-            if(itemType !== null)
-            {
                 content.push('<div style="position: absolute;margin-top: 355px;margin-left: 10px;width: 250px;color: #5b5b5b;text-align: center;font-size: 13px;">');
-                    content.push('<strong>' + itemType.name + '</strong>');
+                    content.push('<strong>' + fluidType.name + '</strong>');
                 content.push('</div>');
             }
-        }
 
         // AMOUNT
         content.push('<div style="position: absolute;margin-top: 270px;margin-left: 40px;width: 210px;color: #FFFFFF;text-align: center;font-size: 13px;">');
