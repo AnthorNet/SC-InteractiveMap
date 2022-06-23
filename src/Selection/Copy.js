@@ -47,6 +47,11 @@ export default class Selection_Copy
             // Filter not wanted
             for(let i = (this.markers.length - 1); i >= 0; i--)
             {
+                if(this.markers[i].options.pathName === undefined)
+                {
+                    continue;
+                }
+
                 let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
                 let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
 
@@ -92,6 +97,11 @@ export default class Selection_Copy
 
             for(let i = 0; i < this.markers.length; i++)
             {
+                if(this.markers[i].options.pathName === undefined)
+                {
+                    continue;
+                }
+
                 if(availablePathName.includes(this.markers[i].options.pathName))
                 {
                     continue; // Skip duplicates...

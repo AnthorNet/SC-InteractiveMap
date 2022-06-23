@@ -38,6 +38,11 @@ export default class Modal_Selection
 
         for(let i = 0; i < markers.length; i++)
         {
+            if(markers[i].options.pathName === undefined)
+            {
+                continue;
+            }
+
             let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
                 if([
                     '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C',
