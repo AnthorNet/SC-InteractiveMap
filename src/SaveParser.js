@@ -224,11 +224,23 @@ export default class SaveParser
                         }
                     }
 
-                this.worker.postMessage({
-                    messageId   : data.messageId,
-                    command     : 'requestObjects',
-                    data        : currentObjects
-                });
+                try
+                {
+                    this.worker.postMessage({
+                        messageId   : data.messageId,
+                        command     : 'requestObjects',
+                        data        : currentObjects
+                    });
+                }
+                catch(error)
+                {
+                    console.error('DataClone Failed', error);
+                    this.worker.postMessage({
+                        messageId   : data.messageId,
+                        command     : 'requestObjects',
+                        data        : JSON.parse(JSON.stringify(currentObjects))
+                    });
+                }
                 break;
 
             case 'requestCollectables':
