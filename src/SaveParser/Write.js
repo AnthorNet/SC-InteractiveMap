@@ -1092,30 +1092,30 @@ export default class SaveParser_Write
             switch(currentProperty.value.keyType)
             {
                 case 'Int':
-                    property += this.writeInt(currentProperty.value.values[iMapProperty].key);
+                    property += this.writeInt(currentProperty.value.values[iMapProperty].keyMap);
                     break;
                 case 'Int64':
-                    property += this.writeLong(currentProperty.value.values[iMapProperty].key);
+                    property += this.writeLong(currentProperty.value.values[iMapProperty].keyMap);
                     break;
                 case 'Name':
                 case 'Str':
-                    property += this.writeString(currentProperty.value.values[iMapProperty].key);
+                    property += this.writeString(currentProperty.value.values[iMapProperty].keyMap);
                     break;
                 case 'Object':
-                    property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].key);
+                    property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].keyMap);
                     break;
                 case 'Enum':
-                     property += this.writeString(currentProperty.value.values[iMapProperty].key.name);
+                     property += this.writeString(currentProperty.value.values[iMapProperty].keyMap.name);
                     break;
                 case 'Struct':
-                    for(let i = 0; i < currentProperty.value.values[iMapProperty].key.length; i++)
+                    for(let i = 0; i < currentProperty.value.values[iMapProperty].keyMap.length; i++)
                     {
-                        property += this.writeProperty(currentProperty.value.values[iMapProperty].key[i]);
+                        property += this.writeProperty(currentProperty.value.values[iMapProperty].keyMap[i]);
                     }
                     property += this.writeString('None');
                     break;
                 default:
-                    console.log('Missing ' + currentProperty.value.type + ' in ' + currentProperty.name);
+                    console.log('Missing keyType ' + currentProperty.value.keyType + ' in ' + currentProperty.name);
             }
 
             switch(currentProperty.value.valueType)
@@ -1123,40 +1123,40 @@ export default class SaveParser_Write
                 case 'Byte':
                     if(currentProperty.value.keyType === 'Str')
                     {
-                        property += this.writeString(currentProperty.value.values[iMapProperty].value);
+                        property += this.writeString(currentProperty.value.values[iMapProperty].valueMap);
                     }
                     else
                     {
-                        property += this.writeByte(currentProperty.value.values[iMapProperty].value);
+                        property += this.writeByte(currentProperty.value.values[iMapProperty].valueMap);
                     }
                     break;
                 case 'Bool':
-                    property += this.writeByte(currentProperty.value.values[iMapProperty].value);
+                    property += this.writeByte(currentProperty.value.values[iMapProperty].valueMap);
                     break;
                 case 'Int':
-                    property += this.writeInt(currentProperty.value.values[iMapProperty].value);
+                    property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap);
                     break;
                 case 'Str':
-                    property += this.writeString(currentProperty.value.values[iMapProperty].value);
+                    property += this.writeString(currentProperty.value.values[iMapProperty].valueMap);
                     break;
                 case 'Object':
-                    property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].value);
+                    property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].valueMap);
                     break;
                 case 'Struct':
                     if(parentType === 'LBBalancerData')
                     {
-                        property += this.writeInt(currentProperty.value.values[iMapProperty].value.mNormalIndex);
-                        property += this.writeInt(currentProperty.value.values[iMapProperty].value.mOverflowIndex);
-                        property += this.writeInt(currentProperty.value.values[iMapProperty].value.mFilterIndex);
+                        property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.mNormalIndex);
+                        property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.mOverflowIndex);
+                        property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.mFilterIndex);
                     }
                     else
                     {
                         let currentBufferStartingLength     = this.currentBufferLength;
                         let structPropertyBufferLength      = this.currentEntityLength;
 
-                        for(let i = 0; i < currentProperty.value.values[iMapProperty].value.length; i++)
+                        for(let i = 0; i < currentProperty.value.values[iMapProperty].valueMap.length; i++)
                         {
-                            property += this.writeProperty(currentProperty.value.values[iMapProperty].value[i]);
+                            property += this.writeProperty(currentProperty.value.values[iMapProperty].valueMap[i]);
                         }
                         property += this.writeString('None');
 
@@ -1164,7 +1164,7 @@ export default class SaveParser_Write
                     }
                     break;
                 default:
-                    console.log('Missing ' + currentProperty.value.type + ' in MapProperty ' + currentProperty.name);
+                    console.log('Missing valueType ' + currentProperty.value.valueType + ' in MapProperty ' + currentProperty.name);
                     break;
             }
         }

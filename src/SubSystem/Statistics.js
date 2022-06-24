@@ -11,16 +11,16 @@ export default class SubSystem_Statistics
         let object = {};
             for(let i = 0; i < array.length; i++)
             {
-                let value = array[i].value;
+                let value = array[i].valueMap;
                     if(Array.isArray(value))
                     {
                         value = {};
-                        for(let j = 0; j < array[i].value.length; j++)
+                        for(let j = 0; j < array[i].valueMap.length; j++)
                         {
-                            value[array[i].value[j].name] = array[i].value[j].value;
+                            value[array[i].valueMap[j].name] = array[i].valueMap[j].value;
                         }
                     }
-                object[array[i].key.pathName] = value;
+                object[array[i].keyMap.pathName] = value;
             }
 
         return object;

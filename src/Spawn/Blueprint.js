@@ -464,6 +464,20 @@ export default class Spawn_Blueprint
                     {
                         currentProperty.value.keyType   = currentProperty.value.keyType.replace('Property', '');
                         currentProperty.value.valueType = currentProperty.value.valueType.replace('Property', '');
+
+                        for(let i = 0; i < currentProperty.value.values.length; i++)
+                        {
+                            if(currentProperty.value.values[i].key !== undefined)
+                            {
+                                currentProperty.value.values[i].keyMap = currentProperty.value.values[i].key;
+                                delete currentProperty.value.values[i].key;
+                            }
+                            if(currentProperty.value.values[i].value !== undefined)
+                            {
+                                currentProperty.value.values[i].valueMap = currentProperty.value.values[i].value;
+                                delete currentProperty.value.values[i].value;
+                            }
+                        }
                     }
                 }
 

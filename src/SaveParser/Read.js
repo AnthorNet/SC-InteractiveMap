@@ -1055,7 +1055,7 @@ export default class SaveParser_Read
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
                             }
-                            throw new Error('Unimplemented key type `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
+                            throw new Error('Unimplemented keyType `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
                     }
 
                     switch(currentProperty.value.valueType)
@@ -1109,12 +1109,12 @@ export default class SaveParser_Read
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
                             }
-                            throw new Error('Unimplemented value type `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
+                            throw new Error('Unimplemented valueType `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
                     }
 
                 currentProperty.value.values[iMapProperty]    = {
-                    key     : mapPropertyKey,
-                    value   : mapPropertySubProperties
+                    keyMap      : mapPropertyKey,
+                    valueMap    : mapPropertySubProperties
                 };
             }
 
