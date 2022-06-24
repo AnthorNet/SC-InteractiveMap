@@ -126,6 +126,22 @@ export default class Building_Pipeline
                 callback    : Building_Pipeline.clearInventory,
                 className   : 'Building_Pipeline_clearInventory'
             });
+
+            /*
+            let mFlowIndicator = baseLayout.getObjectProperty(currentObject, 'mFlowIndicator');
+                if(mFlowIndicator !== null)
+                {
+                    let flowIndicatorObject = baseLayout.saveGameParser.getTargetObject(mFlowIndicator.pathName);
+                    contextMenu.push('-');
+                    contextMenu.push({
+                        icon        : 'fa-scanner-keyboard',
+                        text        : baseLayout.translate._('MAP\\CONTEXTMENU\\Delete flow indicator'),
+                        callback    : Building_Pipeline.deleteFlowIndicator,
+                        className   : 'Building_Pipeline_deleteFlowIndicator'
+                    });
+                    contextMenu.push('-');
+                }
+            */
         }
 
         return contextMenu;
@@ -265,8 +281,30 @@ export default class Building_Pipeline
 
     static clearInventory(marker)
     {
-        let baseLayout          = marker.baseLayout;
-        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
             baseLayout.deleteObjectProperty(currentObject, 'mFluidBox');
+    }
+
+    static deleteFlowIndicator(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+            if(currentObject !== null)
+            {
+                let mFlowIndicator = baseLayout.getObjectProperty(currentObject, 'mFlowIndicator');
+                    if(mFlowIndicator !== null)
+                    {
+                        baseLayout.saveGameParser.deleteObject(mFlowIndicator.pathName);
+                        baseLayout.deleteObjectProperty(currentObject, 'mFlowIndicator');
+
+                        new Promise(function(resolve){
+                            return baseLayout.parseObject(currentObject, resolve);
+                        }).then(function(result){
+                            baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
+                            baseLayout.addElementToLayer(result.layer, result.marker);
+                        });
+                    }
+            }
     }
 }
