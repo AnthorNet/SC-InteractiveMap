@@ -533,6 +533,10 @@ export default class Spawn_Blueprint
                 {
                     currentProperty.value = this.transformValue(currentProperty.value, pathNameConversion);
                 }
+                if(currentProperty.keyMap !== undefined && currentProperty.keyMap.pathName !== undefined)
+                {
+                    currentProperty.keyMap = this.transformValue(currentProperty.keyMap, pathNameConversion);
+                }
         }
 
         return properties;
