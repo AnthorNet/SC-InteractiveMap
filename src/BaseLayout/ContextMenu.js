@@ -20,6 +20,7 @@ import Building_SmartSplitter                   from '../Building/SmartSplitter.
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_TradingPost                     from '../Building/TradingPost.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
+import Building_TruckStation                    from '../Building/TruckStation.js';
 import Building_Vehicle                         from '../Building/Vehicle.js';
 
 import Modal_Debug                              from '../Modal/Debug.js';
@@ -90,10 +91,13 @@ export default class BaseLayout_ContextMenu
                         break;
                     case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
                         let mDecorationDescriptor           = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
-                            buildingData                    = this.baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
-                            if(buildingData !== null)
+                            if(mDecorationDescriptor !== null)
                             {
-                                buildingData.mapUseSlotColor    = false;
+                                buildingData                    = this.baseLayout.getItemDataFromClassName(mDecorationDescriptor.pathName);
+                                if(buildingData !== null)
+                                {
+                                    buildingData.mapUseSlotColor    = false;
+                                }
                             }
                         break;
                     case '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C':
@@ -314,6 +318,10 @@ export default class BaseLayout_ContextMenu
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C')
                 {
                     contextMenu = Building_DroneStation.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                }
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/TruckStation/Build_TruckStation.Build_TruckStation_C')
+                {
+                    contextMenu = Building_TruckStation.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
                 if(buildingData.category === 'light')
                 {

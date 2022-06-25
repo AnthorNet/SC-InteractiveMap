@@ -20,6 +20,7 @@ import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
+import Building_TruckStation                    from '../Building/TruckStation.js';
 
 export default class BaseLayout_Tooltip
 {
@@ -153,6 +154,8 @@ export default class BaseLayout_Tooltip
                                         return this.setBuildingFrackerExtractorTooltipContent(currentObject, buildingData);
                                     case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
                                         return Building_DroneStation.getTooltip(this.baseLayout, currentObject, buildingData);
+                                    case '/Game/FactoryGame/Buildable/Factory/TruckStation/Build_TruckStation.Build_TruckStation_C':
+                                        return Building_TruckStation.getTooltip(this.baseLayout, currentObject, buildingData);
                                     case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
                                         return Building_GeneratorGeoThermal.getTooltip(this.baseLayout, currentObject, buildingData);
                                     case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
@@ -739,15 +742,6 @@ export default class BaseLayout_Tooltip
                 let colSize = 'col-12';
 
                 content.push('<div class="row">');
-
-                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/TruckStation/Build_TruckStation.Build_TruckStation_C')
-                    {
-                        colSize = 'col-6';
-
-                        content.push('<div class="' + colSize + '">');
-                            content.push(this.setInventoryFuel(currentObject));
-                        content.push('</div>');
-                    }
 
                     if(buildingData.category === 'dockstation')
                     {
