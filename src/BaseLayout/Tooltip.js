@@ -1439,7 +1439,7 @@ export default class BaseLayout_Tooltip
                     let inventoryOut    = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
 
                         content.push('<td class="text-center"><i class="fas fa-arrow-alt-right"></i></td>');
-                        content.push('<td class="text-center"><div class="small">' + this.baseLayout.translate._('MAP\\TOOLTIP\\Waste') + '</div>');
+                        content.push('<td class="text-center"><div class="small">' + this.baseLayout.translate._('Waste') + '</div>');
                             content.push('<table class="mx-auto"><tr><td>' + this.baseLayout.getInventoryImage(inventoryOut[0], 48) + '</td></tr></table>');
                         content.push('</td>');
                 }

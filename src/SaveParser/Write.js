@@ -146,7 +146,7 @@ export default class SaveParser_Write
                             if(i % 1000 === 0 && currentLevel === (this.levels.length - 1))
                             {
                                 let progress = step / objectKeys.length * 100;
-                                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
                                     this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.48)});
 
                                 this.pushSaveToChunk();
@@ -207,7 +207,7 @@ export default class SaveParser_Write
                             if(i % 1000 === 0 && currentLevel === (this.levels.length - 1))
                             {
                                 let progress = step / objectKeys.length * 100;
-                                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
                                     this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (progress * 0.48))});
 
                                 this.pushSaveToChunk();
@@ -288,7 +288,7 @@ export default class SaveParser_Write
                             if(i % 1000 === 0)
                             {
                                 let progress = step / objectKeys.length * 100;
-                                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
                                     this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.48)});
 
                                 this.pushSaveToChunk();
@@ -329,7 +329,7 @@ export default class SaveParser_Write
                             if(i % 1000 === 0)
                             {
                                 let progress = step / objectKeys.length * 100;
-                                    this.worker.postMessage({command: 'loaderMessage', message: 'MAP\\SAVEPARSER\\Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
                                     this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (progress * 0.48))});
 
                                 this.pushSaveToChunk();

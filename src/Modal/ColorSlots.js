@@ -17,8 +17,8 @@ export default class Modal_ColorSlots
 
         let headerTabs = [];
             headerTabs.push('<ul class="nav nav-tabs nav-fill card-header-tabs mb-n3 w-100" style="margin-right: 0.375rem;">');
-            headerTabs.push('<li class="nav-item"><a class="nav-link active" data-type="swatches" href="#">' + this.baseLayout.translate._('GLOBAL\\Color swatches') + '</a></li>');
-            headerTabs.push('<li class="nav-item"><a class="nav-link" data-type="presets" href="#">' + this.baseLayout.translate._('MAP\\Color presets') + '</a></li>');
+            headerTabs.push('<li class="nav-item"><a class="nav-link active" data-type="swatches" href="#">' + this.baseLayout.translate._('Color swatches') + '</a></li>');
+            headerTabs.push('<li class="nav-item"><a class="nav-link" data-type="presets" href="#">' + this.baseLayout.translate._('Color presets') + '</a></li>');
             headerTabs.push('</ul>');
 
         $('#genericModal .modal-header').prepend(headerTabs.join(''));

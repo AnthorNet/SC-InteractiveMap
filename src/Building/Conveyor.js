@@ -291,7 +291,7 @@ export default class Building_Conveyor
 
             contextMenu.push({
                 icon        : 'fa-box-open',
-                text        : baseLayout.translate._('MAP\\CONTEXTMENU\\Clear inventory'),
+                text        : baseLayout.translate._('Clear inventory'),
                 callback    : Building_Conveyor.clearInventory,
                 className   : 'Building_Conveyor_clearInventory'
             });

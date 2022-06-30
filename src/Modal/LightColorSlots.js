@@ -13,7 +13,7 @@ export default class Modal_LightColorSlots
 
     parse()
     {
-        $('#genericModal .modal-title').empty().html(this.baseLayout.translate._('GLOBAL\\Light color slots'));
+        $('#genericModal .modal-title').empty().html(this.baseLayout.translate._('Light color slots'));
         let html            = [];
         let playerColors    = this.baseLayout.gameStateSubSystem.getPlayerLightColorSlots();
             for(let slotIndex = 0; slotIndex < SubSystem_GameState.totalLightColorSlots; slotIndex++)

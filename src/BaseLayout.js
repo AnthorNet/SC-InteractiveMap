@@ -350,7 +350,7 @@ export default class BaseLayout
             {
                 return new Promise((resolve) => {
                     $('#loaderProgressBar .progress-bar').css('width', '60%');
-                    $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading game data...'));
+                    $('.loader h6').html(this.translate._('Loading game data...'));
                     window.requestAnimationFrame(resolve);
                 }).then(() => {
                     $.getJSON(this.dataUrl + '?v=' + this.scriptVersion, (data) => {
@@ -385,7 +385,7 @@ export default class BaseLayout
     loadDetailedModels()
     {
         return new Promise((resolve) => {
-            $('.loader h6').html(this.translate._('MAP\\LOADER\\Loading detailed models...'));
+            $('.loader h6').html(this.translate._('Loading detailed models...'));
             window.requestAnimationFrame(resolve);
         }).then(() => {
             $.getJSON(this.staticUrl + '/js/InteractiveMap/build/detailedModels.json?v=' + this.scriptVersion, (data) => {
@@ -568,7 +568,7 @@ export default class BaseLayout
 
                 $('#saveGameInformation').html('<strong>' + header.sessionName + '</strong> <em><small>(' + hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's)</small></em>');
 
-            $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', 0));
+            $('.loader h6').html(this.translate._('Rendering objects (%1$s%)...', 0));
             console.time('renderObjects');
             window.requestAnimationFrame(resolve);
         }).then(() => {
@@ -938,7 +938,7 @@ export default class BaseLayout
                 {
                     return Promise.all(promises).then(() => {
                         $('#loaderProgressBar .progress-bar').css('width', (60 + progress * 0.3) + '%');
-                        $('.loader h6').html(this.translate._('MAP\\LOADER\\Rendering objects (%1$s%)...', progress));
+                        $('.loader h6').html(this.translate._('Rendering objects (%1$s%)...', progress));
                         window.requestAnimationFrame(() => { this.parseObjects((i + 1), objectsKeys); });
                     });
                 }
@@ -1147,7 +1147,7 @@ export default class BaseLayout
                                     {
                                         layerTitle = 'Lights halo';
                                     }
-                                $('.loader h6').html(this.translate._('MAP\\LOADER\\Adding map layers (%1$s)...', layerTitle));
+                                $('.loader h6').html(this.translate._('Adding map layers (%1$s)...', layerTitle));
 
                                 window.requestAnimationFrame(resolve);
                             }).then(() => {
@@ -1160,7 +1160,7 @@ export default class BaseLayout
 
         return new Promise((resolve) => {
             $('#loaderProgressBar .progress-bar').css('width', '100%');
-            $('.loader h6').html(this.translate._('MAP\\LOADER\\Finalization of statistics and controls...'));
+            $('.loader h6').html(this.translate._('Finalization of statistics and controls...'));
             window.requestAnimationFrame(resolve);
         }).then(() => {
             // Altitude slider

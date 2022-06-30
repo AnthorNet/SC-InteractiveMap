@@ -1123,7 +1123,7 @@ export default class Modal_Selection
                 markers     : markers
             });
 
-        $('#genericModal .modal-title').empty().html(baseLayout.translate._('MAP\\MODAL\\Statistics - Production'));
+        $('#genericModal .modal-title').empty().html(baseLayout.translate._('Statistics - Production'));
         $('#genericModal .modal-body').empty().html(statisticsProduction.parse());
         setTimeout(function(){
             $('#genericModal').modal('show').modal('handleUpdate');
@@ -1137,7 +1137,7 @@ export default class Modal_Selection
                 markers     : markers
             });
 
-        $('#genericModal .modal-title').empty().html(baseLayout.translate._('MAP\\MODAL\\Statistics - Storage'));
+        $('#genericModal .modal-title').empty().html(baseLayout.translate._('Statistics - Storage'));
         $('#genericModal .modal-body').empty().html(statisticsStorage.parse());
         setTimeout(function(){
             $('#genericModal').modal('show').modal('handleUpdate');

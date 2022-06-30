@@ -116,13 +116,13 @@ export default class Building_Pipeline
         {
             contextMenu.push({
                 icon        : 'fa-water-rise',
-                text        : baseLayout.translate._('MAP\\CONTEXTMENU\\Fill inventory'),
+                text        : baseLayout.translate._('Fill inventory'),
                 callback    : Building_Pipeline.fillInventory,
                 className   : 'Building_Pipeline_fillInventory'
             });
             contextMenu.push({
                 icon        : 'fa-water-lower',
-                text        : baseLayout.translate._('MAP\\CONTEXTMENU\\Clear inventory'),
+                text        : baseLayout.translate._('Clear inventory'),
                 callback    : Building_Pipeline.clearInventory,
                 className   : 'Building_Pipeline_clearInventory'
             });
@@ -135,7 +135,7 @@ export default class Building_Pipeline
                     contextMenu.push('-');
                     contextMenu.push({
                         icon        : 'fa-scanner-keyboard',
-                        text        : baseLayout.translate._('MAP\\CONTEXTMENU\\Delete flow indicator'),
+                        text        : baseLayout.translate._('Delete flow indicator'),
                         callback    : Building_Pipeline.deleteFlowIndicator,
                         className   : 'Building_Pipeline_deleteFlowIndicator'
                     });

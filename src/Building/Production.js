@@ -18,7 +18,7 @@ export default class Building_Production
             {
                 contextMenu.push({
                     icon        : 'fa-box-full',
-                    text        : baseLayout.translate._('MAP\\CONTEXTMENU\\Fill inventory'),
+                    text        : baseLayout.translate._('Fill inventory'),
                     callback    : Building_Production.fillInventory,
                     className   : 'Building_Production_fillInventory'
                 });
@@ -26,7 +26,7 @@ export default class Building_Production
 
         contextMenu.push({
             icon        : 'fa-box-open',
-            text        : baseLayout.translate._('MAP\\CONTEXTMENU\\Clear inventory'),
+            text        : baseLayout.translate._('Clear inventory'),
             callback    : Building_Production.clearInventory,
             className   : 'Building_Production_clearInventory'
         });
