@@ -10,6 +10,9 @@ export default class SaveParser_FicsIt
         {
             switch(currentObject.className)
             {
+                case '/Script/FactoryGame.FGDroneStationInfo':
+                case '/Script/FactoryGame.FGWheeledVehicleInfo':
+                    return SaveParser_FicsIt.fixObjectConnectedInfo(baseLayout, currentObject);
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_RailroadSubsystem.BP_RailroadSubsystem_C':
                     return SaveParser_FicsIt.fixRailroadSubsystem(baseLayout, currentObject);
                 case '/Script/FactoryGame.FGTrainStationIdentifier':
@@ -65,6 +68,37 @@ export default class SaveParser_FicsIt
             case '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_02_Steel.Build_Wall_Door_8x4_02_Steel_C':
                 return SaveParser_FicsIt.convertRightDoorWall(baseLayout, currentObject, '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_03_Steel.Build_Wall_Door_8x4_03_Steel_C');
         }
+
+        return currentObject;
+    }
+
+    /*
+     * For some time the mInfo from vehicle/drone station wasn't removed properly adding some blank icon to the map
+     */
+    static fixObjectConnectedInfo(baseLayout, currentObject)
+    {
+        let mVehicle = baseLayout.getObjectProperty(currentObject, 'mVehicle');
+            if(mVehicle !== null)
+            {
+                let mVehicleObject = baseLayout.saveGameParser.getTargetObject(mVehicle.pathName);
+                    if(mVehicleObject === null)
+                    {
+                        console.log('Removing ghost "' + currentObject.className + '"', currentObject.pathName);
+                        baseLayout.saveGameParser.deleteObject(currentObject);
+                        return null;
+                    }
+            }
+        let mStation = baseLayout.getObjectProperty(currentObject, 'mStation');
+            if(mStation !== null)
+            {
+                let mStationObject = baseLayout.saveGameParser.getTargetObject(mStation.pathName);
+                    if(mStationObject === null)
+                    {
+                        console.log('Removing ghost "' + currentObject.className + '"', currentObject.pathName);
+                        baseLayout.saveGameParser.deleteObject(currentObject);
+                        return null;
+                    }
+            }
 
         return currentObject;
     }

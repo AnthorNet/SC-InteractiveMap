@@ -3051,6 +3051,11 @@ export default class BaseLayout
             {
                 baseLayout.saveGameParser.deleteObject(mFlowIndicator.pathName);
             }
+        let mInfo = baseLayout.getObjectProperty(currentObject, 'mInfo');
+            if(mInfo !== null)
+            {
+                baseLayout.saveGameParser.deleteObject(mInfo.pathName);
+            }
 
         // Delete extra marker!
         if(marker.relatedTarget.options.extraMarker !== undefined)
