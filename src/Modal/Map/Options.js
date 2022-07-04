@@ -123,16 +123,24 @@ export default class Modal_Map_Options
         }
 
         html.push('<div class="form-group row">');
-            html.push('<label for="inputSessionName" class="col-sm-3 col-form-label">Session name</label>');
+            html.push('<label for="inputSessionName" class="col-sm-3 col-form-label">' + this.baseLayout.translate._('Session name') + '</label>');
             html.push('<div class="col-sm-9"><input type="text" name="sessionName" class="form-control" id="inputSessionName" value="' + header.sessionName + '"></div>');
         html.push('</div>');
 
         html.push('<div class="form-group row">');
-            html.push('<label for="inputTimeOfDay" class="col-sm-6 col-form-label">Time of day</label>');
+            html.push('<label for="inputSessionVisibility" class="col-sm-3 col-form-label">' + this.baseLayout.translate._('Session type') + '</label>');
+            html.push('<div class="col-sm-9"><select name="sessionVisibility" class="form-control" id="inputSessionVisibility">');
+                html.push('<option value="0" ' + ((header.sessionVisibility === 0) ? 'selected' : '') + '>' + this.baseLayout.translate._('Private') + '</option>'); // SV_Private
+                html.push('<option value="1" ' + ((header.sessionVisibility === 1) ? 'selected' : '') + '>' + this.baseLayout.translate._('Friends Only') + '</option>'); // SV_FriendsOnly
+            html.push('</select></div>');
+        html.push('</div>');
+
+        html.push('<div class="form-group row">');
+            html.push('<label for="inputTimeOfDay" class="col-sm-6 col-form-label">' + this.baseLayout.translate._('Time of day') + '</label>');
             html.push('<div class="col-sm-6"><input type="text" name="timeOfDay" class="form-control text-right" id="inputTimeOfDay" value="' + new Date(1000 * this.baseLayout.timeSubSystem.getDaySeconds()).toISOString().substr(11, 8) + '" readonly></div>');
         html.push('</div>');
         html.push('<div class="form-group row">');
-            html.push('<label for="inputNumberOfPassedDay" class="col-sm-6 col-form-label">Number of passed days</label>');
+            html.push('<label for="inputNumberOfPassedDay" class="col-sm-6 col-form-label">' + this.baseLayout.translate._('Number of passed days') + '</label>');
             html.push('<div class="col-sm-6"><input type="text" name="numberOfPassedDay" class="form-control text-right" id="inputNumberOfPassedDay" value="' + this.baseLayout.timeSubSystem.getNumberOfPassedDays() + '" readonly></div>');
         html.push('</div>');
 
@@ -140,80 +148,122 @@ export default class Modal_Map_Options
 
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputBuildingEfficiencyUnlocked" id="inputBuildingEfficiencyUnlocked" ' + ((mIsBuildingEfficiencyUnlocked === 1) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputBuildingEfficiencyUnlocked">Building efficiency unlocked?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputBuildingEfficiencyUnlocked" id="inputBuildingEfficiencyUnlocked" ' + ((mIsBuildingEfficiencyUnlocked === 1) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputBuildingEfficiencyUnlocked">' + this.baseLayout.translate._('Building efficiency unlocked?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputBuildingOverclockUnlocked" id="inputBuildingOverclockUnlocked" ' + ((mIsBuildingOverclockUnlocked === 1) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputBuildingOverclockUnlocked">Building overclocking unlocked?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputBuildingOverclockUnlocked" id="inputBuildingOverclockUnlocked" ' + ((mIsBuildingOverclockUnlocked === 1) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputBuildingOverclockUnlocked">' + this.baseLayout.translate._('Building overclocking unlocked?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div></div>');
 
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputGameStateMapUnlocked" id="inputGameStateMapUnlocked" ' + ((mIsMapUnlocked === 1) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputGameStateMapUnlocked">Map unlocked?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputGameStateMapUnlocked" id="inputGameStateMapUnlocked" ' + ((mIsMapUnlocked === 1) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputGameStateMapUnlocked">' + this.baseLayout.translate._('Map unlocked?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
 
         html.push('<hr />');
-        html.push('<h4>Map visibility:</h4>');
+        html.push('<h4>' + this.baseLayout.translate._('Map visibility:') + '</h4>');
         html.push('<div class="row"><div class="col-6">');
-        html.push('<button class="btn btn-secondary w-100" id="resetFogOfWar">Hide all map</button>');
+            html.push('<button class="btn btn-secondary w-100" id="resetFogOfWar">' + this.baseLayout.translate._('Hide all map') + '</button>');
         html.push('</div><div class="col-6">');
-        html.push('<button class="btn btn-secondary w-100" id="clearFogOfWar">reveal all map</button>');
+            html.push('<button class="btn btn-secondary w-100" id="clearFogOfWar">' + this.baseLayout.translate._('Reveal all map') + '</button>');
         html.push('</div></div>');
 
         html.push('<hr />');
-        html.push('<h4>Creative mode:</h4>');
+        html.push('<h4>' + this.baseLayout.translate._('Creative mode:') + '</h4>');
         html.push('<div class="row"><div class="col-4">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputCheatNoCost" id="inputCheatNoCost" ' + ((mCheatNoCost === 1) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputCheatNoCost">No cost?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputCheatNoCost" id="inputCheatNoCost" ' + ((mCheatNoCost === 1) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputCheatNoCost">' + this.baseLayout.translate._('No cost?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-4">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputCheatNoPower" id="inputCheatNoPower" ' + ((mCheatNoPower === 1) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputCheatNoPower">No power?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputCheatNoPower" id="inputCheatNoPower" ' + ((mCheatNoPower === 1) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputCheatNoPower">' + this.baseLayout.translate._('No power?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-4">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputCheatNoFuel" id="inputCheatNoFuel" ' + ((mCheatNoFuel === 1) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputCheatNoFuel">No fuel?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputCheatNoFuel" id="inputCheatNoFuel" ' + ((mCheatNoFuel === 1) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputCheatNoFuel">' + this.baseLayout.translate._('No fuel?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div></div>');
 
         html.push('<hr />');
-        html.push('<h4>Interactive map (Need a full refresh):</h4>');
+        html.push('<h4>' + this.baseLayout.translate._('Interactive map (Need a full refresh):') + '</h4>');
 
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowStructuresOnLoad" id="inputShowStructuresOnLoad" ' + ((this.baseLayout.showStructuresOnLoad === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowStructuresOnLoad">Show structures by default?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputShowStructuresOnLoad" id="inputShowStructuresOnLoad" ' + ((this.baseLayout.showStructuresOnLoad === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputShowStructuresOnLoad">' + this.baseLayout.translate._('Show structures by default?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowBuildingsOnLoad" id="inputShowBuildingsOnLoad" ' + ((this.baseLayout.showBuildingsOnLoad === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowBuildingsOnLoad">Show buildings by default?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputShowBuildingsOnLoad" id="inputShowBuildingsOnLoad" ' + ((this.baseLayout.showBuildingsOnLoad === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputShowBuildingsOnLoad">' + this.baseLayout.translate._('Show buildings by default?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div></div>');
 
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowGeneratorsOnLoad" id="inputShowGeneratorsOnLoad" ' + ((this.baseLayout.showGeneratorsOnLoad === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowGeneratorsOnLoad">Show power grid by default?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputShowGeneratorsOnLoad" id="inputShowGeneratorsOnLoad" ' + ((this.baseLayout.showGeneratorsOnLoad === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputShowGeneratorsOnLoad">' + this.baseLayout.translate._('Show power grid by default?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowNodesOnMiners" id="inputShowNodesOnMiners" ' + ((this.baseLayout.showNodesOnMiners === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowNodesOnMiners">Show nodes icons on miners?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputShowNodesOnMiners" id="inputShowNodesOnMiners" ' + ((this.baseLayout.showNodesOnMiners === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputShowNodesOnMiners">' + this.baseLayout.translate._('Show nodes icons on miners?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div></div>');
 
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowTransportationOnLoad" id="inputShowTransportationOnLoad" ' + ((this.baseLayout.showTransportationOnLoad === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowTransportationOnLoad">Show transportation by default?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputShowTransportationOnLoad" id="inputShowTransportationOnLoad" ' + ((this.baseLayout.showTransportationOnLoad === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputShowTransportationOnLoad">' + this.baseLayout.translate._('Show transportation by default?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowVehicleExtraMarker" id="inputShowVehicleExtraMarker" ' + ((this.baseLayout.showVehicleExtraMarker === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowVehicleExtraMarker">Show vehicles map icons?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputShowVehicleExtraMarker" id="inputShowVehicleExtraMarker" ' + ((this.baseLayout.showVehicleExtraMarker === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputShowVehicleExtraMarker">' + this.baseLayout.translate._('Show vehicles map icons?') + '</label>');
+            html.push('</div>');
         html.push('</div></div>');
 
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputUseRadioactivity" id="inputUseRadioactivity" ' + ((this.baseLayout.useRadioactivity === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputUseRadioactivity">Generate radioactivity?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputUseRadioactivity" id="inputUseRadioactivity" ' + ((this.baseLayout.useRadioactivity === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputUseRadioactivity">' + this.baseLayout.translate._('Generate radioactivity?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputUseFogOfWar" id="inputUseFogOfWar" ' + ((this.baseLayout.useFogOfWar === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputUseFogOfWar">Generate fog of war?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputUseFogOfWar" id="inputUseFogOfWar" ' + ((this.baseLayout.useFogOfWar === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputUseFogOfWar">' + this.baseLayout.translate._('Generate fog of war?') + '</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div></div>');
 
@@ -227,11 +277,17 @@ export default class Modal_Map_Options
 
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowPatterns" id="inputShowPatterns" ' + ((this.baseLayout.showPatterns === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowPatterns">Show patterns?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputShowPatterns" id="inputShowPatterns" ' + ((this.baseLayout.showPatterns === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputShowPatterns">Show patterns?</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
         html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="inputShowCollected" id="inputShowCollected" ' + ((this.baseLayout.showCollected === true) ? 'checked' : '') + ' /><label class="custom-control-label" for="inputShowCollected">Show collected icons?</label></div>');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputShowCollected" id="inputShowCollected" ' + ((this.baseLayout.showCollected === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputShowCollected">Show collected icons?</label>');
+            html.push('</div>');
         html.push('</div>');
         html.push('</div></div>');
 
@@ -302,7 +358,6 @@ export default class Modal_Map_Options
                 RestrictedChars[] = TEXT("/?:&\\*\"<>|%#@^");
             */
             let newSessionName          = $('#inputSessionName').removeClass('is-invalid').val();
-
             let isValidNewSessionName   = true;
             let sessionNameRegex        = /[\/?:&\\*"<>|%#@^]/;
                 if([...newSessionName].length <= 4 || sessionNameRegex.test(newSessionName) === true || newSessionName === "CLOCK$")
@@ -328,6 +383,20 @@ export default class Modal_Map_Options
             {
                 this.baseLayout.setObjectProperty(gameState, 'mReplicatedSessionName', newSessionName, 'Str');
             }
+
+            let newSessionVisibility        = parseInt($('#inputSessionVisibility').val());
+                header.sessionVisibility    = newSessionVisibility;
+                header.mapOptions           = header.mapOptions.replace('?Visibility=SV_Private', '')
+                                                               .replace('?Visibility=SV_FriendsOnly', '');
+
+                if(newSessionVisibility === 1)
+                {
+                    header.mapOptions = header.mapOptions + '?Visibility=SV_FriendsOnly';
+                }
+                else
+                {
+                    header.mapOptions = header.mapOptions + '?Visibility=SV_Private';
+                }
 
             if($('#inputCheatNoCost').is(':checked') === true)
             {
