@@ -24,13 +24,13 @@ export default class Modal_Map_Todo
                     todoHtml.push('<div class="tab-pane fade ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'show active' : '') + '" id="playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
                     todoHtml.push('<div class="row">');
                     todoHtml.push('<div class="col-4">');
-                        todoHtml.push('<h5 class="border-bottom border-warning">Public Notes</h5>');
+                        todoHtml.push('<h5 class="border-bottom border-warning">' + this.baseLayout.translate._('Public Notes') + '</h5>');
                             let mPublicTodoList = this.baseLayout.gameStateSubSystem.getPublicTodoList();
                                 if(mPublicTodoList !== null)
                                 {
                                     todoHtml.push(marked.parse(mPublicTodoList).replace(/(?:\r\n|\r|\n)/g, '<br>'));
                                 }
-                        todoHtml.push('<h5 class="border-bottom border-warning mt-3">Private Notes</h5>');
+                        todoHtml.push('<h5 class="border-bottom border-warning mt-3">' + this.baseLayout.translate._('Private Notes') + '</h5>');
                             let mPrivateTodoList = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mPrivateTodoList');
                                 if(mPrivateTodoList !== null)
                                 {
@@ -39,7 +39,7 @@ export default class Modal_Map_Todo
                     todoHtml.push('</div>');
                     todoHtml.push('<div class="col-8">');
 
-                        todoHtml.push('<h5 class="border-bottom border-warning">Recipes</h5>');
+                        todoHtml.push('<h5 class="border-bottom border-warning">' + this.baseLayout.translate._('Recipes') + '</h5>');
 
                         let mShoppingList     = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mShoppingList');
                             if(mShoppingList !== null)
