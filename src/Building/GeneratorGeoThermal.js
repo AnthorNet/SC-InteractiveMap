@@ -1,7 +1,5 @@
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
-import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
-
 export default class Building_GeneratorGeoThermal
 {
     /**
@@ -10,12 +8,11 @@ export default class Building_GeneratorGeoThermal
     static getTooltip(baseLayout, currentObject, buildingData)
     {
         let content             = [];
-        let circuitSubSystem    = new SubSystem_Circuit({baseLayout: baseLayout});
         let objectCircuit       = null;
         let powerConnection     = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection');
             if(powerConnection !== null)
             {
-                objectCircuit = circuitSubSystem.getObjectCircuit(powerConnection);
+                objectCircuit = baseLayout.circuitSubSystem.getObjectCircuit(powerConnection);
             }
 
         // HEADER
@@ -78,7 +75,7 @@ export default class Building_GeneratorGeoThermal
         content.push('<div style="position: absolute;margin-top: 40px;margin-left: 166px; width: 315px;height: 130px;color: #5b5b5b;text-shadow: none;' + BaseLayout_Tooltip.genericUIBackgroundStyle(baseLayout) + '">');
         if(objectCircuit !== null)
         {
-            let circuitStatistics = circuitSubSystem.getStatistics(objectCircuit.circuitId);
+            let circuitStatistics = baseLayout.circuitSubSystem.getStatistics(objectCircuit.circuitId);
                 content.push(BaseLayout_Tooltip.setCircuitStatisticsGraph(baseLayout, circuitStatistics));
         }
         else

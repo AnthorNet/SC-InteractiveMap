@@ -2,14 +2,11 @@
 
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
-import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
-
 export default class Modal_PowerCircuits
 {
     constructor(options)
     {
         this.baseLayout         = options.baseLayout;
-        this.circuitSubSystem   = new SubSystem_Circuit({baseLayout: this.baseLayout});
         this.requiredCircuits   = [];
         this.requiredComponents = [];
 
@@ -58,7 +55,7 @@ export default class Modal_PowerCircuits
                             this.requiredComponents.push(currentObject.pathName);
                         }
 
-                        let objectCircuit = this.circuitSubSystem.getObjectCircuit(currentObject);
+                        let objectCircuit = this.baseLayout.circuitSubSystem.getObjectCircuit(currentObject);
                             if(objectCircuit !== null && this.requiredCircuits.includes(objectCircuit.circuitId) === false)
                             {
                                 this.requiredCircuits.push(objectCircuit.circuitId)
@@ -79,9 +76,16 @@ export default class Modal_PowerCircuits
             header.push('<ul class="nav nav-tabs nav-fill card-header-tabs mb-n3 w-100" style="font-size: 12px;">');
             for(let i = 0; i < this.requiredCircuits.length; i++)
             {
-                header.push('<li class="nav-item">');
-                    header.push('<a class="nav-link ' + ((i === 0) ? 'active' : '') + '" data-toggle="tab" href="#modalPowerCircuits_' + i + '" style="padding: 0.5rem;">#' + this.requiredCircuits[i] + '</a>')
-                header.push('</li>');
+                let extraStyle = '';
+                    if(this.baseLayout.showCircuitsColors === true)
+                    {
+                        let circuitColor    = this.baseLayout.circuitSubSystem.getCircuitColor(this.requiredCircuits[i]);
+                            extraStyle      = 'color: rgb(' + circuitColor[0] + ', ' + circuitColor[1] + ', ' + circuitColor[2] + ');';
+                    }
+
+                    header.push('<li class="nav-item">');
+                        header.push('<a class="nav-link ' + ((i === 0) ? 'active' : '') + '" data-toggle="tab" href="#modalPowerCircuits_' + i + '" style="padding: 0.5rem;' + extraStyle + '">#' + this.requiredCircuits[i] + '</a>')
+                    header.push('</li>');
             }
             header.push('</ul>');
 
@@ -96,12 +100,12 @@ export default class Modal_PowerCircuits
 
                 // CIRCUIT GRAPHICS
                 html.push('<div style="margin: 0 auto;width: 630px;height: 130px;color: #5b5b5b;text-shadow: none;' + BaseLayout_Tooltip.genericUIBackgroundStyle(this.baseLayout) + '">');
-                let circuitStatistics = this.circuitSubSystem.getStatistics(this.requiredCircuits[i]);
+                let circuitStatistics = this.baseLayout.circuitSubSystem.getStatistics(this.requiredCircuits[i]);
                     html.push(BaseLayout_Tooltip.setCircuitStatisticsGraph(this.baseLayout, circuitStatistics, 630));
                 html.push('</div>');
 
                 // COMPONENTS
-                let circuitComponents   = this.circuitSubSystem.getCircuitsComponents(this.requiredCircuits[i]);
+                let circuitComponents   = this.baseLayout.circuitSubSystem.getCircuitsComponents(this.requiredCircuits[i]);
                 let playerFuel          = {};
 
                     for(let j = 0; j < circuitComponents.length; j++)
@@ -142,8 +146,7 @@ export default class Modal_PowerCircuits
                                                     continue;
                                                 }
 
-                                            let fuelClass           = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
-
+                                            let fuelClass = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
                                                 if(fuelClass !== null && this.baseLayout.getObjectProperty(currentObject, 'mIsProductionPaused') === null)
                                                 {
                                                     let fuelItem = this.baseLayout.getItemDataFromClassName(fuelClass.pathName);
@@ -170,6 +173,31 @@ export default class Modal_PowerCircuits
                                                                         playerFuel[fuelItem.className].consumed += (60 / (fuelItem.energy / mDynamicProductionCapacity));
                                                                         playerFuel[fuelItem.className].powerGenerated += mDynamicProductionCapacity;
                                                                     }
+                                                                }
+                                                                else
+                                                                {
+                                                                    let mIsFullBlast  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
+                                                                        if(mIsFullBlast !== null && mIsFullBlast === 1)
+                                                                        {
+                                                                            if(playerFuel[fuelItem.className] === undefined)
+                                                                            {
+                                                                                playerFuel[fuelItem.className] = {
+                                                                                    name            : fuelItem.name,
+                                                                                    buildingName    : buildingData.name,
+                                                                                    buildingCount   : 1,
+                                                                                    image           : fuelItem.image,
+                                                                                    category        : fuelItem.category,
+                                                                                    powerGenerated  : buildingData.powerGenerated,
+                                                                                    consumed        : (60 / (fuelItem.energy / buildingData.powerGenerated))
+                                                                                };
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                playerFuel[fuelItem.className].buildingCount++;
+                                                                                playerFuel[fuelItem.className].consumed += (60 / (fuelItem.energy / buildingData.powerGenerated));
+                                                                                playerFuel[fuelItem.className].powerGenerated += buildingData.powerGenerated;
+                                                                            }
+                                                                        }
                                                                 }
                                                         }
                                                 }

@@ -1,5 +1,4 @@
 /* global gtag, Intl */
-import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
 
 export default class Modal_Buildings
 {
@@ -225,8 +224,7 @@ export default class Modal_Buildings
                             let clockSpeed      = this.baseLayout.getClockSpeed(currentObject);
                                 htmlRow.push('<td class="text-center">' + Math.round(clockSpeed * 1000) / 10 + '%</td>');
 
-                            let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this.baseLayout});
-                            let objectCircuit       = circuitSubSystem.getObjectCircuit(currentObject);
+                            let objectCircuit = this.baseLayout.circuitSubSystem.getObjectCircuit(currentObject);
                                 if(objectCircuit !== null)
                                 {
                                     htmlRow.push('<td class="text-center">#' + objectCircuit.circuitId + '</td>');

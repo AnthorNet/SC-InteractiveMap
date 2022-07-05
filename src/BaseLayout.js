@@ -106,6 +106,7 @@ export default class BaseLayout
         this.showTransportationOnLoad           = (this.localStorage !== null && this.localStorage.getItem('mapShowTransportationOnLoad') !== null) ? (this.localStorage.getItem('mapShowTransportationOnLoad') === 'true') : true;
         this.showNodesOnMiners                  = (this.localStorage !== null && this.localStorage.getItem('mapShowNodesOnMiners') !== null) ? (this.localStorage.getItem('mapShowNodesOnMiners') === 'true') : false;
         this.showCollected                      = (this.localStorage !== null && this.localStorage.getItem('mapShowCollected') !== null) ? (this.localStorage.getItem('mapShowCollected') === 'true') : false;
+        this.showCircuitsColors                 = (this.localStorage !== null && this.localStorage.getItem('mapShowCircuitsColors') !== null) ? (this.localStorage.getItem('mapShowCircuitsColors') === 'true') : true;
 
         this.showPatterns                       = (this.localStorage !== null && this.localStorage.getItem('mapShowPatterns') !== null) ? (this.localStorage.getItem('mapShowPatterns') === 'true') : true;
         this.showVehicleExtraMarker             = (this.localStorage !== null && this.localStorage.getItem('mapShowVehicleExtraMarker') !== null) ? (this.localStorage.getItem('mapShowVehicleExtraMarker') === 'true') : false;
@@ -339,6 +340,7 @@ export default class BaseLayout
         this.saveGameParser.load(() => {
             // Hold sub system to get better performance
             this.buildableSubSystem     = new SubSystem_Buildable({baseLayout: this});
+            this.circuitSubSystem       = new SubSystem_Circuit({baseLayout: this});
             this.gameStateSubSystem     = new SubSystem_GameState({baseLayout: this});
             this.mapSubSystem           = new SubSystem_Map({baseLayout: this});
             this.pipeNetworkSubSystem   = new SubSystem_PipeNetwork({baseLayout: this});
@@ -1351,8 +1353,7 @@ export default class BaseLayout
                 $('.loader h6').html('Saving...');
 
                 // Clean subsystems...
-                let circuitSubSystem    = new SubSystem_Circuit({baseLayout: this});
-                    circuitSubSystem.cleanCircuits();
+                this.circuitSubSystem.cleanCircuits();
 
                 // Save...
                 this.saveGameParser.save(this);

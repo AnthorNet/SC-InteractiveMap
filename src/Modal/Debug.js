@@ -1,5 +1,3 @@
-import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
-
 import Building_PowerLine                       from '../Building/PowerLine.js';
 
 export default class Modal_Debug
@@ -89,86 +87,85 @@ export default class Modal_Debug
                     }
             }
 
-        let circuitSubSystem        = new SubSystem_Circuit({baseLayout: baseLayout});
-            if(currentObject.children !== undefined)
+        if(currentObject.children !== undefined)
+        {
+            for(let i = 0; i < currentObject.children.length; i++)
             {
-                for(let i = 0; i < currentObject.children.length; i++)
-                {
-                    let endWith = '.' + currentObject.children[i].pathName.split('.').pop();
-                        if(Building_PowerLine.availableConnections.includes(endWith))
-                        {
-                            let objectCircuit = circuitSubSystem.getObjectCircuit(currentObject, endWith);
-                                if(objectCircuit !== null && extraPathName.includes(objectCircuit.pathName) === false)
-                                {
-                                    extraPathName.push(objectCircuit.pathName);
-                                }
-                        }
-                }
+                let endWith = '.' + currentObject.children[i].pathName.split('.').pop();
+                    if(Building_PowerLine.availableConnections.includes(endWith))
+                    {
+                        let objectCircuit = baseLayout.circuitSubSystem.getObjectCircuit(currentObject, endWith);
+                            if(objectCircuit !== null && extraPathName.includes(objectCircuit.pathName) === false)
+                            {
+                                extraPathName.push(objectCircuit.pathName);
+                            }
+                    }
             }
+        }
 
-            html.push('<ul class="nav nav-tabs nav-fill">');
-            html.push('<li class="nav-item"><span class="nav-link active" data-toggle="tab" href="#advancedDebugObject-MAIN" style="cursor:pointer;">Main object</span></li>');
+        html.push('<ul class="nav nav-tabs nav-fill">');
+        html.push('<li class="nav-item"><span class="nav-link active" data-toggle="tab" href="#advancedDebugObject-MAIN" style="cursor:pointer;">Main object</span></li>');
 
-            if(currentObject.children !== undefined)
+        if(currentObject.children !== undefined)
+        {
+            for(let i = 0; i < currentObject.children.length; i++)
             {
-                for(let i = 0; i < currentObject.children.length; i++)
-                {
-                    html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;cursor:pointer;" data-toggle="tab" href="#advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">.' + currentObject.children[i].pathName.split('.').pop() + '</span></li>');
+                html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;cursor:pointer;" data-toggle="tab" href="#advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">.' + currentObject.children[i].pathName.split('.').pop() + '</span></li>');
 
-                    let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
-                        if(currentChildren !== null)
-                        {
-                            htmlChildren.push('<div class="tab-pane fade" id="advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">');
-                            htmlChildren.push(Modal_Debug.getJsonViewer(currentChildren));
-                            htmlChildren.push('</div>');
+                let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[i].pathName);
+                    if(currentChildren !== null)
+                    {
+                        htmlChildren.push('<div class="tab-pane fade" id="advancedDebugObject-' + currentObject.children[i].pathName.split('.').pop() + '">');
+                        htmlChildren.push(Modal_Debug.getJsonViewer(currentChildren));
+                        htmlChildren.push('</div>');
 
-                            let mHiddenConnections = baseLayout.getObjectProperty(currentChildren, 'mHiddenConnections');
-                                if(mHiddenConnections !== null)
+                        let mHiddenConnections = baseLayout.getObjectProperty(currentChildren, 'mHiddenConnections');
+                            if(mHiddenConnections !== null)
+                            {
+                                for(let j = 0; j < mHiddenConnections.values.length; j++)
                                 {
-                                    for(let j = 0; j < mHiddenConnections.values.length; j++)
+                                    if(childrenPathName.includes(mHiddenConnections.values[j].pathName) === false && extraPathName.includes(mHiddenConnections.values[j].pathName) === false)
                                     {
-                                        if(childrenPathName.includes(mHiddenConnections.values[j].pathName) === false && extraPathName.includes(mHiddenConnections.values[j].pathName) === false)
-                                        {
-                                            extraPathName.push(mHiddenConnections.values[j].pathName);
-                                        }
+                                        extraPathName.push(mHiddenConnections.values[j].pathName);
                                     }
                                 }
-                        }
-                        else
-                        {
-                            console.log('Missing children: ' + currentObject.children[i].pathName);
-                        }
-                }
+                            }
+                    }
+                    else
+                    {
+                        console.log('Missing children: ' + currentObject.children[i].pathName);
+                    }
             }
+        }
 
-            let currentObjectPipeNetwork = baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
-                if(currentObjectPipeNetwork !== null)
-                {
-                    extraPathName.push(currentObjectPipeNetwork.pathName);
-                }
-
-            for(let j = 0; j < extraPathName.length; j++)
+        let currentObjectPipeNetwork = baseLayout.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
+            if(currentObjectPipeNetwork !== null)
             {
-                html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;cursor:pointer;" data-toggle="tab" href="#advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '">' + extraPathName[j].replace('Persistent_Level:', '') + '</span></li>');
+                extraPathName.push(currentObjectPipeNetwork.pathName);
             }
 
-            html.push('</ul>');
+        for(let j = 0; j < extraPathName.length; j++)
+        {
+            html.push('<li class="nav-item"><span class="nav-link" style="text-transform: none;cursor:pointer;" data-toggle="tab" href="#advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '">' + extraPathName[j].replace('Persistent_Level:', '') + '</span></li>');
+        }
 
-            html.push('<div class="tab-content">');
-            html.push('<div class="tab-pane fade show active" id="advancedDebugObject-MAIN">');
-            html.push(Modal_Debug.getJsonViewer(currentObject));
-            html.push('</div>');
-            html.push(htmlChildren.join(''));
+        html.push('</ul>');
 
-            for(let j = 0; j < extraPathName.length; j++)
-            {
-                let currentExtraObject = baseLayout.saveGameParser.getTargetObject(extraPathName[j]);
-                    html.push('<div class="tab-pane fade" id="advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '">');
-                    html.push(Modal_Debug.getJsonViewer(currentExtraObject));
-                    html.push('</div>');
-            }
+        html.push('<div class="tab-content">');
+        html.push('<div class="tab-pane fade show active" id="advancedDebugObject-MAIN">');
+        html.push(Modal_Debug.getJsonViewer(currentObject));
+        html.push('</div>');
+        html.push(htmlChildren.join(''));
 
-            html.push('</div>');
+        for(let j = 0; j < extraPathName.length; j++)
+        {
+            let currentExtraObject = baseLayout.saveGameParser.getTargetObject(extraPathName[j]);
+                html.push('<div class="tab-pane fade" id="advancedDebugObject-' + extraPathName[j].replace(':', '-').replace('.', '-').replace('.', '-') + '">');
+                html.push(Modal_Debug.getJsonViewer(currentExtraObject));
+                html.push('</div>');
+        }
+
+        html.push('</div>');
 
         $('#genericModal .modal-title').empty().html('Advanced Debug - ' + marker.relatedTarget.options.pathName);
         $('#genericModal .modal-body').empty().html(html.join(''));

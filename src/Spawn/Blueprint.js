@@ -1,8 +1,6 @@
 /* global Infinity, gtag, L, Promise */
 import SaveParser_FicsIt                        from '../SaveParser/FicsIt.js';
 
-import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
-
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
@@ -689,17 +687,16 @@ export default class Spawn_Blueprint
         return new Promise((resolve) => {
             if(this.clipboard.powerCircuits !== undefined)
             {
-                let circuitSubSystem = new SubSystem_Circuit({baseLayout: this.baseLayout});
-                    for(let powerCircuitPathName in this.clipboard.powerCircuits)
-                    {
-                        let newPowerCircuit             = JSON.parse(JSON.stringify(this.clipboard.powerCircuits[powerCircuitPathName]));
-                            newPowerCircuit.pathName    = this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.CircuitSubsystem.FGPowerCircuit_XXX'});
-                            newPowerCircuit.properties  = this.transformProperties(newPowerCircuit.properties, pathNameConversion);
-                            this.baseLayout.setObjectProperty(newPowerCircuit, 'mCircuitID', circuitSubSystem.getNextId(), 'Int');
+                for(let powerCircuitPathName in this.clipboard.powerCircuits)
+                {
+                    let newPowerCircuit             = JSON.parse(JSON.stringify(this.clipboard.powerCircuits[powerCircuitPathName]));
+                        newPowerCircuit.pathName    = this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.CircuitSubsystem.FGPowerCircuit_XXX'});
+                        newPowerCircuit.properties  = this.transformProperties(newPowerCircuit.properties, pathNameConversion);
+                        this.baseLayout.setObjectProperty(newPowerCircuit, 'mCircuitID', this.baseLayout.circuitSubSystem.getNextId(), 'Int');
 
-                            this.baseLayout.saveGameParser.addObject(newPowerCircuit);
-                            circuitSubSystem.add(newPowerCircuit);
-                    }
+                        this.baseLayout.saveGameParser.addObject(newPowerCircuit);
+                        this.baseLayout.circuitSubSystem.add(newPowerCircuit);
+                }
             }
 
             window.requestAnimationFrame(resolve);

@@ -279,15 +279,26 @@ export default class Modal_Map_Options
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch">');
             html.push('<input type="checkbox" class="custom-control-input" name="inputShowPatterns" id="inputShowPatterns" ' + ((this.baseLayout.showPatterns === true) ? 'checked' : '') + ' />');
-            html.push('<label class="custom-control-label" for="inputShowPatterns">Show patterns?</label>');
+            html.push('<label class="custom-control-label" for="inputShowPatterns">' + this.baseLayout.translate._('Show patterns?') + '</label>');
             html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch">');
             html.push('<input type="checkbox" class="custom-control-input" name="inputShowCollected" id="inputShowCollected" ' + ((this.baseLayout.showCollected === true) ? 'checked' : '') + ' />');
-            html.push('<label class="custom-control-label" for="inputShowCollected">Show collected icons?</label>');
+            html.push('<label class="custom-control-label" for="inputShowCollected">' + this.baseLayout.translate._('Show collected icons?') + '</label>');
             html.push('</div>');
+        html.push('</div>');
+        html.push('</div></div>');
+
+        html.push('<div class="row"><div class="col-6">');
+        html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputShowCircuitsColors" id="inputShowCircuitsColors" ' + ((this.baseLayout.showCircuitsColors === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputShowCircuitsColors">' + this.baseLayout.translate._('Show colored power circuits?') + '</label>');
+            html.push('</div>');
+        html.push('</div>');
+        html.push('</div><div class="col-6">');
         html.push('</div>');
         html.push('</div></div>');
 
@@ -331,6 +342,9 @@ export default class Modal_Map_Options
 
                 this.baseLayout.showPatterns                = (($('#inputShowPatterns').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowPatterns', this.baseLayout.showPatterns);
+
+                this.baseLayout.showCircuitsColors          = (($('#inputShowCircuitsColors').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapShowCircuitsColors', this.baseLayout.showCircuitsColors);
 
                 this.baseLayout.showVehicleExtraMarker      = (($('#inputShowVehicleExtraMarker').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowVehicleExtraMarker', this.baseLayout.showVehicleExtraMarker);

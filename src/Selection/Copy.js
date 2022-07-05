@@ -1,8 +1,6 @@
 /* global gtag */
 import Modal_Selection                          from '../Modal/Selection.js';
 
-import SubSystem_Circuit                        from '../SubSystem/Circuit.js';
-
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_HyperTube                       from '../Building/HyperTube.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
@@ -16,7 +14,6 @@ export default class Selection_Copy
     {
         this.baseLayout         = options.baseLayout;
         this.markers            = options.markers;
-        this.circuitSubSystem   = new SubSystem_Circuit({baseLayout: this.baseLayout});
 
         let header              = this.baseLayout.saveGameParser.getHeader();
             this.clipboard      = {
@@ -283,7 +280,7 @@ export default class Selection_Copy
                                 // Handle power circuits
                                 if(Building_PowerLine.availableConnections.includes(endWith))
                                 {
-                                    let objectCircuit = this.circuitSubSystem.getObjectCircuit(this.clipboard.data[i].parent, endWith);
+                                    let objectCircuit = this.baseLayout.circuitSubSystem.getObjectCircuit(this.clipboard.data[i].parent, endWith);
                                         if(objectCircuit !== null && this.clipboard.powerCircuits[objectCircuit.pathName] === undefined)
                                         {
                                             let newPowerCircuit = JSON.parse(JSON.stringify(this.baseLayout.saveGameParser.getTargetObject(objectCircuit.pathName)));

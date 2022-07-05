@@ -8,6 +8,37 @@ export default class Building_PowerLine
 
     static get availableConnections(){ return ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.FGPowerConnection1', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection']; }
 
+    static getColor(baseLayout, currentObject, currentObjectSource = null, currentObjectTarget = null)
+    {
+        if(baseLayout.showCircuitsColors === true)
+        {
+            if(currentObjectSource === null)
+            {
+                currentObjectSource = baseLayout.saveGameParser.getTargetObject(currentObject.extra.source.pathName);
+            }
+            if(currentObjectSource === null && currentObjectTarget === null)
+            {
+                currentObjectSource = baseLayout.saveGameParser.getTargetObject(currentObject.extra.target.pathName);
+            }
+            if(currentObjectSource === null && currentObjectTarget !== null)
+            {
+                currentObjectSource = currentObjectTarget;
+            }
+
+            if(currentObjectSource !== null)
+            {
+                let powerLineCircuit = baseLayout.circuitSubSystem.getObjectCircuit(currentObjectSource);
+                    if(powerLineCircuit !== null)
+                    {
+                        let circuitColor = baseLayout.circuitSubSystem.getCircuitColor(powerLineCircuit.circuitId);
+                            return 'rgb(' + circuitColor[0] + ', ' + circuitColor[1] + ', ' + circuitColor[2] + ')';
+                    }
+            }
+        }
+
+        return ((currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff');
+    }
+
     /*
      * ADD/DELETE
      */
@@ -67,15 +98,14 @@ export default class Building_PowerLine
                                     targetTranslation[2]    = currentObjectTargetOuterPath.transform.translation[2];
                             }
 
-
                         // Add the power line!
-                        let powerline = L.powerLine([
+                        let powerline       = L.powerLine([
                                 baseLayout.satisfactoryMap.unproject(sourceTranslation),
                                 baseLayout.satisfactoryMap.unproject(targetTranslation)
                             ], {
                                 pathName    : currentObject.pathName,
-                                color       : ((currentObject.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff'),
-                                weight      : 1,
+                                color       : Building_PowerLine.getColor(baseLayout, currentObject, currentObjectSource, currentObjectTarget),
+                                weight      : 2,
                                 interactive : false
                             });
 
@@ -359,9 +389,7 @@ export default class Building_PowerLine
                                         let connectedMarker     = baseLayout.getMarkerFromPathName(currentWire.pathName, 'playerPowerGridLayer');
                                             if(connectedMarker !== null)
                                             {
-                                                connectedMarker.setStyle({
-                                                    color: ((currentWire.className === '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C') ? '#00ff00' : '#0000ff')
-                                                });
+                                                connectedMarker.setStyle({color: Building_PowerLine.getColor(baseLayout, currentWire)});
                                                 connectedMarker.removeDashArray();
                                             }
                                     }

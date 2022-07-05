@@ -7,6 +7,7 @@ export default class SubSystem_Circuit
     {
         this.baseLayout         = options.baseLayout;
         this.circuitSubSystem   = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.CircuitSubsystem');
+        this.circuitsColor      = {};
     }
 
 
@@ -100,6 +101,38 @@ export default class SubSystem_Circuit
         return null;
     }
 
+    getCircuitColor(circuitID)
+    {
+        if(this.circuitsColor[circuitID] === undefined)
+        {
+            let rgb                 = [0, 0, 0];
+            let seed                = 69;
+            let str                 = circuitID + 'x';
+
+            let h1                  = 0xdeadbeef ^ seed;
+            let h2                  = 0x41c6ce57 ^ seed;
+                for(let i = 0, ch; i < str.length; i++)
+                {
+                    ch = str.charCodeAt(i);
+                    h1 = Math.imul(h1 ^ ch, 2654435761);
+                    h2 = Math.imul(h2 ^ ch, 1597334677);
+                }
+            h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
+            h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
+
+            let hash = 4294967296 * (2097151 & h2) + (h1>>>0);
+                for(let i = 0; i < 3; i++)
+                {
+                    rgb[i] = hash >> (i * 8) & 255;
+                    rgb[i] = Math.max(69, rgb[i]);
+                }
+
+            this.circuitsColor[circuitID] = rgb;
+        }
+
+        return this.circuitsColor[circuitID];
+    }
+
     getCircuitsComponents(circuitID, excludeCircuits = [])
     {
         let currentCircuit  = this.getCircuitByID(circuitID);
@@ -119,6 +152,7 @@ export default class SubSystem_Circuit
                                         components.push(currentComponentPowerConnection.outerPathName);
 
                                         // Do we need to link another circuit?
+                                        //TODO: Do we need to link double wall pole?
                                         if(mComponents.values[i].pathName.startsWith('Persistent_Level:PersistentLevel.Build_PowerSwitch_C_'))
                                         {
                                             let currentSwitch    = this.baseLayout.saveGameParser.getTargetObject(currentComponentPowerConnection.outerPathName);
@@ -187,21 +221,27 @@ export default class SubSystem_Circuit
                         let buildingData                = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
 
                         // PRODUCTION
-                        let mIsFullBlast                = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
-                        let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
-                            if(mDynamicProductionCapacity !== null)
+                        let fuelClass = this.baseLayout.getObjectProperty(currentComponent, 'mCurrentFuelClass');
+                            if(fuelClass !== null && this.baseLayout.getObjectProperty(currentComponent, 'mIsProductionPaused') === null)
                             {
-                                if(mIsFullBlast !== null && mIsFullBlast === 1)
-                                {
-                                    statistics.production += mDynamicProductionCapacity;
-                                }
-
-                                statistics.capacity += mDynamicProductionCapacity;
+                                let mDynamicProductionCapacity  = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mDynamicProductionCapacity');
+                                    if(mDynamicProductionCapacity !== null)
+                                    {
+                                        statistics.production += mDynamicProductionCapacity;
+                                    }
+                                    else
+                                    {
+                                        let mIsFullBlast = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mIsFullBlast');
+                                            if(mIsFullBlast !== null && mIsFullBlast === 1)
+                                            {
+                                                statistics.production += buildingData.powerGenerated;
+                                            }
+                                    }
                             }
 
-                        if(currentComponent !== null && currentComponent.className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass.Build_GeneratorBiomass_C')
+                        if(buildingData.powerGenerated !== undefined)
                         {
-                            //TODO:
+                            statistics.capacity   += buildingData.powerGenerated;
                         }
 
                         if(currentComponent !== null && currentComponent.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
