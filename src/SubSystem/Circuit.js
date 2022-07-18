@@ -133,7 +133,7 @@ export default class SubSystem_Circuit
         return this.circuitsColor[circuitID];
     }
 
-    getCircuitsComponents(circuitID, excludeCircuits = [])
+    getCircuitComponents(circuitID, excludeCircuits = [])
     {
         let currentCircuit  = this.getCircuitByID(circuitID);
         let components      = [];
@@ -168,7 +168,7 @@ export default class SubSystem_Circuit
                                                                 {
                                                                     if(excludeCircuits.includes(currentSwitchOtherCircuit.circuitId) === false)
                                                                     {
-                                                                        let mergeComponents = this.getCircuitsComponents(currentSwitchOtherCircuit.circuitId, excludeCircuits);
+                                                                        let mergeComponents = this.getCircuitComponents(currentSwitchOtherCircuit.circuitId, excludeCircuits);
                                                                             for(let j = 0; j < mergeComponents.length; j++)
                                                                             {
                                                                                 components.push(mergeComponents[j]);
@@ -208,7 +208,7 @@ export default class SubSystem_Circuit
                 return statistics;
             }
 
-        let components                      = this.getCircuitsComponents(circuitID);
+        let components                      = this.getCircuitComponents(circuitID);
         let availablePowerStorageForCharge  = [];
         let availablePowerStorageForDrain   = [];
 
@@ -239,7 +239,7 @@ export default class SubSystem_Circuit
                                     }
                             }
 
-                        if(buildingData.powerGenerated !== undefined)
+                        if(buildingData !== null && buildingData.powerGenerated !== undefined)
                         {
                             statistics.capacity   += buildingData.powerGenerated;
                         }

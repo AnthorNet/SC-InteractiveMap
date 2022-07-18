@@ -115,7 +115,7 @@ export default class BaseLayout_Polygon
             let currentPoints = [];
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) - ((options.width - options.offset) / 2), center[1] - ((options.length - options.offset) / 2)],
+                        [(center[0] - options.xShift) - ((options.width - options.offset) / 2), (center[1] - options.yShift) - ((options.length - options.offset) / 2)],
                         center,
                         transform.rotation,
                         options.useOnly2D
@@ -123,7 +123,7 @@ export default class BaseLayout_Polygon
                 ));
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) + ((options.width - options.offset) / 2), center[1] - ((options.length - options.offset) / 2)],
+                        [(center[0] - options.xShift) + ((options.width - options.offset) / 2), (center[1] - options.yShift) - ((options.length - options.offset) / 2)],
                         center,
                         transform.rotation,
                         options.useOnly2D
@@ -131,7 +131,7 @@ export default class BaseLayout_Polygon
                 ));
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) + ((options.width - options.offset) / 2), center[1] + ((options.length - options.offset) / 2)],
+                        [(center[0] - options.xShift) + ((options.width - options.offset) / 2), (center[1] - options.yShift) + ((options.length - options.offset) / 2)],
                         center,
                         transform.rotation,
                         options.useOnly2D
@@ -139,7 +139,7 @@ export default class BaseLayout_Polygon
                 ));
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) - ((options.width - options.offset) / 2), center[1] + ((options.length - options.offset) / 2)],
+                        [(center[0] - options.xShift) - ((options.width - options.offset) / 2), (center[1] - options.yShift) + ((options.length - options.offset) / 2)],
                         center,
                         transform.rotation,
                         options.useOnly2D

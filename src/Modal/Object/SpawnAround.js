@@ -539,6 +539,16 @@ export default class Modal_Object_SpawnAround
                                 inputType   : 'file'
                             });
                             imageOptions.push({
+                                label       : 'Image position',
+                                name        : 'position',
+                                inputType   : 'select',
+                                inputOptions: [
+                                    {text: 'Vertical', value: 'vertical'},
+                                    {text: 'Horizontal', value: 'horizontal'},
+                                ],
+                                value       : 'vertical'
+                            });
+                            imageOptions.push({
                                 label       : 'Support type',
                                 name        : 'supportId',
                                 inputType   : 'select',
@@ -562,6 +572,7 @@ export default class Modal_Object_SpawnAround
                                 return new Spawn_Image({
                                     marker          : marker,
                                     imageFile       : values.imageFile,
+                                    position        : values.position,
                                     supportId       : values.supportId,
                                     useOwnMaterials : form.useOwnMaterials
                                 });

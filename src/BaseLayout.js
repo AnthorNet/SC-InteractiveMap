@@ -2401,6 +2401,7 @@ export default class BaseLayout
             length              : (buildingData.length !== undefined) ? (buildingData.length * 100) : 800,
             offset              : (buildingData.mapOffset !== undefined) ? buildingData.mapOffset : 0,
             xShift              : (buildingData.mapShiftX !== undefined) ? buildingData.mapShiftX : 0,
+            yShift              : (buildingData.mapShiftY !== undefined) ? buildingData.mapShiftY : 0,
             useOnly2D           : false,
             skipDetailedModel   : false
         };
@@ -2441,8 +2442,17 @@ export default class BaseLayout
                             let mLength = this.getObjectProperty(currentObject, 'mLength');
                                 if(mLength !== null)
                                 {
-                                    polygonOptions.width    = mLength;
-                                    polygonOptions.xShift   = -mLength / 2;
+                                    if(Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.roll)) !== 0)
+                                    {
+                                        polygonOptions.length       = mLength;
+                                        polygonOptions.xShift       = -mLength / 2;
+                                        polygonOptions.useOnly2D    = true;
+                                    }
+                                    else
+                                    {
+                                        polygonOptions.width    = mLength;
+                                        polygonOptions.xShift   = -mLength / 2;
+                                    }
                                 }
                         }
                     }

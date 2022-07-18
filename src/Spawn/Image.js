@@ -16,6 +16,7 @@ export default class Spawn_Image
             this.supportSize        = this.baseLayout.buildingsData[this.supportId].width * 100;
             this.layerId            = this.baseLayout.buildingsData[this.supportId].mapLayer;
 
+        this.position               = options.position;
         this.maxPixelSize           = 64;
         this.useOwnMaterials        = options.useOwnMaterials;
 
@@ -70,6 +71,32 @@ export default class Spawn_Image
                                 if(typeof gtag === 'function')
                                 {
                                     gtag('event', 'Image', {event_category: 'Spawn'});
+                                }
+
+                            // Calculate support rotation
+                            let supportRotation     = this.correctedCenterYaw;
+                                if(this.position === 'vertical')
+                                {
+                                    if(this.supportId === 'Build_Beam_Painted_C' && this.supportRotation !== 0)
+                                    {
+                                        supportRotation = BaseLayout_Math.clampEulerAxis(this.correctedCenterYaw + this.supportRotation);
+                                    }
+
+                                    this.supportNewRotation = BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, supportRotation);
+                                }
+                                else
+                                {
+                                    let eulerAngle          = BaseLayout_Math.getQuaternionToEuler(this.centerObject.transform.rotation);
+                                        eulerAngle.yaw      = BaseLayout_Math.normalizeEulerAxis(eulerAngle.yaw + supportRotation);
+                                        eulerAngle.roll     = BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll - 90);
+
+
+                                        if(this.supportId === 'Build_Beam_Painted_C' && this.supportRotation !== 0)
+                                        {
+                                            eulerAngle.pitch = BaseLayout_Math.normalizeEulerAxis(eulerAngle.pitch - this.supportRotation);
+                                        }
+
+                                    this.supportNewRotation = BaseLayout_Math.getEulerToQuaternion(eulerAngle);
                                 }
 
                             return this.spawn();
@@ -156,19 +183,13 @@ export default class Spawn_Image
                 }
             };
 
-        let supportRotation     = this.correctedCenterYaw;
-            if(this.supportId === 'Build_Beam_Painted_C' && this.supportRotation !== 0)
-            {
-                supportRotation = BaseLayout_Math.clampEulerAxis(this.correctedCenterYaw + this.supportRotation);
-            }
-
         let newSupport          = {
                 type                : 1,
                 className           : this.supportClassName,
                 pathName            : 'Persistent_Level:PersistentLevel.' + this.supportId + '_XXX',
                 needTransform       : 1,
                 transform           : {
-                    rotation            : BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, supportRotation),
+                    rotation            : this.supportNewRotation,
                     translation         : [0, 0, 0]
                 },
                 entity              : {pathName: 'Persistent_Level:PersistentLevel.BuildableSubsystem'},
@@ -218,7 +239,7 @@ export default class Spawn_Image
                 newSupport.properties.push({name: 'mBackgroundColor', type: 'Struct', value: linearColor});
             }
 
-            newSupport.pathName    = this.baseLayout.generateFastPathName(newSupport);
+            newSupport.pathName = this.baseLayout.generateFastPathName(newSupport);
                                   this.baseLayout.updateBuiltWithRecipe(newSupport);
 
             // Check around for materials!
@@ -235,15 +256,31 @@ export default class Spawn_Image
             // Calculate support position!
             let rotation                = BaseLayout_Math.getPointRotation(
                 [
-                    this.centerObject.transform.translation[0] - (this.imageWidth * this.supportSize / 2) + (x * this.supportSize),
-                    this.centerObject.transform.translation[1]
+                    this.centerObject.transform.translation[0] - (this.imageWidth * this.supportSize / 2) + (x * this.supportSize) + ((this.supportId === 'Build_Beam_Painted_C' && this.supportRotation === 0) ? 0 : (this.supportSize / 2)),
+                    ((this.position === 'vertical')
+                        ? (this.centerObject.transform.translation[1] - ((this.supportId === 'Build_Beam_Painted_C') ? (this.supportSize / 2) : 0) + ((this.supportId === 'Build_Beam_Painted_C' && this.supportRotation === 0) ? (this.supportSize / 2) : 0))
+                        : (this.centerObject.transform.translation[1] - (this.imageHeight * this.supportSize / 2) + (y * this.supportSize) + (this.supportSize / 2))
+                    )
                 ],
                 this.centerObject.transform.translation,
                 BaseLayout_Math.getNewQuaternionRotate(this.centerObject.transform.rotation, this.correctedCenterYaw)
             );
             newSupport.transform.translation[0]  = rotation[0];
             newSupport.transform.translation[1]  = rotation[1];
-            newSupport.transform.translation[2]  = this.centerObject.transform.translation[2] + (this.imageHeight * this.supportSize) - (y * this.supportSize) + this.centerObjectHeight - (this.supportSize / 2);
+
+            if(this.position === 'vertical')
+            {
+                newSupport.transform.translation[2]  = this.centerObject.transform.translation[2] + (this.imageHeight * this.supportSize) - (y * this.supportSize) + this.centerObjectHeight - (this.supportSize / 2);
+            }
+            else
+            {
+                newSupport.transform.translation[2]  = this.centerObject.transform.translation[2] + (this.centerObjectHeight / 2) + (this.supportSize / 2);
+
+                if(this.supportId !== 'Build_Beam_Painted_C')
+                {
+                    newSupport.transform.translation[2]  += (this.supportSize / 2);
+                }
+            }
 
         return new Promise((resolve) => {
             this.baseLayout.saveGameParser.addObject(newSupport);

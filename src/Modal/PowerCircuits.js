@@ -105,7 +105,7 @@ export default class Modal_PowerCircuits
                 html.push('</div>');
 
                 // COMPONENTS
-                let circuitComponents   = this.baseLayout.circuitSubSystem.getCircuitsComponents(this.requiredCircuits[i]);
+                let circuitComponents   = this.baseLayout.circuitSubSystem.getCircuitComponents(this.requiredCircuits[i]);
                 let playerFuel          = {};
 
                     for(let j = 0; j < circuitComponents.length; j++)
