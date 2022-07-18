@@ -826,6 +826,7 @@ export default class SaveParser_Read
                 {
                     currentProperty.value.values.push(this.readByte());
                 }
+                break;
 
             case 'Int':
                 for(let i = 0; i < currentArrayPropertyCount; i++)
