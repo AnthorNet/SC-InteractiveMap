@@ -202,7 +202,9 @@ export default class BaseLayout
                 '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C': {items: [], layerId: 'somersloops'},
                 '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C': {items: [], layerId: 'mercerSpheres'},
 
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C': {items: [], layerId: 'hardDrives'}
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C': {items: [], layerId: 'hardDrives'},
+
+                '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C': {items: [], layerId: 'playerFaunaLayer'}
             }
         };
 
@@ -855,6 +857,17 @@ export default class BaseLayout
 
                 this.playerStatistics.collectables[currentObject.className].items.push(currentObject.pathName);
                 continue;
+            }
+
+            if(currentObject.className === '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C')
+            {
+                this.playerStatistics.collectables[currentObject.className].items.push(currentObject.pathName);
+
+                let mCurrentHealth = this.getObjectProperty(currentObject, 'mCurrentHealth');
+                    if(mCurrentHealth !== null && mCurrentHealth === 0)
+                    {
+                        continue;
+                    }
             }
 
             if([
