@@ -470,10 +470,33 @@ export default class Spawn_Blueprint
                                 currentProperty.value.values[i].keyMap = currentProperty.value.values[i].key;
                                 delete currentProperty.value.values[i].key;
                             }
+                            // Loop keyMap
+                            if(currentProperty.value.values[i].keyMap !== undefined)
+                            {
+                                for(let k = 0; k < currentProperty.value.values[i].keyMap.length; k++)
+                                {
+                                    if(currentProperty.value.values[i].keyMap[k].type !== undefined)
+                                    {
+                                        currentProperty.value.values[i].keyMap[k].type = currentProperty.value.values[i].keyMap[k].type.replace('Property', '');
+                                    }
+                                }
+                            }
+
                             if(currentProperty.value.values[i].value !== undefined)
                             {
                                 currentProperty.value.values[i].valueMap = currentProperty.value.values[i].value;
                                 delete currentProperty.value.values[i].value;
+                            }
+                            // Loop valueMap
+                            if(currentProperty.value.values[i].valueMap !== undefined)
+                            {
+                                for(let k = 0; k < currentProperty.value.values[i].valueMap.length; k++)
+                                {
+                                    if(currentProperty.value.values[i].valueMap[k].type !== undefined)
+                                    {
+                                        currentProperty.value.values[i].valueMap[k].type = currentProperty.value.values[i].valueMap[k].type.replace('Property', '');
+                                    }
+                                }
                             }
                         }
                     }
@@ -501,7 +524,7 @@ export default class Spawn_Blueprint
                     }
                 }
 
-                // Traverse pathNames
+                // Traverse pathName
                 if(currentProperty.value !== undefined && currentProperty.value.values !== undefined)
                 {
                     currentProperty.value.values = this.transformProperties(currentProperty.value.values, pathNameConversion);
