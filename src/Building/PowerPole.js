@@ -1,3 +1,5 @@
+import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
+
 export default class Building_PowerPole
 {
     static get availablePowerPoles()
@@ -125,5 +127,60 @@ export default class Building_PowerPole
                 currentObject.className = usePool[poolIndex + 1];
                 baseLayout.updateBuiltWithRecipe(currentObject);
             }
+    }
+
+    /**
+     * TOOLTIP
+     */
+    static getTooltip(baseLayout, currentObject, buildingData, genericTooltipBackgroundStyle)
+    {
+        let content             = [];
+        let objectCircuit       = null;
+        let powerConnection     = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection');
+            if(powerConnection === null)
+            {
+                powerConnection = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection1');
+            }
+            if(powerConnection !== null)
+            {
+                objectCircuit = baseLayout.circuitSubSystem.getObjectCircuit(powerConnection);
+            }
+
+            if(objectCircuit !== null)
+            {
+                let circuitColorContent = '';
+                    if(baseLayout.showCircuitsColors === true)
+                    {
+                        let circuitColor        = baseLayout.circuitSubSystem.getCircuitColor(objectCircuit.circuitId);
+                            circuitColorContent = '<span style="display: inline-block;width: 12px;height:12px;border-radius: 50%;background: rgb(' + circuitColor[0] + ', ' + circuitColor[1] + ', ' + circuitColor[2] + ');margin-left: 5px;"></span>';
+                    }
+
+                content.push('<div style="position: absolute;width: 100%;text-align: center;">' + buildingData.name + ' (Circuit #' + objectCircuit.circuitId + circuitColorContent + ')</div>');
+            }
+            else
+            {
+                content.push('<div style="position: absolute;width: 100%;text-align: center;">' + buildingData.name + '</div>');
+            }
+
+        if(buildingData.image !== undefined)
+        {
+            content.push('<div style="position: absolute;margin-top: 25px;"><img src="' + buildingData.image + '" style="width: 128px;height: 128px;" /></div>');
+        }
+
+        content.push('<div style="position: absolute;margin-top: 25px;margin-left: 145px; width: 315px;height: 130px;color: #5b5b5b;text-shadow: none;' + BaseLayout_Tooltip.genericUIBackgroundStyle(baseLayout) + '">');
+        if(objectCircuit !== null)
+        {
+            let circuitStatistics = baseLayout.circuitSubSystem.getStatistics(objectCircuit.circuitId);
+                content.push(BaseLayout_Tooltip.setCircuitStatisticsGraph(baseLayout, circuitStatistics));
+        }
+        content.push('</div>');
+
+        return '<div class="d-flex" style="' + genericTooltipBackgroundStyle + '">\
+                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                        <div style="color: #FFFFFF;line-height: 16px;font-size: 12px;width:450px;height: 155px;position: relative;" >\
+                            ' + content.join('') + '\
+                        </div>\
+                    </div>\
+                </div>';
     }
 }

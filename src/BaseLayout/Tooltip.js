@@ -12,6 +12,7 @@ import Building_FrackingSmasher                 from '../Building/FrackingSmashe
 import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoThermal.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
+import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 import Building_RadarTower                      from '../Building/RadarTower.js';
@@ -169,7 +170,7 @@ export default class BaseLayout_Tooltip
                                 switch(buildingData.category)
                                 {
                                     case 'powerPole':
-                                        return this.setPowerPoleTooltipContent(currentObject, buildingData);
+                                        return Building_PowerPole.getTooltip(this.baseLayout, currentObject, buildingData, this.genericTooltipBackgroundStyle);
                                     case 'sign':
                                         return Building_Sign.getTooltip(this.baseLayout, currentObject, buildingData);;
                                     case 'extraction':
@@ -992,51 +993,6 @@ export default class BaseLayout_Tooltip
         content.push('<div style="position: absolute;margin-top: 240px;margin-left: 46px; width: 120px;' + BaseLayout_Tooltip.styleLabels + '"><strong>POWER STORAGE INFO</strong></div>');
 
         return '<div style="' + this.genericPowerStorageBackgroundStyle + '">' + content.join('') + '</div>';
-    }
-
-    setPowerPoleTooltipContent(currentObject, buildingData)
-    {
-        let content             = [];
-        let objectCircuit       = null;
-        let powerConnection     = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection');
-            if(powerConnection === null)
-            {
-                powerConnection = this.baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.PowerConnection1');
-            }
-            if(powerConnection !== null)
-            {
-                objectCircuit = this.baseLayout.circuitSubSystem.getObjectCircuit(powerConnection);
-            }
-
-            if(objectCircuit !== null)
-            {
-                content.push('<div style="position: absolute;width: 100%;text-align: center;">' + buildingData.name + ' (Circuit #' + objectCircuit.circuitId + ')</div>');
-            }
-            else
-            {
-                content.push('<div style="position: absolute;width: 100%;text-align: center;">' + buildingData.name + '</div>');
-            }
-
-        if(buildingData.image !== undefined)
-        {
-            content.push('<div style="position: absolute;margin-top: 25px;"><img src="' + buildingData.image + '" style="width: 128px;height: 128px;" /></div>');
-        }
-
-        content.push('<div style="position: absolute;margin-top: 25px;margin-left: 145px; width: 315px;height: 130px;color: #5b5b5b;text-shadow: none;' + BaseLayout_Tooltip.genericUIBackgroundStyle(this.baseLayout) + '">');
-        if(objectCircuit !== null)
-        {
-            let circuitStatistics = this.baseLayout.circuitSubSystem.getStatistics(objectCircuit.circuitId);
-                content.push(BaseLayout_Tooltip.setCircuitStatisticsGraph(this.baseLayout, circuitStatistics));
-        }
-        content.push('</div>');
-
-        return '<div class="d-flex" style="' + this.genericTooltipBackgroundStyle + '">\
-                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
-                        <div style="color: #FFFFFF;line-height: 16px;font-size: 12px;width:450px;height: 155px;position: relative;" >\
-                            ' + content.join('') + '\
-                        </div>\
-                    </div>\
-                </div>';
     }
 
     setBuildingPowerSwitchTooltipContent(currentObject)
