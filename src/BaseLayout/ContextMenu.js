@@ -3,6 +3,7 @@ import Building_Beacon                          from '../Building/Beacon.js';
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_Door                            from '../Building/Door.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
+import Building_HyperTube                       from '../Building/HyperTube.js';
 import Building_Light                           from '../Building/Light.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_MapMarker                       from '../Building/MapMarker.js';
@@ -388,9 +389,13 @@ export default class BaseLayout_ContextMenu
                 {
                     contextMenu = Building_AwesomeSink.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipeHyperStart/Build_PipeHyperStart.Build_PipeHyperStart_C')
                 {
-                    contextMenu = Building_TradingPost.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                    contextMenu = Building_HyperTube.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                }
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
+                {
+                    contextMenu = Building_PowerSwitch.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
                 if(buildingData.category === 'production')
                 {
