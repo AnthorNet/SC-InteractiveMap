@@ -1,0 +1,13 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/PipeHyperStart/Build_PipeHyperStart.Build_PipeHyperStart_C": {
+        "scale"             : 1,
+        "powerConnection"   : [-190, 0],
+        "forms"             : [
+            {
+                "points"        : [
+                    [-150, -110], [-130, -85], [-130, 85], [-150, 110], [-280, 110], [-280, 85], [-260, 65], [-260, -65], [-280, -85], [-280, -110]
+                ]
+            }
+        ]
+    }
+}
