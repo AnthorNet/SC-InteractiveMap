@@ -1136,6 +1136,9 @@ export default class SaveParser_Write
                 case 'Int':
                     property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap);
                     break;
+                case 'Float':
+                    property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap);
+                    break;
                 case 'Str':
                     property += this.writeString(currentProperty.value.values[iMapProperty].valueMap);
                     break;

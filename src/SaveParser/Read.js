@@ -1077,6 +1077,9 @@ export default class SaveParser_Read
                         case 'Int':
                             mapPropertySubProperties = this.readInt();
                             break;
+                        case 'Float':
+                            mapPropertySubProperties = this.readFloat();
+                            break;
                         case 'Str':
                             mapPropertySubProperties = this.readString();
                             break;
