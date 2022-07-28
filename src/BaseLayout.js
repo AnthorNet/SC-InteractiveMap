@@ -41,6 +41,7 @@ import Building_Beacon                          from './Building/Beacon.js';
 import Building_Conveyor                        from './Building/Conveyor.js';
 import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
+import Building_HyperTube                       from './Building/HyperTube.js';
 import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_MapMarker                       from './Building/MapMarker.js';
 import Building_Pipeline                        from './Building/Pipeline.js';
@@ -5064,7 +5065,7 @@ export default class BaseLayout
                         {
                             Building_RailroadTrack.bindTooltip(this, currentObject, tooltipOptions);
                         }
-                        if(Building_Conveyor.isConveyorBelt(currentObject))
+                        if(Building_Conveyor.isConveyorBelt(currentObject) || Building_HyperTube.isHyperTube(currentObject))
                         {
                             Building_Conveyor.bindTooltip(this, currentObject, tooltipOptions);
                         }
@@ -5096,7 +5097,7 @@ export default class BaseLayout
                 {
                     Building_RailroadTrack.unbindTooltip(this, currentObject);
                 }
-                if(Building_Conveyor.isConveyorBelt(currentObject))
+                if(Building_Conveyor.isConveyorBelt(currentObject) || Building_HyperTube.isHyperTube(currentObject))
                 {
                     Building_Conveyor.unbindTooltip(this, currentObject);
                 }

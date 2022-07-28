@@ -7,6 +7,19 @@ export default class Building_HyperTube
 
     static get availableConnections(){ return ['.PipeHyperConnection0', '.PipeHyperConnection1', '.PipeHyperStartConnection']; }
 
+    /*
+     * HYPERTUBE LOOKUP, includes mods to avoid finding them everywhere
+     */
+    static isHyperTube(currentObject)
+    {
+        if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PipeHyper'))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * CONTEXT MENU
      */

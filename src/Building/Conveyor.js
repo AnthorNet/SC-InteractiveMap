@@ -2,6 +2,7 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Polygon                       from '../BaseLayout/Polygon.js';
 
+import Building_HyperTube                       from '../Building/HyperTube.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
 
 export default class Building_Conveyor
@@ -468,13 +469,16 @@ export default class Building_Conveyor
                 mapLayer = buildingData.mapLayer;
             }
 
-        let marker          = baseLayout.getMarkerFromPathName(currentObject.pathName, mapLayer);
+        let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, mapLayer);
             if(marker !== null)
             {
-                let slotColor           = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
+                let slotColor = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
+                    marker.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
 
-                marker.setStyle({color: 'rgb(' + slotColor.r + ', ' + slotColor.g + ', ' + slotColor.b + ')'});
-                marker.setDashArray();
+                    if(typeof marker.setDashArray === 'function')
+                    {
+                        marker.setDashArray();
+                    }
             }
 
         Building_Conveyor.bindConnectedComponents(baseLayout, currentObject);
@@ -497,7 +501,7 @@ export default class Building_Conveyor
                         if(mConnectedComponent !== null)
                         {
                             let endsWith = '.' + mConnectedComponent.pathName.split('.').pop();
-                                if(Building_Conveyor.availableConnections.includes(endsWith))
+                                if(Building_Conveyor.availableConnections.includes(endsWith) || Building_HyperTube.availableConnections.includes(endsWith))
                                 {
                                     let connectedComponent  = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName.replace(endsWith, ''));
                                         if(connectedComponent !== null)
@@ -514,7 +518,7 @@ export default class Building_Conveyor
                                                 {
                                                     connectedMarker.setStyle({color: '#00FF00'});
 
-                                                    if(Building_Conveyor.isConveyorBelt(connectedComponent))
+                                                    if(typeof connectedMarker.setDashArray === 'function')
                                                     {
                                                         connectedMarker.setDashArray();
                                                     }
@@ -534,7 +538,7 @@ export default class Building_Conveyor
                 mapLayer = buildingData.mapLayer;
             }
 
-        let marker          = baseLayout.getMarkerFromPathName(currentObject.pathName, mapLayer);
+        let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, mapLayer);
             if(marker !== null)
             {
                 if(buildingData !== null)
@@ -542,7 +546,10 @@ export default class Building_Conveyor
                     marker.setStyle({color: buildingData.mapColor});
                 }
 
-                marker.removeDashArray();
+                if(typeof marker.removeDashArray === 'function')
+                {
+                    marker.removeDashArray();
+                }
             }
 
         Building_Conveyor.unbindConnectedComponents(baseLayout, currentObject);
@@ -565,7 +572,7 @@ export default class Building_Conveyor
                         if(mConnectedComponent !== null)
                         {
                             let endsWith = '.' + mConnectedComponent.pathName.split('.').pop();
-                                if(Building_Conveyor.availableConnections.includes(endsWith))
+                                if(Building_Conveyor.availableConnections.includes(endsWith) || Building_HyperTube.availableConnections.includes(endsWith))
                                 {
                                     let connectedComponent  = baseLayout.saveGameParser.getTargetObject(mConnectedComponent.pathName.replace(endsWith, ''));
                                         if(connectedComponent !== null)
@@ -585,7 +592,7 @@ export default class Building_Conveyor
                                                         connectedMarker.setStyle({color: buildingData.mapColor});
                                                     }
 
-                                                    if(Building_Conveyor.isConveyorBelt(connectedComponent))
+                                                    if(typeof connectedMarker.removeDashArray === 'function')
                                                     {
                                                         connectedMarker.removeDashArray();
                                                     }
