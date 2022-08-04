@@ -20,9 +20,44 @@ export default class SubSystem_Foliage
                     if(BaseLayout_Math.isPointInsideSelection(baseLayout, selection, objects[pathName].transform.translation[0], objects[pathName].transform.translation[1]) === true)
                     {
                         baseLayout.saveGameParser.deleteObject(pathName);
+                        restoredFoliage++;
                     }
                     else
                     {
+                        // UPDATE 6
+                        let mRemovalLocations   = baseLayout.getObjectProperty(objects[pathName], 'mRemovalLocations');
+                            if(mRemovalLocations !== null && mRemovalLocations.values.length > 0)
+                            {
+                                for(let i = (mRemovalLocations.values.length - 1); i >= 0; i--)
+                                {
+                                    if(BaseLayout_Math.isPointInsideSelection(baseLayout, selection, mRemovalLocations.values[i].x, mRemovalLocations.values[i].y) === true)
+                                    {
+                                        mRemovalLocations.values.splice(i, 1);
+                                        restoredFoliage++;
+                                    }
+
+                                }
+                            }
+
+                        /*
+                        let mByteRemovalIndices     = baseLayout.getObjectProperty(objects[pathName], 'mByteRemovalIndices');
+                            if(mByteRemovalIndices !== null)
+                            {
+                                console.log('mByteRemovalIndices', mByteRemovalIndices)
+                            }
+                        let mShortRemovalIndices     = baseLayout.getObjectProperty(objects[pathName], 'mShortRemovalIndices');
+                            if(mShortRemovalIndices !== null)
+                            {
+                                console.log('mShortRemovalIndices', mShortRemovalIndices)
+                            }
+                        let mLongRemovalIndices     = baseLayout.getObjectProperty(objects[pathName], 'mLongRemovalIndices');
+                            if(mLongRemovalIndices !== null)
+                            {
+                                console.log('mLongRemovalIndices', mLongRemovalIndices)
+                            }
+                        */
+
+                        // UPDATE 5
                         let mRemovedInstances = baseLayout.getObjectProperty(objects[pathName], 'mRemovedInstances');
                             if(mRemovedInstances !== null && mRemovedInstances.values.length > 0)
                             {
