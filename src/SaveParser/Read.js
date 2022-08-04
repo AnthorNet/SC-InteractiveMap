@@ -469,6 +469,7 @@ export default class SaveParser_Read
              || this.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')
              || this.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
              || this.objects[objectKey].className.startsWith('/CoveredConveyor')
+             || this.objects[objectKey].className.startsWith('/conveyorbeltmod/lift/')
         )
         {
             this.objects[objectKey].extra   = {count: this.readInt(), items: []};

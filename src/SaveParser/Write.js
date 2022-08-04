@@ -639,6 +639,7 @@ export default class SaveParser_Write
              || currentObject.className.startsWith('/Conveyors_Mod/Build_LiftMk')
              || currentObject.className.startsWith('/Game/CoveredConveyor')
              || currentObject.className.startsWith('/CoveredConveyor')
+             || currentObject.className.startsWith('/conveyorbeltmod/lift/')
         )
         {
             let itemsLength  = currentObject.extra.items.length;

@@ -49,6 +49,8 @@ export default class Building_Conveyor
              || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
              || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
              || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
+             || currentObject.className.startsWith('/conveyorbeltmod/Belt/mk')
+
         )
         {
             return true;
