@@ -306,7 +306,7 @@ export default class Building_Sign
 
     static getOther1(baseLayout, currentObject)
     {
-        return Building_Sign.getText(baseLayout, currentObject, 'Other_1', '10');
+        return Building_Sign.getText(baseLayout, currentObject, 'Other_Text', '10');
     }
 
     static getText(baseLayout, currentObject, elementName = 'Name', defaultName = 'Shennanigans')
@@ -1185,7 +1185,7 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_1', values.mPrefabTextElementSaveData);
+                    return Building_Sign.updatePrefabData(baseLayout, currentObject, 'mPrefabTextElementSaveData', 'Text', 'Other_Text', values.mPrefabTextElementSaveData);
                 }
             });
     }
