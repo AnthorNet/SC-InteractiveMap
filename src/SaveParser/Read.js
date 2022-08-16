@@ -1039,6 +1039,16 @@ export default class SaveParser_Read
                             };
                             break;
                         case 'Struct':
+                            if(currentProperty.name === 'Destroyed_Foliage_Transform') // Mod: Universal Destroyer
+                            {
+                                mapPropertyKey = {
+                                    x: this.readFloat(),
+                                    y: this.readFloat(),
+                                    z: this.readFloat()
+                                };
+                                break;
+                            }
+
                             mapPropertyKey = [];
                             while(true)
                             {

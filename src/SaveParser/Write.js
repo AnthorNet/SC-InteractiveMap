@@ -1109,6 +1109,14 @@ export default class SaveParser_Write
                      property += this.writeString(currentProperty.value.values[iMapProperty].keyMap.name);
                     break;
                 case 'Struct':
+                    if(currentProperty.name === 'Destroyed_Foliage_Transform') // Mod: Universal Destroyer
+                    {
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.x);
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.y);
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.z);
+                        break;
+                    }
+
                     for(let i = 0; i < currentProperty.value.values[iMapProperty].keyMap.length; i++)
                     {
                         property += this.writeProperty(currentProperty.value.values[iMapProperty].keyMap[i]);
