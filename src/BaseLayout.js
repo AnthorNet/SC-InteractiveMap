@@ -863,12 +863,6 @@ export default class BaseLayout
             if(currentObject.className === '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C')
             {
                 this.playerStatistics.collectables[currentObject.className].items.push(currentObject.pathName);
-
-                let mCurrentHealth = this.getObjectProperty(currentObject, 'mCurrentHealth');
-                    if(mCurrentHealth !== null && mCurrentHealth === 0)
-                    {
-                        continue;
-                    }
             }
 
             if([
@@ -3097,6 +3091,7 @@ export default class BaseLayout
         {
             baseLayout.playerLayers[layerId].count--;
         }
+
         baseLayout.saveGameParser.deleteObject(pathName);
         baseLayout.deleteMarkerFromElements(layerId, marker.relatedTarget, fast);
 
@@ -4921,11 +4916,13 @@ export default class BaseLayout
                 if(addBuildingEvents === true)
                 {
                     let currentObject   = this.saveGameParser.getTargetObject(marker.options.pathName);
-                    let buildingData    = this.getBuildingDataFromClassName(currentObject.className);
-
-                        this.setBuildingMouseOutStyle(marker, buildingData, currentObject);
-                        Building_Conveyor.unbindConnectedComponents(this, currentObject);
-                        Building_PowerLine.unbindConnectedComponents(this, currentObject);
+                        if(currentObject !== null)
+                        {
+                            let buildingData = this.getBuildingDataFromClassName(currentObject.className);
+                                this.setBuildingMouseOutStyle(marker, buildingData, currentObject);
+                                Building_Conveyor.unbindConnectedComponents(this, currentObject);
+                                Building_PowerLine.unbindConnectedComponents(this, currentObject);
+                        }
                 }
             });
 

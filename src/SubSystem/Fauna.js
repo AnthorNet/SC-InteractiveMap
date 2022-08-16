@@ -200,13 +200,18 @@ export default class SubSystem_Fauna
             baseLayout.setObjectProperty(currentObject, 'mTriggered', 1, 'Bool');
             baseLayout.setObjectProperty(currentObject, 'mDayOfDeath', 1, 'Int');
             baseLayout.setObjectProperty(currentObject, 'mCurrentHealth', 0, 'Float');
+
+            $('.updatePlayerLayerState[data-id="' + layerId + '"] > .badge').html(parseInt($('.updatePlayerLayerState[data-id="' + layerId + '"] > .badge').html()) - 1);
+            $('.updatePlayerLayerState[data-id="' + layerId + '"] .updatePlayerLayerFilter[data-filter="' + currentObject.className + '"] > .badge').html(parseInt($('.updatePlayerLayerState[data-id="' + layerId + '"] .updatePlayerLayerFilter[data-filter="' + currentObject.className + '"] > .badge').html()) - 1);
+
+            let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, layerId);
+                baseLayout.playerLayers[layerId].subLayer.removeLayer(marker);
         }
         else
         {
             baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
+            baseLayout.deleteMarkerFromElements(layerId, marker.relatedTarget);
+            baseLayout.setBadgeLayerCount(layerId);
         }
-
-        baseLayout.deleteMarkerFromElements(layerId, marker.relatedTarget);
-        baseLayout.setBadgeLayerCount(layerId);
     }
 }

@@ -52,7 +52,11 @@ export default class Modal_Map_Collectables
                                                         this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(updatedOpacity);
 
                                                         $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', dataCollected);
-                                                        $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
+
+                                                        if(dataCollected > 0)
+                                                        {
+                                                            $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
+                                                        }
                                                 }
                                                 else
                                                 {
@@ -103,6 +107,54 @@ export default class Modal_Map_Collectables
                         }
                     }
                 }
+
+                if(className === '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C')
+                {
+                    let faunaData                               = this.baseLayout.faunaSubsystem.getDataFromClassName(className);
+                        playerCollectables[className].name      = faunaData.name;
+                        playerCollectables[className].image     = faunaData.image;
+                        playerCollectables[className].markers   = [];
+
+                    for(let i = 0; i < playerCollectables[className].items.length; i++)
+                    {
+                        let currentObject = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].items[i]);
+                            if(currentObject !== null)
+                            {
+                                let marker          = this.baseLayout.getMarkerFromPathName(currentObject.pathName, playerCollectables[className].layerId);
+                                let mCurrentHealth  = this.baseLayout.getObjectProperty(currentObject, 'mCurrentHealth');
+                                    if(mCurrentHealth !== null && mCurrentHealth === 0)
+                                    {
+                                        playerCollectables[className].used++;
+
+                                        if(marker !== null && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.hasLayer(marker))
+                                        {
+                                            this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.removeLayer(marker);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if(marker !== null && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.hasLayer(marker) === false)
+                                        {
+                                            this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.addLayer(marker);
+                                        }
+                                    }
+
+                                    if(marker !== null)
+                                    {
+                                        playerCollectables[className].markers.push(marker);
+                                    }
+                            }
+                    }
+
+                    let dataCollected = playerCollectables[className].markers.length - playerCollectables[className].used;
+                        $('.updatePlayerLayerState[data-id="' + playerCollectables[className].layerId + '"] .updatePlayerLayerFilter[data-filter="' + className + '"] > .badge').html(dataCollected);
+
+                    let totalCollected = 0;
+                        $('.updatePlayerLayerState[data-id="' + playerCollectables[className].layerId + '"] .updatePlayerLayerFilter[data-filter] > .badge').each(function(){
+                            totalCollected += parseInt($(this).html()) || 0;
+                        })
+                        $('.updatePlayerLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(totalCollected);
+                }
             }
 
         return playerCollectables;
@@ -120,33 +172,32 @@ export default class Modal_Map_Collectables
         for(let className in playerCollectables)
         {
             let currentItem = playerCollectables[className];
-
-            if(currentItem.markers !== undefined)
-            {
-                html.push('<tr>');
-                html.push('<td width="74"><img src="' + currentItem.image + '" class="img-fluid img-thumbnail" /></td>');
-                html.push('<td><table class="table table-borderless table-sm mb-0">');
-                html.push('<tr>');
-                html.push('<td>' + currentItem.name + '</td>');
-                html.push('<td class="text-right" width="20%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.used) + ' / ' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.markers.length) + '</td>');
-
-                html.push('<td class="text-right" width="20%">');
-                if(currentItem.used > 0)
+                if(currentItem.markers !== undefined)
                 {
-                    html.push('<button class="btn btn-danger btn-sm resetCollectables" data-id="' + className + '">Reset</button>');
-                }
-                if((currentItem.markers.length - currentItem.used) > 0)
-                {
-                    html.push('<button class="btn btn-success btn-sm clearCollectables" data-id="' + className + '">Clear</button>');
-                }
-                html.push('</td>');
+                    html.push('<tr>');
+                    html.push('<td width="74"><img src="' + currentItem.image + '" class="img-fluid img-thumbnail" /></td>');
+                    html.push('<td><table class="table table-borderless table-sm mb-0">');
+                    html.push('<tr>');
+                    html.push('<td>' + currentItem.name + '</td>');
+                    html.push('<td class="text-right" width="20%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.used) + ' / ' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.markers.length) + '</td>');
 
-                html.push('</tr>');
-                html.push('<tr>');
-                html.push('<td colspan="3" class="pt-0"><div class="progress"><div class="progress-bar bg-success" style="width: ' + (currentItem.used / currentItem.markers.length * 100) + '%"></div></div></td>');
-                html.push('</table></td>');
-                html.push('</tr>');
-            }
+                    html.push('<td class="text-right" width="20%">');
+                    if(currentItem.used > 0)
+                    {
+                        html.push('<button class="btn btn-danger btn-sm resetCollectables" data-id="' + className + '">Reset</button>');
+                    }
+                    if((currentItem.markers.length - currentItem.used) > 0)
+                    {
+                        html.push('<button class="btn btn-success btn-sm clearCollectables" data-id="' + className + '">Clear</button>');
+                    }
+                    html.push('</td>');
+
+                    html.push('</tr>');
+                    html.push('<tr>');
+                    html.push('<td colspan="3" class="pt-0"><div class="progress"><div class="progress-bar bg-success" style="width: ' + (currentItem.used / currentItem.markers.length * 100) + '%"></div></div></td>');
+                    html.push('</table></td>');
+                    html.push('</tr>');
+                }
         }
 
         html.push('</table>');
@@ -171,55 +222,71 @@ export default class Modal_Map_Collectables
         let collectables        = this.baseLayout.saveGameParser.getCollectables();
         let playerCollectables  = this.baseLayout.playerStatistics.collectables;
 
-        if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
+        switch(className)
         {
-            this.baseLayout.collectedHardDrives.resetCollected();
-        }
-
-        for(let m = 0; m < playerCollectables[className].markers.length; m++)
-        {
-            let collectedStatus = this.getStatusFromPathName(playerCollectables[className].markers[m].pathName, className);
-                if(collectedStatus === true)
+            case '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C':
+                for(let m = 0; m < playerCollectables[className].markers.length; m++)
                 {
-                    let currentObject   = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].markers[m].pathName);
+                    let currentObject = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].markers[m].options.pathName);
                         if(currentObject !== null)
                         {
-                            if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
-                            {
-                                this.baseLayout.deleteObjectProperty(currentObject, 'mHasBeenOpened');
-                            }
-                            else
-                            {
-                                if(playerCollectables[className].markers[m].defaultValue !== undefined)
+                            this.baseLayout.deleteObjectProperty(currentObject, 'mTriggered');
+                            this.baseLayout.deleteObjectProperty(currentObject, 'mDayOfDeath');
+                            this.baseLayout.deleteObjectProperty(currentObject, 'mCurrentHealth');
+                        }
+                }
+                break;
+
+            case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
+                this.baseLayout.collectedHardDrives.resetCollected();
+                // Continue ;)
+
+            default:
+                for(let m = 0; m < playerCollectables[className].markers.length; m++)
+                {
+                    let collectedStatus = this.getStatusFromPathName(playerCollectables[className].markers[m].pathName, className);
+                        if(collectedStatus === true)
+                        {
+                            let currentObject = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].markers[m].pathName);
+                                if(currentObject !== null)
                                 {
-                                    this.baseLayout.setObjectProperty(currentObject, 'mPickupItems', {
-                                        type    : 'InventoryStack',
-                                        values  : [
+                                    switch(className)
+                                    {
+                                        case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
+                                            this.baseLayout.deleteObjectProperty(currentObject, 'mHasBeenOpened');
+                                            break;
+                                        default:
+                                            if(playerCollectables[className].markers[m].defaultValue !== undefined)
                                             {
-                                                name    : 'NumItems',
-                                                type    : 'Int',
-                                                value   : playerCollectables[className].markers[m].defaultValue
+                                                this.baseLayout.setObjectProperty(currentObject, 'mPickupItems', {
+                                                    type    : 'InventoryStack',
+                                                    values  : [
+                                                        {
+                                                            name    : 'NumItems',
+                                                            type    : 'Int',
+                                                            value   : playerCollectables[className].markers[m].defaultValue
+                                                        }
+                                                    ]
+                                                }, 'Struct');
                                             }
-                                        ]
-                                    }, 'Struct');
+                                            else
+                                            {
+                                                this.baseLayout.deleteObjectProperty(currentObject, 'mPickupItems');
+                                            }
+                                    }
                                 }
                                 else
                                 {
-                                    this.baseLayout.deleteObjectProperty(currentObject, 'mPickupItems');
+                                    for(let i = (collectables.length - 1); i >= 0; i--)
+                                    {
+                                        if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
+                                        {
+                                            // Removes from collectables...
+                                            collectables.splice(i, 1);
+                                            break;
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                        else
-                        {
-                            for(let i = (collectables.length - 1); i >= 0; i--)
-                            {
-                                if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
-                                {
-                                    // Removes from collectables...
-                                    collectables.splice(i, 1);
-                                    break;
-                                }
-                            }
                         }
                 }
         }
@@ -232,52 +299,68 @@ export default class Modal_Map_Collectables
         let collectables        = this.baseLayout.saveGameParser.getCollectables();
         let playerCollectables  = this.baseLayout.playerStatistics.collectables;
 
-        for(let m = 0; m < playerCollectables[className].markers.length; m++)
+        switch(className)
         {
-            let collectedStatus = this.getStatusFromPathName(playerCollectables[className].markers[m].pathName, className);
-                if(collectedStatus === false)
+            case '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C':
+                for(let m = 0; m < playerCollectables[className].markers.length; m++)
                 {
-                    let currentObject   = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].markers[m].pathName);
+                    let currentObject = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].markers[m].options.pathName);
                         if(currentObject !== null)
                         {
-                            if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
-                            {
-                                this.baseLayout.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'Bool');
-                            }
-                            else
-                            {
-                                this.baseLayout.setObjectProperty(currentObject, 'mPickupItems', {
-                                    type    : 'InventoryStack',
-                                    values  : [
-                                        {
-                                            name    : 'NumItems',
-                                            type    : 'Int',
-                                            value   : 0
-                                        }
-                                    ]
-                                }, 'Struct');
-                            }
+                            this.baseLayout.setObjectProperty(currentObject, 'mTriggered', 1, 'Bool');
+                            this.baseLayout.setObjectProperty(currentObject, 'mDayOfDeath', 1, 'Int');
+                            this.baseLayout.setObjectProperty(currentObject, 'mCurrentHealth', 0, 'Float');
                         }
-                        else
+                }
+                break;
+            default:
+                for(let m = 0; m < playerCollectables[className].markers.length; m++)
+                {
+                    let collectedStatus = this.getStatusFromPathName(playerCollectables[className].markers[m].pathName, className);
+                        if(collectedStatus === false)
                         {
-                            let collectableAlreadyIn = false;
-                                for(let i = (collectables.length - 1); i >= 0; i--)
+                            let currentObject   = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].markers[m].pathName);
+                                if(currentObject !== null)
                                 {
-                                    if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
+                                    if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                                     {
-                                        collectableAlreadyIn = true;
-                                        break;
+                                        this.baseLayout.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'Bool');
+                                    }
+                                    else
+                                    {
+                                        this.baseLayout.setObjectProperty(currentObject, 'mPickupItems', {
+                                            type    : 'InventoryStack',
+                                            values  : [
+                                                {
+                                                    name    : 'NumItems',
+                                                    type    : 'Int',
+                                                    value   : 0
+                                                }
+                                            ]
+                                        }, 'Struct');
                                     }
                                 }
+                                else
+                                {
+                                    let collectableAlreadyIn = false;
+                                        for(let i = (collectables.length - 1); i >= 0; i--)
+                                        {
+                                            if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
+                                            {
+                                                collectableAlreadyIn = true;
+                                                break;
+                                            }
+                                        }
 
-                            if(collectableAlreadyIn === false)
-                            {
-                                let levelName = playerCollectables[className].markers[m].pathName.split(':');
-                                    collectables.push({
-                                        levelName   : levelName.shift(),
-                                        pathName    : playerCollectables[className].markers[m].pathName
-                                    });
-                            }
+                                    if(collectableAlreadyIn === false)
+                                    {
+                                        let levelName = playerCollectables[className].markers[m].pathName.split(':');
+                                            collectables.push({
+                                                levelName   : levelName.shift(),
+                                                pathName    : playerCollectables[className].markers[m].pathName
+                                            });
+                                    }
+                                }
                         }
                 }
         }
