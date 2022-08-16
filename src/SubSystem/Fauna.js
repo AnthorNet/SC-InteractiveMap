@@ -195,7 +195,17 @@ export default class SubSystem_Fauna
                     }
             }
 
-        baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
+        if(currentObject.className === '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C')
+        {
+            baseLayout.setObjectProperty(currentObject, 'mTriggered', 1, 'Bool');
+            baseLayout.setObjectProperty(currentObject, 'mDayOfDeath', 1, 'Int');
+            baseLayout.setObjectProperty(currentObject, 'mCurrentHealth', 0, 'Float');
+        }
+        else
+        {
+            baseLayout.saveGameParser.deleteObject(marker.relatedTarget.options.pathName);
+        }
+
         baseLayout.deleteMarkerFromElements(layerId, marker.relatedTarget);
         baseLayout.setBadgeLayerCount(layerId);
     }
