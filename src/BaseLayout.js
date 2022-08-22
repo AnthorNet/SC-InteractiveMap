@@ -807,8 +807,9 @@ export default class BaseLayout
 
             if(currentObject.className === '/Game/FactoryGame/Character/Creature/BP_CreatureSpawner.BP_CreatureSpawner_C')
             {
-                //console.log(currentObject)
                 this.faunaSubsystem.creatureSpawners.push(currentObject.pathName);
+                promises.push(new Promise((resolve) => { return resolve(this.faunaSubsystem.add(currentObject)); }));
+
                 continue;
             }
             if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C')
@@ -3624,6 +3625,18 @@ export default class BaseLayout
                                                                 addToSubLayer = false;
                                                             }
                                                         }
+                                                        if(currentClassName === '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C')
+                                                        {
+                                                            let currentObject = this.saveGameParser.getTargetObject(currentMarker.options.pathName);
+                                                                if(currentObject !== null)
+                                                                {
+                                                                    let mCurrentHealth  = this.getObjectProperty(currentObject, 'mCurrentHealth');
+                                                                        if(mCurrentHealth !== null && mCurrentHealth === 0)
+                                                                        {
+                                                                            addToSubLayer = false;
+                                                                        }
+                                                                }
+                                                        }
 
                                                         if(addToSubLayer === true)
                                                         {
@@ -4075,12 +4088,17 @@ export default class BaseLayout
             for(let className in this.playerLayers[layerId].filtersCount)
             {
                 // Show filter icons
-                let filterIcon  = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : className) + '"]');
+                let filterIcon      = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : className) + '"]');
+                let showByDefault   = filterIcon.attr('data-default');
+                    if(showByDefault !== undefined && showByDefault === 'false')
+                    {
+                        this.updatePlayerLayerFilter(filterIcon, layerId, className);
+                    }
+
                     filterIcon.find('img[data-src]').each(function(){
                         $(this).attr('src', $(this).attr('data-src')).removeAttr('data-src');
                     });
                     filterIcon.show();
-
 
                 if(this.playerLayers[layerId].filtersCount[className].distance !== undefined)
                 {

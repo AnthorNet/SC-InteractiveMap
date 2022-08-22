@@ -110,6 +110,7 @@ export default class Modal_Map_Collectables
 
                 if(className === '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C')
                 {
+                    let isFilterShown                           = $('.updatePlayerLayerState[data-id="' + playerCollectables[className].layerId + '"] .updatePlayerLayerFilter[data-filter="' + className + '"]').hasClass('btn-warning');
                     let faunaData                               = this.baseLayout.faunaSubsystem.getDataFromClassName(className);
                         playerCollectables[className].name      = faunaData.name;
                         playerCollectables[className].image     = faunaData.image;
@@ -126,14 +127,14 @@ export default class Modal_Map_Collectables
                                     {
                                         playerCollectables[className].used++;
 
-                                        if(marker !== null && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.hasLayer(marker))
+                                        if(marker !== null && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer !== null && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.hasLayer(marker))
                                         {
                                             this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.removeLayer(marker);
                                         }
                                     }
                                     else
                                     {
-                                        if(marker !== null && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.hasLayer(marker) === false)
+                                        if(marker !== null && isFilterShown === true && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer !== null && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.hasLayer(marker) === false)
                                         {
                                             this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.addLayer(marker);
                                         }
