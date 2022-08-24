@@ -121,6 +121,23 @@ export default class SubSystem_Fauna
                 }
             }
 
+        if(currentObject.className === '/Game/FactoryGame/Character/Creature/BP_CreatureSpawner.BP_CreatureSpawner_C')
+        {
+            let mIsActive = this.baseLayout.getObjectProperty(currentObject, 'mIsActive');
+                if(mIsActive !== null)
+                {
+                    iconColor   = '#b3ffb3';
+                }
+                else
+                {
+                    let mCachedIsNearBase = this.baseLayout.getObjectProperty(currentObject, 'mCachedIsNearBase');
+                        if(mCachedIsNearBase !== null)
+                        {
+                            iconColor   = '#999999';
+                        }
+                }
+        }
+
         let faunaMarker = L.marker(
                 this.baseLayout.satisfactoryMap.unproject(currentObject.transform.translation),
                 {
