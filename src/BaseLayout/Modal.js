@@ -542,8 +542,8 @@ export default class BaseLayout_Modal
         if(options.inputType === 'coordinate')
         {
             input = $('<div class="input-group"></div>').append(input);
-            input.prepend('<div class="input-group-prepend"><button class="btn btn-outline-secondary text-white" type="button">-8m</button><button class="btn btn-outline-secondary text-white" type="button">-4m</button><button class="btn btn-outline-secondary text-white" type="button">-1m</button></div>');
-            input.append('<div class="input-group-append"><button class="btn btn-outline-secondary text-white" type="button">+1m</button><button class="btn btn-outline-secondary text-white" type="button">+4m</button><button class="btn btn-outline-secondary text-white" type="button">+8m</button></div>');
+            input.prepend('<div class="input-group-prepend"><button class="btn btn-outline-secondary text-white" type="button">-8m</button><button class="btn btn-outline-secondary text-white" type="button">-2m</button><button class="btn btn-outline-secondary text-white" type="button">-4m</button><button class="btn btn-outline-secondary text-white" type="button">-1m</button></div>');
+            input.append('<div class="input-group-append"><button class="btn btn-outline-secondary text-white" type="button">+1m</button><button class="btn btn-outline-secondary text-white" type="button">+2m</button><button class="btn btn-outline-secondary text-white" type="button">+4m</button><button class="btn btn-outline-secondary text-white" type="button">+8m</button></div>');
 
             input.find('.input-group-prepend > button:eq(0)').click(function(){
                 let clicked = input.find('input');
@@ -551,9 +551,13 @@ export default class BaseLayout_Modal
             });
             input.find('.input-group-prepend > button:eq(1)').click(function(){
                 let clicked = input.find('input');
-                    clicked.val(parseFloat(clicked.val()) - 400);
+                    clicked.val(parseFloat(clicked.val()) - 200);
             });
             input.find('.input-group-prepend > button:eq(2)').click(function(){
+                let clicked = input.find('input');
+                    clicked.val(parseFloat(clicked.val()) - 400);
+            });
+            input.find('.input-group-prepend > button:eq(3)').click(function(){
                 let clicked = input.find('input');
                     clicked.val(parseFloat(clicked.val()) - 100);
             });
@@ -563,9 +567,13 @@ export default class BaseLayout_Modal
             });
             input.find('.input-group-append > button:eq(1)').click(function(){
                 let clicked = input.find('input');
-                    clicked.val(parseFloat(clicked.val()) + 400);
+                    clicked.val(parseFloat(clicked.val()) + 200);
             });
             input.find('.input-group-append > button:eq(2)').click(function(){
+                let clicked = input.find('input');
+                    clicked.val(parseFloat(clicked.val()) + 400);
+            });
+            input.find('.input-group-append > button:eq(3)').click(function(){
                 let clicked = input.find('input');
                     clicked.val(parseFloat(clicked.val()) + 800);
             });
