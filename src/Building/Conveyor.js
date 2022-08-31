@@ -105,7 +105,8 @@ export default class Building_Conveyor
                                 width: 220,
                                 length: 140,
                                 offset: 0,
-                                xShift: 0
+                                xShift: 0,
+                                yShift: 0
                             }),
                             {
                                 originPathName  : currentObject.pathName,

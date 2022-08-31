@@ -751,6 +751,30 @@ export default class BaseLayout_ContextMenu
                         }
                     }
 
+                    if(buildingData.switchMaterial !== undefined && buildingData.category === 'pipe')
+                    {
+                        if(buildingData.switchMaterial.Ficsit !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : this.baseLayout.translate._('Switch to "%1$s"', 'Pipeline (Indicator)'),
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['pipe', 'Ficsit'],
+                                className   : 'buildableSubSystem_switchObjectMaterial'
+                            });
+                        }
+                        if(buildingData.switchMaterial.NoIndicator !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : this.baseLayout.translate._('Switch to "%1$s"', 'Pipeline (No Indicator)'),
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['pipe', 'NoIndicator'],
+                                className   : 'buildableSubSystem_switchObjectMaterial'
+                            });
+                        }
+                    }
+
                     if(buildingData.switchSkin !== undefined)
                     {
                         let SkinDesc  = this.baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject, 'SkinDesc');

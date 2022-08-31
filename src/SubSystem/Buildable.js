@@ -656,6 +656,36 @@ export default class SubSystem_Buildable
                                 }
                         }
 
+                    // Flow indicator?
+                    /* LET THE GAME GENERATE IT SO IT'S BEST PLACED
+                    if(Building_Pipeline.availablePipelines.includes(currentObject.className))
+                    {
+                        let mFlowIndicator = {
+                                className       : '/Game/FactoryGame/Buildable/Factory/Pipeline/FlowIndicator/Build_PipelineFlowIndicator.Build_PipelineFlowIndicator_C',
+                                pathName        : baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.Build_PipelineFlowIndicator_C_XXX'}),
+                                needTransform   : 1,
+                                transform       : {rotation:[0,0,0,1], translation: BaseLayout_Math.getSplineCenter(baseLayout, currentObject)},
+                                entity          : {pathName: currentObject.pathName},
+                                properties      : [
+                                    {name: 'mCustomizationData', type: 'Struct', value: {type: "FactoryCustomizationData", values: [{name: 'SwatchDesc', type: 'Object', value: {levelName: '', pathName: '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot0.SwatchDesc_Slot0_C'}}]}},
+                                    {name: 'mBuildTimeStamp', type: 'Float', value: 0}
+                                ]
+                            };
+
+                        baseLayout.saveGameParser.addObject(mFlowIndicator);
+                        baseLayout.setObjectProperty(currentObject, 'mFlowIndicator', {pathName: mFlowIndicator.pathName}, 'Object');
+                    }
+                    */
+                    if(Building_Pipeline.availableNoIndicatorPipelines.includes(currentObject.className))
+                    {
+                        let mFlowIndicator = baseLayout.getObjectProperty(currentObject, 'mFlowIndicator');
+                            if(mFlowIndicator !== null)
+                            {
+                                baseLayout.saveGameParser.deleteObject(mFlowIndicator.pathName);
+                                baseLayout.deleteObjectProperty(currentObject, 'mFlowIndicator');
+                            }
+                    }
+
                     // Redraw!
                     new Promise(function(resolve){
                         return baseLayout.parseObject(currentObject, resolve);

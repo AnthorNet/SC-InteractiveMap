@@ -23,6 +23,14 @@ export default class Building_Pipeline
         ];
     }
 
+    static get availableNoIndicatorPipelines()
+    {
+        return [
+            '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline_NoIndicator.Build_Pipeline_NoIndicator_C',
+            '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2_NoIndicator.Build_PipelineMK2_NoIndicator_C'
+        ];
+    }
+
     static get availablePipePumps()
     {
         return [
@@ -37,6 +45,10 @@ export default class Building_Pipeline
     static isPipeline(currentObject)
     {
         if(Building_Pipeline.availablePipelines.includes(currentObject.className))
+        {
+            return true;
+        }
+        if(Building_Pipeline.availableNoIndicatorPipelines.includes(currentObject.className))
         {
             return true;
         }
@@ -76,6 +88,10 @@ export default class Building_Pipeline
             if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PipePump') === true)
             {
                 usePool = Building_Pipeline.availablePipePumps;
+            }
+            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/Pipeline') === true && currentObject.className.endsWith('_NoIndicator_C') === true)
+            {
+                usePool = Building_Pipeline.availableNoIndicatorPipelines;
             }
 
         let poolIndex   = usePool.indexOf(currentObject.className);
@@ -126,22 +142,6 @@ export default class Building_Pipeline
                 callback    : Building_Pipeline.clearInventory,
                 className   : 'Building_Pipeline_clearInventory'
             });
-
-            /*
-            let mFlowIndicator = baseLayout.getObjectProperty(currentObject, 'mFlowIndicator');
-                if(mFlowIndicator !== null)
-                {
-                    let flowIndicatorObject = baseLayout.saveGameParser.getTargetObject(mFlowIndicator.pathName);
-                    contextMenu.push('-');
-                    contextMenu.push({
-                        icon        : 'fa-scanner-keyboard',
-                        text        : baseLayout.translate._('Delete flow indicator'),
-                        callback    : Building_Pipeline.deleteFlowIndicator,
-                        className   : 'Building_Pipeline_deleteFlowIndicator'
-                    });
-                    contextMenu.push('-');
-                }
-            */
         }
 
         return contextMenu;
@@ -237,6 +237,10 @@ export default class Building_Pipeline
             {
                 usePool = Building_Pipeline.availablePipePumps;
             }
+            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/Pipeline') === true && currentObject.className.endsWith('_NoIndicator_C') === true)
+            {
+                usePool = Building_Pipeline.availableNoIndicatorPipelines;
+            }
 
         let poolIndex       = usePool.indexOf(currentObject.className);
             if(poolIndex !== -1 && poolIndex > 0)
@@ -254,6 +258,10 @@ export default class Building_Pipeline
             if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PipePump') === true)
             {
                 usePool = Building_Pipeline.availablePipePumps;
+            }
+            if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/Pipeline') === true && currentObject.className.endsWith('_NoIndicator_C') === true)
+            {
+                usePool = Building_Pipeline.availableNoIndicatorPipelines;
             }
 
         let poolIndex       = usePool.indexOf(currentObject.className);
@@ -284,27 +292,5 @@ export default class Building_Pipeline
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
             baseLayout.deleteObjectProperty(currentObject, 'mFluidBox');
-    }
-
-    static deleteFlowIndicator(marker)
-    {
-        let baseLayout      = marker.baseLayout;
-        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-            if(currentObject !== null)
-            {
-                let mFlowIndicator = baseLayout.getObjectProperty(currentObject, 'mFlowIndicator');
-                    if(mFlowIndicator !== null)
-                    {
-                        baseLayout.saveGameParser.deleteObject(mFlowIndicator.pathName);
-                        baseLayout.deleteObjectProperty(currentObject, 'mFlowIndicator');
-
-                        new Promise(function(resolve){
-                            return baseLayout.parseObject(currentObject, resolve);
-                        }).then(function(result){
-                            baseLayout.deleteMarkerFromElements(result.layer, marker.relatedTarget);
-                            baseLayout.addElementToLayer(result.layer, result.marker);
-                        });
-                    }
-            }
     }
 }
