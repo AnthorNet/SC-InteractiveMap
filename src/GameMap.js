@@ -1045,7 +1045,7 @@ export default class GameMap
                     }
                     else
                     {
-                        baseLayer    = initialHash.baseLayer;
+                        baseLayer = this.baseLayer = initialHash.baseLayer;
                         setTimeout(function(){
                             $('.setBaseLayer[data-id="' + baseLayer + '"]').trigger('click');
                         }, 150);
@@ -1053,11 +1053,11 @@ export default class GameMap
 
                     if(initialHash.activeLayers === null)
                     {
-                        activeLayers    = this.activeLayers   = defaultLayers;
+                        activeLayers = this.activeLayers = defaultLayers;
                     }
                     else
                     {
-                        activeLayers    = this.activeLayers   = initialHash.activeLayers;
+                        activeLayers = this.activeLayers = initialHash.activeLayers;
                     }
 
                     this.leafletMap.setView(center, zoom);
