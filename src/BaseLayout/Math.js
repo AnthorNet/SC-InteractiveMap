@@ -56,9 +56,9 @@ export default class BaseLayout_Math
             }
         }
 
-        rotatorFromQuat.pitch           = Math.round(rotatorFromQuat.pitch);
-        rotatorFromQuat.yaw             = Math.round(rotatorFromQuat.yaw);
-        rotatorFromQuat.roll            = Math.round(rotatorFromQuat.roll);
+        rotatorFromQuat.pitch           = Math.round(rotatorFromQuat.pitch * 100) / 100;
+        rotatorFromQuat.yaw             = Math.round(rotatorFromQuat.yaw * 100) / 100;
+        rotatorFromQuat.roll            = Math.round(rotatorFromQuat.roll * 100) / 100;
 
         return rotatorFromQuat;
     }
@@ -66,9 +66,9 @@ export default class BaseLayout_Math
     // See: https://github.com/EpicGames/UnrealEngine/blob/4.26/Engine/Source/Runtime/Core/Private/Math/UnrealMath.cpp#L460
     static getEulerToQuaternion(angle)
     {
-            angle.pitch     = Math.round(angle.pitch);
-            angle.yaw       = Math.round(angle.yaw);
-            angle.roll      = Math.round(angle.roll);
+            angle.pitch     = Math.round(angle.pitch * 100) / 100;
+            angle.yaw       = Math.round(angle.yaw * 100) / 100;
+            angle.roll      = Math.round(angle.roll * 100) / 100;
 
         let degToRad        = BaseLayout_Math.PI / 180;
         let radBy2          = degToRad / 2;
