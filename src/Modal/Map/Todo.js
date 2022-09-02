@@ -1,3 +1,5 @@
+/* global Intl */
+
 export default class Modal_Map_Todo
 {
     constructor(options)
@@ -39,7 +41,8 @@ export default class Modal_Map_Todo
 
                         todoHtml.push('<h5 class="border-bottom border-warning">' + this.baseLayout.translate._('Recipes') + '</h5>');
 
-                        let mShoppingList     = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mShoppingList');
+                        let todoIngredients = {};
+                        let mShoppingList   = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mShoppingList');
                             if(mShoppingList !== null)
                             {
                                 todoHtml.push('<ul class="list-group list-group-flush">');
@@ -53,7 +56,6 @@ export default class Modal_Map_Todo
                                         if(mShoppingList.values[i][j].type === 'Object')
                                         {
                                             currentRecipe = this.baseLayout.getRecipeFromClassName(mShoppingList.values[i][j].value.pathName);
-                                            //console.log(currentRecipe);
                                         }
                                         if(mShoppingList.values[i][j].type === 'Int')
                                         {
@@ -63,14 +65,50 @@ export default class Modal_Map_Todo
 
                                     if(currentRecipe !== null)
                                     {
-                                        todoHtml.push('<li class="list-group-item d-flex justify-content-between align-items-center">');
-
-
-                                        todoHtml.push('' + currentRecipe.name + '');
-                                        todoHtml.push('<span class="float-right"><strong>' + currentAmount + '</strong></span>');
-
+                                        todoHtml.push('<li class="list-group-item d-flex justify-content-between align-items-center p-0 py-1">');
+                                            todoHtml.push('' + currentRecipe.name + '');
+                                            todoHtml.push('<span class="float-right"><strong>' + new Intl.NumberFormat(this.baseLayout.language).format(currentAmount) + '</strong></span>');
                                         todoHtml.push('</li>');
+
+                                        if(currentRecipe.ingredients !== undefined)
+                                        {
+                                            for(let className in currentRecipe.ingredients)
+                                            {
+                                                if(todoIngredients[className] === undefined)
+                                                {
+                                                    todoIngredients[className]  = currentRecipe.ingredients[className];
+                                                }
+                                                else
+                                                {
+                                                    todoIngredients[className] += currentRecipe.ingredients[className];
+                                                }
+                                            }
+                                        }
                                     }
+                                }
+                                todoHtml.push('</ul>');
+
+                                todoHtml.push('<h5 class="border-bottom border-warning mt-3">' + this.baseLayout.translate._('Ingredients') + '</h5>');
+                                todoHtml.push('<ul class="list-group list-group-flush">');
+
+                                let playerInventory = this.baseLayout.getObjectInventory(mOwnedPawn, 'mInventory');
+                                    todoIngredients = Object.fromEntries(Object.entries(todoIngredients).sort(([,a],[,b]) => b - a));
+                                for(let className in todoIngredients)
+                                {
+                                    let currentPlayerAmount = 0;
+                                        for(let i = 0; i < playerInventory.length; i++)
+                                        {
+                                            if(playerInventory[i] !== null && playerInventory[i].className === className)
+                                            {
+                                                currentPlayerAmount += playerInventory[i].qty;
+                                            }
+                                        }
+
+                                    let currentItem = this.baseLayout.getItemDataFromClassName(className);
+                                        todoHtml.push('<li class="list-group-item d-flex justify-content-between align-items-center p-0 py-1">');
+                                            todoHtml.push('<span><img src="' + currentItem.image + '" class="img-fluid mr-3" style="width: 32px;"> ' + currentItem.name + '</span>');
+                                            todoHtml.push('<span class="float-right"><strong>' + new Intl.NumberFormat(this.baseLayout.language).format(currentPlayerAmount) + ' / ' + new Intl.NumberFormat(this.baseLayout.language).format(todoIngredients[className]) + '</strong></span>');
+                                        todoHtml.push('</li>');
                                 }
                                 todoHtml.push('</ul>');
                             }
