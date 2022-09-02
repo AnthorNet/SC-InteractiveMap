@@ -1,5 +1,3 @@
-import { marked }                               from '../../Lib/marked.esm.js';
-
 export default class Modal_Map_Todo
 {
     constructor(options)
@@ -28,13 +26,13 @@ export default class Modal_Map_Todo
                             let mPublicTodoList = this.baseLayout.gameStateSubSystem.getPublicTodoList();
                                 if(mPublicTodoList !== null)
                                 {
-                                    todoHtml.push(marked.parse(mPublicTodoList).replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                                    todoHtml.push(this.parseNote(mPublicTodoList));
                                 }
                         todoHtml.push('<h5 class="border-bottom border-warning mt-3">' + this.baseLayout.translate._('Private Notes') + '</h5>');
                             let mPrivateTodoList = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mPrivateTodoList');
                                 if(mPrivateTodoList !== null)
                                 {
-                                    todoHtml.push(marked.parse(mPrivateTodoList).replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                                    todoHtml.push(this.parseNote(mPrivateTodoList));
                                 }
                     todoHtml.push('</div>');
                     todoHtml.push('<div class="col-8">');
@@ -90,5 +88,14 @@ export default class Modal_Map_Todo
         $('#statisticsPlayerTodo').empty().html('<ul class="nav nav-tabs nav-fill">' + todoHeaderHtml.join('') + '</ul>'
                                            + '<div class="tab-content border border-top-0 p-3">' + todoHtml.join('') + '</div>'
                                            + '</div>');
+    }
+
+    parseNote(str)
+    {
+        str = str.replace('[x]', '<span class="text-warning">[</span><strong style="display: inline-block;width: 10px;text-align: center;">x</strong><span class="text-warning">]</span>');
+        str = str.replace('[]', '<span class="text-warning">[<span style="display: inline-block;width: 10px;"></span>]</span>');
+        str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
+        return str;
     }
 }
