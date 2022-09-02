@@ -130,8 +130,9 @@ export default class Modal_Map_Todo
 
     parseNote(str)
     {
-        str = str.replace('[x]', '<span class="text-warning">[</span><strong style="display: inline-block;width: 10px;text-align: center;">x</strong><span class="text-warning">]</span>');
-        str = str.replace('[]', '<span class="text-warning">[<span style="display: inline-block;width: 10px;"></span>]</span>');
+        str = str.replaceAll('[x]', '<span class="text-warning">[</span><strong style="display: inline-block;width: 10px;text-align: center;">x</strong><span class="text-warning">]</span>');
+        str = str.replaceAll('[]', '<span class="text-warning">[<span style="display: inline-block;width: 10px;"></span>]</span>');
+        str = str.replace(/<b>(.*?)<\/>/g, '<strong>$1</strong>');
         str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
         return str;
