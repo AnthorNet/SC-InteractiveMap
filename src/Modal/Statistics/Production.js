@@ -3,24 +3,25 @@ export default class Modal_Statistics_Production
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
+        this.baseLayout = options.baseLayout;
+        this.markers    = [];
 
         if(options.markers === undefined)
         {
-            this.markers = [];
             for(let layerId in this.baseLayout.playerLayers)
             {
                 if([
-                    'playerRadioactivityLayer', 'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
+                    'playerRadioactivityLayer', 'playerFogOfWar', 'playerResourceDepositsLayer', 'playerItemsPickupLayer',
+                    'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
                     'playerPillarsLayer', 'playerWalkwaysLayer', 'playerOrientationLayer',
-                    'playerStatuesLayer', 'playerHUBTerminalLayer'
+                    'playerStatuesLayer', 'playerHUBTerminalLayer', 'playerPowerGridLayer'
                 ].includes(layerId))
                 {
                     continue;
                 }
 
                 let layerLength = this.baseLayout.playerLayers[layerId].elements.length;
-
+                    console.log(layerId, layerLength)
                     for(let i = 0; i < layerLength; i++)
                     {
                         if(this.baseLayout.playerLayers[layerId].elements[i].options.pathName !== undefined)

@@ -3,17 +3,18 @@ export default class Modal_Statistics_Storage
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
+        this.baseLayout = options.baseLayout;
+        this.markers    = [];
 
         if(options.markers === undefined)
         {
-            this.markers = [];
             for(let layerId in this.baseLayout.playerLayers)
             {
                 if([
-                    'playerRadioactivityLayer', 'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
+                    'playerRadioactivityLayer', 'playerFogOfWar', 'playerResourceDepositsLayer', 'playerItemsPickupLayer',
+                    'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
                     'playerPillarsLayer', 'playerWalkwaysLayer', 'playerOrientationLayer',
-                    'playerStatuesLayer', 'playerHUBTerminalLayer'
+                    'playerStatuesLayer', 'playerHUBTerminalLayer', 'playerPowerGridLayer'
                 ].includes(layerId))
                 {
                     continue;

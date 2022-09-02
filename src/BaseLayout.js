@@ -126,7 +126,6 @@ export default class BaseLayout
     setDefaultLayers()
     {
         this.delayedBadgeCount                  = null;
-
         this.playerLayers                       = {
             playerRadioactivityLayer                : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: {}},
             playerLightsHaloLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerStructuresLayer', elements: []},
@@ -223,7 +222,7 @@ export default class BaseLayout
         $('#playerModsLayer .col-12').empty();
         $('#statisticsModal').off('show.bs.modal');
         $('#statisticsModal').off('hide.bs.modal');
-        $('#statisticsModal span[data-toggle="tab"]').off('shown.bs.tab');
+        $('#statisticsModal a[data-toggle="tab"]').off('shown.bs.tab');
         $('#researchModal').off('show.bs.modal');
         $('#optionsModal').off('show.bs.modal');
         $('#buildingsModal').off('show.bs.modal');
@@ -1205,7 +1204,6 @@ export default class BaseLayout
             // Swicth statistics tabs
             $('#statisticsModal a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
                 let newTab = $(e.target).attr('href');
-
                     switch(newTab)
                     {
                         case '#statisticsModalProduction':
