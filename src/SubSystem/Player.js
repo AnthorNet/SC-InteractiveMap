@@ -21,6 +21,19 @@ export default class SubSystem_Player
 
     doDisplayNameLookup()
     {
+        let mOwnedPawn = this.getOwnedPawn();
+            if(mOwnedPawn !== null)
+            {
+                let mCachedPlayerName = this.baseLayout.getObjectProperty(mOwnedPawn, 'mCachedPlayerName');
+                    if(mCachedPlayerName !== null)
+                    {
+                        this.displayName = mCachedPlayerName;
+                        //console.log('mCachedPlayerName', this.displayName);
+                        return;
+                    }
+            }
+
+
         if(this.displayName === false)
         {
             this.displayName = null; // Do lookup only once per session
