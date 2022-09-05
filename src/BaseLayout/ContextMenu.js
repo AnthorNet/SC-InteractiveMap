@@ -404,6 +404,7 @@ export default class BaseLayout_ContextMenu
 
                 if(
                        buildingData.category === 'storage'
+                    || buildingData.category === 'vehicle'
                     || ['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C',
                         '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C',
                         '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C',
