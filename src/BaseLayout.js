@@ -2073,7 +2073,7 @@ export default class BaseLayout
         });
     }
 
-    fillPlayerStorageBuildingInventoryModal(marker)
+    fillPlayerStorageBuildingInventoryModal(marker, inventoryProperty = 'mStorageInventory')
     {
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
@@ -2083,7 +2083,7 @@ export default class BaseLayout
                 return baseLayout.fillPlayerStorageBuildingInventory(currentObject, null);
             }
 
-        let selectOptions       = baseLayout.generateInventoryOptions(currentObject, false);
+        let selectOptions       = baseLayout.generateInventoryOptions(currentObject, false, inventoryProperty);
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
         BaseLayout_Modal.form({
@@ -2096,7 +2096,7 @@ export default class BaseLayout
             }],
             callback    : function(values)
             {
-                baseLayout.fillPlayerStorageBuildingInventory(currentObject, values.fillWith);
+                baseLayout.fillPlayerStorageBuildingInventory(currentObject, values.fillWith, inventoryProperty);
                 baseLayout.updateRadioactivityLayer();
             }
         });
@@ -2285,7 +2285,7 @@ export default class BaseLayout
         }
     }
 
-    generateInventoryOptions(currentObject, addNULL = true)
+    generateInventoryOptions(currentObject, addNULL = true, inventoryProperty = 'mStorageInventory')
     {
         let selectOptions           = [];
         let isFluidInventory        = true;
@@ -2306,6 +2306,11 @@ export default class BaseLayout
                 delete itemsCategories.liquid;
                 delete itemsCategories.gas;
             }
+        }
+
+        if(inventoryProperty === 'mFuelInventory')
+        {
+            itemsCategories = {fuel: itemsCategories.fuel};
         }
 
         for(let category in itemsCategories)
@@ -2332,7 +2337,7 @@ export default class BaseLayout
                 selectOptions = selectOptions.concat(categoryOptions);
         }
 
-        if(isFluidInventory === false)
+        if(isFluidInventory === false && inventoryProperty !== 'mFuelInventory')
         {
             let toolsOptions = [];
                 for(let i in this.toolsData)

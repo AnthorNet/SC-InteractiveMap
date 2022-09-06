@@ -137,6 +137,26 @@ export default class Building_Vehicle
                 contextMenu.push('-');
             }
 
+        let mFuelInventory = baseLayout.getObjectProperty(currentObject, 'mFuelInventory');
+            if(mFuelInventory !== null)
+            {
+                contextMenu.push({
+                    icon        : 'fa-box-full',
+                    text        : baseLayout.translate._('Fill fuel'),
+                    callback    : function(marker){
+                        return baseLayout.fillPlayerStorageBuildingInventoryModal(marker, 'mFuelInventory');
+                    }
+                });
+                contextMenu.push({
+                    icon        : 'fa-box-open',
+                    text        : baseLayout.translate._('Clear fuel'),
+                    callback    : function(marker){
+                        return baseLayout.clearPlayerStorageBuildingInventory(marker, 'mFuelInventory');
+                    }
+                });
+                contextMenu.push('-');
+            }
+
         return contextMenu;
     }
 }
