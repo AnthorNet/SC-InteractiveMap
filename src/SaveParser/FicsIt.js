@@ -25,6 +25,9 @@ export default class SaveParser_FicsIt
                 //case '/Script/FactoryGame.FGPipeConnectionFactory':
                 //case '/Script/FactoryGame.FGPipeConnectionComponent':
                 //    return SaveParser_FicsIt.fixPipeConnectionFactory(baseLayout, currentObject);
+                case '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C':
+                case '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C':
+                    return SaveParser_FicsIt.fixPipeIndicatorEntity(baseLayout, currentObject);
 
                 case '/Script/FactoryGame.FGDroneStationInfo':
                     return SaveParser_FicsIt.checkPairedStation(baseLayout, currentObject);
@@ -230,6 +233,37 @@ export default class SaveParser_FicsIt
     }
     */
 
+    /*
+     * Pipe indicator now should have the parent pipe as entity
+     */
+    static fixPipeIndicatorEntity(baseLayout, currentObject)
+    {
+        let mFlowIndicator = baseLayout.getObjectProperty(currentObject, 'mFlowIndicator');
+            if(mFlowIndicator !== null)
+            {
+                let flowIndicatorObject = baseLayout.saveGameParser.getTargetObject(mFlowIndicator.pathName);
+                    if(flowIndicatorObject !== null)
+                    {
+                        if(flowIndicatorObject.entity !== undefined && flowIndicatorObject.entity.pathName === '')
+                        {
+                            if(currentObject.levelName === undefined)
+                            {
+                                delete flowIndicatorObject.entity.levelName;
+                            }
+                            else
+                            {
+                                flowIndicatorObject.entity.levelName = currentObject.levelName;
+                            }
+
+                            flowIndicatorObject.entity.pathName = currentObject.pathName;
+
+                            console.log('Fixing pipe indicator entity "' + currentObject.className + '"', currentObject.pathName);
+                        }
+                    }
+            }
+
+        return currentObject;
+    }
 
     /*
      * Update 5 changed the old corner up ramps default angle,

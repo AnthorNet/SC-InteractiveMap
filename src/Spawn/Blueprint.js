@@ -332,6 +332,11 @@ export default class Spawn_Blueprint
                         }
                     }
 
+                    if(this.clipboard.data[i].parent.entity !== undefined && pathNameConversion[this.clipboard.data[i].parent.entity.pathName] !== undefined)
+                    {
+                        this.clipboard.data[i].parent.entity.pathName = pathNameConversion[this.clipboard.data[i].parent.entity.pathName];
+                    }
+
                     // Power lines connections
                     if(this.powerLineClassName.includes(this.clipboard.data[i].parent.className) && this.clipboard.data[i].parent.extra !== undefined)
                     {
