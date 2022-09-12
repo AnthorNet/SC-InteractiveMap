@@ -114,13 +114,21 @@ export default class Spawn_Blueprint
                         let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.clipboard.data[i].parent.className);
                             if(currentObjectData !== null)
                             {
-                                if(currentObjectData.category === 'frame' || currentObjectData.category === 'foundation' || currentObjectData.category === 'roof')
+                                if(currentObjectData.height === undefined)
                                 {
-                                    minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (currentObjectData.height * 100 / 2)); // GROUND BUILDING USE HALF AS CENTER
+                                    if(currentObjectData.category === 'frame' || currentObjectData.category === 'foundation' || currentObjectData.category === 'roof')
+                                    {
+                                        // GROUND BUILDING USE HALF AS CENTER
+                                        minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (currentObjectData.height * 100 / 2));
+                                    }
+                                    else
+                                    {
+                                        minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
+                                    }
                                 }
                                 else
                                 {
-                                    minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
+                                    minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (400 / 2)); // Use default value...
                                 }
                             }
                     }
@@ -132,7 +140,7 @@ export default class Spawn_Blueprint
                     minZ -= this.zOffset;
                 }
 
-                // Apply transformation
+                // Apply centering transformation
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
                     if(this.clipboard.data[i].parent.transform !== undefined && this.clipboard.data[i].parent.transform.translation !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
@@ -847,48 +855,61 @@ export default class Spawn_Blueprint
                     // Calculate new position
                     if(newObject.transform !== undefined)
                     {
-                        let translationRotation = BaseLayout_Math.getPointRotation(
-                                [
-                                    (newObject.transform.translation[0] + this.centerObject.transform.translation[0]),
-                                    (newObject.transform.translation[1] + this.centerObject.transform.translation[1])
-                                ],
-                                this.centerObject.transform.translation,
-                                this.centerObject.transform.rotation
-                            );
-                            newObject.transform.translation[0]  = translationRotation[0];
-                            newObject.transform.translation[1]  = translationRotation[1];
-                            newObject.transform.translation[2]  = newObject.transform.translation[2] + this.centerObject.transform.translation[2] + (this.centerObjectData.height * 100 / 2);
+                        if(this.centerYaw !== 0)
+                        {
+                            let translationRotation = BaseLayout_Math.getPointRotation(
+                                    [
+                                        (newObject.transform.translation[0] + this.centerObject.transform.translation[0]),
+                                        (newObject.transform.translation[1] + this.centerObject.transform.translation[1])
+                                    ],
+                                    this.centerObject.transform.translation,
+                                    this.centerObject.transform.rotation
+                                );
+                                newObject.transform.translation[0]  = translationRotation[0];
+                                newObject.transform.translation[1]  = translationRotation[1];
+                        }
+                        else
+                        {
+                            newObject.transform.translation[0]  += this.centerObject.transform.translation[0];
+                            newObject.transform.translation[1]  += this.centerObject.transform.translation[1];
+                        }
 
-                            // Switch to the bottom of center object
-                            if(this.pasteOn === 'bottom')
-                            {
-                                newObject.transform.translation[2] -= this.centerObjectData.height * 100;
-                            }
+                        // Update height transform
+                        newObject.transform.translation[2]  = newObject.transform.translation[2] + this.centerObject.transform.translation[2] + (this.centerObjectData.height * 100 / 2);
+
+                        // Switch to the bottom of center object
+                        if(this.pasteOn === 'bottom')
+                        {
+                            newObject.transform.translation[2] -= this.centerObjectData.height * 100;
+                        }
 
                         // Rotate all spline data and tangeant!
-                        let mSplineData                      = this.baseLayout.getObjectProperty(newObject, 'mSplineData');
-                            if(mSplineData !== null)
-                            {
-                                for(let j = 0; j < mSplineData.values.length; j++)
+                        if(this.centerYaw !== 0)
+                        {
+                            let mSplineData                      = this.baseLayout.getObjectProperty(newObject, 'mSplineData');
+                                if(mSplineData !== null)
                                 {
-                                    for(let k = 0; k < mSplineData.values[j].length; k++)
+                                    for(let j = 0; j < mSplineData.values.length; j++)
                                     {
-                                        let currentValue    = mSplineData.values[j][k];
-                                        let splineRotation  = BaseLayout_Math.getPointRotation(
-                                            [currentValue.value.values.x, currentValue.value.values.y],
-                                            [0, 0],
-                                            this.centerObject.transform.rotation
-                                        );
+                                        for(let k = 0; k < mSplineData.values[j].length; k++)
+                                        {
+                                            let currentValue            = mSplineData.values[j][k];
+                                            let splineRotation          = BaseLayout_Math.getPointRotation(
+                                                    [currentValue.value.values.x, currentValue.value.values.y],
+                                                    [0, 0],
+                                                    this.centerObject.transform.rotation
+                                                );
 
-                                        currentValue.value.values.x = splineRotation[0];
-                                        currentValue.value.values.y = splineRotation[1];
+                                            currentValue.value.values.x = splineRotation[0];
+                                            currentValue.value.values.y = splineRotation[1];
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                newObject.transform.rotation        = BaseLayout_Math.getNewQuaternionRotate(newObject.transform.rotation, this.centerYaw);
-                            }
+                                else
+                                {
+                                    newObject.transform.rotation = BaseLayout_Math.getNewQuaternionRotate(newObject.transform.rotation, this.centerYaw);
+                                }
+                        }
                     }
 
                     // Update vehicle current destination
