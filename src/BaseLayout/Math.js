@@ -1,6 +1,7 @@
 export default class BaseLayout_Math
 {
     static get PI(){ return 3.1415926535897932; }
+    static get halfPI(){ return 1.57079632679; }
 
     static getDistance(point1, point2)
     {
@@ -16,28 +17,22 @@ export default class BaseLayout_Math
     }
 
     // See: https://github.com/EpicGames/UnrealEngine/blob/4.26/Engine/Source/Runtime/Core/Private/Math/UnrealMath.cpp#L598
-    static getQuaternionToEuler(quaternion)
+    static getUnrealQuaternionToEuler(quaternion)
     {
-            quaternion              = {
-                x: Math.round(quaternion[0] * 1000000) / 1000000,
-                y: Math.round(quaternion[1] * 1000000) / 1000000,
-                z: Math.round(quaternion[2] * 1000000) / 1000000,
-                w: Math.round(quaternion[3] * 1000000) / 1000000
-            };
+            quaternion              = {x: quaternion[0], y: quaternion[1], z: quaternion[2], w: quaternion[3]};
         let rotatorFromQuat         = {};
+        let radToDeg                = 180 / BaseLayout_Math.PI;
 
         let singularityThreshold    = 0.4999995;
         let singularityTest         = (quaternion.z * quaternion.x) - (quaternion.w * quaternion.y);
 
 	let yawY                    = 2 * ((quaternion.w * quaternion.z) + (quaternion.x * quaternion.y));
 	let yawX                    = 1 - (2 * ((quaternion.y * quaternion.y) + (quaternion.z * quaternion.z)));
-
-	let radToDeg                = 180 / BaseLayout_Math.PI;
+            rotatorFromQuat.yaw     = Math.atan2(yawY, yawX) * radToDeg;
 
 	if(singularityTest < -singularityThreshold)
 	{
             rotatorFromQuat.pitch       = -90;
-            rotatorFromQuat.yaw         = Math.atan2(yawY, yawX) * radToDeg;
             rotatorFromQuat.roll        = BaseLayout_Math.normalizeEulerAxis(-rotatorFromQuat.yaw - (2 * Math.atan2(quaternion.x, quaternion.w) * radToDeg));
 	}
 	else
@@ -45,30 +40,33 @@ export default class BaseLayout_Math
             if(singularityTest > singularityThreshold)
             {
                 rotatorFromQuat.pitch   = 90;
-                rotatorFromQuat.yaw     = Math.atan2(yawY, yawX) * radToDeg;
                 rotatorFromQuat.roll    = BaseLayout_Math.normalizeEulerAxis(rotatorFromQuat.yaw - (2 * Math.atan2(quaternion.x, quaternion.w) * radToDeg));
             }
             else
             {
                 rotatorFromQuat.pitch   = Math.asin(2 * singularityTest) * radToDeg;
-                rotatorFromQuat.yaw     = Math.atan2(yawY, yawX) * radToDeg;
                 rotatorFromQuat.roll    = Math.atan2(-2 * ((quaternion.w * quaternion.x) + (quaternion.y * quaternion.z)), (1 - 2 * (Math.pow(quaternion.x, 2) + Math.pow(quaternion.y, 2)))) * radToDeg;
             }
         }
 
-        rotatorFromQuat.pitch           = Math.round(rotatorFromQuat.pitch * 100) / 100;
-        rotatorFromQuat.yaw             = Math.round(rotatorFromQuat.yaw * 100) / 100;
-        rotatorFromQuat.roll            = Math.round(rotatorFromQuat.roll * 100) / 100;
+        rotatorFromQuat.pitch           = Math.round(rotatorFromQuat.pitch * 1000) / 1000;
+        rotatorFromQuat.yaw             = Math.round(rotatorFromQuat.yaw * 1000) / 1000;
+        rotatorFromQuat.roll            = Math.round(rotatorFromQuat.roll * 1000) / 1000;
 
         return rotatorFromQuat;
+    }
+
+    static getQuaternionToEuler(quaternion)
+    {
+        return BaseLayout_Math.getUnrealQuaternionToEuler(quaternion);
     }
 
     // See: https://github.com/EpicGames/UnrealEngine/blob/4.26/Engine/Source/Runtime/Core/Private/Math/UnrealMath.cpp#L460
     static getEulerToQuaternion(angle)
     {
-            angle.pitch     = Math.round(angle.pitch * 100) / 100;
-            angle.yaw       = Math.round(angle.yaw * 100) / 100;
-            angle.roll      = Math.round(angle.roll * 100) / 100;
+            angle.pitch     = Math.round(angle.pitch * 1000) / 1000;
+            angle.yaw       = Math.round(angle.yaw * 1000) / 1000;
+            angle.roll      = Math.round(angle.roll * 1000) / 1000;
 
         let degToRad        = BaseLayout_Math.PI / 180;
         let radBy2          = degToRad / 2;
@@ -207,12 +205,12 @@ export default class BaseLayout_Math
         let sign    = 1;
 
         // Map y to [-pi/2,pi/2] with sin(y) = sin(Value).
-        if(y > 1.57079632679)
+        if(y > BaseLayout_Math.halfPI)
         {
             y       = BaseLayout_Math.PI - y;
             sign    = -1;
         }
-        if(y < -1.57079632679)
+        if(y < -BaseLayout_Math.halfPI)
         {
             y       = -BaseLayout_Math.PI - y;
             sign    = -1;
@@ -241,11 +239,11 @@ export default class BaseLayout_Math
         let y       = value - (2 * BaseLayout_Math.PI) * quotient;
 
         // Map y to [-pi/2,pi/2] with sin(y) = sin(Value).
-        if(y > 1.57079632679)
+        if(y > BaseLayout_Math.halfPI)
         {
             y       = BaseLayout_Math.PI - y;
         }
-        if(y < -1.57079632679)
+        if(y < -BaseLayout_Math.halfPI)
         {
             y       = -BaseLayout_Math.PI - y;
         }
