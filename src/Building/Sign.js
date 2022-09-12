@@ -4,18 +4,20 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class Building_Sign
 {
-    static getConversionIcons(){
+    static getConversionIcons()
+    {
         return {
             16: 514,    17: 386,    39: 384,    40: 385,    127: 408,
-            128: 409,   129: 410,   130: 411,   131: 412,
+            128: 409,   129: 410,   130: 411,   131: 412,   315: 678,
             132: 413,   143: 433,   144: 434,   145: 435,
             146: 441,   150: 448,   151: 449,   152: 450,
             153: 451,   154: 452,   155: 453,   156: 454,
-            157: 455,   158: 456,   377: 619,
+            157: 455,   158: 456,   306: 673,   377: 619,
         }
     }
 
-    static get getOtherIcons(){
+    static get getOtherIcons()
+    {
         return {
             599: ['Emote Build Gun Spin', '/img/signIcons/Emote_BuildGunSpin_256.png'],
             600: ['Emote Clap', '/img/signIcons/Emote_Clap_256.png'],
@@ -37,7 +39,8 @@ export default class Building_Sign
         };
     }
 
-    static get getMonochromeIcons(){
+    static get getMonochromeIcons()
+    {
         return {
             329: ['Arrow Down', '/img/signIcons/TXUI_MIcon_Arrow_Down.png'],
             330: ['Arrow Down Left', '/img/signIcons/TXUI_MIcon_Arrow_DownLeft.png'],
@@ -83,7 +86,8 @@ export default class Building_Sign
         };
     }
 
-    static get getBackgroundIcons(){
+    static get getBackgroundIcons()
+    {
         return {
             363: ['Background Blueprint Grid', '/img/signIcons/TXUI_MIcon_BG_BlueprintGrid.png'],
             364: ['Background Grid', '/img/signIcons/TXUI_MIcon_BG_Grid.png'],
