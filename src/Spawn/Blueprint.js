@@ -112,24 +112,14 @@ export default class Spawn_Blueprint
                     if(this.clipboard.data[i].parent.transform !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
                     {
                         let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.clipboard.data[i].parent.className);
-                            if(currentObjectData !== null)
+                            if(currentObjectData !== null && currentObjectData.height !== undefined && (currentObjectData.category === 'frame' || currentObjectData.category === 'foundation' || currentObjectData.category === 'roof'))
                             {
-                                if(currentObjectData.height === undefined)
-                                {
-                                    if(currentObjectData.category === 'frame' || currentObjectData.category === 'foundation' || currentObjectData.category === 'roof')
-                                    {
-                                        // GROUND BUILDING USE HALF AS CENTER
-                                        minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (currentObjectData.height * 100 / 2));
-                                    }
-                                    else
-                                    {
-                                        minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
-                                    }
-                                }
-                                else
-                                {
-                                    minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (400 / 2)); // Use default value...
-                                }
+                                // GROUND BUILDING USE HALF AS CENTER
+                                minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2] - (currentObjectData.height * 100 / 2));
+                            }
+                            else
+                            {
+                                minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
                             }
                     }
                 }

@@ -86,7 +86,7 @@ export default class Modal_Selection
 
             let objectOffset    = 0;
             let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-                if(buildingData !== null && (buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof'))
+                if(buildingData !== null && buildingData.height !== undefined && (buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof'))
                 {
                     objectOffset    = 400;
 
