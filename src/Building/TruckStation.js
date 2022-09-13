@@ -43,7 +43,7 @@ export default class Building_TruckStation
                     }
             }
 
-        return null;
+        return 'DockingStation';
     }
 
     /**
@@ -144,61 +144,61 @@ export default class Building_TruckStation
 
 
         // STATION INFORMATION
-        let mInfo                   = Building_TruckStation.getInformation(baseLayout, currentObject);
-        let maximumTransferRate     = 0;
-        let outgoingTransferRate    = 0;
-        let incomingTransferRate    = 0;
-        let tripDuration            = 0;
-            if(mInfo !== null)
+        let mDockingVehicleStatistics   = baseLayout.getObjectProperty(currentObject, 'mDockingVehicleStatistics');
+        let maximumTransferRate         = 0;
+        let currentTransferRate         = 0;
+            if(mDockingVehicleStatistics !== null)
             {
-                let mLatestDroneTrips = baseLayout.getObjectProperty(mInfo, 'mLatestDroneTrips');
-                    if(mLatestDroneTrips !== null)
-                    {
-                        let mLatestDroneTripsNumbers = {};
-                            for(let i = 0; i < mLatestDroneTrips.values[0].length; i++)
+                for(let i = 0; i < mDockingVehicleStatistics.values.length; i++)
+                {
+                    let currentVehicle = baseLayout.saveGameParser.getTargetObject(mDockingVehicleStatistics.values[i].keyMap.pathName);
+                        if(currentVehicle !== null)
+                        {
+                            let mWeightedAverageTimeBetweenDocks    = null;
+                            let mWeightedAverageItemsTransferred    = null;
+                                for(let j = 0; j < mDockingVehicleStatistics.values[i].valueMap.length; j++)
+                                {
+                                    if(mDockingVehicleStatistics.values[i].valueMap[j].name === 'mWeightedAverageTimeBetweenDocks')
+                                    {
+                                        mWeightedAverageTimeBetweenDocks = mDockingVehicleStatistics.values[i].valueMap[j].value;
+                                    }
+                                    if(mDockingVehicleStatistics.values[i].valueMap[j].name === 'mWeightedAverageItemsTransferred')
+                                    {
+                                        mWeightedAverageItemsTransferred = mDockingVehicleStatistics.values[i].valueMap[j].value;
+                                    }
+                                }
+
+                            if(mWeightedAverageTimeBetweenDocks !== null && mWeightedAverageItemsTransferred !== null)
                             {
-                                mLatestDroneTripsNumbers[mLatestDroneTrips.values[0][i].name] = mLatestDroneTrips.values[0][i].value;
+                                currentTransferRate += mWeightedAverageItemsTransferred * 60 / mWeightedAverageTimeBetweenDocks;
+
+                                let vehicleData = baseLayout.getBuildingDataFromClassName(currentVehicle.className);
+                                    if(vehicleData !== null)
+                                    {
+                                        maximumTransferRate += vehicleData.maxSlot * 60 / mWeightedAverageTimeBetweenDocks;
+                                    }
                             }
-
-                            if(mLatestDroneTripsNumbers.TripDuration !== undefined && mLatestDroneTripsNumbers.TripDuration > 0)
-                            {
-                                tripDuration = mLatestDroneTripsNumbers.TripDuration;
-
-                                if(mLatestDroneTripsNumbers.OutgoingItemCount !== undefined)
-                                {
-                                    outgoingTransferRate = mLatestDroneTripsNumbers.OutgoingItemCount * 60 / mLatestDroneTripsNumbers.TripDuration;
-                                }
-                                if(mLatestDroneTripsNumbers.IncomingItemCount !== undefined)
-                                {
-                                    incomingTransferRate = mLatestDroneTripsNumbers.IncomingItemCount * 60 / mLatestDroneTripsNumbers.TripDuration;
-                                }
-
-                                //TODO: Wrong number?!
-                                if(mLatestDroneTripsNumbers.IncomingItemStacks !== undefined || mLatestDroneTripsNumbers.OutgoingItemStacks !== undefined)
-                                {
-                                    maximumTransferRate = Math.max(mLatestDroneTripsNumbers.IncomingItemStacks, mLatestDroneTripsNumbers.OutgoingItemStacks) * 60 / mLatestDroneTripsNumbers.TripDuration;
-                                }
-                            }
-                    }
+                        }
+                }
             }
 
             content.push('<div style="position: absolute;margin-top: 96px;margin-left: 245px;color: #FFFFFF;font-size: 20px;line-height: 24px;"><i class="fas fa-angle-double-right"></i></div>');
             content.push('<div style="position: absolute;margin-top: 96px;margin-left: 277px;color: #FFFFFF;font-size: 10px;line-height: 12px;">');
-            content.push('Maximum Transfer Rate:<br /><span class="text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(maximumTransferRate * 100) / 100) + ' stacks per minute</span>');
+            content.push('Maximum Transfer Rate:<br /><span class="text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(maximumTransferRate)) + ' stacks per minute</span>');
             content.push('</div>');
 
             if(mIsInLoadMode !== null && mIsInLoadMode === 0)
             {
                 content.push('<div style="position: absolute;margin-top: 130px;margin-left: 245px;color: #FFFFFF;font-size: 20px;line-height: 24px;"><i class="fas fa-sign-in"></i></div>');
                 content.push('<div style="position: absolute;margin-top: 130px;margin-left: 277px;color: #FFFFFF;font-size: 10px;line-height: 12px;">');
-                content.push('Incoming Transfer Rate:<br /><span class="text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(incomingTransferRate)) + ' items per minute</span>');
+                content.push('Incoming Transfer Rate:<br /><span class="text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(currentTransferRate)) + ' items per minute</span>');
                 content.push('</div>');
             }
             else
             {
                 content.push('<div style="position: absolute;margin-top: 130px;margin-left: 245px;color: #FFFFFF;font-size: 20px;line-height: 24px;"><i class="fas fa-sign-out"></i></div>');
                 content.push('<div style="position: absolute;margin-top: 130px;margin-left: 277px;color: #FFFFFF;font-size: 10px;line-height: 12px;">');
-                content.push('Outgoing Transfer Rate:<br /><span class="text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(outgoingTransferRate)) + ' items per minute</span>');
+                content.push('Outgoing Transfer Rate:<br /><span class="text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(currentTransferRate)) + ' items per minute</span>');
                 content.push('</div>');
             }
 
