@@ -215,10 +215,28 @@ export default class Building_RadarTower
 
     static bindTooltip(baseLayout, currentObject, tooltipOptions)
     {
-        //TODO: Add extra radius marker
+        let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, 'playerOrientationLayer');
+            if(marker !== null)
+            {
+                let position    = [baseLayout.satisfactoryMap.unproject([0, 0]), baseLayout.satisfactoryMap.unproject([10000, 0])];
+                let meterWeight = baseLayout.satisfactoryMap.leafletMap.latLngToContainerPoint(position[1]).x - baseLayout.satisfactoryMap.leafletMap.latLngToContainerPoint(position[0]).x;
+                let radius      = Building_RadarTower.getCoverageRadius() / 10000 * meterWeight * 2;
+                marker.options.radiusMarker = L.circle(baseLayout.satisfactoryMap.unproject(currentObject.transform.translation), {
+                    interactive : false,
+                    opacity     : 0.25,
+                    color       : '#FA9549',
+                    radius      : 0,
+                    weight      : radius
+                }).addTo(baseLayout.playerLayers.playerOrientationLayer.subLayer);
+            }
     }
     static unbindTooltip(baseLayout, currentObject)
     {
-
+        let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, 'playerOrientationLayer');
+            if(marker !== null && marker.options.radiusMarker !== undefined)
+            {
+                baseLayout.playerLayers.playerOrientationLayer.subLayer.removeLayer(marker.options.radiusMarker);
+                delete marker.options.radiusMarker;
+            }
     }
 }
