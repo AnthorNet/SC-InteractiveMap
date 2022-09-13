@@ -2376,7 +2376,7 @@ export default class BaseLayout
         let layerId         = (buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerUnknownLayer';
             this.setupSubLayer(layerId);
 
-            if(this.playerLayers[layerId].filtersCount !== undefined && currentObject.className.includes('/Build_ConveyorLiftMk') === false)
+            if(this.playerLayers[layerId].filtersCount !== undefined && Building_Conveyor.isConveyorLift(currentObject) === false)
             {
                 if(this.playerLayers[layerId].filtersCount[currentObject.className] === undefined)
                 {
@@ -2510,7 +2510,7 @@ export default class BaseLayout
         }
 
         // Conveyor Lift
-        if(currentObject.className.includes('/Build_ConveyorLiftMk'))
+        if(Building_Conveyor.isConveyorLift(currentObject))
         {
             let mTopTransform = this.getObjectProperty(currentObject, 'mTopTransform');
                 if(mTopTransform !== null)
@@ -2819,7 +2819,7 @@ export default class BaseLayout
                     }
                 }
 
-            if(currentObject.className.includes('/Build_ConveyorLiftMk'))
+            if(Building_Conveyor.isConveyorLift(currentObject))
             {
                 let mTopTransform = baseLayout.getObjectProperty(currentObject, 'mTopTransform');
                     if(mTopTransform !== null)

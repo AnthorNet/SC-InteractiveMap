@@ -59,7 +59,7 @@ export default class BaseLayout_Tooltip
             }
             else
             {
-                if(Building_Conveyor.isConveyorBelt(currentObject) || currentObject.className.includes('/Build_ConveyorLiftMk'))
+                if(Building_Conveyor.isConveyor(currentObject))
                 {
                     return this.setBeltTooltipContent(currentObject);
                 }

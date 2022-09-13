@@ -34,8 +34,13 @@ export default class Building_Conveyor
     }
 
     /*
-     * BELT LOOKUP, includes mods to avoid finding them everywhere
+     * BELT/LIFT LOOKUP, includes mods to avoid finding them everywhere
      */
+    static isConveyor(currentObject)
+    {
+        return Building_Conveyor.isConveyorBelt(currentObject) || Building_Conveyor.isConveyorLift(currentObject);
+    }
+
     static isConveyorBelt(currentObject)
     {
         if(Building_Conveyor.availableConveyorBelts.includes(currentObject.className))
@@ -50,6 +55,33 @@ export default class Building_Conveyor
              || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
              || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
              || currentObject.className.startsWith('/conveyorbeltmod/Belt/mk')
+             || currentObject.className.startsWith('/minerplus/content/buildable/Factory/belt_')
+             || currentObject.className.startsWith('/bamfp/content/buildable/Factory/belt_')
+
+        )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    static isConveyorLift(currentObject)
+    {
+        if(Building_Conveyor.availableConveyorLifts.includes(currentObject.className))
+        {
+            return true;
+        }
+
+        // Lifts Mod
+        if(
+                currentObject.className.startsWith('/minerplus/content/buildable/Factory/lift')
+             || currentObject.className.startsWith('/bamfp/content/buildable/Factory/lift')
+             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
+             || currentObject.className.startsWith('/Conveyors_Mod/Build_LiftMk')
+             || currentObject.className.startsWith('/Game/CoveredConveyor')
+             || currentObject.className.startsWith('/CoveredConveyor')
+             || currentObject.className.startsWith('/conveyorbeltmod/lift/')
 
         )
         {

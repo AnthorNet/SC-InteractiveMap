@@ -631,16 +631,7 @@ export default class SaveParser_Write
         entity += this.writeString('None');
 
         // Extra properties!
-        if(
-                Building_Conveyor.isConveyorBelt(currentObject)
-             || currentObject.className.includes('/Build_ConveyorLiftMk')
-             // MODS (Also have lifts)
-             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
-             || currentObject.className.startsWith('/Conveyors_Mod/Build_LiftMk')
-             || currentObject.className.startsWith('/Game/CoveredConveyor')
-             || currentObject.className.startsWith('/CoveredConveyor')
-             || currentObject.className.startsWith('/conveyorbeltmod/lift/')
-        )
+        if(Building_Conveyor.isConveyor(currentObject))
         {
             let itemsLength  = currentObject.extra.items.length;
                      entity += this.writeInt(currentObject.extra.count);

@@ -461,16 +461,7 @@ export default class SaveParser_Read
         }
 
         // Read Conveyor missing bytes
-        if(
-                Building_Conveyor.isConveyorBelt(this.objects[objectKey])
-             || this.objects[objectKey].className.includes('/Build_ConveyorLiftMk')
-             // MODS (Also have lifts)
-             || this.objects[objectKey].className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
-             || this.objects[objectKey].className.startsWith('/Conveyors_Mod/Build_LiftMk')
-             || this.objects[objectKey].className.startsWith('/Game/CoveredConveyor')
-             || this.objects[objectKey].className.startsWith('/CoveredConveyor')
-             || this.objects[objectKey].className.startsWith('/conveyorbeltmod/lift/')
-        )
+        if(Building_Conveyor.isConveyor(this.objects[objectKey]))
         {
             this.objects[objectKey].extra   = {count: this.readInt(), items: []};
             let itemsLength                 = this.readInt();
