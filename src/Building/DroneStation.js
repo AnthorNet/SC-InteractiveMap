@@ -34,6 +34,58 @@ export default class Building_DroneStation
         return null;
     }
 
+    static getLatestDroneTrips(baseLayout, currentObject)
+    {
+        let mInfo = Building_DroneStation.getInformation(baseLayout, currentObject);
+            if(mInfo !== null)
+            {
+                let mLatestDroneTrips = baseLayout.getObjectProperty(mInfo, 'mLatestDroneTrips');
+                    if(mLatestDroneTrips !== null)
+                    {
+                        return mLatestDroneTrips;
+                    }
+            }
+
+        let mDockedDrone = baseLayout.getObjectProperty(currentObject, 'mDockedDrone');
+            if(mDockedDrone !== null)
+            {
+                let currentDrone = baseLayout.saveGameParser.getTargetObject(mDockedDrone.pathName);
+                    if(currentDrone !== null)
+                    {
+                        let mHomeStation = baseLayout.getObjectProperty(currentDrone, 'mHomeStation');
+                            if(mHomeStation !== null)
+                            {
+                                let currentStation = baseLayout.saveGameParser.getTargetObject(mHomeStation.pathName);
+                                    if(currentStation !== null)
+                                    {
+                                        return Building_DroneStation.getLatestDroneTrips(baseLayout, currentStation);
+                                    }
+                            }
+                    }
+            }
+
+
+        let mRecentlyDockedDrone = baseLayout.getObjectProperty(currentObject, 'mRecentlyDockedDrone');
+            if(mRecentlyDockedDrone !== null)
+            {
+                let currentDrone = baseLayout.saveGameParser.getTargetObject(mRecentlyDockedDrone.pathName);
+                    if(currentDrone !== null)
+                    {
+                        let mHomeStation = baseLayout.getObjectProperty(currentDrone, 'mHomeStation');
+                            if(mHomeStation !== null)
+                            {
+                                let currentStation = baseLayout.saveGameParser.getTargetObject(mHomeStation.pathName);
+                                    if(currentStation !== null)
+                                    {
+                                        return Building_DroneStation.getLatestDroneTrips(baseLayout, currentStation);
+                                    }
+                            }
+                    }
+            }
+
+        return null;
+    }
+
     static getDrone(baseLayout, currentObject)
     {
         let mStationDrone = baseLayout.getObjectProperty(currentObject, 'mStationDrone');
@@ -243,12 +295,16 @@ export default class Building_DroneStation
         content.push('</div>');
 
         // TARGET
+        let isPairedStation         = true;
         let mPairedStation          = Building_DroneStation.getPairedStationInformation(baseLayout, currentObject);
         let mPairedStationDistance  = Building_DroneStation.getPairedStationDistance(baseLayout, currentObject);
             content.push('<div style="position: absolute;margin-top: 100px;margin-left: 20px;width: 140px;text-align: center;' + BaseLayout_Tooltip.defaultTextStyle + '">');
             content.push('TARGET:');
             if(mPairedStation !== null)
             {
+                let mPairedStationPathName  = baseLayout.getObjectProperty(mPairedStation, 'mStation');
+                    isPairedStation         = (mPairedStationPathName.pathName === currentObject.pathName) ? true : false;
+
                 let mPairedBuildingTag = baseLayout.getObjectProperty(mPairedStation, 'mBuildingTag');
                     if(mPairedBuildingTag !== null)
                     {
@@ -278,41 +334,36 @@ export default class Building_DroneStation
             content.push('</div>');
 
         // STATION INFORMATION
-        let mInfo                   = Building_DroneStation.getInformation(baseLayout, currentObject);
+        let mLatestDroneTrips       = Building_DroneStation.getLatestDroneTrips(baseLayout, currentObject);
         let maximumTransferRate     = 0;
         let outgoingTransferRate    = 0;
         let incomingTransferRate    = 0;
         let tripDuration            = 0;
-            if(mInfo !== null)
+            if(mLatestDroneTrips !== null)
             {
-                let mLatestDroneTrips = baseLayout.getObjectProperty(mInfo, 'mLatestDroneTrips');
-                    if(mLatestDroneTrips !== null)
+                let mLatestDroneTripsNumbers = {};
+                    for(let i = 0; i < mLatestDroneTrips.values[0].length; i++)
                     {
-                        let mLatestDroneTripsNumbers = {};
-                            for(let i = 0; i < mLatestDroneTrips.values[0].length; i++)
-                            {
-                                mLatestDroneTripsNumbers[mLatestDroneTrips.values[0][i].name] = mLatestDroneTrips.values[0][i].value;
-                            }
+                        mLatestDroneTripsNumbers[mLatestDroneTrips.values[0][i].name] = mLatestDroneTrips.values[0][i].value;
+                    }
 
-                            if(mLatestDroneTripsNumbers.TripDuration !== undefined && mLatestDroneTripsNumbers.TripDuration > 0)
-                            {
-                                tripDuration = mLatestDroneTripsNumbers.TripDuration;
+                    if(mLatestDroneTripsNumbers.TripDuration !== undefined && mLatestDroneTripsNumbers.TripDuration > 0)
+                    {
+                        tripDuration = mLatestDroneTripsNumbers.TripDuration;
 
-                                if(mLatestDroneTripsNumbers.OutgoingItemCount !== undefined)
-                                {
-                                    outgoingTransferRate = mLatestDroneTripsNumbers.OutgoingItemCount * 60 / mLatestDroneTripsNumbers.TripDuration;
-                                }
-                                if(mLatestDroneTripsNumbers.IncomingItemCount !== undefined)
-                                {
-                                    incomingTransferRate = mLatestDroneTripsNumbers.IncomingItemCount * 60 / mLatestDroneTripsNumbers.TripDuration;
-                                }
+                        if(mLatestDroneTripsNumbers.OutgoingItemCount !== undefined)
+                        {
+                            outgoingTransferRate = mLatestDroneTripsNumbers.OutgoingItemCount * 60 / mLatestDroneTripsNumbers.TripDuration;
+                        }
+                        if(mLatestDroneTripsNumbers.IncomingItemCount !== undefined)
+                        {
+                            incomingTransferRate = mLatestDroneTripsNumbers.IncomingItemCount * 60 / mLatestDroneTripsNumbers.TripDuration;
+                        }
 
-                                //TODO: Wrong number?!
-                                if(mLatestDroneTripsNumbers.IncomingItemStacks !== undefined || mLatestDroneTripsNumbers.OutgoingItemStacks !== undefined)
-                                {
-                                    maximumTransferRate = Math.max(mLatestDroneTripsNumbers.IncomingItemStacks, mLatestDroneTripsNumbers.OutgoingItemStacks) * 60 / mLatestDroneTripsNumbers.TripDuration;
-                                }
-                            }
+                        if(mLatestDroneTripsNumbers.IncomingItemStacks !== undefined || mLatestDroneTripsNumbers.OutgoingItemStacks !== undefined)
+                        {
+                            maximumTransferRate = Math.max(mLatestDroneTripsNumbers.IncomingItemStacks, mLatestDroneTripsNumbers.OutgoingItemStacks) * 60 / (mLatestDroneTripsNumbers.TripDuration * 2);
+                        }
                     }
             }
 
@@ -323,12 +374,12 @@ export default class Building_DroneStation
 
             content.push('<div style="position: absolute;margin-top: 108px;margin-left: 205px;color: #FFFFFF;font-size: 20px;line-height: 24px;"><i class="fas fa-sign-out"></i></div>');
             content.push('<div style="position: absolute;margin-top: 108px;margin-left: 237px;color: #FFFFFF;font-size: 10px;line-height: 12px;">');
-            content.push('Outgoing Transfer Rate:<br /><span class="text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(outgoingTransferRate)) + ' items per minute</span>');
+            content.push('Outgoing Transfer Rate:<br /><span class="text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(((isPairedStation === false) ? outgoingTransferRate : incomingTransferRate))) + ' items per minute</span>');
             content.push('</div>');
 
             content.push('<div style="position: absolute;margin-top: 108px;margin-left: 400px;color: #FFFFFF;font-size: 20px;line-height: 24px;"><i class="fas fa-sign-in"></i></div>');
             content.push('<div style="position: absolute;margin-top: 108px;margin-left: 432px;color: #FFFFFF;font-size: 10px;line-height: 12px;">');
-            content.push('Incoming Transfer Rate:<br /><span class="text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(incomingTransferRate)) + ' items per minute</span>');
+            content.push('Incoming Transfer Rate:<br /><span class="text-warning">' + new Intl.NumberFormat(baseLayout.language).format(Math.round(((isPairedStation === false) ? incomingTransferRate : outgoingTransferRate))) + ' items per minute</span>');
             content.push('</div>');
 
         // TRIP INFORMATION

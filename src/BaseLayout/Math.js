@@ -2,6 +2,7 @@ export default class BaseLayout_Math
 {
     static get PI(){ return 3.1415926535897932; }
     static get halfPI(){ return 1.57079632679; }
+    static get eulerPrecision(){ return 10000; }
 
     static getDistance(point1, point2)
     {
@@ -49,9 +50,9 @@ export default class BaseLayout_Math
             }
         }
 
-        rotatorFromQuat.pitch           = Math.round(rotatorFromQuat.pitch * 1000) / 1000;
-        rotatorFromQuat.yaw             = Math.round(rotatorFromQuat.yaw * 1000) / 1000;
-        rotatorFromQuat.roll            = Math.round(rotatorFromQuat.roll * 1000) / 1000;
+        rotatorFromQuat.pitch           = Math.round(rotatorFromQuat.pitch * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+        rotatorFromQuat.yaw             = Math.round(rotatorFromQuat.yaw * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+        rotatorFromQuat.roll            = Math.round(rotatorFromQuat.roll * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
 
         return rotatorFromQuat;
     }
@@ -64,9 +65,9 @@ export default class BaseLayout_Math
     // See: https://github.com/EpicGames/UnrealEngine/blob/4.26/Engine/Source/Runtime/Core/Private/Math/UnrealMath.cpp#L460
     static getEulerToQuaternion(angle)
     {
-            angle.pitch     = Math.round(angle.pitch * 1000) / 1000;
-            angle.yaw       = Math.round(angle.yaw * 1000) / 1000;
-            angle.roll      = Math.round(angle.roll * 1000) / 1000;
+            angle.pitch     = Math.round(angle.pitch * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+            angle.yaw       = Math.round(angle.yaw * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+            angle.roll      = Math.round(angle.roll * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
 
         let degToRad        = BaseLayout_Math.PI / 180;
         let radBy2          = degToRad / 2;

@@ -264,7 +264,7 @@ export default class SaveParser_FicsIt
 
         return currentObject;
     }
-
+    
     /*
      * Update 5 changed the old corner up ramps default angle,
      * trying to find them when they don't have the recipe in properties
