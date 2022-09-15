@@ -2,7 +2,7 @@ export default class BaseLayout_Math
 {
     static get PI(){ return 3.1415926535897932; }
     static get halfPI(){ return 1.57079632679; }
-    static get eulerPrecision(){ return 10000; }
+    static get eulerPrecision(){ return 1000000; }
 
     static getDistance(point1, point2)
     {
@@ -26,6 +26,13 @@ export default class BaseLayout_Math
 
         let singularityThreshold    = 0.4999995;
         let singularityTest         = (quaternion.z * quaternion.x) - (quaternion.w * quaternion.y);
+            if(singularityTest < -singularityThreshold || singularityTest > singularityThreshold)
+            {
+                quaternion.x            = Math.round(quaternion.x * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+                quaternion.y            = Math.round(quaternion.y * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+                quaternion.z            = Math.round(quaternion.z * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+                quaternion.w            = Math.round(quaternion.w * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+            }
 
 	let yawY                    = 2 * ((quaternion.w * quaternion.z) + (quaternion.x * quaternion.y));
 	let yawX                    = 1 - (2 * ((quaternion.y * quaternion.y) + (quaternion.z * quaternion.z)));
@@ -57,48 +64,8 @@ export default class BaseLayout_Math
         return rotatorFromQuat;
     }
 
-    static getQuaternionToEuler(quaternion, debug = false)
+    static getQuaternionToEuler(quaternion)
     {
-        /*
-        if(debug === true)
-        {
-            let angles = {};
-            var qw = parseFloat(quaternion[0]);
-            var qx = parseFloat(quaternion[1]);
-            var qy = parseFloat(quaternion[2]);
-            var qz = parseFloat(quaternion[3]);
-            var qw2 = qw*qw;
-            var qx2 = qx*qx;
-            var qy2 = qy*qy;
-            var qz2 = qz*qz;
-            var test= qx*qy + qz*qw;
-            if (test > 0.499) {
-              angles.yaw = 360/Math.PI*Math.atan2(qx,qw);
-              angles.pitch = 90;
-              angles.roll = 0;
-              return;
-            }
-            else
-            {
-                if (test < -0.499) {
-                  angles.yaw = -360/Math.PI*Math.atan2(qx,qw);
-                  angles.pitch = -90;
-                  angles.roll = 0;
-                }
-                else
-                {
-                    var h = Math.atan2(2*qy*qw-2*qx*qz,1-2*qy2-2*qz2);
-                    var a = Math.asin(2*qx*qy+2*qz*qw);
-                    var b = Math.atan2(2*qx*qw-2*qy*qz,1-2*qx2-2*qz2);
-                    angles.yaw = h*180/Math.PI;
-                    angles.pitch = a*180/Math.PI;
-                    angles.roll = b*180/Math.PI;
-                }
-            }
-
-            console.log(quaternion, angles, BaseLayout_Math.getUnrealQuaternionToEuler(quaternion))
-        }
-        */
         return BaseLayout_Math.getUnrealQuaternionToEuler(quaternion);
     }
 
@@ -123,12 +90,21 @@ export default class BaseLayout_Math
 	let cosRoll         = BaseLayout_Math.scalarCos(rollNoWinding * radBy2);
         let sinRoll         = BaseLayout_Math.scalarSin(rollNoWinding * radBy2);
 
-	return [
+	let quaternion      = [
              cosRoll * sinPitch * sinYaw - sinRoll * cosPitch * cosYaw, // X
             -cosRoll * sinPitch * cosYaw - sinRoll * cosPitch * sinYaw, // Y
              cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw, // Z
              cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw  // W
         ];
+
+        /*
+        quaternion[0]           = Math.round(quaternion[0] * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+        quaternion[1]           = Math.round(quaternion[1] * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+        quaternion[2]           = Math.round(quaternion[2] * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+        quaternion[3]           = Math.round(quaternion[3] * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+        */
+
+        return quaternion;
     }
 
     static getNewQuaternionRotate(quaternion, angle)

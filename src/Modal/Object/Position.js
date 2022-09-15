@@ -21,7 +21,7 @@ export default class Modal_Object_Position
                 }
         }
 
-        let currentRotation     = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation, true);
+        let currentRotation     = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
         let currentRotationYaw  = Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.yaw) * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision
             if(buildingData !== null && buildingData.mapCorrectedAngle !== undefined)
             {
