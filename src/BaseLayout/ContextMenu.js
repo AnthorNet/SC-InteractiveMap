@@ -558,7 +558,7 @@ export default class BaseLayout_ContextMenu
                 {
                     contextMenu.push('-');
 
-                    if(buildingData.category === 'foundation')
+                    if(buildingData.category === 'foundation' || (buildingData.category === 'frame' && buildingData.className !== '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Frame_01.Build_Wall_Frame_01_C'))
                     {
                         if(buildingData.switchMaterial.Ficsit !== undefined)
                         {
@@ -610,9 +610,19 @@ export default class BaseLayout_ContextMenu
                                 className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }
+                        if(buildingData.switchMaterial.Frame !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : this.baseLayout.translate._('Switch to "%1$s"', 'Frame Foundation'),
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['foundation', 'Frame'],
+                                className   : 'buildableSubSystem_switchObjectMaterial'
+                            });
+                        }
                     }
 
-                    if(buildingData.category === 'wall')
+                    if(buildingData.category === 'wall' || (buildingData.category === 'frame' && buildingData.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Frame_01.Build_Wall_Frame_01_C'))
                     {
                         if(buildingData.switchMaterial.Ficsit !== undefined)
                         {
@@ -641,6 +651,16 @@ export default class BaseLayout_ContextMenu
                                 text        : this.baseLayout.translate._('Switch to "%1$s"', 'Steel Wall'),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['wall', 'Steel'],
+                                className   : 'buildableSubSystem_switchObjectMaterial'
+                            });
+                        }
+                        if(buildingData.switchMaterial.Frame !== undefined)
+                        {
+                            contextMenu.push({
+                                icon        : 'fa-magic',
+                                text        : this.baseLayout.translate._('Switch to "%1$s"', 'Frame Wall'),
+                                callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
+                                argument    : ['wall', 'Frame'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
                             });
                         }

@@ -625,7 +625,7 @@ export default class SubSystem_Buildable
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
-        if(buildingData !== null && buildingData.category === category && buildingData.switchMaterial !== undefined && buildingData.switchMaterial[material] !== undefined)
+        if(buildingData !== null && (buildingData.category === category || (category === 'foundation' && buildingData.category === 'frame') || (category === 'wall' && buildingData.category === 'frame') ) && buildingData.switchMaterial !== undefined && buildingData.switchMaterial[material] !== undefined)
         {
             let newBuildingData = baseLayout.getBuildingDataFromId(buildingData.switchMaterial[material]);
                 if(newBuildingData !== null)

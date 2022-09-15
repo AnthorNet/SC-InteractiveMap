@@ -322,6 +322,7 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Grip Metal Foundation"', value: 'switchMaterial|foundation|GripMetal'});
                 inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Coated Concrete Foundation"', value: 'switchMaterial|foundation|ConcretePolished'});
                 inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Asphalt Foundation"', value: 'switchMaterial|foundation|Asphalt'});
+                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Frame Foundation"', value: 'switchMaterial|foundation|Frame'});
             }
 
             if(haveWallsMaterialsCategory === true)
@@ -329,6 +330,7 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Wall Materials', text: 'Switch to "FICSIT Wall"', value: 'switchMaterial|wall|Ficsit'});
                 inputOptions.push({group: 'Wall Materials', text: 'Switch to "Concrete Wall"', value: 'switchMaterial|wall|Concrete'});
                 inputOptions.push({group: 'Wall Materials', text: 'Switch to "Steel Wall"', value: 'switchMaterial|wall|Steel'});
+                inputOptions.push({group: 'Wall Materials', text: 'Switch to "Frame Wall"', value: 'switchMaterial|wall|Frame'});
             }
 
             if(haveRoofsMaterialsCategory === true)

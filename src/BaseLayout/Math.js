@@ -50,15 +50,55 @@ export default class BaseLayout_Math
             }
         }
 
-        rotatorFromQuat.pitch           = Math.round(rotatorFromQuat.pitch * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
         rotatorFromQuat.yaw             = Math.round(rotatorFromQuat.yaw * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
+        rotatorFromQuat.pitch           = Math.round(rotatorFromQuat.pitch * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
         rotatorFromQuat.roll            = Math.round(rotatorFromQuat.roll * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
 
         return rotatorFromQuat;
     }
 
-    static getQuaternionToEuler(quaternion)
+    static getQuaternionToEuler(quaternion, debug = false)
     {
+        /*
+        if(debug === true)
+        {
+            let angles = {};
+            var qw = parseFloat(quaternion[0]);
+            var qx = parseFloat(quaternion[1]);
+            var qy = parseFloat(quaternion[2]);
+            var qz = parseFloat(quaternion[3]);
+            var qw2 = qw*qw;
+            var qx2 = qx*qx;
+            var qy2 = qy*qy;
+            var qz2 = qz*qz;
+            var test= qx*qy + qz*qw;
+            if (test > 0.499) {
+              angles.yaw = 360/Math.PI*Math.atan2(qx,qw);
+              angles.pitch = 90;
+              angles.roll = 0;
+              return;
+            }
+            else
+            {
+                if (test < -0.499) {
+                  angles.yaw = -360/Math.PI*Math.atan2(qx,qw);
+                  angles.pitch = -90;
+                  angles.roll = 0;
+                }
+                else
+                {
+                    var h = Math.atan2(2*qy*qw-2*qx*qz,1-2*qy2-2*qz2);
+                    var a = Math.asin(2*qx*qy+2*qz*qw);
+                    var b = Math.atan2(2*qx*qw-2*qy*qz,1-2*qx2-2*qz2);
+                    angles.yaw = h*180/Math.PI;
+                    angles.pitch = a*180/Math.PI;
+                    angles.roll = b*180/Math.PI;
+                }
+            }
+
+            console.log(quaternion, angles, BaseLayout_Math.getUnrealQuaternionToEuler(quaternion))
+        }
+        */
         return BaseLayout_Math.getUnrealQuaternionToEuler(quaternion);
     }
 
@@ -84,10 +124,10 @@ export default class BaseLayout_Math
         let sinRoll         = BaseLayout_Math.scalarSin(rollNoWinding * radBy2);
 
 	return [
-             (cosRoll * sinPitch * sinYaw) - (sinRoll * cosPitch * cosYaw), // X
-            -(cosRoll * sinPitch * cosYaw) - (sinRoll * cosPitch * sinYaw), // Y
-             (cosRoll * cosPitch * sinYaw) - (sinRoll * sinPitch * cosYaw), // Z
-             (cosRoll * cosPitch * cosYaw) + (sinRoll * sinPitch * sinYaw)  // W
+             cosRoll * sinPitch * sinYaw - sinRoll * cosPitch * cosYaw, // X
+            -cosRoll * sinPitch * cosYaw - sinRoll * cosPitch * sinYaw, // Y
+             cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw, // Z
+             cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw  // W
         ];
     }
 
@@ -160,7 +200,7 @@ export default class BaseLayout_Math
     }
 
 
-    // returns angle in the range (-360,360)
+    // See: https://github.com/EpicGames/UnrealEngine/blob/4.26/Engine/Source/Runtime/Core/Public/Math/Rotator.h#L603
     static clampEulerAxis(angle)
     {
         angle = angle % 360;
@@ -174,7 +214,7 @@ export default class BaseLayout_Math
 	return angle;
     }
 
-    // returns angle in the range [0,360)
+    // See: https://github.com/EpicGames/UnrealEngine/blob/4.26/Engine/Source/Runtime/Core/Public/Math/Rotator.h#L618
     static normalizeEulerAxis(angle)
     {
         angle = BaseLayout_Math.clampEulerAxis(angle);
@@ -208,13 +248,16 @@ export default class BaseLayout_Math
         // Map y to [-pi/2,pi/2] with sin(y) = sin(Value).
         if(y > BaseLayout_Math.halfPI)
         {
-            y       = BaseLayout_Math.PI - y;
-            sign    = -1;
+            y           = BaseLayout_Math.PI - y;
+            sign        = -1;
         }
-        if(y < -BaseLayout_Math.halfPI)
+        else
         {
-            y       = -BaseLayout_Math.PI - y;
-            sign    = -1;
+            if(y < -BaseLayout_Math.halfPI)
+            {
+                y       = -BaseLayout_Math.PI - y;
+                sign    = -1;
+            }
         }
 
         let y2  = y * y;
@@ -230,10 +273,12 @@ export default class BaseLayout_Math
         let quotient = (0.31830988618 * 0.5) * value;
             if(value >= 0)
             {
+                //quotient = (float)((int)(quotient + 0.5f));
                 quotient = parseInt(quotient + 0.5);
             }
             else
             {
+                //quotient = (float)((int)(quotient - 0.5f));
                 quotient = parseInt(quotient - 0.5);
             }
 
@@ -244,9 +289,12 @@ export default class BaseLayout_Math
         {
             y       = BaseLayout_Math.PI - y;
         }
-        if(y < -BaseLayout_Math.halfPI)
+        else
         {
-            y       = -BaseLayout_Math.PI - y;
+            if(y < -BaseLayout_Math.halfPI)
+            {
+                y   = -BaseLayout_Math.PI - y;
+            }
         }
 
         let y2  = y * y;

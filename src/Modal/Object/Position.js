@@ -21,8 +21,8 @@ export default class Modal_Object_Position
                 }
         }
 
-        let currentRotation     = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation);
-        let currentRotationYaw  = Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.yaw) * 1000) / 1000
+        let currentRotation     = BaseLayout_Math.getQuaternionToEuler(currentObject.transform.rotation, true);
+        let currentRotationYaw  = Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.yaw) * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision
             if(buildingData !== null && buildingData.mapCorrectedAngle !== undefined)
             {
                 currentRotationYaw += buildingData.mapCorrectedAngle;
@@ -58,7 +58,7 @@ export default class Modal_Object_Position
                     inputType   : 'number',
                     min         : 0,
                     max         : 360,
-                    value       : Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.pitch) * 1000) / 1000
+                    value       : Math.round(BaseLayout_Math.clampEulerAxis(currentRotation.pitch) * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision
                 },
                 {
                     label       : 'Roll (Angle between -180 and 180 degrees)',
@@ -66,7 +66,7 @@ export default class Modal_Object_Position
                     inputType   : 'number',
                     min         : -180,
                     max         : 180,
-                    value       : Math.round(BaseLayout_Math.normalizeEulerAxis(currentRotation.roll) * 1000) / 1000
+                    value       : Math.round(BaseLayout_Math.normalizeEulerAxis(currentRotation.roll) * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision
                 },
                 {
                     label       : 'Rotation (Angle between 0 and 360 degrees)',
