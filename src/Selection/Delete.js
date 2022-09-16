@@ -41,66 +41,69 @@ export default class Selection_Delete
                     {
                         if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.includes('delete'))
                         {
-                            if(this.keepDeleted === true)
+                            if(this.keepDeleted === true && this.markers[i].options.mapMarkerId === undefined && this.markers[i].options.pathName !== undefined)
                             {
                                 let currentObject       = this.baseLayout.saveGameParser.getTargetObject(this.markers[i].options.pathName);
-                                let mBuiltWithRecipe    = this.baseLayout.getObjectProperty(currentObject, 'mBuiltWithRecipe');
-                                    if(mBuiltWithRecipe !== null)
+                                    if(currentObject !== null)
                                     {
-                                        let recipeName = mBuiltWithRecipe.pathName.split('.')[1];
-                                            if(this.baseLayout.recipesData[recipeName] !== undefined)
+                                        let mBuiltWithRecipe    = this.baseLayout.getObjectProperty(currentObject, 'mBuiltWithRecipe');
+                                            if(mBuiltWithRecipe !== null)
                                             {
-                                                for(let ingredient in this.baseLayout.recipesData[recipeName].ingredients)
-                                                {
-                                                    if(putInCrate[ingredient] === undefined)
+                                                let recipeName = mBuiltWithRecipe.pathName.split('.')[1];
+                                                    if(this.baseLayout.recipesData[recipeName] !== undefined)
                                                     {
-                                                        putInCrate[ingredient] = 0;
+                                                        for(let ingredient in this.baseLayout.recipesData[recipeName].ingredients)
+                                                        {
+                                                            if(putInCrate[ingredient] === undefined)
+                                                            {
+                                                                putInCrate[ingredient] = 0;
+                                                            }
+
+                                                            putInCrate[ingredient] += this.baseLayout.recipesData[recipeName].ingredients[ingredient];
+                                                        }
                                                     }
-
-                                                    putInCrate[ingredient] += this.baseLayout.recipesData[recipeName].ingredients[ingredient];
-                                                }
                                             }
-                                    }
 
-                                let inventory   = [];
-                                    inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mStorageInventory'));
-                                    inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mInputInventory'));
-                                    inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory'));
-                                    inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mInventory'));
-                                    inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'));
-                                    inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mBatteryInventory'));
-                                    inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential'));
+                                        let inventory   = [];
+                                            inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mStorageInventory'));
+                                            inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mInputInventory'));
+                                            inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory'));
+                                            inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mInventory'));
+                                            inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mFuelInventory'));
+                                            inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mBatteryInventory'));
+                                            inventory   = inventory.concat(this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential'));
 
-                                    if(inventory.length > 0)
-                                    {
-                                        for(let m = 0; m < inventory.length; m++)
-                                        {
-                                            if(inventory[m] !== null)
+                                            if(inventory.length > 0)
                                             {
-                                                if(putInCrate[inventory[m].rawClassName] === undefined)
+                                                for(let m = 0; m < inventory.length; m++)
                                                 {
-                                                    putInCrate[inventory[m].rawClassName] = 0;
+                                                    if(inventory[m] !== null)
+                                                    {
+                                                        if(putInCrate[inventory[m].rawClassName] === undefined)
+                                                        {
+                                                            putInCrate[inventory[m].rawClassName] = 0;
+                                                        }
+
+                                                        putInCrate[inventory[m].rawClassName] += inventory[m].qty;
+                                                    }
+                                                }
+                                            }
+
+                                        if([
+                                            '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C',
+                                            '/Script/FactoryGame.FGItemPickup_Spawnable',
+                                            '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
+                                        ].includes(currentObject.className))
+                                        {
+                                            let itemClassName = this.baseLayout.itemsData[this.markers[i].options.itemId].className;
+                                                if(putInCrate[itemClassName] === undefined)
+                                                {
+                                                    putInCrate[itemClassName] = 0;
                                                 }
 
-                                                putInCrate[inventory[m].rawClassName] += inventory[m].qty;
-                                            }
+                                            putInCrate[itemClassName] += this.markers[i].options.itemQty;
                                         }
                                     }
-
-                                if([
-                                    '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C',
-                                    '/Script/FactoryGame.FGItemPickup_Spawnable',
-                                    '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
-                                ].includes(currentObject.className))
-                                {
-                                    let itemClassName = this.baseLayout.itemsData[this.markers[i].options.itemId].className;
-                                        if(putInCrate[itemClassName] === undefined)
-                                        {
-                                            putInCrate[itemClassName] = 0;
-                                        }
-
-                                    putInCrate[itemClassName] += this.markers[i].options.itemQty;
-                                }
                             }
 
                             contextMenu[j].callback({baseLayout: this.baseLayout, relatedTarget: this.markers[i]}, false, true);
