@@ -4522,6 +4522,8 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C'){ className = '/Game/FactoryGame/Resource/Equipment/PortableMiner/BP_ItemDescriptorPortableMiner.BP_ItemDescriptorPortableMiner_C'; }
         if(className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaSpitterParts.BP_AlphaSpitterParts_C'){ className = '/Game/FactoryGame/Resource/Parts/AnimalParts/Desc_SpitterParts.Desc_SpitterParts_C'; }
 
+        if(className === '/Game/FactoryGame/Equipment/BoomBox/BP_BoomBoxPlayer.BP_BoomBoxPlayer_C'){ className = '/Game/FactoryGame/Equipment/BoomBox/Desc_BoomBox.Desc_BoomBox_C'; }
+
         if(this.itemsData[className] !== undefined)
         {
             this.itemsData[className].id = className;
@@ -4682,6 +4684,14 @@ export default class BaseLayout
             this.buildingsData.Desc_GolfcartGold_C              = JSON.parse(JSON.stringify(this.toolsData.Desc_GolfCartGold_C));
             this.buildingsData.Desc_GolfcartGold_C.className    = '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C';
             this.buildingsData.Desc_GolfcartGold_C.category     = 'vehicle';
+        }
+        if(this.buildingsData.Desc_BoomBox_C === undefined && this.toolsData.Desc_BoomBox_C !== undefined)
+        {
+            this.buildingsData.Desc_BoomBox_C                   = JSON.parse(JSON.stringify(this.toolsData.Desc_BoomBox_C));
+            this.buildingsData.Desc_BoomBox_C.className         = '/Game/FactoryGame/Equipment/BoomBox/BP_BoomBoxPlayer.BP_BoomBoxPlayer_C';
+            this.buildingsData.Desc_BoomBox_C.width             = 0.5;
+            this.buildingsData.Desc_BoomBox_C.length            = 1;
+            this.buildingsData.Desc_BoomBox_C.height            = 0.5;
         }
 
         // Add projectiles

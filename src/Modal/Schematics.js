@@ -409,7 +409,7 @@ export default class Modal_Schematics
         let categories  = [];
             for(let schematicId in this.baseLayout.schematicsData)
             {
-                if(this.baseLayout.schematicsData[schematicId].category !== undefined && schematicId.startsWith('ResourceSink_') && categories.includes(this.baseLayout.schematicsData[schematicId].category) === false)
+                if(this.baseLayout.schematicsData[schematicId].category !== undefined && (schematicId.startsWith('ResourceSink_') || ['Schematic_AbsoluteFicsit_C', 'Schematic_Goat_C', 'Schematic_JoelSyntholm_C', 'Schematic_LeMichael_C', 'Schematic_Sanctum_C', 'Schematic_Sanctum2_C'].includes(schematicId)) && categories.includes(this.baseLayout.schematicsData[schematicId].category) === false)
                 {
                     categories.push(this.baseLayout.schematicsData[schematicId].category);
                 }
@@ -436,7 +436,7 @@ export default class Modal_Schematics
             let currentData = {};
                 for(let schematicId in this.baseLayout.schematicsData)
                 {
-                    if(schematicId.startsWith('ResourceSink_'))
+                    if(schematicId.startsWith('ResourceSink_') || ['Schematic_AbsoluteFicsit_C', 'Schematic_Goat_C', 'Schematic_JoelSyntholm_C', 'Schematic_LeMichael_C', 'Schematic_Sanctum_C', 'Schematic_Sanctum2_C'].includes(schematicId))
                     {
                         if(this.baseLayout.schematicsData[schematicId].category !== undefined && this.baseLayout.schematicsData[schematicId].category === categories[i])
                         {
@@ -540,7 +540,7 @@ export default class Modal_Schematics
             let currentData = {};
                 for(let schematicId in this.baseLayout.schematicsData)
                 {
-                    if(schematicId.startsWith('Ficsmas_Schematic_') || schematicId.startsWith('Schematic_XMassTree_'))
+                    if(schematicId.startsWith('Ficsmas_Schematic_') || schematicId.startsWith('Schematic_XMassTree_') || ['Schematic_DeepRockGalactic_C', 'Schematic_Huntdown_C', 'Schematic_SongsOfConquest_C'].includes(schematicId))
                     {
                         currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
                     }
@@ -752,6 +752,7 @@ export default class Modal_Schematics
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Customizer_Background/') === false
                                             && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/Progression/CustomizerUnlock_PipelineSwatch.CustomizerUnlock_PipelineSwatch_C'
                                             && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/ResourceSink/Patterns/CBG_PatternRemoval.CBG_PatternRemoval_C'
+                                            && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Boombox.ResourceSink_Boombox_C'
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/') === false
                                             && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Events/Christmas/Calendar_Schematics/Ficsmas_Schematic_SkinBundle_') === false
                                             && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Events/Christmas/Calendar_Schematics/Ficsmas_Schematic_FingerGun_Emote.Ficsmas_Schematic_FingerGun_Emote_C'
@@ -1070,25 +1071,59 @@ export default class Modal_Schematics
                             if(unlockSubSystem !== null)
                             {
                                 let mUnlockedEmotes  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mUnlockedEmotes');
-
-                                    switch(currentStatus)
+                                    if(mUnlockedEmotes !== null)
                                     {
-                                        case 'purchased': // Go to none state
-                                        case 'none': // Go to available state
-                                            if(mUnlockedEmotes !== null)
-                                            {
-                                                for(let j = (mUnlockedEmotes.values.length - 1); j >= 0; j--)
+                                        switch(currentStatus)
+                                        {
+                                            case 'purchased': // Go to none state
+                                            case 'none': // Go to available state
+                                                if(mUnlockedEmotes !== null)
                                                 {
-                                                    if(currentSchematic.emotes.includes(mUnlockedEmotes.values[j].pathName))
+                                                    for(let j = (mUnlockedEmotes.values.length - 1); j >= 0; j--)
                                                     {
-                                                        mUnlockedEmotes.values.splice(j, 1);
+                                                        if(currentSchematic.emotes.includes(mUnlockedEmotes.values[j].pathName))
+                                                        {
+                                                            mUnlockedEmotes.values.splice(j, 1);
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            break;
-                                        case 'available': // Go to purchased state
-                                            // Let the game fills the proper recipes...
-                                            break;
+                                                break;
+                                            case 'available': // Go to purchased state
+                                                // Let the game fills the proper recipes...
+                                                break;
+                                        }
+                                    }
+                            }
+                    }
+
+                    // Handle tapes
+                    if(currentSchematic.tapes !== undefined)
+                    {
+                        let unlockSubSystem = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.UnlockSubsystem');
+                            if(unlockSubSystem !== null)
+                            {
+                                let mUnlockedTapes  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mUnlockedTapes');
+                                    if(mUnlockedTapes !== null)
+                                    {
+                                        switch(currentStatus)
+                                        {
+                                            case 'purchased': // Go to none state
+                                            case 'none': // Go to available state
+                                                if(mUnlockedTapes !== null)
+                                                {
+                                                    for(let j = (mUnlockedTapes.values.length - 1); j >= 0; j--)
+                                                    {
+                                                        if(currentSchematic.tapes.includes(mUnlockedTapes.values[j].pathName))
+                                                        {
+                                                            mUnlockedTapes.values.splice(j, 1);
+                                                        }
+                                                    }
+                                                }
+                                                break;
+                                            case 'available': // Go to purchased state
+                                                // Let the game fills the proper recipes...
+                                                break;
+                                        }
                                     }
                             }
                     }
