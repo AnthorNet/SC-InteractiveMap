@@ -4,7 +4,7 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 export default class Building_Sign
 {
-    static getConversionIcons()
+    static get getConversionIcons()
     {
         return {
             16: 514,    17: 386,    39: 384,    40: 385,    127: 408,
@@ -1350,7 +1350,7 @@ export default class Building_Sign
             /*
             if(baseLayout.useDebug === true)
             {
-                options.push({value: 184, text: 'TEST ICON ID'});
+                options.push({value: 306, text: 'TEST ICON ID'});
             }
             /**/
 
