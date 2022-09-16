@@ -526,6 +526,10 @@ export default class SaveParser_Write
                 header += this.writeString(this.header.modMetadata, false);
                 header += this.writeInt(this.header.isModdedSave, false);
             }
+            if(this.header.saveHeaderType >= 10)
+            {
+                header += this.writeString(this.header.saveIdentifier, false);
+            }
 
         this.saveBinary += header;
     }

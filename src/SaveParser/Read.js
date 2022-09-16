@@ -45,9 +45,9 @@ export default class SaveParser_Read
                 this.header.modMetadata      = this.readString();
                 this.header.isModdedSave     = this.readInt();
             }
-            if(this.header.saveHeaderType >= 10) // TODO: UNK
+            if(this.header.saveHeaderType >= 10)
             {
-                console.log('TODO/UNK', this.readString());
+                this.header.saveIdentifier  = this.readString();
             }
 
             this.worker.postMessage({command: 'transferData', data: {header: this.header}});

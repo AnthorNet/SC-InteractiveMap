@@ -50,6 +50,7 @@ import Building_PowerLine                       from './Building/PowerLine.js';
 import Building_RadarTower                      from './Building/RadarTower.js';
 import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
+import Building_Sign                            from './Building/Sign.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
 
 export default class BaseLayout
@@ -3415,6 +3416,11 @@ export default class BaseLayout
                     $(this).attr('src', $(this).attr('data-src')).removeAttr('data-src');
                 });
                 layerIcon.show();
+
+            if(layerId === 'playerResourceDepositsLayer' || layerId === 'playerItemsPickupLayer')
+            {
+                $('.updatePlayerLayerState[data-id=' + layerId + ']').parent().parent().show();
+            }
 
             $(this.playerLayers[layerId].mainDivId).show()
                                                    .parent().show();
