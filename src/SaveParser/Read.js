@@ -14,7 +14,7 @@ export default class SaveParser_Read
 
         this.arrayBuffer        = options.arrayBuffer;
         // Still used for header try not to shrink it too much as modMetadata can be longer than anticipated...
-        this.bufferView         = new DataView(this.arrayBuffer, 0, 102400);
+        this.bufferView         = new DataView(this.arrayBuffer, 0, Math.min(102400, this.arrayBuffer.byteLength));
         this.currentByte        = 0;
 
         this.parseSave();
