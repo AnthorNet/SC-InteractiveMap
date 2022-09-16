@@ -841,7 +841,16 @@ export default class SaveParser_Write
 
             case 'Object':
             case 'Interface':
-                property += this.writeByte(0, false);
+                if(currentProperty.unkObject !== undefined)
+                {
+                    property += this.writeByte(1, false);
+                    property += this.writeHex(16, false);
+                }
+                else
+                {
+                    property += this.writeByte(0, false);
+                }
+
                 property += this.writeObjectProperty(currentProperty.value);
                 break;
 

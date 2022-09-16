@@ -45,6 +45,10 @@ export default class SaveParser_Read
                 this.header.modMetadata      = this.readString();
                 this.header.isModdedSave     = this.readInt();
             }
+            if(this.header.saveHeaderType >= 10) // TODO: UNK
+            {
+                console.log('TODO/UNK', this.readString());
+            }
 
             this.worker.postMessage({command: 'transferData', data: {header: this.header}});
 
@@ -716,7 +720,11 @@ export default class SaveParser_Read
 
             case 'Object':
             case 'Interface':
-                this.skipBytes();
+                let unkObjectByte = this.readByte();
+                    if(unkObjectByte === 1)
+                    {
+                        currentProperty.unkObject = this.readHex(16);
+                    }
                 currentProperty.value = this.readObjectProperty({});
                 break;
 
