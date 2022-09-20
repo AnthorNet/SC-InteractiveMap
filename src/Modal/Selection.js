@@ -188,11 +188,11 @@ export default class Modal_Selection
                                                     {
                                                         buildings[currentObject.className] = {name: buildingData.name, total: 1};
 
-                                                        if(buildingData.category === 'foundation')
+                                                        if(buildingData.category === 'foundation' || (buildingData.category === 'frame' && buildingData.className !== '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Frame_01.Build_Wall_Frame_01_C'))
                                                         {
                                                             haveFoundationsMaterialsCategory = true;
                                                         }
-                                                        if(buildingData.category === 'wall')
+                                                        if(buildingData.category === 'wall' || (buildingData.category === 'frame' && buildingData.className === '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Frame_01.Build_Wall_Frame_01_C'))
                                                         {
                                                             haveWallsMaterialsCategory = true;
                                                         }
