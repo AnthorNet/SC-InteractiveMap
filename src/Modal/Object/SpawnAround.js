@@ -33,11 +33,14 @@ export default class Modal_Object_SpawnAround
             let faunaData = baseLayout.faunaSubsystem.data;
                 for(let faunaId in faunaData)
                 {
-                    inputOptions.push({
-                        group   : 'Fauna - ' + baseLayout.faunaSubsystem.categories[faunaData[faunaId].category],
-                        text    : faunaData[faunaId].name,
-                        value   : faunaData[faunaId].className
-                    });
+                    if(faunaId !== 'BP_FlyingBabyCrab_C')
+                    {
+                        inputOptions.push({
+                            group   : 'Fauna - ' + baseLayout.faunaSubsystem.categories[faunaData[faunaId].category],
+                            text    : faunaData[faunaId].name,
+                            value   : faunaData[faunaId].className
+                        });
+                    }
                 }
 
         BaseLayout_Modal.form({
