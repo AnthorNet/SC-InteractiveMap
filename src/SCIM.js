@@ -11,6 +11,7 @@ export default class SCIM
     constructor()
     {
         this.build                      = 'EarlyAccess';
+        this.buildVersion               = null;
         this.debug                      = false;
         this.language                   = 'en';
 
@@ -60,6 +61,7 @@ export default class SCIM
             startCallback       : () => {
                 this.map = new GameMap({
                     build               : this.build,
+                    buildVersion        : parseInt(this.buildVersion),
                     version             : this.scriptsVERSION,
 
                     collectedOpacity    : this.collectedOpacity,

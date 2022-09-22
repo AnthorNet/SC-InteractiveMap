@@ -4776,10 +4776,13 @@ export default class BaseLayout
         // Removed icons
         if(iconId === 184){ return this.staticUrl + '/img/gameUpdate6/IconDesc_ColorGun_256.png'; }
 
-        console.log('Missing iconID: ' + iconId);
-        if(typeof Sentry !== 'undefined')
+        if(this.saveGameParser.header.buildVersion >= this.satisfactoryMap.buildVersion)
         {
-            Sentry.captureMessage('Missing iconID: ' + iconId);
+            console.log('Missing iconID: ' + iconId);
+            if(typeof Sentry !== 'undefined')
+            {
+                Sentry.captureMessage('Missing iconID: ' + iconId);
+            }
         }
 
         if(defaultIcon !== null)

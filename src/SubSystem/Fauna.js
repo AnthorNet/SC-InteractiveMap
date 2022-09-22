@@ -37,12 +37,15 @@ export default class SubSystem_Fauna
 
         if(className.includes('/Game/FactoryGame/Character/Creature/Wildlife/') || className.includes('/Game/FactoryGame/Character/Creature/Enemy/'))
         {
-            console.log('Missing fauna className: ' + className);
-
-            if(typeof Sentry !== 'undefined')
+            if(this.baseLayout.saveGameParser.header.buildVersion >= this.baseLayout.satisfactoryMap.buildVersion)
             {
-                Sentry.setContext('className', {className: className});
-                Sentry.captureMessage('Missing fauna className: ' + className);
+                console.log('Missing fauna className: ' + className);
+
+                if(typeof Sentry !== 'undefined')
+                {
+                    Sentry.setContext('className', {className: className});
+                    Sentry.captureMessage('Missing fauna className: ' + className);
+                }
             }
         }
 

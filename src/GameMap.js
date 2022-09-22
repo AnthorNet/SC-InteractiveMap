@@ -6,6 +6,7 @@ export default class GameMap
     constructor(options)
     {
         this.build                      = options.build;
+        this.buildVersion               = options.buildVersion;
         this.version                    = options.version;
         this.remoteUrl                  = (options.remoteUrl !== undefined) ? options.remoteUrl : null;
 
