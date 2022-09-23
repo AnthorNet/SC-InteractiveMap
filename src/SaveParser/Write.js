@@ -789,84 +789,57 @@ export default class SaveParser_Write
         {
             case 'Bool':
                 property += this.writeByte(currentProperty.value, false);
-
-                if(currentProperty.unkBool !== undefined)
-                {
-                    property += this.writeByte(1, false);
-                    property += this.writeHex(16, false);
-                }
-                else
-                {
-                    property += this.writeByte(0, false);
-                }
+                property += this.writePropertyGUID(currentProperty);
                 break;
 
             case 'Int8':
-                property += this.writeByte(0, false);
+                property += this.writePropertyGUID(currentProperty);
                 property += this.writeInt8(currentProperty.value);
                 break;
 
             case 'Int':
             case 'UInt32': // Mod?
-                if(currentProperty.unkInt !== undefined)
-                {
-                    property += this.writeByte(1, false);
-                    property += this.writeHex(16, false);
-                }
-                else
-                {
-                    property += this.writeByte(0, false);
-                }
-
+                property += this.writePropertyGUID(currentProperty);
                 property += this.writeInt(currentProperty.value);
                 break;
 
             case 'Int64': //TODO: Use 64bit integer
             case 'UInt64':
-                property += this.writeByte(0, false);
+                property += this.writePropertyGUID(currentProperty);
                 property += this.writeLong(currentProperty.value);
                 break;
 
             case 'Float':
-                property += this.writeByte(0, false);
+                property += this.writePropertyGUID(currentProperty);
                 property += this.writeFloat(currentProperty.value);
                 break;
 
             case 'Double':
-                property += this.writeByte(0, false);
+                property += this.writePropertyGUID(currentProperty);
                 property += this.writeDouble(currentProperty.value);
                 break;
 
             case 'Str':
             case 'Name':
-                property += this.writeByte(0, false);
+                property += this.writePropertyGUID(currentProperty);
                 property += this.writeString(currentProperty.value);
                 break;
 
             case 'Object':
             case 'Interface':
-                if(currentProperty.unkObject !== undefined)
-                {
-                    property += this.writeByte(1, false);
-                    property += this.writeHex(16, false);
-                }
-                else
-                {
-                    property += this.writeByte(0, false);
-                }
-
+                property += this.writePropertyGUID(currentProperty);
                 property += this.writeObjectProperty(currentProperty.value);
                 break;
 
             case 'Enum':
                 property += this.writeString(currentProperty.value.name, false);
-                property += this.writeByte(0, false);
+                property += this.writePropertyGUID(currentProperty);
                 property += this.writeString(currentProperty.value.value);
                 break;
 
             case 'Byte':
                 property += this.writeString(currentProperty.value.enumName, false);
-                property += this.writeByte(0, false);
+                property += this.writePropertyGUID(currentProperty);
 
                 if(currentProperty.value.enumName === 'None')
                 {
@@ -879,7 +852,7 @@ export default class SaveParser_Write
                 break;
 
             case 'Text':
-                property += this.writeByte(0, false);
+                property += this.writePropertyGUID(currentProperty);
                 property += this.writeTextProperty(currentProperty);
                 break;
 
@@ -1428,6 +1401,22 @@ export default class SaveParser_Write
                 property += this.writeString(this.header.mapName, count);
                 property += this.writeString(value.pathName, count);
                 //property += this.writeString(this.header.mapName + ':' + value.pathName, count);
+            }
+
+        return property;
+    }
+
+    writePropertyGUID(value)
+    {
+        let property = '';
+            if(value.propertyGuid !== undefined)
+            {
+                property += this.writeByte(1, false);
+                property += this.writeHex(value.propertyGuid, false);
+            }
+            else
+            {
+                property += this.writeByte(0, false);
             }
 
         return property;

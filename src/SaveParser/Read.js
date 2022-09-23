@@ -456,7 +456,7 @@ export default class SaveParser_Read
         this.objects[objectKey].properties       = [];
         while(true)
         {
-            let property = this.readProperty(this.objects[objectKey].className);
+            let property = this.readProperty(this.objects[objectKey].className, objectKey);
                 if(property === null)
                 {
                     break;
@@ -650,7 +650,7 @@ export default class SaveParser_Read
     /*
      * Properties types
      */
-    readProperty(parentType = null)
+    readProperty(parentType = null, objectKey = null)
     {
         let currentProperty         = {};
             currentProperty.name    = this.readString();
@@ -660,9 +660,29 @@ export default class SaveParser_Read
             return null;
         }
 
-        currentProperty.type    = this.readString().replace('Property', '');
+        //TODO: What is this extra byte that is appearing sometime?
+        let extraByteTest       = this.readByte();
+            if(extraByteTest !== 0)
+            {
+                this.currentByte -= 1;
+            }
+            else
+            {
+                console.log('Property extra byte', currentProperty);
 
-        this.skipBytes(4); // Length of the property, this is calculated when writing back ;)
+                if(typeof Sentry !== 'undefined')
+                {
+                    Sentry.setContext('currentProperty', currentProperty);
+                    if(objectKey !== null)
+                    {
+                        Sentry.setContext('object', this.objects[objectKey]);
+                    }
+                    Sentry.captureMessage('Property extra byte');
+                }
+            }
+
+        currentProperty.type    = this.readString().replace('Property', '');
+                                  this.readInt(); // Length of the property, this is calculated when writing back ;)
 
         let index = this.readInt();
             if(index !== 0)
@@ -673,64 +693,52 @@ export default class SaveParser_Read
         switch(currentProperty.type)
         {
             case 'Bool':
-                    currentProperty.value   = this.readByte();
-                let unkBoolByte             = this.readByte();
-                    if(unkBoolByte === 1)
-                    {
-                        currentProperty.unkBool = this.readHex(16);
-                    }
+                currentProperty.value   = this.readByte();
+                currentProperty         = this.readPropertyGUID(currentProperty);
                 break;
 
             case 'Int8':
-                this.skipBytes();
-                currentProperty.value = this.readInt8();
+                currentProperty         = this.readPropertyGUID(currentProperty);
+                currentProperty.value   = this.readInt8();
                 break;
 
             case 'Int':
             case 'UInt32': // Mod?
-                let unkIntByte = this.readByte();
-                    if(unkIntByte === 1)
-                    {
-                        currentProperty.unkInt = this.readHex(16);
-                    }
-                currentProperty.value = this.readInt();
+                currentProperty         = this.readPropertyGUID(currentProperty);
+                currentProperty.value   = this.readInt();
                 break;
 
             case 'Int64':
             case 'UInt64':
-                this.skipBytes();
-                currentProperty.value = this.readLong();
+                currentProperty         = this.readPropertyGUID(currentProperty);
+                currentProperty.value   = this.readLong();
                 break;
 
             case 'Float':
-                this.skipBytes();
-                currentProperty.value = this.readFloat();
+                currentProperty         = this.readPropertyGUID(currentProperty);
+                currentProperty.value   = this.readFloat();
                 break;
 
             case 'Double':
-                this.skipBytes();
-                currentProperty.value = this.readDouble();
+                currentProperty         = this.readPropertyGUID(currentProperty);
+                currentProperty.value   = this.readDouble();
                 break;
 
             case 'Str':
             case 'Name':
-                this.skipBytes();
-                currentProperty.value = this.readString();
+                currentProperty         = this.readPropertyGUID(currentProperty);
+                currentProperty.value   = this.readString();
                 break;
 
             case 'Object':
             case 'Interface':
-                let unkObjectByte = this.readByte();
-                    if(unkObjectByte === 1)
-                    {
-                        currentProperty.unkObject = this.readHex(16);
-                    }
-                currentProperty.value = this.readObjectProperty({});
+                currentProperty         = this.readPropertyGUID(currentProperty);
+                currentProperty.value   = this.readObjectProperty({});
                 break;
 
             case 'Enum':
                 let enumPropertyName        = this.readString();
-                    this.skipBytes();
+                    currentProperty         = this.readPropertyGUID(currentProperty);
                     currentProperty.value   = {
                         name    : enumPropertyName,
                         value   : this.readString()
@@ -738,8 +746,8 @@ export default class SaveParser_Read
                 break;
 
             case 'Byte':
-                let enumName = this.readString(); //TODO
-                    this.skipBytes();
+                let enumName            = this.readString(); //TODO
+                    currentProperty     = this.readPropertyGUID(currentProperty);
 
                 if(enumName === 'None')
                 {
@@ -758,29 +766,35 @@ export default class SaveParser_Read
                 break;
 
             case 'Text':
-                this.skipBytes();
-                currentProperty = this.readTextProperty(currentProperty);
+                currentProperty         = this.readPropertyGUID(currentProperty);
+                currentProperty         = this.readTextProperty(currentProperty);
                 break;
 
             case 'Array':
-                currentProperty = this.readArrayProperty(currentProperty, parentType);
+                currentProperty         = this.readArrayProperty(currentProperty, parentType);
                 break;
 
             case 'Map':
-                currentProperty = this.readMapProperty(currentProperty, parentType);
+                currentProperty         = this.readMapProperty(currentProperty, parentType);
                 break;
 
             case 'Set':
-                currentProperty = this.readSetProperty(currentProperty, parentType);
+                currentProperty         = this.readSetProperty(currentProperty, parentType);
                 break;
 
             case 'Struct':
-                currentProperty = this.readStructProperty(currentProperty, parentType);
+                currentProperty         = this.readStructProperty(currentProperty, parentType);
                 break;
 
             default:
                 let rewind = this.lastStrRead + 128;
                     this.currentByte -= rewind;
+
+                if(objectKey !== null)
+                {
+                    console.log(this.objects[objectKey]);
+                }
+                console.log(currentProperty);
                 console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
                 this.worker.postMessage({command: 'alertParsing'});
                 if(typeof Sentry !== 'undefined')
@@ -1447,6 +1461,17 @@ export default class SaveParser_Read
             {
                 currentProperty.pathName    = this.readString();
                 //currentProperty.pathName    = this.readString().replace(this.header.mapName + ':', '');
+            }
+
+        return currentProperty;
+    }
+
+    readPropertyGUID(currentProperty)
+    {
+        let hasPropertyGuid         = this.readByte();
+            if(hasPropertyGuid === 1)
+            {
+                currentProperty.propertyGuid = this.readHex(16);
             }
 
         return currentProperty;

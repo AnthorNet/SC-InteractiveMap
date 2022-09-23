@@ -156,6 +156,18 @@ export default class BaseLayout_ContextMenu
                             callback    : this.baseLayout.deleteResourceDeposit
                         });
                         break;
+                    case '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C':
+                    case '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C':
+                    case '/Game/FactoryGame/World/Benefit/Mushroom/BP_Shroom_01.BP_Shroom_01_C':
+                        contextMenu.push({
+                            text        : 'Consumable'
+                        });
+                        contextMenu.push({
+                            icon        : 'fa-portal-exit',
+                            text        : 'Teleport player',
+                            callback    : this.baseLayout.teleportPlayer
+                        });
+                        break;
                     case '/Script/FactoryGame.FGItemPickup_Spawnable':
                     case '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C':
                     case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_SpitterParts.BP_SpitterParts_C':

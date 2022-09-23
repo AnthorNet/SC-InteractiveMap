@@ -614,6 +614,10 @@ export default class BaseLayout
 
                 '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C',
 
+                '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C',
+                '/Game/FactoryGame/Resource/Environment/Nut/Desc_Nut.Desc_Nut_C',
+                '/Game/FactoryGame/Resource/Environment/DesertShroom/Desc_Shroom.Desc_Shroom_C',
+
                 '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C',
                 '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C',
                 '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C',
