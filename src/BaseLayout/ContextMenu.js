@@ -1141,5 +1141,4 @@ L.Mixin.ContextMenu = {
 };
 
 L.Map.addInitHook('addHandler', 'contextmenu', L.Map.ContextMenu);
-L.Marker.include(L.Mixin.ContextMenu);
 L.Path.include(L.Mixin.ContextMenu);

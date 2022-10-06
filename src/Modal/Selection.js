@@ -1352,8 +1352,12 @@ L.Selection = L.Handler.extend({
                             let haveContextMenu = baseLayout.getContextMenu(layer);
                                 if(haveContextMenu !== false)
                                 {
-                                    if(layer instanceof L.Marker)
+                                    if(layer instanceof L.MapMarker)
                                     {
+                                        if(layer instanceof L.MapMarker)
+                                        {
+                                            console.log('MapMarkee?', layer);
+                                        }
                                         if(this.isMarkerInsidePolygon(layer.getLatLng(), this._areaSelected))
                                         {
                                             layers_found.push(layer);

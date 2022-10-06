@@ -1,6 +1,8 @@
 /* global Sentry, Infinity */
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import Lib_MapMarker                            from '../Lib/L.MapMarker.js';
+
 export default class SubSystem_Fauna
 {
     constructor(options)
@@ -149,13 +151,13 @@ export default class SubSystem_Fauna
                 }
         }
 
-        let faunaMarker = L.marker(
+        let faunaMarker = L.mapMarker(
                 this.baseLayout.satisfactoryMap.unproject(currentObject.transform.translation),
                 {
-                    pathName: currentObject.pathName,
-                    icon: this.baseLayout.getMarkerIcon('#FFFFFF', iconColor, iconImage),
-                    riseOnHover: true,
-                    zIndexOffset: 900
+                    pathName    : currentObject.pathName,
+                    color       : '#FFFFFF',
+                    fillColor   : iconColor,
+                    icon        : iconImage
                 }
             );
 

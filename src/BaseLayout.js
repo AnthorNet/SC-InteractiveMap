@@ -53,6 +53,8 @@ import Building_RailroadTrack                   from './Building/RailroadTrack.j
 import Building_Sign                            from './Building/Sign.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
 
+import Lib_MapMarker                            from './Lib/L.MapMarker.js';
+
 export default class BaseLayout
 {
     constructor(options)
@@ -698,17 +700,17 @@ export default class BaseLayout
                         button.parent().parent().show();
 
                     let currentMarkerOptions    = {
-                            pathName: currentObject.pathName,
-                            icon: this.getMarkerIcon(button.attr('data-outside'), button.attr('data-inside'), button.attr('data-image')),
-                            riseOnHover: true,
-                            zIndexOffset: 1000
+                            pathName    : currentObject.pathName,
+                            color       : button.attr('data-outside'),
+                            fillColor   : button.attr('data-inside'),
+                            icon        : button.attr('data-image')
                         };
                     let tooltip                 = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(' + this.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
                                                     <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
                                                         ' + ((button.attr('data-original-title') !== undefined) ? button.attr('data-original-title') : button.attr('title')) + '\
                                                     </div>\
                                                 </div>';
-                    let currentMarker           = L.marker(this.satisfactoryMap.unproject(currentObject.transform.translation), currentMarkerOptions)
+                    let currentMarker           = L.mapMarker(this.satisfactoryMap.unproject(currentObject.transform.translation), currentMarkerOptions)
                                                     .bindTooltip(tooltip)
                                                     .addTo(this.satisfactoryMap.availableLayers[layoutId]);
 
@@ -773,7 +775,7 @@ export default class BaseLayout
                                             playerName = mTetrominoLeaderBoard.values[j][k].value;
                                             break;
                                         case 'LevelName':
-                                            level = mTetrominoLeaderBoard.values[j][k].value.replace('LVL', '');
+                                            level = parseInt(mTetrominoLeaderBoard.values[j][k].value.replace('LVL', ''));
                                             break;
                                         case 'Points':
                                             score = mTetrominoLeaderBoard.values[j][k].value;
@@ -782,7 +784,11 @@ export default class BaseLayout
                                 }
                                 if(playerName !== null && level !== null && score !== null)
                                 {
-                                    $.post(this.tetrominoUrl, {playerName: playerName, level: level, score: score});
+                                    try
+                                    {
+                                        $.post(this.tetrominoUrl, {playerName: playerName, level: level, score: score});
+                                    }
+                                    catch(error){} // Silently fail UCS2 caracters
                                 }
                         }
                     }
@@ -1094,6 +1100,7 @@ export default class BaseLayout
                            this.useDebug === true
                         && currentObject.className.startsWith('/Game/FactoryGame/Equipment/') === false
                         && currentObject.className.startsWith('/Script/FactoryGame.') === false
+                        && currentObject.className !== '/Game/FactoryGame/Testing/BoomBox/BP_TapePickup.BP_TapePickup_C' // Ignore picked up tapes
                         && ['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(currentObject.className) === false
                     )
                     {
@@ -1169,6 +1176,14 @@ export default class BaseLayout
             // Collectables
             let statisticsCollectables = new Modal_Map_Collectables({baseLayout: this});
                 statisticsCollectables.get();
+
+            // Refresh MapMarkers layers to push them on top
+            for(let index in this.satisfactoryMap.activeLayers)
+            {
+                let layerId = this.satisfactoryMap.activeLayers[index];
+                    this.satisfactoryMap.leafletMap.removeLayer(this.satisfactoryMap.availableLayers[layerId]);
+                    this.satisfactoryMap.leafletMap.addLayer(this.satisfactoryMap.availableLayers[layerId]);
+            }
 
             // Player position
             for(let pathName in this.players)
@@ -1414,28 +1429,13 @@ export default class BaseLayout
                     {
                         this.setupSubLayer(layerId, false);
 
-                        let position    = this.satisfactoryMap.unproject(currentObject.transform.translation);
-                        let iconType    = layerId + itemId;
-                            if(this.satisfactoryMap.availableIcons[iconType] === undefined)
-                            {
-                                if(this.itemsData[itemId] !== undefined)
-                                {
-                                    this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
-                                        className   : "leaflet-data-marker",
-                                        html        : this.satisfactoryMap.availableIcons[layerId].options.html.replace(this.itemsData.Desc_OreIron_C.image, this.itemsData[itemId].image),
-                                        iconAnchor  : [48, 78],
-                                        iconSize    : [50, 80]
-                                    });
-                                }
-                            }
-
-                        let depositMarker = L.marker(
-                                position,
+                        let depositMarker = L.mapMarker(
+                                this.satisfactoryMap.unproject(currentObject.transform.translation),
                                 {
                                     pathName    : currentObject.pathName,
                                     itemId      : itemId,
                                     itemQty     : mResourcesLeft,
-                                    icon        : this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
+                                    icon        : this.itemsData[itemId].image
                                 }
                             );
                             this.bindMouseEvents(depositMarker);
@@ -1477,31 +1477,16 @@ export default class BaseLayout
         let itemId      = 'Desc_SpitterParts_C';
             if(currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_HogParts.BP_HogParts_C' || currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaHogParts.BP_AlphaHogParts_C')
             {
-                itemId = 'Desc_HogParts_C';
+                itemId  = 'Desc_HogParts_C';
             }
-        let iconType    = 'playerItemsPickupLayer' + itemId;
 
-        if(this.satisfactoryMap.availableIcons[iconType] === undefined)
-        {
-            if(this.toolsData[itemId] !== undefined)
-            {
-                this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
-                    className   : "leaflet-data-marker",
-                    html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, this.toolsData[itemId].image),
-                    iconAnchor  : [48, 78],
-                    iconSize    : [50, 80]
-                });
-            }
-        }
-
-        let position    = this.satisfactoryMap.unproject(currentObject.transform.translation);
-        let itemMarker  = L.marker(
-                position,
+        let itemMarker  = L.mapMarker(
+                this.satisfactoryMap.unproject(currentObject.transform.translation),
                 {
-                    pathName: currentObject.pathName,
-                    itemId: itemId,
-                    itemQty: 1,
-                    icon: this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
+                    pathName    : currentObject.pathName,
+                    itemId      : itemId,
+                    itemQty     : 1,
+                    icon        : this.toolsData[itemId].image
                 }
             );
             this.bindMouseEvents(itemMarker);
@@ -1524,49 +1509,26 @@ export default class BaseLayout
 
                         this.setupSubLayer('playerItemsPickupLayer', false);
 
-                        let position    = this.satisfactoryMap.unproject(currentObject.transform.translation);
-                        let iconType    = 'playerItemsPickupLayer' + itemId;
-                            if(this.satisfactoryMap.availableIcons[iconType] === undefined)
+                        let iconImage   = 'https://static.satisfactory-calculator.com/img/mapUnknownIcon.png';
+                            if(this.itemsData[itemId] !== undefined)
                             {
-                                if(this.itemsData[itemId] !== undefined)
+                                iconImage = this.itemsData[itemId].image;
+                            }
+                            else
+                            {
+                                if(this.toolsData[itemId] !== undefined)
                                 {
-                                    this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
-                                        className   : "leaflet-data-marker",
-                                        html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, this.itemsData[itemId].image),
-                                        iconAnchor  : [48, 78],
-                                        iconSize    : [50, 80]
-                                    });
-                                }
-                                else
-                                {
-                                    if(this.toolsData[itemId] !== undefined)
-                                    {
-                                        this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
-                                            className   : "leaflet-data-marker",
-                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, this.toolsData[itemId].image),
-                                            iconAnchor  : [48, 78],
-                                            iconSize    : [50, 80]
-                                        });
-                                    }
-                                    else
-                                    {
-                                        this.satisfactoryMap.availableIcons[iconType] = L.divIcon({
-                                            className   : "leaflet-data-marker",
-                                            html        : this.satisfactoryMap.availableIcons.playerItemsPickupLayer.options.html.replace(this.itemsData.Desc_Cable_C.image, 'https://static.satisfactory-calculator.com/img/mapUnknownIcon.png'),
-                                            iconAnchor  : [48, 78],
-                                            iconSize    : [50, 80]
-                                        });
-                                    }
+                                    iconImage = this.toolsData[itemId].image;
                                 }
                             }
 
-                        let itemMarker = L.marker(
-                                position,
+                        let itemMarker = L.mapMarker(
+                                this.satisfactoryMap.unproject(currentObject.transform.translation),
                                 {
-                                    pathName: currentObject.pathName,
-                                    itemId: itemId,
-                                    itemQty: mPickupItems.values[0].value.properties[0].value,
-                                    icon: this.satisfactoryMap.availableIcons[iconType], riseOnHover: true
+                                    pathName    : currentObject.pathName,
+                                    itemId      : itemId,
+                                    itemQty     : mPickupItems.values[0].value.properties[0].value,
+                                    icon        : iconImage
                                 }
                             );
                             this.bindMouseEvents(itemMarker);
@@ -1606,13 +1568,13 @@ export default class BaseLayout
     {
         this.setupSubLayer('playerCratesLayer');
 
-        let crate = L.marker(
+        let crate = L.mapMarker(
             this.satisfactoryMap.unproject(currentObject.transform.translation),
             {
                 pathName        : currentObject.pathName,
-                icon            : this.getMarkerIcon('#FFFFFF', '#b3b3b3', this.staticUrl + '/img/mapLootCrateIcon.png'),
-                riseOnHover     : true,
-                zIndexOffset    : 900
+                color           : '#FFFFFF',
+                fillColor       : '#b3b3b3',
+                icon            : this.staticUrl + '/img/mapLootCrateIcon.png'
             }
         );
 
@@ -2715,11 +2677,10 @@ export default class BaseLayout
         {
             if(buildingData.category !== 'vehicle' || (buildingData.category === 'vehicle' && this.showVehicleExtraMarker === true))
             {
-                let position = this.satisfactoryMap.unproject(currentObject.transform.translation);
-                    markerOptions.extraMarker = L.marker(
-                        position,
-                        {originPathName: currentObject.pathName}
-                    );
+                markerOptions.extraMarker = L.mapMarker(
+                    this.satisfactoryMap.unproject(currentObject.transform.translation),
+                    {originPathName: currentObject.pathName}
+                );
             }
         }
 
@@ -3327,22 +3288,6 @@ export default class BaseLayout
 
 
 
-    // General functions
-    //TODO: Use map cache?
-    getMarkerIcon(outsideColor, insideColor, iconImage)
-    {
-        let icon = this.satisfactoryMap.svgIconMarker.replace(/{outsideColor}/g, outsideColor)
-                                                     .replace(/{insideColor}/g, insideColor)
-                                                     .replace(/{iconImage}/g, iconImage);
-
-        return L.divIcon({
-            className   : "leaflet-data-marker",
-            html        : icon,
-            iconAnchor  : [48, 78],
-            iconSize    : [50, 80]
-        });
-    }
-
     // Layers
     setupSubLayer(layerId, show = true)
     {
@@ -3832,6 +3777,14 @@ export default class BaseLayout
                     this.playerLayers.playerRadioactivityLayer.subLayer.setData({data: radioActiveElements});
                 }
             }
+        }
+
+        // Refresh MapMarkers layers to push them on top
+        for(let index in this.satisfactoryMap.activeLayers)
+        {
+            let layerId = this.satisfactoryMap.activeLayers[index];
+                this.satisfactoryMap.leafletMap.removeLayer(this.satisfactoryMap.availableLayers[layerId]);
+                this.satisfactoryMap.leafletMap.addLayer(this.satisfactoryMap.availableLayers[layerId]);
         }
     }
 
@@ -4959,9 +4912,9 @@ export default class BaseLayout
     setBuildingMouseOverStyle(marker, buildingData)
     {
         marker.setStyle({
-                fillColor: '#999999',
-                fillOpacity: 0.9
-            });
+            fillColor   : '#999999',
+            fillOpacity : 0.9
+        });
 
         if(marker.options.extraPattern !== undefined)
         {
@@ -4969,7 +4922,11 @@ export default class BaseLayout
         }
         if(marker.options.extraMarker !== undefined)
         {
-            marker.options.extraMarker.setIcon(this.getMarkerIcon('#BF0020', '#b3b3b3', buildingData.mapIconImage));
+            marker.options.extraMarker.setStyle({
+                color       : '#BF0020',
+                fillColor   : '#b3b3b3',
+                icon        : buildingData.mapIconImage
+            }).bringToFront();
         }
 
         if(marker.options.vehicleTrackDataPathName !== undefined)
@@ -5037,7 +4994,11 @@ export default class BaseLayout
 
         if(marker.options.extraMarker !== undefined)
         {
-            marker.options.extraMarker.setIcon(this.getMarkerIcon('#FFFFFF', '#b3b3b3', buildingData.mapIconImage));
+            marker.options.extraMarker.setStyle({
+                color       : '#FFFFFF',
+                fillColor   : '#b3b3b3',
+                icon        : buildingData.mapIconImage
+            });
         }
 
         if(marker.options.vehicleTrackDataPathName !== undefined)

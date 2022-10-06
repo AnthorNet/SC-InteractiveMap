@@ -4,6 +4,8 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import Building_Sign                            from './Sign.js';
 
+import Lib_MapMarker                            from '../Lib/L.MapMarker.js';
+
 export default class Building_MapMarker
 {
     static get getStampsIcons(){
@@ -89,16 +91,13 @@ export default class Building_MapMarker
         let mapMarkerId = Building_MapMarker.getProperty(mapMarker, 'MarkerID');
             if(mapMarkerId.value !== 255)
             {
-                let marker      = L.marker(
+                let marker      = new L.mapMarker(
                     baseLayout.satisfactoryMap.unproject([location.values[0].value, location.values[1].value, location.values[2].value]),
                     {
                         mapMarkerId     : mapMarkerId.value,
-                        icon            : baseLayout.getMarkerIcon(
-                            '#FFFFFF',
-                            Building_MapMarker.getFormattedColor(mapMarker),
-                            Building_MapMarker.getIconSrc(baseLayout, mapMarker)
-                        ),
-                        riseOnHover     : true,
+                        color           : '#FFFFFF',
+                        fillColor       : Building_MapMarker.getFormattedColor(mapMarker),
+                        icon            : Building_MapMarker.getIconSrc(baseLayout, mapMarker),
                         zIndexOffset    : 900
                     }
                 );

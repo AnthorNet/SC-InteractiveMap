@@ -2,6 +2,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import Lib_MapMarker                            from '../Lib/L.MapMarker.js';
+
 export default class Building_Beacon
 {
     static getCompassText(baseLayout, currentObject)
@@ -43,13 +45,13 @@ export default class Building_Beacon
     {
         baseLayout.setupSubLayer('playerOrientationLayer');
 
-        let beacon          = L.marker(
+        let beacon          = L.mapMarker(
             baseLayout.satisfactoryMap.unproject(currentObject.transform.translation),
             {
                 pathName        : currentObject.pathName,
-                icon            : baseLayout.getMarkerIcon('#FFFFFF', Building_Beacon.getFormattedCompassColor(baseLayout, currentObject), baseLayout.staticUrl + '/img/mapBeaconIcon.png'),
-                riseOnHover     : true,
-                zIndexOffset    : 900
+                color           : '#FFFFFF',
+                fillColor       : Building_Beacon.getFormattedCompassColor(baseLayout, currentObject),
+                icon            : baseLayout.staticUrl + '/img/mapBeaconIcon.png',
             }
         );
 

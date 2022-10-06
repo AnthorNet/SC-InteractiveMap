@@ -1,5 +1,7 @@
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import Lib_MapMarker                            from '../Lib/L.MapMarker.js';
+
 export default class SubSystem_Player
 {
     constructor(options)
@@ -123,17 +125,13 @@ export default class SubSystem_Player
                 this.baseLayout.setupSubLayer('playerPositionLayer');
 
                 let position        = this.baseLayout.satisfactoryMap.unproject(mOwnedPawn.transform.translation);
-                let playerMarker    = L.marker(
+                let playerMarker    = L.mapMarker(
                         position,
                         {
                             pathName        : this.player.pathName,
-                            icon            : this.baseLayout.getMarkerIcon(
-                                '#FFFFFF',
-                                ((this.isHost() === true) ? '#b3b3b3' : '#666666'),
-                                this.baseLayout.staticUrl + '/img/mapPlayerIcon.png'
-                            ),
-                            riseOnHover     : true,
-                            zIndexOffset    : 1000
+                            color           : '#FFFFFF',
+                            fillColor       : ((this.isHost() === true) ? '#b3b3b3' : '#666666'),
+                            icon            : this.baseLayout.staticUrl + '/img/mapPlayerIcon.png'
                         }
                     );
 
