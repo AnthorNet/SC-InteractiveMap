@@ -3453,8 +3453,15 @@ export default class BaseLayout
                     {
                         if(this.playerLayers[layerId].layerGroup.hasLayer(this.playerLayers[layerId].subLayer))
                         {
-                            this.playerLayers[layerId].layerGroup.removeLayer(this.playerLayers[layerId].subLayer)
-                                                                 .addLayer(this.playerLayers[layerId].subLayer);
+                            if(this.playerLayers[layerId].subLayer.bringToFront !== undefined)
+                            {
+                                this.playerLayers[layerId].subLayer.bringToFront();
+                            }
+                            else
+                            {
+                                this.playerLayers[layerId].layerGroup.removeLayer(this.playerLayers[layerId].subLayer)
+                                                                     .addLayer(this.playerLayers[layerId].subLayer);
+                            }
                         }
                     }
                 }
@@ -3614,12 +3621,19 @@ export default class BaseLayout
                     }
 
                     // Redraw to keep layer order...
-                    if(isHiding === false)
+                    if(isHiding === false && ['playerLightsHaloLayer', 'playerFogOfWar'].includes(updateLayerId) === false)
                     {
                         if(this.playerLayers[layerId].layerGroup.hasLayer(this.playerLayers[layerId].subLayer))
                         {
-                            this.playerLayers[layerId].layerGroup.removeLayer(this.playerLayers[layerId].subLayer)
-                                                                 .addLayer(this.playerLayers[layerId].subLayer);
+                            if(this.playerLayers[layerId].subLayer.bringToFront !== undefined)
+                            {
+                                this.playerLayers[layerId].subLayer.bringToFront();
+                            }
+                            else
+                            {
+                                this.playerLayers[layerId].layerGroup.removeLayer(this.playerLayers[layerId].subLayer)
+                                                                     .addLayer(this.playerLayers[layerId].subLayer);
+                            }
                         }
                     }
                 }

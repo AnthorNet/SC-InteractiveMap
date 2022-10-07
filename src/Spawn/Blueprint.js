@@ -11,19 +11,20 @@ export default class Spawn_Blueprint
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
+        this.baseLayout                     = options.baseLayout;
 
-        this.clipboard          = JSON.parse(JSON.stringify(options.clipboard));
-        this.marker             = options.marker;
-        this.pasteOn            = (options.pasteOn !== undefined) ? options.pasteOn : 'bottom';
+        this.clipboard                      = JSON.parse(JSON.stringify(options.clipboard));
+        this.marker                         = options.marker;
+        this.pasteOn                        = (options.pasteOn !== undefined) ? options.pasteOn : 'bottom';
 
-        this.xOffset            = (options.xOffset !== undefined) ? parseFloat(options.xOffset) : 0;
-        this.yOffset            = (options.yOffset !== undefined) ? parseFloat(options.yOffset) : 0;
-        this.zOffset            = (this.clipboard.zOffset !== undefined) ? parseFloat(this.clipboard.zOffset) : ((options.zOffset !== undefined) ? parseFloat(options.zOffset) : 0);
-        this.colorSlotHelper    = (options.colorSlotHelper !== undefined) ? options.colorSlotHelper : 'NONE';
-        this.powerLineClassName = ['/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C', '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'];
+        this.xOffset                        = (options.xOffset !== undefined) ? parseFloat(options.xOffset) : 0;
+        this.yOffset                        = (options.yOffset !== undefined) ? parseFloat(options.yOffset) : 0;
+        this.zOffset                        = (this.clipboard.zOffset !== undefined) ? parseFloat(this.clipboard.zOffset) : ((options.zOffset !== undefined) ? parseFloat(options.zOffset) : 0);
+        this.colorSlotHelper                = (options.colorSlotHelper !== undefined) ? options.colorSlotHelper : 'NONE';
+        this.powerLineClassName             = ['/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C', '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'];
+        this.excludedTranslationClassName   = this.powerLineClassName.concat(['/Script/FactoryGame.FGDroneStationInfo']);
 
-        this.useHistory         = (options.history !== undefined) ? options.history : true;
+        this.useHistory                     = (options.history !== undefined) ? options.history : true;
 
         if(this.useHistory === true && this.baseLayout.history !== null)
         {
@@ -56,7 +57,7 @@ export default class Spawn_Blueprint
             {
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    if(this.clipboard.data[i].parent.transform !== undefined && this.clipboard.data[i].parent.transform.translation !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
+                    if(this.clipboard.data[i].parent.transform !== undefined && this.clipboard.data[i].parent.transform.translation !== undefined)
                     {
                         if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Building/Ramp/Build_RampDouble_8x1.Build_RampDouble_8x1_C')
                         {
@@ -109,7 +110,7 @@ export default class Spawn_Blueprint
                 // Try to find the minZ
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    if(this.clipboard.data[i].parent.transform !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
+                    if(this.clipboard.data[i].parent.transform !== undefined && this.excludedTranslationClassName.includes(this.clipboard.data[i].parent.className) === false)
                     {
                         let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(this.clipboard.data[i].parent.className);
                             if(currentObjectData !== null && currentObjectData.height !== undefined && (currentObjectData.category === 'frame' || currentObjectData.category === 'foundation' || currentObjectData.category === 'roof'))
@@ -133,7 +134,7 @@ export default class Spawn_Blueprint
                 // Apply centering transformation
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    if(this.clipboard.data[i].parent.transform !== undefined && this.clipboard.data[i].parent.transform.translation !== undefined && this.powerLineClassName.includes(this.clipboard.data[i].parent.className) === false)
+                    if(this.clipboard.data[i].parent.transform !== undefined && this.clipboard.data[i].parent.transform.translation !== undefined && this.excludedTranslationClassName.includes(this.clipboard.data[i].parent.className) === false)
                     {
                         this.clipboard.data[i].parent.transform.translation[0] -= centerX;
                         this.clipboard.data[i].parent.transform.translation[1] -= centerY;
