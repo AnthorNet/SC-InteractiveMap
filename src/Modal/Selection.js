@@ -1354,10 +1354,6 @@ L.Selection = L.Handler.extend({
                                 {
                                     if(layer instanceof L.MapMarker)
                                     {
-                                        if(layer instanceof L.MapMarker)
-                                        {
-                                            console.log('MapMarkee?', layer);
-                                        }
                                         if(this.isMarkerInsidePolygon(layer.getLatLng(), this._areaSelected))
                                         {
                                             layers_found.push(layer);

@@ -4,6 +4,8 @@ if('undefined' !== typeof L) // Avoid worker error
 {
     L.MapMarker = L.CircleMarker.extend({
         options: {
+            radiusRatio : 0.6,
+
             riseOnHover : true,
             fillOpacity : 1,
             fillColor   : '#FFFFFF',
@@ -15,7 +17,7 @@ if('undefined' !== typeof L) // Avoid worker error
 
         getRadius: function()
         {
-            return Math.min(32, Math.max(Math.round(this._radius), 10));
+            return Math.min(50, Math.max(Math.round(this._radius), 10));
         },
 
         setOpacity: function(opacity)
@@ -91,7 +93,7 @@ if('undefined' !== typeof L) // Avoid worker error
         },
 
         _project: function () {
-            let latlngRadius    = this._map.options.crs.unproject(this._map.options.crs.project(this._latlng).subtract([0.5, 0]));
+            let latlngRadius    = this._map.options.crs.unproject(this._map.options.crs.project(this._latlng).subtract([this.options.radiusRatio, 0]));
                 this._point     = this._map.latLngToLayerPoint(this._latlng);
                 this._radius    = this._point.x - this._map.latLngToLayerPoint(latlngRadius).x;
 
