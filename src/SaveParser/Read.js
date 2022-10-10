@@ -172,6 +172,7 @@ export default class SaveParser_Read
             {
                 let levelName           = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
                     levels.push(levelName);
+                    //console.log('OBJ', levelName, this.readInt());
                     this.readInt(); // objectsBinaryLength
                 let countObjects        = this.readInt();
                 let entitiesToObjects   = [];
@@ -219,6 +220,7 @@ export default class SaveParser_Read
                         }
                     }
 
+                    //console.log('ENT', levelName, this.readInt());
                     this.readInt(); // entitiesBinaryLength
                 let countEntities       = this.readInt();
                 let objectsToFlush      = {};

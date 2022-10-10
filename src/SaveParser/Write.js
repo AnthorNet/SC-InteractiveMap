@@ -115,8 +115,8 @@ export default class SaveParser_Write
         if(step === 0)
         {
             this.saveBinaryReplacer.push({
-                key     : currentLevel + '-objectsSaveBinaryLength',
-                location: this.saveBinary.length,
+                key         : currentLevel + '-objectsSaveBinaryLength',
+                location    : this.saveBinary.length,
             });
 
             this.saveBinary            += this.writeInt(0, false);
@@ -178,8 +178,8 @@ export default class SaveParser_Write
         if(step === 0)
         {
             this.saveBinaryReplacer.push({
-                key     : currentLevel + '-entitiesSaveBinaryLength',
-                location: this.saveBinary.length,
+                key         : currentLevel + '-entitiesSaveBinaryLength',
+                location    : this.saveBinary.length,
             });
 
             this.saveBinary            += this.writeInt(0, false);
@@ -379,12 +379,13 @@ export default class SaveParser_Write
     createChunk()
     {
         // Check if we need to replace values afterward...
+        //TODO: CHECK EACH INT BYTES POSITION AGAINST THE END OF THE CHUNK
         let havePlaceholders = [];
             if(this.saveBinaryReplacer.length > 0)
             {
                 for(let i = (this.saveBinaryReplacer.length - 1); i >= 0; i--)
                 {
-                    if(this.saveBinaryReplacer[i].location <= this.saveBinary.length)
+                    if(this.saveBinaryReplacer[i].location < this.saveBinary.length)
                     {
                         havePlaceholders.push(this.saveBinaryReplacer[i]);
                         this.saveBinaryReplacer.splice(i, 1);
