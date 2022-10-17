@@ -34,7 +34,7 @@ export default class Building_DroneStation
         return null;
     }
 
-    static getLatestDroneTrips(baseLayout, currentObject)
+    static getLatestDroneTrips(baseLayout, currentObject, stationsPathName = [])
     {
         let mInfo = Building_DroneStation.getInformation(baseLayout, currentObject);
             if(mInfo !== null)
@@ -53,12 +53,13 @@ export default class Building_DroneStation
                     if(currentDrone !== null)
                     {
                         let mHomeStation = baseLayout.getObjectProperty(currentDrone, 'mHomeStation');
-                            if(mHomeStation !== null)
+                            if(mHomeStation !== null && stationsPathName.includes(mHomeStation.pathName) === false)
                             {
                                 let currentStation = baseLayout.saveGameParser.getTargetObject(mHomeStation.pathName);
                                     if(currentStation !== null)
                                     {
-                                        return Building_DroneStation.getLatestDroneTrips(baseLayout, currentStation);
+                                        stationsPathName.push(mHomeStation.pathName);
+                                        return Building_DroneStation.getLatestDroneTrips(baseLayout, currentStation, stationsPathName);
                                     }
                             }
                     }
@@ -72,12 +73,13 @@ export default class Building_DroneStation
                     if(currentDrone !== null)
                     {
                         let mHomeStation = baseLayout.getObjectProperty(currentDrone, 'mHomeStation');
-                            if(mHomeStation !== null)
+                            if(mHomeStation !== null && stationsPathName.includes(mHomeStation.pathName) === false)
                             {
                                 let currentStation = baseLayout.saveGameParser.getTargetObject(mHomeStation.pathName);
                                     if(currentStation !== null)
                                     {
-                                        return Building_DroneStation.getLatestDroneTrips(baseLayout, currentStation);
+                                        stationsPathName.push(mHomeStation.pathName);
+                                        return Building_DroneStation.getLatestDroneTrips(baseLayout, currentStation, stationsPathName);
                                     }
                             }
                     }
