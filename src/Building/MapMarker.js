@@ -127,6 +127,8 @@ export default class Building_MapMarker
                         baseLayout.deleteMarkerFromElements('playerOrientationLayer', marker.relatedTarget);
                         baseLayout.playerLayers.playerOrientationLayer.count--;
                         baseLayout.setBadgeLayerCount('playerOrientationLayer');
+
+                        baseLayout.mapSubSystem.getMapMarkers(); // Reparse the loop to get proper indexed marker
                         return;
                     }
                 }

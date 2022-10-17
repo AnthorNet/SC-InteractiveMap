@@ -191,7 +191,23 @@ export default class SubSystem_Map
         let mapMarkers = this.getMapMarkers();
             for(let i = 0; i < mapMarkers.length; i++)
             {
-                Building_MapMarker.add(this.baseLayout, mapMarkers[i]);
+                let currentMapMarker = mapMarkers[i];
+
+                    // Fix wrongly indexed map marker
+                    for(let j = 0; j < currentMapMarker.length; j++)
+                    {
+                        if(currentMapMarker[j].name === 'MarkerID')
+                        {
+                            if(currentMapMarker[j].value.value !== 255)
+                            {
+                                if(currentMapMarker[j].value.value !== (i + 1))
+                                {
+                                    currentMapMarker[j].value.value = (i + 1);
+                                }
+                            }
+                        }
+                    }
+                Building_MapMarker.add(this.baseLayout, currentMapMarker);
             }
     }
 
