@@ -83,6 +83,16 @@ export default class Modal_Map_Players
 
                                     inventoryHtml.push('</div>');
 
+                                    inventoryHtml.push('<div class="py-2" data-pathName="' + pathName + '">');
+                                        inventoryHtml.push('<div class="input-group"><div class="input-group-prepend"><button class="btn btn-outline-secondary text-white" type="button" id="parseStatisticsPlayerInventoryRemoveHealth">-</button></div>');
+                                            inventoryHtml.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/bar_health_empty_straight.png?v=' + this.baseLayout.scriptVersion + ') left no-repeat;height: 36px;width: 201px;margin: 0 auto;">');
+                                                inventoryHtml.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/bar_health_full_straight.png?v=' + this.baseLayout.scriptVersion + ') left no-repeat;height: 36px;width: ' + this.baseLayout.players[pathName].getCurrentHealth() + '%;">');
+
+                                                inventoryHtml.push('</div>');
+                                            inventoryHtml.push('</div>');
+                                        inventoryHtml.push('<div class="input-group-append"><button class="btn btn-outline-secondary text-white" type="button" id="parseStatisticsPlayerInventoryAddHealth">+</button></div></div>');
+                                    inventoryHtml.push('</div>');
+
                                     if(this.baseLayout.players[pathName].isHost() === false)
                                     {
                                         inventoryHtml.push('<button class="btn btn-danger w-100 parseStatisticsPlayerInventoryDeleteGuest" data-pathName="' + pathName +'">Delete player</button>')
@@ -115,6 +125,20 @@ export default class Modal_Map_Players
                 this.addEquipmentSlot(1);
                 this.parse();
             });
+
+            $('#parseStatisticsPlayerInventoryRemoveHealth').on('click', (e) => {
+                let pathName = $(e.target).parent().parent().parent().attr('data-pathName');
+
+                    this.baseLayout.players[pathName].setCurrentHealth(this.baseLayout.players[pathName].getCurrentHealth() - 1);
+                    this.parse();
+            });
+            $('#parseStatisticsPlayerInventoryAddHealth').on('click', (e) => {
+                let pathName = $(e.target).parent().parent().parent().attr('data-pathName');
+
+                    this.baseLayout.players[pathName].setCurrentHealth(this.baseLayout.players[pathName].getCurrentHealth() + 1);
+                    this.parse();
+            });
+
             $('.parseStatisticsPlayerInventoryDeleteGuest').on('click', (e) => {
                 let pathName = $(e.target).attr('data-pathName');
                     if(this.baseLayout.players[pathName] !== undefined)
