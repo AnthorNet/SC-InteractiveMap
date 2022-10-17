@@ -986,11 +986,9 @@ export default class GameMap
     formatHash()
     {
         let center          = this.leafletMap.getCenter(),
-            zoom            = this.leafletMap.getZoom(),
-            baseLayer       = this.baseLayer,
-            activeLayers    = this.activeLayers;
+            zoom            = this.leafletMap.getZoom();
 
-        if(activeLayers === null)
+        if(this.activeLayers === null)
         {
             let initialHash         = this.parseHash(location.hash);
             let defaultLayers       = ['limestonePure', 'ironPure', 'copperPure', 'cateriumPure', 'coalPure', 'oilPure', 'hardDrives'];
@@ -1000,39 +998,41 @@ export default class GameMap
                     center          = initialHash.center;
                     zoom            = initialHash.zoom;
 
-                    if(initialHash.baseLayer === null)
+                    if(initialHash.baseLayer !== null)
                     {
-                        //$('.setBaseLayer[data-id="' + baseLayer + '"]').trigger('click');
-                    }
-                    else
-                    {
-                        baseLayer = this.baseLayer = initialHash.baseLayer;
+                        this.baseLayer = initialHash.baseLayer;
+
+                        if(this.baseLayers[this.baseLayer] === undefined)
+                        {
+                            this.baseLayer = 'gameLayer';
+                        }
+
                         setTimeout(function(){
-                            $('.setBaseLayer[data-id="' + baseLayer + '"]').trigger('click');
+                            $('.setBaseLayer[data-id="' + this.baseLayer + '"]').trigger('click');
                         }, 150);
                     }
 
                     if(initialHash.activeLayers === null)
                     {
-                        activeLayers = this.activeLayers = defaultLayers;
+                        this.activeLayers = defaultLayers;
                     }
                     else
                     {
-                        activeLayers = this.activeLayers = initialHash.activeLayers;
+                        this.activeLayers = initialHash.activeLayers;
                     }
 
                     this.leafletMap.setView(center, zoom);
                 }
                 else
                 {
-                    activeLayers = this.activeLayers = defaultLayers;
+                    this.activeLayers = defaultLayers;
                 }
         }
 
         let coordinates     = this.project([center.lat, center.lng], zoom);
             coordinates     = this.convertToGameCoordinates([coordinates.x, coordinates.y]);
 
-        let currentHash     = "#" + [zoom, Math.round(coordinates[0]), Math.round(coordinates[1])].join(";") + '|' + baseLayer + '|' + activeLayers.join(';');
+        let currentHash     = "#" + [zoom, Math.round(coordinates[0]), Math.round(coordinates[1])].join(";") + '|' + this.baseLayer + '|' + this.activeLayers.join(';');
 
             if(this.collectedHardDrives === null)
             {
