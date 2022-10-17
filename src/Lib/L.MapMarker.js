@@ -17,7 +17,7 @@ if('undefined' !== typeof L) // Avoid worker error
 
         getRadius: function()
         {
-            return Math.min(50, Math.max(Math.round(this._radius), 10));
+            return Math.min(40, Math.max(Math.round(this._radius), 15));
         },
 
         setOpacity: function(opacity)
