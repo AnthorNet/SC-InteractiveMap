@@ -4,6 +4,7 @@ export default class Modal_Map_Players
     {
         this.baseLayout         = options.baseLayout;
         this.unlockSubSystem    = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
+        this.lastPathName       = null;
     }
 
     parse()
@@ -34,11 +35,16 @@ export default class Modal_Map_Players
                 let mOwnedPawn  = this.baseLayout.players[pathName].getOwnedPawn();
                     if(mOwnedPawn !== null)
                     {
-                        inventoryHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'active' : '') + '" data-toggle="tab" href="#playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
+                        if(this.baseLayout.players[pathName].isHost() === true && this.lastPathName === null)
+                        {
+                            this.lastPathName = pathName;
+                        }
+
+                        inventoryHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((pathName === this.lastPathName) ? 'active' : '') + '" data-toggle="tab" href="#playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;" data-pathName="' + pathName +'">');
                         inventoryHeaderHtml.push(this.baseLayout.players[pathName].getDisplayName());
                         inventoryHeaderHtml.push('</span></li>');
 
-                        inventoryHtml.push('<div class="tab-pane fade ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'show active' : '') + '" id="playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
+                        inventoryHtml.push('<div class="tab-pane fade ' + ((pathName === this.lastPathName) ? 'show active' : '') + '" id="playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
 
                         let inventory           = this.baseLayout.getObjectInventory(mOwnedPawn, 'mInventory');
 
@@ -83,19 +89,21 @@ export default class Modal_Map_Players
 
                                     inventoryHtml.push('</div>');
 
-                                    inventoryHtml.push('<div class="py-2" data-pathName="' + pathName + '">');
-                                        inventoryHtml.push('<div class="input-group"><div class="input-group-prepend"><button class="btn btn-outline-secondary text-white" type="button" id="parseStatisticsPlayerInventoryRemoveHealth">-</button></div>');
-                                            inventoryHtml.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/bar_health_empty_straight.png?v=' + this.baseLayout.scriptVersion + ') left no-repeat;height: 36px;width: 201px;margin: 0 auto;">');
-                                                inventoryHtml.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/bar_health_full_straight.png?v=' + this.baseLayout.scriptVersion + ') left no-repeat;height: 36px;width: ' + this.baseLayout.players[pathName].getCurrentHealth() + '%;">');
+                                    inventoryHtml.push('<div class="py-2">');
+                                        inventoryHtml.push('<div class="input-group">');
+                                            inventoryHtml.push('<div class="input-group-prepend"><button class="btn btn-outline-secondary text-white parseStatisticsPlayerInventoryRemoveHealth" type="button">-</button></div>');
+                                                inventoryHtml.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/bar_health_empty_straight.png?v=' + this.baseLayout.scriptVersion + ') left no-repeat;height: 36px;width: 201px;margin: 0 auto;">');
+                                                    inventoryHtml.push('<div style="background: url(' + this.baseLayout.staticUrl + '/img/bar_health_full_straight.png?v=' + this.baseLayout.scriptVersion + ') left no-repeat;height: 36px;width: ' + this.baseLayout.players[pathName].getCurrentHealth() + '%;">');
 
+                                                    inventoryHtml.push('</div>');
                                                 inventoryHtml.push('</div>');
-                                            inventoryHtml.push('</div>');
-                                        inventoryHtml.push('<div class="input-group-append"><button class="btn btn-outline-secondary text-white" type="button" id="parseStatisticsPlayerInventoryAddHealth">+</button></div></div>');
+                                            inventoryHtml.push('<div class="input-group-append"><button class="btn btn-outline-secondary text-white parseStatisticsPlayerInventoryAddHealth" type="button">+</button></div>');
+                                        inventoryHtml.push('</div>');
                                     inventoryHtml.push('</div>');
 
                                     if(this.baseLayout.players[pathName].isHost() === false)
                                     {
-                                        inventoryHtml.push('<button class="btn btn-danger w-100 parseStatisticsPlayerInventoryDeleteGuest" data-pathName="' + pathName +'">Delete player</button>')
+                                        inventoryHtml.push('<button class="btn btn-danger w-100 parseStatisticsPlayerInventoryDeleteGuest">Delete player</button>')
                                     }
                                 inventoryHtml.push('</div>');
 
@@ -108,6 +116,10 @@ export default class Modal_Map_Players
 
         if(this.unlockSubSystem !== null)
         {
+            $('#statisticsPlayerInventory span[data-toggle="tab"]').on('show.bs.tab', (e) => {
+                this.lastPathName = $(e.target).attr('data-pathName');
+            });
+
             $('#parseStatisticsPlayerInventoryRemoveInventory').on('click', () => {
                 this.removeInventorySlot(1);
                 this.parse();
@@ -126,26 +138,27 @@ export default class Modal_Map_Players
                 this.parse();
             });
 
-            $('#parseStatisticsPlayerInventoryRemoveHealth').on('click', (e) => {
-                let pathName = $(e.target).parent().parent().parent().attr('data-pathName');
-
-                    this.baseLayout.players[pathName].setCurrentHealth(this.baseLayout.players[pathName].getCurrentHealth() - 1);
+            $('.parseStatisticsPlayerInventoryRemoveHealth').on('click', () => {
+                if(this.baseLayout.players[this.lastPathName] !== undefined)
+                {
+                    this.baseLayout.players[this.lastPathName].setCurrentHealth(this.baseLayout.players[this.lastPathName].getCurrentHealth() - 1);
                     this.parse();
+                }
             });
-            $('#parseStatisticsPlayerInventoryAddHealth').on('click', (e) => {
-                let pathName = $(e.target).parent().parent().parent().attr('data-pathName');
-
-                    this.baseLayout.players[pathName].setCurrentHealth(this.baseLayout.players[pathName].getCurrentHealth() + 1);
+            $('.parseStatisticsPlayerInventoryAddHealth').on('click', () => {
+                if(this.baseLayout.players[this.lastPathName] !== undefined)
+                {
+                    this.baseLayout.players[this.lastPathName].setCurrentHealth(this.baseLayout.players[this.lastPathName].getCurrentHealth() + 1);
                     this.parse();
+                }
             });
 
-            $('.parseStatisticsPlayerInventoryDeleteGuest').on('click', (e) => {
-                let pathName = $(e.target).attr('data-pathName');
-                    if(this.baseLayout.players[pathName] !== undefined)
-                    {
-                        this.baseLayout.players[pathName].delete();
-                    }
-                this.parse();
+            $('.parseStatisticsPlayerInventoryDeleteGuest').on('click', () => {
+                if(this.baseLayout.players[this.lastPathName] !== undefined)
+                {
+                    this.baseLayout.players[this.lastPathName].delete();
+                    this.parse();
+                }
             });
         }
     }
