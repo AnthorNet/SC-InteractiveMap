@@ -4,8 +4,9 @@ export default class Modal_Map_Hotbars
 {
     constructor(options)
     {
-        this.baseLayout = options.baseLayout;
-        this.clipboard  = (this.baseLayout.localStorage !== null && this.baseLayout.localStorage.getItem('hotbarsClipboard') !== null) ? JSON.parse(this.baseLayout.localStorage.getItem('hotbarsClipboard')) : [];
+        this.baseLayout     = options.baseLayout;
+        this.clipboard      = (this.baseLayout.localStorage !== null && this.baseLayout.localStorage.getItem('hotbarsClipboard') !== null) ? JSON.parse(this.baseLayout.localStorage.getItem('hotbarsClipboard')) : [];
+        this.lastPathName   = null;
     }
 
     parse(options = {})
@@ -17,16 +18,25 @@ export default class Modal_Map_Hotbars
 
         for(let pathName in this.baseLayout.players)
         {
-            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
+            if(this.baseLayout.players[pathName].isHost() === true && this.lastPathName === null)
+            {
+                this.lastPathName = pathName;
+            }
+
+            hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((pathName === this.lastPathName) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;" data-pathName="' + pathName +'">');
             hotbarHeaderHtml.push(this.baseLayout.players[pathName].getDisplayName());
             hotbarHeaderHtml.push('</span></li>');
 
-            hotbarHtml.push('<div class="tab-pane fade ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'show active' : '') + '" id="playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
+            hotbarHtml.push('<div class="tab-pane fade ' + ((pathName === this.lastPathName) ? 'show active' : '') + '" id="playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
             hotbarHtml.push(this.parsePlayer(this.baseLayout.players[pathName].player, options));
             hotbarHtml.push('</div>');
         }
 
         $('#statisticsPlayerHotBars').html('<ul class="nav nav-tabs nav-fill">' + hotbarHeaderHtml.join('') + '</ul><div class="tab-content p-3 border border-top-0">' + hotbarHtml.join('') + '</div>');
+
+        $('#statisticsPlayerHotBars span[data-toggle="tab"]').on('show.bs.tab', (e) => {
+                this.lastPathName = $(e.target).attr('data-pathName');
+            });
 
         $('#statisticsPlayerHotBars .btn-copy').click((e) => {
             let playerStatePathName = $(e.target).closest('[data-hotbar]').attr('data-pathName');
@@ -81,30 +91,27 @@ export default class Modal_Map_Hotbars
             }
         });
         $('#statisticsPlayerHotBars .btn-delete').click((e) => {
-            if(this.clipboard.length > 0)
-            {
-                let playerStatePathName = $(e.target).closest('[data-hotbar]').attr('data-pathName');
-                let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
-                    if(playerState !== null)
-                    {
-                        let hotbarSlot          = $(e.target).closest('[data-hotbar]').attr('data-hotbar');
-                        let mHotbars            = this.baseLayout.getObjectProperty(playerState, 'mHotbars');
-                            if(mHotbars !== null)
+            let playerStatePathName = $(e.target).closest('[data-hotbar]').attr('data-pathName');
+            let playerState         = this.baseLayout.saveGameParser.getTargetObject(playerStatePathName);
+                if(playerState !== null)
+                {
+                    let hotbarSlot          = $(e.target).closest('[data-hotbar]').attr('data-hotbar');
+                    let mHotbars            = this.baseLayout.getObjectProperty(playerState, 'mHotbars');
+                        if(mHotbars !== null)
+                        {
+                            for(let j = 0; j < mHotbars.values[parseInt(hotbarSlot)][0].value.values.length; j++)
                             {
-                                for(let j = 0; j < mHotbars.values[parseInt(hotbarSlot)][0].value.values.length; j++)
-                                {
-                                    let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[parseInt(hotbarSlot)][0].value.values[j].pathName);
-                                        if(currentShortcut !== null)
-                                        {
-                                            currentShortcut.properties = [];
-                                        }
-                                }
-
-                                $(e.currentTarget).tooltip('dispose');
-                                this.parse(options);
+                                let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mHotbars.values[parseInt(hotbarSlot)][0].value.values[j].pathName);
+                                    if(currentShortcut !== null)
+                                    {
+                                        currentShortcut.properties = [];
+                                    }
                             }
-                    }
-            }
+
+                            $(e.currentTarget).tooltip('dispose');
+                            this.parse(options);
+                        }
+                }
         });
 
         $('#statisticsPlayerHotBars .btn-copyAll').click((e) => {
