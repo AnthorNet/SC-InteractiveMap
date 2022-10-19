@@ -208,6 +208,17 @@ export default class Modal_Map_Options
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputShowPlayersOnLoad" id="inputShowPlayersOnLoad" ' + ((this.baseLayout.showPlayersOnLoad === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputShowPlayersOnLoad">' + this.baseLayout.translate._('Show player informations by default?') + '</label>');
+            html.push('</div>');
+        html.push('</div>');
+        html.push('</div><div class="col-6">');
+
+        html.push('</div></div>');
+
+        html.push('<div class="row"><div class="col-6">');
+        html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch">');
             html.push('<input type="checkbox" class="custom-control-input" name="inputShowStructuresOnLoad" id="inputShowStructuresOnLoad" ' + ((this.baseLayout.showStructuresOnLoad === true) ? 'checked' : '') + ' />');
             html.push('<label class="custom-control-label" for="inputShowStructuresOnLoad">' + this.baseLayout.translate._('Show structures by default?') + '</label>');
             html.push('</div>');
@@ -322,6 +333,9 @@ export default class Modal_Map_Options
         $('#statisticsModalOptions input, #statisticsModalOptions select').on('keyup click', () => {
             if(this.baseLayout.localStorage !== null)
             {
+                this.baseLayout.showPlayersOnLoad           = (($('#inputShowPlayersOnLoad').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapShowPlayersOnLoad', this.baseLayout.showPlayersOnLoad);
+
                 this.baseLayout.showStructuresOnLoad        = (($('#inputShowStructuresOnLoad').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapShowStructuresOnLoad', this.baseLayout.showStructuresOnLoad);
 

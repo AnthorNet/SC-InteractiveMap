@@ -104,6 +104,7 @@ export default class BaseLayout
         this.collectedSchematics                = new Schematics({language: options.language});
         this.localStorage                       = this.collectedHardDrives.getLocaleStorage();
 
+        this.showPlayersOnLoad                  = (this.localStorage !== null && this.localStorage.getItem('mapShowPlayersOnLoad') !== null) ? (this.localStorage.getItem('mapShowPlayersOnLoad') === 'true') : true;
         this.showStructuresOnLoad               = (this.localStorage !== null && this.localStorage.getItem('mapShowStructuresOnLoad') !== null) ? (this.localStorage.getItem('mapShowStructuresOnLoad') === 'true') : true;
         this.showBuildingsOnLoad                = (this.localStorage !== null && this.localStorage.getItem('mapShowBuildingsOnLoad') !== null) ? (this.localStorage.getItem('mapShowBuildingsOnLoad') === 'true') : true;
         this.showGeneratorsOnLoad               = (this.localStorage !== null && this.localStorage.getItem('mapShowGeneratorsOnLoad') !== null) ? (this.localStorage.getItem('mapShowGeneratorsOnLoad') === 'true') : true;
@@ -3339,6 +3340,12 @@ export default class BaseLayout
             {
                 switch(this.playerLayers[layerId].mainDivId)
                 {
+                    case '#playerInformationLayer':
+                        if(layerId !== 'playerPositionLayer')
+                        {
+                            show = this.showPlayersOnLoad;
+                        }
+                        break;
                     case '#playerStructuresLayer':
                         show = this.showStructuresOnLoad;
                         break;
