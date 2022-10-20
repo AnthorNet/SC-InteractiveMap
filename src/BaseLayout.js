@@ -3324,11 +3324,10 @@ export default class BaseLayout
             {
                 case 'playerRadioactivityLayer':
                     this.playerLayers[layerId].subLayer = new HeatmapOverlay({
-                        maxOpacity: .8,
-                        scaleRadius: true,
-                        useLocalExtrema: false,
-                        //gradient: { 0.33: "rgb(0,255,0)", 0.90: "yellow", 1.0: "rgb(255,0,0)"}
-                        gradient: { 0.40: "rgb(0,0,255)", 0.80: "rgb(0,255,0)", 0.90: "yellow", 1.0: "rgb(255,0,0)"}
+                        maxOpacity      : .8,
+                        scaleRadius     : true,
+                        useLocalExtrema : false,
+                        gradient        : { 0.40: "rgb(0,0,255)", 0.80: "rgb(0,255,0)", 0.90: "yellow", 1.0: "rgb(255,0,0)"}
                     });
                     break;
                 default:
@@ -5136,7 +5135,6 @@ export default class BaseLayout
         if(this.playerLayers[layerId] !== undefined)
         {
             let layerLength = this.playerLayers[layerId].elements.length;
-
                 for(let i = 0; i < layerLength; i++)
                 {
                     if(this.playerLayers[layerId].elements[i] === marker)

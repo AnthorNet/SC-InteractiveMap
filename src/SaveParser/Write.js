@@ -1,4 +1,4 @@
-/* global Intl, self, Promise */
+/* global Intl, self, Promise, Sentry */
 import pako                                     from '../Lib/pako.esm.js';
 
 import Building_Conveyor                        from '../Building/Conveyor.js';
@@ -393,6 +393,14 @@ export default class SaveParser_Write
                     else
                     {
                         this.saveBinaryReplacer[i].location -= this.saveBinary.length;
+
+                        if(this.saveBinaryReplacer[i].location < 0)
+                        {
+                            if(typeof Sentry !== 'undefined')
+                            {
+                                Sentry.captureMessage('Invalid chunk location replacer');
+                            }
+                        }
                     }
                 }
             }

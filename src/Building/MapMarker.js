@@ -5,6 +5,7 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import Building_Sign                            from './Sign.js';
 
 import Lib_MapMarker                            from '../Lib/L.MapMarker.js';
+import SaveParser_FicsIt                        from '../SaveParser/FicsIt.js';
 
 export default class Building_MapMarker
 {
@@ -128,7 +129,7 @@ export default class Building_MapMarker
                         baseLayout.playerLayers.playerOrientationLayer.count--;
                         baseLayout.setBadgeLayerCount('playerOrientationLayer');
 
-                        baseLayout.mapSubSystem.getMapMarkers(); // Reparse the loop to get proper indexed marker
+                        SaveParser_FicsIt.fixMapManager(baseLayout, baseLayout.mapSubSystem.mapSubSystem, true);
                         return;
                     }
                 }

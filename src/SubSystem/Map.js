@@ -1,5 +1,5 @@
 /* global Intl, Infinity */
-
+import SaveParser_FicsIt                        from '../SaveParser/FicsIt.js';
 import Building_MapMarker                       from '../Building/MapMarker.js';
 
 export default class SubSystem_Map
@@ -10,13 +10,13 @@ export default class SubSystem_Map
         this.mapSubSystem   = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.MapManager');
         this.useFogOfWar    = this.baseLayout.useFogOfWar;
 
-        this.baseLayout.setupSubLayer('playerFogOfWar');
-
         if(this.useFogOfWar === true)
         {
+            this.baseLayout.setupSubLayer('playerFogOfWar');
             this.addFogOfWar();
         }
 
+        SaveParser_FicsIt.fixMapManager(this.baseLayout, this.mapSubSystem);
         this.addMapMarkers();
     }
 
@@ -191,6 +191,7 @@ export default class SubSystem_Map
         let mapMarkers = this.getMapMarkers();
             for(let i = 0; i < mapMarkers.length; i++)
             {
+                console.log(mapMarkers[i])
                 Building_MapMarker.add(this.baseLayout, mapMarkers[i]);
             }
     }

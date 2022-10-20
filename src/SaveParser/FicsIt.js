@@ -1,6 +1,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import Building_TrainStation                    from '../Building/TrainStation.js';
+import Building_MapMarker                       from '../Building/MapMarker.js';
 
 export default class SaveParser_FicsIt
 {
@@ -80,7 +81,7 @@ export default class SaveParser_FicsIt
     /*
      * Properly reindex the map markers
      */
-    static fixMapManager(baseLayout, currentObject)
+    static fixMapManager(baseLayout, currentObject, redraw = false)
     {
         let haveFixedMapManager = false;
         let mMapMarkers         = baseLayout.getObjectProperty(currentObject, 'mMapMarkers');
@@ -94,10 +95,24 @@ export default class SaveParser_FicsIt
                         {
                             if(mMapMarkers.values[i][j].value.value !== 255)
                             {
-                                if(mMapMarkers.values[i][j].value.value !== (i + 1))
+                                if(mMapMarkers.values[i][j].value.value !== i)
                                 {
-                                    mMapMarkers.values[i][j].value.value   = (i + 1);
-                                    haveFixedMapManager             = true;
+                                    let oldMarkerID                             = parseInt(mMapMarkers.values[i][j].value.value);
+                                        mMapMarkers.values[i][j].value.value    = i;
+                                        haveFixedMapManager                     = true;
+
+                                    if(redraw === true)
+                                    {
+                                        let layerId     = 'playerOrientationLayer';
+                                        let layerLength = baseLayout.playerLayers[layerId].elements.length;
+                                            for(let k = 0; k < layerLength; k++)
+                                            {
+                                                if(baseLayout.playerLayers[layerId].elements[k].options.mapMarkerId === oldMarkerID)
+                                                {
+                                                    baseLayout.playerLayers[layerId].elements[k].options.mapMarkerId = mMapMarkers.values[i][j].value.value;
+                                                }
+                                            }
+                                    }
                                 }
                             }
                         }
