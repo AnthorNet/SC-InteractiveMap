@@ -28,7 +28,8 @@ export default class Spawn_Blueprint
 
         if(this.useHistory === true && this.baseLayout.history !== null)
         {
-            this.historyPathName = [];
+            this.historyValues      = [];
+            this.historyPathName    = [];
         }
 
         if(typeof gtag === 'function')
@@ -1049,13 +1050,13 @@ export default class Spawn_Blueprint
 
         if(this.useHistory === true && this.baseLayout.history !== null && this.historyPathName.length > 0)
         {
-            this.baseLayout.history.add({
-                name: 'Undo: Paste blueprint',
-                values: [{
-                    pathNameArray: this.historyPathName,
-                    callback: 'Selection_Delete'
-                }]
-            });
+            this.historyValues.push({callback: 'Selection_Delete', pathNameArray: this.historyPathName});
+                if(this.pasteOn === 'bottom' && this.marker !== null)
+                {
+                    this.historyValues.unshift({callback: 'restoreObject', object: this.centerObject});
+                }
+
+            this.baseLayout.history.add({name: 'Undo: Paste blueprint', values: this.historyValues});
         }
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
@@ -1068,15 +1069,17 @@ export default class Spawn_Blueprint
     {
         let centerX             = ((this.clipboard.minX + this.clipboard.maxX) / 2) + this.xOffset;
         let centerY             = ((this.clipboard.minY + this.clipboard.maxY) / 2) + this.yOffset;
-
-        this.baseLayout.buildableSubSystem.setObjectColorSlot(this.centerObject, parseInt(colorSlotHelper));
+        let originalColorSlot   = this.baseLayout.buildableSubSystem.getObjectColorSlot(this.centerObject);
 
         // Redraw!
         new Promise((resolve) => {
+            this.historyValues.push({callback: 'setObjectColorSlot', pathName: this.centerObject.pathName, colorSlot: originalColorSlot});
+            this.baseLayout.buildableSubSystem.setObjectColorSlot(this.centerObject, parseInt(colorSlotHelper));
             return this.baseLayout.parseObject(this.centerObject, resolve);
         }).then((result) => {
-            this.baseLayout.deleteMarkerFromElements(result.layer, this.marker);
+            this.baseLayout.deleteMarkerFromElements(result.layer, this.marker.relatedTarget);
             this.baseLayout.addElementToLayer(result.layer, result.marker);
+            this.marker.relatedTarget = result.marker;
         });
 
         let corners = [
@@ -1111,6 +1114,7 @@ export default class Spawn_Blueprint
                 newFoundation.transform.translation[1]  = translationRotation[1];
 
             new Promise((resolve) => {
+                this.historyPathName.push(newFoundation.pathName);
                 this.baseLayout.saveGameParser.addObject(newFoundation);
                 return this.baseLayout.parseObject(newFoundation, resolve);
             }).then((result) => {
@@ -1196,29 +1200,28 @@ L.Control.ClipboardControl = L.Control.extend({
                     {
                         let reader = new FileReader();
                             reader.readAsArrayBuffer(droppedFile);
+                            reader.onload = () => {
+                                let restored = null;
+                                    try
+                                    {
+                                        restored = JSON.parse(pako.inflate(reader.result, { to: 'string' }));
+                                    }
+                                    catch(error)
+                                    {
+                                        restored = null;
+                                        console.error(error);
+                                    }
 
-                        reader.onload = () => {
-                            let restored = null;
-                                try
+                                if(restored !== null)
                                 {
-                                    restored = JSON.parse(pako.inflate(reader.result, { to: 'string' }));
-                                }
-                                catch(error)
-                                {
-                                    restored = null;
-                                    console.error(error);
+                                    this.options.baseLayout.clipboard = restored;
+
+                                    $(this.options.pasteInPlaceButton).show();
+                                    BaseLayout_Modal.alert('Imported ' + restored.data.length + ' items from the blueprint!<br />Don\'t forget to paste it on original location or by right clicking any foundation!');
                                 }
 
-                            if(restored !== null)
-                            {
-                                this.options.baseLayout.clipboard = restored;
-
-                                $(this.options.pasteInPlaceButton).show();
-                                BaseLayout_Modal.alert('Imported ' + restored.data.length + ' items from the blueprint!<br />Don\'t forget to paste it on original location or by right clicking any foundation!');
-                            }
-
-                            $('#clipboardControlModal').modal('hide');
-                        };
+                                $('#clipboardControlModal').modal('hide');
+                            };
                     }
                     else
                     {

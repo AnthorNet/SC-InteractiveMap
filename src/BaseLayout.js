@@ -5171,12 +5171,12 @@ export default class BaseLayout
                             }
                         }
 
-                        return;
+                        return true;
                     }
                 }
-
-                return;
         }
+
+        return false;
     }
 
     removeFromStorage(currentObject)

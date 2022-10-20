@@ -14,9 +14,9 @@ export default class Modal_Map_Paste
         let baseLayout          = marker.baseLayout;
         let colorSlotOptions    = [];
             colorSlotOptions.push({text: 'No foundation helper', value: 'NONE'});
-            for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
+            for(let slotIndex = 1; slotIndex <= SubSystem_Buildable.totalColorSlots; slotIndex++)
             {
-                colorSlotOptions.push({text: 'Swatch #' + (slotIndex + 1), value: slotIndex});
+                colorSlotOptions.push({text: 'Swatch #' + slotIndex, value: slotIndex});
             }
 
         BaseLayout_Modal.form({

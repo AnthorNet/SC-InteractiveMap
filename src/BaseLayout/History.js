@@ -60,6 +60,16 @@ export default class BaseLayout_History
                     currentOperation.properties = {};
                 }
 
+                if(currentOperation.callback === 'restoreObject')
+                {
+                    new Promise((resolve) => {
+                        this.baseLayout.saveGameParser.addObject(currentOperation.object);
+                        return this.baseLayout.parseObject(currentOperation.object, resolve);
+                    }).then((result) => {
+                        this.baseLayout.addElementToLayer(result.layer, result.marker);
+                    });
+                }
+
                 if(currentOperation.pathName !== undefined)
                 {
                     currentOperation.properties.marker  = this.baseLayout.getMarkerFromPathName(currentOperation.pathName, ((currentOperation.layerId !== undefined) ? currentOperation.layerId : null));
@@ -85,8 +95,14 @@ export default class BaseLayout_History
                                 case 'deleteFauna':
                                     this.baseLayout.faunaSubsystem.delete({baseLayout: this.baseLayout, relatedTarget: currentOperation.properties.marker});
                                     break;
-                                case 'restoreState':
-
+                                case 'setObjectColorSlot':
+                                    new Promise((resolve) => {
+                                        this.baseLayout.buildableSubSystem.setObjectColorSlot(currentOperation.properties.object, currentOperation.colorSlot);
+                                        return this.baseLayout.parseObject(currentOperation.properties.object, resolve);
+                                    }).then((result) => {
+                                        this.baseLayout.deleteMarkerFromElements(result.layer, currentOperation.properties.marker);
+                                        this.baseLayout.addElementToLayer(result.layer, result.marker);
+                                    });
                                     break;
                                 default:
                                     this.baseLayout[currentOperation.callback].call(this.baseLayout, currentOperation.properties);

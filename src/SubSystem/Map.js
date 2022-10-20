@@ -191,7 +191,6 @@ export default class SubSystem_Map
         let mapMarkers = this.getMapMarkers();
             for(let i = 0; i < mapMarkers.length; i++)
             {
-                console.log(mapMarkers[i])
                 Building_MapMarker.add(this.baseLayout, mapMarkers[i]);
             }
     }
