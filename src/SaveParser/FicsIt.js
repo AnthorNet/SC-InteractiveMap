@@ -10,6 +10,8 @@ export default class SaveParser_FicsIt
         {
             switch(currentObject.className)
             {
+                case '/Script/FactoryGame.FGMapManager':
+                    return SaveParser_FicsIt.fixMapManager(baseLayout, currentObject);
                 case '/Script/FactoryGame.FGDroneStationInfo':
                 case '/Script/FactoryGame.FGWheeledVehicleInfo':
                     return SaveParser_FicsIt.fixObjectConnectedInfo(baseLayout, currentObject);
@@ -71,6 +73,42 @@ export default class SaveParser_FicsIt
             case '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_02_Steel.Build_Wall_Door_8x4_02_Steel_C':
                 return SaveParser_FicsIt.convertRightDoorWall(baseLayout, currentObject, '/Game/FactoryGame/Buildable/Building/Wall/Build_Wall_Door_8x4_03_Steel.Build_Wall_Door_8x4_03_Steel_C');
         }
+
+        return currentObject;
+    }
+
+    /*
+     * Properly reindex the map markers
+     */
+    static fixMapManager(baseLayout, currentObject)
+    {
+        let haveFixedMapManager = false;
+        let mMapMarkers         = baseLayout.getObjectProperty(currentObject, 'mMapMarkers');
+            if(mMapMarkers !== null)
+            {
+                for(let i = 0; i < mMapMarkers.values.length; i++)
+                {
+                    for(let j = 0; j < mMapMarkers.values[i].length; j++)
+                    {
+                        if(mMapMarkers.values[i][j].name === 'MarkerID')
+                        {
+                            if(mMapMarkers.values[i][j].value.value !== 255)
+                            {
+                                if(mMapMarkers.values[i][j].value.value !== (i + 1))
+                                {
+                                    mMapMarkers.values[i][j].value.value   = (i + 1);
+                                    haveFixedMapManager             = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(haveFixedMapManager === true)
+            {
+                console.log('Fixing MarkerID indexes in "' + currentObject.className + '"');
+            }
 
         return currentObject;
     }
@@ -264,7 +302,7 @@ export default class SaveParser_FicsIt
 
         return currentObject;
     }
-    
+
     /*
      * Update 5 changed the old corner up ramps default angle,
      * trying to find them when they don't have the recipe in properties
