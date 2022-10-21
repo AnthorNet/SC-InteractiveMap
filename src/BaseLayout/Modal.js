@@ -551,11 +551,11 @@ export default class BaseLayout_Modal
             });
             input.find('.input-group-prepend > button:eq(1)').click(function(){
                 let clicked = input.find('input');
-                    clicked.val(parseFloat(clicked.val()) - 200);
+                    clicked.val(parseFloat(clicked.val()) - 400);
             });
             input.find('.input-group-prepend > button:eq(2)').click(function(){
                 let clicked = input.find('input');
-                    clicked.val(parseFloat(clicked.val()) - 400);
+                    clicked.val(parseFloat(clicked.val()) - 200);
             });
             input.find('.input-group-prepend > button:eq(3)').click(function(){
                 let clicked = input.find('input');
