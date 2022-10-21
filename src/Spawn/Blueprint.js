@@ -22,7 +22,7 @@ export default class Spawn_Blueprint
         this.zOffset                        = (this.clipboard.zOffset !== undefined) ? parseFloat(this.clipboard.zOffset) : ((options.zOffset !== undefined) ? parseFloat(options.zOffset) : 0);
         this.colorSlotHelper                = (options.colorSlotHelper !== undefined) ? options.colorSlotHelper : 'NONE';
         this.powerLineClassName             = ['/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C', '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'];
-        this.excludedTranslationClassName   = this.powerLineClassName.concat(['/Script/FactoryGame.FGDroneStationInfo']);
+        this.excludedTranslationClassName   = this.powerLineClassName.concat(['/Script/FactoryGame.FGDockingStationInfo', '/Script/FactoryGame.FGDroneStationInfo', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGRailroadTimeTable', '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C']);
 
         this.useHistory                     = (options.history !== undefined) ? options.history : true;
 
@@ -123,6 +123,13 @@ export default class Spawn_Blueprint
                             {
                                 minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
                             }
+
+                            /* CHECK IF TRANSLATION SUM EQUALS 0, MEANING MOST LIKELY A SCRIPT THAT SHOUD BE EXCLUDED
+                            if(this.clipboard.data[i].parent.transform.translation.reduce((a, b) => a + b, 0) === 0)
+                            {
+                                console.log(this.clipboard.data[i].parent.transform.translation[2], this.clipboard.data[i].parent)
+                            }
+                            /**/
                     }
                 }
 
@@ -135,7 +142,7 @@ export default class Spawn_Blueprint
                 // Apply centering transformation
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
-                    if(this.clipboard.data[i].parent.transform !== undefined && this.clipboard.data[i].parent.transform.translation !== undefined && this.excludedTranslationClassName.includes(this.clipboard.data[i].parent.className) === false)
+                    if(this.clipboard.data[i].parent.transform !== undefined && this.excludedTranslationClassName.includes(this.clipboard.data[i].parent.className) === false)
                     {
                         this.clipboard.data[i].parent.transform.translation[0] -= centerX;
                         this.clipboard.data[i].parent.transform.translation[1] -= centerY;
