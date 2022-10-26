@@ -436,19 +436,36 @@ export default class Spawn_Blueprint
                         }
                     }
 
+                    // Vehicle target points
+                    if(this.clipboard.data[i].targetPoints !== undefined)
+                    {
+                        for(let j = 0; j < this.clipboard.data[i].targetPoints.length; j++)
+                        {
+                            if(this.clipboard.data[i].targetPoints[j].properties !== undefined && this.clipboard.data[i].targetPoints[j].properties.length > 0)
+                            {
+                                this.clipboard.data[i].targetPoints[j].properties = this.transformProperties(this.clipboard.data[i].targetPoints[j].properties, pathNameConversion);
+                            }
+                        }
+                    }
+
                     // Vehicles waypoints
                     if(this.clipboard.data[i].linkedList !== undefined)
                     {
-                        this.clipboard.data[i] = JSON.stringify(this.clipboard.data[i]);
+                        if(this.clipboard.data[i].linkedList.properties !== undefined && this.clipboard.data[i].linkedList.properties.length > 0)
+                        {
+                            this.clipboard.data[i].linkedList.properties = this.transformProperties(this.clipboard.data[i].linkedList.properties, pathNameConversion);
+                        }
+
+                        this.clipboard.data[i].linkedList = JSON.stringify(this.clipboard.data[i].linkedList);
                         for(let oldPathName in pathNameConversion)
                         {
-                            if(this.clipboard.data[i].indexOf(oldPathName) !== -1)
+                            if(this.clipboard.data[i].linkedList.indexOf(oldPathName) !== -1)
                             {
-                                this.clipboard.data[i]     = this.clipboard.data[i].split('"' + oldPathName + '.').join('"' + pathNameConversion[oldPathName] + '.');
-                                this.clipboard.data[i]     = this.clipboard.data[i].split('"' + oldPathName + '"').join('"' + pathNameConversion[oldPathName] + '"');
+                                this.clipboard.data[i].linkedList     = this.clipboard.data[i].linkedList.split('"' + oldPathName + '.').join('"' + pathNameConversion[oldPathName] + '.');
+                                this.clipboard.data[i].linkedList     = this.clipboard.data[i].linkedList.split('"' + oldPathName + '"').join('"' + pathNameConversion[oldPathName] + '"');
                             }
                         }
-                        this.clipboard.data[i] = JSON.parse(this.clipboard.data[i]);
+                        this.clipboard.data[i].linkedList = JSON.parse(this.clipboard.data[i].linkedList);
                     }
                 }
 
