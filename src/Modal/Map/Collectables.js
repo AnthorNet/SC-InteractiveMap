@@ -180,7 +180,17 @@ export default class Modal_Map_Collectables
                     html.push('<td><table class="table table-borderless table-sm mb-0">');
                     html.push('<tr>');
                     html.push('<td>' + currentItem.name + '</td>');
-                    html.push('<td class="text-right" width="20%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.used) + ' / ' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.markers.length) + '</td>');
+
+                    html.push('<td class="text-right" width="20%">');
+                    if((currentItem.needDiscovery !== undefined && currentItem.needDiscovery === true && currentItem.discovered !== undefined && currentItem.discovered < currentItem.markers.length))
+                    {
+                        html.push(new Intl.NumberFormat(this.baseLayout.language).format(currentItem.used) + ' / ' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.discovered) + ' (Total: ' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.markers.length) + ')');
+                    }
+                    else
+                    {
+                        html.push(new Intl.NumberFormat(this.baseLayout.language).format(currentItem.used) + ' / ' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.markers.length));
+                    }
+                    html.push('</td>');
 
                     html.push('<td class="text-right" width="20%">');
                     if(currentItem.used > 0)
@@ -343,23 +353,27 @@ export default class Modal_Map_Collectables
                                 }
                                 else
                                 {
-                                    let collectableAlreadyIn = false;
-                                        for(let i = (collectables.length - 1); i >= 0; i--)
-                                        {
-                                            if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
-                                            {
-                                                collectableAlreadyIn = true;
-                                                break;
-                                            }
-                                        }
-
-                                    if(collectableAlreadyIn === false)
+                                    if(playerCollectables[className].needDiscovery === undefined)
                                     {
-                                        let levelName = playerCollectables[className].markers[m].pathName.split(':');
-                                            collectables.push({
-                                                levelName   : levelName.shift(),
-                                                pathName    : playerCollectables[className].markers[m].pathName
-                                            });
+                                        let collectableAlreadyIn = false;
+                                            for(let i = (collectables.length - 1); i >= 0; i--)
+                                            {
+                                                if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
+                                                {
+                                                    collectableAlreadyIn = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            if(collectableAlreadyIn === false)
+                                            {
+                                                let levelName = playerCollectables[className].markers[m].pathName.split(':');
+                                                    console.log(levelName, this.baseLayout.saveGameParser.levels);
+                                                    collectables.push({
+                                                        levelName   : levelName.shift(),
+                                                        pathName    : playerCollectables[className].markers[m].pathName
+                                                    });
+                                            }
                                     }
                                 }
                         }

@@ -195,16 +195,16 @@ export default class BaseLayout
 
         this.playerStatistics = {
             collectables : {
-                '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C': {items: [], layerId: 'berylNut'},
-                '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C': {items: [], layerId: 'paleBerry'},
-                '/Game/FactoryGame/World/Benefit/Mushroom/BP_Shroom_01.BP_Shroom_01_C': {items: [], layerId: 'baconAgaric'},
+                '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C': {items: [], layerId: 'berylNut', needDiscovery: true},
+                '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C': {items: [], layerId: 'paleBerry', needDiscovery: true},
+                '/Game/FactoryGame/World/Benefit/Mushroom/BP_Shroom_01.BP_Shroom_01_C': {items: [], layerId: 'baconAgaric', needDiscovery: true},
 
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C': {items: [], layerId: 'greenSlugs'},
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C': {items: [], layerId: 'yellowSlugs'},
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C': {items: [], layerId: 'purpleSlugs'},
+                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C': {items: [], layerId: 'greenSlugs', needDiscovery: true},
+                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C': {items: [], layerId: 'yellowSlugs', needDiscovery: true},
+                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C': {items: [], layerId: 'purpleSlugs', needDiscovery: true},
 
-                '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C': {items: [], layerId: 'somersloops'},
-                '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C': {items: [], layerId: 'mercerSpheres'},
+                '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C': {items: [], layerId: 'somersloops', needDiscovery: true},
+                '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C': {items: [], layerId: 'mercerSpheres', needDiscovery: true},
 
                 '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C': {items: [], layerId: 'hardDrives'},
 
@@ -609,24 +609,11 @@ export default class BaseLayout
                     continue;
                 }
 
-            // Add menu to nodes and collectables...
+            // Add menu to nodes/foliages...
             if([
                 '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C',
                 '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C',
                 '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C',
-
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C',
-
-                '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C',
-                '/Game/FactoryGame/Resource/Environment/Nut/Desc_Nut.Desc_Nut_C',
-                '/Game/FactoryGame/Resource/Environment/DesertShroom/Desc_Shroom.Desc_Shroom_C',
-
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C',
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C',
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C',
-
-                '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C',
-                '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C',
 
                 '/Game/FactoryGame/World/Hazard/SporeCloudPlant/BP_SporeFlower.BP_SporeFlower_C',
                 '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleSmallRock.BP_DestructibleSmallRock_C',
@@ -659,23 +646,7 @@ export default class BaseLayout
                     }
                 }
 
-                if(currentObject.className !== '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
-                {
-                    continue;
-                }
-                else
-                {
-                    if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] != undefined)
-                    {
-                        let haveDropPod = this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId].hasLayer(this.satisfactoryMap.collectableMarkers[currentObject.pathName]);
-                            if(haveDropPod === false)
-                            {
-                                this.satisfactoryMap.collectableMarkers[currentObject.pathName].addTo(
-                                    this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId]
-                                );
-                            }
-                    }
-                }
+                continue;
             }
 
             // Mod nodes
@@ -847,7 +818,34 @@ export default class BaseLayout
                 }
                 /**/
 
+                if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
+                {
+                    this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName = currentObject.pathName;
+                    this.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(this);
+
+                    if(currentObject.className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
+                    {
+                        let haveDropPod = this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId].hasLayer(this.satisfactoryMap.collectableMarkers[currentObject.pathName]);
+                            if(haveDropPod === false)
+                            {
+                                this.satisfactoryMap.collectableMarkers[currentObject.pathName].addTo(
+                                    this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId]
+                                );
+                            }
+                    }
+                }
+
                 this.playerStatistics.collectables[currentObject.className].items.push(currentObject.pathName);
+
+                if(this.playerStatistics.collectables[currentObject.className].needDiscovery !== undefined && this.playerStatistics.collectables[currentObject.className].needDiscovery === true)
+                {
+                    if(this.playerStatistics.collectables[currentObject.className].discovered === undefined)
+                    {
+                        this.playerStatistics.collectables[currentObject.className].discovered = 0;
+                    }
+                    this.playerStatistics.collectables[currentObject.className].discovered++;
+                }
+
                 continue;
             }
 
