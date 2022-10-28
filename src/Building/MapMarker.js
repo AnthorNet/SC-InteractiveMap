@@ -147,27 +147,32 @@ export default class Building_MapMarker
                 contextMenu.push({
                     text        : Building_MapMarker.getProperty(mapMarker, 'Name')
                 });
+                contextMenu.push({
+                    icon        : 'fa-arrows-alt',
+                    text        : baseLayout.translate._('Update position'),
+                    callback    : Building_MapMarker.updatePosition});
+                contextMenu.push('-');
 
                 contextMenu.push({
                     icon        : 'fa-pen',
-                    text        : 'Update label',
+                    text        : baseLayout.translate._('Update label'),
                     callback    : Building_MapMarker.updateText
                 });
                 contextMenu.push({
                     icon        : 'fa-paint-brush',
-                    text        : 'Update color',
+                    text        : baseLayout.translate._('Update color'),
                     callback    : Building_MapMarker.updateColor
                 });
                 contextMenu.push({
                     icon        : 'fa-icons',
-                    text        : 'Update icon',
+                    text        : baseLayout.translate._('Update icon'),
                     callback    : Building_MapMarker.updateIcon
                 });
                 contextMenu.push('-');
 
                 contextMenu.push({
                     icon        : 'fa-trash-alt',
-                    text        : 'Delete',
+                    text        : baseLayout.translate._('Delete'),
                     callback    : Building_MapMarker.delete
                 });
             }
@@ -178,6 +183,69 @@ export default class Building_MapMarker
     /**
      * MODALS
      */
+    static updatePosition(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let mapMarkerId     = marker.relatedTarget.options.mapMarkerId;
+        let mapMarker       = Building_MapMarker.getMarkerFromId(baseLayout, mapMarkerId);
+        let location        = Building_MapMarker.getProperty(mapMarker, 'Location');
+
+            BaseLayout_Modal.form({
+                title       : 'Update "<strong>Map Marker</strong>" position',
+                container   : '#leafletMap',
+                inputs      : [{
+                    label       : 'X',
+                    name        : 'x',
+                    inputType   : 'coordinate',
+                    value       : location.values[0].value
+                },
+                {
+                    label       : 'Y',
+                    name        : 'y',
+                    inputType   : 'coordinate',
+                    value       : location.values[1].value
+                },
+                {
+                    label       : 'Z',
+                    name        : 'z',
+                    inputType   : 'coordinate',
+                    value       : location.values[2].value
+                }],
+                callback    : function(values)
+                {
+                    values.x        = parseFloat(values.x);
+                    values.y        = parseFloat(values.y);
+                    values.z        = parseFloat(values.z);
+
+                    for(let i = 0; i < mapMarker.length; i++)
+                    {
+                        if(mapMarker[i].name === 'Location')
+                        {
+                            if(isNaN(values.x) === false)
+                            {
+                                mapMarker[i].value.values[0].value = values.x;
+                            }
+                            if(isNaN(values.y) === false)
+                            {
+                                mapMarker[i].value.values[1].value = values.y;
+                            }
+                            if(isNaN(values.z) === false)
+                            {
+                                mapMarker[i].value.values[2].value = values.z;
+                            }
+
+                            baseLayout.deleteMarkerFromElements('playerOrientationLayer', marker.relatedTarget);
+                            baseLayout.playerLayers.playerOrientationLayer.count--;
+
+                            let result = Building_MapMarker.add(baseLayout, mapMarker);
+                                baseLayout.addElementToLayer(result.layer, result.marker);
+                            return;
+                        }
+                    }
+                }
+            });
+    }
+
     static updateText(marker)
     {
         let baseLayout      = marker.baseLayout;
