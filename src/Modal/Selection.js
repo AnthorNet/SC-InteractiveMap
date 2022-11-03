@@ -300,6 +300,7 @@ export default class Modal_Selection
                 inputOptions.push({text: 'Update selected buildings custom color', value: 'customColor'});
 
                 inputOptions.push({group: 'Positioning', text: 'Move selected items position', value: 'moveTo'});
+                inputOptions.push({group: 'Positioning', text: 'Align selected items to world grid', value: 'snapToWorldGrid'});
                 inputOptions.push({group: 'Positioning', text: 'Offset selected items position', value: 'offset'});
                 inputOptions.push({group: 'Positioning', text: 'Rotate selected items position', value: 'rotate'});
 
@@ -586,6 +587,28 @@ export default class Modal_Selection
                 });
             }
         });
+    }
+
+    static callbackSnapToWorldGrid(baseLayout, markers)
+    {
+        for(let i = 0; i < markers.length; i++)
+        {
+            if(markers[i].options.pathName !== undefined)
+            {
+                let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
+                    if(currentObject !== null)
+                    {
+                        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+                            if(buildingData !== null)
+                            {
+                                if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof')
+                                {
+                                    baseLayout.worldGridSubSystem.snapToGrid({baseLayout: baseLayout, relatedTarget: markers[i]});
+                                }
+                            }
+                    }
+            }
+        }
     }
 
     static callbackRotate(baseLayout, markers)

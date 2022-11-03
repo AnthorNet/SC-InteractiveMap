@@ -520,6 +520,19 @@ export default class BaseLayout_ContextMenu
                         text        : this.baseLayout.translate._('Update position'),
                         callback    : Modal_Object_Position.getHTML
                     });
+
+                    if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof')
+                    {
+                        let isWorldGridAligned = this.baseLayout.worldGridSubSystem.isOnGrid(currentObject);
+                            if(isWorldGridAligned === false)
+                            {
+                                contextMenu.push({
+                                    icon        : 'fa-magnet',
+                                    text        : this.baseLayout.translate._('Align to world grid'),
+                                    callback    : this.baseLayout.worldGridSubSystem.snapToGrid
+                                });
+                            }
+                    }
                 }
 
                 if((buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false) && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C')

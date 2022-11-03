@@ -18,6 +18,7 @@ import SubSystem_Player                         from './SubSystem/Player.js';
 import SubSystem_Railroad                       from './SubSystem/Railroad.js';
 import SubSystem_Time                           from './SubSystem/Time.js';
 import SubSystem_Unlock                         from './SubSystem/Unlock.js';
+import SubSystem_WorldGrid                      from './SubSystem/WorldGrid.js';
 
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
 import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
@@ -353,6 +354,7 @@ export default class BaseLayout
             this.railroadSubSystem      = new SubSystem_Railroad({baseLayout: this});
             this.timeSubSystem          = new SubSystem_Time({baseLayout: this});
             this.unlockSubSystem        = new SubSystem_Unlock({baseLayout: this});
+            this.worldGridSubSystem     = new SubSystem_WorldGrid({baseLayout: this});
 
             if(this.buildingsData === null)
             {
