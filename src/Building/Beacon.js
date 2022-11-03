@@ -163,9 +163,10 @@ export default class Building_Beacon
                 title       : 'Update "<strong>Beacon</strong>" color',
                 container   : '#leafletMap',
                 inputs      : [{
-                    name        : 'mCompassColor',
-                    inputType   : 'colorPicker',
-                    value       : mFormattedCompassColor
+                    name            : 'mCompassColor',
+                    inputType       : 'colorPicker',
+                    value           : mFormattedCompassColor,
+                    colorPresets    : baseLayout.gameStateSubSystem.getPlayerColorPresets()
                 }],
                 callback    : function(values)
                 {

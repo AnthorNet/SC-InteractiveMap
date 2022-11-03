@@ -1023,9 +1023,10 @@ export default class Building_Sign
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" background color',
                 container   : '#leafletMap',
                 inputs      : [{
-                    name        : 'mBackgroundColor',
-                    inputType   : 'colorPicker',
-                    value       : Building_Sign.getBackgroundColor(baseLayout, currentObject)
+                    name            : 'mBackgroundColor',
+                    inputType       : 'colorPicker',
+                    value           : Building_Sign.getBackgroundColor(baseLayout, currentObject),
+                    colorPresets    : baseLayout.gameStateSubSystem.getPlayerColorPresets()
                 }],
                 callback    : function(values)
                 {
@@ -1053,9 +1054,10 @@ export default class Building_Sign
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" auxilary color',
                 container   : '#leafletMap',
                 inputs      : [{
-                    name        : 'mAuxilaryColor',
-                    inputType   : 'colorPicker',
-                    value       : Building_Sign.getAuxilaryColor(baseLayout, currentObject)
+                    name            : 'mAuxilaryColor',
+                    inputType       : 'colorPicker',
+                    value           : Building_Sign.getAuxilaryColor(baseLayout, currentObject),
+                    colorPresets    : baseLayout.gameStateSubSystem.getPlayerColorPresets()
                 }],
                 callback    : function(values)
                 {
@@ -1083,9 +1085,10 @@ export default class Building_Sign
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" foreground color',
                 container   : '#leafletMap',
                 inputs      : [{
-                    name        : 'mForegroundColor',
-                    inputType   : 'colorPicker',
-                    value       : Building_Sign.getForegroundColor(baseLayout, currentObject)
+                    name            : 'mForegroundColor',
+                    inputType       : 'colorPicker',
+                    value           : Building_Sign.getForegroundColor(baseLayout, currentObject),
+                    colorPresets    : baseLayout.gameStateSubSystem.getPlayerColorPresets()
                 }],
                 callback    : function(values)
                 {

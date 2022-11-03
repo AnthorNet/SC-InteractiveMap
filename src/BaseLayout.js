@@ -1050,7 +1050,10 @@ export default class BaseLayout
         {
             return resolve(Building_Conveyor.add(this, currentObject));
         }
-        if(currentObject.className.includes('Train/Track/Build_RailroadTrack') || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
+        if(
+                currentObject.className.includes('Train/Track/Build_RailroadTrack') || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C'
+             || currentObject.className === '/StartWithVehicles/Vehicles/Train/Track/Build_CheapRailroadTrack.Build_CheapRailroadTrack_C'
+        )
         {
             return resolve(Building_RailroadTrack.add(this, currentObject));
         }

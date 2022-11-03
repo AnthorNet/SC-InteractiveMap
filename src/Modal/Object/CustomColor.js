@@ -17,12 +17,14 @@ export default class Modal_Object_CustomColor
             inputs      : [{
                 name            : 'primaryColor',
                 inputType       : 'colorPicker',
-                value           : objectPrimaryColor
+                value           : objectPrimaryColor,
+                colorPresets    : baseLayout.gameStateSubSystem.getPlayerColorPresets()
             },
             {
                 name            : 'secondaryColor',
                 inputType       : 'colorPicker',
-                value           : objectSecondaryColor
+                value           : objectSecondaryColor,
+                colorPresets    : baseLayout.gameStateSubSystem.getPlayerColorPresets()
             }],
             callback    : function(values)
             {

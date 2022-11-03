@@ -797,12 +797,14 @@ export default class Modal_Selection
             inputs      : [{
                 name            : 'primaryColor',
                 inputType       : 'colorPicker',
-                value           : customColor.primaryColor
+                value           : customColor.primaryColor,
+                colorPresets    : baseLayout.gameStateSubSystem.getPlayerColorPresets()
             },
             {
                 name            : 'secondaryColor',
                 inputType       : 'colorPicker',
-                value           : customColor.secondaryColor
+                value           : customColor.secondaryColor,
+                colorPresets    : baseLayout.gameStateSubSystem.getPlayerColorPresets()
             }],
             callback    : function(values)
             {

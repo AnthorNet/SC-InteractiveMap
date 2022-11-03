@@ -62,6 +62,9 @@ export default class BaseLayout_Modal
                                 + '            <div class="col-4 px-1"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">G</span></div><input type="number" class="form-control px-2 inputG" min="0" max="255"></div></div>'
                                 + '            <div class="input-group col-4"><div class="input-group-prepend"><span class="input-group-text">B</span></div><input type="number" class="form-control pl-2 inputB" min="0" max="255"></div>'
                                 + '        </div>'
+                                + '        <div class="row mt-3 no-gutters">'
+                                + '            <select class="form-control selectpicker inputColorPresets" data-title="Color presets"></select>'
+                                + '        </div>'
                                 + '    </div>'
                                 + '</div>'
             }
@@ -519,6 +522,38 @@ export default class BaseLayout_Modal
                                 catch(e){}; // Silently fail until a correct value is entered...
                             }
                     });
+
+                    if(options.colorPresets !== undefined)
+                    {
+                        for(let i = 0; i < options.colorPresets.length; i++)
+                        {
+                            let customColor = options.colorPresets[i];
+                                input.find('.inputColorPresets')
+                                     .append('<option style="background: rgba(' + customColor.primaryColor.r + ', '
+                                                                                + customColor.primaryColor.g + ', '
+                                                                                + customColor.primaryColor.b + ', '
+                                                                                + customColor.primaryColor.a + ');color: ' +
+                                            ((customColor.primaryColor.r * 0.299 + customColor.primaryColor.g * 0.587 + customColor.primaryColor.b * 0.114) > 186 ? '#000000' : '#FFFFFF') + '" value=\'' + JSON.stringify(customColor.primaryColor) + '\'>' + customColor.name + '</option>')
+                                     .on('change', function(){
+                                        if($(this).val() !== '')
+                                        {
+                                            input.ColorPicker.color.rgb = JSON.parse($(this).val());
+
+                                            input.find('.inputR').val(input.ColorPicker.color.rgb.r);
+                                            input.find('.inputG').val(input.ColorPicker.color.rgb.g);
+                                            input.find('.inputB').val(input.ColorPicker.color.rgb.b);
+
+                                            input.find('.inputHex').val(input.ColorPicker.color.hexString);
+
+                                            $(this).val(null);
+                                        }
+                                     });
+                        }
+                    }
+                    else
+                    {
+                        input.find('.inputColorPresets').parent('div').remove();
+                    }
 
                     break;
                 case 'file':

@@ -287,9 +287,10 @@ export default class Building_MapMarker
                 title       : 'Update "<strong>Map Marker</strong>" color',
                 container   : '#leafletMap',
                 inputs      : [{
-                    name        : 'Color',
-                    inputType   : 'colorPicker',
-                    value       : Building_MapMarker.getFormattedColor(mapMarker)
+                    name            : 'Color',
+                    inputType       : 'colorPicker',
+                    value           : Building_MapMarker.getFormattedColor(mapMarker),
+                    colorPresets    : baseLayout.gameStateSubSystem.getPlayerColorPresets()
                 }],
                 callback    : function(values)
                 {
