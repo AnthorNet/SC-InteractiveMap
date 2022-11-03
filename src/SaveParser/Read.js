@@ -603,6 +603,8 @@ export default class SaveParser_Read
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
+                case '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C':
+                case '/x3_mavegrag/Vehicles/Trains/CargoWagon_Mk1/BP_X3CargoWagon_Mk1.BP_X3CargoWagon_Mk1_C':
                         this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
                     let trainLength                     = this.readInt();
                         for(let i = 0; i < trainLength; i++)
@@ -622,6 +624,7 @@ export default class SaveParser_Read
                 case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
+                case '/x3_mavegrag/Vehicles/Trucks/TruckMk1/BP_X3Truck_Mk1.BP_X3Truck_Mk1_C':
                         this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
                     let vehicleLength                   = this.readInt();
                         for(let i = 0; i < vehicleLength; i++)
@@ -1025,6 +1028,11 @@ export default class SaveParser_Read
             currentProperty.value.modeUnk1 = this.readHex(9);
             currentProperty.value.modeUnk2 = this.readString();
             currentProperty.value.modeUnk3 = this.readString();
+        }
+
+        if(parentType === '/KeysForAll/KSUb.KSUb_C')
+        {
+            currentProperty.value.unk1 = this.readString();
         }
 
         let currentMapPropertyCount = this.readInt();

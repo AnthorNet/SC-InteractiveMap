@@ -712,6 +712,8 @@ export default class SaveParser_Write
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
+                case '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C':
+                case '/x3_mavegrag/Vehicles/Trains/CargoWagon_Mk1/BP_X3CargoWagon_Mk1.BP_X3CargoWagon_Mk1_C':
                     entity += this.writeInt(currentObject.extra.count);
 
                     if(currentObject.extra.objects !== undefined)
@@ -739,6 +741,7 @@ export default class SaveParser_Write
                 case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
+                case '/x3_mavegrag/Vehicles/Trucks/TruckMk1/BP_X3Truck_Mk1.BP_X3Truck_Mk1_C':
                     entity += this.writeInt(currentObject.extra.count);
                     entity += this.writeInt(currentObject.extra.objects.length);
 
@@ -1070,6 +1073,11 @@ export default class SaveParser_Write
             property += this.writeHex(currentProperty.value.modeUnk1);
             property += this.writeString(currentProperty.value.modeUnk2);
             property += this.writeString(currentProperty.value.modeUnk3);
+        }
+
+        if(parentType === '/KeysForAll/KSUb.KSUb_C')
+        {
+            property += this.writeString(currentProperty.value.unk1);
         }
 
         property += this.writeInt(currentMapPropertyCount);
