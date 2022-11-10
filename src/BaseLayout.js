@@ -5099,7 +5099,7 @@ export default class BaseLayout
     {
         let content         = null;
         let tooltip         = new BaseLayout_Tooltip({baseLayout: this, target: e.target});
-        let tooltipOptions  = {sticky: true, opacity: 0.8};
+        let tooltipOptions  = {sticky: true, opacity: 0.9};
 
         if(e.target.options.mapMarkerId !== undefined)
         {
