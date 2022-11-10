@@ -3270,11 +3270,16 @@ export default class BaseLayout
                 let wires = [];
                     for(let i = 0; i < currentObjectWires.values.length; i++)
                     {
-                        let wireMarker              = this.getMarkerFromPathName(currentObjectWires.values[i].pathName, 'playerPowerGridLayer');
-                            wireMarker.baseLayout   = this;
+                        let wireMarker = this.getMarkerFromPathName(currentObjectWires.values[i].pathName, 'playerPowerGridLayer');
+                            if(wireMarker === null) // Most likely a mod so try a larger search...
+                            {
+                                wireMarker = this.getMarkerFromPathName(currentObjectWires.values[i].pathName);
+                            }
+
 
                         if(wireMarker !== null)
                         {
+                            wireMarker.baseLayout   = this;
                             wires.push(wireMarker);
                         }
                     }
