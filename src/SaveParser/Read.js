@@ -463,7 +463,11 @@ export default class SaveParser_Read
                 {
                     break;
                 }
-                this.objects[objectKey].properties.push(property);
+
+                if(property.name !== 'CachedActorTransform') // Should be removed on release
+                {
+                    this.objects[objectKey].properties.push(property);
+                }
         }
 
         // Read Conveyor missing bytes
@@ -599,6 +603,13 @@ export default class SaveParser_Read
                         source  : this.readObjectProperty({}),
                         target  : this.readObjectProperty({})
                     };
+
+                    // 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
+                    if(this.header.saveVersion >= 33)
+                    {
+                        this.objects[objectKey].extra.sourceTranslation = [this.readFloat(), this.readFloat(), this.readFloat()];
+                        this.objects[objectKey].extra.targetTranslation = [this.readFloat(), this.readFloat(), this.readFloat()];
+                    }
 
                     break;
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
@@ -851,6 +862,13 @@ export default class SaveParser_Read
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
                     currentProperty.value.values.push(this.readInt());
+                }
+                break;
+
+            case 'Int64':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    currentProperty.value.values.push(this.readLong());
                 }
                 break;
 
