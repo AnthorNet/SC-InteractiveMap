@@ -1,10 +1,10 @@
 export default class SubSystem_WorldGrid
 {
-    constructor(options)
+    constructor()
     {
         this.xModulo            = 800;
-        this.yModulo            = 100;
-        this.zModulo            = 800;
+        this.yModulo            = 800;
+        this.zModulo            = 100;
     }
 
     isOnGrid(currentObject)

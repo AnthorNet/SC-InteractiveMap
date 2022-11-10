@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-80, -45], [80, -45], [80, 45], [-80, 45]
+                ]
+            }
+        ]
+    }
+}

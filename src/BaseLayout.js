@@ -9,6 +9,7 @@ import BaseLayout_Polygon                       from './BaseLayout/Polygon.js';
 import BaseLayout_Tooltip                       from './BaseLayout/Tooltip.js';
 
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
+import SubSystem_Blueprint                      from './SubSystem/Blueprint.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 import SubSystem_Fauna                          from './SubSystem/Fauna.js';
 import SubSystem_GameState                      from './SubSystem/GameState.js';
@@ -347,6 +348,7 @@ export default class BaseLayout
         this.saveGameParser.load(() => {
             // Hold sub system to get better performance
             this.buildableSubSystem     = new SubSystem_Buildable({baseLayout: this});
+            this.blueprintSubSystem     = new SubSystem_Blueprint({baseLayout: this});
             this.circuitSubSystem       = new SubSystem_Circuit({baseLayout: this});
             this.gameStateSubSystem     = new SubSystem_GameState({baseLayout: this});
             this.mapSubSystem           = new SubSystem_Map({baseLayout: this});
@@ -354,7 +356,7 @@ export default class BaseLayout
             this.railroadSubSystem      = new SubSystem_Railroad({baseLayout: this});
             this.timeSubSystem          = new SubSystem_Time({baseLayout: this});
             this.unlockSubSystem        = new SubSystem_Unlock({baseLayout: this});
-            this.worldGridSubSystem     = new SubSystem_WorldGrid({baseLayout: this});
+            this.worldGridSubSystem     = new SubSystem_WorldGrid();
 
             if(this.buildingsData === null)
             {
@@ -3028,6 +3030,61 @@ export default class BaseLayout
             {
                 baseLayout.saveGameParser.deleteObject(mInfo.pathName);
             }
+
+        // Delete building from the Blueprint Designer list
+        let mBlueprintDesigner = baseLayout.getObjectProperty(currentObject, 'mBlueprintDesigner');
+            if(mBlueprintDesigner !== null)
+            {
+                let blueprintDesigner = baseLayout.saveGameParser.getTargetObject(mBlueprintDesigner.pathName);
+                    if(blueprintDesigner !== null)
+                    {
+                        let mBuildables = baseLayout.getObjectProperty(blueprintDesigner, 'mBuildables');
+                            if(mBuildables !== null)
+                            {
+                                for(let i = 0; i < mBuildables.values.length; i++)
+                                {
+                                    if(mBuildables.values[i].pathName === currentObject.pathName)
+                                    {
+                                        mBuildables.values.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                            }
+                    }
+            }
+
+
+        // Delete buildings affected to the Blueprint Designer
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner.Build_BlueprintDesigner_C')
+        {
+            let mBuildables = baseLayout.getObjectProperty(currentObject, 'mBuildables');
+                if(mBuildables !== null)
+                {
+                    for(let i = 0; i < mBuildables.values.length; i++)
+                    {
+                        let buildingObject = baseLayout.saveGameParser.getTargetObject(mBuildables.values[i].pathName);
+                            if(buildingObject !== null)
+                            {
+                                    baseLayout.deleteObjectProperty(buildingObject, 'mBlueprintDesigner'); // Avoid delete loop!
+                                let buildingMarker = baseLayout.getMarkerFromPathName(mBuildables.values[i].pathName); //TODO: Faster layer lookup?
+                                    if(buildingMarker !== null)
+                                    {
+                                        baseLayout.deleteGenericBuilding({baseLayout: baseLayout, relatedTarget: buildingMarker});
+                                    }
+                            }
+                    }
+                }
+
+            let mStorage = baseLayout.getObjectProperty(currentObject, 'mStorage');
+                if(mStorage !== null)
+                {
+                    let mStorageMarker = baseLayout.getMarkerFromPathName(mStorage.pathName, 'playerStoragesLayer');
+                        if(mStorageMarker !== null)
+                        {
+                            baseLayout.deleteGenericBuilding({baseLayout: baseLayout, relatedTarget: mStorageMarker});
+                        }
+                }
+        }
 
         // Delete extra marker!
         if(marker.relatedTarget.options.extraMarker !== undefined)
