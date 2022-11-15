@@ -82,7 +82,8 @@ export default class Building_Sign
             598: ['FICSIT Check Mark', '/img/signIcons/ficsit_checkmark_64.png'],
 
             644: ['Recycle', '/img/signIcons/TXUI_MIcon_Recycle.png'],
-            645: ['Trash', '/img/signIcons/TXUI_MIcon_Trash.png']
+            645: ['Trash', '/img/signIcons/TXUI_MIcon_Trash.png'],
+            782: ['Question Mark', '/img/signIcons/TXUI_MIcon_QuestionMark.png']
         };
     }
 
