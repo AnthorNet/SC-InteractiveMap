@@ -307,10 +307,14 @@ export default class BaseLayout_Tooltip
         {
             clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
             powerUsed           = buildingData.powerUsed * clockSpeed;
-                //if(this.baseLayout.saveGameParser.header.saveVersion < 29)
-                //{
+                if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+                {
+                    powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
+                }
+                else
+                {
                     powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
-                //}
+                }
 
             extractionRate     *= clockSpeed;
         }
@@ -380,10 +384,14 @@ export default class BaseLayout_Tooltip
     {
         let clockSpeed  = this.baseLayout.getClockSpeed(currentObject);
         let powerUsed   = buildingData.powerUsed * clockSpeed;
-            //if(this.baseLayout.saveGameParser.header.saveVersion < 29)
-            //{
+            if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+            {
+                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
+            }
+            else
+            {
                 powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
-            //}
+            }
 
         let satellites  = Building_FrackingSmasher.getSatellites(this.baseLayout, currentObject);
         let potential   = 0;
@@ -593,10 +601,14 @@ export default class BaseLayout_Tooltip
         let craftingTime        = 60 / buildingData.extractionRate[purity];
         let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
         let powerUsed           = buildingData.powerUsed * clockSpeed;
-            //if(this.baseLayout.saveGameParser.header.saveVersion < 29)
-            //{
+            if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+            {
+                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
+            }
+            else
+            {
                 powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
-            //}
+            }
         let productionRatio     = buildingData.extractionRate[purity] * clockSpeed;
 
         // VOLUME
@@ -1114,10 +1126,14 @@ export default class BaseLayout_Tooltip
             if(buildingData.powerUsed !== undefined)
             {
                 powerUsed = buildingData.powerUsed * clockSpeed;
-                //if(this.baseLayout.saveGameParser.header.saveVersion < 29)
-                //{
+                if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+                {
+                    powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
+                }
+                else
+                {
                     powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
-                //}
+                }
             }
             else
             {
@@ -1314,6 +1330,10 @@ export default class BaseLayout_Tooltip
 
         let clockSpeed                  = this.baseLayout.getClockSpeed(currentObject);
         let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
+            if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+            {
+                mPowerProductionExponent = 1.6;
+            }
         let fuelClass                   = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
 
             craftingTime               /= clockSpeed; // Overclocking...
@@ -1735,6 +1755,10 @@ export default class BaseLayout_Tooltip
         let content1                    = [];
         let content2                    = [];
         let mPowerProductionExponent    = options.mPowerProductionExponent || 1.3;
+            if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+            {
+                mPowerProductionExponent = 1.6;
+            }
 
             // FIRST LINE
             if(options.circuit !== undefined && options.circuit !== null)

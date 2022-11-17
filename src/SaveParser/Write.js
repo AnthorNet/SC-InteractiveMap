@@ -1094,7 +1094,7 @@ export default class SaveParser_Write
             property += this.writeString(currentProperty.value.modeUnk3);
         }
 
-        if(parentType === '/KeysForAll/KSUb.KSUb_C')
+        if(parentType === '/KeysForAll/KSUb.KSUb_C' && currentProperty.value.unk1 !== undefined)
         {
             property += this.writeString(currentProperty.value.unk1);
         }

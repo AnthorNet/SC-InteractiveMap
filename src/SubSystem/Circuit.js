@@ -280,15 +280,14 @@ export default class SubSystem_Circuit
                         if(buildingData !== null && buildingData.powerUsed !== undefined)
                         {
                             let clockSpeed                  = this.baseLayout.getClockSpeed(currentComponent);
-
-                                //if(this.baseLayout.saveGameParser.header.saveVersion < 29)
-                                //{
+                                if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+                                {
+                                    statistics.maxConsumption  += buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
+                                }
+                                else
+                                {
                                     statistics.maxConsumption  += buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
-                                //}
-                                //else
-                                //{
-                                //    statistics.maxConsumption  += buildingData.powerUsed * clockSpeed;
-                                //}
+                                }
                         }
 
                         // POWER STORAGE

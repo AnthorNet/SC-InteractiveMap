@@ -1048,10 +1048,23 @@ export default class SaveParser_Read
             currentProperty.value.modeUnk3 = this.readString();
         }
 
+        /*
         if(parentType === '/KeysForAll/KSUb.KSUb_C')
         {
-            currentProperty.value.unk1 = this.readString();
+            console.log(this.readInt());
+            let unk1 = this.readString();
+                console.log(unk1);
+                if(unk1 !== ' ')
+                {
+                    currentProperty.value.unk1 = unk1;
+                }
+                else
+                {
+                    console.log('rewind?');
+                    this.currentByte -= 4;
+                }
         }
+        */
 
         let currentMapPropertyCount = this.readInt();
             for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)

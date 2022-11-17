@@ -265,6 +265,10 @@ export default class Modal_Statistics_Production
                             {
                                 let clockSpeed                  = this.baseLayout.getClockSpeed(currentObject);
                                 let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
+                                    if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+                                    {
+                                        mPowerProductionExponent = 1.6;
+                                    }
                                 let fuelClass                   = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
 
                                 if(fuelClass !== null)

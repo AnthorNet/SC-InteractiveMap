@@ -14,6 +14,8 @@ export default class SubSystem_Player
 
         this.displayName            = false;
         this.doDisplayNameLookup();
+
+        //TODO: mPlayerRules
     }
 
     isHost()
