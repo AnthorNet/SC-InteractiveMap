@@ -191,10 +191,18 @@ export default class SubSystem_Fauna
 
         if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
         {
-            let mFriendActor = baseLayout.getObjectProperty(currentObject, 'mFriendActor');
-                if(mFriendActor !== null)
+            let mTamed = this.baseLayout.getObjectProperty(currentObject, 'mTamed');
+                if(mTamed !== null)
                 {
                     baseLayout.playerLayers[layerId].count--;
+                }
+                else
+                {
+                    let mFriendActor = baseLayout.getObjectProperty(currentObject, 'mFriendActor');
+                        if(mFriendActor !== null)
+                        {
+                            baseLayout.playerLayers[layerId].count--;
+                        }
                 }
         }
 

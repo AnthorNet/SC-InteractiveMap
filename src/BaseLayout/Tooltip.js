@@ -1520,6 +1520,13 @@ export default class BaseLayout_Tooltip
 
         switch(currentObject.className)
         {
+            case '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C':
+                let mDisplayName = this.baseLayout.getObjectProperty(currentObject, 'mDisplayName');
+                    if(mDisplayName !== null)
+                    {
+                        content.push('<div><strong>' + mDisplayName + ' <em class="small">(' + buildingData.name + ')</em></strong></div>');
+                        break;
+                    }
             case '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C':
                 let trainStationIdentifier  = this.baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
                     if(trainStationIdentifier !== null)
