@@ -1093,7 +1093,7 @@ export default class SaveParser_Read
                             };
                             break;
                         case 'Struct':
-                            if(currentProperty.name === 'Destroyed_Foliage_Transform') // Mod: Universal Destroyer
+                            if(currentProperty.name === 'Destroyed_Foliage_Transform' || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C') // Mod: Universal Destroyer/Factory Statistics
                             {
                                 mapPropertyKey = {
                                     x: this.readFloat(),

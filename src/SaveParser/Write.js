@@ -1122,7 +1122,7 @@ export default class SaveParser_Write
                      property += this.writeString(currentProperty.value.values[iMapProperty].keyMap.name);
                     break;
                 case 'Struct':
-                    if(currentProperty.name === 'Destroyed_Foliage_Transform') // Mod: Universal Destroyer
+                    if(currentProperty.name === 'Destroyed_Foliage_Transform' || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C') // Mod: Universal Destroyer/Factory Statistics
                     {
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.x);
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.y);
