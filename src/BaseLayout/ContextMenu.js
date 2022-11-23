@@ -513,7 +513,11 @@ export default class BaseLayout_ContextMenu
                     contextMenu.push('-');
                 }
 
-                if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
+                if([
+                    '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C',
+                    '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageBlueprint.Build_StorageBlueprint_C',
+                    '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C'
+                ].includes(currentObject.className) === false)
                 {
                     contextMenu.push({
                         icon        : 'fa-arrows-alt',
@@ -535,7 +539,7 @@ export default class BaseLayout_ContextMenu
                     }
                 }
 
-                if((buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false) && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C')
+                if(buildingData.mapUseSlotColor === undefined || buildingData.mapUseSlotColor !== false)
                 {
                     contextMenu.push('-');
 
@@ -851,7 +855,12 @@ export default class BaseLayout_ContextMenu
                 }
 
 
-                if(['/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C', '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C', '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C'].includes(currentObject.className) === false)
+                if([
+                    '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C',
+                    '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageBlueprint.Build_StorageBlueprint_C',
+                    '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C',
+                    '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C'
+                ].includes(currentObject.className) === false)
                 {
                     contextMenu.push('-');
                     contextMenu.push({

@@ -1332,7 +1332,7 @@ export default class BaseLayout_Tooltip
         let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
             if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
             {
-                mPowerProductionExponent = 1.6;
+                mPowerProductionExponent = 1.0;
             }
         let fuelClass                   = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
 
@@ -1764,7 +1764,7 @@ export default class BaseLayout_Tooltip
         let mPowerProductionExponent    = options.mPowerProductionExponent || 1.3;
             if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
             {
-                mPowerProductionExponent = 1.6;
+                mPowerProductionExponent = 1.0;
             }
 
             // FIRST LINE

@@ -1,0 +1,12 @@
+{
+    "/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageBlueprint.Build_StorageBlueprint_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [
+                    [-80, -45], [80, -45], [80, 45], [-80, 45]
+                ]
+            }
+        ]
+    }
+}

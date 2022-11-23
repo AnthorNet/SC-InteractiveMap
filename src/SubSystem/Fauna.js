@@ -191,7 +191,7 @@ export default class SubSystem_Fauna
 
         if(currentObject.className === '/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/Char_SpaceRabbit.Char_SpaceRabbit_C')
         {
-            let mTamed = this.baseLayout.getObjectProperty(currentObject, 'mTamed');
+            let mTamed = baseLayout.getObjectProperty(currentObject, 'mTamed');
                 if(mTamed !== null)
                 {
                     baseLayout.playerLayers[layerId].count--;
