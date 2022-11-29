@@ -400,7 +400,7 @@ export default class SaveParser_Read
             };
 
             // Enforce bounding on the map to avoid the game from skipping physics!
-            if(actor.transform.translation[0] < -500000 || actor.transform.translation[0] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000)
+            if(actor.transform.translation[0] < -500000 || actor.transform.translation[0] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000 || actor.transform.translation[2] < -500000 || actor.transform.translation[2] > 500000)
             {
                 actor.transform.translation = [0, 0, 2000];
                 console.log('Out of bounds translation', actor.pathName);
