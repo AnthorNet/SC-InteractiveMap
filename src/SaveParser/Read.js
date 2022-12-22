@@ -1471,6 +1471,12 @@ export default class SaveParser_Read
                 currentProperty.sourceText          = this.readTextProperty({});
                 currentProperty.transformType       = this.readByte();
                 break;
+            // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2463
+            //HISTORYTYPE_STRINGTABLEENTRY
+            case 11:
+                currentProperty.tableId             = this.readString();
+                currentProperty.textKey             = this.readString();
+                break;
             // HISTORYTYPE_NONE
             case 255:
                 // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894

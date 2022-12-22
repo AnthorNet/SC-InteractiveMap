@@ -1428,6 +1428,10 @@ export default class SaveParser_Write
                 property += this.writeTextProperty(currentProperty.sourceText);
                 property += this.writeByte(currentProperty.transformType);
                 break;
+            case 11:
+                property += this.writeString(currentProperty.tableId);
+                property += this.writeString(currentProperty.textKey);
+                break;
             case 255:
                 // Broke during engine upgrade?
                 // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
