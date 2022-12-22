@@ -576,7 +576,11 @@ export default class SaveParser_Write
             actor += this.writeFloat(currentActor.transform.rotation[3], false);
 
             // Enforce bounding on the map to avoid the game from skipping physics!
-            if(currentActor.transform.translation[0] < -500000 || currentActor.transform.translation[0] > 500000 || currentActor.transform.translation[1] < -500000 || currentActor.transform.translation[1] > 500000 || currentActor.transform.translation[2] < -500000 || currentActor.transform.translation[2] > 500000)
+            if(
+                    currentActor.transform.translation[0] < -500000 || currentActor.transform.translation[0] > 500000
+                 || currentActor.transform.translation[1] < -500000 || currentActor.transform.translation[1] > 500000
+                 || currentActor.transform.translation[2] < -500000 || currentActor.transform.translation[2] > 500000
+            )
             {
                 currentActor.transform.translation = [0, 0, 2000];
             }
@@ -699,15 +703,33 @@ export default class SaveParser_Write
                     entity += this.writeObjectProperty(currentObject.extra.target);
 
                     // 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
-                    if(this.header.saveVersion >= 33 && currentObject.extra.sourceTranslation !== undefined && currentObject.extra.targetTranslation !== undefined)
+                    if(this.header.saveVersion >= 33)
                     {
-                        entity += this.writeFloat(currentObject.extra.sourceTranslation[0]);
-                        entity += this.writeFloat(currentObject.extra.sourceTranslation[1]);
-                        entity += this.writeFloat(currentObject.extra.sourceTranslation[2]);
+                        if(currentObject.extra.sourceTranslation !== undefined)
+                        {
+                            entity += this.writeFloat(currentObject.extra.sourceTranslation[0]);
+                            entity += this.writeFloat(currentObject.extra.sourceTranslation[1]);
+                            entity += this.writeFloat(currentObject.extra.sourceTranslation[2]);
+                        }
+                        else // Avoid old blueprints from failing...
+                        {
+                            entity += this.writeFloat(0);
+                            entity += this.writeFloat(0);
+                            entity += this.writeFloat(0);
+                        }
 
-                        entity += this.writeFloat(currentObject.extra.targetTranslation[0]);
-                        entity += this.writeFloat(currentObject.extra.targetTranslation[1]);
-                        entity += this.writeFloat(currentObject.extra.targetTranslation[2]);
+                        if(currentObject.extra.targetTranslation !== undefined)
+                        {
+                            entity += this.writeFloat(currentObject.extra.targetTranslation[0]);
+                            entity += this.writeFloat(currentObject.extra.targetTranslation[1]);
+                            entity += this.writeFloat(currentObject.extra.targetTranslation[2]);
+                        }
+                        else // Avoid old blueprints from failing...
+                        {
+                            entity += this.writeFloat(0);
+                            entity += this.writeFloat(0);
+                            entity += this.writeFloat(0);
+                        }
                     }
 
                     break;
