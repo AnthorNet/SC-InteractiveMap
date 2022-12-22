@@ -812,11 +812,12 @@ export default class SaveParser_Read
                 }
                 console.log(currentProperty);
                 console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                this.worker.postMessage({command: 'alertParsing'});
+                this.worker.postMessage({command: 'alertParsing', source: 'readProperty'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
                 }
+                console.log('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.currentByte + ')');
                 throw new Error('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.currentByte + ')');
         }
 
@@ -988,8 +989,7 @@ export default class SaveParser_Read
                                 let subStructProperties = [];
                                     while(true)
                                     {
-                                        let subStructProperty = this.readProperty();
-
+                                        let subStructProperty = this.readProperty(currentProperty.structureSubType);
                                             if(subStructProperty === null)
                                             {
                                                 break;
@@ -1001,12 +1001,13 @@ export default class SaveParser_Read
                             }
                             catch(error)
                             {
-                                this.worker.postMessage({command: 'alertParsing'});
+                                this.worker.postMessage({command: 'alertParsing', source: 'readArrayProperty/structureSubType'});
                                 if(typeof Sentry !== 'undefined')
                                 {
                                     Sentry.setContext('currentProperty', currentProperty);
                                 }
-                                throw new Error('Unimplemented key structureSubType `' + currentProperty.structureSubType + '` in ArrayProperty `' + currentProperty.name + '`');
+                                console.log('Unimplemented structureSubType `' + currentProperty.structureSubType + '` in ArrayProperty `' + currentProperty.name + '`');
+                                throw new Error('Unimplemented structureSubType `' + currentProperty.structureSubType + '` in ArrayProperty `' + currentProperty.name + '`');
                             }
                     }
                 }
@@ -1014,11 +1015,12 @@ export default class SaveParser_Read
                 break;
 
             default:
-                this.worker.postMessage({command: 'alertParsing'});
+                this.worker.postMessage({command: 'alertParsing', source: 'readArrayProperty'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
                 }
+                console.log('Unimplemented type `' + currentProperty.value.type + '` in ArrayProperty `' + currentProperty.name + '`');
                 throw new Error('Unimplemented type `' + currentProperty.value.type + '` in ArrayProperty `' + currentProperty.name + '`');
         }
 
@@ -1116,11 +1118,12 @@ export default class SaveParser_Read
                             }
                             break;
                         default:
-                            this.worker.postMessage({command: 'alertParsing'});
+                            this.worker.postMessage({command: 'alertParsing', source: 'readMapProperty/keyType'});
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
                             }
+                            console.log('Unimplemented keyType `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
                             throw new Error('Unimplemented keyType `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
                     }
 
@@ -1173,11 +1176,12 @@ export default class SaveParser_Read
                             }
                             break;
                         default:
-                            this.worker.postMessage({command: 'alertParsing'});
+                            this.worker.postMessage({command: 'alertParsing', source: 'readMapProperty/valueType'});
                             if(typeof Sentry !== 'undefined')
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
                             }
+                            console.log('Unimplemented valueType `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
                             throw new Error('Unimplemented valueType `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
                     }
 
@@ -1226,11 +1230,12 @@ export default class SaveParser_Read
                         let rewind = this.lastStrRead + 128;
                             this.currentByte -= rewind;
                         console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
-                        this.worker.postMessage({command: 'alertParsing'});
+                        this.worker.postMessage({command: 'alertParsing', source: 'readSetProperty'});
                         if(typeof Sentry !== 'undefined')
                         {
                             Sentry.setContext('currentProperty', currentProperty);
                         }
+                        console.log('Unimplemented type `' + currentProperty.value.type + '` in SetProperty `' + currentProperty.name + '` (' + this.currentByte + ')');
                         throw new Error('Unimplemented type `' + currentProperty.value.type + '` in SetProperty `' + currentProperty.name + '` (' + this.currentByte + ')');
                 }
             }
@@ -1377,11 +1382,12 @@ export default class SaveParser_Read
                 }
                 catch(error)
                 {
-                    this.worker.postMessage({command: 'alertParsing'});
+                    this.worker.postMessage({command: 'alertParsing', source: 'readStructProperty'});
                     if(typeof Sentry !== 'undefined')
                     {
                         Sentry.setContext('currentProperty', currentProperty);
                     }
+                    console.log('Unimplemented type `' + currentProperty.value.type + '` in StructProperty `' + currentProperty.name + '`');
                     throw new Error('Unimplemented type `' + currentProperty.value.type + '` in StructProperty `' + currentProperty.name + '`');
                 }
         }

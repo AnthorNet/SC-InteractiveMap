@@ -117,7 +117,7 @@ export default class SaveParser
             case 'alert':
                 return BaseLayout_Modal.alert(data.message);
             case 'alertParsing':
-                return BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game... Please try to contact us on Twitter or Discord!');
+                return BaseLayout_Modal.alert('Something went wrong while we were trying to parse your save game...<br />Please try to contact us on Twitter or Discord!<br />Source: ' + data.source);
 
             case 'loaderHide':
                 window.SCIM.hideLoader();
