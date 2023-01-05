@@ -119,14 +119,16 @@ export default class SaveParser_Read
                     currentInflatedChunk    = pako.inflate(currentChunk);
                     this.currentChunks.push(currentInflatedChunk);
             }
-            catch(err)
+            catch(error)
             {
                 this.worker.postMessage({command: 'alert', message: 'Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('pako', pako);
                 }
-                throw new Error(err);
+
+                console.log(error);
+                throw new Error(error);
 
                 this.worker.postMessage({command: 'loaderHide'});
                 return;
@@ -562,6 +564,7 @@ export default class SaveParser_Read
                                             Sentry.setContext('BP_PlayerState_C', this.objects[objectKey]);
                                             Sentry.setContext('playerType', playerType);
                                         }
+
                                         console.log(playerType, this.objects[objectKey]);
                                         //throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
 
@@ -810,13 +813,14 @@ export default class SaveParser_Read
                 {
                     console.log(this.objects[objectKey]);
                 }
-                console.log(currentProperty);
+
                 console.log(this.lastStrRead, this.readHex(rewind), this.readInt(), this.readInt(), this.readInt(), this.readInt());
                 this.worker.postMessage({command: 'alertParsing', source: 'readProperty'});
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
                 }
+
                 console.log('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.currentByte + ')');
                 throw new Error('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.currentByte + ')');
         }
@@ -1006,6 +1010,8 @@ export default class SaveParser_Read
                                 {
                                     Sentry.setContext('currentProperty', currentProperty);
                                 }
+
+                                console.log(error);
                                 console.log('Unimplemented structureSubType `' + currentProperty.structureSubType + '` in ArrayProperty `' + currentProperty.name + '`');
                                 throw new Error('Unimplemented structureSubType `' + currentProperty.structureSubType + '` in ArrayProperty `' + currentProperty.name + '`');
                             }
@@ -1020,6 +1026,7 @@ export default class SaveParser_Read
                 {
                     Sentry.setContext('currentProperty', currentProperty);
                 }
+
                 console.log('Unimplemented type `' + currentProperty.value.type + '` in ArrayProperty `' + currentProperty.name + '`');
                 throw new Error('Unimplemented type `' + currentProperty.value.type + '` in ArrayProperty `' + currentProperty.name + '`');
         }
@@ -1049,6 +1056,8 @@ export default class SaveParser_Read
             currentProperty.value.modeUnk2 = this.readString();
             currentProperty.value.modeUnk3 = this.readString();
         }
+
+        console.log(parentType)
 
         /*
         if(parentType === '/KeysForAll/KSUb.KSUb_C')
@@ -1123,6 +1132,7 @@ export default class SaveParser_Read
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
                             }
+
                             console.log('Unimplemented keyType `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
                             throw new Error('Unimplemented keyType `' + currentProperty.value.keyType + '` in MapProperty `' + currentProperty.name + '`');
                     }
@@ -1160,19 +1170,25 @@ export default class SaveParser_Read
                                 mapPropertySubProperties.mNormalIndex   = this.readInt();
                                 mapPropertySubProperties.mOverflowIndex = this.readInt();
                                 mapPropertySubProperties.mFilterIndex   = this.readInt();
+                                break;
                             }
-                            else
+                            if(parentType === '/StorageStatsRoom/Sub_SR.Sub_SR_C')
                             {
-                                while(true)
-                                {
-                                    let subMapProperty = this.readProperty();
-                                        if(subMapProperty === null)
-                                        {
-                                            break;
-                                        }
+                                mapPropertySubProperties.unk1           = this.readFloat();
+                                mapPropertySubProperties.unk2           = this.readFloat();
+                                mapPropertySubProperties.unk3           = this.readFloat();
+                                break;
+                            }
 
-                                    mapPropertySubProperties.push(subMapProperty);
-                                }
+                            while(true)
+                            {
+                                let subMapProperty = this.readProperty();
+                                    if(subMapProperty === null)
+                                    {
+                                        break;
+                                    }
+
+                                mapPropertySubProperties.push(subMapProperty);
                             }
                             break;
                         default:
@@ -1181,6 +1197,7 @@ export default class SaveParser_Read
                             {
                                 Sentry.setContext('currentProperty', currentProperty);
                             }
+
                             console.log('Unimplemented valueType `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
                             throw new Error('Unimplemented valueType `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
                     }
@@ -1235,6 +1252,7 @@ export default class SaveParser_Read
                         {
                             Sentry.setContext('currentProperty', currentProperty);
                         }
+
                         console.log('Unimplemented type `' + currentProperty.value.type + '` in SetProperty `' + currentProperty.name + '` (' + this.currentByte + ')');
                         throw new Error('Unimplemented type `' + currentProperty.value.type + '` in SetProperty `' + currentProperty.name + '` (' + this.currentByte + ')');
                 }
@@ -1387,6 +1405,8 @@ export default class SaveParser_Read
                     {
                         Sentry.setContext('currentProperty', currentProperty);
                     }
+
+                    console.log(error);
                     console.log('Unimplemented type `' + currentProperty.value.type + '` in StructProperty `' + currentProperty.name + '`');
                     throw new Error('Unimplemented type `' + currentProperty.value.type + '` in StructProperty `' + currentProperty.name + '`');
                 }
@@ -1659,7 +1679,8 @@ export default class SaveParser_Read
         {
             let debugSize       = 512;
             this.currentByte    = Math.max(0, startBytes - (debugSize * 2));
-            let errorMessage    = 'Cannot readString (' + strLength + '):' + error + ': `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
+            let errorMessage    = 'Cannot readString (' + strLength + '): `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
+                console.log(error);
                 console.log(errorMessage);
                 this.worker.postMessage({command: 'alertParsing'});
                 throw new Error(errorMessage);
@@ -1792,6 +1813,7 @@ export default class SaveParser_Read
                             {
                                 Sentry.setContext('currentData', data);
                             }
+
                             throw new Error('Unimplemented `' + structure.unk2 + '` in readFINLuaProcessorStateStorage');
                             break;
                     }

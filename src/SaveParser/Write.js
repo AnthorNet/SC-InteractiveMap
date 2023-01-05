@@ -1195,20 +1195,26 @@ export default class SaveParser_Write
                         property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.mNormalIndex);
                         property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.mOverflowIndex);
                         property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.mFilterIndex);
+                        break;
                     }
-                    else
+                    if(parentType === '/StorageStatsRoom/Sub_SR.Sub_SR_C')
                     {
-                        let currentBufferStartingLength     = this.currentBufferLength;
-                        let structPropertyBufferLength      = this.currentEntityLength;
-
-                        for(let i = 0; i < currentProperty.value.values[iMapProperty].valueMap.length; i++)
-                        {
-                            property += this.writeProperty(currentProperty.value.values[iMapProperty].valueMap[i]);
-                        }
-                        property += this.writeString('None');
-
-                        this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk1);
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk2);
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk3);
+                        break;
                     }
+
+                    let currentBufferStartingLength     = this.currentBufferLength;
+                    let structPropertyBufferLength      = this.currentEntityLength;
+
+                    for(let i = 0; i < currentProperty.value.values[iMapProperty].valueMap.length; i++)
+                    {
+                        property += this.writeProperty(currentProperty.value.values[iMapProperty].valueMap[i]);
+                    }
+                    property += this.writeString('None');
+
+                    this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
                     break;
                 default:
                     console.log('Missing valueType ' + currentProperty.value.valueType + ' in MapProperty ' + currentProperty.name);
@@ -1401,12 +1407,15 @@ export default class SaveParser_Write
 
         switch(currentProperty.historyType)
         {
+            // HISTORYTYPE_BASE
             case 0:
                 property += this.writeString(currentProperty.namespace);
                 property += this.writeString(currentProperty.key);
                 property += this.writeString(currentProperty.value);
                 break;
+            // HISTORYTYPE_NAMEDFORMAT
             case 1:
+            // HISTORYTYPE_ARGUMENTFORMAT
             case 3:
                 property += this.writeTextProperty(currentProperty.sourceFmt);
                 property += this.writeInt(currentProperty.argumentsCount);
@@ -1424,10 +1433,14 @@ export default class SaveParser_Write
                     }
                 }
                 break;
+            // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2268
+            // HISTORYTYPE_TRANSFORM
             case 10:
                 property += this.writeTextProperty(currentProperty.sourceText);
                 property += this.writeByte(currentProperty.transformType);
                 break;
+            // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2463
+            //HISTORYTYPE_STRINGTABLEENTRY
             case 11:
                 property += this.writeString(currentProperty.tableId);
                 property += this.writeString(currentProperty.textKey);
