@@ -11,6 +11,8 @@ export default class SaveParser_FicsIt
         {
             switch(currentObject.className)
             {
+                case '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C':
+                    return SaveParser_FicsIt.fixGameMode(baseLayout, currentObject);
                 case '/Script/FactoryGame.FGMapManager':
                     return SaveParser_FicsIt.fixMapManager(baseLayout, currentObject);
                 case '/Script/FactoryGame.FGDroneStationInfo':
@@ -76,6 +78,33 @@ export default class SaveParser_FicsIt
         }
 
         return currentObject;
+    }
+
+    /*
+     * Removes old non existent PLayerState
+     */
+    static fixGameMode(baseLayout, currentObject)
+    {
+        if(currentObject.extra !== undefined && currentObject.extra.game !== undefined && currentObject.extra.game.length > 0)
+        {
+            for(let i = (currentObject.extra.game.length - 1); i >= 0; i--)
+            {
+                let currentPlayerState = baseLayout.saveGameParser.getTargetObject(currentObject.extra.game[i].pathName);
+                    if(currentPlayerState !== null)
+                    {
+                        let mOwnedPawn = baseLayout.getObjectProperty(currentPlayerState, 'mOwnedPawn');
+                            if(mOwnedPawn !== null)
+                            {
+                                //console.log(mOwnedPawn)
+                                continue;
+                            }
+                    }
+
+                    console.log('Fixing ghost playerState "' + currentObject.extra.game[i].pathName + '" in GameMode');
+                    baseLayout.saveGameParser.deleteObject(currentPlayerState);
+                    currentObject.extra.game.splice(i, 1);
+            }
+        }
     }
 
     /*

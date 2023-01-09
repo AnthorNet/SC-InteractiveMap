@@ -1057,8 +1057,6 @@ export default class SaveParser_Read
             currentProperty.value.modeUnk3 = this.readString();
         }
 
-        console.log(parentType)
-
         /*
         if(parentType === '/KeysForAll/KSUb.KSUb_C')
         {
