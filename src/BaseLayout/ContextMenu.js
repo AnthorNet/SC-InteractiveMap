@@ -213,14 +213,11 @@ export default class BaseLayout_ContextMenu
                         {
                             if(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
                             {
-                                if(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type !== 'Desc_LiquidOil_C')
-                                {
-                                    contextMenu.push('-');
-                                    contextMenu.push({
-                                        text    : 'Spawn a miner',
-                                        callback: Modal_Node_SpawnAround.getHTML
-                                    });
-                                }
+                                contextMenu.push('-');
+                                contextMenu.push({
+                                    text    : ((this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type === 'Desc_LiquidOil_C') ? 'Spawn an Oil Extractor' : 'Spawn a Miner'),
+                                    callback: Modal_Node_SpawnAround.getHTML
+                                });
                             }
                         }
 

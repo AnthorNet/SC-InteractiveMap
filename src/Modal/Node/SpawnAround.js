@@ -7,7 +7,6 @@ export default class Modal_Node_SpawnAround
     static getHTML(marker)
     {
         let baseLayout      = marker.baseLayout;
-        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
 
         let foundationTypes = [];
         let minerTypes      = [];
@@ -29,15 +28,25 @@ export default class Modal_Node_SpawnAround
                 }
                 if(baseLayout.buildingsData[buildingId].category === 'extraction')
                 {
-                    if(baseLayout.buildingsData[buildingId].className.startsWith('/Game/FactoryGame/Buildable/Factory/Miner'))
+                    if(baseLayout.satisfactoryMap.collectableMarkers[marker.relatedTarget.options.pathName].options.type === 'Desc_LiquidOil_C')
                     {
-                        minerTypes.push(currentBuildingOption);
+                        if(baseLayout.buildingsData[buildingId].className.startsWith('/Game/FactoryGame/Buildable/Factory/OilPump'))
+                        {
+                            minerTypes.push(currentBuildingOption);
+                        }
+                    }
+                    else
+                    {
+                        if(baseLayout.buildingsData[buildingId].className.startsWith('/Game/FactoryGame/Buildable/Factory/Miner'))
+                        {
+                            minerTypes.push(currentBuildingOption);
+                        }
                     }
                 }
             }
 
         BaseLayout_Modal.form({
-            title       : "Position",
+            title       : ((baseLayout.satisfactoryMap.collectableMarkers[marker.relatedTarget.options.pathName].options.type === 'Desc_LiquidOil_C') ? 'Spawn an Oil Extractor' : 'Spawn a Miner'),
             container   : '#leafletMap',
             inputs      : [
                 {

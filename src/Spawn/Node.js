@@ -10,16 +10,21 @@ export default class Spawn_Node
 
         this.foundationType     = options.foundationType;
         this.minerType          = options.minerType;
-        this.poleType           = options.poleType;
 
         this.rotation           = options.rotation;
-        this.minerOffset        = 0;
+        this.minerOffsetY       = 0;
+        this.minerOffsetZ       = 0;
 
         let foundationData      = this.baseLayout.getBuildingDataFromClassName(this.foundationType);
             if(foundationData !== null)
             {
-                this.minerOffset += foundationData.height * 100 / 2;
+                this.minerOffsetZ += foundationData.height * 100 / 2;
             }
+
+        if(this.minerType.startsWith('/Game/FactoryGame/Buildable/Factory/OilPump'))
+        {
+            this.minerOffsetY -= 200;
+        }
 
         this.useOwnMaterials    = options.useOwnMaterials;
 
@@ -51,20 +56,20 @@ export default class Spawn_Node
             {
                 className   : this.foundationType,
                 x           : this.centerObject.transform.translation[0],
-                y           : this.centerObject.transform.translation[1],
+                y           : this.centerObject.transform.translation[1] + this.minerOffsetY,
                 z           : this.centerObject.transform.translation[2]
             },
             {
                 className   : this.foundationType,
                 x           : this.centerObject.transform.translation[0],
-                y           : this.centerObject.transform.translation[1] + 800,
+                y           : this.centerObject.transform.translation[1] + 800 + this.minerOffsetY,
                 z           : this.centerObject.transform.translation[2]
             },
             {
                 className   : this.minerType,
                 x           : this.centerObject.transform.translation[0],
                 y           : this.centerObject.transform.translation[1],
-                z           : this.centerObject.transform.translation[2] + this.minerOffset
+                z           : this.centerObject.transform.translation[2] + this.minerOffsetZ
             }
         ];
 
@@ -107,7 +112,7 @@ export default class Spawn_Node
                         fakeBuilding.pathName = this.baseLayout.generateFastPathName(fakeBuilding);
                         this.baseLayout.updateBuiltWithRecipe(fakeBuilding);
 
-        if(options.className.includes('Miner'))
+        if(options.className.startsWith('/Game/FactoryGame/Buildable/Factory/Miner') || options.className.startsWith('/Game/FactoryGame/Buildable/Factory/OilPump'))
         {
             fakeBuilding.properties.push({
                 name    : 'mExtractableResource',
@@ -157,7 +162,7 @@ export default class Spawn_Node
         if(this.baseLayout.history !== null)
         {
             this.baseLayout.history.add({
-                name    : 'Undo: Spawn a miner',
+                name    : ((this.minerType.startsWith('/Game/FactoryGame/Buildable/Factory/OilPump')) ? 'Undo: Spawn an Oil Extractor' : 'Undo: Spawn a Miner'),
                 values  : this.history
             });
         }
