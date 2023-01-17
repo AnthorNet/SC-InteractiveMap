@@ -2,7 +2,7 @@ import BaseLayout_Modal                         from '../../BaseLayout/Modal.js'
 
 import SubSystem_Buildable                      from '../../SubSystem/Buildable.js';
 
-import Spawn_Blueprint                          from '../../Spawn/Blueprint.js';
+import Spawn_Megaprint                          from '../../Spawn/Megaprint.js';
 
 export default class Modal_Map_Paste
 {
@@ -60,7 +60,7 @@ export default class Modal_Map_Paste
             ],
             callback    : function(values)
             {
-                return new Spawn_Blueprint({
+                return new Spawn_Megaprint({
                     baseLayout          : baseLayout,
                     marker              : marker,
                     clipboard           : baseLayout.clipboard,

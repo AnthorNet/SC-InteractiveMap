@@ -5,9 +5,9 @@ import Building_MapMarker                       from '../Building/MapMarker.js';
 
 export default class SaveParser_FicsIt
 {
-    static callADA(baseLayout, currentObject, pastingBlueprint = false)
+    static callADA(baseLayout, currentObject, pastingMegaprint = false)
     {
-        if(pastingBlueprint === false)
+        if(pastingMegaprint === false)
         {
             switch(currentObject.className)
             {
@@ -44,7 +44,7 @@ export default class SaveParser_FicsIt
         }
 
         /*
-        if(pastingBlueprint === true)
+        if(pastingMegaprint === true)
         {
             // Fix old translation Array to object
             if(currentObject.transform !== undefined)
@@ -394,7 +394,7 @@ export default class SaveParser_FicsIt
     }
 
     /**
-     * Some old blueprint were keeping the paired station when is was not existing in the pasted save
+     * Some old megaprint were keeping the paired station when is was not existing in the pasted save
      */
     static checkPairedStation(baseLayout, currentObject)
     {
@@ -413,7 +413,7 @@ export default class SaveParser_FicsIt
     }
 
     /**
-     * Remove not existing drones from old blueprints
+     * Remove not existing drones from old megaprints
      */
     static checkDroneStation(baseLayout, currentObject)
     {

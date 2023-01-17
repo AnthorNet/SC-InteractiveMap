@@ -53,7 +53,7 @@ export default class Modal_Object_SpawnAround
                     inputOptions    : inputOptions
                 },
                 {
-                    label           : 'Use materials from your containers? (Not suitable for pasting blueprints)',
+                    label           : 'Use materials from your containers? (Not suitable for pasting megaprints)',
                     name            : 'useOwnMaterials',
                     inputType       : 'toggle'
                 }

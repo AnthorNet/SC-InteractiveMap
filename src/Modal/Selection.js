@@ -304,8 +304,8 @@ export default class Modal_Selection
                 inputOptions.push({group: 'Positioning', text: 'Offset selected items position', value: 'offset'});
                 inputOptions.push({group: 'Positioning', text: 'Rotate selected items position', value: 'rotate'});
 
-                inputOptions.push({group: 'Blueprints', text: 'Add "Foundation 8m x 2m" helpers on selection boundaries', value: 'helpers'});
-                inputOptions.push({group: 'Blueprints', text: 'Copy selected items', value: 'copy'});
+                inputOptions.push({group: 'Megaprints', text: 'Add "Foundation 8m x 2m" helpers on selection boundaries', value: 'helpers'});
+                inputOptions.push({group: 'Megaprints', text: 'Copy selected items', value: 'copy'});
 
                 if (haveProductionCategory === true || haveExtractionCategory === true || haveGeneratorCategory === true)
                 {

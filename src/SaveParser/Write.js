@@ -711,7 +711,7 @@ export default class SaveParser_Write
                             entity += this.writeFloat(currentObject.extra.sourceTranslation[1]);
                             entity += this.writeFloat(currentObject.extra.sourceTranslation[2]);
                         }
-                        else // Avoid old blueprints from failing...
+                        else // Avoid old megaprints from failing...
                         {
                             entity += this.writeFloat(0);
                             entity += this.writeFloat(0);
@@ -724,7 +724,7 @@ export default class SaveParser_Write
                             entity += this.writeFloat(currentObject.extra.targetTranslation[1]);
                             entity += this.writeFloat(currentObject.extra.targetTranslation[2]);
                         }
-                        else // Avoid old blueprints from failing...
+                        else // Avoid old megaprints from failing...
                         {
                             entity += this.writeFloat(0);
                             entity += this.writeFloat(0);

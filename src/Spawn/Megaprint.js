@@ -7,7 +7,7 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import pako                                     from '../Lib/pako.esm.js';
 import saveAs                                   from '../Lib/FileSaver.js';
 
-export default class Spawn_Blueprint
+export default class Spawn_Megaprint
 {
     constructor(options)
     {
@@ -34,7 +34,7 @@ export default class Spawn_Blueprint
 
         if(typeof gtag === 'function')
         {
-            gtag('event', 'Blueprint', {event_category: 'Spawn'});
+            gtag('event', 'Megaprint', {event_category: 'Spawn'});
         }
 
         return this.spawn();
@@ -482,7 +482,7 @@ export default class Spawn_Blueprint
         {
             let currentProperty = properties[j];
 
-                // Fix old blueprints
+                // Fix old megaprints
                 if(currentProperty.type !== undefined)
                 {
                     currentProperty.type = currentProperty.type.replace('Property', '');
@@ -1080,7 +1080,7 @@ export default class Spawn_Blueprint
                     this.historyValues.unshift({callback: 'restoreObject', object: this.centerObject});
                 }
 
-            this.baseLayout.history.add({name: 'Undo: Paste blueprint', values: this.historyValues});
+            this.baseLayout.history.add({name: 'Undo: Paste megaprint', values: this.historyValues});
         }
 
         $('#liveLoader').hide().find('.progress-bar').css('width', '0%');
@@ -1172,7 +1172,7 @@ L.Control.ClipboardControl = L.Control.extend({
             link1.href          = '#';
             link1.dataset.hover = 'tooltip';
             link1.dataset.placement = 'right';
-            link1.title         = 'Import/Export a blueprint';
+            link1.title         = 'Import/Export a megaprint';
 
         L.DomEvent
             .on(link1, 'click', L.DomEvent.stopPropagation)
@@ -1185,7 +1185,7 @@ L.Control.ClipboardControl = L.Control.extend({
             link2.href          = '#';
             link2.dataset.hover = 'tooltip';
             link2.dataset.placement = 'right';
-            link2.title         = 'Paste blueprint in the original position';
+            link2.title         = 'Paste megaprint in the original position';
             this.options.pasteInPlaceButton = link2;
         $(this.options.pasteInPlaceButton).hide();
 
@@ -1197,9 +1197,9 @@ L.Control.ClipboardControl = L.Control.extend({
 
         let modal = [];
             modal.push('<div class="modal fade" tabindex="-1" id="clipboardControlModal"><div class="modal-dialog modal-lg"><div class="modal-content">');
-            modal.push('<div class="modal-header"><h5 class="modal-title">Blueprint</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>');
-            modal.push('<div class="modal-body"><p>You can copy a selection of items using the <strong>Lasso tool</strong>, then export them into a file.</p><div id="dropBlueprint"><input name="bluePrintFile" type="file" id="blueprintFileInput" accept=".cbp"><label for="blueprintFileInput" class="m-0"><i class="fas fa-upload"></i> Click/Drop a blueprint file</label></div></div>');
-            modal.push('<div class="modal-body"><button class="downloadButton btn btn-secondary w-100">Download current blueprint</button></div>');
+            modal.push('<div class="modal-header"><h5 class="modal-title">Megaprint</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>');
+            modal.push('<div class="modal-body"><p>You can copy a selection of items using the <strong>Lasso tool</strong>, then export them into a file.</p><div id="dropMegaprint"><input name="megaprintFile" type="file" id="megaprintFileInput" accept=".cbp"><label for="megaprintFileInput" class="m-0"><i class="fas fa-upload"></i> Click/Drop a megaprint file</label></div></div>');
+            modal.push('<div class="modal-body"><button class="downloadButton btn btn-secondary w-100">Download current megaprint</button></div>');
             modal.push('</div></div></div>');
 
         $('body').append(modal.join(''));
@@ -1209,7 +1209,7 @@ L.Control.ClipboardControl = L.Control.extend({
                 new Blob(
                     [pako.deflate(JSON.stringify(baseLayout.clipboard))],
                     {type: "application/octet-stream; charset=utf-8"}
-                ), "blueprint-calculator.cbp"
+                ), "megaprint-calculator.cbp"
             );
             $('#clipboardControlModal').modal('hide');
             return;
@@ -1217,7 +1217,7 @@ L.Control.ClipboardControl = L.Control.extend({
 
         if(window.File && window.FileReader && window.FileList && window.Blob)
         {
-            let processBlueprintFile = (droppedFile) => {
+            let processMegaprintFile = (droppedFile) => {
                 if(droppedFile !== undefined)
                 {
                     if(droppedFile.name.endsWith('.cbp'))
@@ -1241,7 +1241,7 @@ L.Control.ClipboardControl = L.Control.extend({
                                     this.options.baseLayout.clipboard = restored;
 
                                     $(this.options.pasteInPlaceButton).show();
-                                    BaseLayout_Modal.alert('Imported ' + restored.data.length + ' items from the blueprint!<br />Don\'t forget to paste it on original location or by right clicking any foundation!');
+                                    BaseLayout_Modal.alert('Imported ' + restored.data.length + ' items from the megaprint!<br />Don\'t forget to paste it on original location or by right clicking any foundation!');
                                 }
 
                                 $('#clipboardControlModal').modal('hide');
@@ -1254,19 +1254,19 @@ L.Control.ClipboardControl = L.Control.extend({
                 }
                 else
                 {
-                    alert('Something went wrong reading your blueprint file!');
+                    alert('Something went wrong reading your megaprint file!');
                 }
             };
 
-            $('#dropBlueprint').on('drag dragstart dragend dragover dragenter dragleave drop', function(e){e.preventDefault();e.stopPropagation();})
-                               .on('dragover dragenter', function(){$('#dropBlueprint').addClass('is-dragover');})
-                               .on('dragleave dragend drop', function(){$('#dropBlueprint').removeClass('is-dragover');})
-                               .on('drop', function(e){ processBlueprintFile(e.originalEvent.dataTransfer.files[0]); });
-            $('#blueprintFileInput').on('change', function(e){
+            $('#dropMegaprint').on('drag dragstart dragend dragover dragenter dragleave drop', function(e){e.preventDefault();e.stopPropagation();})
+                               .on('dragover dragenter', function(){$('#dropMegaprint').addClass('is-dragover');})
+                               .on('dragleave dragend drop', function(){$('#dropMegaprint').removeClass('is-dragover');})
+                               .on('drop', function(e){ processMegaprintFile(e.originalEvent.dataTransfer.files[0]); });
+            $('#megaprintFileInput').on('change', function(e){
                 let currentFile = $(this).prop('files')[0];
                     $(this).val('');
 
-                processBlueprintFile(currentFile);
+                processMegaprintFile(currentFile);
             });
         }
         else
@@ -1279,11 +1279,11 @@ L.Control.ClipboardControl = L.Control.extend({
 
     onRemove: function(){
         $('#clipboardControlModal .downloadButton').off('click');
-        $('#dropBlueprint').off('drag dragstart dragend dragover dragenter dragleave drop')
+        $('#dropMegaprint').off('drag dragstart dragend dragover dragenter dragleave drop')
                            .off('dragover dragenter')
                            .off('dragleave dragend drop')
                            .off('drop');
-        $('#blueprintFileInput').off('change');
+        $('#megaprintFileInput').off('change');
 
         $('#clipboardControlModal').remove();
     },
@@ -1301,7 +1301,7 @@ L.Control.ClipboardControl = L.Control.extend({
     _pasteInPlace: function(){
         if(this.options.baseLayout.clipboard !== null)
         {
-            new Spawn_Blueprint({
+            new Spawn_Megaprint({
                 baseLayout          : this.options.baseLayout,
                 marker              : null,
                 clipboard           : this.options.baseLayout.clipboard
