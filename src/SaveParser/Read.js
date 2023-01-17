@@ -1788,6 +1788,7 @@ export default class SaveParser_Read
                             structure.trace     = this.readFINNetworkTrace();
                             structure.trackId   = this.readInt();
                             break;
+                        case '/Script/FactoryGame.PrefabSignData': // Skip!
                         case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture': // Skip!
                         case '/Script/FactoryGame.InventoryItem': // Skip!
                             break;
