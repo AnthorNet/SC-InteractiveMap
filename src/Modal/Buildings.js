@@ -1,4 +1,7 @@
 /* global gtag, Intl */
+import Building_DroneStation                    from '../Building/DroneStation.js';
+import Building_TrainStation                    from '../Building/TrainStation.js';
+import Building_TruckStation                    from '../Building/TruckStation.js';
 
 export default class Modal_Buildings
 {
@@ -69,6 +72,10 @@ export default class Modal_Buildings
             {
                 for(let i in this.baseLayout.buildingsData)
                 {
+                    if(this.baseLayout.buildingsData[i].className === '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C' && currentCategory === 'dockstation')
+                    {
+                        continue; // Skip to avoid twice...
+                    }
                     if(this.baseLayout.buildingsData[i].category === currentCategory && this.baseLayout.buildingsData[i].className !== undefined)
                     {
                         buildingsList[currentCategory].buildings[this.baseLayout.buildingsData[i].className] = [];
@@ -155,6 +162,36 @@ export default class Modal_Buildings
                             htmlRow.push('<td>#' + (i + 1) + '</td>');
 
                             htmlRow.push('<td>');
+
+                            if(className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C')
+                            {
+                                let trainStationIdentifier  = this.baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
+                                    if(trainStationIdentifier !== null)
+                                    {
+                                        let mStationName    = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
+                                            if(mStationName !== null)
+                                            {
+                                                htmlRow.push('<strong>' + mStationName + '</strong><br />');
+                                            }
+                                    }
+                            }
+                            if(className === '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C')
+                            {
+                                let mDroneStationTag    = Building_DroneStation.getSign(this.baseLayout, currentObject);
+                                    if(mDroneStationTag !== null)
+                                    {
+                                        htmlRow.push('<strong>' + mDroneStationTag + '</strong><br />');
+                                    }
+                            }
+
+                            if(className === '/Game/FactoryGame/Buildable/Factory/TruckStation/Build_TruckStation.Build_TruckStation_C')
+                            {
+                                let mTruckStationTag    = Building_TruckStation.getSign(this.baseLayout, currentObject);
+                                    if(mTruckStationTag !== null)
+                                    {
+                                        htmlRow.push('<strong>' + mTruckStationTag + '</strong><br />');
+                                    }
+                            }
 
                             switch(currentCategory)
                             {
