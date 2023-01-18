@@ -130,9 +130,16 @@ export default class Modal_Map_Todo
 
     parseNote(str)
     {
-        str = str.replaceAll('[x]', '<span class="text-warning">[</span><strong style="display: inline-block;width: 10px;text-align: center;">x</strong><span class="text-warning">]</span>');
-        str = str.replaceAll('[]', '<span class="text-warning">[<span style="display: inline-block;width: 10px;"></span>]</span>');
-        str = str.replace(/<b>(.*?)<\/>/g, '<strong>$1</strong>');
+        // Avoid HTML/JS
+        let fakeDiv = document.createElement('div');
+            fakeDiv.appendChild(document.createTextNode(str));
+
+        str = fakeDiv.innerHTML;
+
+        // Update in-game formatting
+        str = str.replaceAll('[x]', '<span class="text-warning">[</span><strong style="display: inline-block;width: 10px;text-align: center;">x</strong><span class="text-warning">]</span>&nbsp;');
+        str = str.replaceAll('[]', '<span class="text-warning">[<span style="display: inline-block;width: 10px;"></span>]</span>&nbsp;');
+        str = str.replace(/&lt;b&gt;(.*?)&lt;\/&gt;/g, '<strong>$1</strong>');
         str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
         return str;
