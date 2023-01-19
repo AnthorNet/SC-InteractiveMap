@@ -349,21 +349,28 @@ export default class BaseLayout_Math
                     let currentSplineLocation       = null;
                     let currentSplineArriveTangent  = null;
                     let currentSplineLeaveTangent   = null;
+                    let currentSplineCustomRotation = null;
 
                         for(let j = 0; j < currentSpline.length; j++)
                         {
+                            currentSplineCustomRotation = BaseLayout_Math.getPointRotation(
+                                [currentSpline[j].value.values.x, currentSpline[j].value.values.y],
+                                [0, 0],
+                                currentObject.transform.rotation
+                            );
+
                             if(currentSpline[j].name === 'Location')
                             {
-                                currentSplineLocation = currentSpline[j].value.values;
+                                currentSplineLocation = {x: currentSplineCustomRotation[0], y: currentSplineCustomRotation[1], z: currentSpline[j].value.values.z};
                                 originalSplineData.push(currentSplineLocation);
                             }
                             if(currentSpline[j].name === 'ArriveTangent')
                             {
-                                currentSplineArriveTangent = currentSpline[j].value.values;
+                                currentSplineArriveTangent = {x: currentSplineCustomRotation[0], y: currentSplineCustomRotation[1], z: currentSpline[j].value.values.z};
                             }
                             if(currentSpline[j].name === 'LeaveTangent')
                             {
-                                currentSplineLeaveTangent = currentSpline[j].value.values;
+                                currentSplineLeaveTangent = {x: currentSplineCustomRotation[0], y: currentSplineCustomRotation[1], z: currentSpline[j].value.values.z};
                             }
                         }
 
