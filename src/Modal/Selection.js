@@ -318,45 +318,51 @@ export default class Modal_Selection
 
             if(haveFoundationsMaterialsCategory === true)
             {
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "FICSIT Foundation"', value: 'switchMaterial|foundation|Ficsit'});
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Concrete Foundation"', value: 'switchMaterial|foundation|Concrete'});
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Grip Metal Foundation"', value: 'switchMaterial|foundation|GripMetal'});
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Coated Concrete Foundation"', value: 'switchMaterial|foundation|ConcretePolished'});
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Asphalt Foundation"', value: 'switchMaterial|foundation|Asphalt'});
-                inputOptions.push({group: 'Foundation Materials', text: 'Switch to "Frame Foundation"', value: 'switchMaterial|foundation|Frame'});
+                inputOptions.push({group: 'Foundation Materials', text: baseLayout.translate._('Switch to "%1$s"', 'FICSIT Foundation'), value: 'switchMaterial|foundation|Ficsit'});
+                inputOptions.push({group: 'Foundation Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Concrete Foundation'), value: 'switchMaterial|foundation|Concrete'});
+                inputOptions.push({group: 'Foundation Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Grip Metal Foundation'), value: 'switchMaterial|foundation|GripMetal'});
+                inputOptions.push({group: 'Foundation Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Coated Concrete Foundation'), value: 'switchMaterial|foundation|ConcretePolished'});
+                inputOptions.push({group: 'Foundation Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Asphalt Foundation'), value: 'switchMaterial|foundation|Asphalt'});
+                inputOptions.push({group: 'Foundation Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Frame Foundation'), value: 'switchMaterial|foundation|Frame'});
             }
 
             if(haveWallsMaterialsCategory === true)
             {
-                inputOptions.push({group: 'Wall Materials', text: 'Switch to "FICSIT Wall"', value: 'switchMaterial|wall|Ficsit'});
-                inputOptions.push({group: 'Wall Materials', text: 'Switch to "Concrete Wall"', value: 'switchMaterial|wall|Concrete'});
-                inputOptions.push({group: 'Wall Materials', text: 'Switch to "Steel Wall"', value: 'switchMaterial|wall|Steel'});
-                inputOptions.push({group: 'Wall Materials', text: 'Switch to "Frame Wall"', value: 'switchMaterial|wall|Frame'});
+                inputOptions.push({group: 'Wall Materials', text: baseLayout.translate._('Switch to "%1$s"', 'FICSIT Wall'), value: 'switchMaterial|wall|Ficsit'});
+                inputOptions.push({group: 'Wall Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Concrete Wall'), value: 'switchMaterial|wall|Concrete'});
+                inputOptions.push({group: 'Wall Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Steel Wall'), value: 'switchMaterial|wall|Steel'});
+                inputOptions.push({group: 'Wall Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Frame Wall'), value: 'switchMaterial|wall|Frame'});
             }
 
             if(haveRoofsMaterialsCategory === true)
             {
-                inputOptions.push({group: 'Roof Materials', text: 'Switch to "FICSIT Roof"', value: 'switchMaterial|roof|Ficsit'});
-                inputOptions.push({group: 'Roof Materials', text: 'Switch to "Tar Roof"', value: 'switchMaterial|roof|Tar'});
-                inputOptions.push({group: 'Roof Materials', text: 'Switch to "Metal Roof"', value: 'switchMaterial|roof|Metal'});
-                inputOptions.push({group: 'Roof Materials', text: 'Switch to "Glass Roof"', value: 'switchMaterial|roof|Glass'});
+                inputOptions.push({group: 'Roof Materials', text: baseLayout.translate._('Switch to "%1$s"', 'FICSIT Roof'), value: 'switchMaterial|roof|Ficsit'});
+                inputOptions.push({group: 'Roof Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Tar Roof'), value: 'switchMaterial|roof|Tar'});
+                inputOptions.push({group: 'Roof Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Metal Roof'), value: 'switchMaterial|roof|Metal'});
+                inputOptions.push({group: 'Roof Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Glass Roof'), value: 'switchMaterial|roof|Glass'});
             }
 
             if(havePillarsMaterialsCategory === true)
             {
-                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Metal Pillar"', value: 'switchMaterial|pillar|Metal'});
-                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Concrete Pillar"', value: 'switchMaterial|pillar|Concrete'});
-                inputOptions.push({group: 'Pillar Materials', text: 'Switch to "Frame Pillar"', value: 'switchMaterial|pillar|Frame'});
+                inputOptions.push({group: 'Pillar Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Metal Pillar'), value: 'switchMaterial|pillar|Metal'});
+                inputOptions.push({group: 'Pillar Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Concrete Pillar'), value: 'switchMaterial|pillar|Concrete'});
+                inputOptions.push({group: 'Pillar Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Frame Pillar'), value: 'switchMaterial|pillar|Frame'});
             }
 
             if(haveCatwalkMaterialsCategory === true)
             {
-                inputOptions.push({group: 'Catwalk Materials', text: 'Switch to "Walkway"', value: 'switchMaterial|catwalk|Walkway'});
+                inputOptions.push({group: 'Catwalk Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Walkway'), value: 'switchMaterial|catwalk|Walkway'});
             }
 
             if(haveWalkwayMaterialsCategory === true)
             {
-                inputOptions.push({group: 'Walkway Materials', text: 'Switch to "Catwalk"', value: 'switchMaterial|walkway|Catwalk'});
+                inputOptions.push({group: 'Walkway Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Catwalk'), value: 'switchMaterial|walkway|Catwalk'});
+            }
+
+            if(havePipelineCategory)
+            {
+                inputOptions.push({group: 'Pipe Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Pipeline (Indicator)'), value: 'switchMaterial|pipe|Ficsit'});
+                inputOptions.push({group: 'Pipe Materials', text: baseLayout.translate._('Switch to "%1$s"', 'Pipeline (No Indicator)'), value: 'switchMaterial|pipe|NoIndicator'});
             }
 
             if(haveSkinsCategory === true)
