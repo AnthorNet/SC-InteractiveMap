@@ -12,6 +12,7 @@ export default class Spawn_Node
         this.minerType          = options.minerType;
 
         this.rotation           = options.rotation;
+        this.minerCount         = Math.max(1, Math.min(options.minerCount, 12));
         this.minerOffsetY       = 0;
         this.minerOffsetZ       = 0;
 
@@ -52,26 +53,32 @@ export default class Spawn_Node
         ];
 
         let status  = true;
-        let steps   = [
+        let steps   = [];
+            for(let i = 1; i <= this.minerCount; i++)
             {
-                className   : this.foundationType,
-                x           : this.centerObject.transform.translation[0],
-                y           : this.centerObject.transform.translation[1] + this.minerOffsetY,
-                z           : this.centerObject.transform.translation[2]
-            },
-            {
-                className   : this.foundationType,
-                x           : this.centerObject.transform.translation[0],
-                y           : this.centerObject.transform.translation[1] + 800 + this.minerOffsetY,
-                z           : this.centerObject.transform.translation[2]
-            },
-            {
-                className   : this.minerType,
-                x           : this.centerObject.transform.translation[0],
-                y           : this.centerObject.transform.translation[1],
-                z           : this.centerObject.transform.translation[2] + this.minerOffsetZ
+                let rotation = BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.rotation + (360 / this.minerCount * (i - 1)));
+                    steps.push({
+                        className   : this.foundationType,
+                        x           : this.centerObject.transform.translation[0],
+                        y           : this.centerObject.transform.translation[1] + this.minerOffsetY,
+                        z           : this.centerObject.transform.translation[2],
+                        rotation    : rotation
+                    });
+                    steps.push({
+                        className   : this.foundationType,
+                        x           : this.centerObject.transform.translation[0],
+                        y           : this.centerObject.transform.translation[1] + 800 + this.minerOffsetY,
+                        z           : this.centerObject.transform.translation[2],
+                        rotation    : rotation
+                    });
+                    steps.push({
+                        className   : this.minerType,
+                        x           : this.centerObject.transform.translation[0],
+                        y           : this.centerObject.transform.translation[1],
+                        z           : this.centerObject.transform.translation[2] + this.minerOffsetZ,
+                        rotation    : rotation
+                    });
             }
-        ];
 
         for(let i = 0; i < steps.length; i++)
         {
@@ -98,7 +105,7 @@ export default class Spawn_Node
                             className       : options.className,
                             pathName        : pathName,
                             transform       : {
-                                rotation        : BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], this.rotation),
+                                rotation        : options.rotation,
                                 translation     : [options.x, options.y, options.z]
                             },
                             properties      : [
@@ -112,13 +119,17 @@ export default class Spawn_Node
                         fakeBuilding.pathName = this.baseLayout.generateFastPathName(fakeBuilding);
                         this.baseLayout.updateBuiltWithRecipe(fakeBuilding);
 
-        if(options.className.startsWith('/Game/FactoryGame/Buildable/Factory/Miner') || options.className.startsWith('/Game/FactoryGame/Buildable/Factory/OilPump'))
+        if(options.className.startsWith('/Game/FactoryGame/Buildable/Factory/Miner') || options.className.startsWith('/Game/FactoryGame/Buildable/Factory/OilPump') || options.className.startsWith('/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal'))
         {
             fakeBuilding.properties.push({
                 name    : 'mExtractableResource',
                 type    : 'Object',
                 value   : {pathName: this.centerObject.pathName}
             });
+        }
+        if(options.className.startsWith('/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal'))
+        {
+            
         }
 
         // Check around for materials!

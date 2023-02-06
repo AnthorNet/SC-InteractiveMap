@@ -32,10 +32,10 @@ export default class Building_GeneratorGeoThermal
                 content.push('<div style="position: absolute;margin-top: 50px;margin-left: 30px;width: 50px;text-align: center;font-size: 25px;"><i class="fas fa-bolt"></i></div>');
                 content.push('<div style="position: absolute;margin-top: 85px;margin-left: 5px;width: 100px;text-align: center;font-size: 15px;" class="text-warning"><strong>' + Math.round(mBaseProduction * 100) / 100 + ' MW</strong></div>');
 
-            let minBaseProduction   = mBaseProduction;
-            let maxBaseProduction   = mBaseProduction;
+            let minBaseProduction   = Math.round(mBaseProduction * 100) / 100;
+            let maxBaseProduction   = Math.round(mBaseProduction * 100) / 100;
 
-            let resourceNode     = baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
+            let resourceNode        = baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
                 if(resourceNode !== null)
                 {
                     if(baseLayout.satisfactoryMap.collectableMarkers !== undefined && baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)

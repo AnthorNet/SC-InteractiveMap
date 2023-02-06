@@ -209,13 +209,19 @@ export default class BaseLayout_ContextMenu
                             callback    : this.baseLayout.teleportPlayer
                         });
 
-                        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C')
+                        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C' || currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C')
                         {
                             if(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
                             {
+                                let contextMenuText = ((this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type === 'Desc_LiquidOil_C') ? 'Spawn an Oil Extractor' : 'Spawn a Miner');
+                                    if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C')
+                                    {
+                                        contextMenuText = 'Spawn a Geothermal Generator';
+                                    }
+
                                 contextMenu.push('-');
                                 contextMenu.push({
-                                    text    : ((this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type === 'Desc_LiquidOil_C') ? 'Spawn an Oil Extractor' : 'Spawn a Miner'),
+                                    text    : contextMenuText,
                                     callback: Modal_Node_SpawnAround.getHTML
                                 });
                             }
@@ -382,7 +388,7 @@ export default class BaseLayout_ContextMenu
                 {
                     contextMenu = Building_PowerPole.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
-                if(currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/Pipeline') === true || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PipePump') === true)
+                if(Building_Pipeline.isPipeline(currentObject) || currentObject.className.startsWith('/Game/FactoryGame/Buildable/Factory/PipePump') === true)
                 {
                     contextMenu = Building_Pipeline.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }

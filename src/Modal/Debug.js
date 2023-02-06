@@ -52,7 +52,11 @@ export default class Modal_Debug
                 }
         }
 
-        let extraProperties = ['mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn', 'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles', 'mFlowIndicator', 'mBottomSnappedConnection', 'mTopSnappedConnection', 'mHubTerminal', 'mWorkBench', 'mGenerators', 'mBlueprintProxy'];
+        let extraProperties = [
+                'mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn',
+                'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles', 'mFlowIndicator', 'mBottomSnappedConnection', 'mTopSnappedConnection',
+                'mHubTerminal', 'mWorkBench', 'mGenerators', 'mBlueprintProxy', 'mExtractableResource'
+            ];
             for(let i = 0; i < extraProperties.length; i++)
             {
                 let extraProperty = baseLayout.getObjectProperty(currentObject, extraProperties[i]);
