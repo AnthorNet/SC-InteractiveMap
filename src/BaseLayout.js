@@ -120,6 +120,7 @@ export default class BaseLayout
 
         this.useRadioactivity                   = (this.localStorage !== null && this.localStorage.getItem('mapUseRadioactivity') !== null) ? (this.localStorage.getItem('mapUseRadioactivity') === 'true') : true;
         this.useFogOfWar                        = (this.localStorage !== null && this.localStorage.getItem('mapUseFogOfWar') !== null) ? (this.localStorage.getItem('mapUseFogOfWar') === 'true') : true;
+        this.useGlobalStats                     = (this.localStorage !== null && this.localStorage.getItem('mapUseGlobalStats') !== null) ? (this.localStorage.getItem('mapUseGlobalStats') === 'true') : true;
         this.mapModelsQuality                   = (this.localStorage !== null && this.localStorage.getItem('mapModelsQuality') !== null) ? this.localStorage.getItem('mapModelsQuality') : 'high';
 
         this.detailedModels                     = {};
@@ -988,6 +989,9 @@ export default class BaseLayout
 
             //TODO: Sentry new mod?
         }
+
+        // Check for blueprints proxies...
+        this.blueprintSubSystem.addToProxy(currentObject);
 
         // Needed when moving players
         if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C' && this.players[currentObject.pathName] !== undefined)
@@ -2730,7 +2734,6 @@ export default class BaseLayout
                 buildingData.mapLayer       = 'playerMinersLayer';
             }
 
-
         let layerId = (buildingData !== null && buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerHUBTerminalLayer';
 
             if(baseLayout.playerLayers[layerId].filtersCount !== undefined)
@@ -2770,6 +2773,9 @@ export default class BaseLayout
 
         // Remove belt/track connection if needed
         baseLayout.unlinkObjectComponentConnection(currentObject);
+
+        // Clear blueprintProxy
+        baseLayout.blueprintSubSystem.deleteFromProxy(currentObject);
 
         // Does the layer have a distance field to update?
         if(baseLayout.playerLayers[layerId].distance !== undefined)
