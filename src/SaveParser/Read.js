@@ -177,6 +177,10 @@ export default class SaveParser_Read
                     //console.log('OBJ', levelName, this.readInt());
                     this.readInt(); // objectsBinaryLength
                 let countObjects        = this.readInt();
+                    if(levelName === 'Level ' + this.header.mapName)
+                    {
+                        console.log('Loaded ' + countObjects + ' objects...');
+                    }
                 let entitiesToObjects   = [];
 
                 for(let i = 0; i < countObjects; i++)
@@ -225,6 +229,10 @@ export default class SaveParser_Read
                     //console.log('ENT', levelName, this.readInt());
                     this.readInt(); // entitiesBinaryLength
                 let countEntities       = this.readInt();
+                    if(levelName === 'Level ' + this.header.mapName)
+                    {
+                        console.log('Loaded ' + countEntities + ' entities...');
+                    }
                 let objectsToFlush      = {};
 
                 for(let i = 0; i < countEntities; i++)

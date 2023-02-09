@@ -60,6 +60,7 @@ export default class SaveParser
             this.countObjects   = this.objectsKeys.length;
 
             // Fix save before sending results...
+            baseLayout.blueprintSubSystem.clearEmptyProxies();
             for(let i = 0; i < this.countObjects; i++)
             {
                 let currentObject = this.getTargetObject(this.objectsKeys[i]);

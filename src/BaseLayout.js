@@ -709,6 +709,12 @@ export default class BaseLayout
                 continue;
             }
 
+            if(currentObject.className === '/Script/FactoryGame.FGBlueprintProxy')
+            {
+                this.blueprintSubSystem.add(currentObject);
+                continue;
+            }
+
             if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C')
             {
                 this.gameMode.push(currentObject);

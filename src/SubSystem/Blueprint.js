@@ -9,6 +9,14 @@ export default class SubSystem_Blueprint
         this.blueprintsProxies  = {};
     }
 
+    add(currentObject)
+    {
+        if(this.blueprintsProxies[currentObject.pathName] === undefined)
+        {
+            this.blueprintsProxies[currentObject.pathName] = [];
+        }
+    }
+
     addToProxy(currentObject)
     {
         let mBlueprintProxy = this.baseLayout.getObjectProperty(currentObject, 'mBlueprintProxy');
@@ -44,12 +52,21 @@ export default class SubSystem_Blueprint
                         //TODO: Check bounding box?
                     }
 
-                    if(this.blueprintsProxies[mBlueprintProxy.pathName].length === 0)
-                    {
-                        delete this.blueprintsProxies[mBlueprintProxy.pathName];
-                        this.baseLayout.saveGameParser.deleteObject(mBlueprintProxy.pathName);
-                    }
+                    this.clearEmptyProxies();
                 }
             }
+    }
+
+    clearEmptyProxies()
+    {
+        for(let pathName in this.blueprintsProxies)
+        {
+            if(this.blueprintsProxies[pathName].length === 0)
+            {
+                delete this.blueprintsProxies[pathName];
+                this.baseLayout.saveGameParser.deleteObject(pathName);
+                console.log('Removing ghost "/Script/FactoryGame.FGBlueprintProxy"', pathName);
+            }
+        }
     }
 }
