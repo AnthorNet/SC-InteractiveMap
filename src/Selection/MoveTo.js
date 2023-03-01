@@ -10,6 +10,7 @@ export default class Selection_MoveTo
         this.baseLayout             = options.baseLayout;
         this.markers                = options.markers;
         this.boundaries             = options.boundaries;
+        this.keepSelection          = (options.keepSelection !== undefined) ? options.keepSelection : true;
 
         this.moveToX                = parseFloat(options.moveToX);
         this.moveToY                = parseFloat(options.moveToY);
@@ -107,9 +108,15 @@ export default class Selection_MoveTo
                     this.baseLayout.history.add({
                         name: 'Undo: Move To selection',
                         values: [{
-                            pathNameArray: historyPathName,
-                            callback: 'Selection_MoveTo',
-                            properties: {moveToX: this.boundaries.centerX, moveToY: this.boundaries.centerY, moveToZ: this.boundaries.centerZ, boundaries: {centerX : this.moveToX, centerY : this.moveToY, centerZ : this.moveToZ}}
+                            pathNameArray   : historyPathName,
+                            callback        : 'Selection_MoveTo',
+                            properties      : {
+                                moveToX         : this.boundaries.centerX,
+                                moveToY         : this.boundaries.centerY,
+                                moveToZ         : this.boundaries.centerZ,
+                                boundaries      : {centerX : this.moveToX, centerY : this.moveToY, centerZ : this.moveToZ},
+                                keepSelection   : this.keepSelection
+                            }
                         }]
                     });
                 }
@@ -119,6 +126,17 @@ export default class Selection_MoveTo
             });
         }
 
-        Modal_Selection.cancel(this.baseLayout);
+        if(this.keepSelection !== true)
+        {
+            Modal_Selection.cancel(this.baseLayout);
+        }
+        else
+        {
+            this.baseLayout.satisfactoryMap.leafletMap.selection.offsetSelectedArea(
+                this.baseLayout,
+                (this.moveToX - this.boundaries.centerX),
+                (this.moveToY - this.boundaries.centerY)
+            );
+        }
     }
 }

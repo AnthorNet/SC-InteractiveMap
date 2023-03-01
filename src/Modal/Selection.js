@@ -22,6 +22,9 @@ export default class Modal_Selection
 {
     static cancel(baseLayout)
     {
+        baseLayout.satisfactoryMap.leafletMap.selection.control._link0.style.display = 'none';
+        baseLayout.satisfactoryMap.leafletMap.selection.control._link4.style.display = 'none';
+
         baseLayout.satisfactoryMap.leafletMap.selection.removeSelectedArea();
         baseLayout.satisfactoryMap.unpauseMap();
     }
@@ -455,7 +458,7 @@ export default class Modal_Selection
                     callbackName        = 'callback' + callbackName[0].toUpperCase() + callbackName.slice(1);
 
                 // Those callback needs access to the selection!
-                if(['fillArea', 'respawnFlora'].includes(values.form) === false)
+                if(['fillArea', 'respawnFlora', 'moveTo', 'offset', 'rotate'].includes(values.form) === false)
                 {
                     Modal_Selection.cancel(baseLayout);
                 }
@@ -524,32 +527,41 @@ export default class Modal_Selection
             title       : 'You have selected ' + markers.length + ' items',
             message     : 'Negative offset will move X to the West, Y to the North, and Z down.<br /><strong>NOTE:</strong> A foundation is 800 wide.',
             container   : '#leafletMap',
-            inputs      : [{
-                label       : 'X',
-                name        : 'offsetX',
-                inputType   : 'coordinate',
-                value       : 0
-            },
-            {
-                label       : 'Y',
-                name        : 'offsetY',
-                inputType   : 'coordinate',
-                value       : 0
-            },
-            {
-                label       : 'Z',
-                name        : 'offsetZ',
-                inputType   : 'coordinate',
-                value       : 0
-            }],
+            inputs      : [
+                {
+                    label       : 'X',
+                    name        : 'offsetX',
+                    inputType   : 'coordinate',
+                    value       : 0
+                },
+                {
+                    label       : 'Y',
+                    name        : 'offsetY',
+                    inputType   : 'coordinate',
+                    value       : 0
+                },
+                {
+                    label       : 'Z',
+                    name        : 'offsetZ',
+                    inputType   : 'coordinate',
+                    value       : 0
+                },
+                {
+                    label       : 'Keep selection?',
+                    name        : 'keepSelection',
+                    inputType   : 'toggle',
+                    value       : 1,
+                }
+            ],
             callback: function(values)
             {
                 return new Selection_Offset({
-                    baseLayout  : baseLayout,
-                    markers     : markers,
-                    offsetX     : values.offsetX,
-                    offsetY     : values.offsetY,
-                    offsetZ     : values.offsetZ
+                    baseLayout      : baseLayout,
+                    markers         : markers,
+                    offsetX         : values.offsetX,
+                    offsetY         : values.offsetY,
+                    offsetZ         : values.offsetZ,
+                    keepSelection   : !!values.keepSelection
                 });
             }
         });
@@ -563,33 +575,75 @@ export default class Modal_Selection
             title       : 'You have selected ' + markers.length + ' items',
             message     : 'Coordinates are based on the selection center.',
             container   : '#leafletMap',
-            inputs      : [{
-                label       : 'X',
-                name        : 'moveToX',
-                inputType   : 'coordinate',
-                value       : boundaries.centerX
-            },
-            {
-                label       : 'Y',
-                name        : 'moveToY',
-                inputType   : 'coordinate',
-                value       : boundaries.centerY
-            },
-            {
-                label       : 'Z',
-                name        : 'moveToZ',
-                inputType   : 'coordinate',
-                value       : boundaries.centerZ
-            }],
+            inputs      : [
+                {
+                    label       : 'X',
+                    name        : 'moveToX',
+                    inputType   : 'coordinate',
+                    value       : boundaries.centerX
+                },
+                {
+                    label       : 'Y',
+                    name        : 'moveToY',
+                    inputType   : 'coordinate',
+                    value       : boundaries.centerY
+                },
+                {
+                    label       : 'Z',
+                    name        : 'moveToZ',
+                    inputType   : 'coordinate',
+                    value       : boundaries.centerZ
+                },
+                {
+                    label       : 'Keep selection?',
+                    name        : 'keepSelection',
+                    inputType   : 'toggle',
+                    value       : 1,
+                }
+            ],
             callback: function(values)
             {
                 return new Selection_MoveTo({
-                    baseLayout  : baseLayout,
-                    markers     : markers,
-                    boundaries  : boundaries,
-                    moveToX     : values.moveToX,
-                    moveToY     : values.moveToY,
-                    moveToZ     : values.moveToZ
+                    baseLayout      : baseLayout,
+                    markers         : markers,
+                    boundaries      : boundaries,
+                    moveToX         : values.moveToX,
+                    moveToY         : values.moveToY,
+                    moveToZ         : values.moveToZ,
+                    keepSelection   : !!values.keepSelection
+                });
+            }
+        });
+    }
+
+    static callbackRotate(baseLayout, markers)
+    {
+        BaseLayout_Modal.form({
+            title       : 'You have selected ' + markers.length + ' items',
+            container   : '#leafletMap',
+            inputs      : [
+                {
+                    label       : 'Rotation (Angle between 0 and 360 degrees)',
+                    name        : 'angle',
+                    inputType   : 'number',
+                    value       : 0,
+                    min         : 0,
+                    max         : 360
+                },
+                {
+                    label       : 'Keep selection?',
+                    name        : 'keepSelection',
+                    inputType   : 'toggle',
+                    value       : 1,
+                }
+            ],
+            callback    : function(values)
+            {
+                return new Selection_Rotate({
+                    baseLayout      : baseLayout,
+                    markers         : markers,
+                    angle           : values.angle,
+                    keepSelection   : !!values.keepSelection
                 });
             }
         });
@@ -615,30 +669,6 @@ export default class Modal_Selection
                     }
             }
         }
-    }
-
-    static callbackRotate(baseLayout, markers)
-    {
-        BaseLayout_Modal.form({
-            title       : 'You have selected ' + markers.length + ' items',
-            container   : '#leafletMap',
-            inputs      : [{
-                label       : 'Rotation (Angle between 0 and 360 degrees)',
-                name        : 'angle',
-                inputType   : 'number',
-                value       : 0,
-                min         : 0,
-                max         : 360
-            }],
-            callback    : function(values)
-            {
-                return new Selection_Rotate({
-                    baseLayout  : baseLayout,
-                    markers     : markers,
-                    angle       : values.angle
-                });
-            }
-        });
     }
 
     static callbackHelpers(baseLayout, markers)
@@ -1298,10 +1328,10 @@ L.Selection = L.Handler.extend({
                         this._areaGhost = L.circle(
                             this._areaStartPoint,
                             {
-                                color: this.options.color,
-                                weight: this.options.weight,
-                                dashArray: this.options.dashArray,
-                                radius: radius
+                                color       : this.options.color,
+                                weight      : this.options.weight,
+                                dashArray   : this.options.dashArray,
+                                radius      : radius
                             }
                         ).addTo(this._map);
                     }
@@ -1310,9 +1340,9 @@ L.Selection = L.Handler.extend({
                 this._areaGhost = L.rectangle(
                     [this._areaStartPoint, this._areaEndPoint],
                     {
-                        color: this.options.color,
-                        weight: this.options.weight,
-                        dashArray: this.options.dashArray
+                        color       : this.options.color,
+                        weight      : this.options.weight,
+                        dashArray   : this.options.dashArray
                     }
                 ).addTo(this._map);
                 break;
@@ -1321,12 +1351,77 @@ L.Selection = L.Handler.extend({
                 this._areaGhost = L.polygon(
                     this._areaPoints,
                     {
-                        color: this.options.color,
-                        weight: this.options.weight,
-                        dashArray: this.options.dashArray
+                        color       : this.options.color,
+                        weight      : this.options.weight,
+                        dashArray   : this.options.dashArray
                     }
                 ).addTo(this._map);
                 break;
+        }
+    },
+
+    offsetSelectedArea: function(baseLayout, x, y)
+    {
+        if(this._areaSelected !== null)
+        {
+            this._map.removeLayer(this._areaSelected);
+
+            switch(this._currentForm)
+            {
+                case 'circle':
+                    let oldCircleCenter         = baseLayout.satisfactoryMap.project([this._areaSelected._latlng.lat, this._areaSelected._latlng.lng], baseLayout.satisfactoryMap.zoomRatio);
+                    let oldCircleCoordinates    = baseLayout.satisfactoryMap.convertToGameCoordinates([oldCircleCenter.x, oldCircleCenter.y]);
+                    this._areaSelected = L.circle(
+                        baseLayout.satisfactoryMap.unproject([(oldCircleCoordinates[0] + x), (oldCircleCoordinates[1] + y)]),
+                        {
+                            color       : this.options.color,
+                            radius      : this._areaSelected.options.radius
+                        }
+                    ).addTo(this._map);
+                    break;
+                default:
+                    let newPolygonPoints    = [];
+                    let oldPolygonPoints    = this._areaSelected.getLatLngs()[0];
+                        for(let i = 0; i < oldPolygonPoints.length; i++)
+                        {
+                            let oldLatLng       = baseLayout.satisfactoryMap.project([oldPolygonPoints[i].lat, oldPolygonPoints[i].lng], baseLayout.satisfactoryMap.zoomRatio);
+                            let oldCoordinates  = baseLayout.satisfactoryMap.convertToGameCoordinates([oldLatLng.x, oldLatLng.y]);
+                                newPolygonPoints.push(baseLayout.satisfactoryMap.unproject([(oldCoordinates[0] + x), (oldCoordinates[1] + y)]));
+                        }
+
+                    this._areaSelected  = L.polygon(newPolygonPoints, {color: this.options.color}).addTo(this._map);
+                    break;
+            }
+        }
+    },
+
+    rotateSelectedArea: function(baseLayout, centerX, centerY, angle)
+    {
+        if(this._areaSelected !== null)
+        {
+            switch(this._currentForm)
+            {
+                case 'circle':
+                    break;
+                default:
+                    this._map.removeLayer(this._areaSelected);
+
+                    let newPolygonPoints    = [];
+                    let oldPolygonPoints    = this._areaSelected.getLatLngs()[0];
+                        for(let i = 0; i < oldPolygonPoints.length; i++)
+                        {
+                            let oldLatLng           = baseLayout.satisfactoryMap.project([oldPolygonPoints[i].lat, oldPolygonPoints[i].lng], baseLayout.satisfactoryMap.zoomRatio);
+                            let translationRotation = BaseLayout_Math.getPointRotation(
+                                    baseLayout.satisfactoryMap.convertToGameCoordinates([oldLatLng.x, oldLatLng.y]),
+                                    [centerX, centerY],
+                                    BaseLayout_Math.getNewQuaternionRotate([0, 0, 0, 1], angle)
+                                );
+                                newPolygonPoints.push(baseLayout.satisfactoryMap.unproject([translationRotation[0], translationRotation[1]]));
+                        }
+
+                    this._areaSelected  = L.polygon(newPolygonPoints, {color: this.options.color}).addTo(this._map);
+                    break;
+            }
         }
     },
 
@@ -1429,13 +1524,28 @@ L.Control.Selection = L.Control.extend({
         let className   = 'leaflet-control-zoom leaflet-bar';
         let container   = L.DomUtil.create('div', className);
 
-        let link1       = L.DomUtil.create('a', 'leaflet-control-selection leaflet-bar-part', container);
-            link1.innerHTML = '<i class="far fa-lasso"></i>';
-            link1.href      = '#';
-            link1.title     = 'Lasso Selection Tool';
+        let link0                   = L.DomUtil.create('a', 'leaflet-control-selection leaflet-bar-part', container);
+            link0.innerHTML         = '<i class="far fa-list-alt"></i>';
+            link0.href              = '#';
+            link0.title             = 'Selection Menu';
+            link0.style.display     = 'none';
+            link0.dataset.hover     = 'tooltip';
+            link0.dataset.placement = 'right';
+            this._link0             = link0;
+
+        L.DomEvent
+            .on(link0, 'click', L.DomEvent.stopPropagation)
+            .on(link0, 'click', L.DomEvent.preventDefault)
+            .on(link0, 'click', this._toggleSelectionModal, this)
+            .on(link0, 'dbclick', L.DomEvent.stopPropagation);
+
+        let link1                   = L.DomUtil.create('a', 'leaflet-control-selection leaflet-bar-part', container);
+            link1.innerHTML         = '<i class="far fa-lasso"></i>';
+            link1.href              = '#';
+            link1.title             = 'Lasso Selection Tool';
             link1.dataset.hover     = 'tooltip';
             link1.dataset.placement = 'right';
-        this._link1 = link1;
+            this._link1             = link1;
 
         L.DomEvent
             .on(link1, 'click', L.DomEvent.stopPropagation)
@@ -1443,13 +1553,13 @@ L.Control.Selection = L.Control.extend({
             .on(link1, 'click', this._toggleSelection, this)
             .on(link1, 'dbclick', L.DomEvent.stopPropagation);
 
-        let link2       = L.DomUtil.create('a', 'leaflet-control-selection leaflet-bar-part', container);
-            link2.innerHTML     = '<i class="far fa-rectangle-wide"></i>';
-            link2.href          = '#';
-            link2.title         = 'Rectangle Selection Tool';
+        let link2                   = L.DomUtil.create('a', 'leaflet-control-selection leaflet-bar-part', container);
+            link2.innerHTML         = '<i class="far fa-rectangle-wide"></i>';
+            link2.href              = '#';
+            link2.title             = 'Rectangle Selection Tool';
             link2.dataset.hover     = 'tooltip';
             link2.dataset.placement = 'right';
-        this._link2 = link2;
+            this._link2             = link2;
 
         L.DomEvent
             .on(link2, 'click', L.DomEvent.stopPropagation)
@@ -1457,13 +1567,13 @@ L.Control.Selection = L.Control.extend({
             .on(link2, 'click', this._toggleSelectRectangleAreaFeature, this)
             .on(link2, 'dbclick', L.DomEvent.stopPropagation);
 
-        let link3       = L.DomUtil.create('a', 'leaflet-control-selection leaflet-bar-part', container);
-            link3.innerHTML     = '<i class="far fa-circle"></i>';
-            link3.href          = '#';
-            link3.title         = 'Circle Selection Tool';
+        let link3                   = L.DomUtil.create('a', 'leaflet-control-selection leaflet-bar-part', container);
+            link3.innerHTML         = '<i class="far fa-circle"></i>';
+            link3.href              = '#';
+            link3.title             = 'Circle Selection Tool';
             link3.dataset.hover     = 'tooltip';
             link3.dataset.placement = 'right';
-        this._link3 = link3;
+            this._link3             = link3;
 
         L.DomEvent
             .on(link3, 'click', L.DomEvent.stopPropagation)
@@ -1471,11 +1581,36 @@ L.Control.Selection = L.Control.extend({
             .on(link3, 'click', this._toggleSelectCircleAreaFeature, this)
             .on(link3, 'dbclick', L.DomEvent.stopPropagation);
 
+        let link4                   = L.DomUtil.create('a', 'leaflet-control-selection leaflet-bar-part', container);
+            link4.innerHTML         = '<i class="far fa-trash-alt"></i>';
+            link4.href              = '#';
+            link4.title             = 'Clear Selection';
+            link4.style.display     = 'none';
+            link4.dataset.hover     = 'tooltip';
+            link4.dataset.placement = 'right';
+            this._link4             = link4;
+
+        L.DomEvent
+            .on(link4, 'click', L.DomEvent.stopPropagation)
+            .on(link4, 'click', L.DomEvent.preventDefault)
+            .on(link4, 'click', this._cancelSelection, this)
+            .on(link4, 'dbclick', L.DomEvent.stopPropagation);
+
         return container;
     },
 
     onRemove: function(map){},
 
+    _cancelSelection: function()
+    {
+        Modal_Selection.cancel(this.options.baseLayout);
+    },
+
+    _toggleSelectionModal: function()
+    {
+        let selection = this._map.selection.getFeaturesSelected(this.options.baseLayout);
+            Modal_Selection.getHTML(this.options.baseLayout, selection);
+    },
     _toggleSelection: function(currentForm = 'polygon', childNode = 1)
     {
         this._map.selection._currentForm    = currentForm;
@@ -1490,10 +1625,10 @@ L.Control.Selection = L.Control.extend({
         else
         {
             L.DomUtil.removeClass(this['_link' + childNode], 'leaflet-control-selection-on');
-
+            this._link0.style.display = 'block';
+            this._link4.style.display = 'block';
             this._map.selection.disable();
-            let selection = this._map.selection.getFeaturesSelected(this.options.baseLayout);
-                Modal_Selection.getHTML(this.options.baseLayout, selection);
+            this._toggleSelectionModal();
         }
     },
     _toggleSelectRectangleAreaFeature: function()

@@ -9,6 +9,7 @@ export default class Selection_Rotate
     {
         this.baseLayout             = options.baseLayout;
         this.markers                = options.markers;
+        this.keepSelection          = (options.keepSelection !== undefined) ? options.keepSelection : true;
 
         this.angle                  = parseFloat(Math.max(0, Math.min(360, options.angle)));
 
@@ -128,7 +129,11 @@ export default class Selection_Rotate
                         values  : [{
                             pathNameArray   : historyPathName,
                             callback        : 'Selection_Rotate',
-                            properties      : {angle: (360 - this.angle), selectionBoundaries: this.selectionBoundaries}
+                            properties      : {
+                                angle               : (360 - this.angle),
+                                selectionBoundaries : this.selectionBoundaries,
+                                keepSelection       : this.keepSelection
+                            }
                         }]
                     });
                 }
@@ -138,6 +143,13 @@ export default class Selection_Rotate
             });
         }
 
-        Modal_Selection.cancel(this.baseLayout);
+        if(this.keepSelection !== true)
+        {
+            Modal_Selection.cancel(this.baseLayout);
+        }
+        else
+        {
+            this.baseLayout.satisfactoryMap.leafletMap.selection.rotateSelectedArea(this.baseLayout, this.selectionBoundaries.centerX, this.selectionBoundaries.centerY, this.angle);
+        }
     }
 }

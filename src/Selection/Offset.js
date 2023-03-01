@@ -9,11 +9,12 @@ export default class Selection_Offset
     {
         this.baseLayout             = options.baseLayout;
         this.markers                = options.markers;
+        this.keepSelection          = (options.keepSelection !== undefined) ? options.keepSelection : true;
 
         this.offsetX                = parseFloat(options.offsetX);
         this.offsetY                = parseFloat(options.offsetY);
         this.offsetZ                = parseFloat(options.offsetZ);
-        
+
         this.useHistory             = (options.history !== undefined) ? options.history : true;
 
         if(typeof gtag === 'function')
@@ -105,9 +106,14 @@ export default class Selection_Offset
                     this.baseLayout.history.add({
                         name: 'Undo: Offset selection',
                         values: [{
-                            pathNameArray: historyPathName,
-                            callback: 'Selection_Offset',
-                            properties: {offsetX: -this.offsetX, offsetY: -this.offsetY, offsetZ: -this.offsetZ}
+                            pathNameArray   : historyPathName,
+                            callback        : 'Selection_Offset',
+                            properties      : {
+                                offsetX         : -this.offsetX,
+                                offsetY         : -this.offsetY,
+                                offsetZ         : -this.offsetZ,
+                                keepSelection   : this.keepSelection
+                            }
                         }]
                     });
                 }
@@ -117,6 +123,17 @@ export default class Selection_Offset
             });
         }
 
-        Modal_Selection.cancel(this.baseLayout);
+        if(this.keepSelection !== true)
+        {
+            Modal_Selection.cancel(this.baseLayout);
+        }
+        else
+        {
+            this.baseLayout.satisfactoryMap.leafletMap.selection.offsetSelectedArea(
+                this.baseLayout,
+                this.offsetX,
+                this.offsetY
+            );
+        }
     }
 }
