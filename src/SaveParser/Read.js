@@ -1022,11 +1022,22 @@ export default class SaveParser_Read
                             break;
 
                         case 'Vector':
-                            currentProperty.value.values.push({
-                                x           : this.readFloat(),
-                                y           : this.readFloat(),
-                                z           : this.readFloat()
-                            });
+                            if(this.header.saveVersion >= 41)
+                            {
+                                currentProperty.value.values.push({
+                                    x           : this.readDouble(),
+                                    y           : this.readDouble(),
+                                    z           : this.readDouble()
+                                });
+                            }
+                            else
+                            {
+                                currentProperty.value.values.push({
+                                    x           : this.readFloat(),
+                                    y           : this.readFloat(),
+                                    z           : this.readFloat()
+                                });
+                            }
                             break;
 
                         case 'LinearColor':
