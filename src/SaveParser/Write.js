@@ -963,7 +963,9 @@ export default class SaveParser_Write
             }
         }
 
-        return this.writeInt(this.currentEntityLength) + entity;
+        //console.log(currentObject.pathName, this.currentEntityLength)
+
+        return preEntity + this.writeInt(this.currentEntityLength) + entity;
     }
     writeProperties(currentObject, parentType = null)
     {
