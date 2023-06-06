@@ -94,14 +94,23 @@ export default class SaveParser_Read
         while(this.handledByte < this.maxByte)
         {
             // Read chunk info size...
-            let chunkHeader         = new DataView(this.arrayBuffer.slice(0, 48));
-                this.currentByte    = 48;
-                this.handledByte   += 48;
+            let preHeader           = 0;
+            let headerLength        = (this.header.saveVersion >= 41) ? 49 : 48;
+            let chunkHeader         = new DataView(this.arrayBuffer.slice(preHeader, (preHeader + headerLength)));
+                this.currentByte    = (preHeader + headerLength);
+                this.handledByte   += (preHeader + headerLength);
 
             if(this.PACKAGE_FILE_TAG === null)
             {
-                //this.PACKAGE_FILE_TAG = chunkHeader.getBigInt64(0, true);
-                this.PACKAGE_FILE_TAG = chunkHeader.getUint32(0, true);
+                if(this.header.saveVersion >= 41)
+                {
+                    this.PACKAGE_FILE_TAG = chunkHeader.getBigUint64(0, true);
+                }
+                else
+                {
+                    this.PACKAGE_FILE_TAG = chunkHeader.getUint32(0, true);
+                }
+
                 this.worker.postMessage({command: 'transferData', data: {PACKAGE_FILE_TAG: this.PACKAGE_FILE_TAG}});
             }
             if(this.maxChunkSize === null)
@@ -110,7 +119,7 @@ export default class SaveParser_Read
                 this.worker.postMessage({command: 'transferData', data: {maxChunkSize: this.maxChunkSize}});
             }
 
-            let currentChunkSize    = chunkHeader.getUint32(16, true);
+            let currentChunkSize    = chunkHeader.getUint32(((this.header.saveVersion >= 41) ? 17 : 16), true); // 16 before update 8?
             let currentChunk        = this.arrayBuffer.slice(this.currentByte, this.currentByte + currentChunkSize);
                 this.handledByte   += currentChunkSize;
                 this.currentByte   += currentChunkSize;
@@ -119,7 +128,7 @@ export default class SaveParser_Read
             this.arrayBuffer            = this.arrayBuffer.slice(this.currentByte);
             this.currentByte            = 0;
 
-            // Unzip!
+            // Inflate!
             try {
                 // Inflate current chunk
                 let currentInflatedChunk    = null;

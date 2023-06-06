@@ -491,10 +491,24 @@ export default class SaveParser_Write
 
             // Write chunk header
             this.saveBinary = '';
-            this.saveBinary += this.writeInt(this.PACKAGE_FILE_TAG);
-            this.saveBinary += this.writeInt(0);
+            if(this.header.saveVersion >= 41)
+            {
+                this.saveBinary += this.writeUint64(this.PACKAGE_FILE_TAG);
+            }
+            else
+            {
+                this.saveBinary += this.writeInt(this.PACKAGE_FILE_TAG);
+                this.saveBinary += this.writeInt(0);
+            }
+
             this.saveBinary += this.writeInt(this.maxChunkSize);
             this.saveBinary += this.writeInt(0);
+
+            if(this.header.saveVersion >= 41)
+            {
+                this.saveBinary += this.writeByte(3);
+            }
+
             this.saveBinary += this.writeInt(currentChunk.compressedLength);
             this.saveBinary += this.writeInt(0);
             this.saveBinary += this.writeInt(currentChunk.uncompressedLength);
@@ -1607,6 +1621,21 @@ export default class SaveParser_Write
 
                 return property;
         }
+    }
+
+    writeUint64(value, count = true)
+    {
+        let arrayBuffer     = new ArrayBuffer(8);
+        let dataView        = new DataView(arrayBuffer);
+            dataView.setBigUint64(0, value, true);
+
+        if(count === true)
+        {
+            this.currentBufferLength += 8;
+        }
+        this.currentEntityLength += 8;
+
+        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
     }
 
     writeFloat(value, count = true)
