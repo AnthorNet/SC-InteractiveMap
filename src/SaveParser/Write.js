@@ -1004,9 +1004,13 @@ export default class SaveParser_Write
                 break;
 
             case 'Int':
-            case 'UInt32': // Mod?
                 property += this.writePropertyGUID(currentProperty);
                 property += this.writeInt(currentProperty.value);
+                break;
+
+            case 'UInt32':
+                property += this.writePropertyGUID(currentProperty);
+                property += this.writeUint(currentProperty.value);
                 break;
 
             case 'Int64': //TODO: Use 64bit integer
@@ -1314,7 +1318,11 @@ export default class SaveParser_Write
                      property += this.writeString(currentProperty.value.values[iMapProperty].keyMap.name);
                     break;
                 case 'Struct':
-                    if(currentProperty.name === 'Destroyed_Foliage_Transform' || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C') // Mod: Universal Destroyer/Factory Statistics
+                    if(
+                            currentProperty.name === 'Destroyed_Foliage_Transform'              // Cannot remember :D
+                         || currentProperty.name === 'mSaveData'                                // Update 8
+                         || currentProperty.name === 'mUnresolvedSaveData'                      // Update 8
+                         || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')  // Mod: Universal Destroyer/Factory Statistics
                     {
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.x);
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.y);
@@ -1426,8 +1434,15 @@ export default class SaveParser_Write
                 case 'Name':  // MOD: Sweet Transportal
                     property += this.writeString(currentProperty.value.values[iSetProperty].name);
                     break;
-                case 'Int':  // MOD: ???
+
+                case 'Int':
                     property += this.writeInt(currentProperty.value.values[iSetProperty].int);
+
+                    break;
+
+                case 'UInt32':
+                    property += this.writeUint(currentProperty.value.values[iSetProperty].int);
+
                     break;
                 default:
                     console.log('Missing ' + currentProperty.value.type + ' in SetProperty ' + currentProperty.name);

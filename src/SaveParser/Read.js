@@ -825,9 +825,13 @@ export default class SaveParser_Read
                 break;
 
             case 'Int':
-            case 'UInt32': // Mod?
                 currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty.value   = this.readInt();
+                break;
+
+            case 'UInt32':
+                currentProperty         = this.readPropertyGUID(currentProperty);
+                currentProperty.value   = this.readUint();
                 break;
 
             case 'Int64':
@@ -1216,7 +1220,11 @@ export default class SaveParser_Read
                             };
                             break;
                         case 'Struct':
-                            if(currentProperty.name === 'Destroyed_Foliage_Transform' || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C') // Mod: Universal Destroyer/Factory Statistics
+                            if(
+                                    currentProperty.name === 'Destroyed_Foliage_Transform'              // Cannot remember :D
+                                 || currentProperty.name === 'mSaveData'                                // Update 8
+                                 || currentProperty.name === 'mUnresolvedSaveData'                      // Update 8
+                                 || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')  // Mod: Universal Destroyer/Factory Statistics
                             {
                                 mapPropertyKey = {
                                     x: this.readFloat(),
@@ -1352,9 +1360,15 @@ export default class SaveParser_Read
                     case 'Name':  // MOD: Sweet Transportal
                         currentProperty.value.values.push({name: this.readString()});
                         break;
-                    case 'Int':  // MOD: ???
+
+                    case 'Int':
                         currentProperty.value.values.push({int: this.readInt()});
                         break;
+
+                    case 'UInt32':
+                        currentProperty.value.values.push({int: this.readUint()});
+                        break;
+
                     default:
                         let rewind = this.lastStrRead + 128;
                             this.currentByte -= rewind;
