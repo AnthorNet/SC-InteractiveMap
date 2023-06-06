@@ -50,6 +50,13 @@ export default class SaveParser_Read
                 this.header.saveIdentifier  = this.readString();
             }
 
+            if(this.header.saveHeaderType >= 13)
+            {
+                this.header.isPartitionedWorld      = this.readInt();
+                this.header.isCreativeModeEnabled   = this.readInt();
+                this.header.saveDataHash            = this.readHex(20);
+            }
+
             this.worker.postMessage({command: 'transferData', data: {header: this.header}});
 
             // We should now unzip the body!

@@ -539,6 +539,12 @@ export default class SaveParser_Write
             {
                 header += this.writeString(this.header.saveIdentifier, false);
             }
+            if(this.header.saveHeaderType >= 13)
+            {
+                header += this.writeInt(this.header.isPartitionedWorld, false);
+                header += this.writeInt(this.header.isCreativeModeEnabled, false);
+                header += this.writeHex(this.header.saveDataHash, false);
+            }
 
         this.saveBinary += header;
     }
