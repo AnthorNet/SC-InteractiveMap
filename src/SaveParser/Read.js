@@ -266,15 +266,39 @@ export default class SaveParser_Read
                     }
                 }
 
-                let countCollected = this.readInt();
-                    if(countCollected > 0)
+                if(this.header.saveVersion >= 41)
+                {
+                    if(this.currentByte < (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
                     {
-                        for(let i = 0; i < countCollected; i++)
+                        let countCollectedInBetween = this.readInt();
+                            if(countCollectedInBetween > 0)
+                            {
+                                for(let i = 0; i < countCollectedInBetween; i++)
+                                {
+                                    this.readObjectProperty({});
+                                }
+                            }
+                    }
+                    else
+                    {
+                        if(this.currentByte === (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
                         {
-                            let collectable = this.readObjectProperty({});
-                                collectables.push(collectable);
+                            this.readInt();
                         }
                     }
+                }
+                else
+                {
+                    let countCollectedInBetween = this.readInt();
+                        if(countCollectedInBetween > 0)
+                        {
+                            for(let i = 0; i < countCollectedInBetween; i++)
+                            {
+                                let collectable = this.readObjectProperty({});
+                                    collectables.push(collectable);
+                            }
+                        }
+                }
 
                 let entitiesBinaryLength    = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
                 let countEntities           = this.readInt();
@@ -308,20 +332,29 @@ export default class SaveParser_Read
                     }
                 }
 
-                // Twice but we need to handle them in order to fetch the next level...
-                countCollected = this.readInt();
-                if(countCollected > 0)
-                {
-                    for(let i = 0; i < countCollected; i++)
+                let countCollected = this.readInt();
+                    if(countCollected > 0)
                     {
-                        this.readObjectProperty({});
+                        for(let i = 0; i < countCollected; i++)
+                        {
+                            if(this.header.saveVersion >= 41)
+                            {
+                                let collectable = this.readObjectProperty({});
+                                    collectables.push(collectable);
+                            }
+                            else
+                            {
+                                // Silently read as we reuse the first batch...
+                                this.readObjectProperty({});
+                            }
+                        }
                     }
-                }
 
                 this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
             }
 
             // SKIP LAST COLLECTED - They represent old actor not exisiting in game anymore
+            //TODO: Still correct after update 8?
 
             this.worker.postMessage({command: 'transferData', data: {collectables: collectables}});
             this.worker.postMessage({command: 'transferData', data: {levels: levels}});

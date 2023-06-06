@@ -206,7 +206,24 @@ export default class SaveParser_Write
 
 
         this.currentEntityLength    = 0;
-        this.saveBinary            += this.generateCollectablesChunks(collectables);
+
+        if(this.header.saveVersion >= 41)
+        {
+            if(collectables.length > 0)
+            {
+                this.saveBinary        += this.generateCollectablesChunks(collectables);
+            }
+            else
+            {
+                this.saveBinary        += this.writeInt(0);
+            }
+        }
+        else
+        {
+            this.saveBinary            += this.generateCollectablesChunks(collectables);
+        }
+
+
         tempSaveBinaryLength       += this.currentEntityLength;
 
         this.saveBinaryValues[currentLevel + '-objectsSaveBinaryLength'] = tempSaveBinaryLength;
