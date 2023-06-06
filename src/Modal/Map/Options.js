@@ -453,26 +453,11 @@ export default class Modal_Map_Options
                 this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoFuel');
             }
 
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', (($('#inputBuildingOverclockUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
-            this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', (($('#inputGameStateMapUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
-
-            if($('#inputCheatNoCost').is(':checked') === true)
+            if(unlockSubSystem !== null)
             {
-                this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoCost', (($('#inputCheatNoCost').is(':checked') === true) ? 1 : 0), 'Bool');
-            }
-            else
-            {
-                this.baseLayout.deleteObjectProperty(unlockSubSystem, 'mCheatNoCost');
-            }
-
-            if($('#inputCheatNoPower').is(':checked') === true)
-            {
-                this.baseLayout.setObjectProperty(unlockSubSystem, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'Bool');
-            }
-            else
-            {
-                this.baseLayout.deleteObjectProperty(unlockSubSystem, 'mCheatNoPower');
+                this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
+                this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', (($('#inputBuildingOverclockUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
+                this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', (($('#inputGameStateMapUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
             }
         });
 
