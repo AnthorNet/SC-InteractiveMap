@@ -1343,12 +1343,22 @@ export default class SaveParser_Read
 
             case 'Vector':
             case 'Rotator':
-                currentProperty.value.values = {
-                    x           : this.readFloat(),
-                    y           : this.readFloat(),
-                    z           : this.readFloat()
-                };
-
+                if(this.header.saveVersion >= 41)
+                {
+                    currentProperty.value.values = {
+                        x           : this.readDouble(),
+                        y           : this.readDouble(),
+                        z           : this.readDouble()
+                    };
+                }
+                else
+                {
+                    currentProperty.value.values = {
+                        x           : this.readFloat(),
+                        y           : this.readFloat(),
+                        z           : this.readFloat()
+                    };
+                }
                 break;
 
             case 'Vector2D': // Mod?
@@ -1361,28 +1371,55 @@ export default class SaveParser_Read
 
             case 'Quat':
             case 'Vector4':
-                currentProperty.value.values = {
-                    a           : this.readFloat(),
-                    b           : this.readFloat(),
-                    c           : this.readFloat(),
-                    d           : this.readFloat()
-                };
-
+                if(this.header.saveVersion >= 41)
+                {
+                    currentProperty.value.values = {
+                        a           : this.readDouble(),
+                        b           : this.readDouble(),
+                        c           : this.readDouble(),
+                        d           : this.readDouble()
+                    };
+                }
+                else
+                {
+                    currentProperty.value.values = {
+                        a           : this.readFloat(),
+                        b           : this.readFloat(),
+                        c           : this.readFloat(),
+                        d           : this.readFloat()
+                    };
+                }
                 break;
 
             case 'Box':
-                currentProperty.value.min = {
-                    x           : this.readFloat(),
-                    y           : this.readFloat(),
-                    z           : this.readFloat()
-                };
-                currentProperty.value.max = {
-                    x           : this.readFloat(),
-                    y           : this.readFloat(),
-                    z           : this.readFloat()
-                };
-                currentProperty.value.isValid = this.readByte();
+                if(this.header.saveVersion >= 41)
+                {
+                    currentProperty.value.min = {
+                        x           : this.readDouble(),
+                        y           : this.readDouble(),
+                        z           : this.readDouble()
+                    };
+                    currentProperty.value.max = {
+                        x           : this.readDouble(),
+                        y           : this.readDouble(),
+                        z           : this.readDouble()
+                    };
+                }
+                else
+                {
+                    currentProperty.value.min = {
+                        x           : this.readFloat(),
+                        y           : this.readFloat(),
+                        z           : this.readFloat()
+                    };
+                    currentProperty.value.max = {
+                        x           : this.readFloat(),
+                        y           : this.readFloat(),
+                        z           : this.readFloat()
+                    };
+                }
 
+                currentProperty.value.isValid = this.readByte();
                 break;
 
             case 'RailroadTrackPosition':

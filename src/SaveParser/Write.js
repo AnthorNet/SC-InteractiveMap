@@ -1110,9 +1110,19 @@ export default class SaveParser_Write
                             break;
 
                         case 'Vector':
-                            structure += this.writeFloat(currentProperty.value.values[i].x);
-                            structure += this.writeFloat(currentProperty.value.values[i].y);
-                            structure += this.writeFloat(currentProperty.value.values[i].z);
+                            if(this.header.saveVersion >= 41)
+                            {
+                                structure += this.writeDouble(currentProperty.value.values[i].x);
+                                structure += this.writeDouble(currentProperty.value.values[i].y);
+                                structure += this.writeDouble(currentProperty.value.values[i].z);
+                            }
+                            else
+                            {
+                                structure += this.writeFloat(currentProperty.value.values[i].x);
+                                structure += this.writeFloat(currentProperty.value.values[i].y);
+                                structure += this.writeFloat(currentProperty.value.values[i].z);
+                            }
+
                             break;
 
                         case 'LinearColor':
@@ -1354,9 +1364,19 @@ export default class SaveParser_Write
 
             case 'Vector':
             case 'Rotator':
-                property += this.writeFloat(currentProperty.value.values.x);
-                property += this.writeFloat(currentProperty.value.values.y);
-                property += this.writeFloat(currentProperty.value.values.z);
+                if(this.header.saveVersion >= 41)
+                {
+                    property += this.writeDouble(currentProperty.value.values.x);
+                    property += this.writeDouble(currentProperty.value.values.y);
+                    property += this.writeDouble(currentProperty.value.values.z);
+                }
+                else
+                {
+                    property += this.writeFloat(currentProperty.value.values.x);
+                    property += this.writeFloat(currentProperty.value.values.y);
+                    property += this.writeFloat(currentProperty.value.values.z);
+                }
+
                 break;
 
             case 'Vector2D': // Mod?
@@ -1366,19 +1386,43 @@ export default class SaveParser_Write
 
             case 'Quat':
             case 'Vector4':
-                property += this.writeFloat(currentProperty.value.values.a);
-                property += this.writeFloat(currentProperty.value.values.b);
-                property += this.writeFloat(currentProperty.value.values.c);
-                property += this.writeFloat(currentProperty.value.values.d);
+                if(this.header.saveVersion >= 41)
+                {
+                    property += this.writeDouble(currentProperty.value.values.a);
+                    property += this.writeDouble(currentProperty.value.values.b);
+                    property += this.writeDouble(currentProperty.value.values.c);
+                    property += this.writeDouble(currentProperty.value.values.d);
+                }
+                else
+                {
+                    property += this.writeFloat(currentProperty.value.values.a);
+                    property += this.writeFloat(currentProperty.value.values.b);
+                    property += this.writeFloat(currentProperty.value.values.c);
+                    property += this.writeFloat(currentProperty.value.values.d);
+                }
+
                 break;
 
             case 'Box':
-                property += this.writeFloat(currentProperty.value.min.x);
-                property += this.writeFloat(currentProperty.value.min.y);
-                property += this.writeFloat(currentProperty.value.min.z);
-                property += this.writeFloat(currentProperty.value.max.x);
-                property += this.writeFloat(currentProperty.value.max.y);
-                property += this.writeFloat(currentProperty.value.max.z);
+                if(this.header.saveVersion >= 41)
+                {
+                    property += this.writeDouble(currentProperty.value.min.x);
+                    property += this.writeDouble(currentProperty.value.min.y);
+                    property += this.writeDouble(currentProperty.value.min.z);
+                    property += this.writeDouble(currentProperty.value.max.x);
+                    property += this.writeDouble(currentProperty.value.max.y);
+                    property += this.writeDouble(currentProperty.value.max.z);
+                }
+                else
+                {
+                    property += this.writeFloat(currentProperty.value.min.x);
+                    property += this.writeFloat(currentProperty.value.min.y);
+                    property += this.writeFloat(currentProperty.value.min.z);
+                    property += this.writeFloat(currentProperty.value.max.x);
+                    property += this.writeFloat(currentProperty.value.max.y);
+                    property += this.writeFloat(currentProperty.value.max.z);
+                }
+
                 property += this.writeByte(currentProperty.value.isValid);
                 break;
 
