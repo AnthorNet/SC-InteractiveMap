@@ -210,6 +210,7 @@ export default class SaveParser_Write
         tempSaveBinaryLength       += this.currentEntityLength;
 
         this.saveBinaryValues[currentLevel + '-objectsSaveBinaryLength'] = tempSaveBinaryLength;
+        //console.log('objectsBinaryLength', this.levels[currentLevel], tempSaveBinaryLength);
         this.pushSaveToChunk();
 
         if(currentLevel === (this.levels.length - 1))
@@ -238,6 +239,11 @@ export default class SaveParser_Write
 
             this.saveBinary            += this.writeInt(objectKeys.length, false);
             tempSaveBinaryLength       += 4; // countEntities
+
+            if(this.header.saveVersion >= 41)
+            {
+                tempSaveBinaryLength       += objectKeys.length * 8
+            }
         }
 
         let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
@@ -738,8 +744,24 @@ export default class SaveParser_Write
 
     writeEntity(currentObject)
     {
-        this.currentEntityLength    = 0;
+        let preEntity               = '';
         let entity                  = '';
+
+        if(this.header.saveVersion >= 41)
+        {
+            if(currentObject.entitySaveVersion !== undefined)
+            {
+                preEntity += this.writeInt(currentObject.entitySaveVersion);
+                preEntity += this.writeInt(1); //TODO: Check what it is?!
+            }
+            else
+            {
+                preEntity += this.writeInt(this.header.saveVersion);
+                preEntity += this.writeInt(0); //TODO: Check what it is?!
+            }
+        }
+
+        this.currentEntityLength    = 0;
 
         if(currentObject.outerPathName === undefined)
         {
@@ -762,7 +784,7 @@ export default class SaveParser_Write
 
         if(currentObject.shouldBeNulled !== undefined && currentObject.shouldBeNulled === true)
         {
-            return this.writeInt(this.currentEntityLength) + entity;
+            return preEntity + this.writeInt(this.currentEntityLength) + entity;
         }
 
         entity += this.writeProperties(currentObject, currentObject.className);

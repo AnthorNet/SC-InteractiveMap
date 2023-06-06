@@ -488,8 +488,19 @@ export default class SaveParser_Read
 
     readEntity(objectKey)
     {
+        if(this.header.saveVersion >= 41)
+        {
+            let entitySaveVersion = this.readInt();
+                if(entitySaveVersion !== this.header.saveVersion)
+                {
+                    this.objects[objectKey].entitySaveVersion = entitySaveVersion;
+                }
+            this.readInt();//console.log('ENTITY INT2?', this.readInt(), entitySaveVersion)
+        }
+
         let entityLength                            = this.readInt();
         let startByte                               = this.currentByte;
+            //console.log(this.objects[objectKey].pathName, entityLength);
 
         if(this.objects[objectKey].outerPathName === undefined)
         {
