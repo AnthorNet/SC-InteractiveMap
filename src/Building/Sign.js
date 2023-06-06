@@ -13,6 +13,9 @@ export default class Building_Sign
             146: 441,   150: 448,   151: 449,   152: 450,
             153: 451,   154: 452,   155: 453,   156: 454,
             157: 455,   158: 456,   306: 673,   377: 619,
+
+            // OLD: Wall Conveyor Perpendicular, put a warning sign to avoid error popping in...
+            649: 362
         }
     }
 
@@ -1351,10 +1354,10 @@ export default class Building_Sign
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
         let options         = Building_Sign.generateIconOptions(baseLayout);
-            /*
+            /**/
             if(baseLayout.useDebug === true)
             {
-                options.push({value: 306, text: 'TEST ICON ID'});
+                options.push({value: 649, text: 'TEST ICON ID'});
             }
             /**/
 
