@@ -174,11 +174,43 @@ export default class SaveParser_Read
                 currentLength += this.currentChunks[i].length;
             }
 
-        // Parse them as usual while skipping the first 4 bytes!
         delete this.currentChunks;
-        this.currentByte        = 4;
         this.maxByte            = tempChunk.buffer.byteLength;
         this.bufferView         = new DataView(tempChunk.buffer);
+
+        this.currentByte = (this.header.saveVersion >= 41) ? 8 : 4; // totalInflatedLength
+
+        if(this.header.saveVersion >= 41)
+        {
+            let partitions      = {};
+                partitions.unk2 = this.readInt();
+                partitions.unk3 = this.readString();
+
+                partitions.unk4 = this.readInt64();
+                partitions.unk5 = this.readInt();
+                partitions.unk6 = this.readString();
+
+                partitions.unk7 = this.readInt();
+
+                partitions.data = {};
+
+            for(let i = 1; i < partitions.unk2; i++)
+            {
+                let partitionName                           = this.readString();
+                    partitions.data[partitionName]          = {};
+                    partitions.data[partitionName].unk1     = this.readInt();
+                    partitions.data[partitionName].unk2     = this.readInt();
+                    partitions.data[partitionName].levels   = {};
+
+                let nbLevels = this.readInt();
+                    for(let j = 0; j < nbLevels; j++)
+                    {
+                        partitions.data[partitionName].levels[this.readString()] = this.readUint();
+                    }
+            }
+
+            this.worker.postMessage({command: 'transferData', data: {partitions: partitions}});
+        }
 
         if(this.header.saveVersion >= 29)
         {

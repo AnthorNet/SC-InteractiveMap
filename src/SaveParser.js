@@ -19,6 +19,7 @@ export default class SaveParser
         this.PACKAGE_FILE_TAG       = null;
         this.maxChunkSize           = null;
 
+        this.partitions             = null;
         this.levels                 = null;
         this.objects                = null;
         this.collectables           = null;
@@ -89,6 +90,8 @@ export default class SaveParser
                 language            : this.language,
 
                 header              : this.header,
+
+                partitions          : this.partitions,
                 levels              : this.levels,
                 availableLevels     : this.availableLevels,
 

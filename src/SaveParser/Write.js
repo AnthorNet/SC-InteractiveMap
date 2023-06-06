@@ -16,6 +16,7 @@ export default class SaveParser_Write
         this.maxChunkSize           = options.maxChunkSize;
         this.PACKAGE_FILE_TAG       = options.PACKAGE_FILE_TAG;
 
+        this.partitions             = options.partitions;
         this.levels                 = options.levels;
         this.availableLevels        = options.availableLevels;
 
@@ -67,7 +68,44 @@ export default class SaveParser_Write
         this.writeHeader();
         this.saveBlobArray.push(this.flushToUint8Array());
 
-        this.saveBinary        += this.writeInt(0, false); // This is a reservation for the inflated length ;)
+        // This is a reservation for the inflated length ;)
+        if(this.header.saveVersion >= 41)
+        {
+            this.saveBinary        += this.writeInt(0, false);
+        }
+        this.saveBinary        += this.writeInt(0, false);
+
+        // Write grids back...
+        if(this.header.saveVersion >= 41)
+        {
+            this.worker.postMessage({command: 'loaderMessage', message: 'Saving world partitions...'});
+
+            this.saveBinary        += this.writeInt(this.partitions.unk2, false);
+            this.saveBinary        += this.writeString(this.partitions.unk3, false);
+
+            this.saveBinary        += this.writeInt64(this.partitions.unk4, false);
+            this.saveBinary        += this.writeInt(this.partitions.unk5, false);
+            this.saveBinary        += this.writeString(this.partitions.unk6, false);
+
+            this.saveBinary        += this.writeInt(this.partitions.unk7, false);
+
+            for(let partitionName in this.partitions.data)
+            {
+                this.saveBinary        += this.writeString(partitionName, false);
+                this.saveBinary        += this.writeInt(this.partitions.data[partitionName].unk1, false);
+                this.saveBinary        += this.writeInt(this.partitions.data[partitionName].unk2, false);
+
+                let levelKeys           = Object.keys(this.partitions.data[partitionName].levels);
+                    this.saveBinary    += this.writeInt(levelKeys.length, false);
+                    for(let levelName in this.partitions.data[partitionName].levels)
+                    {
+                        this.saveBinary        += this.writeString(levelName, false);
+                        this.saveBinary        += this.writeUint(this.partitions.data[partitionName].levels[levelName], false);
+                    }
+            }
+
+            this.pushSaveToChunk();
+        }
 
         return this.generateChunks();
     }
@@ -1605,6 +1643,21 @@ export default class SaveParser_Write
         return String.fromCharCode.apply(null, arrayBuffer);
     }
 
+    writeUint(value, count = true)
+    {
+        let arrayBuffer     = new ArrayBuffer(4);
+        let dataView        = new DataView(arrayBuffer);
+            dataView.setUint32(0, value, true);
+
+        if(count === true)
+        {
+            this.currentBufferLength += 4;
+        }
+        this.currentEntityLength += 4;
+
+        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+    }
+
     writeLong(value, count = true)
     {
         if(value instanceof Array)
@@ -1621,6 +1674,21 @@ export default class SaveParser_Write
 
                 return property;
         }
+    }
+
+    writeInt64(value, count = true)
+    {
+        let arrayBuffer     = new ArrayBuffer(8);
+        let dataView        = new DataView(arrayBuffer);
+            dataView.setBigInt64(0, value, true);
+
+        if(count === true)
+        {
+            this.currentBufferLength += 8;
+        }
+        this.currentEntityLength += 8;
+
+        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
     }
 
     writeUint64(value, count = true)
