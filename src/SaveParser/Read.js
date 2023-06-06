@@ -711,7 +711,7 @@ export default class SaveParser_Read
                     };
 
                     // 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
-                    if(this.header.saveVersion >= 33)
+                    if(this.header.saveVersion >= 33 && this.header.saveVersion < 41)
                     {
                         this.objects[objectKey].extra.sourceTranslation = [this.readFloat(), this.readFloat(), this.readFloat()];
                         this.objects[objectKey].extra.targetTranslation = [this.readFloat(), this.readFloat(), this.readFloat()];
