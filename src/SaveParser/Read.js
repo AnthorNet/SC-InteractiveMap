@@ -290,10 +290,12 @@ export default class SaveParser_Read
 
                     // Avoid memory error on very large save!
                     objectsToFlush[entitiesToObjects[i]] = this.objects[entitiesToObjects[i]];
-                    delete this.objects[entitiesToObjects[i]];
-
-                    if(i % 5000 === 0)
+                    if(i > 0 && i % 5000 === 0)
                     {
+                        for(let pathName in objectsToFlush)
+                        {
+                            delete this.objects[pathName];
+                        }
                         this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
                         objectsToFlush = {};
                     }
@@ -502,7 +504,7 @@ export default class SaveParser_Read
         let startByte                               = this.currentByte;
             //console.log(this.objects[objectKey].pathName, entityLength);
 
-        if(this.objects[objectKey].outerPathName === undefined)
+        if(this.objects[objectKey] !== undefined && this.objects[objectKey].outerPathName === undefined)
         {
             this.objects[objectKey].entity = this.readObjectProperty({});
 
