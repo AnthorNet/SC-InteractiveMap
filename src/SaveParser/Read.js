@@ -220,7 +220,7 @@ export default class SaveParser_Read
 
             for(let j = 0; j <= nbLevels; j++)
             {
-                let levelName           = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
+                let levelName = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
                     levels.push(levelName);
                     //console.log('OBJ', levelName, this.readInt());
                     this.readInt(); // objectsBinaryLength

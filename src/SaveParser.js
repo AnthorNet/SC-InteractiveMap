@@ -76,9 +76,13 @@ export default class SaveParser
             this.availableLevels = [];
             for(let j = 0; j < (this.levels.length - 1); j++)
             {
-                let currentLevelName = this.levels[j].replace('Level ', '').split(':');
-                    currentLevelName.pop();
-                    currentLevelName = currentLevelName[0].split('.').pop();
+                let currentLevelName = this.levels[j].replace('Level ', '');
+                    if(this.header.saveVersion < 41)
+                    {
+                        currentLevelName = currentLevelName.split(':');
+                        currentLevelName.pop();
+                        currentLevelName = currentLevelName[0].split('.').pop();
+                    }
 
                 this.availableLevels.push(currentLevelName);
             }

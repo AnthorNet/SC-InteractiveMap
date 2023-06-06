@@ -136,9 +136,12 @@ export default class SaveParser_Write
             {
                 this.saveBinary += this.writeString(this.levels[currentLevel], false);
 
-                currentLevelName = currentLevelName.split(':');
-                currentLevelName.pop();
-                currentLevelName = currentLevelName[0].split('.').pop();
+                if(this.header.saveVersion < 41)
+                {
+                    currentLevelName = currentLevelName.split(':');
+                    currentLevelName.pop();
+                    currentLevelName = currentLevelName[0].split('.').pop();
+                }
             }
 
         this.postWorkerMessage({command: 'requestObjectKeys', levelName: currentLevelName}).then((objectKeys) => {
