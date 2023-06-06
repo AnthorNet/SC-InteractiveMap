@@ -160,7 +160,13 @@ export default class SaveParser_Write
                 location    : this.saveBinary.length,
             });
 
+            // objectsSaveBinaryLength placeholder
             this.saveBinary            += this.writeInt(0, false);
+            if(this.header.saveVersion >= 41)
+            {
+                this.saveBinary            += this.writeInt(0, false);
+            }
+
             this.saveBinary            += this.writeInt(objectKeys.length, false);
             tempSaveBinaryLength       += 4; // countObjects
         }
@@ -223,9 +229,15 @@ export default class SaveParser_Write
                 location    : this.saveBinary.length,
             });
 
+            // entitiesSaveBinaryLength placeholder
             this.saveBinary            += this.writeInt(0, false);
+            if(this.header.saveVersion >= 41)
+            {
+                this.saveBinary            += this.writeInt(0, false);
+            }
+
             this.saveBinary            += this.writeInt(objectKeys.length, false);
-            tempSaveBinaryLength       += 4; // countObjects
+            tempSaveBinaryLength       += 4; // countEntities
         }
 
         let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
@@ -263,6 +275,7 @@ export default class SaveParser_Write
         this.saveBinary        += this.generateCollectablesChunks(collectables);
 
         this.saveBinaryValues[currentLevel + '-entitiesSaveBinaryLength'] = tempSaveBinaryLength;
+        //console.log('entitiesSaveBinaryLength', this.levels[currentLevel], tempSaveBinaryLength)
         this.pushSaveToChunk();
 
         if(currentLevel < (this.levels.length - 1))
@@ -507,10 +520,34 @@ export default class SaveParser_Write
                                 totalInflated += this.generatedChunks[i].uncompressedLength;
                             }
 
-                        currentChunk.output[3]          = (totalInflated >>> 24);
-                        currentChunk.output[2]          = (totalInflated >>> 16);
-                        currentChunk.output[1]          = (totalInflated >>> 8);
-                        currentChunk.output[0]          = (totalInflated & 0xff);
+                        if(this.header.saveVersion >= 41)
+                        {
+                            totalInflated -= 4;
+
+                            let lo                      = Number(BigInt(totalInflated) & BigInt(0xffffffff));
+                                currentChunk.output[0]  = lo;
+                                lo                      = lo >> 8;
+                                currentChunk.output[1]  = lo;
+                                lo                      = lo >> 8;
+                                currentChunk.output[2]  = lo;
+                                lo                      = lo >> 8;
+                                currentChunk.output[3]  = lo;
+                            let hi                      = Number(BigInt(totalInflated) >> BigInt(32) & BigInt(0xffffffff));
+                                currentChunk.output[4]  = hi;
+                                hi                      = hi >> 8;
+                                currentChunk.output[5]  = hi;
+                                hi                      = hi >> 8;
+                                currentChunk.output[6]  = hi;
+                                hi                      = hi >> 8;
+                                currentChunk.output[7]  = hi;
+                        }
+                        else
+                        {
+                            currentChunk.output[3]          = (totalInflated >>> 24);
+                            currentChunk.output[2]          = (totalInflated >>> 16);
+                            currentChunk.output[1]          = (totalInflated >>> 8);
+                            currentChunk.output[0]          = (totalInflated & 0xff);
+                        }
                     }
 
                     if(currentChunk.toReplace !== undefined)
@@ -519,10 +556,33 @@ export default class SaveParser_Write
                         {
                             let replaceValue                            = this.saveBinaryValues[currentChunk.toReplace[i].key];
                             let replacePosition                         = currentChunk.toReplace[i].location;
-                                currentChunk.output[replacePosition+3]  = (replaceValue >>> 24);
-                                currentChunk.output[replacePosition+2]  = (replaceValue >>> 16);
-                                currentChunk.output[replacePosition+1]  = (replaceValue >>> 8);
-                                currentChunk.output[replacePosition]    = (replaceValue & 0xff);
+
+                                if(this.header.saveVersion >= 41)
+                                {
+                                    let lo                                      = Number(BigInt(replaceValue) & BigInt(0xffffffff));
+                                        currentChunk.output[replacePosition]    = lo;
+                                        lo                                      = lo >> 8;
+                                        currentChunk.output[replacePosition+1]  = lo;
+                                        lo                                      = lo >> 8;
+                                        currentChunk.output[replacePosition+2]  = lo;
+                                        lo                                      = lo >> 8;
+                                        currentChunk.output[replacePosition+3]  = lo;
+                                    let hi                                      = Number(BigInt(replaceValue) >> BigInt(32) & BigInt(0xffffffff));
+                                        currentChunk.output[replacePosition+4]  = hi;
+                                        hi                                      = hi >> 8;
+                                        currentChunk.output[replacePosition+5]  = hi;
+                                        hi                                      = hi >> 8;
+                                        currentChunk.output[replacePosition+6]  = hi;
+                                        hi                                      = hi >> 8;
+                                        currentChunk.output[replacePosition+7]  = hi;
+                                }
+                                else
+                                {
+                                    currentChunk.output[replacePosition+3]      = (replaceValue >>> 24);
+                                    currentChunk.output[replacePosition+2]      = (replaceValue >>> 16);
+                                    currentChunk.output[replacePosition+1]      = (replaceValue >>> 8);
+                                    currentChunk.output[replacePosition]        = (replaceValue & 0xff);
+                                }
                         }
                     }
 

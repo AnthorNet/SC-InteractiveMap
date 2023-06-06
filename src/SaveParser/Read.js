@@ -222,14 +222,16 @@ export default class SaveParser_Read
             {
                 let levelName = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
                     levels.push(levelName);
-                    //console.log('OBJ', levelName, this.readInt());
-                    this.readInt(); // objectsBinaryLength
+
+                let objectsBinaryLength         = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
+                let objectsBinaryLengthStart    = this.currentByte;
+                    //console.log('objectsBinaryLength', levelName, objectsBinaryLength, objectsBinaryLengthStart)
+                let entitiesToObjects   = [];
                 let countObjects        = this.readInt();
                     if(levelName === 'Level ' + this.header.mapName)
                     {
                         console.log('Loaded ' + countObjects + ' objects...');
                     }
-                let entitiesToObjects   = [];
 
                 for(let i = 0; i < countObjects; i++)
                 {
@@ -274,9 +276,8 @@ export default class SaveParser_Read
                         }
                     }
 
-                    //console.log('ENT', levelName, this.readInt());
-                    this.readInt(); // entitiesBinaryLength
-                let countEntities       = this.readInt();
+                let entitiesBinaryLength    = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
+                let countEntities           = this.readInt();
                     if(levelName === 'Level ' + this.header.mapName)
                     {
                         console.log('Loaded ' + countEntities + ' entities...');
@@ -1643,8 +1644,6 @@ export default class SaveParser_Read
 
 
 
-
-
     /*
      * BYTES MANIPULATIONS
      */
@@ -1673,13 +1672,28 @@ export default class SaveParser_Read
     readInt8()
     {
         let data = this.bufferView.getInt8(this.currentByte++, true);
-            return data;
+
+        return data;
     }
     readInt()
     {
         let data = this.bufferView.getInt32(this.currentByte, true);
             this.currentByte += 4;
+
+        return data;
+    }
+    readUint()
+    {
+        let data = this.bufferView.getUint32(this.currentByte, true);
+            this.currentByte += 4;
             return data;
+    }
+    readInt64()
+    {
+        let data = this.bufferView.getBigInt64(this.currentByte, true);
+            this.currentByte += 8;
+
+        return data;
     }
     readLong()
     {
@@ -1700,13 +1714,15 @@ export default class SaveParser_Read
     {
         let data = this.bufferView.getFloat32(this.currentByte, true);
             this.currentByte += 4;
-            return data;
+
+        return data;
     }
     readDouble()
     {
         let data = this.bufferView.getFloat64(this.currentByte, true);
             this.currentByte += 8;
-            return data;
+
+        return data;
     }
 
     readString()
