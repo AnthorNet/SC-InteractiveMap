@@ -6,7 +6,15 @@ export default class Building_PowerLine
 {
     static clipboard = {source: null, target: null};
 
-    static get availableConnections(){ return ['.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2', '.FGPowerConnection', '.FGPowerConnection1', '.SlidingShoe', '.UpstreamConnection', '.DownstreamConnection']; }
+    static get availableConnections(){
+        return [
+            '.PowerInput', '.PowerConnection', '.PowerConnection1', '.PowerConnection2',
+            '.PowerTowerConnection',
+            '.FGPowerConnection', '.FGPowerConnection1',
+            '.SlidingShoe',
+            '.UpstreamConnection', '.DownstreamConnection'
+        ];
+    }
 
     static getColor(baseLayout, currentObject, currentObjectSource = null, currentObjectTarget = null)
     {
