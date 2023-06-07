@@ -954,6 +954,13 @@ export default class SaveParser_Write
                     }
                     else
                     {
+                        if(this.header.saveVersion >= 41 && currentObject.className.startsWith('/Script/FactoryGame.FG'))
+                        {
+                            entity += this.writeByte(0);
+                            entity += this.writeByte(0);
+                            entity += this.writeByte(0);
+                            entity += this.writeByte(0);
+                        }
                         entity += this.writeByte(0);
                         entity += this.writeByte(0);
                         entity += this.writeByte(0);

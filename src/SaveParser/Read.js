@@ -750,8 +750,15 @@ export default class SaveParser_Read
                     let missingBytes = (startByte + entityLength) - this.currentByte;
                         if(missingBytes > 4)
                         {
-                            this.objects[objectKey].missing = this.readHex(missingBytes); // TODO
-                            console.log('MISSING ' + missingBytes + '  BYTES', this.objects[objectKey]);
+                            if(this.header.saveVersion >= 41 && this.objects[objectKey].className.startsWith('/Script/FactoryGame.FG'))
+                            {
+                                this.skipBytes(8);
+                            }
+                            else
+                            {
+                                this.objects[objectKey].missing = this.readHex(missingBytes); // TODO
+                                console.log('MISSING ' + missingBytes + '  BYTES', this.objects[objectKey]);
+                            }
                         }
                         else
                         {
