@@ -946,6 +946,7 @@ export default class SaveParser_Write
                     }
 
                     break;
+                     */
                 default:
                     if(currentObject.missing !== undefined)
                     {

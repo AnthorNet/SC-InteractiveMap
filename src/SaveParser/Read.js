@@ -266,6 +266,7 @@ export default class SaveParser_Read
                     }
                 }
 
+                //TODO: Was it the same early?
                 if(this.header.saveVersion >= 41)
                 {
                     if(this.currentByte < (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
@@ -275,7 +276,8 @@ export default class SaveParser_Read
                             {
                                 for(let i = 0; i < countCollectedInBetween; i++)
                                 {
-                                    this.readObjectProperty({});
+                                    let collectable = this.readObjectProperty({});
+                                        collectables.push(collectable);
                                 }
                             }
                     }
@@ -337,16 +339,8 @@ export default class SaveParser_Read
                     {
                         for(let i = 0; i < countCollected; i++)
                         {
-                            if(this.header.saveVersion >= 41)
-                            {
-                                let collectable = this.readObjectProperty({});
-                                    collectables.push(collectable);
-                            }
-                            else
-                            {
-                                // Silently read as we reuse the first batch...
-                                this.readObjectProperty({});
-                            }
+                            // Silently read as we reuse the first batch...
+                            this.readObjectProperty({});
                         }
                     }
 
