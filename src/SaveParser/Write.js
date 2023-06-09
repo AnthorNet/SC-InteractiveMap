@@ -893,6 +893,49 @@ export default class SaveParser_Write
                     }
 
                     break;
+
+                case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
+                    if(this.header.saveVersion >= 41) // 2023-01-09: Tobias: Refactored drone actions to no longer be uobjects in order to fix a crash.
+                    {
+                        entity += this.writeInt(currentObject.extra.unk1);
+                        entity += this.writeInt(currentObject.extra.unk2);
+
+                        entity += this.writeInt(currentObject.extra.mActiveAction.length);
+                        for(let i = 0; i < currentObject.extra.mActiveAction.length; i++)
+                        {
+                            let mActiveAction = currentObject.extra.mActiveAction[i]
+                                entity += this.writeString(mActiveAction.name);
+
+                                for(let i = 0; i < mActiveAction.properties.length; i++)
+                                {
+                                    entity += this.writeProperty(mActiveAction.properties[i]);
+                                }
+                                entity += this.writeString('None');
+                        }
+
+                        entity += this.writeInt(currentObject.extra.mActionQueue.length);
+                        for(let i = 0; i < currentObject.extra.mActionQueue.length; i++)
+                        {
+                            let mActionQueue = currentObject.extra.mActionQueue[i]
+                                entity += this.writeString(mActionQueue.name);
+
+                                for(let i = 0; i < mActionQueue.properties.length; i++)
+                                {
+                                    entity += this.writeProperty(mActionQueue.properties[i]);
+                                }
+                                entity += this.writeString('None');
+                        }
+                    }
+                    else
+                    {
+                        if(currentObject.missing !== undefined)
+                        {
+                            entity += this.writeHex(currentObject.missing);
+                        }
+                    }
+
+                    break;
+
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
                     entity += this.writeInt(currentObject.extra.count);
                     entity += this.writeInt(currentObject.extra.circuits.length);

@@ -670,10 +670,66 @@ export default class SaveParser_Read
                                 }
                         }
                     break;
-                //TODO: Not 0 here so bypass those special cases, but why? We mainly do not want to get warned here...
+
                 case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
-                    let missingDrone                    = (startByte + entityLength) - this.currentByte;
-                        this.objects[objectKey].missing = this.readHex(missingDrone);
+                    if(this.header.saveVersion >= 41) // 2023-01-09: Tobias: Refactored drone actions to no longer be uobjects in order to fix a crash.
+                    {
+                        this.objects[objectKey].extra   = {
+                            unk1                : this.readInt(),
+                            unk2                : this.readInt(),
+
+                            mActiveAction       : [],
+                            mActionQueue        : []
+                        };
+
+                       let mActiveActionLength = this.readInt();
+                            for(let i = 0; i < mActiveActionLength; i++)
+                            {
+
+                                let mActiveAction   = {
+                                        name        : this.readString(),
+                                        properties  : []
+                                    };
+
+                                        while(true)
+                                    {
+                                        let mActiveActionProperty = this.readProperty();
+                                            if(mActiveActionProperty === null)
+                                            {
+                                                break;
+                                            }
+                                            mActiveAction.properties.push(mActiveActionProperty);
+                                    }
+
+                                this.objects[objectKey].extra.mActiveAction.push(mActiveAction);
+                            }
+
+                        let mActionQueueLength = this.readInt();
+                            for(let i = 0; i < mActionQueueLength; i++)
+                            {
+                                let mActionQueue   = {
+                                        name        : this.readString(),
+                                        properties  : []
+                                    };
+
+                                        while(true)
+                                    {
+                                        let mActionQueueProperty = this.readProperty();
+                                            if(mActionQueueProperty === null)
+                                            {
+                                                break;
+                                            }
+                                            mActionQueue.properties.push(mActionQueueProperty);
+                                    }
+
+                                this.objects[objectKey].extra.mActionQueue.push(mActionQueue);
+                            }
+                    }
+                    else
+                    {
+                        let missingDrone                    = (startByte + entityLength) - this.currentByte;
+                            this.objects[objectKey].missing = this.readHex(missingDrone);
+                    }
 
                     break;
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
