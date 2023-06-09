@@ -680,8 +680,8 @@ export default class SaveParser_Write
             if(this.header.saveHeaderType >= 13)
             {
                 header += this.writeInt(this.header.isPartitionedWorld, false);
-                header += this.writeInt(this.header.isCreativeModeEnabled, false);
                 header += this.writeHex(this.header.saveDataHash, false);
+                header += this.writeInt(this.header.isCreativeModeEnabled, false);
             }
 
         this.saveBinary += header;

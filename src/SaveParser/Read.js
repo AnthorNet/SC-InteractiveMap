@@ -53,8 +53,8 @@ export default class SaveParser_Read
             if(this.header.saveHeaderType >= 13)
             {
                 this.header.isPartitionedWorld      = this.readInt();
-                this.header.isCreativeModeEnabled   = this.readInt();
                 this.header.saveDataHash            = this.readHex(20);
+                this.header.isCreativeModeEnabled   = this.readInt();
             }
 
             this.worker.postMessage({command: 'transferData', data: {header: this.header}});
