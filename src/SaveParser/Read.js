@@ -792,16 +792,33 @@ export default class SaveParser_Read
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
                 case '/x3_mavegrag/Vehicles/Trucks/TruckMk1/BP_X3Truck_Mk1.BP_X3Truck_Mk1_C':
-                        this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
-                    let vehicleLength                   = this.readInt();
-                        for(let i = 0; i < vehicleLength; i++)
-                        {
-                            this.objects[objectKey].extra.objects.push({
-                                name   : this.readString(),
-                                unk    : this.readHex(53)
-                            });
-                        }
+                    if(this.header.saveVersion >= 41)
+                    {
+                            this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
+                        let vehicleLength                   = this.readInt();
+                            for(let i = 0; i < vehicleLength; i++)
+                            {
+                                this.objects[objectKey].extra.objects.push({
+                                    name   : this.readString(),
+                                    unk    : this.readHex(105)
+                                });
+                            }
+                    }
+                    else
+                    {
+                            this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
+                        let vehicleLength                   = this.readInt();
+                            for(let i = 0; i < vehicleLength; i++)
+                            {
+                                this.objects[objectKey].extra.objects.push({
+                                    name   : this.readString(),
+                                    unk    : this.readHex(53)
+                                });
+                            }
+                    }
+
                     break;
+
                 default:
                     let missingBytes = (startByte + entityLength) - this.currentByte;
                         if(missingBytes > 4)
