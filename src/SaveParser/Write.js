@@ -1428,7 +1428,7 @@ export default class SaveParser_Write
                         property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.mFilterIndex);
                         break;
                     }
-                    if(parentType === '/StorageStatsRoom/Sub_SR.Sub_SR_C')
+                    if(parentType === '/StorageStatsRoom/Sub_SR.Sub_SR_C' || parentType === '/CentralStorage/Subsystem_SC.Subsystem_SC_C')
                     {
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk1);
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk2);

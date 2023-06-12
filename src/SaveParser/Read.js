@@ -1366,7 +1366,7 @@ export default class SaveParser_Read
                                 mapPropertySubProperties.mFilterIndex   = this.readInt();
                                 break;
                             }
-                            if(parentType === '/StorageStatsRoom/Sub_SR.Sub_SR_C')
+                            if(parentType === '/StorageStatsRoom/Sub_SR.Sub_SR_C' || parentType === '/CentralStorage/Subsystem_SC.Subsystem_SC_C')
                             {
                                 mapPropertySubProperties.unk1           = this.readFloat();
                                 mapPropertySubProperties.unk2           = this.readFloat();
