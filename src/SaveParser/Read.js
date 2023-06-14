@@ -611,6 +611,7 @@ export default class SaveParser_Read
                     }
 
                     break;
+
                 case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
                     let missingPlayerState                      = (startByte + entityLength) - this.currentByte;
                         this.objects[objectKey].missing         = this.readHex(missingPlayerState);
@@ -626,7 +627,9 @@ export default class SaveParser_Read
                                             this.readString();
                                         let eosStr                          = this.readString().split('|');
                                             this.objects[objectKey].eosId   = eosStr[0];
+
                                         break;
+
                                     case 249: // EOS
                                             this.readString(); // EOS, then follow 17
                                     case 17: // Old EOS
@@ -638,7 +641,9 @@ export default class SaveParser_Read
                                             }
 
                                         this.objects[objectKey].eosId       = epicHex.replace(/^0+/, '');
+
                                         break;
+
                                     case 25: // Steam
                                     case 29: // Steam
                                         let steamHexLength  = this.readByte();
@@ -649,12 +654,18 @@ export default class SaveParser_Read
                                             }
 
                                         this.objects[objectKey].steamId     = steamHex.replace(/^0+/, '');
+
                                         break;
+
                                     case 8: // ???
                                         this.objects[objectKey].platformId  = this.readString();
+
                                         break;
+
                                     case 3: // Offline
+
                                         break;
+
                                     default:
                                         this.worker.postMessage({command: 'alertParsing'});
                                         if(typeof Sentry !== 'undefined')
@@ -733,6 +744,7 @@ export default class SaveParser_Read
                     }
 
                     break;
+
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
                         this.objects[objectKey].extra   = {count: this.readInt(), circuits: []};
                     let circuitsLength                  = this.readInt();
@@ -747,6 +759,7 @@ export default class SaveParser_Read
                         }
 
                     break;
+
                 case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
                 case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
                 case '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C':
@@ -769,6 +782,7 @@ export default class SaveParser_Read
                     }
 
                     break;
+
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
                 case '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C':
@@ -785,7 +799,9 @@ export default class SaveParser_Read
 
                     this.objects[objectKey].extra.previous  = this.readObjectProperty({});
                     this.objects[objectKey].extra.next      = this.readObjectProperty({});
+
                     break;
+
                 case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
@@ -838,8 +854,6 @@ export default class SaveParser_Read
                         {
                             this.skipBytes(4);
                         }
-
-                    break;
             }
         }
     }
@@ -865,8 +879,6 @@ export default class SaveParser_Read
             }
             else
             {
-                console.log('Property extra byte', currentProperty);
-
                 if(typeof Sentry !== 'undefined')
                 {
                     Sentry.setContext('currentProperty', currentProperty);
@@ -892,49 +904,58 @@ export default class SaveParser_Read
             case 'Bool':
                 currentProperty.value   = this.readByte();
                 currentProperty         = this.readPropertyGUID(currentProperty);
+
                 break;
 
             case 'Int8':
                 currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty.value   = this.readInt8();
+
                 break;
 
             case 'Int':
                 currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty.value   = this.readInt();
+
                 break;
 
             case 'UInt32':
                 currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty.value   = this.readUint();
+
                 break;
 
             case 'Int64':
             case 'UInt64':
                 currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty.value   = this.readLong();
+
                 break;
 
             case 'Float':
                 currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty.value   = this.readFloat();
+
                 break;
 
             case 'Double':
                 currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty.value   = this.readDouble();
+
                 break;
 
             case 'Str':
             case 'Name':
                 currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty.value   = this.readString();
+
                 break;
 
             case 'Object':
             case 'Interface':
                 currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty.value   = this.readObjectProperty({});
+
                 break;
 
             case 'Enum':
@@ -944,6 +965,7 @@ export default class SaveParser_Read
                         name    : enumPropertyName,
                         value   : this.readString()
                     };
+
                 break;
 
             case 'Byte':
@@ -953,38 +975,44 @@ export default class SaveParser_Read
                 if(enumName === 'None')
                 {
                     currentProperty.value = {
-                        enumName: enumName,
-                        value: this.readByte()
+                        enumName    : enumName,
+                        value       : this.readByte()
                     };
                 }
                 else
                 {
                     currentProperty.value = {
-                        enumName: enumName,
-                        valueName: this.readString()
+                        enumName    : enumName,
+                        valueName   : this.readString()
                     };
                 }
+
                 break;
 
             case 'Text':
                 currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty         = this.readTextProperty(currentProperty);
+
                 break;
 
             case 'Array':
                 currentProperty         = this.readArrayProperty(currentProperty, parentType);
+
                 break;
 
             case 'Map':
                 currentProperty         = this.readMapProperty(currentProperty, parentType);
+
                 break;
 
             case 'Set':
                 currentProperty         = this.readSetProperty(currentProperty, parentType);
+
                 break;
 
             case 'Struct':
                 currentProperty         = this.readStructProperty(currentProperty, parentType);
+
                 break;
 
             default:
@@ -1029,13 +1057,16 @@ export default class SaveParser_Read
                             currentProperty.value.values.push(this.readByte());
                             this.readByte(); // 255
                         }
+
                         break;
+
                     default:
                         for(let i = 0; i < currentArrayPropertyCount; i++)
                         {
                             currentProperty.value.values.push(this.readByte());
                         }
                 }
+
                 break;
 
             case 'Bool':
@@ -1043,6 +1074,7 @@ export default class SaveParser_Read
                 {
                     currentProperty.value.values.push(this.readByte());
                 }
+
                 break;
 
             case 'Int':
@@ -1050,6 +1082,7 @@ export default class SaveParser_Read
                 {
                     currentProperty.value.values.push(this.readInt());
                 }
+
                 break;
 
             case 'Int64':
@@ -1057,6 +1090,7 @@ export default class SaveParser_Read
                 {
                     currentProperty.value.values.push(this.readLong());
                 }
+
                 break;
 
             case 'Float':
@@ -1064,6 +1098,7 @@ export default class SaveParser_Read
                 {
                     currentProperty.value.values.push(this.readFloat());
                 }
+
                 break;
 
             case 'Enum':
@@ -1071,18 +1106,23 @@ export default class SaveParser_Read
                 {
                     currentProperty.value.values.push({name: this.readString()});
                 }
+
                 break;
+
             case 'Str':
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
                     currentProperty.value.values.push(this.readString());
                 }
+
                 break;
+
             case 'Text':
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
                     currentProperty.value.values.push(this.readTextProperty({}));
                 }
+
                 break;
 
             case 'Object':
@@ -1091,6 +1131,7 @@ export default class SaveParser_Read
                 {
                     currentProperty.value.values.push(this.readObjectProperty({}));
                 }
+
                 break;
 
             case 'Struct':
@@ -1136,14 +1177,17 @@ export default class SaveParser_Read
                                 levelName     : this.readString(),
                                 pathName      : this.readString()
                             });
+
                             break;
 
                         case 'Guid':
                             currentProperty.value.values.push(this.readHex(16));
+
                             break;
 
                         case 'FINNetworkTrace': // MOD: FicsIt-Networks
                             currentProperty.value.values.push(this.readFINNetworkTrace());
+
                             break;
 
                         case 'Vector':
@@ -1163,6 +1207,7 @@ export default class SaveParser_Read
                                     z           : this.readFloat()
                                 });
                             }
+
                             break;
 
                         case 'LinearColor':
@@ -1172,12 +1217,14 @@ export default class SaveParser_Read
                                 b : this.readFloat(),
                                 a : this.readFloat()
                             });
+
                             break;
 
                         // MOD: FicsIt-Networks
                         // See: https://github.com/CoderDE/FicsIt-Networks/blob/3472a437bcd684deb7096ede8f03a7e338b4a43d/Source/FicsItNetworks/Computer/FINComputerGPUT1.h#L42
                         case 'FINGPUT1BufferPixel':
                             currentProperty.value.values.push(this.readFINGPUT1BufferPixel());
+
                             break;
 
                         default: // Try normalised structure, then throw Error if not working...
@@ -1278,22 +1325,32 @@ export default class SaveParser_Read
                     {
                         case 'Int':
                             mapPropertyKey = this.readInt();
+
                             break;
+
                         case 'Int64':
                             mapPropertyKey = this.readLong();
+
                             break;
+
                         case 'Name':
                         case 'Str':
                             mapPropertyKey = this.readString();
+
                             break;
+
                         case 'Object':
                             mapPropertyKey = this.readObjectProperty({});
+
                             break;
+
                         case 'Enum':
                             mapPropertyKey = {
                                 name        : this.readString()
                             };
+
                             break;
+
                         case 'Struct':
                             if(
                                     currentProperty.name === 'Destroyed_Foliage_Transform'              // Cannot remember :D
@@ -1306,6 +1363,7 @@ export default class SaveParser_Read
                                     y: this.readFloat(),
                                     z: this.readFloat()
                                 };
+
                                 break;
                             }
 
@@ -1320,7 +1378,9 @@ export default class SaveParser_Read
 
                                 mapPropertyKey.push(subMapPropertyValue);
                             }
+
                             break;
+
                         default:
                             this.worker.postMessage({command: 'alertParsing', source: 'readMapProperty/keyType'});
                             if(typeof Sentry !== 'undefined')
@@ -1343,28 +1403,41 @@ export default class SaveParser_Read
                             {
                                 mapPropertySubProperties = this.readByte();
                             }
+
                             break;
+
                         case 'Bool':
                             mapPropertySubProperties = this.readByte();
+
                             break;
+
                         case 'Int':
                             mapPropertySubProperties = this.readInt();
+
                             break;
+
                         case 'Float':
                             mapPropertySubProperties = this.readFloat();
+
                             break;
+
                         case 'Str':
                             mapPropertySubProperties = this.readString();
+
                             break;
+
                         case 'Object':
                             mapPropertySubProperties = this.readObjectProperty({});
+
                             break;
+
                         case 'Struct':
                             if(parentType === 'LBBalancerData')
                             {
                                 mapPropertySubProperties.mNormalIndex   = this.readInt();
                                 mapPropertySubProperties.mOverflowIndex = this.readInt();
                                 mapPropertySubProperties.mFilterIndex   = this.readInt();
+
                                 break;
                             }
                             if(parentType === '/StorageStatsRoom/Sub_SR.Sub_SR_C' || parentType === '/CentralStorage/Subsystem_SC.Subsystem_SC_C')
@@ -1372,6 +1445,7 @@ export default class SaveParser_Read
                                 mapPropertySubProperties.unk1           = this.readFloat();
                                 mapPropertySubProperties.unk2           = this.readFloat();
                                 mapPropertySubProperties.unk3           = this.readFloat();
+
                                 break;
                             }
 
@@ -1386,6 +1460,7 @@ export default class SaveParser_Read
                                 mapPropertySubProperties.push(subMapProperty);
                             }
                             break;
+
                         default:
                             this.worker.postMessage({command: 'alertParsing', source: 'readMapProperty/valueType'});
                             if(typeof Sentry !== 'undefined')
@@ -1418,7 +1493,9 @@ export default class SaveParser_Read
                 {
                     case 'Object':
                         currentProperty.value.values.push(this.readObjectProperty({}));
+
                         break;
+
                     case 'Struct':
                         if(this.header.saveVersion >= 29 && parentType === '/Script/FactoryGame.FGFoliageRemoval')
                         {
@@ -1427,21 +1504,26 @@ export default class SaveParser_Read
                                 y: this.readFloat(),
                                 z: this.readFloat()
                             });
+
                             break;
                         }
                         // MOD: FicsIt-Networks
                         currentProperty.value.values.push(this.readFINNetworkTrace());
                         break;
+
                     case 'Name':  // MOD: Sweet Transportal
                         currentProperty.value.values.push({name: this.readString()});
+
                         break;
 
                     case 'Int':
                         currentProperty.value.values.push({int: this.readInt()});
+
                         break;
 
                     case 'UInt32':
                         currentProperty.value.values.push({int: this.readUint()});
+
                         break;
 
                     default:
@@ -1480,12 +1562,13 @@ export default class SaveParser_Read
                 break;
 
             case 'LinearColor':
-                currentProperty.value.values ={
+                currentProperty.value.values = {
                     r           : this.readFloat(),
                     g           : this.readFloat(),
                     b           : this.readFloat(),
                     a           : this.readFloat()
                 };
+
                 break;
 
             case 'Vector':
@@ -1506,6 +1589,7 @@ export default class SaveParser_Read
                         z           : this.readFloat()
                     };
                 }
+
                 break;
 
             case 'Vector2D': // Mod?
@@ -1536,6 +1620,7 @@ export default class SaveParser_Read
                         d           : this.readFloat()
                     };
                 }
+
                 break;
 
             case 'Box':
@@ -1567,6 +1652,7 @@ export default class SaveParser_Read
                 }
 
                 currentProperty.value.isValid = this.readByte();
+
                 break;
 
             case 'RailroadTrackPosition':
@@ -1583,37 +1669,46 @@ export default class SaveParser_Read
 
             case 'Guid': // MOD?
                 currentProperty.value.guid          = this.readHex(16);
+
                 break;
 
             case 'InventoryItem':
                 currentProperty.value.unk1          = this.readInt();
                 currentProperty.value.itemName      = this.readString();
                 currentProperty.value               = this.readObjectProperty(currentProperty.value);
-                currentProperty.value.properties    = [];
-                currentProperty.value.properties.push(this.readProperty());
+                currentProperty.value.properties    = [this.readProperty()];
+
                 break;
 
             case 'FluidBox':
                 currentProperty.value.value         = this.readFloat();
+
                 break;
 
             case 'SlateBrush': // MOD?
                 currentProperty.value.unk1          = this.readString();
+
                 break;
 
             case 'DateTime': // MOD: Power Suit
                 currentProperty.value.dateTime      = this.readLong();
+
                 break;
 
             case 'FINNetworkTrace': // MOD: FicsIt-Networks
                 currentProperty.value.values        = this.readFINNetworkTrace();
+
                 break;
+
             case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
                 currentProperty.value.values        = this.readFINLuaProcessorStateStorage();
+
                 break;
+
             case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
                 currentProperty.value.begin         = this.readLong();
                 currentProperty.value.end           = this.readLong();
+
                 break;
 
             default: // Try normalised structure, then throw Error if not working...
@@ -1684,16 +1779,15 @@ export default class SaveParser_Read
 
         switch(currentProperty.historyType)
         {
-            // HISTORYTYPE_BASE
-            case 0:
+            case 0:                             // HISTORYTYPE_BASE
                 currentProperty.namespace       = this.readString();
                 currentProperty.key             = this.readString();
                 currentProperty.value           = this.readString();
+
                 break;
-            // HISTORYTYPE_NAMEDFORMAT
-            case 1:
-            // HISTORYTYPE_ARGUMENTFORMAT
-            case 3:
+
+            case 1:                             // HISTORYTYPE_NAMEDFORMAT
+            case 3:                             // HISTORYTYPE_ARGUMENTFORMAT
                 currentProperty.sourceFmt       = this.readTextProperty({});
 
                 currentProperty.argumentsCount  = this.readInt();
@@ -1722,22 +1816,25 @@ export default class SaveParser_Read
 
                     currentProperty.arguments.push(currentArgumentsData);
                 }
+
                 break;
+
             // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2268
-            // HISTORYTYPE_TRANSFORM
-            case 10:
+            case 10:                                // HISTORYTYPE_TRANSFORM
                 currentProperty.sourceText          = this.readTextProperty({});
                 currentProperty.transformType       = this.readByte();
+
                 break;
+
             // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2463
-            //HISTORYTYPE_STRINGTABLEENTRY
-            case 11:
+            case 11:                                //HISTORYTYPE_STRINGTABLEENTRY
                 currentProperty.tableId             = this.readString();
                 currentProperty.textKey             = this.readString();
+
                 break;
-            // HISTORYTYPE_NONE
-            case 255:
-                // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
+
+            // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
+            case 255:                               // HISTORYTYPE_NONE
                 if(this.header.buildVersion >= 140822)
                 {
                     currentProperty.hasCultureInvariantString   = this.readInt();
@@ -1747,7 +1844,9 @@ export default class SaveParser_Read
                         currentProperty.value = this.readString();
                     }
                 }
+
                 break;
+
             default:
                 this.worker.postMessage({command: 'alertParsing'});
                 if(typeof Sentry !== 'undefined')
@@ -1771,7 +1870,6 @@ export default class SaveParser_Read
             else
             {
                 currentProperty.pathName    = this.readString();
-                //currentProperty.pathName    = this.readString().replace(this.header.mapName + ':', '');
             }
 
         return currentProperty;
@@ -2020,33 +2118,44 @@ export default class SaveParser_Read
                             structure.x         = this.readFloat();
                             structure.y         = this.readFloat();
                             structure.z         = this.readFloat();
+
                             break;
+
                         case '/Script/CoreUObject.LinearColor':
                             structure.r         = this.readFloat();
                             structure.g         = this.readFloat();
                             structure.b         = this.readFloat();
                             structure.a         = this.readFloat();
+
                             break;
+
                         case '/Script/FactoryGame.InventoryStack':
                             structure.unk3      = this.readInt();
                             structure.unk4      = this.readString();
                             structure.unk5      = this.readInt();
                             structure.unk6      = this.readInt();
                             structure.unk7      = this.readInt();
+
                             break;
+
                         case '/Script/FactoryGame.ItemAmount':
                             structure.unk3      = this.readInt();
                             structure.unk4      = this.readString();
                             structure.unk5      = this.readInt();
+
                             break;
+
                         case '/Script/FicsItNetworks.FINTrackGraph':
                             structure.trace     = this.readFINNetworkTrace();
                             structure.trackId   = this.readInt();
+
                             break;
+
                         case '/Script/FactoryGame.PrefabSignData': // Skip!
                         case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture': // Skip!
                         case '/Script/FactoryGame.InventoryItem': // Skip!
                             break;
+
                         case '/Script/FicsItNetworks.FINGPUT1Buffer':
                             structure.x         = this.readInt();
                             structure.y         = this.readInt();
@@ -2060,6 +2169,7 @@ export default class SaveParser_Read
                                     structure.buffer.push(this.readFINGPUT1BufferPixel());
                                 }
                             structure.unk3      = this.readHex(45); //TODO: Not sure at all!
+
                             break;
                         default:
                             this.worker.postMessage({command: 'alertParsing'});
@@ -2069,7 +2179,6 @@ export default class SaveParser_Read
                             }
 
                             throw new Error('Unimplemented `' + structure.unk2 + '` in readFINLuaProcessorStateStorage');
-                            break;
                     }
 
                     data.structs.push(structure);

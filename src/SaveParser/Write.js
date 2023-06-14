@@ -134,6 +134,7 @@ export default class SaveParser_Write
         let currentLevelName = this.levels[currentLevel].replace('Level ', '');
             if(currentLevel < (this.levels.length - 1)) // Do not write the level mapName
             {
+                //console.log('levelName', this.levels[currentLevel])
                 this.saveBinary += this.writeString(this.levels[currentLevel], false);
 
                 if(this.header.saveVersion < 41)
@@ -228,6 +229,7 @@ export default class SaveParser_Write
 
         this.saveBinaryValues[currentLevel + '-objectsSaveBinaryLength'] = tempSaveBinaryLength;
         //console.log('objectsBinaryLength', this.levels[currentLevel], tempSaveBinaryLength);
+
         this.pushSaveToChunk();
 
         if(currentLevel === (this.levels.length - 1))
@@ -850,6 +852,7 @@ export default class SaveParser_Write
                     }
 
                     break;
+
                 case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
                 case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
                 case '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C':
@@ -947,6 +950,7 @@ export default class SaveParser_Write
                     }
 
                     break;
+
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
                 case '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C':
@@ -972,6 +976,7 @@ export default class SaveParser_Write
                     entity += this.writeObjectProperty(currentObject.extra.next);
 
                     break;
+
                 case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
                 case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
@@ -989,7 +994,7 @@ export default class SaveParser_Write
                     }
 
                     break;
-                     */
+
                 default:
                     if(currentObject.missing !== undefined)
                     {
@@ -1009,8 +1014,6 @@ export default class SaveParser_Write
                         entity += this.writeByte(0);
                         entity += this.writeByte(0);
                     }
-
-                    break;
             }
         }
 
@@ -1049,55 +1052,65 @@ export default class SaveParser_Write
             case 'Bool':
                 property += this.writeByte(currentProperty.value, false);
                 property += this.writePropertyGUID(currentProperty);
+
                 break;
 
             case 'Int8':
                 property += this.writePropertyGUID(currentProperty);
                 property += this.writeInt8(currentProperty.value);
+
                 break;
 
             case 'Int':
                 property += this.writePropertyGUID(currentProperty);
                 property += this.writeInt(currentProperty.value);
+
                 break;
 
             case 'UInt32':
                 property += this.writePropertyGUID(currentProperty);
                 property += this.writeUint(currentProperty.value);
+
                 break;
 
             case 'Int64': //TODO: Use 64bit integer
             case 'UInt64':
                 property += this.writePropertyGUID(currentProperty);
                 property += this.writeLong(currentProperty.value);
+
                 break;
 
             case 'Float':
                 property += this.writePropertyGUID(currentProperty);
                 property += this.writeFloat(currentProperty.value);
+
                 break;
 
             case 'Double':
                 property += this.writePropertyGUID(currentProperty);
                 property += this.writeDouble(currentProperty.value);
+
                 break;
 
             case 'Str':
             case 'Name':
                 property += this.writePropertyGUID(currentProperty);
                 property += this.writeString(currentProperty.value);
+
                 break;
 
             case 'Object':
             case 'Interface':
                 property += this.writePropertyGUID(currentProperty);
                 property += this.writeObjectProperty(currentProperty.value);
+
                 break;
 
             case 'Enum':
                 property += this.writeString(currentProperty.value.name, false);
                 property += this.writePropertyGUID(currentProperty);
                 property += this.writeString(currentProperty.value.value);
+
                 break;
 
             case 'Byte':
@@ -1112,6 +1125,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeString(currentProperty.value.valueName);
                 }
+
                 break;
 
             case 'Text':
@@ -1121,18 +1135,22 @@ export default class SaveParser_Write
 
             case 'Array':
                 property += this.writeArrayProperty(currentProperty, parentType);
+
                 break;
 
             case 'Map':
                 property += this.writeMapProperty(currentProperty, parentType);
+
                 break;
 
             case 'Set':
                 property += this.writeSetProperty(currentProperty, parentType);
+
                 break;
 
             case 'Struct':
                 property += this.writeStructProperty(currentProperty, parentType);
+
                 break;
         }
 
@@ -1168,10 +1186,13 @@ export default class SaveParser_Write
                             property += this.writeByte(currentProperty.value.values[i]);
                             property += this.writeByte(255);
                         }
+
                         break;
+
                     default:
                         property += this.writeBytesArray(currentProperty.value.values);
                 }
+
                 break;
 
             case 'Bool':
@@ -1179,6 +1200,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeByte(currentProperty.value.values[i]);
                 }
+
                 break;
 
             case 'Int':
@@ -1186,6 +1208,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeInt(currentProperty.value.values[i]);
                 }
+
                 break;
 
             case 'Int64':
@@ -1193,6 +1216,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeLong(currentProperty.value.values[i]);
                 }
+                
                 break;
 
             case 'Float':
@@ -1200,6 +1224,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeFloat(currentProperty.value.values[i]);
                 }
+
                 break;
 
             case 'Enum':
@@ -1207,6 +1232,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeString(currentProperty.value.values[i].name);
                 }
+
                 break;
 
             case 'Str':
@@ -1214,6 +1240,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeString(currentProperty.value.values[i]);
                 }
+
                 break;
 
             case 'Text':
@@ -1221,6 +1248,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeTextProperty(currentProperty.value.values[i]);
                 }
+
                 break;
 
             case 'Object':
@@ -1229,6 +1257,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeObjectProperty(currentProperty.value.values[i]);
                 }
+
                 break;
 
             case 'Struct':
@@ -1258,14 +1287,17 @@ export default class SaveParser_Write
                             structure += this.writeInt(currentProperty.value.values[i].unk1);
                             structure += this.writeString(currentProperty.value.values[i].itemName);
                             structure += this.writeObjectProperty(currentProperty.value.values[i]);
+
                             break;
 
                         case 'Guid':
                             structure += this.writeHex(currentProperty.value.values[i]);
+
                             break;
 
                         case 'FINNetworkTrace': // MOD: FicsIt-Networks
                             structure += this.writeFINNetworkTrace(currentProperty.value.values[i]);
+
                             break;
 
                         case 'Vector':
@@ -1289,12 +1321,13 @@ export default class SaveParser_Write
                             structure += this.writeFloat(currentProperty.value.values[i].g);
                             structure += this.writeFloat(currentProperty.value.values[i].b);
                             structure += this.writeFloat(currentProperty.value.values[i].a);
-                            break;
 
+                            break;
 
                         // MOD: FicsIt-Networks
                         case 'FINGPUT1BufferPixel':
                             structure += this.writeFINGPUT1BufferPixel(currentProperty.value.values[i]);
+
                             break;
 
                         default:
@@ -1303,7 +1336,6 @@ export default class SaveParser_Write
                                 structure += this.writeProperty(currentProperty.value.values[i][j]);
                             }
                             structure += this.writeString('None');
-                            break;
                     }
                 }
 
@@ -1313,9 +1345,9 @@ export default class SaveParser_Write
                 this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
 
                 break;
+
             default:
                 console.log('Missing ' + currentProperty.value.type + ' in ArrayProperty ' + currentProperty.name);
-                break;
         }
 
         return property;
@@ -1356,20 +1388,30 @@ export default class SaveParser_Write
             {
                 case 'Int':
                     property += this.writeInt(currentProperty.value.values[iMapProperty].keyMap);
+
                     break;
+
                 case 'Int64':
                     property += this.writeLong(currentProperty.value.values[iMapProperty].keyMap);
+
                     break;
+
                 case 'Name':
                 case 'Str':
                     property += this.writeString(currentProperty.value.values[iMapProperty].keyMap);
+
                     break;
+
                 case 'Object':
                     property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].keyMap);
+
                     break;
+
                 case 'Enum':
                      property += this.writeString(currentProperty.value.values[iMapProperty].keyMap.name);
+
                     break;
+
                 case 'Struct':
                     if(
                             currentProperty.name === 'Destroyed_Foliage_Transform'              // Cannot remember :D
@@ -1388,7 +1430,9 @@ export default class SaveParser_Write
                         property += this.writeProperty(currentProperty.value.values[iMapProperty].keyMap[i]);
                     }
                     property += this.writeString('None');
+
                     break;
+
                 default:
                     console.log('Missing keyType ' + currentProperty.value.keyType + ' in ' + currentProperty.name);
             }
@@ -1404,22 +1448,34 @@ export default class SaveParser_Write
                     {
                         property += this.writeByte(currentProperty.value.values[iMapProperty].valueMap);
                     }
+
                     break;
+
                 case 'Bool':
                     property += this.writeByte(currentProperty.value.values[iMapProperty].valueMap);
+
                     break;
+
                 case 'Int':
                     property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap);
+
                     break;
+
                 case 'Float':
                     property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap);
+
                     break;
+
                 case 'Str':
                     property += this.writeString(currentProperty.value.values[iMapProperty].valueMap);
+
                     break;
+
                 case 'Object':
                     property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].valueMap);
+
                     break;
+
                 case 'Struct':
                     if(parentType === 'LBBalancerData')
                     {
@@ -1446,10 +1502,11 @@ export default class SaveParser_Write
                     property += this.writeString('None');
 
                     this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+
                     break;
+
                 default:
                     console.log('Missing valueType ' + currentProperty.value.valueType + ' in MapProperty ' + currentProperty.name);
-                    break;
             }
         }
 
@@ -1472,20 +1529,26 @@ export default class SaveParser_Write
             {
                 case 'Object':
                     property += this.writeObjectProperty(currentProperty.value.values[iSetProperty]);
+
                     break;
+
                 case 'Struct':
                     if(this.header.saveVersion >= 29 && parentType === '/Script/FactoryGame.FGFoliageRemoval')
                     {
                         property += this.writeFloat(currentProperty.value.values[iSetProperty].x);
                         property += this.writeFloat(currentProperty.value.values[iSetProperty].y);
                         property += this.writeFloat(currentProperty.value.values[iSetProperty].z);
+
                         break;
                     }
                     // MOD: FicsIt-Networks
                     property += this.writeFINNetworkTrace(currentProperty.value.values[iSetProperty]);
+
                     break;
+
                 case 'Name':  // MOD: Sweet Transportal
                     property += this.writeString(currentProperty.value.values[iSetProperty].name);
+
                     break;
 
                 case 'Int':
@@ -1497,9 +1560,9 @@ export default class SaveParser_Write
                     property += this.writeUint(currentProperty.value.values[iSetProperty].int);
 
                     break;
+
                 default:
                     console.log('Missing ' + currentProperty.value.type + ' in SetProperty ' + currentProperty.name);
-                    break;
             }
         }
 
@@ -1523,6 +1586,7 @@ export default class SaveParser_Write
                 property += this.writeByte(currentProperty.value.values.g);
                 property += this.writeByte(currentProperty.value.values.r);
                 property += this.writeByte(currentProperty.value.values.a);
+
                 break;
 
             case 'LinearColor':
@@ -1530,6 +1594,7 @@ export default class SaveParser_Write
                 property += this.writeFloat(currentProperty.value.values.g);
                 property += this.writeFloat(currentProperty.value.values.b);
                 property += this.writeFloat(currentProperty.value.values.a);
+
                 break;
 
             case 'Vector':
@@ -1552,6 +1617,7 @@ export default class SaveParser_Write
             case 'Vector2D': // Mod?
                 property += this.writeFloat(currentProperty.value.values.x);
                 property += this.writeFloat(currentProperty.value.values.y);
+
                 break;
 
             case 'Quat':
@@ -1594,6 +1660,7 @@ export default class SaveParser_Write
                 }
 
                 property += this.writeByte(currentProperty.value.isValid);
+
                 break;
 
             case 'RailroadTrackPosition':
@@ -1610,6 +1677,7 @@ export default class SaveParser_Write
 
             case 'Guid': // MOD?
                 property += this.writeHex(currentProperty.value.guid);
+
                 break;
 
             case 'InventoryItem':
@@ -1633,25 +1701,33 @@ export default class SaveParser_Write
 
             case 'FluidBox':
                 property += this.writeFloat(currentProperty.value.value);
+
                 break;
 
             case 'SlateBrush': // MOD?
                 property += this.writeString(currentProperty.value.unk1);
+
                 break;
 
             case 'DateTime': // MOD: Power Suit
                 property += this.writeLong(currentProperty.value.dateTime);
+
                 break;
 
             case 'FINNetworkTrace': // MOD: FicsIt-Networks
                 property += this.writeFINNetworkTrace(currentProperty.value.values);
+
                 break;
+
             case 'FINLuaProcessorStateStorage': // MOD: FicsIt-Networks
                 property += this.writeFINLuaProcessorStateStorage(currentProperty.value.values);
+
                 break;
+
             case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
                 property += this.writeLong(currentProperty.value.begin);
                 property += this.writeLong(currentProperty.value.end);
+
                 break;
 
             default:
@@ -1665,8 +1741,6 @@ export default class SaveParser_Write
                 property += this.writeString('None');
 
                 this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
-
-                break;
         }
 
         return property;
