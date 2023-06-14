@@ -640,6 +640,7 @@ export default class SaveParser_Read
                                         this.objects[objectKey].eosId       = epicHex.replace(/^0+/, '');
                                         break;
                                     case 25: // Steam
+                                    case 29: // Steam
                                         let steamHexLength  = this.readByte();
                                         let steamHex        = '';
                                             for(let i = 0; i < steamHexLength; i++)
