@@ -1,5 +1,4 @@
 /* global Intl */
-
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 

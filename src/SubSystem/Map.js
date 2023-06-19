@@ -1,13 +1,16 @@
 /* global Intl, Infinity */
+import SubSystem                                from '../SubSystem.js';
+
 import SaveParser_FicsIt                        from '../SaveParser/FicsIt.js';
 import Building_MapMarker                       from '../Building/MapMarker.js';
 
-export default class SubSystem_Map
+export default class SubSystem_Map extends SubSystem
 {
     constructor(options)
     {
-        this.baseLayout     = options.baseLayout;
-        this.mapSubSystem   = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.MapManager');
+        options.pathName        = 'Persistent_Level:PersistentLevel.MapManager';
+        super(options);
+
         this.useFogOfWar    = this.baseLayout.useFogOfWar;
 
         if(this.useFogOfWar === true)
@@ -16,13 +19,13 @@ export default class SubSystem_Map
             this.addFogOfWar();
         }
 
-        SaveParser_FicsIt.fixMapManager(this.baseLayout, this.mapSubSystem);
+        SaveParser_FicsIt.fixMapManager(this.baseLayout, this.subSystem);
         this.addMapMarkers();
     }
 
     getFogOfWar()
     {
-        let mFogOfWarRawData = this.baseLayout.getObjectProperty(this.mapSubSystem, 'mFogOfWarRawData');
+        let mFogOfWarRawData = this.baseLayout.getObjectProperty(this.subSystem, 'mFogOfWarRawData');
             if(mFogOfWarRawData !== null)
             {
                 return mFogOfWarRawData.values;
@@ -33,7 +36,7 @@ export default class SubSystem_Map
 
     getMapMarkers()
     {
-        let mMapMarkers = this.baseLayout.getObjectProperty(this.mapSubSystem, 'mMapMarkers');
+        let mMapMarkers = this.baseLayout.getObjectProperty(this.subSystem, 'mMapMarkers');
             if(mMapMarkers !== null)
             {
                 return mMapMarkers.values;

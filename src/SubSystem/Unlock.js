@@ -1,14 +1,20 @@
-export default class SubSystem_Unlock
+import SubSystem                                from '../SubSystem.js';
+
+export default class SubSystem_Unlock extends SubSystem
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
-        this.unlockSubSystem    = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.UnlockSubsystem');
+        options.pathName        = 'Persistent_Level:PersistentLevel.UnlockSubsystem';
+            if(options.baseLayout.saveGameParser.header.saveVersion >= 41)
+            {
+                options.pathName        = 'Persistent_Level:PersistentLevel.unlockSubsystem';
+            }
+        super(options);
     }
 
     haveEfficiency()
     {
-        let mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0);
+        let mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(this.subSystem, 'mIsBuildingOverclockUnlocked', 0);
             if(mIsBuildingOverclockUnlocked === 1)
             {
                 return true;
@@ -19,7 +25,7 @@ export default class SubSystem_Unlock
 
     haveOverclocking()
     {
-        let mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0);
+        let mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(this.subSystem, 'mIsBuildingOverclockUnlocked', 0);
             if(mIsBuildingOverclockUnlocked === 1)
             {
                 return true;
@@ -30,7 +36,7 @@ export default class SubSystem_Unlock
 
     haveMap()
     {
-        let mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(this.unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0);
+        let mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(this.subSystem, 'mIsBuildingOverclockUnlocked', 0);
             if(mIsBuildingOverclockUnlocked === 1)
             {
                 return true;

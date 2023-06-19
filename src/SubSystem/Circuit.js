@@ -1,12 +1,15 @@
+import SubSystem                                from '../SubSystem.js';
+
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 
-export default class SubSystem_Circuit
+export default class SubSystem_Circuit extends SubSystem
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
-        this.circuitSubSystem   = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.CircuitSubsystem');
+        options.pathName        = 'Persistent_Level:PersistentLevel.CircuitSubsystem';
+        super(options);
+
         this.circuitsColor      = {};
     }
 
@@ -17,7 +20,7 @@ export default class SubSystem_Circuit
         let mCircuitID = this.baseLayout.getObjectProperty(currentObject, 'mCircuitID');
             if(mCircuitID !== null)
             {
-                this.circuitSubSystem.extra.circuits.push({
+                this.subSystem.extra.circuits.push({
                     circuitId   : mCircuitID,
                     levelName   : ((currentObject.levelName !== undefined) ? currentObject.levelName : 'Persistent_Level'),
                     pathName    : currentObject.pathName
@@ -30,9 +33,9 @@ export default class SubSystem_Circuit
     getNextId()
     {
         let maxId = 0;
-            for(let i = 0; i < this.circuitSubSystem.extra.circuits.length; i++)
+            for(let i = 0; i < this.subSystem.extra.circuits.length; i++)
             {
-                maxId = Math.max(maxId, this.circuitSubSystem.extra.circuits[i].circuitId);
+                maxId = Math.max(maxId, this.subSystem.extra.circuits[i].circuitId);
             }
 
         return maxId + 1;
@@ -42,11 +45,11 @@ export default class SubSystem_Circuit
 
     getObjectCircuit(currentObject, powerConnection = '.PowerConnection')
     {
-        if(this.circuitSubSystem !== null && this.circuitSubSystem.extra.circuits !== undefined)
+        if(this.subSystem !== null && this.subSystem.extra.circuits !== undefined)
         {
-            for(let i = 0; i < this.circuitSubSystem.extra.circuits.length; i++)
+            for(let i = 0; i < this.subSystem.extra.circuits.length; i++)
             {
-                let currentSubCircuit = this.baseLayout.saveGameParser.getTargetObject(this.circuitSubSystem.extra.circuits[i].pathName);
+                let currentSubCircuit = this.baseLayout.saveGameParser.getTargetObject(this.subSystem.extra.circuits[i].pathName);
                     if(currentSubCircuit !== null)
                     {
                         let mComponents = this.baseLayout.getObjectProperty(currentSubCircuit, 'mComponents');
@@ -57,11 +60,11 @@ export default class SubSystem_Circuit
                                     {
                                         if(mComponents.values[j].pathName === currentObject.pathName)
                                         {
-                                            return this.circuitSubSystem.extra.circuits[i];
+                                            return this.subSystem.extra.circuits[i];
                                         }
                                         if(mComponents.values[j].pathName === currentObject.pathName + powerConnection)
                                         {
-                                            return this.circuitSubSystem.extra.circuits[i];
+                                            return this.subSystem.extra.circuits[i];
                                         }
 
                                         componentsArray.push(mComponents.values[j].pathName);
@@ -73,7 +76,7 @@ export default class SubSystem_Circuit
                                         {
                                             if(componentsArray.includes(currentObject.children[j].pathName))
                                             {
-                                                return this.circuitSubSystem.extra.circuits[i];
+                                                return this.subSystem.extra.circuits[i];
                                             }
                                         }
                                     }
@@ -87,13 +90,13 @@ export default class SubSystem_Circuit
 
     getCircuitByID(circuitID)
     {
-        if(this.circuitSubSystem !== null && this.circuitSubSystem.extra.circuits !== undefined)
+        if(this.subSystem !== null && this.subSystem.extra.circuits !== undefined)
         {
-            for(let i = 0; i < this.circuitSubSystem.extra.circuits.length; i++)
+            for(let i = 0; i < this.subSystem.extra.circuits.length; i++)
             {
-                if(this.circuitSubSystem.extra.circuits[i].circuitId === circuitID)
+                if(this.subSystem.extra.circuits[i].circuitId === circuitID)
                 {
-                    return this.baseLayout.saveGameParser.getTargetObject(this.circuitSubSystem.extra.circuits[i].pathName);
+                    return this.baseLayout.saveGameParser.getTargetObject(this.subSystem.extra.circuits[i].pathName);
                 }
             }
         }
@@ -359,9 +362,9 @@ export default class SubSystem_Circuit
      */
     cleanCircuits()
     {
-        for(let i = 0; i < this.circuitSubSystem.extra.circuits.length; i++)
+        for(let i = 0; i < this.subSystem.extra.circuits.length; i++)
         {
-            let currentCiruitSubSystem = this.baseLayout.saveGameParser.getTargetObject(this.circuitSubSystem.extra.circuits[i].pathName);
+            let currentCiruitSubSystem = this.baseLayout.saveGameParser.getTargetObject(this.subSystem.extra.circuits[i].pathName);
 
             for(let j = 0; j < currentCiruitSubSystem.properties.length; j++)
             {

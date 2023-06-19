@@ -1,9 +1,11 @@
-export default class SubSystem_Railroad
+import SubSystem                                from '../SubSystem.js';
+
+export default class SubSystem_Railroad extends SubSystem
 {
     constructor(options)
     {
-        this.baseLayout             = options.baseLayout;
-        this.railroadSubSystem      = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.RailroadSubsystem');
+        options.pathName        = 'Persistent_Level:PersistentLevel.RailroadSubsystem';
+        super(options);
 
         // Hold some objects to speed linking
         this.railroadSwitchControls = [];
@@ -12,9 +14,9 @@ export default class SubSystem_Railroad
     getTrainStations()
     {
         let trainStations = [];
-            if(this.railroadSubSystem !== null)
+            if(this.subSystem !== null)
             {
-                let mTrainStationIdentifiers = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrainStationIdentifiers');
+                let mTrainStationIdentifiers = this.baseLayout.getObjectProperty(this.subSystem, 'mTrainStationIdentifiers');
                     if(mTrainStationIdentifiers !== null)
                     {
                         for(let i = 0; i < mTrainStationIdentifiers.values.length; i++)
@@ -30,9 +32,9 @@ export default class SubSystem_Railroad
     getTrains()
     {
         let trains = [];
-            if(this.railroadSubSystem !== null)
+            if(this.subSystem !== null)
             {
-                let mTrains = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrains');
+                let mTrains = this.baseLayout.getObjectProperty(this.subSystem, 'mTrains');
                     if(mTrains !== null)
                     {
                         for(let i = 0; i < mTrains.values.length; i++)
@@ -109,7 +111,7 @@ export default class SubSystem_Railroad
 
                 if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrain'].includes(currentIdentifier.className))
                 {
-                    let mTrains = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrains');
+                    let mTrains = this.baseLayout.getObjectProperty(this.subSystem, 'mTrains');
                         if(mTrains !== null)
                         {
                             for(let i = 0; i < mTrains.values.length; i ++)
@@ -124,7 +126,7 @@ export default class SubSystem_Railroad
                 }
                 if(currentIdentifier.className === '/Script/FactoryGame.FGTrainStationIdentifier')
                 {
-                    let mTrainStationIdentifiers = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrainStationIdentifiers');
+                    let mTrainStationIdentifiers = this.baseLayout.getObjectProperty(this.subSystem, 'mTrainStationIdentifiers');
                         if(mTrainStationIdentifiers !== null)
                         {
                             for(let i = 0; i < mTrainStationIdentifiers.values.length; i ++)
@@ -144,7 +146,7 @@ export default class SubSystem_Railroad
     {
         if(['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrain'].includes(currentIdentifier.className))
         {
-            let mTrains = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrains');
+            let mTrains = this.baseLayout.getObjectProperty(this.subSystem, 'mTrains');
                 if(mTrains !== null)
                 {
                     for(let i = 0; i < mTrains.values.length; i ++) // Avoid duplicate!
@@ -159,7 +161,7 @@ export default class SubSystem_Railroad
                 else
                 {
                     this.baseLayout.setObjectProperty(
-                        this.railroadSubSystem,
+                        this.subSystem,
                         'mTrains',
                         {
                             type    : 'Object',
@@ -171,7 +173,7 @@ export default class SubSystem_Railroad
         }
         if(currentIdentifier.className === '/Script/FactoryGame.FGTrainStationIdentifier')
         {
-            let mTrainStationIdentifiers = this.baseLayout.getObjectProperty(this.railroadSubSystem, 'mTrainStationIdentifiers');
+            let mTrainStationIdentifiers = this.baseLayout.getObjectProperty(this.subSystem, 'mTrainStationIdentifiers');
                 if(mTrainStationIdentifiers !== null)
                 {
                     for(let i = 0; i < mTrainStationIdentifiers.values.length; i ++)
@@ -186,7 +188,7 @@ export default class SubSystem_Railroad
                 else
                 {
                     this.baseLayout.setObjectProperty(
-                        this.railroadSubSystem,
+                        this.subSystem,
                         'mTrainStationIdentifiers',
                         {
                             type    : 'Object',

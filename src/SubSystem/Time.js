@@ -1,19 +1,21 @@
-export default class SubSystem_Time
+import SubSystem                                from '../SubSystem.js';
+
+export default class SubSystem_Time extends SubSystem
 {
     constructor(options)
     {
-        this.baseLayout     = options.baseLayout;
-        this.timeSubSystem  = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.TimeSubsystem');
+        options.pathName        = 'Persistent_Level:PersistentLevel.TimeSubsystem';
+        super(options);
     }
 
     getDaySeconds()
     {
-        return this.baseLayout.getObjectProperty(this.timeSubSystem, 'mDaySeconds', 43200);
+        return this.baseLayout.getObjectProperty(this.subSystem, 'mDaySeconds', 43200);
     }
 
     getNumberOfPassedDays()
     {
-        return this.baseLayout.getObjectProperty(this.timeSubSystem, 'mNumberOfPassedDays', 0);
+        return this.baseLayout.getObjectProperty(this.subSystem, 'mNumberOfPassedDays', 0);
     }
 
     isNight()

@@ -1,9 +1,11 @@
-export default class SubSystem_Statistics
+import SubSystem                                from '../SubSystem.js';
+
+export default class SubSystem_Statistics extends SubSystem
 {
     constructor(options)
     {
-        this.baseLayout             = options.baseLayout;
-        this.statisticsSubSystem    = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.StatisticsSubsystem');
+        options.pathName        = 'Persistent_Level:PersistentLevel.StatisticsSubsystem';
+        super(options);
     }
 
     convert(array)
@@ -28,7 +30,7 @@ export default class SubSystem_Statistics
 
     getConsumablesConsumedCount()
     {
-        let mConsumablesConsumedCount = this.baseLayout.getObjectProperty(this.statisticsSubSystem, 'mConsumablesConsumedCount');
+        let mConsumablesConsumedCount = this.baseLayout.getObjectProperty(this.subSystem, 'mConsumablesConsumedCount');
             if(mConsumablesConsumedCount !== null)
             {
                 return this.convert(mConsumablesConsumedCount.values);
@@ -39,7 +41,7 @@ export default class SubSystem_Statistics
 
     getCreaturesKilledCount()
     {
-        let mCreaturesKilledCount = this.baseLayout.getObjectProperty(this.statisticsSubSystem, 'mCreaturesKilledCount');
+        let mCreaturesKilledCount = this.baseLayout.getObjectProperty(this.subSystem, 'mCreaturesKilledCount');
             if(mCreaturesKilledCount !== null)
             {
                 return this.convert(mCreaturesKilledCount.values);
@@ -50,7 +52,7 @@ export default class SubSystem_Statistics
 
     getItemsManuallyCraftedCount()
     {
-        let mItemsManuallyCraftedCount = this.baseLayout.getObjectProperty(this.statisticsSubSystem, 'mItemsManuallyCraftedCount');
+        let mItemsManuallyCraftedCount = this.baseLayout.getObjectProperty(this.subSystem, 'mItemsManuallyCraftedCount');
             if(mItemsManuallyCraftedCount !== null)
             {
                 return this.convert(mItemsManuallyCraftedCount.values);
@@ -61,7 +63,7 @@ export default class SubSystem_Statistics
 
     getActorsBuiltCount()
     {
-        let mActorsBuiltCount = this.baseLayout.getObjectProperty(this.statisticsSubSystem, 'mActorsBuiltCount');
+        let mActorsBuiltCount = this.baseLayout.getObjectProperty(this.subSystem, 'mActorsBuiltCount');
             if(mActorsBuiltCount !== null)
             {
                 return this.convert(mActorsBuiltCount.values);

@@ -756,6 +756,7 @@ export default class Modal_Schematics
         {
             let purchasedAlternate      = [];
             let schematicManager        = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
+                console.log(schematicManager)
                 if(schematicManager !== null)
                 {
                     let mPurchasedSchematics    = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
@@ -1111,7 +1112,7 @@ export default class Modal_Schematics
             // Handle emotes
             if(currentSchematic.emotes !== undefined)
             {
-                let unlockSubSystem = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.UnlockSubsystem');
+                let unlockSubSystem = this.baseLayout.unlockSubSystem.get();
                     if(unlockSubSystem !== null)
                     {
                         let mUnlockedEmotes  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mUnlockedEmotes');
@@ -1143,7 +1144,7 @@ export default class Modal_Schematics
             // Handle tapes
             if(currentSchematic.tapes !== undefined)
             {
-                let unlockSubSystem = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.UnlockSubsystem');
+                let unlockSubSystem = this.baseLayout.unlockSubSystem.get();
                     if(unlockSubSystem !== null)
                     {
                         let mUnlockedTapes  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mUnlockedTapes');

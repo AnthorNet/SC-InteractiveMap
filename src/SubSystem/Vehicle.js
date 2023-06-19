@@ -1,10 +1,10 @@
-export default class SubSystem_Vehicle
+import SubSystem                                from '../SubSystem.js';
+
+export default class SubSystem_Vehicle extends SubSystem
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
-        this.vehicleSubSystem   = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.VehicleSubsystem');
-
-        //TODO: Delete /Script/FactoryGame.FGWeeledVehicleInfo
+        options.pathName        = 'Persistent_Level:PersistentLevel.VehicleSubsystem';
+        super(options);
     }
 }

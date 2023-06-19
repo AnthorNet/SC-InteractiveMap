@@ -3,7 +3,7 @@ export default class Modal_Map_Players
     constructor(options)
     {
         this.baseLayout         = options.baseLayout;
-        this.unlockSubSystem    = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
+        this.unlockSubSystem    = this.baseLayout.unlockSubSystem.get();
         this.lastPathName       = null;
     }
 

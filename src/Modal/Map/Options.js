@@ -105,7 +105,7 @@ export default class Modal_Map_Options
         let header                          = this.baseLayout.saveGameParser.getHeader();
         let gameState                       = this.baseLayout.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
 
-        let unlockSubSystem                 = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.UnlockSubsystem");
+        let unlockSubSystem                 = this.baseLayout.unlockSubSystem.get();
 
         let mIsBuildingEfficiencyUnlocked   = 0;
         let mIsBuildingOverclockUnlocked    = 0;

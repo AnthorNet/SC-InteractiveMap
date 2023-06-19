@@ -1,8 +1,10 @@
-export default class SubSystem_Story
+import SubSystem                                from '../SubSystem.js';
+
+export default class SubSystem_Story extends SubSystem
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
-        this.storySubSystem     = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.StorySubsystem');
+        options.pathName        = 'Persistent_Level:PersistentLevel.StorySubsystem';
+        super(options);
     }
 }

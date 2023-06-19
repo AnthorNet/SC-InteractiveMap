@@ -1,8 +1,10 @@
+import SubSystem                                from '../SubSystem.js';
+
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import Building_Pipeline                        from '../Building/Pipeline.js';
 
-export default class SubSystem_Buildable
+export default class SubSystem_Buildable extends SubSystem
 {
     static get totalColorSlots(){ return 16; }
     static get extraColorSlots(){ return 3; }
@@ -62,8 +64,8 @@ export default class SubSystem_Buildable
 
     constructor(options)
     {
-        this.baseLayout             = options.baseLayout;
-        this.buildableSubSystem     = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.BuildableSubsystem');
+        options.pathName        = 'Persistent_Level:PersistentLevel.BuildableSubsystem';
+        super(options);
     }
 
     getObjectCustomizationData(currentObject, property = null)
@@ -457,7 +459,7 @@ export default class SubSystem_Buildable
 
     setPlayerColorSlot(slotIndex, primaryColor, secondaryColor)
     {
-        let mColorSlots_Data = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlots_Data');
+        let mColorSlots_Data = this.baseLayout.getObjectProperty(this.subSystem, 'mColorSlots_Data');
             if(mColorSlots_Data !== null)
             {
                 if(mColorSlots_Data.values[slotIndex] === undefined)
@@ -502,10 +504,10 @@ export default class SubSystem_Buildable
 
     getPrimaryColorSlots()
     {
-        let mColorSlots_Data = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlots_Data');
+        let mColorSlots_Data = this.baseLayout.getObjectProperty(this.subSystem, 'mColorSlots_Data');
             if(this.baseLayout.saveGameParser.header.buildVersion > 168000)
             {
-                if(mColorSlots_Data === null && this.buildableSubSystem !== null)
+                if(mColorSlots_Data === null && this.subSystem !== null)
                 {
                     console.log('Creating missing mColorSlots_Data');
 
@@ -534,7 +536,7 @@ export default class SubSystem_Buildable
                         ]);
                     }
 
-                    this.buildableSubSystem.properties.push(mColorSlots_Data);
+                    this.subSystem.properties.push(mColorSlots_Data);
                     return this.getPrimaryColorSlots();
                 }
             }
@@ -577,7 +579,7 @@ export default class SubSystem_Buildable
 
     getSecondaryColorSlots()
     {
-        let mColorSlots_Data = this.baseLayout.getObjectProperty(this.buildableSubSystem, 'mColorSlots_Data');
+        let mColorSlots_Data = this.baseLayout.getObjectProperty(this.subSystem, 'mColorSlots_Data');
             if(mColorSlots_Data !== null)
             {
                 let data = [];

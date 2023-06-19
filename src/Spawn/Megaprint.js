@@ -654,13 +654,13 @@ export default class Spawn_Megaprint
                     // Push railroadSubSystem power connection
                     if(currentHiddenConnections.className === '/Script/FactoryGame.FGPowerConnectionComponent')
                     {
-                        if(this.baseLayout.railroadSubSystem.railroadSubSystem.children === undefined)
+                        if(this.baseLayout.railroadSubSystem.subSystem.children === undefined)
                         {
-                            this.baseLayout.railroadSubSystem.railroadSubSystem.children = [];
+                            this.baseLayout.railroadSubSystem.subSystem.children = [];
                         }
-                        if(this.baseLayout.railroadSubSystem.railroadSubSystem.children.includes(currentHiddenConnections.pathName) === false)
+                        if(this.baseLayout.railroadSubSystem.subSystem.children.includes(currentHiddenConnections.pathName) === false)
                         {
-                            this.baseLayout.railroadSubSystem.railroadSubSystem.children.push({pathName: currentHiddenConnections.pathName});
+                            this.baseLayout.railroadSubSystem.subSystem.children.push({pathName: currentHiddenConnections.pathName});
                         }
                     }
                 }

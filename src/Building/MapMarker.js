@@ -129,7 +129,7 @@ export default class Building_MapMarker
                         baseLayout.playerLayers.playerOrientationLayer.count--;
                         baseLayout.setBadgeLayerCount('playerOrientationLayer');
 
-                        SaveParser_FicsIt.fixMapManager(baseLayout, baseLayout.mapSubSystem.mapSubSystem, true);
+                        SaveParser_FicsIt.fixMapManager(baseLayout, baseLayout.mapSubSystem.subSystem, true);
                         return;
                     }
                 }
