@@ -1573,7 +1573,7 @@ export default class SaveParser_Read
 
             case 'Vector':
             case 'Rotator':
-                if(this.header.saveVersion >= 41)
+                if(this.header.saveVersion >= 41 && parentType !== 'SpawnData')
                 {
                     currentProperty.value.values = {
                         x           : this.readDouble(),

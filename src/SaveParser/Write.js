@@ -1216,7 +1216,7 @@ export default class SaveParser_Write
                 {
                     property += this.writeLong(currentProperty.value.values[i]);
                 }
-                
+
                 break;
 
             case 'Float':
@@ -1333,7 +1333,7 @@ export default class SaveParser_Write
                         default:
                             for(let j = 0; j < currentProperty.value.values[i].length; j++)
                             {
-                                structure += this.writeProperty(currentProperty.value.values[i][j]);
+                                structure += this.writeProperty(currentProperty.value.values[i][j], currentProperty.structureSubType);
                             }
                             structure += this.writeString('None');
                     }
@@ -1599,7 +1599,7 @@ export default class SaveParser_Write
 
             case 'Vector':
             case 'Rotator':
-                if(this.header.saveVersion >= 41)
+                if(this.header.saveVersion >= 41 && parentType !== 'SpawnData')
                 {
                     property += this.writeDouble(currentProperty.value.values.x);
                     property += this.writeDouble(currentProperty.value.values.y);
