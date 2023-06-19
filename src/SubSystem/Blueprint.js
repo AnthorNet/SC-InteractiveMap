@@ -1,10 +1,11 @@
-//
-export default class SubSystem_Blueprint
+import SubSystem                                from '../SubSystem.js';
+
+export default class SubSystem_Blueprint extends SubSystem
 {
     constructor(options)
     {
-        this.baseLayout         = options.baseLayout;
-        this.blueprintSubSystem = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.BlueprintSubsystem');
+        options.pathName        = 'Persistent_Level:PersistentLevel.BlueprintSubsystem';
+        super(options);
 
         this.blueprintsProxies  = {};
     }
