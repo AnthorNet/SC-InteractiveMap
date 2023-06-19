@@ -76,6 +76,19 @@ export default class Spawn_Megaprint
                 }
             }
 
+            // Old drone format?
+            //TODO: Get mCurrentAction/mActionsToExecute to the new format!
+            if(this.baseLayout.saveGameParser.header.saveVersion >= 41 && this.clipboard.saveVersion < 41)
+            {
+                for(let i = 0; i < this.clipboard.data.length; i++)
+                {
+                    if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
+                    {
+                        this.clipboard.data[i].parent.extra = {unk1 :0, unk2 :0, mActiveAction: [], mActionQueue: []};
+                    }
+                }
+            }
+
             // Apply SaveParser_FicsIt
             for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
             {
