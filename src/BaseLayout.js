@@ -808,27 +808,6 @@ export default class BaseLayout
                 '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C'
             ].includes(currentObject.className))
             {
-                /**/
-                if(this.useDebug === true) //TODO: Find a way to extract them properly now
-                {
-                    if(this.saveGameParser.header.saveVersion >= 29 && this.satisfactoryMap.collectableMarkers[currentObject.pathName] === undefined)
-                    {
-                        let oldCollectableLevels = ['Persistent_Exploration', 'Persistent_Exploration_2'];
-                            for(let j = 0; j < oldCollectableLevels.length; j++)
-                            {
-                                let collectableLevel    = oldCollectableLevels[j];
-                                let testPathName        = collectableLevel + ':' + currentObject.pathName.split(':').pop();
-
-                                    if(this.satisfactoryMap.collectableMarkers[testPathName] !== undefined)
-                                    {
-                                        console.log('Collectable needs to be renamed...', currentObject.pathName.split(':').shift(), currentObject.pathName.split('.').pop(), currentObject.transform.translation[0]);
-                                        break;
-                                    }
-                            }
-                    }
-                }
-                /**/
-
                 if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
                 {
                     this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName = currentObject.pathName;

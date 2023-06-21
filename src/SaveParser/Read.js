@@ -60,7 +60,7 @@ export default class SaveParser_Read
             this.worker.postMessage({command: 'transferData', data: {header: this.header}});
 
             // We should now unzip the body!
-            if(this.header.saveVersion >= 21)
+            if(this.header.saveVersion >= 29)
             {
                 // Remove the header...
                 this.arrayBuffer        = this.arrayBuffer.slice(this.currentByte);
@@ -212,84 +212,62 @@ export default class SaveParser_Read
             this.worker.postMessage({command: 'transferData', data: {partitions: partitions}});
         }
 
-        if(this.header.saveVersion >= 29)
+        let collectables    = [];
+        let nbLevels        = this.readInt();
+        let levels          = [];
+
+        for(let j = 0; j <= nbLevels; j++)
         {
-            let collectables    = [];
-            let nbLevels        = this.readInt();
-            let levels          = [];
+            let levelName = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
+                levels.push(levelName);
 
-            for(let j = 0; j <= nbLevels; j++)
+            let objectsBinaryLength         = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
+            let objectsBinaryLengthStart    = this.currentByte;
+                //console.log('objectsBinaryLength', levelName, objectsBinaryLength, objectsBinaryLengthStart)
+            let entitiesToObjects   = [];
+            let countObjects        = this.readInt();
+                if(levelName === 'Level ' + this.header.mapName)
+                {
+                    console.log('Loaded ' + countObjects + ' objects...');
+                }
+
+            for(let i = 0; i < countObjects; i++)
             {
-                let levelName = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
-                    levels.push(levelName);
-
-                let objectsBinaryLength         = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
-                let objectsBinaryLengthStart    = this.currentByte;
-                    //console.log('objectsBinaryLength', levelName, objectsBinaryLength, objectsBinaryLengthStart)
-                let entitiesToObjects   = [];
-                let countObjects        = this.readInt();
-                    if(levelName === 'Level ' + this.header.mapName)
+                let objectType = this.readInt();
+                    switch(objectType)
                     {
-                        console.log('Loaded ' + countObjects + ' objects...');
-                    }
+                        case 0:
+                            let object                          = this.readObject();
+                                this.objects[object.pathName]   = object;
+                                entitiesToObjects[i]            = object.pathName;
+                            break;
+                        case 1:
+                            let actor                           = this.readActor();
+                                this.objects[actor.pathName]    = actor;
+                                entitiesToObjects[i]            = actor.pathName;
 
-                for(let i = 0; i < countObjects; i++)
-                {
-                    let objectType = this.readInt();
-                        switch(objectType)
-                        {
-                            case 0:
-                                let object                          = this.readObject();
-                                    this.objects[object.pathName]   = object;
-                                    entitiesToObjects[i]            = object.pathName;
-                                break;
-                            case 1:
-                                let actor                           = this.readActor();
-                                    this.objects[actor.pathName]    = actor;
-                                    entitiesToObjects[i]            = actor.pathName;
-
-                                    if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
-                                    {
-                                        this.worker.postMessage({command: 'transferData', data: {gameStatePathName: actor.pathName}});
-                                    }
-                                break;
-                            default:
-                                console.log('Unknown object type', objectType);
-                                break;
-                        }
-
-                    // Only show progress for the main level
-                    if(i % 2500 === 0 && levelName === 'Level ' + this.header.mapName)
-                    {
-                        this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
-                        this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 15))});
-                    }
-                }
-
-                //TODO: Was it the same early?
-                if(this.header.saveVersion >= 41)
-                {
-                    if(this.currentByte < (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
-                    {
-                        let countCollectedInBetween = this.readInt();
-                            if(countCollectedInBetween > 0)
-                            {
-                                for(let i = 0; i < countCollectedInBetween; i++)
+                                if(actor.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
                                 {
-                                    let collectable = this.readObjectProperty({});
-                                        collectables.push(collectable);
+                                    this.worker.postMessage({command: 'transferData', data: {gameStatePathName: actor.pathName}});
                                 }
-                            }
+                            break;
+                        default:
+                            console.log('Unknown object type', objectType);
+                            break;
                     }
-                    else
-                    {
-                        if(this.currentByte === (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
-                        {
-                            this.readInt();
-                        }
-                    }
+
+                // Only show progress for the main level
+                if(i % 2500 === 0 && levelName === 'Level ' + this.header.mapName)
+                {
+                    this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
+                    this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 15))});
                 }
-                else
+            }
+
+            //TODO: Was it the same early?
+            if(this.header.saveVersion >= 41)
+            {
+                if(this.currentByte < (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
                 {
                     let countCollectedInBetween = this.readInt();
                         if(countCollectedInBetween > 0)
@@ -301,62 +279,79 @@ export default class SaveParser_Read
                             }
                         }
                 }
-
-                let entitiesBinaryLength    = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
-                let countEntities           = this.readInt();
-                    if(levelName === 'Level ' + this.header.mapName)
-                    {
-                        console.log('Loaded ' + countEntities + ' entities...');
-                    }
-                let objectsToFlush      = {};
-
-                for(let i = 0; i < countEntities; i++)
+                else
                 {
-                    this.readEntity(entitiesToObjects[i]);
-
-                    // Avoid memory error on very large save!
-                    objectsToFlush[entitiesToObjects[i]] = this.objects[entitiesToObjects[i]];
-                    if(i > 0 && i % 5000 === 0)
+                    if(this.currentByte === (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
                     {
-                        for(let pathName in objectsToFlush)
-                        {
-                            delete this.objects[pathName];
-                        }
-                        this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
-                        objectsToFlush = {};
+                        this.readInt();
                     }
-
-                    // Only show progress for the main level
-                    if(i % 2500 === 0 && levelName === 'Level ' + this.header.mapName)
+                }
+            }
+            else
+            {
+                let countCollectedInBetween = this.readInt();
+                    if(countCollectedInBetween > 0)
                     {
-                        this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), Math.round(i / countEntities * 100)]});
-                        this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
+                        for(let i = 0; i < countCollectedInBetween; i++)
+                        {
+                            let collectable = this.readObjectProperty({});
+                                collectables.push(collectable);
+                        }
+                    }
+            }
+
+            let entitiesBinaryLength    = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
+            let countEntities           = this.readInt();
+                if(levelName === 'Level ' + this.header.mapName)
+                {
+                    console.log('Loaded ' + countEntities + ' entities...');
+                }
+            let objectsToFlush      = {};
+
+            for(let i = 0; i < countEntities; i++)
+            {
+                this.readEntity(entitiesToObjects[i]);
+
+                // Avoid memory error on very large save!
+                objectsToFlush[entitiesToObjects[i]] = this.objects[entitiesToObjects[i]];
+                if(i > 0 && i % 5000 === 0)
+                {
+                    for(let pathName in objectsToFlush)
+                    {
+                        delete this.objects[pathName];
+                    }
+                    this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
+                    objectsToFlush = {};
+                }
+
+                // Only show progress for the main level
+                if(i % 2500 === 0 && levelName === 'Level ' + this.header.mapName)
+                {
+                    this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), Math.round(i / countEntities * 100)]});
+                    this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
+                }
+            }
+
+            let countCollected = this.readInt();
+                if(countCollected > 0)
+                {
+                    for(let i = 0; i < countCollected; i++)
+                    {
+                        // Silently read as we reuse the first batch...
+                        this.readObjectProperty({});
                     }
                 }
 
-                let countCollected = this.readInt();
-                    if(countCollected > 0)
-                    {
-                        for(let i = 0; i < countCollected; i++)
-                        {
-                            // Silently read as we reuse the first batch...
-                            this.readObjectProperty({});
-                        }
-                    }
-
-                this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
-            }
-
-            // SKIP LAST COLLECTED - They represent old actor not exisiting in game anymore
-            //TODO: Still correct after update 8?
-
-            this.worker.postMessage({command: 'transferData', data: {collectables: collectables}});
-            this.worker.postMessage({command: 'transferData', data: {levels: levels}});
-            this.worker.postMessage({command: 'endSaveLoading'});
-            return;
+            this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
         }
 
-        return this.parseObjects();
+        // SKIP LAST COLLECTED - They represent old actor not exisiting in game anymore
+        //TODO: Still correct after update 8?
+
+        this.worker.postMessage({command: 'transferData', data: {collectables: collectables}});
+        this.worker.postMessage({command: 'transferData', data: {levels: levels}});
+        this.worker.postMessage({command: 'endSaveLoading'});
+        return;
     }
 
     /*
@@ -609,6 +604,14 @@ export default class SaveParser_Read
                             this.worker.postMessage({command: 'transferData', data: {playerHostPathName: this.objects[objectKey].extra.game[0].pathName}});
                         }
                     }
+
+                    /*
+                    if(this.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                    {
+                        console.log(this.objects[objectKey])
+                        console.log('EXTRA', this.objects[objectKey].extra)
+                    }
+                    /**/
 
                     break;
 
@@ -1497,7 +1500,7 @@ export default class SaveParser_Read
                         break;
 
                     case 'Struct':
-                        if(this.header.saveVersion >= 29 && parentType === '/Script/FactoryGame.FGFoliageRemoval')
+                        if(parentType === '/Script/FactoryGame.FGFoliageRemoval')
                         {
                             currentProperty.value.values.push({
                                 x: this.readFloat(),

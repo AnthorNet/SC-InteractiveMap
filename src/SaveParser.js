@@ -52,7 +52,7 @@ export default class SaveParser
 
     save(baseLayout, callback = null)
     {
-        if(this.header.saveVersion >= 21)
+        if(this.header.saveVersion >= 29)
         {
             console.time('writeFileSaveAs');
 

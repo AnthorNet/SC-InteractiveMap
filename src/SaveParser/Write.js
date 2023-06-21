@@ -112,12 +112,8 @@ export default class SaveParser_Write
 
     generateChunks()
     {
-        if(this.header.saveVersion >= 29)
-        {
-            return this.generateLevelChunks();
-        }
 
-        return this.generateOldChunks();
+        return this.generateLevelChunks();
     }
 
 
@@ -326,107 +322,6 @@ export default class SaveParser_Write
             }
 
         return tempSaveBinary;
-    }
-
-
-    /*
-     * VERSION 28
-     */
-    generateOldChunks()
-    {
-        let currentLevel = this.header.mapName;
-
-        this.postWorkerMessage({command: 'requestObjectKeys', levelName: currentLevel}).then((objectKeys) => {
-            return this.generateOldObjectsChunks(currentLevel, objectKeys);
-        });
-    }
-
-    generateOldObjectsChunks(currentLevel, objectKeys, step = 0)
-    {
-        if(step === 0)
-        {
-            this.saveBinary += this.writeInt(objectKeys.length, false);
-        }
-
-        let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
-            if(objectKeySpliced.length > 0)
-            {
-                return this.postWorkerMessage({command: 'requestObjects', objectKeys: objectKeySpliced}).then((objects) => {
-                    let countObjects = objects.length;
-                        for(let i = 0; i < countObjects; i++)
-                        {
-                            if(objects[i].outerPathName === undefined)
-                            {
-                                this.saveBinary += this.writeActor(objects[i]);
-                            }
-                            else
-                            {
-                                this.saveBinary += this.writeObject(objects[i]);
-                            }
-
-                            if(i % 1000 === 0)
-                            {
-                                let progress = step / objectKeys.length * 100;
-                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
-                                    this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.48)});
-
-                                this.pushSaveToChunk();
-                            }
-                        }
-
-                    return this.generateOldObjectsChunks(currentLevel, objectKeys, (step + this.stepsLength));
-                });
-            }
-
-        this.pushSaveToChunk();
-        console.log('Saved ' + objectKeys.length + ' objects...');
-        return this.generateOldEntitiesChunks(currentLevel, objectKeys);
-    }
-
-    generateOldEntitiesChunks(currentLevel, objectKeys, step = 0)
-    {
-        if(step === 0)
-        {
-            this.saveBinary += this.writeInt(objectKeys.length, false);
-        }
-
-        let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
-            if(objectKeySpliced.length > 0)
-            {
-                return this.postWorkerMessage({command: 'requestObjects', objectKeys: objectKeySpliced}).then((objects) => {
-                    let countObjects = objects.length;
-                        for(let i = 0; i < countObjects; i++)
-                        {
-                            this.saveBinary += this.writeEntity(objects[i]);
-
-                            // Force big entities to deflate to avoid memory error (Mainly foliage removal...)
-                            if(this.currentEntityLength >= this.maxChunkSize)
-                            {
-                                this.pushSaveToChunk();
-                            }
-
-                            if(i % 1000 === 0)
-                            {
-                                let progress = step / objectKeys.length * 100;
-                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
-                                    this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (progress * 0.48))});
-
-                                this.pushSaveToChunk();
-                            }
-                        }
-
-                    return this.generateOldEntitiesChunks(currentLevel, objectKeys, (step + this.stepsLength));
-                });
-            }
-
-        this.pushSaveToChunk();
-        console.log('Saved ' + objectKeys.length + ' entities...');
-
-        this.postWorkerMessage({command: 'requestCollectables', levelName: currentLevel}).then((collectables) => {
-            this.saveBinary  += this.generateCollectablesChunks(collectables);
-            this.pushSaveToChunk();
-            return this.finalizeChunks();
-        });
     }
 
     /*
