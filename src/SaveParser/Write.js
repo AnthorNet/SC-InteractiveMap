@@ -18,15 +18,12 @@ export default class SaveParser_Write
 
         this.partitions             = options.partitions;
         this.levels                 = options.levels;
-        this.availableLevels        = options.availableLevels;
+        this.availableSubLevels     = options.availableSubLevels;
 
         this.stepsLength            = 5000;
         this.saveBinaryReplacer     = [];
         this.saveBinaryValues       = {};
         this.countObjects           = options.countObjects;
-
-        this.gameStatePathName      = options.gameStatePathName;
-        this.playerHostPathName     = options.playerHostPathName;
 
         this.language               = options.language;
 
@@ -107,45 +104,62 @@ export default class SaveParser_Write
             this.pushSaveToChunk();
         }
 
-        return this.generateChunks();
-    }
-
-    generateChunks()
-    {
+        this.saveBinary += this.writeInt((this.levels.length - 1), false);
 
         return this.generateLevelChunks();
     }
 
 
-    /*
-     * VERSION 29
-     */
     generateLevelChunks(currentLevel = 0)
     {
-        if(currentLevel === 0)
+        if(currentLevel === (this.levels.length - 1))
         {
-            this.saveBinary += this.writeInt((this.levels.length - 1), false);
+            delete this.subLevelObjectKeys;
+            delete this.subLevelCollectables;
+
+            return this.generateMainLevelChunks();
         }
 
-        let currentLevelName = this.levels[currentLevel].replace('Level ', '');
-            if(currentLevel < (this.levels.length - 1)) // Do not write the level mapName
-            {
-                //console.log('levelName', this.levels[currentLevel])
-                this.saveBinary += this.writeString(this.levels[currentLevel], false);
+        let progress = currentLevel / this.levels.length * 100;
+            this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s sub-levels (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format((this.levels.length - 1)), Math.round(progress)]});
+            this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.08)});
 
-                if(this.header.saveVersion < 41)
-                {
-                    currentLevelName = currentLevelName.split(':');
-                    currentLevelName.pop();
-                    currentLevelName = currentLevelName[0].split('.').pop();
-                }
+        let currentLevelName = this.levels[currentLevel].replace('Level ', '');
+            //console.log('levelName', this.levels[currentLevel])
+            this.saveBinary += this.writeString(this.levels[currentLevel], false);
+
+            if(this.header.saveVersion < 41)
+            {
+                currentLevelName = currentLevelName.split(':');
+                currentLevelName.pop();
+                currentLevelName = currentLevelName[0].split('.').pop();
             }
 
-        this.postWorkerMessage({command: 'requestObjectKeys', levelName: currentLevelName}).then((objectKeys) => {
-            this.postWorkerMessage({command: 'requestCollectables', levelName: currentLevelName}).then((collectables) => {
-                return this.generateObjectsChunks(currentLevel, objectKeys, collectables);
+        if(currentLevel === 0)
+        {
+            this.postWorkerMessage({command: 'requestObjectKeys', levelNames: this.availableSubLevels}).then((objectKeys) => {
+                this.postWorkerMessage({command: 'requestCollectables', levelNames: this.availableSubLevels}).then((collectables) => {
+                    this.subLevelObjectKeys     = objectKeys;
+                    this.subLevelCollectables   = collectables;
+
+                    return this.generateObjectsChunks(currentLevel, objectKeys[currentLevelName], collectables[currentLevelName]);
+                });
             });
-        });
+        }
+        else
+        {
+            return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName]);
+        }
+    }
+
+    generateMainLevelChunks()
+    {
+        let currentLevelName = this.levels[this.levels.length - 1].replace('Level ', '');
+            this.postWorkerMessage({command: 'requestObjectKeys', levelName: currentLevelName}).then((objectKeys) => {
+                this.postWorkerMessage({command: 'requestCollectables', levelName: currentLevelName}).then((collectables) => {
+                    return this.generateObjectsChunks((this.levels.length - 1), objectKeys[currentLevelName], collectables[currentLevelName]);
+                });
+            });
     }
 
     generateObjectsChunks(currentLevel, objectKeys, collectables, step = 0, tempSaveBinaryLength = 0)
@@ -191,7 +205,7 @@ export default class SaveParser_Write
                             {
                                 let progress = step / objectKeys.length * 100;
                                     this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
-                                    this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.48)});
+                                    this.worker.postMessage({command: 'loaderProgress', percentage: 8 + (progress * 0.40)});
 
                                 this.pushSaveToChunk();
                             }

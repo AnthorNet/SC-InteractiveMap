@@ -73,7 +73,7 @@ export default class SaveParser
             }
 
             // Prepare available levels
-            this.availableLevels = [];
+            this.availableSubLevels = [];
             for(let j = 0; j < (this.levels.length - 1); j++)
             {
                 let currentLevelName = this.levels[j].replace('Level ', '');
@@ -84,7 +84,7 @@ export default class SaveParser
                         currentLevelName = currentLevelName[0].split('.').pop();
                     }
 
-                this.availableLevels.push(currentLevelName);
+                this.availableSubLevels.push(currentLevelName);
             }
 
             // Do the magic!
@@ -97,14 +97,12 @@ export default class SaveParser
 
                 partitions          : this.partitions,
                 levels              : this.levels,
-                availableLevels     : this.availableLevels,
+                availableSubLevels  : this.availableSubLevels,
 
                 countObjects        : this.countObjects,
 
                 maxChunkSize        : this.maxChunkSize,
-                PACKAGE_FILE_TAG    : this.PACKAGE_FILE_TAG,
-                gameStatePathName   : this.gameStatePathName,
-                playerHostPathName  : this.playerHostPathName
+                PACKAGE_FILE_TAG    : this.PACKAGE_FILE_TAG
             });
 
             $('#loaderProgressBar').css('display', 'flex');
@@ -188,26 +186,38 @@ export default class SaveParser
         switch(data.command)
         {
             case 'requestObjectKeys':
-                let currentObjectKeys = [];
+                let currentObjectKeys = {};
+                    if(data.levelNames !== undefined)
+                    {
+                        for(let i = 0; i < data.levelNames.length; i++)
+                        {
+                            currentObjectKeys[data.levelNames[i]] = [];
+                        }
+                    }
+                    if(data.levelName !== undefined)
+                    {
+                        currentObjectKeys[data.levelName] = [];
+                    }
+
                     for(let i = 0; i < this.countObjects; i++)
                     {
                         if(this.objects[this.objectsKeys[i]] !== undefined)
                         {
-                            if(this.objects[this.objectsKeys[i]].levelName !== undefined && this.objects[this.objectsKeys[i]].levelName === data.levelName)
+                            if(data.levelNames !== undefined && this.objects[this.objectsKeys[i]].levelName !== undefined && data.levelNames.includes(this.objects[this.objectsKeys[i]].levelName))
                             {
-                                currentObjectKeys.push(this.objectsKeys[i]);
+                                currentObjectKeys[this.objects[this.objectsKeys[i]].levelName].push(this.objectsKeys[i]);
                                 continue;
                             }
-                            if(data.levelName === this.header.mapName)
+                            if(data.levelName !== undefined && data.levelName === this.header.mapName)
                             {
-                                if(this.objects[this.objectsKeys[i]].levelName !== undefined && this.availableLevels.includes(this.objects[this.objectsKeys[i]].levelName) === false)
+                                if(this.objects[this.objectsKeys[i]].levelName !== undefined && this.availableSubLevels.includes(this.objects[this.objectsKeys[i]].levelName) === false)
                                 {
-                                    currentObjectKeys.push(this.objectsKeys[i]);
+                                    currentObjectKeys[data.levelName].push(this.objectsKeys[i]);
                                     continue;
                                 }
                                 if(this.objects[this.objectsKeys[i]].levelName === undefined)
                                 {
-                                    currentObjectKeys.push(this.objectsKeys[i]);
+                                    currentObjectKeys[data.levelName].push(this.objectsKeys[i]);
                                     continue;
                                 }
                             }
@@ -240,24 +250,36 @@ export default class SaveParser
                 break;
 
             case 'requestCollectables':
-                let currentLevelCollectables = [];
+                let currentLevelCollectables = {};
+                    if(data.levelNames !== undefined)
+                    {
+                        for(let i = 0; i < data.levelNames.length; i++)
+                        {
+                            currentLevelCollectables[data.levelNames[i]] = [];
+                        }
+                    }
+                    if(data.levelName !== undefined)
+                    {
+                        currentLevelCollectables[data.levelName] = [];
+                    }
+
                     for(let i = 0; i < this.collectables.length; i++)
                     {
-                        if(this.collectables[i].levelName !== undefined && this.collectables[i].levelName === data.levelName)
+                        if(data.levelNames !== undefined && this.collectables[i].levelName !== undefined && data.levelNames.includes(this.collectables[i].levelName))
                         {
-                            currentLevelCollectables.push(this.collectables[i]);
+                            currentLevelCollectables[this.collectables[i].levelName].push(this.collectables[i]);
                             continue;
                         }
-                        if(data.levelName === this.header.mapName)
+                        if(data.levelName !== undefined && data.levelName === this.header.mapName)
                         {
-                            if(this.collectables[i].levelName !== undefined && this.availableLevels.includes(this.collectables[i].levelName) === false)
+                            if(this.collectables[i].levelName !== undefined && this.availableSubLevels.includes(this.collectables[i].levelName) === false)
                             {
-                                currentLevelCollectables.push(this.collectables[i]);
+                                currentLevelCollectables[data.levelName].push(this.collectables[i]);
                                 continue;
                             }
                             if(this.collectables[i].levelName === undefined)
                             {
-                                currentLevelCollectables.push(this.collectables[i]);
+                                currentLevelCollectables[data.levelName].push(this.collectables[i]);
                                 continue;
                             }
                         }
