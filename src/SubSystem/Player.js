@@ -20,7 +20,18 @@ export default class SubSystem_Player
 
     isHost()
     {
-        return (this.baseLayout.saveGameParser.playerHostPathName === this.player.pathName);
+        if(this.baseLayout.saveGameParser.playerHostPathName !== null)
+        {
+            return (this.baseLayout.saveGameParser.playerHostPathName === this.player.pathName);
+        }
+
+        // A temporary fix for Update 8...
+        if(Object.keys(this.baseLayout.players)[0] === this.player.pathName)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     doDisplayNameLookup()

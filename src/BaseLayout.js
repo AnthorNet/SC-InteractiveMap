@@ -726,7 +726,10 @@ export default class BaseLayout
                 this.players[currentObject.pathName] = new SubSystem_Player({baseLayout: this, player: currentObject});
 
                 // Moving view before rendering objects...
-                if(this.saveGameParser.playerHostPathName === currentObject.pathName)
+                if(
+                        (this.saveGameParser.playerHostPathName !== null && this.saveGameParser.playerHostPathName === currentObject.pathName)
+                     || (this.saveGameParser.playerHostPathName === null && Object.keys(this.players).length === 1) // Update 8, get first player...
+                )
                 {
                     let mOwnedPawn  = this.getObjectProperty(currentObject, 'mOwnedPawn');
                         if(mOwnedPawn !== null)
