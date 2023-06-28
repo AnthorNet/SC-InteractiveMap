@@ -81,7 +81,7 @@ export default class SaveParser_FicsIt
     }
 
     /*
-     * Removes old non existent PLayerState
+     * Removes old non existent PlayerState
      */
     static fixGameMode(baseLayout, currentObject)
     {
