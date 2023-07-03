@@ -1324,13 +1324,23 @@ export default class SaveParser_Write
                 case 'Struct':
                     if(
                             currentProperty.name === 'Destroyed_Foliage_Transform'              // Cannot remember :D
-                         || currentProperty.name === 'mSaveData'                                // Update 8
-                         || currentProperty.name === 'mUnresolvedSaveData'                      // Update 8
-                         || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')  // Mod: Universal Destroyer/Factory Statistics
+                         || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C'   // Mod: Universal Destroyer/Factory Statistics
+                    )
                     {
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.x);
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.y);
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.z);
+                        break;
+                    }
+
+                    if(
+                            currentProperty.name === 'mSaveData'                                // Update 8
+                         || currentProperty.name === 'mUnresolvedSaveData'                      // Update 8
+                    )
+                    {
+                        property += this.writeInt(currentProperty.value.values[iMapProperty].keyMap.x);
+                        property += this.writeInt(currentProperty.value.values[iMapProperty].keyMap.y);
+                        property += this.writeInt(currentProperty.value.values[iMapProperty].keyMap.z);
                         break;
                     }
 

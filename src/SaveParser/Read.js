@@ -1260,14 +1260,27 @@ export default class SaveParser_Read
                         case 'Struct':
                             if(
                                     currentProperty.name === 'Destroyed_Foliage_Transform'              // Cannot remember :D
-                                 || currentProperty.name === 'mSaveData'                                // Update 8
-                                 || currentProperty.name === 'mUnresolvedSaveData'                      // Update 8
-                                 || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')  // Mod: Universal Destroyer/Factory Statistics
+                                 || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C'   // Mod: Universal Destroyer/Factory Statistics
+                            )
                             {
                                 mapPropertyKey = {
                                     x: this.readFloat(),
                                     y: this.readFloat(),
                                     z: this.readFloat()
+                                };
+
+                                break;
+                            }
+
+                            if(
+                                    currentProperty.name === 'mSaveData'                                // Update 8
+                                 || currentProperty.name === 'mUnresolvedSaveData'                      // Update 8
+                            )
+                            {
+                                mapPropertyKey = {
+                                    x: this.readInt(),
+                                    y: this.readInt(),
+                                    z: this.readInt()
                                 };
 
                                 break;
