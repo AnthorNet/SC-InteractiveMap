@@ -291,8 +291,6 @@ export default class BaseLayout_Tooltip
                 }
             }
 
-            console.log(buildingData);
-
             if(buildingData.extractionRate !== undefined && buildingData.extractionRate[purity] !== undefined)
             {
                 extractionRate      = buildingData.extractionRate[purity];

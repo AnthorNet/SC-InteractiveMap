@@ -16,7 +16,6 @@ import Selection_Rotate                         from '../Selection/Rotate.js';
 import Spawn_Fill                               from '../Spawn/Fill.js';
 
 import SubSystem_Buildable                      from '../SubSystem/Buildable.js';
-import SubSystem_Foliage                        from '../SubSystem/Foliage.js';
 
 export default class Modal_Selection
 {
@@ -437,7 +436,6 @@ export default class Modal_Selection
 
             // Foliage
             inputOptions.push({group: 'Flora', text: 'Respawn flora', value: 'respawnFlora'});
-            //inputOptions.push({group: 'Flora', text: 'Clear flora', value: 'clearFlora'});
 
         BaseLayout_Modal.form({
             title       : 'You have selected ' + ((markers !== null) ? markers.length : 0) + ' items',
@@ -955,15 +953,7 @@ export default class Modal_Selection
     {
         if(baseLayout.satisfactoryMap.leafletMap.selection._areaSelected !== null)
         {
-            return SubSystem_Foliage.respawn(baseLayout);
-        }
-    }
-
-    static callbackClearFlora(baseLayout)
-    {
-        if(baseLayout.satisfactoryMap.leafletMap.selection._areaSelected !== null)
-        {
-            return SubSystem_Foliage.clear(baseLayout);
+            return baseLayout.foliageSubSystem.respawn();
         }
     }
 

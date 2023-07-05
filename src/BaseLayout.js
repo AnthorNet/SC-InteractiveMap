@@ -12,6 +12,7 @@ import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Blueprint                      from './SubSystem/Blueprint.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 import SubSystem_Fauna                          from './SubSystem/Fauna.js';
+import SubSystem_Foliage                        from './SubSystem/Foliage.js';
 import SubSystem_GameState                      from './SubSystem/GameState.js';
 import SubSystem_Map                            from './SubSystem/Map.js';
 import SubSystem_PipeNetwork                    from './SubSystem/PipeNetwork.js';
@@ -351,6 +352,7 @@ export default class BaseLayout
             this.buildableSubSystem     = new SubSystem_Buildable({baseLayout: this});
             this.blueprintSubSystem     = new SubSystem_Blueprint({baseLayout: this});
             this.circuitSubSystem       = new SubSystem_Circuit({baseLayout: this});
+            this.foliageSubSystem       = new SubSystem_Foliage({baseLayout: this});
             this.gameStateSubSystem     = new SubSystem_GameState({baseLayout: this});
             this.mapSubSystem           = new SubSystem_Map({baseLayout: this});
             this.pipeNetworkSubSystem   = new SubSystem_PipeNetwork({baseLayout: this});
