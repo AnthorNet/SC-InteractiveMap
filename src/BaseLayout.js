@@ -4390,6 +4390,36 @@ export default class BaseLayout
                 baseLayout.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'Float');
                 baseLayout.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'Float');
 
+                // UPDATE 8: Update mDynamicProductionCapacity to force circuits capacity?
+                let mPowerInfo = baseLayout.getObjectProperty(currentObject, 'mPowerInfo');
+                    if(mPowerInfo !== null)
+                    {
+                        let powerInfo = baseLayout.saveGameParser.getTargetObject(mPowerInfo.pathName);
+                            if(powerInfo !== null)
+                            {
+                                let mDynamicProductionCapacity = baseLayout.getObjectProperty(powerInfo, 'mDynamicProductionCapacity');
+                                    if(mDynamicProductionCapacity !== null)
+                                    {
+                                        let buildingData = baseLayout.getBuildingDataFromClassName(currentObject.className);
+                                            if(buildingData !== null && buildingData.category === 'generator')
+                                            {
+                                                let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
+                                                    if(baseLayout.saveGameParser.header.saveVersion >= 33)
+                                                    {
+                                                        mPowerProductionExponent = 1.0;
+                                                    }
+
+                                                baseLayout.setObjectProperty(
+                                                    powerInfo,
+                                                    'mDynamicProductionCapacity',
+                                                    (buildingData.powerGenerated * Math.pow(clockSpeed / 100, 1 / mPowerProductionExponent)),
+                                                    'Float'
+                                                );
+                                            }
+                                    }
+                            }
+                    }
+
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
                 {
                     // Update all linked extractors
