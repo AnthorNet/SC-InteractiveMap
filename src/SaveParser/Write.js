@@ -1395,6 +1395,10 @@ export default class SaveParser_Write
 
                     break;
 
+                case 'Text':
+                    property += this.writeTextProperty(currentProperty.value.values[iMapProperty].valueMap);
+                    break;
+
                 case 'Struct':
                     if(parentType === 'LBBalancerData')
                     {

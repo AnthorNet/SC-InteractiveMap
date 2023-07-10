@@ -46,11 +46,23 @@ export default class SubSystem_Blueprint extends SubSystem
                             if(this.blueprintsProxies[mBlueprintProxy.pathName][i] === currentObject.pathName)
                             {
                                 this.blueprintsProxies[mBlueprintProxy.pathName].splice(i, 1);
+
+                                // Invalidate proxy bounding box
+                                /*
+                                let blueprintProxyObject = this.baseLayout.saveGameParser.getTargetObject(mBlueprintProxy.pathName);
+                                    if(blueprintProxyObject !== null)
+                                    {
+                                        let mLocalBounds = this.baseLayout.getObjectProperty(blueprintProxyObject, 'mLocalBounds');
+                                            if(mLocalBounds !== null)
+                                            {
+                                                mLocalBounds.isValid = 0;
+                                                console.log(mLocalBounds);
+                                            }
+                                    }
+                                /**/
                                 break;
                             }
                         }
-
-                        //TODO: Check bounding box?
                     }
 
                     this.clearEmptyProxies();

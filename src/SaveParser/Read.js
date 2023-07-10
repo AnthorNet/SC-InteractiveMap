@@ -1316,37 +1316,42 @@ export default class SaveParser_Read
                         case 'Byte':
                             if(currentProperty.value.keyType === 'Str')
                             {
-                                mapPropertySubProperties = this.readString();
+                                mapPropertySubProperties    = this.readString();
                             }
                             else
                             {
-                                mapPropertySubProperties = this.readByte();
+                                mapPropertySubProperties    = this.readByte();
                             }
 
                             break;
 
                         case 'Bool':
-                            mapPropertySubProperties = this.readByte();
+                            mapPropertySubProperties    = this.readByte();
 
                             break;
 
                         case 'Int':
-                            mapPropertySubProperties = this.readInt();
+                            mapPropertySubProperties    = this.readInt();
 
                             break;
 
                         case 'Float':
-                            mapPropertySubProperties = this.readFloat();
+                            mapPropertySubProperties    = this.readFloat();
 
                             break;
 
                         case 'Str':
-                            mapPropertySubProperties = this.readString();
+                            mapPropertySubProperties    = this.readString();
 
                             break;
 
                         case 'Object':
-                            mapPropertySubProperties = this.readObjectProperty({});
+                            mapPropertySubProperties    = this.readObjectProperty({});
+
+                            break;
+
+                        case 'Text':
+                            mapPropertySubProperties    = this.readTextProperty({});
 
                             break;
 
