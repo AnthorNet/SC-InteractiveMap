@@ -432,7 +432,13 @@ export default class BaseLayout
     preloadMods()
     {
         let promises        = [];
-        let availableMods   = JSON.parse(this.saveGameParser.header.modMetadata);
+        let availableMods   = {};
+            try
+            {
+                availableMods = JSON.parse(this.saveGameParser.header.modMetadata);
+            }
+            catch(e){}
+
             if(availableMods.Mods !== undefined && availableMods.Mods.length > 0)
             {
                 for(let i = 0; i < availableMods.Mods.length; i++)
