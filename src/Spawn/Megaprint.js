@@ -89,6 +89,28 @@ export default class Spawn_Megaprint
                 }
             }
 
+            // Move old extractor to new water volume...
+            /**/
+            if(this.clipboard.buildVersion < 238433)
+            {
+                for(let i = 0; i < this.clipboard.data.length; i++)
+                {
+                    if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/WaterPump/Build_WaterPump.Build_WaterPump_C')
+                    {
+                        for(let j = 0; j < this.clipboard.data[i].parent.properties.length; j++)
+                        {
+                            if(this.clipboard.data[i].parent.properties[j].name === 'mExtractableResource')
+                            {
+                                this.clipboard.data[i].parent.properties[j].value = {
+                                    pathName    : 'Persistent_Level:PersistentLevel.FGWaterVolume68_23'
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            /**/
+
             // Apply SaveParser_FicsIt
             for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
             {
