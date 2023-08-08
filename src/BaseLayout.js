@@ -5197,7 +5197,7 @@ export default class BaseLayout
                 {
                     content = tooltip.getTooltip(currentObject);
 
-                    if(content !== null)
+                    if(content !== null && e.type !== 'click')
                     {
                         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
                         {
