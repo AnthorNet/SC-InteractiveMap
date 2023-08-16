@@ -1380,6 +1380,11 @@ export default class SaveParser_Write
 
                     break;
 
+                case 'Double':
+                    property += this.writeDouble(currentProperty.value.values[iMapProperty].valueMap);
+
+                    break;
+
                 case 'Float':
                     property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap);
 

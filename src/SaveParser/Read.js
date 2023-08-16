@@ -1353,6 +1353,11 @@ export default class SaveParser_Read
 
                             break;
 
+                        case 'Double':
+                            mapPropertySubProperties    = this.readDouble();
+
+                            break;
+
                         case 'Float':
                             mapPropertySubProperties    = this.readFloat();
 
