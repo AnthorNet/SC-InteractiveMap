@@ -1534,11 +1534,21 @@ export default class SaveParser_Read
 
                 break;
 
-            case 'Vector2D': // Mod?
-                currentProperty.value.values = {
-                    x           : this.readFloat(),
-                    y           : this.readFloat()
-                };
+            case 'Vector2D':
+                if(this.header.saveVersion >= 41)
+                {
+                    currentProperty.value.values = {
+                        x           : this.readDouble(),
+                        y           : this.readDouble()
+                    };
+                }
+                else
+                {
+                    currentProperty.value.values = {
+                        x           : this.readFloat(),
+                        y           : this.readFloat()
+                    };
+                }
 
                 break;
 

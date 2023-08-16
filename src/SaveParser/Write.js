@@ -1538,8 +1538,16 @@ export default class SaveParser_Write
                 break;
 
             case 'Vector2D': // Mod?
-                property += this.writeFloat(currentProperty.value.values.x);
-                property += this.writeFloat(currentProperty.value.values.y);
+                if(this.header.saveVersion >= 41)
+                {
+                    property += this.writeDouble(currentProperty.value.values.x);
+                    property += this.writeDouble(currentProperty.value.values.y);
+                }
+                else
+                {
+                    property += this.writeFloat(currentProperty.value.values.x);
+                    property += this.writeFloat(currentProperty.value.values.y);
+                }
 
                 break;
 
