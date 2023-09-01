@@ -1389,9 +1389,18 @@ export default class SaveParser_Read
                             }
                             if(parentType === '/StorageStatsRoom/Sub_SR.Sub_SR_C' || parentType === '/CentralStorage/Subsystem_SC.Subsystem_SC_C')
                             {
-                                mapPropertySubProperties.unk1           = this.readFloat();
-                                mapPropertySubProperties.unk2           = this.readFloat();
-                                mapPropertySubProperties.unk3           = this.readFloat();
+                                if(this.header.saveVersion >= 41)
+                                {
+                                    mapPropertySubProperties.unk1           = this.readDouble();
+                                    mapPropertySubProperties.unk2           = this.readDouble();
+                                    mapPropertySubProperties.unk3           = this.readDouble();
+                                }
+                                else
+                                {
+                                    mapPropertySubProperties.unk1           = this.readFloat();
+                                    mapPropertySubProperties.unk2           = this.readFloat();
+                                    mapPropertySubProperties.unk3           = this.readFloat();
+                                }
 
                                 break;
                             }

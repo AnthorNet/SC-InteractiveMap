@@ -1414,9 +1414,19 @@ export default class SaveParser_Write
                     }
                     if(parentType === '/StorageStatsRoom/Sub_SR.Sub_SR_C' || parentType === '/CentralStorage/Subsystem_SC.Subsystem_SC_C')
                     {
-                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk1);
-                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk2);
-                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk3);
+                        if(this.header.saveVersion >= 41)
+                        {
+                            property += this.writeDouble(currentProperty.value.values[iMapProperty].valueMap.unk1);
+                            property += this.writeDouble(currentProperty.value.values[iMapProperty].valueMap.unk2);
+                            property += this.writeDouble(currentProperty.value.values[iMapProperty].valueMap.unk3);
+                        }
+                        else
+                        {
+                            property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk1);
+                            property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk2);
+                            property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk3);
+                        }
+
                         break;
                     }
 
