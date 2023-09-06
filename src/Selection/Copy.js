@@ -124,7 +124,7 @@ export default class Selection_Copy
 
                 // Need some extra linked properties?
                 //TODO: Check mPairedStation?
-                let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone', 'mSignPoles', 'mFlowIndicator'];
+                let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone', 'mSignPoles', 'mFlowIndicator', 'mBlueprintProxy'];
                     for(let j = 0; j < extraProperties.length; j++)
                     {
                         let extraProperty   = this.baseLayout.getObjectProperty(currentObject, extraProperties[j]);
