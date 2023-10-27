@@ -575,7 +575,7 @@ export default class Spawn_Megaprint
                     delete currentProperty.structureType;
                 }
 
-                if(currentProperty.value !== undefined)
+                if(currentProperty.value !== undefined && currentProperty.value !== null)
                 {
                     if(currentProperty.value.type !== undefined)
                     {
@@ -589,7 +589,7 @@ export default class Spawn_Megaprint
                 }
 
                 // Traverse pathName
-                if(currentProperty.value !== undefined && currentProperty.value.values !== undefined)
+                if(currentProperty.value !== undefined && currentProperty.value !== null && currentProperty.value.values !== undefined)
                 {
                     currentProperty.value.values = this.transformProperties(currentProperty.value.values, pathNameConversion);
 
@@ -614,7 +614,7 @@ export default class Spawn_Megaprint
                         }
                     }
                 }
-                if(currentProperty.value !== undefined && currentProperty.value.pathName !== undefined)
+                if(currentProperty.value !== undefined && currentProperty.value !== null && currentProperty.value.pathName !== undefined)
                 {
                     currentProperty.value = this.transformValue(currentProperty.value, pathNameConversion);
                 }
