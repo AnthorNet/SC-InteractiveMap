@@ -529,10 +529,24 @@ export default class SaveParser_Read
                             let playerType = this.readByte();
                                 switch(playerType)
                                 {
+                                    case 241: // EOS UE5.2
+                                        this.readByte();
+                                        let epicHexLength241    = this.readInt();
+                                        let epicHex241          = '';
+                                            for(let i = 0; i < epicHexLength241; i++)
+                                            {
+                                                epicHex241 += this.readByte().toString(16).padStart(2, '0');
+                                            }
+
+                                        this.objects[objectKey].eosId       = epicHex241.replace(/^0+/, '').substring(1, 33);
+
+
+                                        break;
+
                                     case 248: // EOS
                                             this.readString();
-                                        let eosStr                          = this.readString().split('|');
-                                            this.objects[objectKey].eosId   = eosStr[0];
+                                        let eosStr2                         = this.readString().split('|');
+                                            this.objects[objectKey].eosId   = eosStr2[0];
 
                                         break;
 
