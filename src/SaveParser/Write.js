@@ -1322,14 +1322,29 @@ export default class SaveParser_Write
                     break;
 
                 case 'Struct':
-                    if(
-                            currentProperty.name === 'Destroyed_Foliage_Transform'              // Cannot remember :D
-                         || parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C'   // Mod: Universal Destroyer/Factory Statistics
-                    )
+                    if(currentProperty.name === 'Destroyed_Foliage_Transform')
+                    {
+                        if(this.header.saveVersion >= 41)
+                        {
+                            property += this.writeDouble(currentProperty.value.values[iMapProperty].keyMap.x);
+                            property += this.writeDouble(currentProperty.value.values[iMapProperty].keyMap.y);
+                            property += this.writeDouble(currentProperty.value.values[iMapProperty].keyMap.z);
+                        }
+                        else
+                        {
+                            property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.x);
+                            property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.y);
+                            property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.z);
+                        }
+
+                        break;
+                    }
+                    if(parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')       // Mod: Universal Destroyer/Factory Statistics
                     {
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.x);
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.y);
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.z);
+
                         break;
                     }
 
@@ -1341,6 +1356,7 @@ export default class SaveParser_Write
                         property += this.writeInt(currentProperty.value.values[iMapProperty].keyMap.x);
                         property += this.writeInt(currentProperty.value.values[iMapProperty].keyMap.y);
                         property += this.writeInt(currentProperty.value.values[iMapProperty].keyMap.z);
+
                         break;
                     }
 
