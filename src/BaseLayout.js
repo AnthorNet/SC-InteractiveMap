@@ -2510,11 +2510,11 @@ export default class BaseLayout
 
                             // Two nodes...
                             //TODO: Check coordinates...
-                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625')
+                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625' && this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614'] !== undefined)
                             {
                                 this.satisfactoryMap.availableLayers[nodeLayerId].removeLayer(this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614']);
                             }
-                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614')
+                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614' && this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625'] !== undefined)
                             {
                                 this.satisfactoryMap.availableLayers[nodeLayerId].removeLayer(this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625']);
                             }
@@ -2525,11 +2525,11 @@ export default class BaseLayout
 
                             // Two nodes...
                             //TODO: Check coordinates...
-                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625')
+                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625' && this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614'] !== undefined)
                             {
                                 this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614'].setOpacity(window.SCIM.collectedOpacity);
                             }
-                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614')
+                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614' && this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625'] !== undefined)
                             {
                                 this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625'].setOpacity(window.SCIM.collectedOpacity);
                             }
