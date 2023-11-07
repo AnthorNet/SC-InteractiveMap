@@ -511,7 +511,7 @@ export default class Modal_Map_Hotbars
         let currentShortcut     = this.baseLayout.saveGameParser.getTargetObject(pathName);
             if(currentShortcut !== null)
             {
-                let mRecipeToActivate     = this.baseLayout.getItemDataFromRecipe(currentShortcut, 'mRecipeToActivate');
+                let mRecipeToActivate = this.baseLayout.getItemDataFromRecipe(currentShortcut, 'mRecipeToActivate');
                     if(mRecipeToActivate !== null && mRecipeToActivate.produce !== undefined)
                     {
                         let buildingData = this.baseLayout.getBuildingDataFromClassName(Object.keys(mRecipeToActivate.produce)[0].replace(new RegExp(/Desc_/, 'g'), 'Build_'));
@@ -522,52 +522,127 @@ export default class Modal_Map_Hotbars
                             }
                     }
 
-                    let mCustomizationRecipeToActivate = this.baseLayout.getObjectProperty(currentShortcut, 'mCustomizationRecipeToActivate');
-                        if(mCustomizationRecipeToActivate !== null)
+                let mCustomizationRecipeToActivate = this.baseLayout.getObjectProperty(currentShortcut, 'mCustomizationRecipeToActivate');
+                    if(mCustomizationRecipeToActivate !== null)
+                    {
+                        if(mCustomizationRecipeToActivate.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/Recipe_'))
                         {
-                            if(mCustomizationRecipeToActivate.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/Recipe_'))
-                            {
-                                let currentSwatch = mCustomizationRecipeToActivate.pathName.split('.').pop();
-                                    switch(currentSwatch)
-                                    {
-                                        case 'Recipe_Swatch_Custom_C':
-                                            let customColor = this.baseLayout.buildableSubSystem.getPlayerCustomColor();
+                            let currentSwatch = mCustomizationRecipeToActivate.pathName.split('.').pop();
+                                switch(currentSwatch)
+                                {
+                                    case 'Recipe_Swatch_Custom_C':
+                                        let customColor = this.baseLayout.buildableSubSystem.getPlayerCustomColor();
+                                            return '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 50%;padding: 5px;background: linear-gradient(135deg, rgb('
+                                                + customColor.primaryColor.r + ', ' + customColor.primaryColor.g + ', ' + customColor.primaryColor.b + ') 0%,'
+                                                + 'rgb(' + customColor.primaryColor.r + ', ' + customColor.primaryColor.g + ', ' + customColor.primaryColor.b + ') 50%,'
+                                                + 'rgb(' + customColor.secondaryColor.r + ', ' + customColor.secondaryColor.g + ', ' + customColor.secondaryColor.b + ') 51%,'
+                                                + 'rgb(' + customColor.secondaryColor.r + ', ' + customColor.secondaryColor.g + ', ' + customColor.secondaryColor.b + ') 100%);" data-hover="tooltip" title="Custom Swatch"></div>';
+                                        break;
+                                    default:
+                                        let currentSlot     = parseInt(currentSwatch.replace('Recipe_Swatch_Slot', '').replace('_C'));
+                                        let playerColors    = this.baseLayout.buildableSubSystem.getPlayerColorSlots();
+                                            if(playerColors[currentSlot] !== undefined)
+                                            {
+                                                let swatchName          = 'Swatch ' + currentSlot;
+                                                    if(currentSlot === 0){ swatchName = 'FICSIT Factory'; }
+                                                    if(currentSlot === 16){ swatchName = 'FICSIT Foundation'; }
+                                                    if(currentSlot === 17){ swatchName = 'FICSIT Pipe'; }
+                                                    if(currentSlot === 18){ swatchName = 'Concrete Structure'; }
+
                                                 return '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 50%;padding: 5px;background: linear-gradient(135deg, rgb('
-                                                    + customColor.primaryColor.r + ', ' + customColor.primaryColor.g + ', ' + customColor.primaryColor.b + ') 0%,'
-                                                    + 'rgb(' + customColor.primaryColor.r + ', ' + customColor.primaryColor.g + ', ' + customColor.primaryColor.b + ') 50%,'
-                                                    + 'rgb(' + customColor.secondaryColor.r + ', ' + customColor.secondaryColor.g + ', ' + customColor.secondaryColor.b + ') 51%,'
-                                                    + 'rgb(' + customColor.secondaryColor.r + ', ' + customColor.secondaryColor.g + ', ' + customColor.secondaryColor.b + ') 100%);" data-hover="tooltip" title="Custom Swatch"></div>';
-                                            break;
-                                        default:
-                                            let currentSlot     = parseInt(currentSwatch.replace('Recipe_Swatch_Slot', '').replace('_C'));
-                                            let playerColors    = this.baseLayout.buildableSubSystem.getPlayerColorSlots();
-                                                if(playerColors[currentSlot] !== undefined)
-                                                {
-                                                    let swatchName          = 'Swatch ' + currentSlot;
-                                                        if(currentSlot === 0){ swatchName = 'FICSIT Factory'; }
-                                                        if(currentSlot === 16){ swatchName = 'FICSIT Foundation'; }
-                                                        if(currentSlot === 17){ swatchName = 'FICSIT Pipe'; }
-                                                        if(currentSlot === 18){ swatchName = 'Concrete Structure'; }
-
-                                                    return '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 50%;padding: 5px;background: linear-gradient(135deg, rgb('
-                                                        + playerColors[currentSlot].primaryColor.r + ', ' + playerColors[currentSlot].primaryColor.g + ', ' + playerColors[currentSlot].primaryColor.b + ') 0%,'
-                                                        + 'rgb(' + playerColors[currentSlot].primaryColor.r + ', ' + playerColors[currentSlot].primaryColor.g + ', ' + playerColors[currentSlot].primaryColor.b + ') 50%,'
-                                                        + 'rgb(' + playerColors[currentSlot].secondaryColor.r + ', ' + playerColors[currentSlot].secondaryColor.g + ', ' + playerColors[currentSlot].secondaryColor.b + ') 51%,'
-                                                        + 'rgb(' + playerColors[currentSlot].secondaryColor.r + ', ' + playerColors[currentSlot].secondaryColor.g + ', ' + playerColors[currentSlot].secondaryColor.b + ') 100%);" data-hover="tooltip" title="' + swatchName + '"></div>';
-                                                }
-                                    }
-                            }
-
-
-                            if(mCustomizationRecipeToActivate.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/'))
-                            {
-
-                            }
-                            else
-                            {
-                                //console.log('MISSING CASE', mCustomizationRecipeToActivate);
-                            }
+                                                    + playerColors[currentSlot].primaryColor.r + ', ' + playerColors[currentSlot].primaryColor.g + ', ' + playerColors[currentSlot].primaryColor.b + ') 0%,'
+                                                    + 'rgb(' + playerColors[currentSlot].primaryColor.r + ', ' + playerColors[currentSlot].primaryColor.g + ', ' + playerColors[currentSlot].primaryColor.b + ') 50%,'
+                                                    + 'rgb(' + playerColors[currentSlot].secondaryColor.r + ', ' + playerColors[currentSlot].secondaryColor.g + ', ' + playerColors[currentSlot].secondaryColor.b + ') 51%,'
+                                                    + 'rgb(' + playerColors[currentSlot].secondaryColor.r + ', ' + playerColors[currentSlot].secondaryColor.g + ', ' + playerColors[currentSlot].secondaryColor.b + ') 100%);" data-hover="tooltip" title="' + swatchName + '"></div>';
+                                            }
+                                }
                         }
+
+
+                        if(mCustomizationRecipeToActivate.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Patterns/'))
+                        {
+                            let patternDesc = mCustomizationRecipeToActivate.pathName.replaceAll('Recipe_Pattern_', 'PatternDesc_');
+                                if(this.baseLayout.detailedModels !== null)
+                                {
+                                    for(let patternPathname in this.baseLayout.detailedModels)
+                                    {
+                                        if(patternPathname === patternDesc && this.baseLayout.detailedModels[patternPathname].patternImage !== undefined)
+                                        {
+                                            return '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background: #666;" data-hover="tooltip" title="' + this.baseLayout.detailedModels[patternPathname].patternName + '">'
+                                                + '<img src="' + this.baseLayout.detailedModels[patternPathname].patternImage + '" class="img-fluid" />'
+                                                + '</div>';
+                                        }
+                                    }
+                                }
+
+                            return this.baseLayout.getInventoryImage(null, cellWidth);
+                        }
+
+                        if(mCustomizationRecipeToActivate.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Materials/'))
+                        {
+                            let materialRecipe      = mCustomizationRecipeToActivate.pathName.replace('/Game/FactoryGame/Buildable/-Shared/Customization/Materials/', '');
+                            let availableMaterials  = {
+                                'Recipe_Material_Foundation_Default.Recipe_Material_Foundation_Default_C'                   : { image: '/img/gameUpdate8/IconDesc_FicsitFoundation4m_256.png', name: 'FICSIT Foundation' },
+                                'Recipe_Material_Foundation_Concrete.Recipe_Material_Foundation_Concrete_C'                 : { image: '/img/gameUpdate8/IconDesc_ConcFoundation4m_256.png', name: 'Concrete Foundation' },
+                                'Recipe_Material_Foundation_GripMetal.Recipe_Material_Foundation_GripMetal_C'               : { image: '/img/gameUpdate8/IconDesc_SteelFoundation4m_256.png', name: 'Grip Metal Foundation' },
+                                'Recipe_Material_Foundation_PolishedConcrete.Recipe_Material_Foundation_PolishedConcrete_C' : { image: '/img/gameUpdate8/IconDesc_PolishFoundation4m_256.png', name: 'Coated Concrete Foundation' },
+                                'Recipe_Material_Foundation_Asphalt.Recipe_Material_Foundation_Asphalt_C'                   : { image: '/img/gameUpdate8/IconDesc_AsphaltFoundation8x4_256.png', name: 'Asphalt Foundation' },
+
+                                'Recipe_Material_Wall_Orange.Recipe_Material_Wall_Orange_C'                                 : { image: '/img/gameUpdate8/IconDesc_FicsitWall8x4_256.png', name: 'FICSIT Wall' },
+                                'Recipe_Material_Wall_Concrete.Recipe_Material_Wall_Concrete_C'                             : { image: '/img/gameUpdate8/IconDesc_ConcWall8x4_256.png', name: 'Concrete Wall' },
+                                'Recipe_Material_Wall_Steel.Recipe_Material_Wall_Steel_C'                                   : { image: '/img/gameUpdate8/IconDesc_SteelWall8x4_256.png', name: 'Steel Wall' },
+
+                                'Recipe_Material_Roof_Ficsit.Recipe_Material_Roof_Ficsit_C'                                 : { image: '/img/gameUpdate8/IconDesc_FicsitRoof4m_256.png', name: 'FICSIT Roof' },
+                                'Recipe_Material_Roof_Tar.Recipe_Material_Roof_Tar_C'                                       : { image: '/img/gameUpdate8/IconDesc_TarRoof4m_256.png', name: 'Tar Roof' },
+                                'Recipe_Material_Roof_Metal.Recipe_Material_Roof_Metal_C'                                   : { image: '/img/gameUpdate8/IconDesc_SteelRoof4m_256.png', name: 'Metal Roof' },
+                                'Recipe_Material_Roof_Glass.Recipe_Material_Roof_Glass_C'                                   : { image: '/img/gameUpdate8/IconDesc_GlassRoof4m_256.png', name: 'Glass Roof' }
+                            };
+
+                            if(availableMaterials.hasOwnProperty(materialRecipe))
+                            {
+                                return '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background: #666;" data-hover="tooltip" title="' + availableMaterials[materialRecipe].name + '">'
+                                    + '<img src="' + availableMaterials[materialRecipe].image + '" class="img-fluid" />'
+                                    + '</div>';
+                            }
+
+                            console.log('MISSING HOTBAR MATERIAL', mCustomizationRecipeToActivate);
+                            return this.baseLayout.getInventoryImage(null, cellWidth);
+                        }
+
+                        if(mCustomizationRecipeToActivate.pathName.startsWith('/Game/FactoryGame/Buildable/-Shared/Customization/Skins/'))
+                        {
+                            let skinRecipe      = mCustomizationRecipeToActivate.pathName.replace('/Game/FactoryGame/Buildable/-Shared/Customization/Skins/', '');
+                            let availableSkins  = {
+                                'Recipe_SkinFicsmas_Default.Recipe_SkinFicsmas_Default_C'   : { image: '/img/gameUpdate8/IconDesc_FicsMasBasic_256.png', name: 'Basic FICSMAS Skins' },
+                                'Recipe_SkinFicsmas_Premium.Recipe_SkinFicsmas_Premium_C'   : { image: '/img/gameUpdate8/IconDesc_FicsMasPremium_256.png', name: 'Premium FICSMAS Skins' },
+                                'Recipe_SkinRemover.Recipe_SkinRemover_C'                   : { image: '/img/patternIcons/IconDesc_PatternRemover_256.png', name: 'Reset Skin' }
+                            };
+
+                            if(availableSkins.hasOwnProperty(skinRecipe))
+                            {
+                                return '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background: #666;" data-hover="tooltip" title="' + availableSkins[skinRecipe].name + '">'
+                                    + '<img src="' + availableSkins[skinRecipe].image + '" class="img-fluid" />'
+                                    + '</div>';
+                            }
+
+                            console.log('MISSING HOTBAR SKIN', mCustomizationRecipeToActivate);
+                            return this.baseLayout.getInventoryImage(null, cellWidth);
+                        }
+                    }
+
+                let mBlueprintName = this.baseLayout.getObjectProperty(currentShortcut, 'mBlueprintName');
+                    if(mBlueprintName !== null)
+                    {
+                        // Those are sadly not in the save game...
+                        let defaultColor    = [92, 176, 197];
+                        let defaultImage    = '/img/signIcons/TXUI_MIcon_QuestionMark.png';
+
+                        return '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 5px;padding: 0px;background: #FFFFFF;" data-hover="tooltip" title="' + mBlueprintName + '">'
+                            + '<div style="position: absolute;width: 100%;height: 100%;background: rgb(' + defaultColor[0] + ', ' + defaultColor[1] + ', ' + defaultColor[2] + ');background: radial-gradient(circle, rgba(' + defaultColor[0] + ', ' + defaultColor[1] + ', ' + defaultColor[2] + ', 0.6) 33%, rgba(' + defaultColor[0] + ', ' + defaultColor[1] + ', ' + defaultColor[2] + ', 1) 100%);"></div>'
+                            + '<img src="/img/TXUI_BlueprintIconBG_Mask.png" class="img-fluid" style="position: relative;" />'
+                            + '<img src="' + defaultImage + '" style="position: absolute;left: 10%;top: 10%;width: 80%;height: 80%;">'
+                            + '</div>';
+                    }
             }
 
         return this.baseLayout.getInventoryImage(null, cellWidth);
