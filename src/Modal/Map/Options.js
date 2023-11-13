@@ -16,17 +16,13 @@ export default class Modal_Map_Options
 
         let html                            = [];
         let header                          = this.baseLayout.saveGameParser.getHeader();
-        let gameState                       = this.baseLayout.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
+        let gameState                       = this.baseLayout.gameStateSubSystem.get();
 
         let unlockSubSystem                 = this.baseLayout.unlockSubSystem.get();
 
         let mIsBuildingEfficiencyUnlocked   = 0;
         let mIsBuildingOverclockUnlocked    = 0;
         let mIsMapUnlocked                  = 0;
-
-        let mCheatNoCost                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoCost', 0);
-        let mCheatNoPower                   = this.baseLayout.getObjectProperty(gameState, 'mCheatNoPower', 0);
-        let mCheatNoFuel                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoFuel', 0);
 
         if(unlockSubSystem !== null)
         {
@@ -57,7 +53,7 @@ export default class Modal_Map_Options
             html.push('<div class="col-sm-6"><input type="text" name="numberOfPassedDay" class="form-control text-right" id="inputNumberOfPassedDay" value="' + this.baseLayout.timeSubSystem.getNumberOfPassedDays() + '" readonly></div>');
         html.push('</div>');
 
-        html.push('<hr />');
+        html.push('<hr class="border-secondary" />');
 
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
@@ -82,40 +78,21 @@ export default class Modal_Map_Options
             html.push('</div>');
         html.push('</div>');
 
-        html.push('<hr />');
+        html.push('<hr class="border-secondary" />');
         html.push('<h4>' + this.baseLayout.translate._('Map visibility:') + '</h4>');
         html.push('<div class="row"><div class="col-6">');
             html.push('<button class="btn btn-secondary w-100" id="resetFogOfWar">' + this.baseLayout.translate._('Hide all map') + '</button>');
         html.push('</div><div class="col-6">');
             html.push('<button class="btn btn-secondary w-100" id="clearFogOfWar">' + this.baseLayout.translate._('Reveal all map') + '</button>');
         html.push('</div></div>');
-
-        html.push('<hr />');
-        html.push('<h4>' + this.baseLayout.translate._('Creative mode:') + '</h4>');
-        html.push('<div class="row"><div class="col-4">');
-        html.push('<div class="form-group">');
+        html.push('<div class="row"><div class="col-12">');
             html.push('<div class="custom-control custom-switch">');
-            html.push('<input type="checkbox" class="custom-control-input" name="inputCheatNoCost" id="inputCheatNoCost" ' + ((mCheatNoCost === 1) ? 'checked' : '') + ' />');
-            html.push('<label class="custom-control-label" for="inputCheatNoCost">' + this.baseLayout.translate._('No cost?') + '</label>');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputUseInternalCoordinates" id="inputUseInternalCoordinates" ' + ((this.baseLayout.satisfactoryMap.showInternalCoordinates === true) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputUseInternalCoordinates">' + this.baseLayout.translate._('Show coordinates in centimeters (Internal Engine measure)') + '</label>');
             html.push('</div>');
-        html.push('</div>');
-        html.push('</div><div class="col-4">');
-        html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch">');
-            html.push('<input type="checkbox" class="custom-control-input" name="inputCheatNoPower" id="inputCheatNoPower" ' + ((mCheatNoPower === 1) ? 'checked' : '') + ' />');
-            html.push('<label class="custom-control-label" for="inputCheatNoPower">' + this.baseLayout.translate._('No power?') + '</label>');
-            html.push('</div>');
-        html.push('</div>');
-        html.push('</div><div class="col-4">');
-        html.push('<div class="form-group">');
-            html.push('<div class="custom-control custom-switch">');
-            html.push('<input type="checkbox" class="custom-control-input" name="inputCheatNoFuel" id="inputCheatNoFuel" ' + ((mCheatNoFuel === 1) ? 'checked' : '') + ' />');
-            html.push('<label class="custom-control-label" for="inputCheatNoFuel">' + this.baseLayout.translate._('No fuel?') + '</label>');
-            html.push('</div>');
-        html.push('</div>');
         html.push('</div></div>');
 
-        html.push('<hr />');
+        html.push('<hr class="border-secondary" />');
         html.push('<h4>' + this.baseLayout.translate._('Interactive map (Need a full refresh):') + '</h4>');
 
         html.push('<div class="row"><div class="col-6">');
@@ -267,6 +244,9 @@ export default class Modal_Map_Options
                 this.baseLayout.useFogOfWar                 = (($('#inputUseFogOfWar').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapUseFogOfWar', this.baseLayout.useFogOfWar);
 
+                this.baseLayout.satisfactoryMap.showInternalCoordinates = (($('#inputUseInternalCoordinates').is(':checked') === true) ? true : false);
+                this.baseLayout.localStorage.setItem('mapInternalCoordinates', this.baseLayout.satisfactoryMap.showInternalCoordinates);
+
                 this.baseLayout.mapModelsQuality            = $('#inputMapModelsQuality').val();
                 this.baseLayout.localStorage.setItem('mapModelsQuality', this.baseLayout.mapModelsQuality);
             }
@@ -323,33 +303,6 @@ export default class Modal_Map_Options
                 {
                     header.mapOptions = header.mapOptions + '?Visibility=SV_Private';
                 }
-
-            if($('#inputCheatNoCost').is(':checked') === true)
-            {
-                this.baseLayout.setObjectProperty(gameState, 'mCheatNoCost', 1, 'Bool');
-            }
-            else
-            {
-                this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoCost');
-            }
-
-            if($('#inputCheatNoPower').is(':checked') === true)
-            {
-                this.baseLayout.setObjectProperty(gameState, 'mCheatNoPower', (($('#inputCheatNoPower').is(':checked') === true) ? 1 : 0), 'Bool');
-            }
-            else
-            {
-                this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoPower');
-            }
-
-            if($('#inputCheatNoFuel').is(':checked') === true)
-            {
-                this.baseLayout.setObjectProperty(gameState, 'mCheatNoFuel', (($('#inputCheatNoFuel').is(':checked') === true) ? 1 : 0), 'Bool');
-            }
-            else
-            {
-                this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoFuel');
-            }
 
             if(unlockSubSystem !== null)
             {

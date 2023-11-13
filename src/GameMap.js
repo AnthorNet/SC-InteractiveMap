@@ -200,9 +200,11 @@ export default class GameMap
         this.availableLayers            = {};
 
         this.collectableMarkers         = {};
-        this.collectedHardDrives        = null; //TODO: Rename as it is some locale storage stuff to keep track of things ^^
+        this.collectedHardDrives        = new HardDrives({ language: this.language });
+        this.localStorage               = this.collectedHardDrives.getLocaleStorage();
         this.mapOptions                 = null;
         this.activeLayers               = null;
+        this.showInternalCoordinates    = (this.localStorage !== null && this.localStorage.getItem('mapInternalCoordinates') !== null) ? (this.localStorage.getItem('mapInternalCoordinates') === 'false') : true;
 
         this.start();
     }
@@ -360,8 +362,7 @@ export default class GameMap
 
                                 if(option.layerId === 'hardDrives')
                                 {
-                                    this.collectedHardDrives    = new HardDrives({ hardDrivesData: option.markers, language: this.language });
-                                    this.localStorage           = this.collectedHardDrives.getLocaleStorage();
+                                    this.collectedHardDrives.setCollectedHardDrives(option.markers);
                                 }
 
                                 for(let l = 0; l < option.markers.length; l++)
@@ -428,7 +429,15 @@ export default class GameMap
                                     }
 
                                     tooltip.push('<br />');
-                                    tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.x)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(marker.y)));
+                                    if(this.showInternalCoordinates === true)
+                                    {
+                                        tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.x)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(marker.y)));
+                                    }
+                                    else
+                                    {
+                                        tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.x / 100)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(marker.y / 100)));
+                                    }
+
                                     tooltip.push('<br />');
                                     tooltip.push('Altitude: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.z / 100)) + 'm');
 
@@ -643,7 +652,14 @@ export default class GameMap
             let coordinates = this.project([e.latlng.lat, e.latlng.lng], this.zoomRatio);
                 coordinates = this.convertToGameCoordinates([coordinates.x, coordinates.y]);
 
-            $('.mouseMoveCoordinates').html(new Intl.NumberFormat(this.language).format(Math.round(coordinates[0])) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(coordinates[1])));
+            if(this.showInternalCoordinates === true)
+            {
+                $('.mouseMoveCoordinates').html(new Intl.NumberFormat(this.language).format(Math.round(coordinates[0])) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(coordinates[1])));
+            }
+            else
+            {
+                $('.mouseMoveCoordinates').html(new Intl.NumberFormat(this.language).format(Math.round(coordinates[0] / 100)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(coordinates[1] / 100)));
+            }
 
             let biomeX      = Math.round(((coordinates[0] - this.mappingBoundWest - (67800 * 2)) / 100) / 512);
             let biomeY      = Math.round(((-coordinates[1] - this.mappingBoundNorth - (67800 * 2)) / 100) / 512);

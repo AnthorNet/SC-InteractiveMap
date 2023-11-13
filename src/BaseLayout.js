@@ -13,6 +13,7 @@ import SubSystem_Blueprint                      from './SubSystem/Blueprint.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 import SubSystem_Fauna                          from './SubSystem/Fauna.js';
 import SubSystem_Foliage                        from './SubSystem/Foliage.js';
+import SubSystem_GameRules                      from './SubSystem/GameRules.js';
 import SubSystem_GameState                      from './SubSystem/GameState.js';
 import SubSystem_Map                            from './SubSystem/Map.js';
 import SubSystem_PipeNetwork                    from './SubSystem/PipeNetwork.js';
@@ -23,6 +24,7 @@ import SubSystem_Unlock                         from './SubSystem/Unlock.js';
 import SubSystem_WorldGrid                      from './SubSystem/WorldGrid.js';
 
 import Modal_Map_Collectables                   from './Modal/Map/Collectables.js';
+import Modal_Map_GameRules                      from './Modal/Map/GameRules.js';
 import Modal_Map_Hotbars                        from './Modal/Map/Hotbars.js';
 import Modal_Map_Players                        from './Modal/Map/Players.js';
 import Modal_Map_Todo                           from './Modal/Map/Todo.js';
@@ -353,6 +355,7 @@ export default class BaseLayout
             this.blueprintSubSystem     = new SubSystem_Blueprint({baseLayout: this});
             this.circuitSubSystem       = new SubSystem_Circuit({baseLayout: this});
             this.foliageSubSystem       = new SubSystem_Foliage({baseLayout: this});
+            this.gameRulesSubSystem     = new SubSystem_GameRules({baseLayout: this});
             this.gameStateSubSystem     = new SubSystem_GameState({baseLayout: this});
             this.mapSubSystem           = new SubSystem_Map({baseLayout: this});
             this.pipeNetworkSubSystem   = new SubSystem_PipeNetwork({baseLayout: this});
@@ -1292,24 +1295,28 @@ export default class BaseLayout
                     switch(target)
                     {
                         case '#statisticsPlayerInventory':
-                            let mapPlayers = new Modal_Map_Players({baseLayout: this});
+                            let mapPlayers      = new Modal_Map_Players({baseLayout: this});
                                 mapPlayers.parse();
                             break;
                         case '#statisticsPlayerHotBars':
-                            let mapHotbars = new Modal_Map_Hotbars({baseLayout: this});
+                            let mapHotbars      = new Modal_Map_Hotbars({baseLayout: this});
                                 mapHotbars.parse();
                             break;
                         case '#statisticsModalCollectables':
-                            let statisticsCollectables = new Modal_Map_Collectables({baseLayout: this});
-                                statisticsCollectables.parse();
+                            let mapCollectables = new Modal_Map_Collectables({baseLayout: this});
+                                mapCollectables.parse();
                             break;
                         case '#statisticsPlayerTodo':
-                            let mapTodos = new Modal_Map_Todo({baseLayout: this});
+                            let mapTodos        = new Modal_Map_Todo({baseLayout: this});
                                 mapTodos.parse();
                             break;
                         case '#statisticsModalOptions':
-                            let mapOptions = new Modal_Map_Options({baseLayout: this});
+                            let mapOptions      = new Modal_Map_Options({baseLayout: this});
                                 mapOptions.parse();
+                            break;
+                        case '#statisticsModalRules':
+                            let mapRules        = new Modal_Map_GameRules({baseLayout: this});
+                                mapRules.parse();
                             break;
                     }
             });
@@ -4533,29 +4540,69 @@ export default class BaseLayout
                 }
         }
 
+        if(currentObject!== null && currentObject.values !== undefined)
+        {
+            let currentObjectPropertiesLength = currentObject.values.length;
+                for(let i = 0; i < currentObjectPropertiesLength; i++)
+                {
+                    if(currentObject.values[i].name === propertyName)
+                    {
+                        return currentObject.values[i].value;
+                    }
+                }
+        }
+
         return defaultPropertyValue;
     }
 
     setObjectProperty(currentObject, propertyName, propertyValue, propertyType = null)
     {
-        let currentObjectPropertiesLength = currentObject.properties.length;
-            for(let j = 0; j < currentObjectPropertiesLength; j++)
-            {
-                if(currentObject.properties[j].name === propertyName)
+        if(currentObject!== null && currentObject.properties !== undefined)
+        {
+            let currentObjectPropertiesLength = currentObject.properties.length;
+                for(let j = 0; j < currentObjectPropertiesLength; j++)
                 {
-                    currentObject.properties[j].value = propertyValue;
-                    return;
+                    if(currentObject.properties[j].name === propertyName)
+                    {
+                        currentObject.properties[j].value = propertyValue;
+                        return;
+                    }
                 }
+
+            // Property not found, add it!
+            if(propertyType !== null)
+            {
+                currentObject.properties.push({
+                    name: propertyName,
+                    type: propertyType,
+                    value: propertyValue
+                });
             }
 
-        // Property not found, add it!
-        if(propertyType !== null)
+            return;
+        }
+
+        if(currentObject!== null && currentObject.values !== undefined)
         {
-            currentObject.properties.push({
-                name: propertyName,
-                type: propertyType,
-                value: propertyValue
-            });
+            let currentObjectPropertiesLength = currentObject.values.length;
+                for(let j = 0; j < currentObjectPropertiesLength; j++)
+                {
+                    if(currentObject.values[j].name === propertyName)
+                    {
+                        currentObject.values[j].value = propertyValue;
+                        return;
+                    }
+                }
+
+            // Property not found, add it!
+            if(propertyType !== null)
+            {
+                currentObject.values.push({
+                    name: propertyName,
+                    type: propertyType,
+                    value: propertyValue
+                });
+            }
         }
 
         return;
@@ -4563,15 +4610,32 @@ export default class BaseLayout
 
     deleteObjectProperty(currentObject, propertyName)
     {
-        let currentObjectPropertiesLength = currentObject.properties.length;
-
-        for(let j = 0; j < currentObjectPropertiesLength; j++)
+        if(currentObject!== null && currentObject.properties !== undefined)
         {
-            if(currentObject.properties[j].name === propertyName)
-            {
-                currentObject.properties.splice(j, 1);
-                return;
-            }
+            let currentObjectPropertiesLength = currentObject.properties.length;
+                for(let j = 0; j < currentObjectPropertiesLength; j++)
+                {
+                    if(currentObject.properties[j].name === propertyName)
+                    {
+                        currentObject.properties.splice(j, 1);
+                        return;
+                    }
+                }
+
+            return;
+        }
+
+        if(currentObject!== null && currentObject.values !== undefined)
+        {
+            let currentObjectPropertiesLength = currentObject.values.length;
+                for(let j = 0; j < currentObjectPropertiesLength; j++)
+                {
+                    if(currentObject.values[j].name === propertyName)
+                    {
+                        currentObject.values.splice(j, 1);
+                        return;
+                    }
+                }
         }
 
         return;
