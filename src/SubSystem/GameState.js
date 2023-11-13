@@ -1,20 +1,22 @@
+import SubSystem                                from '../SubSystem.js';
+
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
 import Building_Light                           from '../Building/Light.js';
 
-export default class SubSystem_GameState
+export default class SubSystem_GameState extends SubSystem
 {
     static get totalLightColorSlots(){ return 7; }
 
     constructor(options)
     {
-        this.baseLayout             = options.baseLayout;
-        this.gameState              = this.baseLayout.saveGameParser.getTargetObject('/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C');
+        options.pathName        = '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C';
+        super(options);
     }
 
     getPublicTodoList()
     {
-        return this.baseLayout.getObjectProperty(this.gameState, 'mPublicTodoList');
+        return this.baseLayout.getObjectProperty(this.subSystem, 'mPublicTodoList');
     }
 
     /**
@@ -23,7 +25,7 @@ export default class SubSystem_GameState
     getPlayerColorPresets()
     {
         let presets                     = [];
-        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.subSystem, 'mPlayerGlobalColorPresets');
             if(mPlayerGlobalColorPresets !== null)
             {
                 for(let i = 0; i < mPlayerGlobalColorPresets.values.length; i++)
@@ -62,7 +64,7 @@ export default class SubSystem_GameState
     }
     setPlayerColorPreset(presetIndex, name, primaryColor)
     {
-        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.subSystem, 'mPlayerGlobalColorPresets');
             if(mPlayerGlobalColorPresets !== null)
             {
                 if(mPlayerGlobalColorPresets.values[presetIndex] !== undefined)
@@ -86,10 +88,10 @@ export default class SubSystem_GameState
     }
     addPlayerColorPreset(name, primaryColor)
     {
-        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.subSystem, 'mPlayerGlobalColorPresets');
             if(mPlayerGlobalColorPresets === null)
             {
-                this.gameState.properties.push({
+                this.subSystem.properties.push({
                     name                : 'mPlayerGlobalColorPresets',
                     structureSubType    : 'GlobalColorPreset',
                     type                : 'Array',
@@ -120,7 +122,7 @@ export default class SubSystem_GameState
     }
     deletePlayerColorPreset(presetIndex)
     {
-        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+        let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.subSystem, 'mPlayerGlobalColorPresets');
             if(mPlayerGlobalColorPresets !== null)
             {
                 if(mPlayerGlobalColorPresets.values[presetIndex] !== undefined)
@@ -129,7 +131,7 @@ export default class SubSystem_GameState
                 }
                 if(mPlayerGlobalColorPresets.values.length === 0)
                 {
-                    this.baseLayout.deleteObjectProperty(this.gameState, 'mPlayerGlobalColorPresets');
+                    this.baseLayout.deleteObjectProperty(this.subSystem, 'mPlayerGlobalColorPresets');
                 }
             }
     }
@@ -172,7 +174,7 @@ export default class SubSystem_GameState
                         mBuildableLightColorSlots.value.values[slotIndex]     = JSON.parse(JSON.stringify(this.getDefaultLightColorSlot(slotIndex, true)));
                     }
 
-                    this.gameState.properties.push(mBuildableLightColorSlots);
+                    this.subSystem.properties.push(mBuildableLightColorSlots);
                     return this.getPlayerLightColorSlots();
                 }
 
@@ -214,7 +216,7 @@ export default class SubSystem_GameState
 
     getLightColorSlots()
     {
-        return this.baseLayout.getObjectProperty(this.gameState, 'mBuildableLightColorSlots');
+        return this.baseLayout.getObjectProperty(this.subSystem, 'mBuildableLightColorSlots');
     }
 
     getDefaultLightColorSlot(index, raw = false)
