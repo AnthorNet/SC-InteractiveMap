@@ -21,23 +21,29 @@ export default class Modal_Map_GameRules
             console.log(gameState);
             console.log(gameRules);
 
-        if(gameRules !== null)
+        if(gameRules !== null || this.baseLayout.saveGameParser.header.saveHeaderType >= 8)
         {
-            let mIsCreativeModeEnabled = this.baseLayout.getObjectProperty(gameState, 'mIsCreativeModeEnabled');
-                html.push('<div class="row"><div class="col-6">');
-                    html.push('<div class="custom-control custom-switch">');
-                    html.push('<input type="checkbox" class="custom-control-input" name="inputIsCreativeModeEnabled" id="inputIsCreativeModeEnabled" ' + ((mIsCreativeModeEnabled !== null) ? 'checked' : '') + ' />');
-                    html.push('<label class="custom-control-label" for="inputIsCreativeModeEnabled">' + this.baseLayout.translate._('Activate Advanced Game Settings') + '</label>');
-                    html.push('</div>');
-                    html.push('</div><div class="col-6">');
-                    html.push('<div class="form-group">');
+            html.push('<div class="row"><div class="col-6">');
+
+            if(gameRules !== null)
+            {
+                let mIsCreativeModeEnabled = this.baseLayout.getObjectProperty(gameState, 'mIsCreativeModeEnabled');
+
                         html.push('<div class="custom-control custom-switch">');
-                        html.push('<input type="checkbox" class="custom-control-input" name="inputIsModdedSave" id="inputIsModdedSave" ' + ((this.baseLayout.saveGameParser.header.isModdedSave !== undefined && this.baseLayout.saveGameParser.header.isModdedSave === 1) ? 'checked' : '') + ' />');
-                        html.push('<label class="custom-control-label" for="inputIsModdedSave">' + this.baseLayout.translate._('Is modded save? (Avoid main menu warning)') + '</label>');
+                        html.push('<input type="checkbox" class="custom-control-input" name="inputIsCreativeModeEnabled" id="inputIsCreativeModeEnabled" ' + ((mIsCreativeModeEnabled !== null) ? 'checked' : '') + ' />');
+                        html.push('<label class="custom-control-label" for="inputIsCreativeModeEnabled">' + this.baseLayout.translate._('Activate Advanced Game Settings') + '</label>');
                         html.push('</div>');
+            }
+
+            html.push('</div><div class="col-6">');
+                html.push('<div class="form-group">');
+                    html.push('<div class="custom-control custom-switch">');
+                    html.push('<input type="checkbox" class="custom-control-input" name="inputIsModdedSave" id="inputIsModdedSave" ' + ((this.baseLayout.saveGameParser.header.isModdedSave !== undefined && this.baseLayout.saveGameParser.header.isModdedSave === 1) ? 'checked' : '') + ' />');
+                    html.push('<label class="custom-control-label" for="inputIsModdedSave">' + this.baseLayout.translate._('Is modded save? (Avoid main menu warning)') + '</label>');
                     html.push('</div>');
-                html.push('</div></div>');
-                html.push('<hr class="border-secondary" />');
+                html.push('</div>');
+            html.push('</div></div>');
+            html.push('<hr class="border-secondary" />');
         }
 
         html.push('<h4>' + this.baseLayout.translate._('Gameplay (For all players):') + '</h4>');
@@ -193,6 +199,18 @@ export default class Modal_Map_GameRules
                 this.baseLayout.deleteObjectProperty(gameState, 'mCheatNoFuel');
             }
 
+            if(this.baseLayout.saveGameParser.header.saveHeaderType >= 8)
+            {
+                if($('#inputIsCreativeModeEnabled').is(':checked') === true)
+                {
+                    this.baseLayout.saveGameParser.header.isModdedSave = 1;
+                }
+                else
+                {
+                    this.baseLayout.saveGameParser.header.isModdedSave = 0;
+                }
+            }
+
             if(gameRules !== null)
             {
                 if($('#inputIsCreativeModeEnabled').is(':checked') === true)
@@ -212,15 +230,6 @@ export default class Modal_Map_GameRules
                     $( "#inputNoUnlockCost" ).prop( "checked", false );
                     $( "#inputUnlockInstantAltRecipes" ).prop( "checked", false );
                     $( "#inputDisableArachnidCreatures" ).prop( "checked", false );
-                }
-
-                if($('#inputIsCreativeModeEnabled').is(':checked') === true)
-                {
-                    this.baseLayout.saveGameParser.header.isModdedSave = 1;
-                }
-                else
-                {
-                    this.baseLayout.saveGameParser.header.isModdedSave = 0;
                 }
 
                 if($('#inputNoUnlockCost').is(':checked') === true)
