@@ -1709,6 +1709,12 @@ export default class SaveParser_Read
 
                 break;
 
+            case 'IntPoint': // MOD: FicsIt-Cam
+                currentProperty.value.x             = this.readInt();
+                currentProperty.value.y             = this.readInt();
+
+                break;
+
             default: // Try normalised structure, then throw Error if not working...
                 try
                 {

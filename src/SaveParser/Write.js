@@ -1692,6 +1692,12 @@ export default class SaveParser_Write
 
                 break;
 
+            case 'IntPoint':  // MOD: FicsIt-Cam
+                property += this.writeInt(currentProperty.value.x);
+                property += this.writeInt(currentProperty.value.y);
+
+                break;
+
             default:
                 let currentBufferStartingLength     = this.currentBufferLength;
                 let structPropertyBufferLength      = this.currentEntityLength;
