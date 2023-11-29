@@ -2,6 +2,7 @@
 import pako                                     from '../Lib/pako.esm.js';
 
 import Building_Conveyor                        from '../Building/Conveyor.js';
+import Building_PowerLine                       from '../Building/PowerLine.js';
 
 export default class SaveParser_Read
 {
@@ -490,308 +491,304 @@ export default class SaveParser_Read
         }
         else
         {
-            // Extra processing
-            switch(this.objects[objectKey].className)
+            // Read Conveyor missing bytes
+            if(Building_PowerLine.isPowerline(this.objects[objectKey]))
             {
-                case '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C':
-                case '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C':
-                    this.objects[objectKey].extra   = {count: this.readInt(), game: []};
-                    let gameLength                  = this.readInt();
+                this.objects[objectKey].extra       = {
+                    count   : this.readInt(),
+                    source  : this.readObjectProperty({}),
+                    target  : this.readObjectProperty({})
+                };
 
-                    for(let i = 0; i < gameLength; i++)
-                    {
-                        this.objects[objectKey].extra.game.push(this.readObjectProperty({}));
+                // 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
+                if(this.header.saveVersion >= 33 && this.header.saveVersion < 41)
+                {
+                    this.objects[objectKey].extra.sourceTranslation = [this.readFloat(), this.readFloat(), this.readFloat()];
+                    this.objects[objectKey].extra.targetTranslation = [this.readFloat(), this.readFloat(), this.readFloat()];
+                }
+            }
+            else
+            {
+                // Extra processing
+                switch(this.objects[objectKey].className)
+                {
+                    case '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C':
+                    case '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C':
+                        this.objects[objectKey].extra   = {count: this.readInt(), game: []};
+                        let gameLength                  = this.readInt();
 
-                        if(i === 0 && this.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                        for(let i = 0; i < gameLength; i++)
                         {
-                            this.worker.postMessage({command: 'transferData', data: {playerHostPathName: this.objects[objectKey].extra.game[0].pathName}});
+                            this.objects[objectKey].extra.game.push(this.readObjectProperty({}));
+
+                            if(i === 0 && this.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
+                            {
+                                this.worker.postMessage({command: 'transferData', data: {playerHostPathName: this.objects[objectKey].extra.game[0].pathName}});
+                            }
                         }
-                    }
 
-                    /*
-                    if(this.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
-                    {
-                        console.log(this.objects[objectKey])
-                        console.log('EXTRA', this.objects[objectKey].extra)
-                    }
-                    /**/
-
-                    break;
-
-                case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                    let missingPlayerState                      = (startByte + entityLength) - this.currentByte;
-                        this.objects[objectKey].missing         = this.readHex(missingPlayerState);
-                        this.currentByte                       -= missingPlayerState; // Reset back to grab the user ID if possible!
-
-                        if(missingPlayerState > 0)
+                        /*
+                        if(this.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
                         {
-                            this.readInt(); // Skip count
-                            let playerType = this.readByte();
-                                switch(playerType)
+                            console.log(this.objects[objectKey])
+                            console.log('EXTRA', this.objects[objectKey].extra)
+                        }
+                        /**/
+
+                        break;
+
+                    case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
+                        let missingPlayerState                      = (startByte + entityLength) - this.currentByte;
+                            this.objects[objectKey].missing         = this.readHex(missingPlayerState);
+                            this.currentByte                       -= missingPlayerState; // Reset back to grab the user ID if possible!
+
+                            if(missingPlayerState > 0)
+                            {
+                                this.readInt(); // Skip count
+                                let playerType = this.readByte();
+                                    switch(playerType)
+                                    {
+                                        case 241: // EOS UE5.2
+                                            this.readByte();
+                                            let epicHexLength241    = this.readInt();
+                                            let epicHex241          = '';
+                                                for(let i = 0; i < epicHexLength241; i++)
+                                                {
+                                                    epicHex241 += this.readByte().toString(16).padStart(2, '0');
+                                                }
+
+                                            this.objects[objectKey].eosId       = epicHex241.replace(/^0+/, '').substring(1, 33);
+
+
+                                            break;
+
+                                        case 248: // EOS
+                                                this.readString();
+                                            let eosStr2                         = this.readString().split('|');
+                                                this.objects[objectKey].eosId   = eosStr2[0];
+
+                                            break;
+
+                                        case 249: // EOS
+                                                this.readString(); // EOS, then follow 17
+                                        case 17: // Old EOS
+                                            let epicHexLength   = this.readByte();
+                                            let epicHex         = '';
+                                                for(let i = 0; i < epicHexLength; i++)
+                                                {
+                                                    epicHex += this.readByte().toString(16).padStart(2, '0');
+                                                }
+
+                                            this.objects[objectKey].eosId       = epicHex.replace(/^0+/, '');
+
+                                            break;
+
+                                        case 25: // Steam
+                                        case 29: // Steam
+                                            let steamHexLength  = this.readByte();
+                                            let steamHex        = '';
+                                                for(let i = 0; i < steamHexLength; i++)
+                                                {
+                                                    steamHex += this.readByte().toString(16).padStart(2, '0');
+                                                }
+
+                                            this.objects[objectKey].steamId     = steamHex.replace(/^0+/, '');
+
+                                            break;
+
+                                        case 8: // ???
+                                            this.objects[objectKey].platformId  = this.readString();
+
+                                            break;
+
+                                        case 3: // Offline
+
+                                            break;
+
+                                        default:
+                                            this.worker.postMessage({command: 'alertParsing'});
+                                            if(typeof Sentry !== 'undefined')
+                                            {
+                                                Sentry.setContext('BP_PlayerState_C', this.objects[objectKey]);
+                                                Sentry.setContext('playerType', playerType);
+                                            }
+
+                                            console.log(playerType, this.objects[objectKey]);
+                                            //throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
+
+                                            // By pass, and hope that the user will still continue to send us the save!
+                                            this.currentByte += missingPlayerState - 5;
+                                    }
+                            }
+                        break;
+
+                    case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
+                        if(this.header.saveVersion >= 41) // 2023-01-09: Tobias: Refactored drone actions to no longer be uobjects in order to fix a crash.
+                        {
+                            this.objects[objectKey].extra   = {
+                                unk1                : this.readInt(),
+                                unk2                : this.readInt(),
+
+                                mActiveAction       : [],
+                                mActionQueue        : []
+                            };
+
+                           let mActiveActionLength = this.readInt();
+                                for(let i = 0; i < mActiveActionLength; i++)
                                 {
-                                    case 241: // EOS UE5.2
-                                        this.readByte();
-                                        let epicHexLength241    = this.readInt();
-                                        let epicHex241          = '';
-                                            for(let i = 0; i < epicHexLength241; i++)
-                                            {
-                                                epicHex241 += this.readByte().toString(16).padStart(2, '0');
-                                            }
 
-                                        this.objects[objectKey].eosId       = epicHex241.replace(/^0+/, '').substring(1, 33);
+                                    let mActiveAction   = {
+                                            name        : this.readString(),
+                                            properties  : []
+                                        };
 
-
-                                        break;
-
-                                    case 248: // EOS
-                                            this.readString();
-                                        let eosStr2                         = this.readString().split('|');
-                                            this.objects[objectKey].eosId   = eosStr2[0];
-
-                                        break;
-
-                                    case 249: // EOS
-                                            this.readString(); // EOS, then follow 17
-                                    case 17: // Old EOS
-                                        let epicHexLength   = this.readByte();
-                                        let epicHex         = '';
-                                            for(let i = 0; i < epicHexLength; i++)
-                                            {
-                                                epicHex += this.readByte().toString(16).padStart(2, '0');
-                                            }
-
-                                        this.objects[objectKey].eosId       = epicHex.replace(/^0+/, '');
-
-                                        break;
-
-                                    case 25: // Steam
-                                    case 29: // Steam
-                                        let steamHexLength  = this.readByte();
-                                        let steamHex        = '';
-                                            for(let i = 0; i < steamHexLength; i++)
-                                            {
-                                                steamHex += this.readByte().toString(16).padStart(2, '0');
-                                            }
-
-                                        this.objects[objectKey].steamId     = steamHex.replace(/^0+/, '');
-
-                                        break;
-
-                                    case 8: // ???
-                                        this.objects[objectKey].platformId  = this.readString();
-
-                                        break;
-
-                                    case 3: // Offline
-
-                                        break;
-
-                                    default:
-                                        this.worker.postMessage({command: 'alertParsing'});
-                                        if(typeof Sentry !== 'undefined')
+                                            while(true)
                                         {
-                                            Sentry.setContext('BP_PlayerState_C', this.objects[objectKey]);
-                                            Sentry.setContext('playerType', playerType);
+                                            let mActiveActionProperty = this.readProperty();
+                                                if(mActiveActionProperty === null)
+                                                {
+                                                    break;
+                                                }
+                                                mActiveAction.properties.push(mActiveActionProperty);
                                         }
 
-                                        console.log(playerType, this.objects[objectKey]);
-                                        //throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
-
-                                        // By pass, and hope that the user will still continue to send us the save!
-                                        this.currentByte += missingPlayerState - 5;
+                                    this.objects[objectKey].extra.mActiveAction.push(mActiveAction);
                                 }
-                        }
-                    break;
 
-                case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
-                    if(this.header.saveVersion >= 41) // 2023-01-09: Tobias: Refactored drone actions to no longer be uobjects in order to fix a crash.
-                    {
-                        this.objects[objectKey].extra   = {
-                            unk1                : this.readInt(),
-                            unk2                : this.readInt(),
+                            let mActionQueueLength = this.readInt();
+                                for(let i = 0; i < mActionQueueLength; i++)
+                                {
+                                    let mActionQueue   = {
+                                            name        : this.readString(),
+                                            properties  : []
+                                        };
 
-                            mActiveAction       : [],
-                            mActionQueue        : []
-                        };
+                                            while(true)
+                                        {
+                                            let mActionQueueProperty = this.readProperty();
+                                                if(mActionQueueProperty === null)
+                                                {
+                                                    break;
+                                                }
+                                                mActionQueue.properties.push(mActionQueueProperty);
+                                        }
 
-                       let mActiveActionLength = this.readInt();
-                            for(let i = 0; i < mActiveActionLength; i++)
-                            {
-
-                                let mActiveAction   = {
-                                        name        : this.readString(),
-                                        properties  : []
-                                    };
-
-                                        while(true)
-                                    {
-                                        let mActiveActionProperty = this.readProperty();
-                                            if(mActiveActionProperty === null)
-                                            {
-                                                break;
-                                            }
-                                            mActiveAction.properties.push(mActiveActionProperty);
-                                    }
-
-                                this.objects[objectKey].extra.mActiveAction.push(mActiveAction);
-                            }
-
-                        let mActionQueueLength = this.readInt();
-                            for(let i = 0; i < mActionQueueLength; i++)
-                            {
-                                let mActionQueue   = {
-                                        name        : this.readString(),
-                                        properties  : []
-                                    };
-
-                                        while(true)
-                                    {
-                                        let mActionQueueProperty = this.readProperty();
-                                            if(mActionQueueProperty === null)
-                                            {
-                                                break;
-                                            }
-                                            mActionQueue.properties.push(mActionQueueProperty);
-                                    }
-
-                                this.objects[objectKey].extra.mActionQueue.push(mActionQueue);
-                            }
-                    }
-                    else
-                    {
-                        let missingDrone                    = (startByte + entityLength) - this.currentByte;
-                            this.objects[objectKey].missing = this.readHex(missingDrone);
-                    }
-
-                    break;
-
-                case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
-                        this.objects[objectKey].extra   = {count: this.readInt(), circuits: []};
-                    let circuitsLength                  = this.readInt();
-
-                        for(let i = 0; i < circuitsLength; i++)
-                        {
-                            this.objects[objectKey].extra.circuits.push({
-                                circuitId   : this.readInt(),
-                                levelName   : this.readString(),
-                                pathName    : this.readString()
-                            });
-                        }
-
-                    break;
-
-                case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
-                case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
-                case '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C':
-                case '/AB_CableMod/Visuals1/Build_AB-PLCopper.Build_AB-PLCopper_C':
-                case '/AB_CableMod/Visuals1/Build_AB-PLCaterium.Build_AB-PLCaterium_C':
-                case '/AB_CableMod/Visuals3/Build_AB-PLHeavy.Build_AB-PLHeavy_C':
-                case '/AB_CableMod/Visuals4/Build_AB-SPLight.Build_AB-SPLight_C':
-                case '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C':
-                    this.objects[objectKey].extra       = {
-                        count   : this.readInt(),
-                        source  : this.readObjectProperty({}),
-                        target  : this.readObjectProperty({})
-                    };
-
-                    // 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
-                    if(this.header.saveVersion >= 33 && this.header.saveVersion < 41)
-                    {
-                        this.objects[objectKey].extra.sourceTranslation = [this.readFloat(), this.readFloat(), this.readFloat()];
-                        this.objects[objectKey].extra.targetTranslation = [this.readFloat(), this.readFloat(), this.readFloat()];
-                    }
-
-                    break;
-
-                case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
-                case '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C':
-                case '/x3_mavegrag/Vehicles/Trains/CargoWagon_Mk1/BP_X3CargoWagon_Mk1.BP_X3CargoWagon_Mk1_C':
-                    if(this.header.saveVersion >= 41)
-                    {
-                            this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
-                        let trainLength                     = this.readInt();
-                            for(let i = 0; i < trainLength; i++)
-                            {
-                                this.objects[objectKey].extra.objects.push({
-                                    name   : this.readString(),
-                                    unk    : this.readHex(105)
-                                });
-                            }
-
-                        this.objects[objectKey].extra.previous  = this.readObjectProperty({});
-                        this.objects[objectKey].extra.next      = this.readObjectProperty({});
-                    }
-                    else
-                    {
-                            this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
-                        let trainLength                     = this.readInt();
-                            for(let i = 0; i < trainLength; i++)
-                            {
-                                this.objects[objectKey].extra.objects.push({
-                                    name   : this.readString(),
-                                    unk    : this.readHex(53)
-                                });
-                            }
-
-                        this.objects[objectKey].extra.previous  = this.readObjectProperty({});
-                        this.objects[objectKey].extra.next      = this.readObjectProperty({});
-                    }
-
-                    break;
-
-                case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
-                case '/x3_mavegrag/Vehicles/Trucks/TruckMk1/BP_X3Truck_Mk1.BP_X3Truck_Mk1_C':
-                    if(this.header.saveVersion >= 41)
-                    {
-                            this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
-                        let vehicleLength                   = this.readInt();
-                            for(let i = 0; i < vehicleLength; i++)
-                            {
-                                this.objects[objectKey].extra.objects.push({
-                                    name   : this.readString(),
-                                    unk    : this.readHex(105)
-                                });
-                            }
-                    }
-                    else
-                    {
-                            this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
-                        let vehicleLength                   = this.readInt();
-                            for(let i = 0; i < vehicleLength; i++)
-                            {
-                                this.objects[objectKey].extra.objects.push({
-                                    name   : this.readString(),
-                                    unk    : this.readHex(53)
-                                });
-                            }
-                    }
-
-                    break;
-
-                default:
-                    let missingBytes = (startByte + entityLength) - this.currentByte;
-                        if(missingBytes > 4)
-                        {
-                            if(this.header.saveVersion >= 41 && this.objects[objectKey].className.startsWith('/Script/FactoryGame.FG'))
-                            {
-                                this.skipBytes(8);
-                            }
-                            else
-                            {
-                                this.objects[objectKey].missing = this.readHex(missingBytes); // TODO
-                                console.log('MISSING ' + missingBytes + '  BYTES', this.objects[objectKey]);
-                            }
+                                    this.objects[objectKey].extra.mActionQueue.push(mActionQueue);
+                                }
                         }
                         else
                         {
-                            this.skipBytes(4);
+                            let missingDrone                    = (startByte + entityLength) - this.currentByte;
+                                this.objects[objectKey].missing = this.readHex(missingDrone);
                         }
+
+                        break;
+
+                    case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
+                            this.objects[objectKey].extra   = {count: this.readInt(), circuits: []};
+                        let circuitsLength                  = this.readInt();
+
+                            for(let i = 0; i < circuitsLength; i++)
+                            {
+                                this.objects[objectKey].extra.circuits.push({
+                                    circuitId   : this.readInt(),
+                                    levelName   : this.readString(),
+                                    pathName    : this.readString()
+                                });
+                            }
+
+                        break;
+
+                    case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
+                    case '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C':
+                    case '/x3_mavegrag/Vehicles/Trains/CargoWagon_Mk1/BP_X3CargoWagon_Mk1.BP_X3CargoWagon_Mk1_C':
+                        if(this.header.saveVersion >= 41)
+                        {
+                                this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
+                            let trainLength                     = this.readInt();
+                                for(let i = 0; i < trainLength; i++)
+                                {
+                                    this.objects[objectKey].extra.objects.push({
+                                        name   : this.readString(),
+                                        unk    : this.readHex(105)
+                                    });
+                                }
+
+                            this.objects[objectKey].extra.previous  = this.readObjectProperty({});
+                            this.objects[objectKey].extra.next      = this.readObjectProperty({});
+                        }
+                        else
+                        {
+                                this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
+                            let trainLength                     = this.readInt();
+                                for(let i = 0; i < trainLength; i++)
+                                {
+                                    this.objects[objectKey].extra.objects.push({
+                                        name   : this.readString(),
+                                        unk    : this.readHex(53)
+                                    });
+                                }
+
+                            this.objects[objectKey].extra.previous  = this.readObjectProperty({});
+                            this.objects[objectKey].extra.next      = this.readObjectProperty({});
+                        }
+
+                        break;
+
+                    case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
+                    case '/x3_mavegrag/Vehicles/Trucks/TruckMk1/BP_X3Truck_Mk1.BP_X3Truck_Mk1_C':
+                        if(this.header.saveVersion >= 41)
+                        {
+                                this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
+                            let vehicleLength                   = this.readInt();
+                                for(let i = 0; i < vehicleLength; i++)
+                                {
+                                    this.objects[objectKey].extra.objects.push({
+                                        name   : this.readString(),
+                                        unk    : this.readHex(105)
+                                    });
+                                }
+                        }
+                        else
+                        {
+                                this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
+                            let vehicleLength                   = this.readInt();
+                                for(let i = 0; i < vehicleLength; i++)
+                                {
+                                    this.objects[objectKey].extra.objects.push({
+                                        name   : this.readString(),
+                                        unk    : this.readHex(53)
+                                    });
+                                }
+                        }
+
+                        break;
+
+                    default:
+                        let missingBytes = (startByte + entityLength) - this.currentByte;
+                            if(missingBytes > 4)
+                            {
+                                if(this.header.saveVersion >= 41 && this.objects[objectKey].className.startsWith('/Script/FactoryGame.FG'))
+                                {
+                                    this.skipBytes(8);
+                                }
+                                else
+                                {
+                                    this.objects[objectKey].missing = this.readHex(missingBytes); // TODO
+                                    console.log('MISSING ' + missingBytes + '  BYTES', this.objects[objectKey]);
+                                }
+                            }
+                            else
+                            {
+                                this.skipBytes(4);
+                            }
+                }
             }
         }
     }

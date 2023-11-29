@@ -748,126 +748,146 @@ export default class SaveParser_Write
         }
         else
         {
-            switch(currentObject.className)
+            if(Building_PowerLine.isPowerline(currentObject))
             {
-                case '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C':
-                case '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C':
-                    entity += this.writeInt(currentObject.extra.count);
-                    entity += this.writeInt(currentObject.extra.game.length);
+                entity += this.writeInt(currentObject.extra.count);
+                entity += this.writeObjectProperty(currentObject.extra.source);
+                entity += this.writeObjectProperty(currentObject.extra.target);
 
-                    for(let i = 0; i < currentObject.extra.game.length; i++)
+                // 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
+                if(this.header.saveVersion >= 33 && this.header.saveVersion < 41)
+                {
+                    if(currentObject.extra.sourceTranslation !== undefined)
                     {
-                        entity += this.writeObjectProperty(currentObject.extra.game[i]);
+                        entity += this.writeFloat(currentObject.extra.sourceTranslation[0]);
+                        entity += this.writeFloat(currentObject.extra.sourceTranslation[1]);
+                        entity += this.writeFloat(currentObject.extra.sourceTranslation[2]);
+                    }
+                    else // Avoid old megaprints from failing...
+                    {
+                        entity += this.writeFloat(0);
+                        entity += this.writeFloat(0);
+                        entity += this.writeFloat(0);
                     }
 
-                    break;
-
-                case '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C':
-                case '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C':
-                case '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C':
-                case '/AB_CableMod/Visuals1/Build_AB-PLCopper.Build_AB-PLCopper_C':
-                case '/AB_CableMod/Visuals1/Build_AB-PLCaterium.Build_AB-PLCaterium_C':
-                case '/AB_CableMod/Visuals3/Build_AB-PLHeavy.Build_AB-PLHeavy_C':
-                case '/AB_CableMod/Visuals4/Build_AB-SPLight.Build_AB-SPLight_C':
-                case '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C':
-                    entity += this.writeInt(currentObject.extra.count);
-                    entity += this.writeObjectProperty(currentObject.extra.source);
-                    entity += this.writeObjectProperty(currentObject.extra.target);
-
-                    // 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
-                    if(this.header.saveVersion >= 33 && this.header.saveVersion < 41)
+                    if(currentObject.extra.targetTranslation !== undefined)
                     {
-                        if(currentObject.extra.sourceTranslation !== undefined)
-                        {
-                            entity += this.writeFloat(currentObject.extra.sourceTranslation[0]);
-                            entity += this.writeFloat(currentObject.extra.sourceTranslation[1]);
-                            entity += this.writeFloat(currentObject.extra.sourceTranslation[2]);
-                        }
-                        else // Avoid old megaprints from failing...
-                        {
-                            entity += this.writeFloat(0);
-                            entity += this.writeFloat(0);
-                            entity += this.writeFloat(0);
-                        }
-
-                        if(currentObject.extra.targetTranslation !== undefined)
-                        {
-                            entity += this.writeFloat(currentObject.extra.targetTranslation[0]);
-                            entity += this.writeFloat(currentObject.extra.targetTranslation[1]);
-                            entity += this.writeFloat(currentObject.extra.targetTranslation[2]);
-                        }
-                        else // Avoid old megaprints from failing...
-                        {
-                            entity += this.writeFloat(0);
-                            entity += this.writeFloat(0);
-                            entity += this.writeFloat(0);
-                        }
+                        entity += this.writeFloat(currentObject.extra.targetTranslation[0]);
+                        entity += this.writeFloat(currentObject.extra.targetTranslation[1]);
+                        entity += this.writeFloat(currentObject.extra.targetTranslation[2]);
                     }
-
-                    break;
-
-                case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
-                    if(this.header.saveVersion >= 41) // 2023-01-09: Tobias: Refactored drone actions to no longer be uobjects in order to fix a crash.
+                    else // Avoid old megaprints from failing...
                     {
-                        entity += this.writeInt(currentObject.extra.unk1);
-                        entity += this.writeInt(currentObject.extra.unk2);
+                        entity += this.writeFloat(0);
+                        entity += this.writeFloat(0);
+                        entity += this.writeFloat(0);
+                    }
+                }
+            }
+            else
+            {
+                switch(currentObject.className)
+                {
+                    case '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C':
+                    case '/Game/FactoryGame/-Shared/Blueprint/BP_GameMode.BP_GameMode_C':
+                        entity += this.writeInt(currentObject.extra.count);
+                        entity += this.writeInt(currentObject.extra.game.length);
 
-                        entity += this.writeInt(currentObject.extra.mActiveAction.length);
-                        for(let i = 0; i < currentObject.extra.mActiveAction.length; i++)
+                        for(let i = 0; i < currentObject.extra.game.length; i++)
                         {
-                            let mActiveAction = currentObject.extra.mActiveAction[i]
-                                entity += this.writeString(mActiveAction.name);
-
-                                for(let i = 0; i < mActiveAction.properties.length; i++)
-                                {
-                                    entity += this.writeProperty(mActiveAction.properties[i]);
-                                }
-                                entity += this.writeString('None');
+                            entity += this.writeObjectProperty(currentObject.extra.game[i]);
                         }
 
-                        entity += this.writeInt(currentObject.extra.mActionQueue.length);
-                        for(let i = 0; i < currentObject.extra.mActionQueue.length; i++)
+                        break;
+
+                    case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
+                        if(this.header.saveVersion >= 41) // 2023-01-09: Tobias: Refactored drone actions to no longer be uobjects in order to fix a crash.
                         {
-                            let mActionQueue = currentObject.extra.mActionQueue[i]
-                                entity += this.writeString(mActionQueue.name);
+                            entity += this.writeInt(currentObject.extra.unk1);
+                            entity += this.writeInt(currentObject.extra.unk2);
 
-                                for(let i = 0; i < mActionQueue.properties.length; i++)
-                                {
-                                    entity += this.writeProperty(mActionQueue.properties[i]);
-                                }
-                                entity += this.writeString('None');
+                            entity += this.writeInt(currentObject.extra.mActiveAction.length);
+                            for(let i = 0; i < currentObject.extra.mActiveAction.length; i++)
+                            {
+                                let mActiveAction = currentObject.extra.mActiveAction[i]
+                                    entity += this.writeString(mActiveAction.name);
+
+                                    for(let i = 0; i < mActiveAction.properties.length; i++)
+                                    {
+                                        entity += this.writeProperty(mActiveAction.properties[i]);
+                                    }
+                                    entity += this.writeString('None');
+                            }
+
+                            entity += this.writeInt(currentObject.extra.mActionQueue.length);
+                            for(let i = 0; i < currentObject.extra.mActionQueue.length; i++)
+                            {
+                                let mActionQueue = currentObject.extra.mActionQueue[i]
+                                    entity += this.writeString(mActionQueue.name);
+
+                                    for(let i = 0; i < mActionQueue.properties.length; i++)
+                                    {
+                                        entity += this.writeProperty(mActionQueue.properties[i]);
+                                    }
+                                    entity += this.writeString('None');
+                            }
                         }
-                    }
-                    else
-                    {
-                        if(currentObject.missing !== undefined)
+                        else
                         {
-                            entity += this.writeHex(currentObject.missing);
+                            if(currentObject.missing !== undefined)
+                            {
+                                entity += this.writeHex(currentObject.missing);
+                            }
                         }
-                    }
 
-                    break;
+                        break;
 
-                case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
-                    entity += this.writeInt(currentObject.extra.count);
-                    entity += this.writeInt(currentObject.extra.circuits.length);
+                    case '/Game/FactoryGame/-Shared/Blueprint/BP_CircuitSubsystem.BP_CircuitSubsystem_C':
+                        entity += this.writeInt(currentObject.extra.count);
+                        entity += this.writeInt(currentObject.extra.circuits.length);
 
-                    for(let i = 0; i < currentObject.extra.circuits.length; i++)
-                    {
-                        entity += this.writeInt(currentObject.extra.circuits[i].circuitId);
-                        entity += this.writeObjectProperty(currentObject.extra.circuits[i]);
-                    }
+                        for(let i = 0; i < currentObject.extra.circuits.length; i++)
+                        {
+                            entity += this.writeInt(currentObject.extra.circuits[i].circuitId);
+                            entity += this.writeObjectProperty(currentObject.extra.circuits[i]);
+                        }
 
-                    break;
+                        break;
 
-                case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
-                case '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C':
-                case '/x3_mavegrag/Vehicles/Trains/CargoWagon_Mk1/BP_X3CargoWagon_Mk1.BP_X3CargoWagon_Mk1_C':
-                    entity += this.writeInt(currentObject.extra.count);
+                    case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
+                    case '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C':
+                    case '/x3_mavegrag/Vehicles/Trains/CargoWagon_Mk1/BP_X3CargoWagon_Mk1.BP_X3CargoWagon_Mk1_C':
+                        entity += this.writeInt(currentObject.extra.count);
 
-                    if(currentObject.extra.objects !== undefined)
-                    {
+                        if(currentObject.extra.objects !== undefined)
+                        {
+                            entity += this.writeInt(currentObject.extra.objects.length);
+
+                            for(let i = 0; i < currentObject.extra.objects.length; i++)
+                            {
+                                entity += this.writeString(currentObject.extra.objects[i].name);
+                                entity += this.writeHex(currentObject.extra.objects[i].unk);
+                            }
+                        }
+                        else
+                        {
+                            entity += this.writeInt(0);
+                        }
+
+                        entity += this.writeObjectProperty(currentObject.extra.previous);
+                        entity += this.writeObjectProperty(currentObject.extra.next);
+
+                        break;
+
+                    case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
+                    case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
+                    case '/x3_mavegrag/Vehicles/Trucks/TruckMk1/BP_X3Truck_Mk1.BP_X3Truck_Mk1_C':
+                        entity += this.writeInt(currentObject.extra.count);
                         entity += this.writeInt(currentObject.extra.objects.length);
 
                         for(let i = 0; i < currentObject.extra.objects.length; i++)
@@ -875,54 +895,29 @@ export default class SaveParser_Write
                             entity += this.writeString(currentObject.extra.objects[i].name);
                             entity += this.writeHex(currentObject.extra.objects[i].unk);
                         }
-                    }
-                    else
-                    {
-                        entity += this.writeInt(0);
-                    }
 
-                    entity += this.writeObjectProperty(currentObject.extra.previous);
-                    entity += this.writeObjectProperty(currentObject.extra.next);
+                        break;
 
-                    break;
-
-                case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
-                case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
-                case '/x3_mavegrag/Vehicles/Trucks/TruckMk1/BP_X3Truck_Mk1.BP_X3Truck_Mk1_C':
-                    entity += this.writeInt(currentObject.extra.count);
-                    entity += this.writeInt(currentObject.extra.objects.length);
-
-                    for(let i = 0; i < currentObject.extra.objects.length; i++)
-                    {
-                        entity += this.writeString(currentObject.extra.objects[i].name);
-                        entity += this.writeHex(currentObject.extra.objects[i].unk);
-                    }
-
-                    break;
-
-                default:
-                    if(currentObject.missing !== undefined)
-                    {
-                        entity += this.writeHex(currentObject.missing);
-                    }
-                    else
-                    {
-                        if(this.header.saveVersion >= 41 && currentObject.className.startsWith('/Script/FactoryGame.FG'))
+                    default:
+                        if(currentObject.missing !== undefined)
                         {
+                            entity += this.writeHex(currentObject.missing);
+                        }
+                        else
+                        {
+                            if(this.header.saveVersion >= 41 && currentObject.className.startsWith('/Script/FactoryGame.FG'))
+                            {
+                                entity += this.writeByte(0);
+                                entity += this.writeByte(0);
+                                entity += this.writeByte(0);
+                                entity += this.writeByte(0);
+                            }
                             entity += this.writeByte(0);
                             entity += this.writeByte(0);
                             entity += this.writeByte(0);
                             entity += this.writeByte(0);
                         }
-                        entity += this.writeByte(0);
-                        entity += this.writeByte(0);
-                        entity += this.writeByte(0);
-                        entity += this.writeByte(0);
-                    }
+                }
             }
         }
 
