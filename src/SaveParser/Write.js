@@ -1407,11 +1407,31 @@ export default class SaveParser_Write
                     break;
 
                 case 'Str':
+                    if(parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')
+                    {
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk1);
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk2);
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk3);
+                    }
+
                     property += this.writeString(currentProperty.value.values[iMapProperty].valueMap);
 
                     break;
 
                 case 'Object':
+                    if(parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')
+                    {
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk1);
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk2);
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk3);
+                        property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk4);
+
+                        property += this.writeString(currentProperty.value.values[iMapProperty].valueMap.unk5);
+                        property += this.writeProperty(currentProperty.value.values[iMapProperty].valueMap.unk6);
+
+                        break;
+                    }
+
                     property += this.writeObjectProperty(currentProperty.value.values[iMapProperty].valueMap);
 
                     break;

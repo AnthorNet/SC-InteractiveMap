@@ -1396,11 +1396,31 @@ export default class SaveParser_Read
                             break;
 
                         case 'Str':
+                            if(parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')
+                            {
+                                mapPropertySubProperties.unk1           = this.readFloat();
+                                mapPropertySubProperties.unk2           = this.readFloat();
+                                mapPropertySubProperties.unk3           = this.readFloat();
+                            }
+
                             mapPropertySubProperties    = this.readString();
 
                             break;
 
                         case 'Object':
+                            if(parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')
+                            {
+                                mapPropertySubProperties.unk1           = this.readFloat();
+                                mapPropertySubProperties.unk2           = this.readFloat();
+                                mapPropertySubProperties.unk3           = this.readFloat();
+                                mapPropertySubProperties.unk4           = this.readFloat();
+
+                                mapPropertySubProperties.unk5           = this.readString();
+                                mapPropertySubProperties.unk6           = this.readProperty();
+
+                                break;
+                            }
+
                             mapPropertySubProperties    = this.readObjectProperty({});
 
                             break;

@@ -2,6 +2,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import Building_PowerLine                       from '../Building/PowerLine.js';
+
 import Modal_Statistics_Production              from '../Modal/Statistics/Production.js';
 import Modal_Statistics_Storage                 from '../Modal/Statistics/Storage.js';
 
@@ -46,11 +48,7 @@ export default class Modal_Selection
             }
 
             let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                if([
-                    '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C',
-                    '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C',
-                    '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'
-                ].includes(currentObject.className))
+                if(Building_PowerLine.isPowerline(currentObject) || currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
                 {
                     continue;
                 }

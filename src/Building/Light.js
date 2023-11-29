@@ -3,6 +3,8 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import Building_PowerLine                       from '../Building/PowerLine.js';
+
 import SubSystem_GameState                      from '../SubSystem/GameState.js';
 
 export default class Building_Light
@@ -124,7 +126,7 @@ export default class Building_Light
                         let currentObject = baseLayout.saveGameParser.getTargetObject(mWires.values[i].pathName);
                             followedPowerConnections.push(currentObject.pathName);
 
-                            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C')
+                            if(Building_PowerLine.isPowerline(currentObject))
                             {
                                 if(currentObject.extra !== undefined)
                                 {
