@@ -82,4 +82,22 @@ export default class SubSystem_Blueprint extends SubSystem
             }
         }
     }
+
+    getProxyByName(blueprintName)
+    {
+        for(let pathName in this.blueprintsProxies)
+        {
+            let currentProxy = this.baseLayout.saveGameParser.getTargetObject(pathName);
+                if(currentProxy !== null)
+                {
+                    let mBlueprintName = this.baseLayout.getObjectProperty(currentProxy, 'mBlueprintName');
+                        if(mBlueprintName !== null && mBlueprintName === blueprintName)
+                        {
+                            return currentProxy;
+                        }
+                }
+        }
+
+        return null;
+    }
 }
