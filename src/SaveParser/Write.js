@@ -2,6 +2,7 @@
 import pako                                     from '../Lib/pako.esm.js';
 
 import Building_Conveyor                        from '../Building/Conveyor.js';
+import Building_PowerLine                       from '../Building/PowerLine.js';
 
 export default class SaveParser_Write
 {
@@ -19,17 +20,18 @@ export default class SaveParser_Write
         this.partitions             = options.partitions;
         this.levels                 = options.levels;
         this.availableSubLevels     = options.availableSubLevels;
-
-        this.stepsLength            = 5000;
-        this.saveBinaryReplacer     = [];
-        this.saveBinaryValues       = {};
         this.countObjects           = options.countObjects;
 
+        this.stepsLength            = 5000;
         this.language               = options.language;
 
         // Used for writing...
         this.currentBufferLength    = 0;
         this.currentEntityLength    = 0;
+
+        // Hold binary replacer values...
+        this.saveBinaryReplacer     = [];
+        this.saveBinaryValues       = {};
 
         return this.streamSave();
     }
@@ -120,9 +122,12 @@ export default class SaveParser_Write
             return this.generateMainLevelChunks();
         }
 
-        let progress = currentLevel / this.levels.length * 100;
-            this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s sub-levels (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format((this.levels.length - 1)), Math.round(progress)]});
-            this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.08)});
+        if(currentLevel % 25 === 0)
+        {
+            let progress = currentLevel / this.levels.length * 100;
+                this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s sub-levels (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format((this.levels.length - 1)), Math.round(progress)]});
+                this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.08)});
+        }
 
         let currentLevelName = this.levels[currentLevel].replace('Level ', '');
             //console.log('levelName', this.levels[currentLevel])
@@ -135,16 +140,18 @@ export default class SaveParser_Write
                 currentLevelName = currentLevelName[0].split('.').pop();
             }
 
-        if(currentLevel === 0)
+        if(currentLevel % 100 === 0)
         {
-            this.postWorkerMessage({command: 'requestObjectKeys', levelNames: this.availableSubLevels}).then((objectKeys) => {
-                this.postWorkerMessage({command: 'requestCollectables', levelNames: this.availableSubLevels}).then((collectables) => {
-                    this.subLevelObjectKeys     = objectKeys;
-                    this.subLevelCollectables   = collectables;
+            let currentSubLevels = this.availableSubLevels.slice(currentLevel, Math.min((currentLevel + 100), this.availableSubLevels.length));
 
-                    return this.generateObjectsChunks(currentLevel, objectKeys[currentLevelName], collectables[currentLevelName]);
+                this.postWorkerMessage({command: 'requestObjectKeys', levelNames: currentSubLevels}).then((objectKeys) => {
+                    this.postWorkerMessage({command: 'requestCollectables', levelNames: currentSubLevels}).then((collectables) => {
+                        this.subLevelObjectKeys     = objectKeys;
+                        this.subLevelCollectables   = collectables;
+
+                        return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName]);
+                    });
                 });
-            });
         }
         else
         {
@@ -166,17 +173,21 @@ export default class SaveParser_Write
     {
         if(step === 0)
         {
-            this.saveBinaryReplacer.push({
-                key         : currentLevel + '-objectsSaveBinaryLength',
-                location    : this.saveBinary.length,
-            });
+            // objectsSaveBinaryLength replacer positions
+            for(let i = 0; i < ((this.header.saveVersion >= 41) ? 8 : 4); i++)
+            {
+                this.saveBinaryReplacer.push({
+                    key         : currentLevel + '-' + i + '-objectsSaveBinaryLength',
+                    location    : (this.saveBinary.length + i),
+                });
+            }
 
             // objectsSaveBinaryLength placeholder
-            this.saveBinary            += this.writeInt(0, false);
-            if(this.header.saveVersion >= 41)
-            {
-                this.saveBinary            += this.writeInt(0, false);
-            }
+            this.saveBinary                    += this.writeInt(0, false);
+                if(this.header.saveVersion >= 41)
+                {
+                    this.saveBinary            += this.writeInt(0, false);
+                }
 
             this.saveBinary            += this.writeInt(objectKeys.length, false);
             tempSaveBinaryLength       += 4; // countObjects
@@ -237,8 +248,33 @@ export default class SaveParser_Write
 
         tempSaveBinaryLength       += this.currentEntityLength;
 
-        this.saveBinaryValues[currentLevel + '-objectsSaveBinaryLength'] = tempSaveBinaryLength;
-        //console.log('objectsBinaryLength', this.levels[currentLevel], tempSaveBinaryLength);
+        // Add the binary length to the replacer...
+        if(this.header.saveVersion >= 41)
+        {
+            let lo                                      = Number(BigInt(tempSaveBinaryLength) & BigInt(0xffffffff));
+                this.saveBinaryValues[currentLevel + '-0-objectsSaveBinaryLength'] = lo;
+                lo                                      = lo >> 8;
+                this.saveBinaryValues[currentLevel + '-1-objectsSaveBinaryLength'] = lo;
+                lo                                      = lo >> 8;
+                this.saveBinaryValues[currentLevel + '-2-objectsSaveBinaryLength'] = lo;
+                lo                                      = lo >> 8;
+                this.saveBinaryValues[currentLevel + '-3-objectsSaveBinaryLength'] = lo;
+            let hi                                      = Number(BigInt(tempSaveBinaryLength) >> BigInt(32) & BigInt(0xffffffff));
+                this.saveBinaryValues[currentLevel + '-7-objectsSaveBinaryLength'] = hi;
+                hi                                      = hi >> 8;
+                this.saveBinaryValues[currentLevel + '-6-objectsSaveBinaryLength'] = hi;
+                hi                                      = hi >> 8;
+                this.saveBinaryValues[currentLevel + '-5-objectsSaveBinaryLength'] = hi;
+                hi                                      = hi >> 8;
+                this.saveBinaryValues[currentLevel + '-4-objectsSaveBinaryLength'] = hi;
+        }
+        else
+        {
+            this.saveBinaryValues[currentLevel + '-3-objectsSaveBinaryLength'] = (tempSaveBinaryLength >>> 24);
+            this.saveBinaryValues[currentLevel + '-2-objectsSaveBinaryLength'] = (tempSaveBinaryLength >>> 16);
+            this.saveBinaryValues[currentLevel + '-1-objectsSaveBinaryLength'] = (tempSaveBinaryLength >>> 8);
+            this.saveBinaryValues[currentLevel + '-0-objectsSaveBinaryLength'] = (tempSaveBinaryLength & 0xff);
+        }
 
         this.pushSaveToChunk();
 
@@ -254,16 +290,20 @@ export default class SaveParser_Write
     {
         if(step === 0)
         {
-            this.saveBinaryReplacer.push({
-                key         : currentLevel + '-entitiesSaveBinaryLength',
-                location    : this.saveBinary.length,
-            });
+            // entitiesSaveBinaryLength replacer positions
+            for(let i = 0; i < ((this.header.saveVersion >= 41) ? 8 : 4); i++)
+            {
+                this.saveBinaryReplacer.push({
+                    key         : currentLevel + '-' + i + '-entitiesSaveBinaryLength',
+                    location    : (this.saveBinary.length + i),
+                });
+            }
 
             // entitiesSaveBinaryLength placeholder
-            this.saveBinary            += this.writeInt(0, false);
+            this.saveBinary                    += this.writeInt(0, false);
             if(this.header.saveVersion >= 41)
             {
-                this.saveBinary            += this.writeInt(0, false);
+                this.saveBinary                += this.writeInt(0, false);
             }
 
             this.saveBinary            += this.writeInt(objectKeys.length, false);
@@ -271,7 +311,7 @@ export default class SaveParser_Write
 
             if(this.header.saveVersion >= 41)
             {
-                tempSaveBinaryLength       += objectKeys.length * 8
+                tempSaveBinaryLength       += objectKeys.length * 8;
             }
         }
 
@@ -309,14 +349,41 @@ export default class SaveParser_Write
         // Save current level entities
         this.saveBinary        += this.generateCollectablesChunks(collectables);
 
-        this.saveBinaryValues[currentLevel + '-entitiesSaveBinaryLength'] = tempSaveBinaryLength;
-        //console.log('entitiesSaveBinaryLength', this.levels[currentLevel], tempSaveBinaryLength)
+        // Add the binary length to the replacer...
+        if(this.header.saveVersion >= 41)
+        {
+            let lo                                      = Number(BigInt(tempSaveBinaryLength) & BigInt(0xffffffff));
+                this.saveBinaryValues[currentLevel + '-0-entitiesSaveBinaryLength'] = lo;
+                lo                                      = lo >> 8;
+                this.saveBinaryValues[currentLevel + '-1-entitiesSaveBinaryLength'] = lo;
+                lo                                      = lo >> 8;
+                this.saveBinaryValues[currentLevel + '-2-entitiesSaveBinaryLength'] = lo;
+                lo                                      = lo >> 8;
+                this.saveBinaryValues[currentLevel + '-3-entitiesSaveBinaryLength'] = lo;
+            let hi                                      = Number(BigInt(tempSaveBinaryLength) >> BigInt(32) & BigInt(0xffffffff));
+                this.saveBinaryValues[currentLevel + '-7-entitiesSaveBinaryLength'] = hi;
+                hi                                      = hi >> 8;
+                this.saveBinaryValues[currentLevel + '-6-entitiesSaveBinaryLength'] = hi;
+                hi                                      = hi >> 8;
+                this.saveBinaryValues[currentLevel + '-5-entitiesSaveBinaryLength'] = hi;
+                hi                                      = hi >> 8;
+                this.saveBinaryValues[currentLevel + '-4-entitiesSaveBinaryLength'] = hi;
+        }
+        else
+        {
+            this.saveBinaryValues[currentLevel + '-3-entitiesSaveBinaryLength'] = (tempSaveBinaryLength >>> 24);
+            this.saveBinaryValues[currentLevel + '-2-entitiesSaveBinaryLength'] = (tempSaveBinaryLength >>> 16);
+            this.saveBinaryValues[currentLevel + '-1-entitiesSaveBinaryLength'] = (tempSaveBinaryLength >>> 8);
+            this.saveBinaryValues[currentLevel + '-0-entitiesSaveBinaryLength'] = (tempSaveBinaryLength & 0xff);
+        }
+
         this.pushSaveToChunk();
 
         if(currentLevel < (this.levels.length - 1))
         {
             return this.generateLevelChunks(currentLevel + 1);
         }
+
         if(currentLevel === (this.levels.length - 1))
         {
             console.log('Saved ' + objectKeys.length + ' entities...');
@@ -326,13 +393,13 @@ export default class SaveParser_Write
         return this.finalizeChunks();
     }
 
-    generateCollectablesChunks(collectables)
+    generateCollectablesChunks(collectables, count = false)
     {
         let tempSaveBinary  = '';
-            tempSaveBinary += this.writeInt(collectables.length, false);
+            tempSaveBinary += this.writeInt(collectables.length, count);
             for(let i = 0; i < collectables.length; i++)
             {
-                tempSaveBinary += this.writeObjectProperty(collectables[i], false);
+                tempSaveBinary += this.writeObjectProperty(collectables[i], count);
             }
 
         return tempSaveBinary;
@@ -367,7 +434,6 @@ export default class SaveParser_Write
     createChunk()
     {
         // Check if we need to replace values afterward...
-        //TODO: CHECK EACH INT BYTES POSITION AGAINST THE END OF THE CHUNK
         let havePlaceholders = [];
             if(this.saveBinaryReplacer.length > 0)
             {
@@ -381,14 +447,6 @@ export default class SaveParser_Write
                     else
                     {
                         this.saveBinaryReplacer[i].location -= this.saveBinary.length;
-
-                        if(this.saveBinaryReplacer[i].location < 0)
-                        {
-                            if(typeof Sentry !== 'undefined')
-                            {
-                                Sentry.captureMessage('Invalid chunk location replacer');
-                            }
-                        }
                     }
                 }
             }
@@ -458,6 +516,18 @@ export default class SaveParser_Write
                         {
                             totalInflated -= 4;
 
+                            /*
+                            let low                     = Number(BigInt(totalInflated) & BigInt(0xffffffff));
+                                currentChunk.output[3]      = (low >>> 24);
+                                currentChunk.output[2]      = (low >>> 16);
+                                currentChunk.output[1]      = (low >>> 8);
+                                currentChunk.output[0]      = (low & 0xff);
+                            let high                    = Number(BigInt(totalInflated) >> BigInt(32) & BigInt(0xffffffff));
+                                currentChunk.output[7]      = (high >>> 24);
+                                currentChunk.output[6]      = (high >>> 16);
+                                currentChunk.output[5]      = (high >>> 8);
+                                currentChunk.output[4]      = (high & 0xff);
+                            */
                             let lo                      = Number(BigInt(totalInflated) & BigInt(0xffffffff));
                                 currentChunk.output[0]  = lo;
                                 lo                      = lo >> 8;
@@ -467,13 +537,13 @@ export default class SaveParser_Write
                                 lo                      = lo >> 8;
                                 currentChunk.output[3]  = lo;
                             let hi                      = Number(BigInt(totalInflated) >> BigInt(32) & BigInt(0xffffffff));
-                                currentChunk.output[4]  = hi;
-                                hi                      = hi >> 8;
-                                currentChunk.output[5]  = hi;
+                                currentChunk.output[7]  = hi;
                                 hi                      = hi >> 8;
                                 currentChunk.output[6]  = hi;
                                 hi                      = hi >> 8;
-                                currentChunk.output[7]  = hi;
+                                currentChunk.output[5]  = hi;
+                                hi                      = hi >> 8;
+                                currentChunk.output[4]  = hi;
                         }
                         else
                         {
@@ -488,35 +558,7 @@ export default class SaveParser_Write
                     {
                         for(let i = 0; i < currentChunk.toReplace.length; i++)
                         {
-                            let replaceValue                            = this.saveBinaryValues[currentChunk.toReplace[i].key];
-                            let replacePosition                         = currentChunk.toReplace[i].location;
-
-                                if(this.header.saveVersion >= 41)
-                                {
-                                    let lo                                      = Number(BigInt(replaceValue) & BigInt(0xffffffff));
-                                        currentChunk.output[replacePosition]    = lo;
-                                        lo                                      = lo >> 8;
-                                        currentChunk.output[replacePosition+1]  = lo;
-                                        lo                                      = lo >> 8;
-                                        currentChunk.output[replacePosition+2]  = lo;
-                                        lo                                      = lo >> 8;
-                                        currentChunk.output[replacePosition+3]  = lo;
-                                    let hi                                      = Number(BigInt(replaceValue) >> BigInt(32) & BigInt(0xffffffff));
-                                        currentChunk.output[replacePosition+4]  = hi;
-                                        hi                                      = hi >> 8;
-                                        currentChunk.output[replacePosition+5]  = hi;
-                                        hi                                      = hi >> 8;
-                                        currentChunk.output[replacePosition+6]  = hi;
-                                        hi                                      = hi >> 8;
-                                        currentChunk.output[replacePosition+7]  = hi;
-                                }
-                                else
-                                {
-                                    currentChunk.output[replacePosition+3]      = (replaceValue >>> 24);
-                                    currentChunk.output[replacePosition+2]      = (replaceValue >>> 16);
-                                    currentChunk.output[replacePosition+1]      = (replaceValue >>> 8);
-                                    currentChunk.output[replacePosition]        = (replaceValue & 0xff);
-                                }
+                            currentChunk.output[currentChunk.toReplace[i].location] = this.saveBinaryValues[currentChunk.toReplace[i].key];
                         }
                     }
 
