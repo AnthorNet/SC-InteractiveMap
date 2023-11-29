@@ -192,11 +192,11 @@ export default class Building_Pipeline
                     content.push('<div style="position: absolute;margin-top: 31px;margin-left: 187px;">');
                         if(fluidType.category === 'gas')
                         {
-                            content.push(tooltip.setGasDome(140, currentFluid, maxFluid, fluidType.color));
+                            content.push(BaseLayout_Tooltip.setGasDome(baseLayout, 140, currentFluid, maxFluid, fluidType.color));
                         }
                         else
                         {
-                            content.push(tooltip.setLiquidDome(140, currentFluid, maxFluid, fluidType.color));
+                            content.push(BaseLayout_Tooltip.setLiquidDome(baseLayout, 140, currentFluid, maxFluid, fluidType.color));
                         }
                     content.push('</div>');
                 }

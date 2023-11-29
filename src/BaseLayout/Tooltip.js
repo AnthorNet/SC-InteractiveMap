@@ -8,6 +8,7 @@ import Building_AwesomeSink                     from '../Building/AwesomeSink.js
 import Building_Beacon                          from '../Building/Beacon.js';
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
+import Building_FrackingExtractor               from '../Building/FrackingExtractor.js';
 import Building_FrackingSmasher                 from '../Building/FrackingSmasher.js';
 import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoThermal.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
@@ -40,8 +41,6 @@ export default class BaseLayout_Tooltip
         this.genericPowerSwicthBackgroundStyle      = 'width: 500px;height: 322px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_PowerSwitch_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
         this.genericProductionBackgroundStyle       = 'width: 500px;height: 510px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
         this.genericExtractionBackgroundStyle       = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Extractor_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
-        this.genericFrackerSmasherBackgroundStyle   = 'width: 500px;height: 380px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Fracker_Smasher_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
-        this.genericFrackerExtractorBackgroundStyle = 'width: 500px;height: 235px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/Fracker_Extractor_BG.png?v=' + this.baseLayout.scriptVersion + ');margin: -7px;';
         this.genericGeneratorBackgroundStyle        = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/generatorBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
         this.fluidGeneratorBackgroundStyle          = 'width: 500px;height: 470px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/generatorFluidBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
         this.genericPumpBackground                  = 'width: 500px;height: 370px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/pumpBackground.png?v=' + this.baseLayout.scriptVersion + ') no-repeat #7b7b7b;margin: -7px;';
@@ -149,9 +148,9 @@ export default class BaseLayout_Tooltip
                                     case '/Game/FactoryGame/Buildable/Factory/PowerStorage/Build_PowerStorageMk1.Build_PowerStorageMk1_C':
                                         return this.setBuildingPowerStorageTooltipContent(currentObject, buildingData);
                                     case '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C':
-                                        return this.setBuildingFrackerSmasherTooltipContent(currentObject, buildingData);
+                                        return Building_FrackingSmasher.getTooltip(this.baseLayout, currentObject, buildingData);
                                     case '/Game/FactoryGame/Buildable/Factory/FrackingExtractor/Build_FrackingExtractor.Build_FrackingExtractor_C':
-                                        return this.setBuildingFrackerExtractorTooltipContent(currentObject, buildingData);
+                                        return Building_FrackingExtractor.getTooltip(this.baseLayout, currentObject, buildingData);
                                     case '/Game/FactoryGame/Buildable/Factory/DroneStation/Build_DroneStation.Build_DroneStation_C':
                                         return Building_DroneStation.getTooltip(this.baseLayout, currentObject, buildingData);
                                     case '/Game/FactoryGame/Buildable/Factory/TruckStation/Build_TruckStation.Build_TruckStation_C':
@@ -336,7 +335,7 @@ export default class BaseLayout_Tooltip
                 if(currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
                 {
                     let objectCircuit = this.baseLayout.circuitSubSystem.getObjectCircuit(currentObject);
-                        content.push(this.setTooltipFooter({circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed, singleLine: true}));
+                        content.push(BaseLayout_Tooltip.setTooltipFooter({baseLayout: this.baseLayout, circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed, singleLine: true}));
                 }
 
             content.push('</div></div>');
@@ -371,205 +370,11 @@ export default class BaseLayout_Tooltip
             content.push('</div>');
 
             // FOOTER
-            content.push(this.getOverclockingPanel(currentObject, 356, 12));
+            content.push(BaseLayout_Tooltip.getOverclockingPanel(this.baseLayout, currentObject, 356, 12));
             content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 365, 385, 434, 387));
         }
 
         return '<div style="' + this.genericExtractionBackgroundStyle + '">' + content.join('') + '</div>';
-    }
-
-    setBuildingFrackerSmasherTooltipContent(currentObject, buildingData)
-    {
-        let clockSpeed  = this.baseLayout.getClockSpeed(currentObject);
-        let powerUsed   = buildingData.powerUsed * clockSpeed;
-            if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
-            {
-                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
-            }
-            else
-            {
-                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
-            }
-
-        let satellites  = Building_FrackingSmasher.getSatellites(this.baseLayout, currentObject);
-        let potential   = 0;
-
-        let content     = [];
-
-            // TOP
-            content.push('<div style="position: absolute;margin-top: 25px;margin-left: 90px; width: 195px;height: 110px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + BaseLayout_Tooltip.uiGradient + '">');
-            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
-                content.push('<strong style="white-space: normal;">' + buildingData.name + '</strong>');
-
-                let objectCircuit = this.baseLayout.circuitSubSystem.getObjectCircuit(currentObject);
-                    content.push(this.setTooltipFooter({circuit: objectCircuit, powerUsed: powerUsed, singleLine: true}));
-
-                content.push('<ins class="small">Extractors connected:</ins>');
-                content.push('<div class="small text-warning">');
-
-                let connectedContent    = [];
-                let unconnectedContent  = [];
-                let extractorRates      = {impure: 30000, normal: 60000, pure: 120000};
-                    if(this.baseLayout.buildingsData.Build_FrackingExtractor_C !== undefined)
-                    {
-                        extractorRates = this.baseLayout.buildingsData.Build_FrackingExtractor_C.extractionRate;
-                    }
-
-                    for(let i = 0; i < satellites.length; i++)
-                    {
-                        if(satellites[i].options.extractorPathName !== undefined)
-                        {
-                            connectedContent.push('<i class="fas fa-circle"></i>');
-                        }
-                        else
-                        {
-                            unconnectedContent.push('<i class="far fa-circle"></i>');
-                        }
-
-                        if(satellites[i].options.purity !== undefined && extractorRates[satellites[i].options.purity] !== undefined)
-                        {
-                            potential += extractorRates[satellites[i].options.purity];
-                        }
-                        else
-                        {
-                            potential += 60000;
-                        }
-                    }
-                    content.push(connectedContent.join('') + unconnectedContent.join(''));
-
-                content.push('</div>');
-
-            content.push('</div></div>');
-            content.push('</div>');
-
-            // BOTTOM
-            content.push('<div style="position: absolute;margin-top: 140px;margin-left: 90px; width: 195px;height: 50px;line-height: 1;">');
-            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
-
-                content.push('<ins class="small">Resource Well Potential</ins><br />');
-                content.push('<strong class="small"><span class="text-info">' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(potential * clockSpeed / 100) / 10) + '</span> m³ per minute</strong>');
-
-            content.push('</div></div>');
-            content.push('</div>');
-
-            // FOOTER
-            content.push(this.getOverclockingPanel(currentObject, 256, 12));
-            content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 265, 385, 334, 387));
-
-        return '<div style="' + this.genericFrackerSmasherBackgroundStyle + '">' + content.join('') + '</div>';
-    }
-
-    setBuildingFrackerExtractorTooltipContent(currentObject, buildingData)
-    {
-        let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
-        let itemType                = null;
-        let purity                  = 'normal';
-
-            if(extractResourceNode !== null && this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
-            {
-                if(this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.purity !== undefined)
-                {
-                    purity = this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.purity;
-                }
-
-                if(this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type !== undefined)
-                {
-                    itemType = this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.type;
-                    if(itemType === 'Desc_LiquidOilWell_C')
-                    {
-                        itemType = 'Desc_LiquidOil_C';
-                    }
-                }
-            }
-
-        let craftingTime        = 60 / buildingData.extractionRate[purity];
-        let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
-        let productionRatio     = buildingData.extractionRate[purity] * clockSpeed;
-
-        // VOLUME
-        let currentFluid        = 0;
-        let maxFluid            = (buildingData.maxFluid !== undefined) ? buildingData.maxFluid : 50000;
-        let inventoryOut        = this.baseLayout.getObjectInventory(currentObject, 'mOutputInventory');
-
-            for(let i = 0; i < inventoryOut.length; i++)
-            {
-                if(inventoryOut[i] !== null && this.baseLayout.itemsData[itemType] !== undefined && inventoryOut[i].className === this.baseLayout.itemsData[itemType].className)
-                {
-                    currentFluid = inventoryOut[i].qty;
-                    break;
-                }
-            }
-
-            currentFluid        = Math.min(currentFluid, maxFluid);
-            currentFluid        = +(Math.round((currentFluid / 1000) * 100) / 100);
-            maxFluid            = +(Math.round((maxFluid / 1000) * 100) / 100);
-
-        let content     = [];
-
-            // TOP
-            content.push('<div style="position: absolute;margin-top: 6px;margin-left: 8px; width: 155px;height: 110px;border-radius: 10px;color: #FFFFFF;padding-bottom: 10px;' + BaseLayout_Tooltip.uiGradient + '">');
-            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
-                content.push('<strong class="small">' + buildingData.name + '</strong>');
-
-                let currentProgress = Math.min(100, Math.round(this.baseLayout.getObjectProperty(currentObject, 'mCurrentExtractProgress', 0) * 10000) / 100);
-                    content.push('<div class="progress rounded-sm mx-3 mt-2" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
-                    content.push('<span style="font-size: 10px;" class="d-block mb-2">Extracting - <span class="text-warning">' + currentProgress + '%</span></span>');
-
-            content.push(this.setTooltipFooter({craftingTime: craftingTime, clockSpeed: clockSpeed, singleLine: true}));
-            content.push('</div></div>');
-            content.push('</div>');
-
-            // BOTTOM
-            content.push('<div style="position: absolute;margin-top: 130px;margin-left: 8px; width: 155px;height: 90px;background: #FFFFFF;border: 2px solid #373737;border-radius: 10px;line-height: 1;">');
-            content.push('<div class="d-flex h-100"><div class="justify-content-center align-self-center w-100 text-center">');
-
-                if(extractResourceNode !== null && itemType !== null)
-                {
-                    content.push('<div class="text-center"><table class="mx-auto mb-2"><tr><td><div class="d-flex flex-row" style="position:relative;margin: 1px;width: 36px;height: 36px;border: 1px solid #000000;border-radius:50%;padding: 5px;background-color: #FFFFFF;"><img src="' + this.baseLayout.itemsData[itemType].image + '" class="img-fluid" /></div></td></tr></table></div>');
-                    content.push('<div><strong>' + this.baseLayout.itemsData[itemType].name + '</strong></div>');
-                    content.push('<span class="small"><strong class="text-warning">' + +(Math.round((productionRatio / 1000) * 100) / 100) + 'm³</strong> per minute</span>');
-                }
-
-            content.push('</div></div>');
-            content.push('</div>');
-
-            content.push('<div style="position: absolute;margin-top: 111px;margin-left: 75px; width: 24px;height: 24px;color: #FFFFFF;background: #404040;border-radius: 50%;line-height: 24px;text-align: center;font-size: 14px;box-shadow: 0 0 2px 0px rgba(0,0,0,0.75);"><i class="fas fa-arrow-alt-down"></i></div>');
-
-        // DOME
-        if(extractResourceNode !== null && itemType !== null && this.baseLayout.itemsData[itemType].color !== undefined)
-        {
-            content.push('<div style="position: absolute;margin-top: 9px;margin-left: 358px;">');
-                if(this.baseLayout.itemsData[itemType].category === 'gas')
-                {
-                    content.push(this.setGasDome(112, currentFluid, maxFluid, this.baseLayout.itemsData[itemType].color));
-                }
-                else
-                {
-                    content.push(this.setLiquidDome(112, currentFluid, maxFluid, this.baseLayout.itemsData[itemType].color));
-                }
-            content.push('</div>');
-        }
-
-        // AMOUNT
-        content.push('<div style="position: absolute;margin-top: 140px;margin-left: 365px;width: 104px;color: #FFFFFF;text-align: center;font-size: 13px;">');
-        content.push('<span class="small">Current amount:</span><br /><strong><strong class="text-info">' + currentFluid + '</strong> / ' + maxFluid + ' m³</strong>');
-        content.push('</div>');
-
-        if(buildingData.maxFlowRate !== undefined)
-        {
-            content.push('<div style="position: absolute;margin-top: 135px;margin-left: 218px;width: 65px;text-align: center;font-size: 11px;color: #5b5b5b;">');
-            content.push('<span class="small">Flow Rate</span><br /><i class="fas fa-chevron-right"></i><br /><strong><strong class="text-info">???</strong> m³/min</strong>');
-            content.push('</div>');
-            content.push('<div style="position: absolute;margin-top: 135px;margin-left: 280px;width: 65px;text-align: center;font-size: 11px;color: #5b5b5b;border-left: 1px solid #5b5b5b;">');
-            content.push('<span class="small">Max Flow Rate</span><br /><i class="fas fa-chevron-double-right"></i><br /><strong><strong class="text-info">' + buildingData.maxFlowRate / 1000 + '</strong> m³/min</strong>');
-            content.push('</div>');
-        }
-
-        // Flow indicator
-        content.push('<div style="position: absolute;margin-top: 13px;margin-left: 231px;width: 102px;height: 102px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/flowIndicator.png?v=' + this.baseLayout.scriptVersion + '" style="width: 102px;height: 102px;transform: rotate(-135deg);" /></div>');
-        content.push('<div style="position: absolute;margin-top: 13px;margin-left: 231px;width: 102px;height: 102px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/flowGlass.png?v=' + this.baseLayout.scriptVersion + '" style="width: 102px;height: 102px;" /></div>');
-
-        return '<div style="' + this.genericFrackerExtractorBackgroundStyle + '">' + content.join('') + '</div>';
     }
 
     setBuildingPumpTooltipContent(currentObject, buildingData)
@@ -639,7 +444,7 @@ export default class BaseLayout_Tooltip
                     content.push('<span style="font-size: 10px;" class="d-block mb-3">Extracting - <span class="text-warning">' + currentProgress + '%</span></span>');
 
                 let objectCircuit = this.baseLayout.circuitSubSystem.getObjectCircuit(currentObject);
-                    content.push(this.setTooltipFooter({circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed, singleLine: true}));
+                    content.push(BaseLayout_Tooltip.setTooltipFooter({baseLayout: this.baseLayout, circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed, singleLine: true}));
             content.push('</div></div>');
             content.push('</div>');
 
@@ -695,7 +500,7 @@ export default class BaseLayout_Tooltip
         content.push('<div style="position: absolute;margin-top: 22px;margin-left: 211px;width: 102px;height: 102px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/flowGlass.png?v=' + this.baseLayout.scriptVersion + '" style="width: 102px;height: 102px;" /></div>');
 
         // FOOTER
-        content.push(this.getOverclockingPanel(currentObject, 256, 12));
+        content.push(BaseLayout_Tooltip.getOverclockingPanel(this.baseLayout, currentObject, 256, 12));
         content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 265, 385, 334, 387));
 
         return '<div style="' + this.genericPumpBackground + '">' + content.join('') + '</div>';
@@ -781,17 +586,17 @@ export default class BaseLayout_Tooltip
                         {
                             if(itemType.category === 'gas')
                             {
-                                content.push(this.setGasDome(230, currentFluid, maxFluid, itemType.color));
+                                content.push(BaseLayout_Tooltip.setGasDome(this.baseLayout, 230, currentFluid, maxFluid, itemType.color));
                             }
                             else
                             {
-                                content.push(this.setLiquidDome(230, currentFluid, maxFluid, itemType.color));
+                                content.push(BaseLayout_Tooltip.setLiquidDome(this.baseLayout, 230, currentFluid, maxFluid, itemType.color));
                             }
                         }
                     }
                     else
                     {
-                        content.push(this.setLiquidDome(230, 0, maxFluid, '#000'));
+                        content.push(BaseLayout_Tooltip.setLiquidDome(this.baseLayout, 230, 0, maxFluid, '#000'));
                     }
                     content.push('</div>');
                 }
@@ -842,11 +647,11 @@ export default class BaseLayout_Tooltip
                     content.push('<div style="position: absolute;margin-top: 25px;margin-left: 20px;">');
                         if(fluidType.category === 'gas')
                         {
-                            content.push(this.setGasDome(230, currentFluid, maxFluid, fluidType.color));
+                            content.push(BaseLayout_Tooltip.setGasDome(this.baseLayout, 230, currentFluid, maxFluid, fluidType.color));
                         }
                         else
                         {
-                            content.push(this.setLiquidDome(230, currentFluid, maxFluid, fluidType.color));
+                            content.push(BaseLayout_Tooltip.setLiquidDome(this.baseLayout, 230, currentFluid, maxFluid, fluidType.color));
                         }
                     content.push('</div>');
                 }
@@ -1248,7 +1053,7 @@ export default class BaseLayout_Tooltip
                     }
 
                 let objectCircuit = this.baseLayout.circuitSubSystem.getObjectCircuit(currentObject);
-                    content.push(this.setTooltipFooter({circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed}));
+                    content.push(BaseLayout_Tooltip.setTooltipFooter({baseLayout: this.baseLayout, circuit: objectCircuit, craftingTime: craftingTime, clockSpeed: clockSpeed, powerUsed: powerUsed}));
 
             content.push('</div></div>');
             content.push('</div>');
@@ -1301,7 +1106,7 @@ export default class BaseLayout_Tooltip
             content.push('<div style="position: absolute;margin-top: 286px;margin-left: 370px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>OUTPUT</strong></div>');
 
             // FOOTER
-            content.push(this.getOverclockingPanel(currentObject));
+            content.push(BaseLayout_Tooltip.getOverclockingPanel(this.baseLayout, currentObject));
             content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject));
 
         let footerBackground = this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG_Constructor.png';
@@ -1360,7 +1165,7 @@ export default class BaseLayout_Tooltip
 
         let content                 = [];
         let objectCircuit           = this.baseLayout.circuitSubSystem.getObjectCircuit(currentObject);
-        let tooltipFooterOptions    = {circuit: objectCircuit, clockSpeed: clockSpeed, powerGenerated: buildingData.powerGenerated, singleLine: true, mPowerProductionExponent: mPowerProductionExponent};
+        let tooltipFooterOptions    = {baseLayout: this.baseLayout, circuit: objectCircuit, clockSpeed: clockSpeed, powerGenerated: buildingData.powerGenerated, singleLine: true, mPowerProductionExponent: mPowerProductionExponent};
 
             // BOTTOM
             content.push('<div style="position: absolute;margin-top: 176px;margin-left: 315px; width: 165px;height: 125px;background: #FFFFFF;border: 2px solid #373737;border-radius: 10px;line-height: 1;">');
@@ -1443,7 +1248,7 @@ export default class BaseLayout_Tooltip
                         }
                 }
 
-                content.push(this.setTooltipFooter(tooltipFooterOptions));
+                content.push(BaseLayout_Tooltip.setTooltipFooter(tooltipFooterOptions));
 
             content.push('</div></div>');
             content.push('</div>');
@@ -1487,7 +1292,7 @@ export default class BaseLayout_Tooltip
             }
 
             // FOOTER
-            content.push(this.getOverclockingPanel(currentObject, 356, 12));
+            content.push(BaseLayout_Tooltip.getOverclockingPanel(this.baseLayout, currentObject, 356, 12));
             content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 365, 385, 434, 387));
 
         if(buildingData.supplementalLoadType !== undefined)
@@ -1634,49 +1439,6 @@ export default class BaseLayout_Tooltip
                 </div>';
     }
 
-    getOverclockingPanel(currentObject, top = 312, left = 89)
-    {
-        if(this.baseLayout.unlockSubSystem.haveOverclocking() === true)
-        {
-            let content                 = [];
-            let clockSpeed              = this.baseLayout.getClockSpeed(currentObject);
-            let potentialInventory      = this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential');
-
-                content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + (parseInt(left) + 2) + 'px; width: 318px;height: 97px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/ManufacutringMenu_OverclockBackground.png?v=' + this.baseLayout.scriptVersion + ')">');
-                content.push('<table style="margin: 10px;width: 298px;"><tr>');
-                content.push('<td><span class="text-small">Clockspeed:</span><br /><strong class="lead text-warning">' + +(Math.round(clockSpeed * 10000) / 100) + ' %</strong></td>');
-
-                if(potentialInventory !== null)
-                {
-                    for(let i = 0; i < potentialInventory.length; i++)
-                    {
-                        content.push('<td width="62">');
-                        content.push('<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + this.baseLayout.setInventoryTableSlot([potentialInventory[i]], null, 56, '', this.baseLayout.itemsData.Desc_CrystalShard_C.image) + '</td></tr></table></div>');
-                        content.push('</td>');
-                    }
-                }
-
-                content.push('</tr><tr>');
-                content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + Math.min(100, (clockSpeed * 10000) / 100) + '%"></div></div></td>');
-
-                if(potentialInventory !== null)
-                {
-                    for(let i = 0; i < potentialInventory.length; i++)
-                    {
-                        let potentialProgress = Math.min(100, ((clockSpeed * 10000) / 100 - (100 + (i * 50))) * 2);
-                            content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + potentialProgress + '%"></div></div></td>');
-                    }
-                }
-
-                content.push('</tr></table>');
-                content.push('</div>');
-
-            return content.join('');
-        }
-
-        return '<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px; width: 322px;height: 105px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/OverclockPanelLocked.png?v=' + this.baseLayout.scriptVersion + ');"></div>';
-    }
-
     setInventoryFuel(currentObject)
     {
         let content         = [];
@@ -1705,61 +1467,62 @@ export default class BaseLayout_Tooltip
         return '<div style="margin: 0 auto;width: 153px;height: 106px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/' + imageFile + '?v=' + this.baseLayout.scriptVersion + ') no-repeat;"></div>';
     }
 
-    setGasDome(backgroundImageSize, currentFluid, maxFluid, color)
+    /*
+     * SHARED PARTS
+     */
+
+
+    static getOverclockingPanel(baseLayout, currentObject, top = 312, left = 89)
     {
-        let content             = [];
-            backgroundImageSize = Math.min(backgroundImageSize, 230);
-        let imageRatio          = backgroundImageSize / 230
-        let domeImageSize       = 164 * imageRatio;
+        if(baseLayout.unlockSubSystem.haveOverclocking() === true)
+        {
+            let content                 = [];
+            let clockSpeed              = baseLayout.getClockSpeed(currentObject);
+            let potentialInventory      = baseLayout.getObjectInventory(currentObject, 'mInventoryPotential');
 
-        let volumeOpacity       = Math.round(currentFluid / maxFluid * 100) / 100;
+                content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + (parseInt(left) + 2) + 'px; width: 318px;height: 97px;background: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/ManufacutringMenu_OverclockBackground.png?v=' + baseLayout.scriptVersion + ')">');
+                content.push('<table style="margin: 10px;width: 298px;"><tr>');
+                content.push('<td><span class="text-small">Clockspeed:</span><br /><strong class="lead text-warning">' + +(Math.round(clockSpeed * 10000) / 100) + ' %</strong></td>');
 
-            content.push('<div style="position: absolute;margin-top: ' + 32 * imageRatio + 'px;margin-left: ' + 32 * imageRatio + 'px;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;background-color: ' + color + ';border-radius: 50%;opacity: ' + volumeOpacity + ';"></div>');
-            content.push('<div style="position: absolute;margin-top: ' + 32 * imageRatio + 'px;margin-left: ' + 32 * imageRatio + 'px;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;border-radius: 50%;overflow: hidden;">');
-                content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/PROT_TX_Gas_01.png?v=' + this.baseLayout.scriptVersion + '" style="position: absolute;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;animation: loader-clockwise 40s infinite linear;" />');
-                content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/PROT_TX_Gas_01.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;animation: loader-counter-clockwise 60s infinite linear;" />');
-            content.push('</div>');
-            content.push('<div style="position: absolute;width: ' + backgroundImageSize + 'px;height: ' + backgroundImageSize + 'px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_GasModule_Small.png?v=' + this.baseLayout.scriptVersion + '" style="width: ' + backgroundImageSize + 'px;height: ' + backgroundImageSize + 'px;" /></div>');
-
-        return content.join('');
-    }
-
-    setLiquidDome(backgroundImageSize, currentFluid, maxFluid, color)
-    {
-        let content             = [];
-            backgroundImageSize = Math.min(backgroundImageSize, 230);
-        let imageRatio          = backgroundImageSize / 230
-        let domeImageSize       = 196 * imageRatio;
-
-        let volumeHeight        = Math.round(currentFluid / maxFluid * domeImageSize);
-
-            content.push('<div style="height: ' + backgroundImageSize + 'px;width:' + backgroundImageSize + 'px;background: url(' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidBackground.png?v=' + this.baseLayout.scriptVersion + ');background-size: cover;" class="d-inline-block">');
-                content.push('<div style="position: absolute;margin-top: ' + 12 * imageRatio + 'px;margin-left: ' + 17 * imageRatio + 'px;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;border-radius: 50%;overflow: hidden;">');
-
-                    if(currentFluid > 0)
+                if(potentialInventory !== null)
+                {
+                    for(let i = 0; i < potentialInventory.length; i++)
                     {
-                        content.push('<div style="margin-top: ' + (domeImageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;position: relative;">');
-                            content.push('<div class="liquidDome" style="background-color:' + color + ';height: ' + (domeImageSize * 2) + 'px;top: -' + (domeImageSize / 2) + 'px"></div>');
-                        content.push('</div>');
+                        content.push('<td width="62">');
+                        content.push('<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + baseLayout.setInventoryTableSlot([potentialInventory[i]], null, 56, '', baseLayout.itemsData.Desc_CrystalShard_C.image) + '</td></tr></table></div>');
+                        content.push('</td>');
                     }
+                }
 
-                content.push('</div>');
-                content.push('<div style="position: absolute;margin-top: ' + 12 * imageRatio + 'px;margin-left: ' + 17 * imageRatio + 'px;">');
-                    content.push('<img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + this.baseLayout.scriptVersion + '" width="' + domeImageSize + '" height="' + domeImageSize + '" />');
-                content.push('</div>');
-            content.push('</div>');
+                content.push('</tr><tr>');
+                content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + Math.min(100, (clockSpeed * 10000) / 100) + '%"></div></div></td>');
 
-        return content.join('');
+                if(potentialInventory !== null)
+                {
+                    for(let i = 0; i < potentialInventory.length; i++)
+                    {
+                        let potentialProgress = Math.min(100, ((clockSpeed * 10000) / 100 - (100 + (i * 50))) * 2);
+                            content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + potentialProgress + '%"></div></div></td>');
+                    }
+                }
+
+                content.push('</tr></table>');
+                content.push('</div>');
+
+            return content.join('');
+        }
+
+        return '<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px; width: 322px;height: 105px;background: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/OverclockPanelLocked.png?v=' + baseLayout.scriptVersion + ');"></div>';
     }
 
-    setTooltipFooter(options)
+    static setTooltipFooter(options)
     {
         let header1                     = [];
         let header2                     = [];
         let content1                    = [];
         let content2                    = [];
         let mPowerProductionExponent    = options.mPowerProductionExponent || 1.3;
-            if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+            if(options.baseLayout.saveGameParser.header.saveVersion >= 33)
             {
                 mPowerProductionExponent = 1.0;
             }
@@ -1815,9 +1578,6 @@ export default class BaseLayout_Tooltip
              + '<div class="mt-1"><table class="mr-auto ml-auto" style="font-size: 12px;line-height: 1;"><tr>' + header2.join('') + '</tr><tr>' + content2.join('') + '</tr></table></div>';
     }
 
-    /*
-     * SHARED PARTS
-     */
     static genericUIBackgroundStyle(baseLayout)
     {
         return 'border: 19px solid #ffffff;border-image: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/UI_Screen.png?v=' + baseLayout.scriptVersion + ') 20 repeat;background: #ffffff;background-clip: padding-box;';
@@ -1955,6 +1715,53 @@ export default class BaseLayout_Tooltip
 
                         content.push('</div>');
                 }
+            content.push('</div>');
+
+        return content.join('');
+    }
+
+    static setGasDome(baseLayout, backgroundImageSize, currentFluid, maxFluid, color)
+    {
+        let content             = [];
+            backgroundImageSize = Math.min(backgroundImageSize, 230);
+        let imageRatio          = backgroundImageSize / 230
+        let domeImageSize       = 164 * imageRatio;
+
+        let volumeOpacity       = Math.round(currentFluid / maxFluid * 100) / 100;
+
+            content.push('<div style="position: absolute;margin-top: ' + 32 * imageRatio + 'px;margin-left: ' + 32 * imageRatio + 'px;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;background-color: ' + color + ';border-radius: 50%;opacity: ' + volumeOpacity + ';"></div>');
+            content.push('<div style="position: absolute;margin-top: ' + 32 * imageRatio + 'px;margin-left: ' + 32 * imageRatio + 'px;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;border-radius: 50%;overflow: hidden;">');
+                content.push('<img src="' + baseLayout.staticUrl + '/js/InteractiveMap/img/PROT_TX_Gas_01.png?v=' + baseLayout.scriptVersion + '" style="position: absolute;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;animation: loader-clockwise 40s infinite linear;" />');
+                content.push('<img src="' + baseLayout.staticUrl + '/js/InteractiveMap/img/PROT_TX_Gas_01.png?v=' + baseLayout.scriptVersion + '" style="width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;animation: loader-counter-clockwise 60s infinite linear;" />');
+            content.push('</div>');
+            content.push('<div style="position: absolute;width: ' + backgroundImageSize + 'px;height: ' + backgroundImageSize + 'px;"><img src="' + baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_GasModule_Small.png?v=' + baseLayout.scriptVersion + '" style="width: ' + backgroundImageSize + 'px;height: ' + backgroundImageSize + 'px;" /></div>');
+
+        return content.join('');
+    }
+
+    static setLiquidDome(baseLayout, backgroundImageSize, currentFluid, maxFluid, color)
+    {
+        let content             = [];
+            backgroundImageSize = Math.min(backgroundImageSize, 230);
+        let imageRatio          = backgroundImageSize / 230
+        let domeImageSize       = 196 * imageRatio;
+
+        let volumeHeight        = Math.round(currentFluid / maxFluid * domeImageSize);
+
+            content.push('<div style="height: ' + backgroundImageSize + 'px;width:' + backgroundImageSize + 'px;background: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/liquidBackground.png?v=' + baseLayout.scriptVersion + ');background-size: cover;" class="d-inline-block">');
+                content.push('<div style="position: absolute;margin-top: ' + 12 * imageRatio + 'px;margin-left: ' + 17 * imageRatio + 'px;width: ' + domeImageSize + 'px;height: ' + domeImageSize + 'px;border-radius: 50%;overflow: hidden;">');
+
+                    if(currentFluid > 0)
+                    {
+                        content.push('<div style="margin-top: ' + (domeImageSize - volumeHeight) + 'px;height: ' + volumeHeight + 'px;position: relative;">');
+                            content.push('<div class="liquidDome" style="background-color:' + color + ';height: ' + (domeImageSize * 2) + 'px;top: -' + (domeImageSize / 2) + 'px"></div>');
+                        content.push('</div>');
+                    }
+
+                content.push('</div>');
+                content.push('<div style="position: absolute;margin-top: ' + 12 * imageRatio + 'px;margin-left: ' + 17 * imageRatio + 'px;">');
+                    content.push('<img src="' + baseLayout.staticUrl + '/js/InteractiveMap/img/liquidDome.png?v=' + baseLayout.scriptVersion + '" width="' + domeImageSize + '" height="' + domeImageSize + '" />');
+                content.push('</div>');
             content.push('</div>');
 
         return content.join('');
