@@ -2416,6 +2416,20 @@ export default class BaseLayout
                 this.playerLayers[layerId].filtersCount[currentObject.className]++;
             }
 
+        // Don't show fake Boombox...
+        if(currentObject.className === '/Game/FactoryGame/Equipment/BoomBox/BP_BoomBoxPlayer.BP_BoomBoxPlayer_C')
+        {
+            let mMode = this.getObjectProperty(currentObject, 'mMode');
+                if(mMode !== null && mMode.value === 'EBoomBoxMode::Static')
+                {
+
+                }
+                else
+                {
+                    return null;
+                }
+        }
+
         // Check building options
         let weight          = (buildingData.mapWeight !== undefined) ? buildingData.mapWeight : 1;
         let polygonOptions  = {
