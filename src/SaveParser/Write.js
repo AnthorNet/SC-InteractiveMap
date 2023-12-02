@@ -1158,6 +1158,7 @@ export default class SaveParser_Write
                 break;
 
             case 'Int64':
+            case 'Double':
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
                     property += this.writeLong(currentProperty.value.values[i]);

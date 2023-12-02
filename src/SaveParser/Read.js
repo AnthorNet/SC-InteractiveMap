@@ -1021,6 +1021,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Int64':
+            case 'Double':
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
                     currentProperty.value.values.push(this.readLong());
