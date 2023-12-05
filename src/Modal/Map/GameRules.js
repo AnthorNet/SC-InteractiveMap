@@ -18,9 +18,6 @@ export default class Modal_Map_GameRules
         let mCheatNoPower                   = this.baseLayout.getObjectProperty(gameState, 'mCheatNoPower', 0);
         let mCheatNoFuel                    = this.baseLayout.getObjectProperty(gameState, 'mCheatNoFuel', 0);
 
-            console.log(gameState);
-            console.log(gameRules);
-
         if(gameRules !== null || this.baseLayout.saveGameParser.header.saveHeaderType >= 8)
         {
             html.push('<div class="row"><div class="col-6">');
@@ -129,7 +126,6 @@ export default class Modal_Map_GameRules
                 html.push('<div class="tab-pane fade ' + ((pathName === this.lastPathName) ? 'show active' : '') + '" id="playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
 
                 let mPlayerRules    = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mPlayerRules');
-                console.log(mPlayerRules);
 
                 let NoBuildCost = this.baseLayout.getObjectProperty(mPlayerRules, 'NoBuildCost');
                 let FlightMode  = this.baseLayout.getObjectProperty(mPlayerRules, 'FlightMode');
@@ -230,6 +226,15 @@ export default class Modal_Map_GameRules
                     $( "#inputNoUnlockCost" ).prop( "checked", false );
                     $( "#inputUnlockInstantAltRecipes" ).prop( "checked", false );
                     $( "#inputDisableArachnidCreatures" ).prop( "checked", false );
+
+                    for(let pathName in this.baseLayout.players)
+                    {
+                        let mPlayerRules    = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mPlayerRules');
+                            this.baseLayout.deleteObjectProperty(mPlayerRules, 'NoBuildCost');
+                            this.baseLayout.deleteObjectProperty(mPlayerRules, 'FlightMode');
+                            this.baseLayout.deleteObjectProperty(mPlayerRules, 'GodMode');
+                    }
+
                 }
 
                 if($('#inputNoUnlockCost').is(':checked') === true)
@@ -261,32 +266,34 @@ export default class Modal_Map_GameRules
 
                 for(let pathName in this.baseLayout.players)
                 {
-                    if($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatNoCost').is(':checked') === true)
-                    {
-                        this.baseLayout.setObjectProperty(this.baseLayout.players[pathName], 'NoBuildCost', (($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatNoCost').is(':checked') === true) ? 1 : 0), 'Bool');
-                    }
-                    else
-                    {
-                        this.baseLayout.deleteObjectProperty(this.baseLayout.players[pathName], 'NoBuildCost');
-                    }
+                    let mPlayerRules    = this.baseLayout.getObjectProperty(this.baseLayout.players[pathName].player, 'mPlayerRules');
 
-                    if($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatFlightMode').is(':checked') === true)
-                    {
-                        this.baseLayout.setObjectProperty(this.baseLayout.players[pathName], 'FlightMode', (($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatFlightMode').is(':checked') === true) ? 1 : 0), 'Bool');
-                    }
-                    else
-                    {
-                        this.baseLayout.deleteObjectProperty(this.baseLayout.players[pathName], 'FlightMode');
-                    }
+                        if($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatNoCost').is(':checked') === true)
+                        {
+                            this.baseLayout.setObjectProperty(mPlayerRules, 'NoBuildCost', (($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatNoCost').is(':checked') === true) ? 1 : 0), 'Bool');
+                        }
+                        else
+                        {
+                            this.baseLayout.deleteObjectProperty(mPlayerRules, 'NoBuildCost');
+                        }
 
-                    if($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatGodMode').is(':checked') === true)
-                    {
-                        this.baseLayout.setObjectProperty(this.baseLayout.players[pathName], 'GodMode', (($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatGodMode').is(':checked') === true) ? 1 : 0), 'Bool');
-                    }
-                    else
-                    {
-                        this.baseLayout.deleteObjectProperty(this.baseLayout.players[pathName], 'GodMode');
-                    }
+                        if($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatFlightMode').is(':checked') === true)
+                        {
+                            this.baseLayout.setObjectProperty(mPlayerRules, 'FlightMode', (($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatFlightMode').is(':checked') === true) ? 1 : 0), 'Bool');
+                        }
+                        else
+                        {
+                            this.baseLayout.deleteObjectProperty(mPlayerRules, 'FlightMode');
+                        }
+
+                        if($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatGodMode').is(':checked') === true)
+                        {
+                            this.baseLayout.setObjectProperty(mPlayerRules, 'GodMode', (($('#playerGameRules-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '-inputCheatGodMode').is(':checked') === true) ? 1 : 0), 'Bool');
+                        }
+                        else
+                        {
+                            this.baseLayout.deleteObjectProperty(mPlayerRules, 'GodMode');
+                        }
                 }
             }
         });
