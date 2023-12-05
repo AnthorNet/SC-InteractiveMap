@@ -4,6 +4,8 @@ import SaveParser_FicsIt                        from '../SaveParser/FicsIt.js';
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import Building_PowerLine                       from '../Building/PowerLine.js';
+
 import pako                                     from '../Lib/pako.esm.js';
 import saveAs                                   from '../Lib/FileSaver.js';
 
@@ -25,7 +27,6 @@ export default class Spawn_Megaprint
         this.excludedTranslationClassName   = this.powerLineClassName.concat(['/Script/FactoryGame.FGDockingStationInfo', '/Script/FactoryGame.FGDroneStationInfo', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGRailroadTimeTable', '/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C']);
 
         this.useHistory                     = (options.history !== undefined) ? options.history : true;
-
         if(this.useHistory === true && this.baseLayout.history !== null)
         {
             this.historyValues      = [];
@@ -89,27 +90,135 @@ export default class Spawn_Megaprint
                 }
             }
 
-            // Move old extractor to new water volume...
-            /**/
-            if(this.clipboard.buildVersion < 238433)
+            if(this.clipboard.buildVersion < 264901)
             {
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
+                    // Move water extractor to known volume...
                     if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/WaterPump/Build_WaterPump.Build_WaterPump_C')
                     {
                         for(let j = 0; j < this.clipboard.data[i].parent.properties.length; j++)
                         {
                             if(this.clipboard.data[i].parent.properties[j].name === 'mExtractableResource')
                             {
-                                this.clipboard.data[i].parent.properties[j].value = {
-                                    pathName    : 'Persistent_Level:PersistentLevel.FGWaterVolume68_23'
-                                };
+                                this.clipboard.data[i].parent.properties[j].value = { pathName : 'Persistent_Level:PersistentLevel.FGWaterVolume68_23' };
+                            }
+                        }
+                    }
+
+                    // Move wells extractor to known volume...
+                    if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/FrackingExtractor/Build_FrackingExtractor.Build_FrackingExtractor_C')
+                    {
+                        for(let j = 0; j < this.clipboard.data[i].parent.properties.length; j++)
+                        {
+                            if(this.clipboard.data[i].parent.properties[j].name === 'mExtractableResource')
+                            {
+                                if(this.baseLayout.satisfactoryMap.collectableMarkers[this.clipboard.data[i].parent.properties[j].value.pathName] === undefined)
+                                {
+                                    // Find a pipe network in order to get the needed well type...
+                                    if(this.clipboard.pipes !== undefined)
+                                    {
+                                        for(let pipeNetworkID in this.clipboard.pipes)
+                                        {
+                                            if(this.clipboard.pipes[pipeNetworkID].interface.includes(this.clipboard.data[i].parent.pathName + '.FGPipeConnectionFactory'))
+                                            {
+                                                let availableWellsFluids = {
+                                                        waterWellPure       : '/Game/FactoryGame/Resource/RawResources/Water/Desc_Water.Desc_Water_C',
+                                                        nitrogenGasWellPure : '/Game/FactoryGame/Resource/RawResources/NitrogenGas/Desc_NitrogenGas.Desc_NitrogenGas_C',
+                                                        oilWellPure         : '/Game/FactoryGame/Resource/RawResources/CrudeOil/Desc_LiquidOil.Desc_LiquidOil_C'
+                                                    };
+
+                                                    for(let currentFluid in availableWellsFluids)
+                                                    {
+                                                        if(this.clipboard.pipes[pipeNetworkID].fluid.pathName === availableWellsFluids[currentFluid])
+                                                        {
+                                                            for(let markerPathName in this.baseLayout.satisfactoryMap.collectableMarkers)
+                                                            {
+                                                                if(this.baseLayout.satisfactoryMap.collectableMarkers[markerPathName].options.layerId === currentFluid)
+                                                                {
+                                                                    delete this.clipboard.data[i].parent.properties[j].value.levelName;
+                                                                    this.clipboard.data[i].parent.properties[j].value.pathName = this.baseLayout.satisfactoryMap.collectableMarkers[markerPathName].options.pathName;
+
+                                                                    // Check if satellite is active..
+                                                                    let currentSatellite = this.baseLayout.saveGameParser.getTargetObject(this.clipboard.data[i].parent.properties[j].value.pathName)
+                                                                        if(currentSatellite !== null)
+                                                                        {
+                                                                            let mState = this.baseLayout.getObjectProperty(currentSatellite, 'mState');
+                                                                                if(mState === null)
+                                                                                {
+                                                                                    currentSatellite.properties.push({
+                                                                                        name    : 'mState',
+                                                                                        type    : 'Enum',
+                                                                                        value   : {
+                                                                                            name    : 'EFrackingSatelliteState',
+                                                                                            value   : 'EFrackingSatelliteState::FSS_Active'
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                        }
+
+
+                                                                    // Link the smasher to its core...
+                                                                    //TODO: Find the neareast smasher?
+                                                                    let availableSmashers   = [];
+                                                                        for(let k = 0; k < this.clipboard.data.length; k++)
+                                                                        {
+                                                                            if(this.clipboard.data[k].parent.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
+                                                                            {
+                                                                                availableSmashers.push({
+                                                                                    index       : k,
+                                                                                    x           : this.clipboard.data[k].parent.transform.translation[0],
+                                                                                    y           : this.clipboard.data[k].parent.transform.translation[1],
+                                                                                    z           : this.clipboard.data[k].parent.transform.translation[2]
+                                                                                });
+                                                                            }
+                                                                        }
+
+                                                                        if(availableSmashers.length > 0)
+                                                                        {
+                                                                            let closestSmasher = availableSmashers.reduce((a, b) => BaseLayout_Math.getDistance(this.clipboard.data[i].parent.transform.translation, a) < BaseLayout_Math.getDistance(this.clipboard.data[i].parent.transform.translation, b) ? a : b);
+                                                                                for(let l = 0; l < this.clipboard.data[closestSmasher.index].parent.properties.length; l++)
+                                                                                {
+                                                                                    if(this.clipboard.data[closestSmasher.index].parent.properties[l].name === 'mExtractableResource')
+                                                                                    {
+                                                                                        delete this.clipboard.data[closestSmasher.index].parent.properties[l].value.levelName;
+                                                                                        this.clipboard.data[closestSmasher.index].parent.properties[l].value.pathName = this.baseLayout.satisfactoryMap.collectableMarkers[markerPathName].options.core;
+
+                                                                                        let currentCore = this.baseLayout.saveGameParser.getTargetObject(this.clipboard.data[closestSmasher.index].parent.properties[l].value.pathName);
+                                                                                            if(currentCore !== null)
+                                                                                            {
+                                                                                                let mDoSpawnParticle = this.baseLayout.getObjectProperty(currentCore, 'mDoSpawnParticle');
+                                                                                                    if(mDoSpawnParticle === null)
+                                                                                                    {
+                                                                                                        currentCore.properties.push({
+                                                                                                            name    : 'mDoSpawnParticle',
+                                                                                                            type    : 'Bool',
+                                                                                                            value   : 0
+                                                                                                        });
+                                                                                                    }
+                                                                                            }
+                                                                                    }
+                                                                                }
+                                                                        }
+
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            break;
+                                                        }
+                                                    }
+
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-            /**/
 
             // Apply SaveParser_FicsIt
             for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
