@@ -655,6 +655,24 @@ export default class SaveParser_Write
     {
         this.currentEntityLength    = 0;
         let actor                   = this.writeInt(1, false);
+            /*
+            if(currentActor.className.startsWith('/FastConveyors/Buildable/Belts/Build_FastConveyorBelt'))
+            {
+                actor                  += this.writeString('/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk5/Build_ConveyorBeltMk5.Build_ConveyorBeltMk5_C', false);
+            }
+            else
+            {
+                if(currentActor.className.startsWith('/FastConveyors/Buildable/Lifts/Build_FastConveyorLift'))
+                {
+                    actor                  += this.writeString('/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk5/Build_ConveyorLiftMk5.Build_ConveyorLiftMk5_C', false);
+                }
+                else
+                {
+                    actor                  += this.writeString(currentActor.className, false);
+                }
+            }
+            */
+
             actor                  += this.writeString(currentActor.className, false);
             actor                  += this.writeObjectProperty(currentActor, false);
 
@@ -1465,7 +1483,7 @@ export default class SaveParser_Write
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].valueMap.unk4);
 
                         property += this.writeString(currentProperty.value.values[iMapProperty].valueMap.unk5);
-                        property += this.writeProperty(currentProperty.value.values[iMapProperty].valueMap.unk6);
+                        //property += this.writeProperty(currentProperty.value.values[iMapProperty].valueMap.unk6);
 
                         break;
                     }

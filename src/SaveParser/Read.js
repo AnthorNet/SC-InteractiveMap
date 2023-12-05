@@ -1414,7 +1414,7 @@ export default class SaveParser_Read
                                 mapPropertySubProperties.unk4           = this.readFloat();
 
                                 mapPropertySubProperties.unk5           = this.readString();
-                                mapPropertySubProperties.unk6           = this.readProperty();
+                                //mapPropertySubProperties.unk6           = this.readProperty();
 
                                 break;
                             }
