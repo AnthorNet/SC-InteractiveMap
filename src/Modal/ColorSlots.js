@@ -326,6 +326,21 @@ export default class Modal_ColorSlots
                             html.push('<hr class="border-secondary">');
                         }
 
+                        let currentPresetName = Modal_ColorSlots.getUniquePresetName(presets, i);
+                            if(currentPresetName !== presets[i].name)
+                            {
+                                this.baseLayout.gameStateSubSystem.setPlayerColorPreset(
+                                    i,
+                                    currentPresetName,
+                                    {
+                                        r : BaseLayout_Math.RGBToLinearColor(presets[i].primaryColor.r),
+                                        g : BaseLayout_Math.RGBToLinearColor(presets[i].primaryColor.g),
+                                        b : BaseLayout_Math.RGBToLinearColor(presets[i].primaryColor.b),
+                                        a : BaseLayout_Math.RGBToLinearColor(255),
+                                    }
+                                );
+                            }
+
                         let style = [];
                             style.push('background: rgb(' + presets[i].primaryColor.r + ', ' + presets[i].primaryColor.g + ', ' + presets[i].primaryColor.b + ');');
                             style.push('position: relative;height: 32px;border-radius: 5px;margin: 2px;');
@@ -333,7 +348,7 @@ export default class Modal_ColorSlots
                             style.push('cursor: pointer;');
 
                         html.push('<div class="row align-items-center">');
-                            html.push('<div class="col-7"><h5 class="mb-0">' + presets[i].name + '</h5></div>');
+                            html.push('<div class="col-7"><h5 class="mb-0">' + currentPresetName + '</h5></div>');
                             html.push('<div class="col-3">');
                                 html.push('<div class="d-flex flex-row selectColorPreset ' + ((i === activePreset) ? 'active ' : '') + 'align-items-center" style="' + style.join('') + '" data-preset="' + i + '">');
                                 html.push('</div>');
@@ -370,7 +385,7 @@ export default class Modal_ColorSlots
                     + '      </div>'
                     + '      <div class="row">'
                     + '          <div class="col-12 mt-3">'
-                    + '              <input type="text" class="form-control" value="' + presets[activePreset].name + '" id="presetColorInputName">'
+                    + '              <input type="text" class="form-control" value="' + Modal_ColorSlots.getUniquePresetName(presets, activePreset) + '" id="presetColorInputName">'
                     + '          </div>'
                     + '      </div>'
                     + '  </div>'
@@ -404,10 +419,12 @@ export default class Modal_ColorSlots
                     let style                       = 'rgb(' + presetColorR + ', ' + presetColorG + ', ' + presetColorB + ')';
                         $('#genericModal .modal-body .selectColorPreset.active').css('background', style);
                         $('#genericModal .modal-body .selectColorPreset.active').closest('.row').find('h5').html($('#presetColorInputName').val());
+                    let uniquePresetName            = Modal_ColorSlots.getUniquePresetName(presets, activePreset, $('#presetColorInputName').val());
+                        $('#presetColorInputName').val(uniquePresetName);
 
                     this.baseLayout.gameStateSubSystem.setPlayerColorPreset(
                         parseInt($('#genericModal .modal-body .selectColorPreset.active').attr('data-preset')),
-                        $('#presetColorInputName').val(),
+                        uniquePresetName,
                         {
                             r : BaseLayout_Math.RGBToLinearColor(presetColorR),
                             g : BaseLayout_Math.RGBToLinearColor(presetColorG),
@@ -432,7 +449,10 @@ export default class Modal_ColorSlots
                         }
                 });
                 $('#presetColorInputName').on('change keyup input', function(){
-                    $('#presetColorInputB').trigger('change');
+                    setTimeout(function(){
+                        $('#presetColorInputB').trigger('change');
+                    }, 200);
+
                 });
 
                 $('#genericModal .modal-body .selectColorPreset').hover(
@@ -451,6 +471,7 @@ export default class Modal_ColorSlots
                     $(this).addClass('active').css('border', '3px solid #FFFFFF');
 
                     let presetIndex                     = parseInt($(this).attr('data-preset'));
+                        activePreset                    = presetIndex;
                         presetColorPicker.color.rgb     = {r: presets[presetIndex].primaryColor.r, g: presets[presetIndex].primaryColor.g, b: presets[presetIndex].primaryColor.b};
 
                     $('#presetColorInputR').val(presets[presetIndex].primaryColor.r);
@@ -459,7 +480,8 @@ export default class Modal_ColorSlots
 
                     $('#presetColorInputHex').val(presetColorPicker.color.hexString);
 
-                    $('#presetColorInputName').val(presets[presetIndex].name);
+                    $('#presetColorInputName').val(Modal_ColorSlots.getUniquePresetName(presets, presetIndex));
+
                 });
 
                 $('#genericModal .modal-body .btn-delete').on('click', (e) => {
@@ -490,5 +512,27 @@ export default class Modal_ColorSlots
             let presets = this.baseLayout.gameStateSubSystem.getPlayerColorPresets();
                 this.parseColorPresets(presets.length - 1);
         });
+    }
+
+    static getUniquePresetName(presets, i, newValue = null)
+    {
+            if(newValue !== null)
+            {
+                presets[i].name = newValue;
+            }
+
+        let requestedName       = presets[i].name;
+        let supplementalCount   = 0;
+        let supplementalName    = '';
+            for(let j = 0; j < i; j++)
+            {
+                if(requestedName === presets[j].name)
+                {
+                    supplementalCount++;
+                    supplementalName    = ' (' + supplementalCount + ')';
+                }
+            }
+
+        return requestedName + supplementalName;
     }
 }
