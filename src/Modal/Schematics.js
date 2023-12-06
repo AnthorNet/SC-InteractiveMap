@@ -756,7 +756,6 @@ export default class Modal_Schematics
         {
             let purchasedAlternate      = [];
             let schematicManager        = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
-                console.log(schematicManager)
                 if(schematicManager !== null)
                 {
                     let mPurchasedSchematics    = this.baseLayout.getObjectProperty(schematicManager, 'mPurchasedSchematics');
@@ -778,36 +777,17 @@ export default class Modal_Schematics
                             {
                                 if(purchasedAlternate.includes(mPurchasedSchematics.values[i].pathName) === false)
                                 {
-                                    purchasedAlternate.push(mPurchasedSchematics.values[i].pathName);
+                                    // Convert old schematics...
+                                    if(mPurchasedSchematics.values[i].pathName === '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_AOrgans_0.Research_AOrgans_0_C')
+                                    {
+                                        mPurchasedSchematics.values[i].pathName = '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_AO_Spitter.Research_AO_Spitter_C';
+                                    }
+                                    if(mPurchasedSchematics.values[i].pathName === '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_ACarapace_0.Research_ACarapace_0_C')
+                                    {
+                                        mPurchasedSchematics.values[i].pathName = '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_AO_Hog.Research_AO_Hog_C';
+                                    }
 
-                                    let schematicId = mPurchasedSchematics.values[i].pathName.split('.').pop();
-                                        if(
-                                               this.baseLayout.schematicsData[schematicId] === undefined
-                                            && [
-                                                    'Research_HardDrive_0_C',
-                                                    'Research_FlowerPetals_1_C', 'Research_FlowerPetals_2_C', 'Research_FlowerPetals_3_C',
-                                                    'Research_Sulfur_4_2_1_C', 'Research_Sulfur_3_2_1_C', 'Research_Sulfur_2_C',
-                                                    'Research_Quartz_3_C', 'Research_Quartz_3_3_C', 'Research_Quartz_3_2_C',
-                                                    'Research_AOrgans_1_C', 'Research_AOrgans_0_C', 'Research_AOrganisms_1_C', 'Research_AOrgans_0_C', 'Research_AOrganisms_1_C', 'Research_ACarapace_2_1_C', 'Research_ACarapace_1_C', 'Research_ACarapace_0_C'
-                                                ].includes(schematicId) === false
-                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Parts/') === false
-                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Statue') === false
-                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Schematics/ResourceSink/Customizer_Background/') === false
-                                            && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/Progression/CustomizerUnlock_PipelineSwatch.CustomizerUnlock_PipelineSwatch_C'
-                                            && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/ResourceSink/Patterns/CBG_PatternRemoval.CBG_PatternRemoval_C'
-                                            && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Schematics/ResourceSink/ResourceSink_Boombox.ResourceSink_Boombox_C'
-                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Events/Christmas/Buildings/TreeDecor/') === false
-                                            && mPurchasedSchematics.values[i].pathName.startsWith('/Game/FactoryGame/Events/Christmas/Calendar_Schematics/Ficsmas_Schematic_SkinBundle_') === false
-                                            && mPurchasedSchematics.values[i].pathName !== '/Game/FactoryGame/Events/Christmas/Calendar_Schematics/Ficsmas_Schematic_FingerGun_Emote.Ficsmas_Schematic_FingerGun_Emote_C'
-                                        )
-                                        {
-                                            if(typeof Sentry !== 'undefined' && this.baseLayout.useDebug === true)
-                                            {
-                                                Sentry.setContext('className', {className: mPurchasedSchematics.values[i].pathName});
-                                                Sentry.captureMessage('Missing schematic className: ' + mPurchasedSchematics.values[i].pathName);
-                                            }
-                                            console.log('Missing schematic className: ' + mPurchasedSchematics.values[i].pathName);
-                                        }
+                                    purchasedAlternate.push(mPurchasedSchematics.values[i].pathName);
                                 }
                                 else
                                 {
