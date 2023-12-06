@@ -98,10 +98,34 @@ export default class SaveParser_FicsIt
                                 //console.log(mOwnedPawn)
                                 continue;
                             }
+
+                        // Remove unused hotbars...
+                        let mPlayerHotbars = baseLayout.getObjectProperty(currentPlayerState, 'mPlayerHotbars');
+                            if(mPlayerHotbars !== null)
+                            {
+                                for(let i = 0; i < mPlayerHotbars.values.length; i++)
+                                {
+                                    let currentHotbar = baseLayout.saveGameParser.getTargetObject(mPlayerHotbars.values[i].pathName);
+                                        if(currentHotbar !== null)
+                                        {
+                                            let mShortcuts  = baseLayout.getObjectProperty(currentHotbar, 'mShortcuts');
+                                                if(mShortcuts !== null)
+                                                {
+                                                    for(let j = 0; j < mShortcuts.values.length; j++)
+                                                    {
+                                                        baseLayout.saveGameParser.deleteObject(mShortcuts.values[j].pathName);
+                                                    }
+                                                }
+                                        }
+
+                                    baseLayout.saveGameParser.deleteObject(mPlayerHotbars.values[i].pathName);
+                                }
+                            }
+
+                        baseLayout.saveGameParser.deleteObject(currentObject.extra.game[i].pathName);
                     }
 
                     console.log('Fixing ghost playerState "' + currentObject.extra.game[i].pathName + '" in GameMode');
-                    baseLayout.saveGameParser.deleteObject(currentPlayerState);
                     currentObject.extra.game.splice(i, 1);
             }
         }

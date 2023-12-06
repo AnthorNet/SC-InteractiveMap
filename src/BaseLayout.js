@@ -733,17 +733,16 @@ export default class BaseLayout
             }
             if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
             {
-                //console.log('BP_PlayerState_C', currentObject);
-                this.players[currentObject.pathName] = new SubSystem_Player({baseLayout: this, player: currentObject});
+                let mOwnedPawn  = this.getObjectProperty(currentObject, 'mOwnedPawn');
+                    if(mOwnedPawn !== null)
+                    {
+                        this.players[currentObject.pathName] = new SubSystem_Player({baseLayout: this, player: currentObject});
 
-                // Moving view before rendering objects...
-                if(
-                        (this.saveGameParser.playerHostPathName !== null && this.saveGameParser.playerHostPathName === currentObject.pathName)
-                     || (this.saveGameParser.playerHostPathName === null && Object.keys(this.players).length === 1) // Update 8, get first player...
-                )
-                {
-                    let mOwnedPawn  = this.getObjectProperty(currentObject, 'mOwnedPawn');
-                        if(mOwnedPawn !== null)
+                        // Moving view before rendering objects...
+                        if(
+                                (this.saveGameParser.playerHostPathName !== null && this.saveGameParser.playerHostPathName === currentObject.pathName)
+                             || (this.saveGameParser.playerHostPathName === null && Object.keys(this.players).length === 1) // Update 8, get first player...
+                        )
                         {
                             let targetPlayer = this.saveGameParser.getTargetObject(mOwnedPawn.pathName);
                                 if(targetPlayer !== null)
@@ -751,7 +750,8 @@ export default class BaseLayout
                                     this.satisfactoryMap.leafletMap.setView(this.satisfactoryMap.unproject(targetPlayer.transform.translation), 7);
                                 }
                         }
-                }
+                    }
+
                 continue;
             }
 
@@ -1067,7 +1067,7 @@ export default class BaseLayout
                         && ['/Game/FactoryGame/Buildable/Vehicle/Train/-Shared/BP_Train.BP_Train_C', '/Script/FactoryGame.FGTrainStationIdentifier', '/Script/FactoryGame.FGTrain'].includes(currentObject.className) === false
                     )
                     {
-                        console.log('Unknown?', currentObject);
+                        //console.log('Unknown?', currentObject);
                     }
                 }
             }
