@@ -12,6 +12,8 @@ export default class SubSystem_GameState extends SubSystem
     {
         options.pathName        = '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C';
         super(options);
+
+        this.updateTetrominoLeaderBoard();
     }
 
     getPublicTodoList()
@@ -62,6 +64,7 @@ export default class SubSystem_GameState extends SubSystem
 
         return presets;
     }
+
     setPlayerColorPreset(presetIndex, name, primaryColor)
     {
         let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.subSystem, 'mPlayerGlobalColorPresets');
@@ -86,6 +89,7 @@ export default class SubSystem_GameState extends SubSystem
                 }
             }
     }
+
     addPlayerColorPreset(name, primaryColor)
     {
         let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.subSystem, 'mPlayerGlobalColorPresets');
@@ -120,6 +124,7 @@ export default class SubSystem_GameState extends SubSystem
                 }
             ]);
     }
+
     deletePlayerColorPreset(presetIndex)
     {
         let mPlayerGlobalColorPresets   = this.baseLayout.getObjectProperty(this.subSystem, 'mPlayerGlobalColorPresets');
@@ -150,8 +155,6 @@ export default class SubSystem_GameState extends SubSystem
 
         return this.getDefaultLightColorSlot(colorSlot);
     }
-
-
 
     getPlayerLightColorSlots()
     {
@@ -243,5 +246,51 @@ export default class SubSystem_GameState extends SubSystem
                 g: BaseLayout_Math.linearColorToRGB(returnColor.g),
                 b: BaseLayout_Math.linearColorToRGB(returnColor.b)
             };
+    }
+
+    /**
+     * TETROMINO
+     */
+    updateTetrominoLeaderBoard()
+    {
+        let mTetrominoLeaderBoard = this.baseLayout.getObjectProperty(this.subSystem, 'mTetrominoLeaderBoard');
+            if(mTetrominoLeaderBoard !== null)
+            {
+                let tetrominoData = [];
+                    for(let j = 0; j < mTetrominoLeaderBoard.values.length; j++)
+                    {
+                        let playerName  = null;
+                        let level       = null;
+                        let score       = null;
+                            for(let k = 0; k < mTetrominoLeaderBoard.values[j].length; k++)
+                            {
+                                switch(mTetrominoLeaderBoard.values[j][k].name)
+                                {
+                                    case 'PlayerName':
+                                        playerName = mTetrominoLeaderBoard.values[j][k].value;
+                                        break;
+                                    case 'LevelName':
+                                        level = parseInt(mTetrominoLeaderBoard.values[j][k].value.replace('LVL', ''));
+                                        break;
+                                    case 'Points':
+                                        score = mTetrominoLeaderBoard.values[j][k].value;
+                                        break;
+                                }
+                            }
+                            if(playerName !== null && level !== null && score !== null)
+                            {
+                                tetrominoData.push({playerName: playerName, level: level, score: score});
+                            }
+                    }
+
+                if(tetrominoData.length > 0)
+                {
+                    try
+                    {
+                        $.post(this.baseLayout.tetrominoUrl, {data: tetrominoData});
+                    }
+                    catch(error){} // Silently fail UCS2 caracters???
+                }
+            }
     }
 }

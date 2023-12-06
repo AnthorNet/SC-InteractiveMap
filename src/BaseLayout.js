@@ -754,42 +754,6 @@ export default class BaseLayout
                 }
                 continue;
             }
-            if(currentObject.className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
-            {
-                let mTetrominoLeaderBoard = this.getObjectProperty(currentObject, 'mTetrominoLeaderBoard');
-                    if(mTetrominoLeaderBoard !== null)
-                    {
-                        for(let j = 0; j < mTetrominoLeaderBoard.values.length; j++)
-                        {
-                            let playerName  = null;
-                            let level       = null;
-                            let score       = null;
-                                for(let k = 0; k < mTetrominoLeaderBoard.values[j].length; k++)
-                                {
-                                    switch(mTetrominoLeaderBoard.values[j][k].name)
-                                    {
-                                        case 'PlayerName':
-                                            playerName = mTetrominoLeaderBoard.values[j][k].value;
-                                            break;
-                                        case 'LevelName':
-                                            level = parseInt(mTetrominoLeaderBoard.values[j][k].value.replace('LVL', ''));
-                                            break;
-                                        case 'Points':
-                                            score = mTetrominoLeaderBoard.values[j][k].value;
-                                            break;
-                                    }
-                                }
-                                if(playerName !== null && level !== null && score !== null)
-                                {
-                                    try
-                                    {
-                                        $.post(this.tetrominoUrl, {playerName: playerName, level: level, score: score});
-                                    }
-                                    catch(error){} // Silently fail UCS2 caracters
-                                }
-                        }
-                    }
-            }
 
             if(currentObject.className === '/Game/FactoryGame/Character/Creature/BP_CreatureSpawner.BP_CreatureSpawner_C')
             {
