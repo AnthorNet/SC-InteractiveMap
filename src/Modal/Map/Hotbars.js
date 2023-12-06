@@ -514,11 +514,21 @@ export default class Modal_Map_Hotbars
                 let mRecipeToActivate = this.baseLayout.getItemDataFromRecipe(currentShortcut, 'mRecipeToActivate');
                     if(mRecipeToActivate !== null && mRecipeToActivate.produce !== undefined)
                     {
-                        let buildingData = this.baseLayout.getBuildingDataFromClassName(Object.keys(mRecipeToActivate.produce)[0].replace(new RegExp(/Desc_/, 'g'), 'Build_'));
+                        let buildingClassName = Object.keys(mRecipeToActivate.produce)[0];
+                            if(buildingClassName.startsWith('/Game/FactoryGame/Buildable/Vehicle') === false)
+                            {
+                                buildingClassName = buildingClassName.replace(new RegExp(/Desc_/, 'g'), 'Build_');
+                            }
+
+                        let buildingData = this.baseLayout.getBuildingDataFromClassName(buildingClassName);
 
                             if(buildingData !== null)
                             {
                                 return this.baseLayout.getInventoryImage({image: buildingData.image, name: buildingData.name}, cellWidth);
+                            }
+                            else
+                            {
+                                console.log(mRecipeToActivate)
                             }
                     }
 
