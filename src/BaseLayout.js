@@ -124,6 +124,7 @@ export default class BaseLayout
         this.useRadioactivity                   = (this.localStorage !== null && this.localStorage.getItem('mapUseRadioactivity') !== null) ? (this.localStorage.getItem('mapUseRadioactivity') === 'true') : true;
         this.useFogOfWar                        = (this.localStorage !== null && this.localStorage.getItem('mapUseFogOfWar') !== null) ? (this.localStorage.getItem('mapUseFogOfWar') === 'true') : true;
         this.useGlobalStats                     = (this.localStorage !== null && this.localStorage.getItem('mapUseGlobalStats') !== null) ? (this.localStorage.getItem('mapUseGlobalStats') === 'true') : true;
+        this.mapStructuresModelsQuality         = (this.localStorage !== null && this.localStorage.getItem('mapStructuresModelsQuality') !== null) ? this.localStorage.getItem('mapStructuresModelsQuality') : 'medium';
         this.mapModelsQuality                   = (this.localStorage !== null && this.localStorage.getItem('mapModelsQuality') !== null) ? this.localStorage.getItem('mapModelsQuality') : 'high';
 
         this.detailedModels                     = {};
@@ -608,9 +609,9 @@ export default class BaseLayout
                 objectsKeys         = Object.keys(objects);
 
                 // Performance warning!!!
-                if(objectsKeys.length > 500000)  { this.mapModelsQuality   = 'medium'; }
-                if(objectsKeys.length > 750000)  { this.showPatterns       = false; }
-                if(objectsKeys.length > 1000000) { this.mapModelsQuality   = 'low'; }
+                if(objectsKeys.length > 500000)  { this.mapStructuresModelsQuality  = 'medium'; }
+                if(objectsKeys.length > 750000)  { this.showPatterns                = false; }
+                if(objectsKeys.length > 1000000) { this.mapStructuresModelsQuality  = 'low'; this.mapModelsQuality  = 'medium'; }
         }
 
         let countObjects            = objectsKeys.length;

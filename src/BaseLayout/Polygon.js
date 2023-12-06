@@ -29,7 +29,23 @@ export default class BaseLayout_Polygon
         }
 
         // Prepare high quality model
-        if(((['medium', 'high'].includes(baseLayout.mapModelsQuality) && baseLayout.detailedModels !== null) || options.customPolygon !== undefined) && baseLayout.detailedModels[model] !== undefined && options.skipDetailedModel === false)
+        let useHighQuality      = false;
+        let isStructureModel    = false;
+            if(model.startsWith('/Game/FactoryGame/Buildable/Building/Foundation') || model.startsWith('/Game/FactoryGame/Buildable/Building/Ramp') || model.startsWith('/Game/FactoryGame/Buildable/Building/Wall'))
+            {
+                isStructureModel = true;
+            }
+
+            if(['medium', 'high'].includes(baseLayout.mapModelsQuality) && isStructureModel === false)
+            {
+                useHighQuality = true;
+            }
+            if(['medium', 'high'].includes(baseLayout.mapStructuresModelsQuality) && isStructureModel === true)
+            {
+                useHighQuality = true;
+            }
+
+        if(((useHighQuality === true && baseLayout.detailedModels !== null) || options.customPolygon !== undefined) && baseLayout.detailedModels[model] !== undefined && options.skipDetailedModel === false)
         {
             let currentModel        = baseLayout.detailedModels[model];
             let currentModelScale   = (currentModel.scale !== undefined) ? currentModel.scale : 1;
@@ -37,9 +53,16 @@ export default class BaseLayout_Polygon
             let currentModelYOffset = (currentModel.yOffset !== undefined) ? currentModel.yOffset : 0;
 
             // Only keep the first model form which should always give the main object outline...
-            if(baseLayout.mapModelsQuality === 'medium' && options.isPattern === undefined)
+            if(options.isPattern === undefined)
             {
-                currentModel.forms = [currentModel.forms[0]];
+                if(baseLayout.mapModelsQuality === 'medium' && isStructureModel === false)
+                {
+                    currentModel.forms = [currentModel.forms[0]];
+                }
+                if(baseLayout.mapStructuresModelsQuality === 'medium' && isStructureModel === true)
+                {
+                    currentModel.forms = [currentModel.forms[0]];
+                }
             }
 
             if(currentModel.formsLength === undefined)
@@ -73,7 +96,10 @@ export default class BaseLayout_Polygon
                 currentForm.push(currentPoints);
 
                 // Only deals with form holes in high quality
-                if(currentModel.forms[i].holes !== undefined && (baseLayout.mapModelsQuality === 'high' || options.isPattern !== undefined))
+                if(
+                        currentModel.forms[i].holes !== undefined
+                    && ((baseLayout.mapModelsQuality === 'high' && isStructureModel === false) || (baseLayout.mapStructuresModelsQuality === 'high' && isStructureModel === true) || options.isPattern !== undefined)
+                )
                 {
                    if(currentModel.forms[i].holesLength === undefined)
                     {

@@ -168,8 +168,14 @@ export default class Modal_Map_Options
         html.push('</div>');
         html.push('</div></div>');
 
-        html.push('<div class="row"><div class="col-12">');
-        html.push('<div class="form-group"><div class="input-group input-group-sm"><div class="input-group-prepend"><label class="input-group-text" for="inputMapModelsQuality">Models Quality</label></div><select class="custom-select text-white" id="inputMapModelsQuality" style="background: none;">');
+        html.push('<div class="row"><div class="col-6">');
+        html.push('<div class="form-group"><div class="input-group input-group-sm"><div class="input-group-prepend"><label class="input-group-text" for="inputMapStructuresModelsQuality">Structures Models Quality</label></div><select class="custom-select text-white" id="inputMapStructuresModelsQuality" style="background: none;">');
+        html.push('<option value="low" class="text-secondary" ' + ((this.baseLayout.mapStructuresModelsQuality === 'low') ? 'selected' : '') + '>Square (Low)</option>');
+        html.push('<option value="medium" class="text-secondary" ' + ((this.baseLayout.mapStructuresModelsQuality === 'medium') ? 'selected' : '') + '>Outline (Medium)</option>');
+        html.push('<option value="high" class="text-secondary" ' + ((this.baseLayout.mapStructuresModelsQuality === 'high') ? 'selected' : '') + '>Ouline + Details (High)</option>');
+        html.push('</select></div></div>');
+        html.push('</div><div class="col-6">');
+        html.push('<div class="form-group"><div class="input-group input-group-sm"><div class="input-group-prepend"><label class="input-group-text" for="inputMapModelsQuality">BuildingsModels Quality</label></div><select class="custom-select text-white" id="inputMapModelsQuality" style="background: none;">');
         html.push('<option value="low" class="text-secondary" ' + ((this.baseLayout.mapModelsQuality === 'low') ? 'selected' : '') + '>Square (Low)</option>');
         html.push('<option value="medium" class="text-secondary" ' + ((this.baseLayout.mapModelsQuality === 'medium') ? 'selected' : '') + '>Outline (Medium)</option>');
         html.push('<option value="high" class="text-secondary" ' + ((this.baseLayout.mapModelsQuality === 'high') ? 'selected' : '') + '>Ouline + Details (High)</option>');
@@ -246,6 +252,9 @@ export default class Modal_Map_Options
 
                 this.baseLayout.satisfactoryMap.showInternalCoordinates = (($('#inputUseInternalCoordinates').is(':checked') === true) ? true : false);
                 this.baseLayout.localStorage.setItem('mapInternalCoordinates', this.baseLayout.satisfactoryMap.showInternalCoordinates);
+
+                this.baseLayout.mapStructuresModelsQuality  = $('#inputMapStructuresModelsQuality').val();
+                this.baseLayout.localStorage.setItem('mapStructuresModelsQuality', this.baseLayout.mapStructuresModelsQuality);
 
                 this.baseLayout.mapModelsQuality            = $('#inputMapModelsQuality').val();
                 this.baseLayout.localStorage.setItem('mapModelsQuality', this.baseLayout.mapModelsQuality);
