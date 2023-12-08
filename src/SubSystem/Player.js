@@ -14,8 +14,6 @@ export default class SubSystem_Player
 
         this.displayName            = false;
         this.doDisplayNameLookup();
-
-        //TODO: mPlayerRules
     }
 
     isHost()
@@ -32,6 +30,20 @@ export default class SubSystem_Player
         }
 
         return false;
+    }
+
+    getPlatformId()
+    {
+        if(this.player.eosId !== undefined)
+        {
+            return this.player.eosId;
+        }
+        if(this.player.steamId !== undefined)
+        {
+            return this.player.steamId;
+        }
+
+        return null;
     }
 
     doDisplayNameLookup()
@@ -74,8 +86,13 @@ export default class SubSystem_Player
         }
     }
 
-    getDisplayName()
+    getDisplayName(raw = false)
     {
+        if(raw === true)
+        {
+            return this.displayName;
+        }
+
         if(this.isHost() === true)
         {
             if(this.displayName !== null)

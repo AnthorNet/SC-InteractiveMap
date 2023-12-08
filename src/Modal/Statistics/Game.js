@@ -1,12 +1,9 @@
 /* global Intl, gtag */
-import SubSystem_Statistics                     from '../../SubSystem/Statistics.js';
-
 export default class Modal_Statistics_Game
 {
     constructor(options)
     {
         this.baseLayout             = options.baseLayout;
-        this.statisticsSubSystem    = new SubSystem_Statistics({baseLayout: this.baseLayout});
 
         if(typeof gtag === 'function')
         {
@@ -17,7 +14,7 @@ export default class Modal_Statistics_Game
     parseConsumables()
     {
         let html        = [];
-        let consumables = this.statisticsSubSystem.getConsumablesConsumedCount();
+        let consumables = this.baseLayout.statisticsSubSystem.getConsumablesConsumedCount();
             if(consumables !== null)
             {
                 let sorted = Object.keys(consumables).sort(function(a,b){ return consumables[b] - consumables[a]; });
@@ -49,7 +46,7 @@ export default class Modal_Statistics_Game
     parseCreatures()
     {
         let html        = [];
-        let creatures   = this.statisticsSubSystem.getCreaturesKilledCount();
+        let creatures   = this.baseLayout.statisticsSubSystem.getCreaturesKilledCount();
             if(creatures !== null)
             {
                 let sorted = Object.keys(creatures).sort(function(a,b){ return creatures[b] - creatures[a]; });
@@ -81,7 +78,7 @@ export default class Modal_Statistics_Game
     parseCrafting()
     {
         let html        = [];
-        let crafting    = this.statisticsSubSystem.getItemsManuallyCraftedCount();
+        let crafting    = this.baseLayout.statisticsSubSystem.getItemsManuallyCraftedCount();
             if(crafting !== null)
             {
                 let sorted = Object.keys(crafting).sort(function(a,b){ return crafting[b] - crafting[a]; });
@@ -113,7 +110,7 @@ export default class Modal_Statistics_Game
     parseBuilt()
     {
         let html        = [];
-        let built       = this.statisticsSubSystem.getActorsBuiltCount();
+        let built       = this.baseLayout.statisticsSubSystem.getActorsBuiltCount();
             if(built !== null)
             {
                 let sorted = Object.keys(built).sort(function(a,b){ return built[b].Total - built[a].Total; });
@@ -144,7 +141,7 @@ export default class Modal_Statistics_Game
     parsePartsUsed()
     {
         let html        = [];
-        let built       = this.statisticsSubSystem.getActorsBuiltCount();
+        let built       = this.baseLayout.statisticsSubSystem.getActorsBuiltCount();
             if(built !== null)
             {
                 // Loop built and create a new parts consumed from the recipes...

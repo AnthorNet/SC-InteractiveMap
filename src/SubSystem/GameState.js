@@ -249,7 +249,7 @@ export default class SubSystem_GameState extends SubSystem
     }
 
     /**
-     * TETROMINO
+     * TETROMINO LEADERBOARD
      */
     updateTetrominoLeaderBoard()
     {

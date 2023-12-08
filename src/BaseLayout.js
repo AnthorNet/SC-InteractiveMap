@@ -19,6 +19,7 @@ import SubSystem_Map                            from './SubSystem/Map.js';
 import SubSystem_PipeNetwork                    from './SubSystem/PipeNetwork.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
 import SubSystem_Railroad                       from './SubSystem/Railroad.js';
+import SubSystem_Statistics                     from './SubSystem/Statistics.js';
 import SubSystem_Time                           from './SubSystem/Time.js';
 import SubSystem_Unlock                         from './SubSystem/Unlock.js';
 import SubSystem_WorldGrid                      from './SubSystem/WorldGrid.js';
@@ -68,6 +69,7 @@ export default class BaseLayout
         this.useBuild                           = (options.build !== undefined) ? options.build : 'EarlyAccess';
         this.scriptVersion                      = (options.version !== undefined) ? options.version : Math.floor(Math.random() * Math.floor(9999999999));
         this.staticUrl                          = options.staticUrl;
+        this.statisticsUrl                      = options.statisticsUrl;
         this.tetrominoUrl                       = options.tetrominoUrl;
         this.usersUrl                           = options.usersUrl;
 
@@ -351,19 +353,14 @@ export default class BaseLayout
         this.collectedSchematics.resetCollected();
 
         this.saveGameParser.load(() => {
-            // Hold sub system to get better performance
+            // Hold sub system to get better performance (Needed to parse objects)
             this.buildableSubSystem     = new SubSystem_Buildable({baseLayout: this});
             this.blueprintSubSystem     = new SubSystem_Blueprint({baseLayout: this});
             this.circuitSubSystem       = new SubSystem_Circuit({baseLayout: this});
-            this.foliageSubSystem       = new SubSystem_Foliage({baseLayout: this});
-            this.gameRulesSubSystem     = new SubSystem_GameRules({baseLayout: this});
             this.gameStateSubSystem     = new SubSystem_GameState({baseLayout: this});
-            this.mapSubSystem           = new SubSystem_Map({baseLayout: this});
             this.pipeNetworkSubSystem   = new SubSystem_PipeNetwork({baseLayout: this});
             this.railroadSubSystem      = new SubSystem_Railroad({baseLayout: this});
             this.timeSubSystem          = new SubSystem_Time({baseLayout: this});
-            this.unlockSubSystem        = new SubSystem_Unlock({baseLayout: this});
-            this.worldGridSubSystem     = new SubSystem_WorldGrid();
 
             if(this.buildingsData === null)
             {
@@ -916,6 +913,14 @@ export default class BaseLayout
 
         this.minAltitude = Number.MAX_SAFE_INTEGER;
         this.maxAltitude = Number.MIN_SAFE_INTEGER;
+
+        // Hold sub system to get better performance
+        this.foliageSubSystem       = new SubSystem_Foliage({baseLayout: this});
+        this.gameRulesSubSystem     = new SubSystem_GameRules({baseLayout: this});
+        this.mapSubSystem           = new SubSystem_Map({baseLayout: this});
+        this.statisticsSubSystem    = new SubSystem_Statistics({baseLayout: this});
+        this.unlockSubSystem        = new SubSystem_Unlock({baseLayout: this});
+        this.worldGridSubSystem     = new SubSystem_WorldGrid();
 
         console.time('addMapLayers');
 

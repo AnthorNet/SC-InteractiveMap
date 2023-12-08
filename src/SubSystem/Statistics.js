@@ -6,6 +6,8 @@ export default class SubSystem_Statistics extends SubSystem
     {
         options.pathName        = 'Persistent_Level:PersistentLevel.StatisticsSubsystem';
         super(options);
+
+        this.updateStatisticsLeaderBoard();
     }
 
     convert(array)
@@ -22,7 +24,11 @@ export default class SubSystem_Statistics extends SubSystem
                             value[array[i].valueMap[j].name] = array[i].valueMap[j].value;
                         }
                     }
-                object[array[i].keyMap.pathName] = value;
+
+                if(array[i].keyMap.pathName !== '')
+                {
+                    object[array[i].keyMap.pathName] = value;
+                }
             }
 
         return object;
@@ -70,5 +76,29 @@ export default class SubSystem_Statistics extends SubSystem
             }
 
         return null;
+    }
+
+    /**
+     * LEADERBOARD
+     */
+    updateStatisticsLeaderBoard()
+    {
+        let playerPlatformId = null;
+            for(let player in this.baseLayout.players)
+            {
+                if(playerPlatformId === null)
+                {
+                    playerPlatformId = this.baseLayout.players[player].getPlatformId();
+                }
+            }
+
+        if(playerPlatformId !== null)
+        {
+            try
+            {
+                $.post(this.baseLayout.statisticsUrl, {playerPlatformId: playerPlatformId, data: Object.assign({}, this.getCreaturesKilledCount(), this.getConsumablesConsumedCount(), this.getItemsManuallyCraftedCount(), this.getActorsBuiltCount())});
+            }
+            catch(error){}
+        }
     }
 }

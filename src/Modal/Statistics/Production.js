@@ -21,7 +21,6 @@ export default class Modal_Statistics_Production
                 }
 
                 let layerLength = this.baseLayout.playerLayers[layerId].elements.length;
-                    console.log(layerId, layerLength)
                     for(let i = 0; i < layerLength; i++)
                     {
                         if(this.baseLayout.playerLayers[layerId].elements[i].options.pathName !== undefined)
