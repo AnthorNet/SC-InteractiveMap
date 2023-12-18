@@ -92,6 +92,9 @@ export default class Spawn_Megaprint
 
             if(this.clipboard.buildVersion < 264901)
             {
+                let excludedSmashers    = [];
+                let excludedCores       = [];
+
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
                     // Move water extractor to known volume...
@@ -159,14 +162,14 @@ export default class Spawn_Megaprint
 
 
                                                                     // Link the smasher to its core...
-                                                                    //TODO: Find the neareast smasher?
                                                                     let availableSmashers   = [];
                                                                         for(let k = 0; k < this.clipboard.data.length; k++)
                                                                         {
-                                                                            if(this.clipboard.data[k].parent.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
+                                                                            if(this.clipboard.data[k].parent.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C' && excludedSmashers.includes(this.clipboard.data[k].parent.pathName) === false)
                                                                             {
                                                                                 availableSmashers.push({
                                                                                     index       : k,
+                                                                                    pathName    : this.clipboard.data[k].parent.pathName,
                                                                                     x           : this.clipboard.data[k].parent.transform.translation[0],
                                                                                     y           : this.clipboard.data[k].parent.transform.translation[1],
                                                                                     z           : this.clipboard.data[k].parent.transform.translation[2]
@@ -174,9 +177,10 @@ export default class Spawn_Megaprint
                                                                             }
                                                                         }
 
-                                                                        if(availableSmashers.length > 0)
+                                                                        if(availableSmashers.length > 0 && excludedCores.includes(this.baseLayout.satisfactoryMap.collectableMarkers[markerPathName].options.core) === false)
                                                                         {
                                                                             let closestSmasher = availableSmashers.reduce((a, b) => BaseLayout_Math.getDistance(this.clipboard.data[i].parent.transform.translation, a) < BaseLayout_Math.getDistance(this.clipboard.data[i].parent.transform.translation, b) ? a : b);
+                                                                                excludedSmashers.push(closestSmasher.pathName);
                                                                                 for(let l = 0; l < this.clipboard.data[closestSmasher.index].parent.properties.length; l++)
                                                                                 {
                                                                                     if(this.clipboard.data[closestSmasher.index].parent.properties[l].name === 'mExtractableResource')
@@ -187,6 +191,7 @@ export default class Spawn_Megaprint
                                                                                         let currentCore = this.baseLayout.saveGameParser.getTargetObject(this.clipboard.data[closestSmasher.index].parent.properties[l].value.pathName);
                                                                                             if(currentCore !== null)
                                                                                             {
+                                                                                                    excludedCores.push(this.baseLayout.satisfactoryMap.collectableMarkers[markerPathName].options.core)
                                                                                                 let mDoSpawnParticle = this.baseLayout.getObjectProperty(currentCore, 'mDoSpawnParticle');
                                                                                                     if(mDoSpawnParticle === null)
                                                                                                     {
