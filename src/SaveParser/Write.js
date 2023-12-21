@@ -1817,7 +1817,11 @@ export default class SaveParser_Write
 
                     switch(currentProperty.arguments[i].valueType)
                     {
-                        case 4:
+                        case 0: // FORMATARGUMENTTYPE_INT
+                            property += this.writeInt(currentProperty.arguments[i].argumentValue);
+                            property += this.writeInt(currentProperty.arguments[i].argumentValueUnk);
+                            break;
+                        case 4: // FORMATARGUMENTTYPE_TEXT
                             property += this.writeTextProperty(currentProperty.arguments[i].argumentValue);
                             break;
                     }

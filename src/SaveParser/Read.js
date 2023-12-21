@@ -1773,26 +1773,13 @@ export default class SaveParser_Read
 
     /*
     // ETextHistoryType
-    const HISTORYTYPE_BASE = 0;
-    const HISTORYTYPE_NAMEDFORMAT = 1;
     const HISTORYTYPE_ORDEREDFORMAT = 2;
-    const HISTORYTYPE_ARGUMENTFORMAT = 3;
     const HISTORYTYPE_ASNUMBER = 4;
     const HISTORYTYPE_ASPERCENT = 5;
     const HISTORYTYPE_ASCURRENCY = 6;
     const HISTORYTYPE_ASDATE = 7;
     const HISTORYTYPE_ASTIME = 8;
     const HISTORYTYPE_ASDATETIME = 9;
-    const HISTORYTYPE_TRANSFORM = 10;
-    const HISTORYTYPE_STRINGTABLEENTRY = 11;
-    const HISTORYTYPE_NONE = 255; // -1
-    // EFormatArgumentType
-    const FORMATARGUMENTTYPE_INT = 0;
-    const FORMATARGUMENTTYPE_UINT = 1;
-    const FORMATARGUMENTTYPE_FLOAT = 2;
-    const FORMATARGUMENTTYPE_DOUBLE = 3;
-    const FORMATARGUMENTTYPE_TEXT = 4;
-    const FORMATARGUMENTTYPE_GENDER = 5;
     */
     readTextProperty(currentProperty)
     {
@@ -1808,6 +1795,7 @@ export default class SaveParser_Read
 
                 break;
 
+            // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L1354
             case 1:                             // HISTORYTYPE_NAMEDFORMAT
             case 3:                             // HISTORYTYPE_ARGUMENTFORMAT
                 currentProperty.sourceFmt       = this.readTextProperty({});
@@ -1823,9 +1811,17 @@ export default class SaveParser_Read
 
                         switch(currentArgumentsData.valueType)
                         {
-                            case 4:
+                            case 0: // FORMATARGUMENTTYPE_INT
+                                currentArgumentsData.argumentValue    = this.readInt();
+                                currentArgumentsData.argumentValueUnk = this.readInt();
+                                break;
+                            case 4: // FORMATARGUMENTTYPE_TEXT
                                 currentArgumentsData.argumentValue    = this.readTextProperty({});
                                 break;
+                            case 1: // FORMATARGUMENTTYPE_UINT
+                            case 5: // FORMATARGUMENTTYPE_GENDER
+                            case 2: // FORMATARGUMENTTYPE_FLOAT
+                            case 3: // FORMATARGUMENTTYPE_DOUBLE
                             default:
                                 this.worker.postMessage({command: 'alertParsing'});
                                 if(typeof Sentry !== 'undefined')
