@@ -5,6 +5,7 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
 import Building_PowerLine                       from '../Building/PowerLine.js';
+import Building_Vehicle                         from '../Building/Vehicle.js';
 
 import pako                                     from '../Lib/pako.esm.js';
 import saveAs                                   from '../Lib/FileSaver.js';
@@ -77,15 +78,23 @@ export default class Spawn_Megaprint
                 }
             }
 
-            // Old drone format?
-            //TODO: Get mCurrentAction/mActionsToExecute to the new format!
             if(this.baseLayout.saveGameParser.header.saveVersion >= 41 && this.clipboard.saveVersion < 41)
             {
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
+                    // Old drone format?
+                    //TODO: Get mCurrentAction/mActionsToExecute to the new format!
                     if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
                     {
+                        console.log('Fix old drone format', this.clipboard.data[i].parent.pathName);
                         this.clipboard.data[i].parent.extra = {unk1 :0, unk2 :0, mActiveAction: [], mActionQueue: []};
+                    }
+
+                    // Rsset vehicle physics
+                    if(Building_Vehicle.isVehicle(this.clipboard.data[i].parent))
+                    {
+                        console.log('Fix old vehicle physics', this.clipboard.data[i].parent.pathName);
+                        this.clipboard.data[i].parent.extra = {count: 0, objects: []};
                     }
                 }
             }
