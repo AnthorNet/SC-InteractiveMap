@@ -1531,8 +1531,6 @@ export default class BaseLayout
                 'PersistentLevel.FGItemPickup_Spawnable_111', 'PersistentLevel.FGItemPickup_Spawnable_112',
                 'PersistentLevel.FGItemPickup_Spawnable_113', 'PersistentLevel.FGItemPickup_Spawnable_121',
 
-                'PersistentLevel.FGItemPickup_Spawnable_365',
-
                 'PersistentLevel.FGItemPickup_Spawnable424_0', 'PersistentLevel.FGItemPickup_Spawnable425_1',
                 'PersistentLevel.FGItemPickup_Spawnable426_2', 'PersistentLevel.FGItemPickup_Spawnable427_3',
                 'PersistentLevel.FGItemPickup_Spawnable428_4', 'PersistentLevel.FGItemPickup_Spawnable429_5',
@@ -1570,6 +1568,11 @@ export default class BaseLayout
 
                 'PersistentLevel.FGItemPickup_Spawnable439', 'PersistentLevel.FGItemPickup_Spawnable440',
                 'PersistentLevel.FGItemPickup_Spawnable441', 'PersistentLevel.FGItemPickup_Spawnable442',
+
+                'PersistentLevel.FGItemPickup_Spawnable185', 'PersistentLevel.FGItemPickup_Spawnable186',
+                'PersistentLevel.FGItemPickup_Spawnable363', 'PersistentLevel.FGItemPickup_Spawnable364',
+                'PersistentLevel.FGItemPickup_Spawnable365', 'PersistentLevel.FGItemPickup_Spawnable366',
+                'PersistentLevel.FGItemPickup_Spawnable367', 'PersistentLevel.FGItemPickup_Spawnable368',
 
                 // Update 7
                 'PersistentLevel.FGItemPickup_Spawnable_101'

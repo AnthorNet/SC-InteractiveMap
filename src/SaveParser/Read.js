@@ -168,6 +168,12 @@ export default class SaveParser_Read
                 newChunkLength += this.currentChunks[i].length;
             }
 
+            if(newChunkLength > (Math.pow(2, 31) - 1)) // Avoid invalid array length
+            {
+                this.worker.postMessage({command: 'alertParsing', source: 'Save game was borked by deleting a bugged dropped item in the save. We are still investigating how to fix that. Please use a backup save.'});
+                return;
+            }
+
         let tempChunk       = new Uint8Array(newChunkLength);
         let currentLength   = 0;
             for(let i = 0; i < this.currentChunks.length; i++)
