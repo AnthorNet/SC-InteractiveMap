@@ -1017,11 +1017,9 @@ export default class BaseLayout
         {
             return resolve(Building_Conveyor.add(this, currentObject));
         }
-        if(
-                currentObject.className.includes('Train/Track/Build_RailroadTrack') || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C'
-             || currentObject.className === '/StartWithVehicles/Vehicles/Train/Track/Build_CheapRailroadTrack.Build_CheapRailroadTrack_C'
-        )
+        if(Building_RailroadTrack.isRailroadTrack(currentObject))
         {
+            this.railroadSubSystem.addRailroadTrack(currentObject);
             return resolve(Building_RailroadTrack.add(this, currentObject));
         }
 
@@ -3001,13 +2999,13 @@ export default class BaseLayout
             }
         }
 
-        // Delete trains on tracks!
-        if(
-               currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'
-            || currentObject.className === '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'
-            || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C'
-        )
+
+        if(Building_RailroadTrack.isRailroadTrack(currentObject))
         {
+            // Delete from subsystem graph
+            baseLayout.railroadSubSystem.deleteRailroadTrack(currentObject);
+
+            // Delete trains on tracks!
             for(let n = (baseLayout.saveGameRailVehicles.length - 1); n >= 0; n--)
             {
                 let mTrackPosition = baseLayout.getObjectProperty(baseLayout.saveGameRailVehicles[n], 'mTrackPosition');
@@ -4818,7 +4816,6 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C'){ className = '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass.Build_GeneratorBiomass_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C'){ className = '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StoragePlayer.Build_StoragePlayer_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageBlueprint.Build_StorageBlueprint_C'){ className = '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StoragePlayer.Build_StoragePlayer_C'; }
-        if(className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'){ className = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'; }
         if(className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C'){ className = '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Tractor/Desc_Tractor.Desc_Tractor_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Truck/Desc_Truck.Desc_Truck_C'; }
@@ -4829,7 +4826,7 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/Desc_FreightWagon.Desc_FreightWagon_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/JumpPad/Build_JumpPad.Build_JumpPad_C'){ className = '/Game/FactoryGame/Buildable/Factory/JumpPad/Build_JumpPadAdjustable.Build_JumpPadAdjustable_C'; }
 
-        if(className === '/FlexSplines/Track/Build_Track.Build_Track_C'){ className = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'; }
+        if(Building_RailroadTrack.isRailroadTrack({className: className})){ className = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'; }
 
         // Create fake angled railings with new width
         if(this.buildingsData.Build_SM_RailingRamp_8x4_01_C === undefined && this.buildingsData.Build_Railing_01_C !== undefined)
@@ -5260,7 +5257,7 @@ export default class BaseLayout
                         {
                             Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
                         }
-                        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C')
+                        if(Building_RailroadTrack.isRailroadTrack(currentObject))
                         {
                             Building_RailroadTrack.bindTooltip(this, currentObject, tooltipOptions);
                         }
@@ -5292,7 +5289,7 @@ export default class BaseLayout
                 {
                     Building_RailroadSwitchControl.unbindTooltip(this, currentObject);
                 }
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C')
+                if(Building_RailroadTrack.isRailroadTrack(currentObject))
                 {
                     Building_RailroadTrack.unbindTooltip(this, currentObject);
                 }

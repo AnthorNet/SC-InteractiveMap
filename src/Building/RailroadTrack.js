@@ -7,6 +7,33 @@ export default class Building_RailroadTrack
 {
     static get availableConnections(){ return ['.TrackConnection0', '.TrackConnection1']; }
 
+    static get availableRailroadTracks()
+    {
+        return [
+            '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C',
+            '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C'
+        ];
+    }
+
+    static isRailroadTrack(currentObject)
+    {
+        if(Building_RailroadTrack.availableRailroadTracks.includes(currentObject.className))
+        {
+            return true;
+        }
+
+        // RailroadTrack Mod
+        if(
+                currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C'
+             || currentObject.className === '/StartWithVehicles/Vehicles/Train/Track/Build_CheapRailroadTrack.Build_CheapRailroadTrack_C'
+        )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     static getConnectedComponents(baseLayout, currentObject)
     {
         if(currentObject.children !== undefined)
@@ -63,11 +90,7 @@ export default class Building_RailroadTrack
 
         if(baseLayout.playerLayers.playerTracksLayer.filtersCount !== undefined)
         {
-            let trackClassName = currentObject.className;
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C' || currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C')
-                {
-                    trackClassName = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C';
-                }
+            let trackClassName = Building_RailroadTrack.availableRailroadTracks[0];
 
             if(baseLayout.playerLayers.playerTracksLayer.filtersCount[trackClassName] === undefined)
             {
