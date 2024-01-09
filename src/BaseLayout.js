@@ -544,7 +544,13 @@ export default class BaseLayout
 
                     console.timeEnd('Loading mod: ' + this.modsData[modId].name);
                     return resolve();
-                });
+                }).fail(() => {
+                    console.log('FAILED Loading mod:' + this.modsData[modId].name);
+                    console.timeEnd('Loading mod: ' + this.modsData[modId].name);
+
+                    delete this.modsData[modId];
+                    return resolve();
+                  });
 
                 return;
             }
