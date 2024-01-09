@@ -59,6 +59,7 @@ export default class Building_Conveyor
              || currentObject.className.startsWith('/bamfp/content/buildable/Factory/belt_')
              || currentObject.className.startsWith('/MkPlus/Buildables/ConveyorBelt/Build_ConveyorBelt_')
              || currentObject.className.startsWith('/FastConveyors/Buildable/Belts/Build_FastConveyorBelt')
+             || currentObject.className.startsWith('/MkPlusLibs/Buildables/ConveyorBelt/Build_ConveyorBelt_Mk')
 
         )
         {
@@ -86,6 +87,7 @@ export default class Building_Conveyor
              || currentObject.className.startsWith('/conveyorbeltmod/lift/')
              || currentObject.className.startsWith('/MkPlus/Buildables/ConveyorLift/Build_ConveyorLift_')
              || currentObject.className.startsWith('/FastConveyors/Buildable/Lifts/Build_FastConveyorLift')
+             || currentObject.className.startsWith('/MkPlusLibs/Buildables/ConveyorLift/Build_ConveyorLift_Mk')
 
         )
         {
