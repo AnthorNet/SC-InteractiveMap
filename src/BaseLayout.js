@@ -1522,72 +1522,17 @@ export default class BaseLayout
 
     deleteItemPickUp(marker)
     {
-        let inGameBuggedSpawnable   = [
-                'PersistentLevel.FGItemPickup_Spawnable_26', 'PersistentLevel.FGItemPickup_Spawnable_27',
+        let inGameBuggedSpawnable   = SaveParser_FicsIt.getBuggedItemPickup(marker.baseLayout);
+        let splittedPathName        = marker.relatedTarget.options.pathName.split(':')
+            if(inGameBuggedSpawnable.includes(splittedPathName[1]))
+            {
+                //TODO: May be avoid spamming too much alert on that if selection is used?
+                BaseLayout_Modal.alert('That dropped item is not saving properly in-game and cannot be deleted...<br /><em>' + marker.relatedTarget.options.pathName + '</em>');
+                return;
+            }
 
-                'PersistentLevel.FGItemPickup_Spawnable_33',
-
-                'PersistentLevel.FGItemPickup_Spawnable_109', 'PersistentLevel.FGItemPickup_Spawnable_110',
-                'PersistentLevel.FGItemPickup_Spawnable_111', 'PersistentLevel.FGItemPickup_Spawnable_112',
-                'PersistentLevel.FGItemPickup_Spawnable_113', 'PersistentLevel.FGItemPickup_Spawnable_121',
-
-                'PersistentLevel.FGItemPickup_Spawnable424_0', 'PersistentLevel.FGItemPickup_Spawnable425_1',
-                'PersistentLevel.FGItemPickup_Spawnable426_2', 'PersistentLevel.FGItemPickup_Spawnable427_3',
-                'PersistentLevel.FGItemPickup_Spawnable428_4', 'PersistentLevel.FGItemPickup_Spawnable429_5',
-
-                'PersistentLevel.FGItemPickup_Spawnable430_6', 'PersistentLevel.FGItemPickup_Spawnable431_7',
-                'PersistentLevel.FGItemPickup_Spawnable432_8', 'PersistentLevel.FGItemPickup_Spawnable433_9',
-                'PersistentLevel.FGItemPickup_Spawnable434',
-
-                'PersistentLevel.FGItemPickup_Spawnable435', 'PersistentLevel.FGItemPickup_Spawnable436',
-                'PersistentLevel.FGItemPickup_Spawnable437', 'PersistentLevel.FGItemPickup_Spawnable438',
-
-                'PersistentLevel.FGItemPickup_Spawnable439', 'PersistentLevel.FGItemPickup_Spawnable440',
-                'PersistentLevel.FGItemPickup_Spawnable441', 'PersistentLevel.FGItemPickup_Spawnable442',
-
-                'PersistentLevel.FGItemPickup_Spawnable_26', 'PersistentLevel.FGItemPickup_Spawnable_27',
-
-                'PersistentLevel.FGItemPickup_Spawnable_33',
-
-                'PersistentLevel.FGItemPickup_Spawnable_109', 'PersistentLevel.FGItemPickup_Spawnable_110',
-                'PersistentLevel.FGItemPickup_Spawnable_111', 'PersistentLevel.FGItemPickup_Spawnable_112',
-                'PersistentLevel.FGItemPickup_Spawnable_113', 'PersistentLevel.FGItemPickup_Spawnable_121',
-
-                'PersistentLevel.FGItemPickup_Spawnable_365',
-
-                'PersistentLevel.FGItemPickup_Spawnable424_0', 'PersistentLevel.FGItemPickup_Spawnable425_1',
-                'PersistentLevel.FGItemPickup_Spawnable426_2', 'PersistentLevel.FGItemPickup_Spawnable427_3',
-                'PersistentLevel.FGItemPickup_Spawnable428_4', 'PersistentLevel.FGItemPickup_Spawnable429_5',
-
-                'PersistentLevel.FGItemPickup_Spawnable430_6', 'PersistentLevel.FGItemPickup_Spawnable431_7',
-                'PersistentLevel.FGItemPickup_Spawnable432_8', 'PersistentLevel.FGItemPickup_Spawnable433_9',
-                'PersistentLevel.FGItemPickup_Spawnable434',
-
-                'PersistentLevel.FGItemPickup_Spawnable435', 'PersistentLevel.FGItemPickup_Spawnable436',
-                'PersistentLevel.FGItemPickup_Spawnable437', 'PersistentLevel.FGItemPickup_Spawnable438',
-
-                'PersistentLevel.FGItemPickup_Spawnable439', 'PersistentLevel.FGItemPickup_Spawnable440',
-                'PersistentLevel.FGItemPickup_Spawnable441', 'PersistentLevel.FGItemPickup_Spawnable442',
-
-                'PersistentLevel.FGItemPickup_Spawnable185', 'PersistentLevel.FGItemPickup_Spawnable186',
-                'PersistentLevel.FGItemPickup_Spawnable363', 'PersistentLevel.FGItemPickup_Spawnable364',
-                'PersistentLevel.FGItemPickup_Spawnable365', 'PersistentLevel.FGItemPickup_Spawnable366',
-                'PersistentLevel.FGItemPickup_Spawnable367', 'PersistentLevel.FGItemPickup_Spawnable368',
-
-                // Update 7
-                'PersistentLevel.FGItemPickup_Spawnable_101'
-            ];
-
-            //TODO: May be avoid spamming too much alert on that if selection is used?
-            let splittedPathName = marker.relatedTarget.options.pathName.split(':')
-                if(inGameBuggedSpawnable.includes(splittedPathName[1]))
-                {
-                    BaseLayout_Modal.alert('That dropped item is not saving properly in-game and cannot be deleted...<br /><em>' + marker.relatedTarget.options.pathName + '</em>');
-                    return;
-                }
-
-        let baseLayout              = marker.baseLayout;
-        let currentObject           = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
 
             // Game dropped items...
             if(currentObject.className === '/Script/FactoryGame.FGItemPickup_Spawnable')

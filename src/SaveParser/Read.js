@@ -19,6 +19,10 @@ export default class SaveParser_Read
         this.bufferView         = new DataView(this.arrayBuffer, 0, Math.min(102400, this.arrayBuffer.byteLength));
         this.currentByte        = 0;
 
+        // Was the save degraded by a faulty dropped item?
+        this.isDegraded             = false;
+        this.degradedMaxRangeLength = 2145386496;
+
         this.parseSave();
     }
 
@@ -121,7 +125,7 @@ export default class SaveParser_Read
                 this.worker.postMessage({command: 'transferData', data: {maxChunkSize: this.maxChunkSize}});
             }
 
-            let currentChunkSize    = chunkHeader.getUint32(((this.header.saveVersion >= 41) ? 17 : 16), true); // 16 before update 8?
+            let currentChunkSize    = chunkHeader.getUint32(((this.header.saveVersion >= 41) ? 17 : 16), true); // 16 before update 8, compression format was added, should always be 3
             let currentChunk        = this.arrayBuffer.slice(this.currentByte, this.currentByte + currentChunkSize);
                 this.handledByte   += currentChunkSize;
                 this.currentByte   += currentChunkSize;
@@ -165,24 +169,40 @@ export default class SaveParser_Read
         let newChunkLength = 0;
             for(let i = 0; i < this.currentChunks.length; i++)
             {
-                newChunkLength += this.currentChunks[i].length;
-            }
+                // Don't go further than the max available range...
+                if(newChunkLength + this.currentChunks[i].length > this.degradedMaxRangeLength)
+                {
+                    break;
+                }
 
-            if(newChunkLength > (Math.pow(2, 31) - 1)) // Avoid invalid array length
-            {
-                this.worker.postMessage({command: 'alertParsing', source: 'Save game was borked by deleting a bugged dropped item in the save. We are still investigating how to fix that. Please use a backup save.'});
-                return;
+                newChunkLength += this.currentChunks[i].length;
             }
 
         let tempChunk       = new Uint8Array(newChunkLength);
         let currentLength   = 0;
-            for(let i = 0; i < this.currentChunks.length; i++)
+            while(this.currentChunks.length > 0)
             {
-                tempChunk.set(this.currentChunks[i], currentLength);
-                currentLength += this.currentChunks[i].length;
+                let currentChunk = this.currentChunks.shift();
+                    if(currentLength + currentChunk.length > this.degradedMaxRangeLength)
+                    {
+                        this.currentChunks.unshift(currentChunk);
+                        this.worker.postMessage({command: 'alertParsing', source: 'Save game was borked by deleting a bugged dropped item in the save.<br />The current fix is experimental but should most likely fix your save again, if you can please use a backup save.'});
+                        break;
+                    }
+
+                tempChunk.set(currentChunk, currentLength);
+                currentLength += currentChunk.length;
             }
 
-        delete this.currentChunks;
+        if(this.currentChunks.length === 0)
+        {
+            delete this.currentChunks;
+        }
+        else
+        {
+            this.isDegraded = true;
+        }
+
         this.maxByte            = tempChunk.buffer.byteLength;
         this.bufferView         = new DataView(tempChunk.buffer);
 
@@ -275,23 +295,31 @@ export default class SaveParser_Read
             //TODO: Was it the same early?
             if(this.header.saveVersion >= 41)
             {
-                if(this.currentByte < (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
+                // We skip collectables from the degraded mode...
+                if(levelName === 'Level ' + this.header.mapName && this.isDegraded === true)
                 {
-                    let countCollectedInBetween = this.readInt();
-                        if(countCollectedInBetween > 0)
-                        {
-                            for(let i = 0; i < countCollectedInBetween; i++)
-                            {
-                                let collectable = this.readObjectProperty({});
-                                    collectables.push(collectable);
-                            }
-                        }
+                    this.currentByte = (objectsBinaryLengthStart + Number(objectsBinaryLength));
                 }
                 else
                 {
-                    if(this.currentByte === (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
+                    if(this.currentByte < (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
                     {
-                        this.readInt();
+                        let countCollectedInBetween = this.readInt();
+                            if(countCollectedInBetween > 0)
+                            {
+                                for(let i = 0; i < countCollectedInBetween; i++)
+                                {
+                                    let collectable = this.readObjectProperty({});
+                                        collectables.push(collectable);
+                                }
+                            }
+                    }
+                    else
+                    {
+                        if(this.currentByte === (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
+                        {
+                            this.readInt();
+                        }
                     }
                 }
             }
@@ -337,6 +365,48 @@ export default class SaveParser_Read
                 {
                     this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), Math.round(i / countEntities * 100)]});
                     this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
+
+                    // Try to fill up the data view with the remaining chunks...
+                    if(this.isDegraded === true && this.currentChunks !== undefined && (this.maxByte - this.currentByte) > this.maxChunkSize)
+                    {
+                        let tempBuffer          = this.bufferView.buffer.slice(this.currentByte);
+                        let newChunkLength      = tempBuffer.byteLength;
+                            for(let i = 0; i < this.currentChunks.length; i++)
+                            {
+                                // Don't go further than the max available range...
+                                if(newChunkLength + this.currentChunks[i].length > this.degradedMaxRangeLength)
+                                {
+                                    break;
+                                }
+
+                                newChunkLength += this.currentChunks[i].length;
+                            }
+
+                            let tempChunk       = new Uint8Array(newChunkLength);
+                                tempChunk.set(new Uint8Array(tempBuffer), 0);
+                            let currentLength   = tempBuffer.byteLength;
+                                while(this.currentChunks.length > 0)
+                                {
+                                    let currentChunk = this.currentChunks.shift();
+                                        if(currentLength + currentChunk.length > this.degradedMaxRangeLength)
+                                        {
+                                            this.currentChunks.unshift(currentChunk);
+                                            break;
+                                        }
+
+                                    tempChunk.set(currentChunk, currentLength);
+                                    currentLength += currentChunk.length;
+                                }
+
+                        this.currentByte    = 0;
+                        this.maxByte            = tempChunk.byteLength;
+                        this.bufferView         = new DataView(tempChunk.buffer);
+
+                        if(this.currentChunks.length === 0)
+                        {
+                            delete this.currentChunks;
+                        }
+                    }
                 }
             }
 

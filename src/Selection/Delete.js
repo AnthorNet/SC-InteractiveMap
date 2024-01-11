@@ -106,6 +106,7 @@ export default class Selection_Delete
                                     }
                             }
 
+                            // deleteGenericBuilding(marker, updateRadioactivity = true, fast = false)
                             contextMenu[j].callback({baseLayout: this.baseLayout, relatedTarget: this.markers[i]}, false, true);
                         }
                     }
