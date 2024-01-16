@@ -189,6 +189,13 @@ export default class BaseLayout_ContextMenu
                             text        : 'Teleport player',
                             callback    : this.baseLayout.teleportPlayer
                         });
+
+                        contextMenu.push({
+                            icon        : 'fa-arrows-alt',
+                            text        : this.baseLayout.translate._('Update position'),
+                            callback    : Modal_Object_Position.getHTML
+                        });
+
                         contextMenu.push('-');
                         contextMenu.push({
                             icon        : 'fa-trash-alt',
