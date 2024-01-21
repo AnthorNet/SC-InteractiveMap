@@ -1,5 +1,10 @@
 import SubSystem                                from '../SubSystem.js';
 
+import BaseLayout_Math                          from '../BaseLayout/Math.js';
+import PriorityQueue                            from '../Lib/PriorityQueue.js';
+
+import Building_RailroadTrack                   from '../Building/RailroadTrack.js';
+
 export default class SubSystem_Railroad extends SubSystem
 {
     constructor(options)
@@ -46,6 +51,8 @@ export default class SubSystem_Railroad extends SubSystem
 
         return trains;
     }
+
+
 
     getObjectIdentifier(currentObject)
     {
@@ -273,5 +280,75 @@ export default class SubSystem_Railroad extends SubSystem
                             }
                     }
             }
+    }
+
+
+
+    findShortestPath(graphNetwork, startObject, finishObject)
+    {
+        const nodes     = new PriorityQueue();
+        const distances = {};
+        const previous  = {};
+
+        let smallest;
+
+        // Build up initial state
+        for(let vertex in graphNetwork)
+        {
+            if(vertex === startObject.pathName)
+            {
+                distances[vertex] = 0;
+                nodes.enqueue(vertex, 0);
+            }
+            else
+            {
+                distances[vertex] = Infinity;
+                nodes.enqueue(vertex, Infinity);
+            }
+
+            previous[vertex] = null;
+        }
+
+        // As long as there is something to visit
+        while(nodes.values.length)
+        {
+            smallest = nodes.dequeue().val;
+
+            // WE ARE DONE
+            // BUILD UP PATH TO RETURN AT END
+            if(smallest === finishObject.pathName)
+            {
+                let path                = [];
+
+                    while(previous[smallest])
+                    {
+                        path.push(smallest);
+                        smallest            = previous[smallest];
+                    }
+
+                return {path: path.concat(smallest).reverse()};
+            }
+
+            if(smallest || distances[smallest] !== Infinity)
+            {
+                for(let nextNeighbor in graphNetwork[smallest])
+                {
+
+                    //calculate new distance to neighboring node
+                    let candidate = distances[smallest] + graphNetwork[smallest][nextNeighbor];
+                        if(candidate < distances[nextNeighbor])
+                        {
+                            //updating new smallest distance to neighbor
+                            distances[nextNeighbor] = candidate;
+                            //updating previous - How we got to neighbor
+                            previous[nextNeighbor]  = smallest;
+                            //enqueue in priority queue with new priority
+                            nodes.enqueue(nextNeighbor, candidate);
+                        }
+                }
+            }
+        }
+
+        return null;
     }
 }

@@ -202,9 +202,10 @@ export default class SubSystem_Map extends SubSystem
 
     getMinimap(splineData, iconsData = null)
     {
-        if(splineData !== null && iconsData === null)
+        // Add vehicle data as icons
+        if(splineData !== null && iconsData === null && splineData.trackData !== undefined)
         {
-            iconsData = splineData;
+            iconsData = splineData.trackData;
         }
 
         let html                = [];
@@ -227,12 +228,15 @@ export default class SubSystem_Map extends SubSystem
             if(splineData !== null)
             {
                 boundaries = {xMin: Infinity, xMax: -Infinity, yMin: Infinity, yMax: -Infinity};
-                for(let i = 0; i < (splineData.length - 1); i++)
+                for(let currentSplineData in splineData)
                 {
-                    boundaries.xMin = Math.min(boundaries.xMin, splineData[i][0]);
-                    boundaries.xMax = Math.max(boundaries.xMax, splineData[i][0]);
-                    boundaries.yMin = Math.min(boundaries.yMin, splineData[i][1]);
-                    boundaries.yMax = Math.max(boundaries.yMax, splineData[i][1]);
+                    for(let i = 0; i < (splineData[currentSplineData].length - 1); i++)
+                    {
+                        boundaries.xMin = Math.min(boundaries.xMin, splineData[currentSplineData][i][0]);
+                        boundaries.xMax = Math.max(boundaries.xMax, splineData[currentSplineData][i][0]);
+                        boundaries.yMin = Math.min(boundaries.yMin, splineData[currentSplineData][i][1]);
+                        boundaries.yMax = Math.max(boundaries.yMax, splineData[currentSplineData][i][1]);
+                    }
                 }
 
                 // Add padding to boundaries
@@ -286,15 +290,18 @@ export default class SubSystem_Map extends SubSystem
             // Generate lines SVG
             if(splineData !== null)
             {
-                let points = [];
-                    for(let i = 0; i < splineData.length; i++)
-                    {
-                        let x               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + splineData[i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
-                        let y               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + splineData[i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
-                            points.push(x + ',' + y);
-                    }
+                for(let currentSplineData in splineData)
+                {
+                    let points = [];
+                        for(let i = 0; i < splineData[currentSplineData].length; i++)
+                        {
+                            let x               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + splineData[currentSplineData][i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
+                            let y               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + splineData[currentSplineData][i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
+                                points.push(x + ',' + y);
+                        }
 
-                html.push('<svg viewBox="0 0 ' + containerSize + ' ' + containerSize + '" xmlns="http://www.w3.org/2000/svg" style="position: absolute;"><polyline points="' + points.join(' ') + '" stroke="#FFC0CB" stroke-width="2" fill="none" /></svg>');
+                    html.push('<svg viewBox="0 0 ' + containerSize + ' ' + containerSize + '" xmlns="http://www.w3.org/2000/svg" style="position: absolute;" id="miniMap_' + currentSplineData.replace(':', '-').replace('.', '-').replace('.', '-') + '"><polyline points="' + points.join(' ') + '" stroke="#FFC0CB" stroke-width="2" fill="none" /></svg>');
+                }
             }
 
             // Generate icons

@@ -1025,7 +1025,6 @@ export default class BaseLayout
         }
         if(Building_RailroadTrack.isRailroadTrack(currentObject))
         {
-            this.railroadSubSystem.addRailroadTrack(currentObject);
             return resolve(Building_RailroadTrack.add(this, currentObject));
         }
 
@@ -2956,9 +2955,6 @@ export default class BaseLayout
 
         if(Building_RailroadTrack.isRailroadTrack(currentObject))
         {
-            // Delete from subsystem graph
-            baseLayout.railroadSubSystem.deleteRailroadTrack(currentObject);
-
             // Delete trains on tracks!
             for(let n = (baseLayout.saveGameRailVehicles.length - 1); n >= 0; n--)
             {

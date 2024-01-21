@@ -23,14 +23,17 @@ export default class Modal_Train_Timetable
     {
         if(this.timeTable !== null)
         {
+            let timeTableSplinePoints   = this.getTimeTableSplinePoints();
+            let timeTableStationsPoints = this.getTimeTableStationsPoints();
+
             $('#genericModal .modal-title').empty().html('Timetable - ' + Building_Locomotive.getTrainName(this.baseLayout, this.locomotive, this.trainIdentifier.pathName));
             let html = [];
                 html.push('<div class="row">');
                     html.push('<div class="col-6" style="max-height: 512px;overflow-y: scroll;">');
-                        html.push(this.getTimeTableList());
+                        html.push(this.getTimeTableList(timeTableSplinePoints.distances));
                     html.push('</div>');
                     html.push('<div class="col-6">');
-                        html.push(this.baseLayout.mapSubSystem.getMinimap(this.getTimeTableSplinePoints(), this.getTimeTableStationsPoints()));
+                        html.push(this.baseLayout.mapSubSystem.getMinimap(timeTableSplinePoints.points, timeTableStationsPoints));
                     html.push('</div>');
                 html.push('</div>');
 
@@ -43,20 +46,31 @@ export default class Modal_Train_Timetable
                 let stop = $(this).attr('data-stop');
                     $('#genericModal .modal-body .img-minimap span[data-stop=' + stop + ']')
                         .css('border-color', '#FF0000')
-                        .css('z-index', 2)
+                        .css('z-index', 2);
             }, function(){
                 let stop = $(this).attr('data-stop');
                     $('#genericModal .modal-body .img-minimap span[data-stop=' + stop + ']')
                         .css('border-color', '#777777')
-                        .css('z-index', 1)
+                        .css('z-index', 1);
+            });
+
+            $('#genericModal .modal-body table tr[data-spline]').hover(function(){
+                let spline = $(this).attr('data-spline');
+                    $('#genericModal .modal-body .img-minimap #' + spline).detach().insertBefore('#genericModal .modal-body .img-minimap span');
+                    $('#genericModal .modal-body .img-minimap #' + spline + ' polyline')
+                        .attr('stroke', '#FF0000');
+            }, function(){
+                let spline = $(this).attr('data-spline');
+                    $('#genericModal .modal-body .img-minimap #' + spline + ' polyline')
+                        .attr('stroke', '#FFC0CB');
             });
         }
     }
 
-    getTimeTableList()
+    getTimeTableList(distances)
     {
-        let html = [];
-        let mStops = this.baseLayout.getObjectProperty(this.timeTable, 'mStops');
+        let html    = [];
+        let mStops  = this.baseLayout.getObjectProperty(this.timeTable, 'mStops');
             if(mStops !== null)
             {
                 let mCurrentStop    = this.baseLayout.getObjectProperty(this.timeTable, 'mCurrentStop', 0);
@@ -78,47 +92,61 @@ export default class Modal_Train_Timetable
                                 }
                             }
 
-                        html.push('<tr data-stop="'+ j + '">');
+                        if(trainStationIdentifier !== null)
+                        {
+                            let mStation        = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStation');
+                            let mStationName    = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
+                            let isDocked        = false;
+
+                            html.push('<tr data-stop="'+ j + '" data-spline="miniMap_' + ((mStation !== null) ? mStation.pathName.replace(':', '-').replace('.', '-').replace('.', '-') : 'NULL') + '">');
                             html.push('<td width="1" class="text-right"><h6>' + (j + 1) + '.</h6></td>');
                             html.push('<td>');
-                                if(trainStationIdentifier !== null)
+                                if(mStation !== null)
                                 {
-                                    let mStation        = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStation');
-                                    let mStationName    = this.baseLayout.getObjectProperty(trainStationIdentifier, 'mStationName');
-                                    let isDocked        = false;
-
-                                        if(mStation !== null)
+                                    let currentStation      = this.baseLayout.saveGameParser.getTargetObject(mStation.pathName);
+                                    let mDockingLocomotive  = this.baseLayout.getObjectProperty(currentStation, 'mDockingLocomotive');
+                                        if(mDockingLocomotive !== null)
                                         {
-                                            let currentStation      = this.baseLayout.saveGameParser.getTargetObject(mStation.pathName);
-                                            let mDockingLocomotive  = this.baseLayout.getObjectProperty(currentStation, 'mDockingLocomotive');
-                                                if(mDockingLocomotive !== null)
-                                                {
-                                                    if(this.locomotive.pathName === mDockingLocomotive.pathName)
-                                                    {
-                                                        isDocked = true;
-                                                    }
-                                                }
+                                            if(this.locomotive.pathName === mDockingLocomotive.pathName)
+                                            {
+                                                isDocked = true;
+                                            }
                                         }
-
-                                        html.push('<h6 class="mb-0">');
-                                            html.push(((mStationName !== null) ? mStationName : trainStationIdentifier.pathName));
-
-                                            if(isDocked === true)
-                                            {
-                                                html.push(' <sup class="badge badge-warning">Docked</sup>');
-                                            }
-                                            if(j === mCurrentStop)
-                                            {
-                                                html.push(' <sup class="badge badge-warning">Next stop</sup>');
-                                            }
-
-                                        html.push('</h3>');
                                 }
+
+                                html.push('<h6 class="mb-0">');
+                                    html.push(((mStationName !== null) ? mStationName : trainStationIdentifier.pathName));
+
+                                    if(isDocked === true)
+                                    {
+                                        html.push(' <sup class="badge badge-warning">Docked</sup>');
+                                    }
+                                    if(j === mCurrentStop)
+                                    {
+                                        html.push(' <sup class="badge badge-warning">Next stop</sup>');
+                                    }
+
+                                html.push('</h3>');
+                                html.push('<em><small>');
+
+                                if(mStation !== null && distances[mStation.pathName] !== undefined)
+                                {
+                                    if(distances[mStation.pathName] > 1000)
+                                    {
+                                        html.push('<strong>Distance to next stop:</strong> ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(distances[mStation.pathName] / 10) / 100) + 'km<br />');
+                                    }
+                                    else
+                                    {
+                                        html.push('<strong>Distance to next stop:</strong> ' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(distances[mStation.pathName])) + 'm<br />');
+                                    }
+
+                                }
+
                                 if(trainStationRules !== null)
                                 {
                                     trainStationRules = {properties: trainStationRules};
 
-                                    html.push('<em><small>');
+
 
                                         let DockingDefinition = this.baseLayout.getObjectProperty(trainStationRules, 'DockingDefinition');
                                             switch(DockingDefinition.value)
@@ -205,11 +233,11 @@ export default class Modal_Train_Timetable
                                                         html.push('<br /><strong>Unload Only:</strong> ' + unloadFilter.join(', '));
                                                     }
                                             }
-
-                                    html.push('</small></em>');
                                 }
+                            html.push('</small></em>');
                             html.push('</td>');
-                        html.push('</tr>');
+                            html.push('</tr>');
+                        }
                     }
                 html.push('</table>');
             }
@@ -253,7 +281,8 @@ export default class Modal_Train_Timetable
 
     getTimeTableSplinePoints()
     {
-        let points          = [];
+        let points          = {};
+        let distances       = {};
         let startStation    = null;
         let prevStation     = null;
 
@@ -277,8 +306,9 @@ export default class Modal_Train_Timetable
                                                 {
                                                     if(prevStation !== null)
                                                     {
-                                                        let stepPoints  = this.getPointsBetweenStations(prevStation, nextStation);
-                                                            points      = points.concat(stepPoints);
+                                                        let newPoints                       = this.getPointsBetweenStations(prevStation, nextStation);
+                                                            points[prevStation.pathName]    = newPoints.points;
+                                                            distances[prevStation.pathName] = newPoints.distance;
                                                     }
                                                     else
                                                     {
@@ -295,10 +325,11 @@ export default class Modal_Train_Timetable
             }
 
         // Close loop
-        points = points.concat(this.getPointsBetweenStations(prevStation, startStation));
-        //points.push(points[0]);
+        let newPoints                       = this.getPointsBetweenStations(prevStation, startStation);
+            points[prevStation.pathName]    = newPoints.points;
+            distances[prevStation.pathName] = newPoints.distance;
 
-        return points;
+        return {points: points, distances: distances};
     }
 
     /**
@@ -316,7 +347,7 @@ export default class Modal_Train_Timetable
 
                 if(startRailroadTrack !== null && endRailroadTrack !== null)
                 {
-                        let availableEdges  = this.getRailroadGraphEdges(startRailroadTrack);
+                    let availableEdges  = this.getRailroadGraphEdges(startRailroadTrack);
                         let graphNetwork    =   {};
 
                             for(let edgeKey in availableEdges)
@@ -334,10 +365,11 @@ export default class Modal_Train_Timetable
                                     }
                             }
 
-                        let shortestPath = this.findShortestPath(graphNetwork, startRailroadTrack, endRailroadTrack);
-                            if(shortestPath.distance != Infinity)
+                        let shortestPath = this.baseLayout.railroadSubSystem.findShortestPath(graphNetwork, startRailroadTrack, endRailroadTrack);
+                            if(shortestPath !== null)
                             {
-                                let points          = [];
+                                let points      = [];
+                                let distance    = 0;
                                     for(let i = 0; i < shortestPath.path.length; i++)
                                     {
                                         let currentTrack = this.baseLayout.saveGameParser.getTargetObject(shortestPath.path[i]);
@@ -364,18 +396,21 @@ export default class Modal_Train_Timetable
                                                             {
                                                                 points.push(splineDataPoints[j]);
                                                             }
+
+                                                        distance += splineData.distance;
                                                     }
                                             }
                                     }
+
                                     if(points.length > 0)
                                     {
-                                        return points;
+                                        return {points: points, distance: distance};
                                     }
                             }
                 }
             }
 
-        return [];
+        return {points: [], distance: 0};
     }
 
     getRailroadGraphEdges(startRailroadTrack, connectionType  = 'TrackConnection1', currentGraph = {}, alreadyChecked = [])
@@ -411,8 +446,8 @@ export default class Modal_Train_Timetable
                                                             currentGraph[graphKey]  = (prevSplineData.distance / 2) + (nextSplineData.distance / 2);
 
                                                         // Follow the new track
-                                                        currentGraph            = this.getRailroadGraphEdges(newRailroad, connectionType, currentGraph, alreadyChecked);
-                                                        haveNewComponent        = true;
+                                                            currentGraph            = this.getRailroadGraphEdges(newRailroad, connectionType, currentGraph, alreadyChecked);
+                                                            haveNewComponent        = true;
                                                     }
                                             }
                                     }
@@ -427,92 +462,5 @@ export default class Modal_Train_Timetable
             }
 
         return currentGraph;
-    }
-
-    findShortestPath(graphNetwork, startRailroadTrack, endRailroadTrack)
-    {
-        graphNetwork[endRailroadTrack.pathName]     = {};
-
-        // establish object for recording distances from the start node
-	let distances                               = {};
-            distances[endRailroadTrack.pathName]    = Infinity;
-            distances                               = Object.assign(distances, graphNetwork[startRailroadTrack.pathName]);
-
-	// track paths
-	let parents = { endNode: null };
-            for(let child in graphNetwork[startRailroadTrack.pathName])
-            {
-                parents[child] = startRailroadTrack.pathName;
-            }
-
-	// track nodes that have already been visited
-	let visited = [];
-
-	// find the nearest node
-	let node = this.shortestDistanceNode(distances, visited);
-
-	// for that node
-	while(node)
-        {
-            // find its distance from the start node & its child nodes
-            let distance = distances[node];
-            let children = graphNetwork[node];
-            // for each of those child nodes
-            for (let child in children) {
-                    // make sure each child node is not the start node
-                    if (String(child) === String(startRailroadTrack.pathName)) {
-                            continue;
-                    } else {
-                            // save the distance from the start node to the child node
-                            let newdistance = distance + children[child];
-                            // if there's no recorded distance from the start node to the child node in the distances object
-                            // or if the recorded distance is shorter than the previously stored distance from the start node to the child node
-                            // save the distance to the object
-                            // record the path
-                            if (!distances[child] || distances[child] > newdistance) {
-                                    distances[child] = newdistance;
-                                    parents[child] = node;
-                            }
-                    }
-            }
-            // move the node to the visited set
-            visited.push(node);
-            // move to the nearest neighbor node
-            node = this.shortestDistanceNode(distances, visited);
-	}
-
-	// using the stored paths from start node to end node
-	// record the shortest path
-	let shortestPath    = [endRailroadTrack.pathName];
-	let parent          = parents[endRailroadTrack.pathName];
-            while(parent)
-            {
-                shortestPath.push(parent);
-                parent = parents[parent];
-            }
-	shortestPath.reverse();
-
-	// return the shortest path from start node to end node & its distance
-	let results = {
-		distance: distances[endRailroadTrack.pathName],
-		path: shortestPath,
-	};
-
-	return results;
-    }
-
-    shortestDistanceNode(distances, visited)
-    {
-	let shortest = null;
-            for(let node in distances)
-            {
-                    let currentIsShortest = shortest === null || distances[node] < distances[shortest];
-                        if(currentIsShortest && !visited.includes(node))
-                        {
-                            shortest = node;
-                        }
-            }
-
-	return shortest;
     }
 }

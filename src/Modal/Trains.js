@@ -1,6 +1,8 @@
 /* global gtag, Intl */
 import Building_Locomotive                      from '../Building/Locomotive.js';
 
+import Modal_Train_Timetable                    from './Train/Timetable.js';
+
 export default class Modal_Trains
 {
     constructor(options)
@@ -67,6 +69,14 @@ export default class Modal_Trains
             let position    = this.baseLayout.satisfactoryMap.unproject([x, y]);
                 this.baseLayout.satisfactoryMap.leafletMap.setView(position, 9);
         });
+        $('#statisticsModalTrains .fa-train').on('click', (e) => {
+            let currentObject   = this.baseLayout.saveGameParser.getTargetObject($(e.currentTarget).attr('data-pathname'));
+            
+            let modalTimetable  = new Modal_Train_Timetable({baseLayout: this.baseLayout, locomotive: currentObject});
+                modalTimetable.parse();
+        });
+
+
     }
 
     getCurrentTrainFromIdentifier(currentIdentifier)
@@ -117,7 +127,10 @@ export default class Modal_Trains
 
                 html.push('<div class="card">');
                 html.push('<div class="card-header">');
-                html.push('<span class="float-right"><i class="fas fa-search-location" style="cursor: pointer;font-size: 24px;" data-x="' + currentTrain.transform.translation[0] + '" data-y="' + currentTrain.transform.translation[1] + '"></i></span>');
+                html.push('<span class="float-right">');
+                html.push('<i class="fas fa-train mr-3" style="cursor: pointer;font-size: 24px;" data-pathname="' + currentTrain.pathName + '" data-hover="tooltip" title="See Timetable"></i>');
+                html.push('<i class="fas fa-search-location" style="cursor: pointer;font-size: 24px;" data-x="' + currentTrain.transform.translation[0] + '" data-y="' + currentTrain.transform.translation[1] + '" data-hover="tooltip" title="Center on Map"></i>');
+                html.push('</span>');
                 html.push('<strong>' + haveName + '</strong>');
                 html.push('</div>');
                 html.push('<table class="table">');
@@ -136,7 +149,7 @@ export default class Modal_Trains
                                 let lastStopStationName     = this.baseLayout.getObjectProperty(lastStopStationIdentifier, 'mStationName');
                                     if(firstStopStationName !== null && lastStopStationName !== null)
                                     {
-                                        html.push('<tr><td colspan="2" width="50%">Route:</td><td colspan="2" class="pl-3 text-right">' + firstStopStationName + ' <i class="fas fa-chevron-left"></i><i class="fas fa-train"></i><i class="fas fa-chevron-right"></i> ' + lastStopStationName + ' </td></tr>');
+                                        html.push('<tr><td colspan="2" width="50%">Route:</td><td colspan="2" class="pl-3 text-right">' + firstStopStationName + ' <i class="fas fa-chevron-left mr-1"></i><i class="fas fa-train"></i><i class="fas fa-chevron-right ml-1"></i> ' + lastStopStationName + ' </td></tr>');
                                     }
                             }
                     }

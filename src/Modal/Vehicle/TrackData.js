@@ -22,7 +22,7 @@ export default class Modal_Vehicle_TrackData
                         html.push(this.getTrackDataList(trackData));
                     html.push('</div>');
                     html.push('<div class="col-6">');
-                        html.push(this.baseLayout.mapSubSystem.getMinimap(trackData));
+                        html.push(this.baseLayout.mapSubSystem.getMinimap({trackData: trackData}));
                     html.push('</div>');
                 html.push('</div>');
 
