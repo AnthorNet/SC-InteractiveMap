@@ -413,6 +413,7 @@ export default class Modal_Train_Timetable
         return {points: [], distance: 0};
     }
 
+    //TODO: follow forward TrackConnection?
     getRailroadGraphEdges(startRailroadTrack, connectionType  = 'TrackConnection1', currentGraph = {}, alreadyChecked = [])
     {
         let currentRailroad = startRailroadTrack;

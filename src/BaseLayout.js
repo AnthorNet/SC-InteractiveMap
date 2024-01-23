@@ -2359,7 +2359,7 @@ export default class BaseLayout
             offset              : (buildingData.mapOffset !== undefined) ? buildingData.mapOffset : 0,
             xShift              : (buildingData.mapShiftX !== undefined) ? buildingData.mapShiftX : 0,
             yShift              : (buildingData.mapShiftY !== undefined) ? buildingData.mapShiftY : 0,
-            useOnly2D           : false,
+            useOnly2D           : (buildingData.useOnly2D !== undefined) ? buildingData.useOnly2D : false,
             skipDetailedModel   : false
         };
 
@@ -2407,14 +2407,24 @@ export default class BaseLayout
                                     }
                                     else
                                     {
-                                        polygonOptions.width    = mLength;
-                                        polygonOptions.xShift   = -mLength / 2;
+                                        polygonOptions.width        = mLength;
+                                        polygonOptions.xShift       = -mLength / 2;
                                     }
+                                }
+                                else
+                                {
+                                    // Connectors...
+                                    polygonOptions.length           = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
+                                    polygonOptions.useOnly2D        = true;
                                 }
                         }
                     }
                 }
         }
+
+        // Make sure polygon are selectable with a minimum size...
+        polygonOptions.width = Math.max(50, polygonOptions.width);
+        polygonOptions.length = Math.max(50, polygonOptions.length);
 
         // Update nodes used by extraction building
         if(buildingData.category === 'extraction' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
