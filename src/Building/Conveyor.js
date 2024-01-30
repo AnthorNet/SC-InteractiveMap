@@ -2,100 +2,16 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Polygon                       from '../BaseLayout/Polygon.js';
 
+import Building                                 from '../Building.js';
+
 import Building_HyperTube                       from '../Building/HyperTube.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
 
-export default class Building_Conveyor
+export default class Building_Conveyor extends Building
 {
     static clipboard = {entry: null, exit: null};
 
     static get availableConnections(){ return ['.ConveyorAny0', '.ConveyorAny1', '.Input0', '.Input1', '.Input2', '.Input3', '.InPut3', '.Input4', '.Input5', '.Input6', '.Output0', '.Output1', '.Output2', '.Output3']; }
-
-    static get availableConveyorBelts()
-    {
-        return [
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk1/Build_ConveyorBeltMk1.Build_ConveyorBeltMk1_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk2/Build_ConveyorBeltMk2.Build_ConveyorBeltMk2_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk3/Build_ConveyorBeltMk3.Build_ConveyorBeltMk3_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk4/Build_ConveyorBeltMk4.Build_ConveyorBeltMk4_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk5/Build_ConveyorBeltMk5.Build_ConveyorBeltMk5_C'
-        ];
-    }
-
-    static get availableConveyorLifts()
-    {
-        return [
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk1/Build_ConveyorLiftMk1.Build_ConveyorLiftMk1_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk2/Build_ConveyorLiftMk2.Build_ConveyorLiftMk2_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk3/Build_ConveyorLiftMk3.Build_ConveyorLiftMk3_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk4/Build_ConveyorLiftMk4.Build_ConveyorLiftMk4_C',
-            '/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk5/Build_ConveyorLiftMk5.Build_ConveyorLiftMk5_C'
-        ];
-    }
-
-    /*
-     * BELT/LIFT LOOKUP, includes mods to avoid finding them everywhere
-     */
-    static isConveyor(currentObject)
-    {
-        return Building_Conveyor.isConveyorBelt(currentObject) || Building_Conveyor.isConveyorLift(currentObject);
-    }
-
-    static isConveyorBelt(currentObject)
-    {
-        if(Building_Conveyor.availableConveyorBelts.includes(currentObject.className))
-        {
-            return true;
-        }
-
-        // Belts Mod
-        if(
-                currentObject.className.startsWith('/Conveyors_Mod/Build_BeltMk')
-             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_BeltMk')
-             || currentObject.className.startsWith('/UltraFastLogistics/Buildable/build_conveyorbeltMK')
-             || currentObject.className.startsWith('/FlexSplines/Conveyor/Build_Belt')
-             || currentObject.className.startsWith('/conveyorbeltmod/Belt/mk')
-             || currentObject.className.startsWith('/minerplus/content/buildable/Factory/belt_')
-             || currentObject.className.startsWith('/bamfp/content/buildable/Factory/belt_')
-             || currentObject.className.startsWith('/MkPlus/Buildables/ConveyorBelt/Build_ConveyorBelt_')
-             || currentObject.className.startsWith('/FastConveyors/Buildable/Belts/Build_FastConveyorBelt')
-             || currentObject.className.startsWith('/MkPlusLibs/Buildables/ConveyorBelt/Build_ConveyorBelt_Mk')
-
-        )
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    static isConveyorLift(currentObject)
-    {
-        if(Building_Conveyor.availableConveyorLifts.includes(currentObject.className))
-        {
-            return true;
-        }
-
-        // Lifts Mod
-        if(
-                currentObject.className.startsWith('/minerplus/content/buildable/Factory/lift')
-             || currentObject.className.startsWith('/bamfp/content/buildable/Factory/lift')
-             || currentObject.className.startsWith('/Game/Conveyors_Mod/Build_LiftMk')
-             || currentObject.className.startsWith('/Conveyors_Mod/Build_LiftMk')
-             || currentObject.className.startsWith('/Game/CoveredConveyor')
-             || currentObject.className.startsWith('/CoveredConveyor')
-             || currentObject.className.startsWith('/conveyorbeltmod/lift/')
-             || currentObject.className.startsWith('/MkPlus/Buildables/ConveyorLift/Build_ConveyorLift_')
-             || currentObject.className.startsWith('/FastConveyors/Buildable/Lifts/Build_FastConveyorLift')
-             || currentObject.className.startsWith('/MkPlusLibs/Buildables/ConveyorLift/Build_ConveyorLift_Mk')
-
-        )
-        {
-            return true;
-        }
-
-        return false;
-    }
 
     /*
      * ADD

@@ -2,7 +2,9 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
-export default class Building_PowerLine
+import Building                                 from '../Building.js';
+
+export default class Building_PowerLine extends Building
 {
     static clipboard = {source: null, target: null};
 
@@ -14,44 +16,6 @@ export default class Building_PowerLine
             '.SlidingShoe',
             '.UpstreamConnection', '.DownstreamConnection'
         ];
-    }
-
-    static get availablePowerlines()
-    {
-        return [
-            '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C',
-            '/Game/FactoryGame/Events/Christmas/Buildings/PowerLineLights/Build_XmassLightsLine.Build_XmassLightsLine_C'
-        ];
-    }
-
-    /*
-     * POWER LINE LOOKUP, includes mods to avoid finding them everywhere
-     */
-    static isPowerline(currentObject)
-    {
-        if(Building_PowerLine.availablePowerlines.includes(currentObject.className))
-        {
-            return true;
-        }
-
-        // Powerline Mod
-        if(
-               currentObject.className === '/FlexSplines/PowerLine/Build_FlexPowerline.Build_FlexPowerline_C'
-            || currentObject.className === '/AB_CableMod/Visuals1/Build_AB-PLCopper.Build_AB-PLCopper_C'
-            || currentObject.className === '/AB_CableMod/Visuals1/Build_AB-PLCaterium.Build_AB-PLCaterium_C'
-            || currentObject.className === '/AB_CableMod/Visuals3/Build_AB-PLHeavy.Build_AB-PLHeavy_C'
-            || currentObject.className === '/AB_CableMod/Visuals4/Build_AB-SPLight.Build_AB-SPLight_C'
-            || currentObject.className === '/AB_CableMod/Visuals3/Build_AB-PLPaintable.Build_AB-PLPaintable_C'
-            || currentObject.className === '/AB_CableMod/Cables_Heavy/Build_AB-PLHeavy-Cu.Build_AB-PLHeavy-Cu_C'
-            || currentObject.className === '/AB_CableMod/Cables_Standard/Build_AB-PLStandard-Cu.Build_AB-PLStandard-Cu_C'
-            || currentObject.className === '/AB_CableMod/Cables_Wire/Build_AB-PLWire-Si.Build_AB-PLWire-Si_C'
-            || currentObject.className === '/AB_CableMod/Cables_Wire/Build_AB-PLWire-Au.Build_AB-PLWire-Au_C'
-        )
-        {
-            return true;
-        }
-
-        return false;
     }
 
     static getColor(baseLayout, currentObject, currentObjectSource = null, currentObjectTarget = null)

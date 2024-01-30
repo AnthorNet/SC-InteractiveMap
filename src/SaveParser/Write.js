@@ -1,9 +1,7 @@
 /* global Intl, self, Promise, Sentry */
 import pako                                     from '../Lib/pako.esm.js';
 
-import Building_Conveyor                        from '../Building/Conveyor.js';
-import Building_PowerLine                       from '../Building/PowerLine.js';
-import Building_Vehicle                         from '../Building/Vehicle.js';
+import Building                                 from '../Building.js';
 
 export default class SaveParser_Write
 {
@@ -780,7 +778,7 @@ export default class SaveParser_Write
         entity += this.writeString('None');
 
         // Extra properties!
-        if(Building_Conveyor.isConveyor(currentObject))
+        if(Building.isConveyor(currentObject))
         {
             let itemsLength  = currentObject.extra.items.length;
                      entity += this.writeInt(currentObject.extra.count);
@@ -810,7 +808,7 @@ export default class SaveParser_Write
             return preEntity + this.writeInt(this.currentEntityLength) + entity;
         }
 
-        if(Building_PowerLine.isPowerline(currentObject))
+        if(Building.isPowerline(currentObject))
         {
             entity += this.writeInt(currentObject.extra.count);
             entity += this.writeObjectProperty(currentObject.extra.source);
@@ -844,6 +842,20 @@ export default class SaveParser_Write
                     entity += this.writeFloat(0);
                     entity += this.writeFloat(0);
                 }
+            }
+
+            return preEntity + this.writeInt(this.currentEntityLength) + entity;
+        }
+
+        if(Building.isVehicle(currentObject))
+        {
+            entity += this.writeInt(currentObject.extra.count);
+            entity += this.writeInt(currentObject.extra.objects.length);
+
+            for(let i = 0; i < currentObject.extra.objects.length; i++)
+            {
+                entity += this.writeString(currentObject.extra.objects[i].name);
+                entity += this.writeHex(currentObject.extra.objects[i].unk);
             }
 
             return preEntity + this.writeInt(this.currentEntityLength) + entity;
@@ -940,24 +952,6 @@ export default class SaveParser_Write
 
                 entity += this.writeObjectProperty(currentObject.extra.previous);
                 entity += this.writeObjectProperty(currentObject.extra.next);
-
-                break;
-
-            case '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C':
-            case '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C':
-            case '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C':
-            case '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C':
-            case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C':
-            case '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C':
-            case '/x3_mavegrag/Vehicles/Trucks/TruckMk1/BP_X3Truck_Mk1.BP_X3Truck_Mk1_C':
-                entity += this.writeInt(currentObject.extra.count);
-                entity += this.writeInt(currentObject.extra.objects.length);
-
-                for(let i = 0; i < currentObject.extra.objects.length; i++)
-                {
-                    entity += this.writeString(currentObject.extra.objects[i].name);
-                    entity += this.writeHex(currentObject.extra.objects[i].unk);
-                }
 
                 break;
 

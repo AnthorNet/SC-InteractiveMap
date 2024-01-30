@@ -1,9 +1,7 @@
 /* global Sentry, Intl, self */
 import pako                                     from '../Lib/pako.esm.js';
 
-import Building_Conveyor                        from '../Building/Conveyor.js';
-import Building_PowerLine                       from '../Building/PowerLine.js';
-import Building_Vehicle                         from '../Building/Vehicle.js';
+import Building                                 from '../Building.js';
 
 export default class SaveParser_Read
 {
@@ -546,7 +544,7 @@ export default class SaveParser_Read
         }
 
         // Read Conveyor missing bytes
-        if(Building_Conveyor.isConveyor(this.objects[objectKey]))
+        if(Building.isConveyor(this.objects[objectKey]))
         {
             this.objects[objectKey].extra   = {count: this.readInt(), items: []};
             let itemsLength                 = this.readInt();
@@ -570,7 +568,7 @@ export default class SaveParser_Read
         }
 
         // Read Conveyor missing bytes
-        if(Building_PowerLine.isPowerline(this.objects[objectKey]))
+        if(Building.isPowerline(this.objects[objectKey]))
         {
             this.objects[objectKey].extra       = {
                 count   : this.readInt(),
@@ -589,7 +587,7 @@ export default class SaveParser_Read
         }
 
         // Read Vehicle missing bytes
-        if(Building_Vehicle.isVehicle(this.objects[objectKey]))
+        if(Building.isVehicle(this.objects[objectKey]))
         {
             this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
             let vehicleLength                   = this.readInt();

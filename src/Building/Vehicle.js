@@ -1,38 +1,9 @@
+import Building                                 from '../Building.js';
+
 import Modal_Vehicle_TrackData                  from '../Modal/Vehicle/TrackData.js';
 
-export default class Building_Vehicle
+export default class Building_Vehicle extends Building
 {
-    static get availableVehicles()
-    {
-        return [
-            '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C',
-            '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C',
-            '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C',
-            '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C',
-            '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_Golfcart.BP_Golfcart_C',
-            '/Game/FactoryGame/Buildable/Vehicle/Golfcart/BP_GolfcartGold.BP_GolfcartGold_C'
-        ];
-    }
-
-    /*
-     * BELT/LIFT LOOKUP, includes mods to avoid finding them everywhere
-     */
-    static isVehicle(currentObject)
-    {
-        if(Building_Vehicle.availableVehicles.includes(currentObject.className))
-        {
-            return true;
-        }
-
-        // Vehicles Mod
-        if(currentObject.className === '/x3_mavegrag/Vehicles/Trucks/TruckMk1/BP_X3Truck_Mk1.BP_X3Truck_Mk1_C')
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     static getName(baseLayout, currentObject)
     {
         return currentObject.pathName.replace('Persistent_Level:PersistentLevel.', '');
