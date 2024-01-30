@@ -1575,7 +1575,8 @@ export default class SaveParser_Write
 
                     break;
 
-                case 'Name':  // MOD: Sweet Transportal
+                case 'Name':    // MOD: Sweet Transportal
+                case 'Str':     // MOD: ???
                     property += this.writeString(currentProperty.value.values[iSetProperty].name);
 
                     break;

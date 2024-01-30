@@ -1576,7 +1576,8 @@ export default class SaveParser_Read
                         currentProperty.value.values.push(this.readFINNetworkTrace());
                         break;
 
-                    case 'Name':  // MOD: Sweet Transportal
+                    case 'Name':    // MOD: Sweet Transportal
+                    case 'Str':     // Mod: ???
                         currentProperty.value.values.push({name: this.readString()});
 
                         break;
