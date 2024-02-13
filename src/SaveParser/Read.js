@@ -756,7 +756,7 @@ export default class SaveParser_Read
                                     properties  : []
                                 };
 
-                                    while(true)
+                                while(true)
                                 {
                                     let mActionQueueProperty = this.readProperty();
                                         if(mActionQueueProperty === null)
@@ -2206,11 +2206,24 @@ export default class SaveParser_Read
                             break;
 
                         case '/Script/FactoryGame.InventoryStack':
-                            structure.unk3      = this.readInt();
-                            structure.unk4      = this.readString();
-                            structure.unk5      = this.readInt();
-                            structure.unk6      = this.readInt();
-                            structure.unk7      = this.readInt();
+                            if(this.header.saveVersion >= 42)
+                            {
+                                structure.unk3      = this.readString();
+                                structure.unk4      = this.readString();
+                                structure.unk5      = this.readInt();
+                                structure.unk6      = this.readInt();
+                                structure.unk7      = this.readStructProperty(structure, structure.unk2);
+                                structure.unk8      = this.readString();
+                            }
+                            else
+                            {
+                                structure.unk3      = this.readInt();
+                                structure.unk4      = this.readString();
+
+                                structure.unk5      = this.readInt();
+                                structure.unk6      = this.readInt();
+                                structure.unk7      = this.readInt();
+                            }
 
                             break;
 

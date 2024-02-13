@@ -1796,7 +1796,9 @@ export default class SaveParser_Write
                 property += this.writeString(currentProperty.namespace);
                 property += this.writeString(currentProperty.key);
                 property += this.writeString(currentProperty.value);
+
                 break;
+
             // HISTORYTYPE_NAMEDFORMAT
             case 1:
             // HISTORYTYPE_ARGUMENTFORMAT
@@ -1820,19 +1822,25 @@ export default class SaveParser_Write
                             break;
                     }
                 }
+
                 break;
+
             // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2268
             // HISTORYTYPE_TRANSFORM
             case 10:
                 property += this.writeTextProperty(currentProperty.sourceText);
                 property += this.writeByte(currentProperty.transformType);
+
                 break;
+
             // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2463
             //HISTORYTYPE_STRINGTABLEENTRY
             case 11:
                 property += this.writeString(currentProperty.tableId);
                 property += this.writeString(currentProperty.textKey);
+
                 break;
+
             case 255:
                 // Broke during engine upgrade?
                 // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L894
@@ -1845,6 +1853,7 @@ export default class SaveParser_Write
                         property += this.writeString(currentProperty.value);
                     }
                 }
+
                 break;
         }
 
@@ -2189,29 +2198,51 @@ export default class SaveParser_Write
                         saveBinary += this.writeFloat(value.structs[i].x);
                         saveBinary += this.writeFloat(value.structs[i].y);
                         saveBinary += this.writeFloat(value.structs[i].z);
+
                         break;
+
                     case '/Script/CoreUObject.LinearColor':
                         saveBinary += this.writeFloat(value.structs[i].r);
                         saveBinary += this.writeFloat(value.structs[i].g);
                         saveBinary += this.writeFloat(value.structs[i].b);
                         saveBinary += this.writeFloat(value.structs[i].a);
+
                         break;
+
                     case '/Script/FactoryGame.InventoryStack':
-                        saveBinary += this.writeInt(value.structs[i].unk3);
-                        saveBinary += this.writeString(value.structs[i].unk4);
-                        saveBinary += this.writeInt(value.structs[i].unk5);
-                        saveBinary += this.writeInt(value.structs[i].unk6);
-                        saveBinary += this.writeInt(value.structs[i].unk7);
+                        if(this.header.saveVersion >= 41)
+                        {
+                            saveBinary += this.writeString(value.structs[i].unk3);
+                            saveBinary += this.writeString(value.structs[i].unk4);
+                            saveBinary += this.writeInt(value.structs[i].unk5);
+                            saveBinary += this.writeInt(value.structs[i].unk6);
+                            saveBinary += this.writeStructProperty(value.structs[i].unk7, value.structs[i].unk2);
+                            saveBinary += this.writeString(value.structs[i].unk8);
+                        }
+                        else
+                        {
+                            saveBinary += this.writeInt(value.structs[i].unk3);
+                            saveBinary += this.writeString(value.structs[i].unk4);
+                            saveBinary += this.writeInt(value.structs[i].unk5);
+                            saveBinary += this.writeInt(value.structs[i].unk6);
+                            saveBinary += this.writeInt(value.structs[i].unk7);
+                        }
+
                         break;
+
                     case '/Script/FactoryGame.ItemAmount':
                         saveBinary += this.writeInt(value.structs[i].unk3);
                         saveBinary += this.writeString(value.structs[i].unk4);
                         saveBinary += this.writeInt(value.structs[i].unk5);
+
                         break;
+
                     case '/Script/FicsItNetworks.FINTrackGraph':
                         saveBinary += this.writeFINNetworkTrace(value.structs[i].trace);
                         saveBinary += this.writeInt(value.structs[i].trackId);
+
                         break;
+
                     case '/Script/FicsItNetworks.FINGPUT1Buffer':
                         saveBinary += this.writeInt(value.structs[i].x);
                         saveBinary += this.writeInt(value.structs[i].y);
@@ -2226,6 +2257,7 @@ export default class SaveParser_Write
                         }
 
                         saveBinary += this.writeHex(value.structs[i].unk3);
+
                         break;
                 }
             }
