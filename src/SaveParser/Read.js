@@ -2243,6 +2243,8 @@ export default class SaveParser_Read
                         case '/Script/FactoryGame.PrefabSignData': // Skip!
                         case '/Script/FicsItNetworks.FINInternetCardHttpRequestFuture': // Skip!
                         case '/Script/FactoryGame.InventoryItem': // Skip!
+                        case '/Script/FicsItNetworks.FINRailroadSignalBlock': // Skip!
+
                             break;
 
                         case '/Script/FicsItNetworks.FINGPUT1Buffer':
