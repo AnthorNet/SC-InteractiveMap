@@ -3,6 +3,7 @@ import Modal_Selection                          from '../Modal/Selection.js';
 
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_HyperTube                       from '../Building/HyperTube.js';
+import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
 import Building_PowerLine                       from '../Building/PowerLine.js';
 import Building_RailroadTrack                   from '../Building/RailroadTrack.js';
@@ -221,11 +222,10 @@ export default class Selection_Copy
                     }
 
                 // Handle train/station
-                if([
+                if(Building_Locomotive.isLocomotive(newDataObject.parent) || [
                     '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C',
                     '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C',
-                    '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C',
-                    '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'
+                    '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'
                 ].includes(newDataObject.parent.className))
                 {
                     let trainIdentifier = this.baseLayout.railroadSubSystem.getObjectIdentifier(newDataObject.parent);

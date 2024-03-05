@@ -2,6 +2,7 @@
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
+import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_PowerLine                       from '../Building/PowerLine.js';
 
 import Modal_Statistics_Production              from '../Modal/Statistics/Production.js';
@@ -1120,7 +1121,7 @@ export default class Modal_Selection
                         if(currentObject !== null)
                         {
                             // Skip locomotive to avoid double freight wagons...
-                            if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                            if(Building_Locomotive.isLocomotive(currentObject))
                             {
                                 continue;
                             }
@@ -1144,7 +1145,7 @@ export default class Modal_Selection
                 if(currentObject !== null)
                 {
                     // Skip locomotive to avoid double freight wagons...
-                    if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                    if(Building_Locomotive.isLocomotive(currentObject))
                     {
                         continue;
                     }

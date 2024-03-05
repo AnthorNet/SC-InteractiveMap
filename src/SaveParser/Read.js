@@ -602,6 +602,43 @@ export default class SaveParser_Read
             return;
         }
 
+        // Read locomotive/freight wagon missing bytes
+        if(Building.isLocomotive(this.objects[objectKey]) || Building.isFreightWagon(this.objects[objectKey]))
+        {
+            if(this.header.saveVersion >= 41)
+            {
+                    this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
+                let trainLength                     = this.readInt();
+                    for(let i = 0; i < trainLength; i++)
+                    {
+                        this.objects[objectKey].extra.objects.push({
+                            name   : this.readString(),
+                            unk    : this.readHex(105)
+                        });
+                    }
+
+                this.objects[objectKey].extra.previous  = this.readObjectProperty({});
+                this.objects[objectKey].extra.next      = this.readObjectProperty({});
+            }
+            else
+            {
+                    this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
+                let trainLength                     = this.readInt();
+                    for(let i = 0; i < trainLength; i++)
+                    {
+                        this.objects[objectKey].extra.objects.push({
+                            name   : this.readString(),
+                            unk    : this.readHex(53)
+                        });
+                    }
+
+                this.objects[objectKey].extra.previous  = this.readObjectProperty({});
+                this.objects[objectKey].extra.next      = this.readObjectProperty({});
+            }
+
+            return;
+        }
+
         // Extra processing
         switch(this.objects[objectKey].className)
         {
@@ -789,43 +826,6 @@ export default class SaveParser_Read
                             pathName    : this.readString()
                         });
                     }
-
-                break;
-
-            case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
-            case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
-            case '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C':
-            case '/x3_mavegrag/Vehicles/Trains/CargoWagon_Mk1/BP_X3CargoWagon_Mk1.BP_X3CargoWagon_Mk1_C':
-                if(this.header.saveVersion >= 41)
-                {
-                        this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
-                    let trainLength                     = this.readInt();
-                        for(let i = 0; i < trainLength; i++)
-                        {
-                            this.objects[objectKey].extra.objects.push({
-                                name   : this.readString(),
-                                unk    : this.readHex(105)
-                            });
-                        }
-
-                    this.objects[objectKey].extra.previous  = this.readObjectProperty({});
-                    this.objects[objectKey].extra.next      = this.readObjectProperty({});
-                }
-                else
-                {
-                        this.objects[objectKey].extra   = {count: this.readInt(), objects: []};
-                    let trainLength                     = this.readInt();
-                        for(let i = 0; i < trainLength; i++)
-                        {
-                            this.objects[objectKey].extra.objects.push({
-                                name   : this.readString(),
-                                unk    : this.readHex(53)
-                            });
-                        }
-
-                    this.objects[objectKey].extra.previous  = this.readObjectProperty({});
-                    this.objects[objectKey].extra.next      = this.readObjectProperty({});
-                }
 
                 break;
 

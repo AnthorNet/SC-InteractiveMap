@@ -1,3 +1,4 @@
+import Building                                 from '../Building.js';
 import Building_PowerLine                       from '../Building/PowerLine.js';
 
 export default class Modal_Debug
@@ -43,7 +44,7 @@ export default class Modal_Debug
         {
             extraPathName.push('Persistent_Level:PersistentLevel.ResourceSinkSubsystem');
         }
-        if(['/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C'].includes(currentObject.className))
+        if(Building.isLocomotive(currentObject) || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainStation.Build_TrainStation_C')
         {
             let identifier  = baseLayout.railroadSubSystem.getObjectIdentifier(currentObject);
                 if(identifier !== null)

@@ -861,6 +861,31 @@ export default class SaveParser_Write
             return preEntity + this.writeInt(this.currentEntityLength) + entity;
         }
 
+        if(Building.isLocomotive(currentObject) || Building.isFreightWagon(currentObject))
+        {
+            entity += this.writeInt(currentObject.extra.count);
+
+            if(currentObject.extra.objects !== undefined)
+            {
+                entity += this.writeInt(currentObject.extra.objects.length);
+
+                for(let i = 0; i < currentObject.extra.objects.length; i++)
+                {
+                    entity += this.writeString(currentObject.extra.objects[i].name);
+                    entity += this.writeHex(currentObject.extra.objects[i].unk);
+                }
+            }
+            else
+            {
+                entity += this.writeInt(0);
+            }
+
+            entity += this.writeObjectProperty(currentObject.extra.previous);
+            entity += this.writeObjectProperty(currentObject.extra.next);
+
+            return preEntity + this.writeInt(this.currentEntityLength) + entity;
+        }
+
         switch(currentObject.className)
         {
             case '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C':
@@ -926,32 +951,6 @@ export default class SaveParser_Write
                     entity += this.writeInt(currentObject.extra.circuits[i].circuitId);
                     entity += this.writeObjectProperty(currentObject.extra.circuits[i]);
                 }
-
-                break;
-
-            case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
-            case '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C':
-            case '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C':
-            case '/x3_mavegrag/Vehicles/Trains/CargoWagon_Mk1/BP_X3CargoWagon_Mk1.BP_X3CargoWagon_Mk1_C':
-                entity += this.writeInt(currentObject.extra.count);
-
-                if(currentObject.extra.objects !== undefined)
-                {
-                    entity += this.writeInt(currentObject.extra.objects.length);
-
-                    for(let i = 0; i < currentObject.extra.objects.length; i++)
-                    {
-                        entity += this.writeString(currentObject.extra.objects[i].name);
-                        entity += this.writeHex(currentObject.extra.objects[i].unk);
-                    }
-                }
-                else
-                {
-                    entity += this.writeInt(0);
-                }
-
-                entity += this.writeObjectProperty(currentObject.extra.previous);
-                entity += this.writeObjectProperty(currentObject.extra.next);
 
                 break;
 

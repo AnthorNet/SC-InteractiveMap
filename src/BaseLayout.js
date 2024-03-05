@@ -43,6 +43,7 @@ import Modal_Schematics                         from './Modal/Schematics.js';
 import Modal_Selection                          from './Modal/Selection.js';
 import Modal_Trains                             from './Modal/Trains.js';
 
+import Building                                 from './Building.js';
 import Building_Beacon                          from './Building/Beacon.js';
 import Building_Conveyor                        from './Building/Conveyor.js';
 import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
@@ -715,8 +716,6 @@ export default class BaseLayout
 
                 continue;
             }
-
-
 
             if(currentObject.className === '/Script/FactoryGame.FGPipeNetwork')
             {
@@ -2038,7 +2037,7 @@ export default class BaseLayout
         let stack           =  100;
         let storageObjects  = [currentObject];
             // Switch to freight wagons when locomotive was selected
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+            if(Building_Locomotive.isLocomotive(currentObject))
             {
                 storageObjects = Building_Locomotive.getFreightWagons(this, currentObject);
             }
@@ -2106,7 +2105,7 @@ export default class BaseLayout
             }
 
             // Skip fluid Freight Wagon
-            if(storageObjects[i].className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+            if(Building.isFreightWagon(storageObjects[i]))
             {
                 let storage           = this.getObjectProperty(storageObjects[i], inventoryProperty);
                     if(storage !== null)
@@ -2171,7 +2170,7 @@ export default class BaseLayout
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let storageObjects  = [currentObject];
             // Switch to freight wagons when locomotive was selected
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+            if(Building_Locomotive.isLocomotive(currentObject))
             {
                 storageObjects      = Building_Locomotive.getFreightWagons(baseLayout, currentObject);
             }
@@ -3189,7 +3188,7 @@ export default class BaseLayout
         }
 
         // Trains connection
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+        if(Building_Locomotive.isLocomotive(currentObject) || Building.isFreightWagon(currentObject))
         {
             let previousTrain   = null;
             let nextTrain       = null;
@@ -4786,8 +4785,6 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/Desc_FreightWagon.Desc_FreightWagon_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/JumpPad/Build_JumpPad.Build_JumpPad_C'){ className = '/Game/FactoryGame/Buildable/Factory/JumpPad/Build_JumpPadAdjustable.Build_JumpPadAdjustable_C'; }
 
-        if(Building_RailroadTrack.isRailroadTrack({className: className})){ className = '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrack.Build_RailroadTrack_C'; }
-
         // Create fake angled railings with new width
         if(this.buildingsData.Build_SM_RailingRamp_8x4_01_C === undefined && this.buildingsData.Build_Railing_01_C !== undefined)
         {
@@ -4875,6 +4872,22 @@ export default class BaseLayout
                 this.buildingDataClassNameHashTable[className] = i;
                 return this.buildingsData[i];
             }
+        }
+
+        if(Building_RailroadTrack.isRailroadTrack({className: className}))
+        {
+            this.buildingDataClassNameHashTable[className] = 'Build_RailroadTrack_C';
+            return this.buildingsData.Build_RailroadTrack_C;
+        }
+        if(Building_Locomotive.isLocomotive({className: className}))
+        {
+            this.buildingDataClassNameHashTable[className] = 'Desc_Locomotive_C';
+            return this.buildingsData.Desc_Locomotive_C;
+        }
+        if(Building.isFreightWagon({className: className}))
+        {
+            this.buildingDataClassNameHashTable[className] = 'Desc_FreightWagon_C';
+            return this.buildingsData.Desc_FreightWagon_C;
         }
 
         return null;

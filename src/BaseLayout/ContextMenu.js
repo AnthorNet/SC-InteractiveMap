@@ -1,3 +1,5 @@
+import Building                                 from '../Building.js';
+
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
 import Building_Beacon                          from '../Building/Beacon.js';
 import Building_Conveyor                        from '../Building/Conveyor.js';
@@ -353,7 +355,8 @@ export default class BaseLayout_ContextMenu
                 {
                     contextMenu = Building_Light.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+
+                if(Building_Locomotive.isLocomotive(currentObject))
                 {
                     contextMenu = Building_Locomotive.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
@@ -430,18 +433,17 @@ export default class BaseLayout_ContextMenu
                 if(
                        buildingData.category === 'storage'
                     || buildingData.category === 'vehicle'
+                    || Building_Locomotive.isLocomotive(currentObject) || Building.isFreightWagon(currentObject)
                     || ['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C',
-                        '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C',
-                        '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C',
-                        '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'].includes(currentObject.className)
+                        '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'].includes(currentObject.className)
                 )
                 {
                     let inventoryType = 'solid';
-                        if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                        if(Building_Locomotive.isLocomotive(currentObject))
                         {
                             inventoryType = 'multiple';
                         }
-                        if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+                        if(Building.isFreightWagon(currentObject))
                         {
                             let storage = this.baseLayout.getObjectProperty(currentObject, 'mStorageInventory');
                                 if(storage !== null)

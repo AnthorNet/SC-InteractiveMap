@@ -4,6 +4,8 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import SubSystem_Fauna                          from '../SubSystem/Fauna.js';
 import SubSystem_Unlock                         from '../SubSystem/Unlock.js';
 
+import Building                                 from '../Building.js';
+
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
 import Building_Beacon                          from '../Building/Beacon.js';
 import Building_Conveyor                        from '../Building/Conveyor.js';
@@ -65,6 +67,10 @@ export default class BaseLayout_Tooltip
                 if(Building_Pipeline.isPipeline(currentObject))
                 {
                     return Building_Pipeline.getTooltip(this.baseLayout, this, currentObject);
+                }
+                if(Building_Locomotive.isLocomotive(currentObject))
+                {
+                    return Building_Locomotive.getTooltip(this.baseLayout, currentObject, this.genericTooltipBackgroundStyle);
                 }
 
                 switch(currentObject.className)
@@ -157,8 +163,6 @@ export default class BaseLayout_Tooltip
                                         return Building_TruckStation.getTooltip(this.baseLayout, currentObject, buildingData);
                                     case '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C':
                                         return Building_GeneratorGeoThermal.getTooltip(this.baseLayout, currentObject, buildingData);
-                                    case '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C':
-                                        return Building_Locomotive.getTooltip(this.baseLayout, currentObject, buildingData, this.genericTooltipBackgroundStyle);
                                     case '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C':
                                         return Building_RadarTower.getTooltip(this.baseLayout, currentObject, buildingData);
                                     case '/Game/FactoryGame/Buildable/Factory/ResourceSink/Build_ResourceSink.Build_ResourceSink_C':
@@ -520,7 +524,7 @@ export default class BaseLayout_Tooltip
         {
             inventoryType = 'liquid';
         }
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+        if(Building.isFreightWagon(currentObject))
         {
             let storage           = this.baseLayout.getObjectProperty(currentObject, inventoryKey);
                 if(storage !== null)

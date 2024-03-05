@@ -3,9 +3,11 @@
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
+import Building                                 from '../Building.js';
+
 import Modal_Train_Timetable                    from '../Modal/Train/Timetable.js';
 
-export default class Building_Locomotive
+export default class Building_Locomotive extends Building
 {
     static getTrainName(baseLayout, currentObject, defaultName = null)
     {
@@ -33,7 +35,7 @@ export default class Building_Locomotive
         let includedPathName    = [currentObject.pathName];
         let freightWagons       = [];
 
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+        if(Building_Locomotive.isLocomotive(currentObject))
         {
             if(currentObject.extra !== undefined)
             {
@@ -44,7 +46,7 @@ export default class Building_Locomotive
                         {
                             includedPathName.push(adjacentPreviousWagon.pathName);
 
-                            if(adjacentPreviousWagon.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+                            if(Building.isFreightWagon(adjacentPreviousWagon))
                             {
                                 freightWagons.push(adjacentPreviousWagon);
                             }
@@ -59,7 +61,7 @@ export default class Building_Locomotive
                         {
                             includedPathName.push(adjacentNextWagon.pathName);
 
-                            if(adjacentNextWagon.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C')
+                            if(Building.isFreightWagon(adjacentNextWagon))
                             {
                                 freightWagons.push(adjacentNextWagon);
                             }
@@ -301,9 +303,10 @@ export default class Building_Locomotive
     /**
      * TOOLTIP
      */
-    static getTooltip(baseLayout, currentObject, buildingData, genericTooltipBackgroundStyle)
+    static getTooltip(baseLayout, currentObject, genericTooltipBackgroundStyle)
     {
         let content         = [];
+        let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
         let mTrainName      = Building_Locomotive.getTrainName(baseLayout, currentObject);
             if(mTrainName !== null)

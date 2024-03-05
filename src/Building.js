@@ -157,4 +157,62 @@ export default class Building
 
         return false;
     }
+
+    /**
+     * LOCOMOTIVE
+     */
+    static get availableLocomotives()
+    {
+        return [
+            '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C'
+        ];
+    }
+
+    static isLocomotive(currentObject)
+    {
+        if(Building.availableLocomotives.includes(currentObject.className))
+        {
+            return true;
+        }
+
+        // Locomotives Mod
+        if(
+                currentObject.className === '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C'
+             || currentObject.className === '/DI_Transportation_Darkplate/Trains/Locomotive/DI_Locomotive_400/Build_DI_Locomotive_400.Build_DI_Locomotive_400_C'
+        )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * FREIGHT WAGON
+     */
+    static get availableFreightWagons()
+    {
+        return [
+            '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'
+        ];
+    }
+
+    static isFreightWagon(currentObject)
+    {
+        if(Building.availableFreightWagons.includes(currentObject.className))
+        {
+            return true;
+        }
+
+        // Freight Wagons Mod
+        if(
+                currentObject.className === '/x3_mavegrag/Vehicles/Trains/CargoWagon_Mk1/BP_X3CargoWagon_Mk1.BP_X3CargoWagon_Mk1_C'
+             || currentObject.className === '/DI_Transportation_Darkplate/Trains/Wagon/DI_Wagon_512/Build_DI_FrieghtWagon512.Build_DI_FrieghtWagon512_C'
+        )
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

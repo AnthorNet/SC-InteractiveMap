@@ -71,7 +71,7 @@ export default class Modal_Trains
         });
         $('#statisticsModalTrains .fa-train').on('click', (e) => {
             let currentObject   = this.baseLayout.saveGameParser.getTargetObject($(e.currentTarget).attr('data-pathname'));
-            
+
             let modalTimetable  = new Modal_Train_Timetable({baseLayout: this.baseLayout, locomotive: currentObject});
                 modalTimetable.parse();
         });
@@ -85,7 +85,7 @@ export default class Modal_Trains
             if(FirstVehicle !== null)
             {
                 let FirstVehicleTarget  = this.baseLayout.saveGameParser.getTargetObject(FirstVehicle.pathName);
-                    if(FirstVehicleTarget !== null && FirstVehicleTarget.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                    if(FirstVehicleTarget !== null && Building_Locomotive.isLocomotive(FirstVehicleTarget))
                     {
                         return FirstVehicleTarget;
                     }
@@ -94,7 +94,7 @@ export default class Modal_Trains
             if(LastVehicle !== null)
             {
                 let LastVehicleTarget  = this.baseLayout.saveGameParser.getTargetObject(LastVehicle.pathName);
-                    if(LastVehicleTarget !== null && LastVehicleTarget.className === '/Game/FactoryGame/Buildable/Vehicle/Train/Locomotive/BP_Locomotive.BP_Locomotive_C')
+                    if(LastVehicleTarget !== null && Building_Locomotive.isLocomotive(LastVehicleTarget))
                     {
                         return LastVehicleTarget;
                     }
