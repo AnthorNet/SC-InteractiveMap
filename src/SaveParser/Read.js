@@ -477,7 +477,7 @@ export default class SaveParser_Read
             let scale3d = [this.readFloat(), this.readFloat(), this.readFloat()];
                 if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[2] !== 1)
                 {
-                    actor.transform.scale3d = scale3d
+                    actor.transform.scale3d = scale3d;
                 }
 
         let wasPlacedInLevel       = this.readInt();

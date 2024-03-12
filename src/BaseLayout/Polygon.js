@@ -20,6 +20,11 @@ export default class BaseLayout_Polygon
     {
         let center  = [transform.translation[0], transform.translation[1]];
         let forms   = [];
+        let scale3D = {
+                x       : ((transform.scale3d !== undefined) ? transform.scale3d[0] : 1),
+                y       : ((transform.scale3d !== undefined) ? transform.scale3d[0] : 1),
+                z       : ((transform.scale3d !== undefined) ? transform.scale3d[0] : 1),
+            };
 
         // Only used for convoyer lift orientation
         if(options.customPolygon !== undefined && options.customModel !== undefined)
@@ -84,8 +89,8 @@ export default class BaseLayout_Polygon
                     currentPoints.push(baseLayout.satisfactoryMap.unproject(
                         BaseLayout_Math.getPointRotation(
                             [
-                                center[0] + ((currentModel.forms[i].points[j][0] + currentModelXOffset) * currentModelScale),
-                                center[1] + ((currentModel.forms[i].points[j][1] + currentModelYOffset) * currentModelScale)
+                                center[0] + ((currentModel.forms[i].points[j][0] + currentModelXOffset) * currentModelScale * scale3D.x),
+                                center[1] + ((currentModel.forms[i].points[j][1] + currentModelYOffset) * currentModelScale * scale3D.y)
                             ],
                             center,
                             transform.rotation
@@ -120,8 +125,8 @@ export default class BaseLayout_Polygon
                             currentHole.push(baseLayout.satisfactoryMap.unproject(
                                 BaseLayout_Math.getPointRotation(
                                     [
-                                        center[0] + ((currentModel.forms[i].holes[j][k][0] + currentModelXOffset) * currentModelScale),
-                                        center[1] + ((currentModel.forms[i].holes[j][k][1] + currentModelYOffset) * currentModelScale)
+                                        center[0] + ((currentModel.forms[i].holes[j][k][0] + currentModelXOffset) * currentModelScale * scale3D.x),
+                                        center[1] + ((currentModel.forms[i].holes[j][k][1] + currentModelYOffset) * currentModelScale * scale3D.y)
                                     ],
                                     center,
                                     transform.rotation
@@ -141,7 +146,10 @@ export default class BaseLayout_Polygon
             let currentPoints = [];
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) - ((options.width - options.offset) / 2), (center[1] - options.yShift) - ((options.length - options.offset) / 2)],
+                        [
+                            (center[0] - options.xShift) - (((options.width - options.offset) / 2) * scale3D.x),
+                            (center[1] - options.yShift) - (((options.length - options.offset) / 2) * scale3D.y)
+                        ],
                         center,
                         transform.rotation,
                         options.useOnly2D
@@ -149,7 +157,10 @@ export default class BaseLayout_Polygon
                 ));
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) + ((options.width - options.offset) / 2), (center[1] - options.yShift) - ((options.length - options.offset) / 2)],
+                        [
+                            (center[0] - options.xShift) + (((options.width - options.offset) / 2) * scale3D.x),
+                            (center[1] - options.yShift) - (((options.length - options.offset) / 2) * scale3D.y)
+                        ],
                         center,
                         transform.rotation,
                         options.useOnly2D
@@ -157,7 +168,10 @@ export default class BaseLayout_Polygon
                 ));
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) + ((options.width - options.offset) / 2), (center[1] - options.yShift) + ((options.length - options.offset) / 2)],
+                        [
+                            (center[0] - options.xShift) + (((options.width - options.offset) / 2) * scale3D.x),
+                            (center[1] - options.yShift) + (((options.length - options.offset) / 2) * scale3D.y)
+                        ],
                         center,
                         transform.rotation,
                         options.useOnly2D
@@ -165,7 +179,10 @@ export default class BaseLayout_Polygon
                 ));
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
                     BaseLayout_Math.getPointRotation(
-                        [(center[0] - options.xShift) - ((options.width - options.offset) / 2), (center[1] - options.yShift) + ((options.length - options.offset) / 2)],
+                        [
+                            (center[0] - options.xShift) - (((options.width - options.offset) / 2) * scale3D.x),
+                            (center[1] - options.yShift) + (((options.length - options.offset) / 2) * scale3D.y)
+                        ],
                         center,
                         transform.rotation,
                         options.useOnly2D
