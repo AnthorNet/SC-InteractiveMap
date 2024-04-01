@@ -797,10 +797,14 @@ export default class SaveParser_Write
                     }
 
                     entity += this.writeString(currentObject.extra.items[i].name);
-                    // Always empty
-                    //entity += this.writeObjectProperty(currentObject.extra.items[i]);
-                    entity += this.writeString('');
-                    entity += this.writeString('');
+
+                    if(this.header.saveVersion < 44)
+                    {
+                        // Always empty
+                        //entity += this.writeObjectProperty(currentObject.extra.items[i]);
+                        entity += this.writeString('');
+                        entity += this.writeString('');
+                    }
 
                     entity += this.writeFloat(currentObject.extra.items[i].position);
                 }

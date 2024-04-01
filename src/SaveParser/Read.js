@@ -557,8 +557,13 @@ export default class SaveParser_Read
                             currentItem.length  = currentItemLength;
                         }
                         currentItem.name        = this.readString();
-                        this.readString(); //currentItem.levelName   = this.readString();
-                        this.readString(); //currentItem.pathName    = this.readString();
+
+                        if(this.header.saveVersion < 44)
+                        {
+                            this.readString(); //currentItem.levelName   = this.readString();
+                            this.readString(); //currentItem.pathName    = this.readString();
+                        }
+
                         currentItem.position    = this.readFloat();
 
                     this.objects[objectKey].extra.items.push(currentItem);
