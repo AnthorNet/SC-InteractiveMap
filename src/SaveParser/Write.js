@@ -1651,6 +1651,14 @@ export default class SaveParser_Write
 
                 break;
 
+            case 'IntVector4':
+                property += this.writeInt(currentProperty.value.values.a);
+                property += this.writeInt(currentProperty.value.values.b);
+                property += this.writeInt(currentProperty.value.values.c);
+                property += this.writeInt(currentProperty.value.values.d);
+
+                break;
+
             case 'Quat':
             case 'Vector4':
                 if(this.header.saveVersion >= 41)

@@ -1674,6 +1674,16 @@ export default class SaveParser_Read
 
                 break;
 
+            case 'IntVector4':
+                currentProperty.value.values = {
+                        a           : this.readInt(),
+                        b           : this.readInt(),
+                        c           : this.readInt(),
+                        d           : this.readInt()
+                    };
+
+                break;
+
             case 'Quat':
             case 'Vector4':
                 if(this.header.saveVersion >= 41)
