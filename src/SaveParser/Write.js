@@ -613,7 +613,7 @@ export default class SaveParser_Write
             header += this.writeString(this.header.mapOptions, false);
             header += this.writeString(this.header.sessionName, false);
             header += this.writeInt(this.header.playDurationSeconds, false);
-            header += this.writeLong(this.header.saveDateTime, false);
+            header += this.writeInt64(this.header.saveDateTime, false);
             header += this.writeByte(this.header.sessionVisibility, false);
 
             if(this.header.saveHeaderType >= 7)
@@ -786,7 +786,7 @@ export default class SaveParser_Write
 
                 for(let i = 0; i < itemsLength; i++)
                 {
-                    //TODO: Proper langth handle?
+                    //TODO: Proper length handle?
                     if(currentObject.extra.items[i].length !== undefined)
                     {
                         entity += this.writeInt(currentObject.extra.items[i].length);
@@ -1040,7 +1040,7 @@ export default class SaveParser_Write
             case 'Int64': //TODO: Use 64bit integer
             case 'UInt64':
                 property += this.writePropertyGUID(currentProperty);
-                property += this.writeLong(currentProperty.value);
+                property += this.writeInt64(currentProperty.value);
 
                 break;
 
@@ -1176,10 +1176,9 @@ export default class SaveParser_Write
                 break;
 
             case 'Int64':
-            case 'Double':
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
-                    property += this.writeLong(currentProperty.value.values[i]);
+                    property += this.writeInt64(currentProperty.value.values[i]);
                 }
 
                 break;
@@ -1188,6 +1187,14 @@ export default class SaveParser_Write
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
                     property += this.writeFloat(currentProperty.value.values[i]);
+                }
+
+                break;
+
+            case 'Double':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    property += this.writeDouble(currentProperty.value.values[i]);
                 }
 
                 break;
@@ -1357,7 +1364,7 @@ export default class SaveParser_Write
                     break;
 
                 case 'Int64':
-                    property += this.writeLong(currentProperty.value.values[iMapProperty].keyMap);
+                    property += this.writeInt64(currentProperty.value.values[iMapProperty].keyMap);
 
                     break;
 
@@ -1757,7 +1764,7 @@ export default class SaveParser_Write
                 break;
 
             case 'DateTime': // MOD: Power Suit
-                property += this.writeLong(currentProperty.value.dateTime);
+                property += this.writeInt64(currentProperty.value.dateTime);
 
                 break;
 
@@ -1772,8 +1779,8 @@ export default class SaveParser_Write
                 break;
 
             case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
-                property += this.writeLong(currentProperty.value.begin);
-                property += this.writeLong(currentProperty.value.end);
+                property += this.writeInt64(currentProperty.value.begin);
+                property += this.writeInt64(currentProperty.value.end);
 
                 break;
 
@@ -2010,24 +2017,6 @@ export default class SaveParser_Write
         this.currentEntityLength += 4;
 
         return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
-    }
-
-    writeLong(value, count = true)
-    {
-        if(value instanceof Array)
-        {
-            let property  = this.writeInt(value[0], count);
-                property += this.writeInt(value[1], count);
-
-                return property;
-        }
-        else
-        {
-            let property  = this.writeInt(value, count);
-                property += this.writeInt(0, count);
-
-                return property;
-        }
     }
 
     writeInt64(value, count = true)

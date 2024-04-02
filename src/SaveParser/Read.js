@@ -37,7 +37,7 @@ export default class SaveParser_Read
             this.header.mapOptions           = this.readString();
             this.header.sessionName          = this.readString();
             this.header.playDurationSeconds  = this.readInt();
-            this.header.saveDateTime         = this.readLong();
+            this.header.saveDateTime         = this.readInt64();
             this.header.sessionVisibility    = this.readByte();
 
             if(this.header.saveHeaderType >= 7)
@@ -866,11 +866,10 @@ export default class SaveParser_Read
     {
         let currentProperty         = {};
             currentProperty.name    = this.readString();
-
-        if(currentProperty.name === 'None')
-        {
-            return null;
-        }
+            if(currentProperty.name === 'None')
+            {
+                return null;
+            }
 
         //TODO: What is this extra byte that is appearing sometime?
         let extraByteTest       = this.readByte();
@@ -929,7 +928,7 @@ export default class SaveParser_Read
             case 'Int64':
             case 'UInt64':
                 currentProperty         = this.readPropertyGUID(currentProperty);
-                currentProperty.value   = this.readLong();
+                currentProperty.value   = this.readInt64();
 
                 break;
 
@@ -1087,10 +1086,9 @@ export default class SaveParser_Read
                 break;
 
             case 'Int64':
-            case 'Double':
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
-                    currentProperty.value.values.push(this.readLong());
+                    currentProperty.value.values.push(this.readInt64());
                 }
 
                 break;
@@ -1099,6 +1097,14 @@ export default class SaveParser_Read
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
                     currentProperty.value.values.push(this.readFloat());
+                }
+
+                break;
+
+            case 'Double':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    currentProperty.value.values.push(this.readDouble());
                 }
 
                 break;
@@ -1331,7 +1337,7 @@ export default class SaveParser_Read
                             break;
 
                         case 'Int64':
-                            mapPropertyKey = this.readLong();
+                            mapPropertyKey = this.readInt64();
 
                             break;
 
@@ -1449,13 +1455,18 @@ export default class SaveParser_Read
 
                             break;
 
-                        case 'Double':
-                            mapPropertySubProperties    = this.readDouble();
+                        case 'Int64':
+                            mapPropertySubProperties    = this.readInt64();
 
                             break;
 
                         case 'Float':
                             mapPropertySubProperties    = this.readFloat();
+
+                            break;
+
+                        case 'Double':
+                            mapPropertySubProperties    = this.readDouble();
 
                             break;
 
@@ -1784,7 +1795,7 @@ export default class SaveParser_Read
                 break;
 
             case 'DateTime': // MOD: Power Suit
-                currentProperty.value.dateTime      = this.readLong();
+                currentProperty.value.dateTime      = this.readInt64();
 
                 break;
 
@@ -1799,8 +1810,8 @@ export default class SaveParser_Read
                 break;
 
             case 'FICFrameRange': // https://github.com/Panakotta00/FicsIt-Cam/blob/c55e254a84722c56e1badabcfaef1159cd7d2ef1/Source/FicsItCam/Public/Data/FICTypes.h#L34
-                currentProperty.value.begin         = this.readLong();
-                currentProperty.value.end           = this.readLong();
+                currentProperty.value.begin         = this.readInt64();
+                currentProperty.value.end           = this.readInt64();
 
                 break;
 
@@ -2033,20 +2044,6 @@ export default class SaveParser_Read
             this.currentByte += 8;
 
         return data;
-    }
-    readLong()
-    {
-        let data1   = this.readInt();
-        let data2   = this.readInt();
-
-            if(data2 === 0)
-            {
-                return data1;
-            }
-            else
-            {
-                return [data1, data2];
-            }
     }
 
     readFloat()
