@@ -558,7 +558,11 @@ export default class SaveParser_Read
                         }
                         currentItem.name        = this.readString();
 
-                        if(this.header.saveVersion < 44)
+                        if(this.header.saveVersion >= 44)
+                        {
+                            this.readString(); // Not sure but seems to be always 0?
+                        }
+                        else
                         {
                             this.readString(); //currentItem.levelName   = this.readString();
                             this.readString(); //currentItem.pathName    = this.readString();

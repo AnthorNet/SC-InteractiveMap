@@ -798,7 +798,11 @@ export default class SaveParser_Write
 
                     entity += this.writeString(currentObject.extra.items[i].name);
 
-                    if(this.header.saveVersion < 44)
+                    if(this.header.saveVersion >= 44)
+                    {
+                        entity += this.writeString('');
+                    }
+                    else
                     {
                         // Always empty
                         //entity += this.writeObjectProperty(currentObject.extra.items[i]);
