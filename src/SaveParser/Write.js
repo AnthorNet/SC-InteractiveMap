@@ -1112,14 +1112,20 @@ export default class SaveParser_Write
 
                 break;
 
+            case 'SoftObject':
+                property += this.writePropertyGUID(currentProperty);
+                property += this.writeString(currentProperty.value.pathName);
+                property += this.writeString(currentProperty.value.subPathString);
+                property += this.writeInt(0);
+
             case 'Struct':
                 property += this.writeStructProperty(currentProperty, parentType);
 
                 break;
         }
 
-        let propertyLength          = parseInt(this.currentBufferLength) || 0; // Prevent NaN
-        this.currentBufferLength    = startCurrentPropertyBufferLength + propertyLength;
+        let propertyLength              = parseInt(this.currentBufferLength) || 0; // Prevent NaN
+            this.currentBufferLength    = startCurrentPropertyBufferLength + propertyLength;
 
         return propertyStart + this.writeInt(propertyLength) + property;
     }
@@ -1228,6 +1234,16 @@ export default class SaveParser_Write
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
                     property += this.writeObjectProperty(currentProperty.value.values[i]);
+                }
+
+                break;
+
+            case 'SoftObject':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    property += this.writeString(currentProperty.value.values[i].pathName);
+                    property += this.writeString(currentProperty.value.values[i].subPathString);
+                    property += this.writeInt(0);
                 }
 
                 break;

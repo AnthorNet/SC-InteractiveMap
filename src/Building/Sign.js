@@ -399,6 +399,14 @@ export default class Building_Sign
 
     static getActivePrefabLayout(baseLayout, currentObject)
     {
+        // Release
+        let mSoftActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mSoftActivePrefabLayout');
+            if(mSoftActivePrefabLayout !== null)
+            {
+                return mSoftActivePrefabLayout.pathName + '.' + mSoftActivePrefabLayout.subPathString;
+            }
+
+        // Early Access
         let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
             if(mActivePrefabLayout !== null)
             {
@@ -1005,6 +1013,15 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
+                    // Release
+                    let mSoftActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mSoftActivePrefabLayout');
+                        if(mSoftActivePrefabLayout !== null)
+                        {
+                            mSoftActivePrefabLayout.pathName = values.mActivePrefabLayout.replace('.' + values.mActivePrefabLayout.split('.').pop(), '');
+                            mSoftActivePrefabLayout.subPathString = values.mActivePrefabLayout.split('.').pop();
+                        }
+
+                    // Early Access
                     let mActivePrefabLayout = baseLayout.getObjectProperty(currentObject, 'mActivePrefabLayout');
                         if(mActivePrefabLayout !== null)
                         {

@@ -228,7 +228,15 @@ export default class Spawn_Image
             }
             else
             {
-                newSupport.properties.push({name: 'mActivePrefabLayout', type: 'Object', value: {levelName: '', pathName: '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C'}});
+                if(this.baseLayout.saveGameParser.header.saveVersion >= 44)
+                {
+                    newSupport.properties.push({name: 'mSoftActivePrefabLayout', type: 'SoftObject', value: {pathName: '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2', subPathString: 'BPW_Sign1x1_2_C'}});
+                }
+                else
+                {
+                    newSupport.properties.push({name: 'mActivePrefabLayout', type: 'Object', value: {levelName: '', pathName: '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C'}});
+                }
+
                 newSupport.properties.push({name: 'mPrefabTextElementSaveData', type: 'Array', value: {
                     type    : 'Struct',
                     values  : [[

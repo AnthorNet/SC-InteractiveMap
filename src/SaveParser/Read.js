@@ -1010,6 +1010,16 @@ export default class SaveParser_Read
 
                 break;
 
+            case 'SoftObject':
+                currentProperty                 = this.readPropertyGUID(currentProperty);
+                currentProperty.value   = {
+                    pathName        : this.readString(),
+                    subPathString   : this.readString()
+                }
+                this.readInt(); // 0
+
+                break;
+
             case 'Struct':
                 currentProperty         = this.readStructProperty(currentProperty, parentType);
 
@@ -1138,6 +1148,18 @@ export default class SaveParser_Read
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
                     currentProperty.value.values.push(this.readObjectProperty({}));
+                }
+
+                break;
+
+            case 'SoftObject':
+                for(let i = 0; i < currentArrayPropertyCount; i++)
+                {
+                    currentProperty.value.values.push({
+                        pathName        : this.readString(),
+                        subPathString   : this.readString()
+                    });
+                    this.readInt(); // 0
                 }
 
                 break;
