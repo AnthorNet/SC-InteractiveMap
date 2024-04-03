@@ -1802,7 +1802,30 @@ export default class SaveParser_Read
                 currentProperty.value.unk1          = this.readInt();
                 currentProperty.value.itemName      = this.readString();
                 currentProperty.value               = this.readObjectProperty(currentProperty.value);
-                currentProperty.value.properties    = [this.readProperty()];
+
+                if(this.header.saveVersion >= 44)
+                {
+                    let inventoryItemProperty           = {};
+                        inventoryItemProperty.type      = this.readString();
+
+                        if(inventoryItemProperty.type !== 'IntProperty')
+                        {
+                            inventoryItemProperty.name  = inventoryItemProperty.type;
+                            inventoryItemProperty.type  = this.readString();
+                        }
+
+                        inventoryItemProperty = this.readPropertyGUID(inventoryItemProperty);
+                        this.readInt(); // 0
+                        this.readInt(); // 0
+                        inventoryItemProperty.value     = this.readInt();
+
+                    currentProperty.value.properties    = [inventoryItemProperty];
+
+                }
+                else
+                {
+                    currentProperty.value.properties    = [this.readProperty()];
+                }
 
                 break;
 
@@ -2065,7 +2088,7 @@ export default class SaveParser_Read
         let data = this.bufferView.getBigInt64(this.currentByte, true);
             this.currentByte += 8;
 
-        return data;
+        return Number(data);
     }
 
     readFloat()

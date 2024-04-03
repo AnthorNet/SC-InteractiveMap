@@ -1755,17 +1755,29 @@ export default class SaveParser_Write
                 property += this.writeString(currentProperty.value.itemName);
                 property += this.writeObjectProperty(currentProperty.value);
 
-                let oldLength   = this.currentBufferLength;
-
-                for(let i =0; i < currentProperty.value.properties.length; i++)
+                if(this.header.saveVersion >= 44)
                 {
-                    if(currentProperty.value.properties[i] !== null)
+                    if(currentProperty.value.properties[0].name !== undefined)
                     {
-                        property += this.writeProperty(currentProperty.value.properties[i]);
+                        property += this.writeString(currentProperty.value.properties[0].name);
                     }
-                }
 
-                this.currentBufferLength = oldLength + 4; // Don't ask why!
+                    property += this.writeString(currentProperty.value.properties[0].type);
+                    property += this.writePropertyGUID(currentProperty);
+                    property += this.writeInt(0);
+                    property += this.writeInt(0);
+                    property += this.writeInt(currentProperty.value.properties[0].value);
+                }
+                else
+                {
+                    let oldLength   = this.currentBufferLength;
+                        if(currentProperty.value.properties[0] !== null)
+                        {
+                            property += this.writeProperty(currentProperty.value.properties[0]);
+                        }
+
+                    this.currentBufferLength = oldLength + 4; // Don't ask why!
+                }
 
                 break;
 
@@ -2039,7 +2051,7 @@ export default class SaveParser_Write
     {
         let arrayBuffer     = new ArrayBuffer(8);
         let dataView        = new DataView(arrayBuffer);
-            dataView.setBigInt64(0, value, true);
+            dataView.setBigInt64(0, BigInt(value), true);
 
         if(count === true)
         {
