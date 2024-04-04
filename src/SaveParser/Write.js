@@ -1120,6 +1120,8 @@ export default class SaveParser_Write
                 property += this.writeString(currentProperty.value.subPathString);
                 property += this.writeInt(0);
 
+                break;
+
             case 'Struct':
                 property += this.writeStructProperty(currentProperty, parentType);
 
