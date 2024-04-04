@@ -307,7 +307,7 @@ export default class SaveParser_Read
                             {
                                 for(let i = 0; i < countCollectedInBetween; i++)
                                 {
-                                    let collectable = this.readObjectProperty({});
+                                    let collectable = this.readObjectProperty();
                                         collectables.push(collectable);
                                 }
                             }
@@ -328,7 +328,7 @@ export default class SaveParser_Read
                     {
                         for(let i = 0; i < countCollectedInBetween; i++)
                         {
-                            let collectable = this.readObjectProperty({});
+                            let collectable = this.readObjectProperty();
                                 collectables.push(collectable);
                         }
                     }
@@ -414,7 +414,7 @@ export default class SaveParser_Read
                     for(let i = 0; i < countCollected; i++)
                     {
                         // Silently read as we reuse the first batch...
-                        this.readObjectProperty({});
+                        this.readObjectProperty();
                     }
                 }
 
@@ -507,7 +507,7 @@ export default class SaveParser_Read
 
         if(this.objects[objectKey] !== undefined && this.objects[objectKey].outerPathName === undefined)
         {
-            this.objects[objectKey].entity = this.readObjectProperty({});
+            this.objects[objectKey].entity = this.readObjectProperty();
 
             let countChild  = this.readInt();
                 if(countChild > 0)
@@ -516,7 +516,7 @@ export default class SaveParser_Read
 
                     for(let i = 0; i < countChild; i++)
                     {
-                        this.objects[objectKey].children.push(this.readObjectProperty({}));
+                        this.objects[objectKey].children.push(this.readObjectProperty());
                     }
                 }
         }
@@ -581,8 +581,8 @@ export default class SaveParser_Read
         {
             this.objects[objectKey].extra       = {
                 count   : this.readInt(),
-                source  : this.readObjectProperty({}),
-                target  : this.readObjectProperty({})
+                source  : this.readObjectProperty(),
+                target  : this.readObjectProperty()
             };
 
             // 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
@@ -626,8 +626,8 @@ export default class SaveParser_Read
                         });
                     }
 
-                this.objects[objectKey].extra.previous  = this.readObjectProperty({});
-                this.objects[objectKey].extra.next      = this.readObjectProperty({});
+                this.objects[objectKey].extra.previous  = this.readObjectProperty();
+                this.objects[objectKey].extra.next      = this.readObjectProperty();
             }
             else
             {
@@ -641,8 +641,8 @@ export default class SaveParser_Read
                         });
                     }
 
-                this.objects[objectKey].extra.previous  = this.readObjectProperty({});
-                this.objects[objectKey].extra.next      = this.readObjectProperty({});
+                this.objects[objectKey].extra.previous  = this.readObjectProperty();
+                this.objects[objectKey].extra.next      = this.readObjectProperty();
             }
 
             return;
@@ -658,7 +658,7 @@ export default class SaveParser_Read
 
                 for(let i = 0; i < gameLength; i++)
                 {
-                    this.objects[objectKey].extra.game.push(this.readObjectProperty({}));
+                    this.objects[objectKey].extra.game.push(this.readObjectProperty());
 
                     if(i === 0 && this.objects[objectKey].className === '/Game/FactoryGame/-Shared/Blueprint/BP_GameState.BP_GameState_C')
                     {
@@ -954,7 +954,7 @@ export default class SaveParser_Read
             case 'Object':
             case 'Interface':
                 currentProperty         = this.readPropertyGUID(currentProperty);
-                currentProperty.value   = this.readObjectProperty({});
+                currentProperty.value   = this.readObjectProperty();
 
                 break;
 
@@ -1147,7 +1147,7 @@ export default class SaveParser_Read
             case 'Interface':
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
-                    currentProperty.value.values.push(this.readObjectProperty({}));
+                    currentProperty.value.values.push(this.readObjectProperty());
                 }
 
                 break;
@@ -1370,7 +1370,7 @@ export default class SaveParser_Read
                             break;
 
                         case 'Object':
-                            mapPropertyKey = this.readObjectProperty({});
+                            mapPropertyKey = this.readObjectProperty();
 
                             break;
 
@@ -1518,7 +1518,7 @@ export default class SaveParser_Read
                                 break;
                             }
 
-                            mapPropertySubProperties    = this.readObjectProperty({});
+                            mapPropertySubProperties    = this.readObjectProperty();
 
                             break;
 
@@ -1597,7 +1597,7 @@ export default class SaveParser_Read
                 switch(currentProperty.value.type)
                 {
                     case 'Object':
-                        currentProperty.value.values.push(this.readObjectProperty({}));
+                        currentProperty.value.values.push(this.readObjectProperty());
 
                         break;
 
@@ -2010,7 +2010,7 @@ export default class SaveParser_Read
         return currentProperty;
     }
 
-    readObjectProperty(currentProperty)
+    readObjectProperty(currentProperty = {})
     {
         let levelName   = this.readString();
             if(levelName !== this.header.mapName)
