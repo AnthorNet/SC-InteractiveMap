@@ -671,10 +671,13 @@ export default class BaseLayout
             }
 
             // Mod nodes
+            //if(currentObject.className.includes('Node')){ console.log(currentObject); }
             if([
                 '/RefinedPower/World/ResourceNodes/Element65/BP_Element65_Impure.BP_Element65_Impure_C',
                 '/RefinedPower/World/ResourceNodes/Element65/BP_Element65_Normal.BP_Element65_Normal_C',
-                '/RefinedPower/World/ResourceNodes/Element65/BP_Element65_Pure.BP_Element65_Pure_C'
+                '/RefinedPower/World/ResourceNodes/Element65/BP_Element65_Pure.BP_Element65_Pure_C',
+
+                '/FicsitFarming/World/ResourceNodes/Dirt/BP_DirtNode.BP_DirtNode_C'
             ].includes(currentObject.className))
             {
                 if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] === undefined)
