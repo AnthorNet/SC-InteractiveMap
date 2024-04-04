@@ -491,12 +491,14 @@ export default class SaveParser_Read
 
     readEntity(objectKey)
     {
+        this.currentEntitySaveVersion = this.header.saveVersion;
         if(this.header.saveVersion >= 41)
         {
             let entitySaveVersion = this.readInt();
                 if(entitySaveVersion !== this.header.saveVersion)
                 {
-                    this.objects[objectKey].entitySaveVersion = entitySaveVersion;
+                    this.currentEntitySaveVersion               = entitySaveVersion;
+                    this.objects[objectKey].entitySaveVersion   = entitySaveVersion;
                 }
             this.readInt();//console.log('ENTITY INT2?', this.readInt(), entitySaveVersion)
         }
@@ -1202,10 +1204,8 @@ export default class SaveParser_Read
                     {
                         case 'InventoryItem': // MOD: FicsItNetworks
                             currentProperty.value.values.push({
-                                unk1          : this.readInt(),
-                                itemName      : this.readString(),
-                                levelName     : this.readString(),
-                                pathName      : this.readString()
+                                itemName      : this.readObjectProperty(),
+                                itemState     : this.readObjectProperty()
                             });
 
                             break;
@@ -1326,24 +1326,6 @@ export default class SaveParser_Read
             currentProperty.value.modeUnk2 = this.readString();
             currentProperty.value.modeUnk3 = this.readString();
         }
-
-        /*
-        if(parentType === '/KeysForAll/KSUb.KSUb_C')
-        {
-            console.log(this.readInt());
-            let unk1 = this.readString();
-                console.log(unk1);
-                if(unk1 !== ' ')
-                {
-                    currentProperty.value.unk1 = unk1;
-                }
-                else
-                {
-                    console.log('rewind?');
-                    this.currentByte -= 4;
-                }
-        }
-        */
 
         let currentMapPropertyCount = this.readInt();
             for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
@@ -1799,33 +1781,35 @@ export default class SaveParser_Read
                 break;
 
             case 'InventoryItem':
-                currentProperty.value.unk1          = this.readInt();
-                currentProperty.value.itemName      = this.readString();
-                currentProperty.value               = this.readObjectProperty(currentProperty.value);
+                currentProperty.value.itemName      = this.readObjectProperty();
 
-                if(this.header.saveVersion >= 44)
+                if(this.header.saveVersion >= 44 && this.currentEntitySaveVersion >= 44)
                 {
-                    let inventoryItemProperty           = {};
-                        inventoryItemProperty.type      = this.readString();
-
-                        if(inventoryItemProperty.type !== 'IntProperty')
+                    let itemState = this.readInt();
+                        if(itemState !== 0)
                         {
-                            inventoryItemProperty.name  = inventoryItemProperty.type;
-                            inventoryItemProperty.type  = this.readString();
+                            currentProperty.value.itemState = this.readObjectProperty();
+
+                            this.readInt(); // itemStateLength
+                            currentProperty.value.itemStateProperties = [];
+                                while(true)
+                                {
+                                    let property = this.readProperty();
+                                        if(property === null)
+                                        {
+                                            break;
+                                        }
+
+                                        currentProperty.value.itemStateProperties.push(property);
+                                }
                         }
-
-                        inventoryItemProperty = this.readPropertyGUID(inventoryItemProperty);
-                        this.readInt(); // 0
-                        this.readInt(); // 0
-                        inventoryItemProperty.value     = this.readInt();
-
-                    currentProperty.value.properties    = [inventoryItemProperty];
-
                 }
                 else
                 {
-                    currentProperty.value.properties    = [this.readProperty()];
+                    currentProperty.value.itemState               = this.readObjectProperty();
                 }
+
+                currentProperty.value.properties    = [this.readProperty()];
 
                 break;
 

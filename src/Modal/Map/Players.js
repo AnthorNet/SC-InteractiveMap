@@ -188,9 +188,8 @@ export default class Modal_Map_Players
                                             name    : 'Item',
                                             type    : 'Struct',
                                             value   : {
-                                                itemName    : '',
-                                                levelName   : '',
-                                                pathName    : '',
+                                                itemName    : {levelName: '', pathName: ''},
+                                                itemState   : {levelName: '', pathName: ''},
                                                 type        : 'InventoryItem',
                                                 unk1        : 0,
                                                 properties  : [{name: 'NumItems', type: 'Int', value: 0}]
@@ -273,9 +272,8 @@ export default class Modal_Map_Players
                                             name    : 'Item',
                                             type    : 'Struct',
                                             value   : {
-                                                itemName    : '',
-                                                levelName   : '',
-                                                pathName    : '',
+                                                itemName    : {levelName: '', pathName: ''},
+                                                itemState   : {levelName: '', pathName: ''},
                                                 type        : 'InventoryItem',
                                                 unk1        : 0,
                                                 properties  : [{name: 'NumItems', type: 'Int', value: 0}]

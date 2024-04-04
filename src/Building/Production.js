@@ -143,7 +143,7 @@ export default class Building_Production
                                             {
                                                 if(ingredientsKeys[i] !== undefined)
                                                 {
-                                                    mInventoryStacks.values[i][0].value.itemName = ingredientsKeys[i];
+                                                    mInventoryStacks.values[i][0].value.itemName.pathName = ingredientsKeys[i];
 
                                                     let itemData = baseLayout.getItemDataFromClassName(ingredientsKeys[i]);
                                                         if(itemData.category === 'liquid' || itemData.category === 'gas')
@@ -157,7 +157,7 @@ export default class Building_Production
                                                 }
                                                 else
                                                 {
-                                                    mInventoryStacks.values[i][0].value.itemName = '';
+                                                    mInventoryStacks.values[i][0].value.itemName.pathName = '';
                                                     baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', 0);
                                                 }
                                             }
@@ -176,7 +176,7 @@ export default class Building_Production
                                             {
                                                 if(produceKeys[i] !== undefined)
                                                 {
-                                                    mInventoryStacks.values[i][0].value.itemName = produceKeys[i];
+                                                    mInventoryStacks.values[i][0].value.itemName.pathName = produceKeys[i];
 
                                                     let itemData = baseLayout.getItemDataFromClassName(produceKeys[i]);
                                                         if(itemData.category === 'liquid' || itemData.category === 'gas')
@@ -190,7 +190,7 @@ export default class Building_Production
                                                 }
                                                 else
                                                 {
-                                                    mInventoryStacks.values[i][0].value.itemName = '';
+                                                    mInventoryStacks.values[i][0].value.itemName.pathName = '';
                                                     baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', 0);
                                                 }
                                             }
@@ -224,7 +224,7 @@ export default class Building_Production
                         let mInventoryStacks = baseLayout.getObjectProperty(inputInventory, 'mInventoryStacks');
                             for(let i = 0; i < mInventoryStacks.values.length; i++)
                             {
-                                mInventoryStacks.values[i][0].value.itemName = '';
+                                mInventoryStacks.values[i][0].value.itemName.pathName = '';
                                 baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', 0);
                             }
                     }
@@ -239,7 +239,7 @@ export default class Building_Production
                         let mInventoryStacks = baseLayout.getObjectProperty(outInventory, 'mInventoryStacks');
                             for(let i = 0; i < mInventoryStacks.values.length; i++)
                             {
-                                mInventoryStacks.values[i][0].value.itemName = '';
+                                mInventoryStacks.values[i][0].value.itemName.pathName = '';
                                 baseLayout.setObjectProperty(mInventoryStacks.values[i][0].value, 'NumItems', 0);
                             }
                     }

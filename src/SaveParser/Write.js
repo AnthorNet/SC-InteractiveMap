@@ -731,13 +731,15 @@ export default class SaveParser_Write
 
     writeEntity(currentObject)
     {
-        let preEntity               = '';
-        let entity                  = '';
+        let preEntity                   = '';
+        let entity                      = '';
 
+        this.currentEntitySaveVersion   = this.header.saveVersion;
         if(this.header.saveVersion >= 41)
         {
             if(currentObject.entitySaveVersion !== undefined)
             {
+                this.currentEntitySaveVersion = currentObject.entitySaveVersion;
                 preEntity += this.writeInt(currentObject.entitySaveVersion);
                 preEntity += this.writeInt(1); //TODO: Check what it is?!
             }
@@ -1272,9 +1274,8 @@ export default class SaveParser_Write
                     switch(currentProperty.structureSubType)
                     {
                         case 'InventoryItem': // MOD: FicsItNetworks
-                            structure += this.writeInt(currentProperty.value.values[i].unk1);
-                            structure += this.writeString(currentProperty.value.values[i].itemName);
-                            structure += this.writeObjectProperty(currentProperty.value.values[i]);
+                            structure += this.writeObjectProperty(currentProperty.value.values[i].itemName);
+                            structure += this.writeObjectProperty(currentProperty.value.values[i].itemState);
 
                             break;
 
@@ -1751,33 +1752,46 @@ export default class SaveParser_Write
                 break;
 
             case 'InventoryItem':
-                property += this.writeInt(currentProperty.value.unk1, false);
-                property += this.writeString(currentProperty.value.itemName);
-                property += this.writeObjectProperty(currentProperty.value);
+                property += this.writeObjectProperty(currentProperty.value.itemName);
 
-                if(this.header.saveVersion >= 44)
+                if(this.header.saveVersion >= 44 && this.currentEntitySaveVersion >= 44)
                 {
-                    if(currentProperty.value.properties[0].name !== undefined)
+                    if(currentProperty.value.itemState !== undefined)
                     {
-                        property += this.writeString(currentProperty.value.properties[0].name);
-                    }
+                        property += this.writeInt(1);
+                        property += this.writeObjectProperty(currentProperty.value.itemState);
 
-                    property += this.writeString(currentProperty.value.properties[0].type);
-                    property += this.writePropertyGUID(currentProperty);
-                    property += this.writeInt(0);
-                    property += this.writeInt(0);
-                    property += this.writeInt(currentProperty.value.properties[0].value);
+                        let itemStateStartLength        = this.currentEntityLength;
+                            this.currentEntityLength    = 0;
+                        let itemStateProperties         = '';
+                            for(let i = 0; i < currentProperty.value.itemStateProperties.length; i++)
+                            {
+                                itemStateProperties += this.writeProperty(currentProperty.value.itemStateProperties[i]);
+                            }
+                            itemStateProperties += this.writeString('None');
+
+                             let propertyLength              = parseInt(this.currentEntityLength) || 0; // Prevent NaN
+                                 this.currentEntityLength    = itemStateStartLength + propertyLength;
+
+                            property += this.writeInt(propertyLength);
+                            property += itemStateProperties;
+                    }
+                    else
+                    {
+                        property += this.writeInt(0);
+                    }
                 }
                 else
                 {
-                    let oldLength   = this.currentBufferLength;
-                        if(currentProperty.value.properties[0] !== null)
-                        {
-                            property += this.writeProperty(currentProperty.value.properties[0]);
-                        }
-
-                    this.currentBufferLength = oldLength + 4; // Don't ask why!
+                    property += this.writeObjectProperty(currentProperty.value.itemState);
                 }
+
+                let oldLength   = this.currentBufferLength;
+                    if(currentProperty.value.properties[0] !== null)
+                    {
+                        property += this.writeProperty(currentProperty.value.properties[0]);
+                        this.currentBufferLength = oldLength;
+                    }
 
                 break;
 

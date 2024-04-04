@@ -129,11 +129,11 @@ export default class SubSystem_PipeNetwork
                                                                     {
                                                                         if(values.mFluidDescriptor === 'NULL')
                                                                         {
-                                                                            mInventoryStacks.values[0][0].value.itemName = '';
+                                                                            mInventoryStacks.values[0][0].value.itemName.pathName = '';
                                                                         }
                                                                         else
                                                                         {
-                                                                            mInventoryStacks.values[0][0].value.itemName = values.mFluidDescriptor;
+                                                                            mInventoryStacks.values[0][0].value.itemName.pathName = values.mFluidDescriptor;
                                                                         }
                                                                     }
                                                             }

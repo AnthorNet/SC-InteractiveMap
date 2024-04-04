@@ -1477,7 +1477,7 @@ export default class BaseLayout
         let mPickupItems = this.getObjectProperty(currentObject, 'mPickupItems');
             if(mPickupItems !== null && mPickupItems.values[0].value.properties[0] !== null && mPickupItems.values[0].value.properties[0].value > 0)
             {
-                let itemId = this.getItemDataFromClassName(mPickupItems.values[0].value.itemName);
+                let itemId = this.getItemDataFromClassName(mPickupItems.values[0].value.itemName.pathName);
                     if(itemId !== null)
                     {
                         itemId = itemId.id;
@@ -1980,12 +1980,12 @@ export default class BaseLayout
                                 {
                                     if(values['slot' + (j + 1)] === 'NULL')
                                     {
-                                        oldInventory[j][0].value.itemName = "";
+                                        oldInventory[j][0].value.itemName.pathName = "";
                                         baseLayout.setObjectProperty(oldInventory[j][0].value, 'NumItems', 0, 'Int');
                                     }
                                     else
                                     {
-                                        oldInventory[j][0].value.itemName = values['slot' + (j + 1)];
+                                        oldInventory[j][0].value.itemName.pathName = values['slot' + (j + 1)];
                                         baseLayout.setObjectProperty(oldInventory[j][0].value, 'NumItems', Math.max(1, parseInt(values['QTY_slot' + (j + 1)])), 'Int');
                                     }
                                 }
@@ -2081,7 +2081,7 @@ export default class BaseLayout
                                     if(mInventoryStacks !== null)
                                     {
                                         let value = mInventoryStacks.values[0][0].value;
-                                            if(value.itemName === '')
+                                            if(value.itemName.pathName === '')
                                             {
                                                 let currentPipeNetwork = this.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
                                                     if(currentPipeNetwork !== null)
@@ -2089,7 +2089,7 @@ export default class BaseLayout
                                                         let mFluidDescriptor = this.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
                                                             if(mFluidDescriptor !== null)
                                                             {
-                                                                value.itemName = mFluidDescriptor.pathName;
+                                                                value.itemName.pathName = mFluidDescriptor.pathName;
                                                             }
                                                     }
                                             }
@@ -2149,7 +2149,7 @@ export default class BaseLayout
                         {
                             if(oldInventory[k] !== undefined)
                             {
-                                oldInventory[k][0].value.itemName = fillWith;
+                                oldInventory[k][0].value.itemName.pathName = fillWith;
                                 this.setObjectProperty(oldInventory[k][0].value, 'NumItems', stack, 'Int');
                             }
 
@@ -2201,7 +2201,7 @@ export default class BaseLayout
                             let mInventoryStacks = oldInventory.properties[j].value.values;
                                 for(let k = 0; k < mInventoryStacks.length; k++)
                                 {
-                                    mInventoryStacks[k][0].value.itemName = "";
+                                    mInventoryStacks[k][0].value.itemName.pathName = "";
                                     baseLayout.setObjectProperty(mInventoryStacks[k][0].value, 'NumItems', 0, 'Int');
                                 }
                             break;
@@ -3917,10 +3917,10 @@ export default class BaseLayout
                                     let radioactivityItems  = [];
                                         for(let k = 0; k < mInventoryStacks.values.length; k++)
                                         {
-                                            if(mInventoryStacks.values[k][0].value.itemName !== '')
+                                            if(mInventoryStacks.values[k][0].value.itemName.pathName !== '')
                                             {
                                                 // Rename item
-                                                let currentItemData = this.getItemDataFromClassName(mInventoryStacks.values[k][0].value.itemName, false);
+                                                let currentItemData = this.getItemDataFromClassName(mInventoryStacks.values[k][0].value.itemName.pathName, false);
                                                     if(currentItemData !== null)
                                                     {
                                                         if(currentItemData.radioactiveDecay !== undefined)
@@ -3957,14 +3957,14 @@ export default class BaseLayout
 
                 for(let k = 0; k < mInventoryStacks.values.length; k++)
                 {
-                    if(mInventoryStacks.values[k][0].value.itemName !== '')
+                    if(mInventoryStacks.values[k][0].value.itemName.pathName !== '')
                     {
                         // Rename item
-                        let currentItemData = this.getItemDataFromClassName(mInventoryStacks.values[k][0].value.itemName);
+                        let currentItemData = this.getItemDataFromClassName(mInventoryStacks.values[k][0].value.itemName.pathName);
                             if(currentItemData !== null)
                             {
                                 inventory.push({
-                                    rawClassName    : mInventoryStacks.values[k][0].value.itemName,
+                                    rawClassName    : mInventoryStacks.values[k][0].value.itemName.pathName,
                                     className       : currentItemData.className,
                                     category        : currentItemData.category,
                                     name            : currentItemData.name,
@@ -4384,7 +4384,7 @@ export default class BaseLayout
                                                 }
                                         }
 
-                                        potentialInventory.properties[i].value.values[j][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
+                                        potentialInventory.properties[i].value.values[j][0].value.itemName.pathName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
                                         baseLayout.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, 'NumItems', 1, 'Int');
                                     }
                                 }
@@ -5394,11 +5394,11 @@ export default class BaseLayout
                             {
                                 for(let k = 0; k < storageInventory.properties[j].value.values.length; k++)
                                 {
-                                    if(storageInventory.properties[j].value.values[k][0].value.itemName !== '')
+                                    if(storageInventory.properties[j].value.values[k][0].value.itemName.pathName !== '')
                                     {
-                                        while(recipe.includes(storageInventory.properties[j].value.values[k][0].value.itemName))
+                                        while(recipe.includes(storageInventory.properties[j].value.values[k][0].value.itemName.pathName))
                                         {
-                                            let currentIndex = recipe.indexOf(storageInventory.properties[j].value.values[k][0].value.itemName);
+                                            let currentIndex = recipe.indexOf(storageInventory.properties[j].value.values[k][0].value.itemName.pathName);
                                                 if(currentIndex !== -1)
                                                 {
                                                     recipe.splice(currentIndex, 1);
@@ -5406,7 +5406,7 @@ export default class BaseLayout
 
                                                     if(storageInventory.properties[j].value.values[k][0].value.properties[0].value === 0)
                                                     {
-                                                        storageInventory.properties[j].value.values[k][0].value.itemName    = '';
+                                                        storageInventory.properties[j].value.values[k][0].value.itemName.pathName    = '';
 
                                                         break;
                                                     }

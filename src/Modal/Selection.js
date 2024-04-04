@@ -1082,7 +1082,7 @@ export default class Modal_Selection
                                                                             }
                                                                     }
 
-                                                                    potentialInventory.properties[k].value.values[m][0].value.itemName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
+                                                                    potentialInventory.properties[k].value.values[m][0].value.itemName.pathName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
                                                                     baseLayout.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, 'NumItems', 1, 'Int');
                                                                 }
                                                             }

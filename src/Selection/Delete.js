@@ -160,9 +160,8 @@ export default class Selection_Delete
                         value   : {
                             type        : 'InventoryItem',
                             unk1        : 0,
-                            itemName    : tempCrate[i].className,
-                            levelName   : '',
-                            pathName    : '',
+                            itemName    : {levelName: '', pathName: tempCrate[i].className},
+                            itemState   : {levelName: '', pathName: ''},
                             properties  : [{name: 'NumItems', type: 'Int', value: tempCrate[i].amount}]
                         }
                     }];
