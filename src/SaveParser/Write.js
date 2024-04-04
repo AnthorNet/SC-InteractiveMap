@@ -1476,6 +1476,11 @@ export default class SaveParser_Write
 
                     break;
 
+                case 'Int64':
+                    property += this.writeInt64(currentProperty.value.values[iMapProperty].valueMap);
+
+                    break;
+
                 case 'Double':
                     property += this.writeDouble(currentProperty.value.values[iMapProperty].valueMap);
 
