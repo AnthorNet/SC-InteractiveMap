@@ -222,58 +222,6 @@ export default class SubSystem_Player
         BaseLayout_Modal.alert('Cannot teleport that player!');
     }
 
-
-
-    reset()
-    {
-        this.baseLayout.deleteObjectProperty(this.player, 'mLastSchematicTierInUI');
-        this.baseLayout.deleteObjectProperty(this.player, 'mShoppingList');
-        this.baseLayout.deleteObjectProperty(this.player, 'mMessageData');
-
-        // Update player inventories
-        let mOwnedPawn = this.baseLayout.getObjectProperty(this.player, 'mOwnedPawn');
-            if(mOwnedPawn !== null)
-            {
-                let currentPlayer   = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-                let inventory       = this.baseLayout.getObjectInventory(currentPlayer, 'mInventory', true);
-                    if(inventory !== null)
-                    {
-                        for(let j = 0; j < inventory.properties.length; j++)
-                        {
-                            if(inventory.properties[j].name === 'mAdjustedSizeDiff')
-                            {
-                                inventory.properties[j].value = 0;
-                            }
-                            if(inventory.properties[j].name === 'mInventoryStacks' || inventory.properties[j].name === 'mArbitrarySlotSizes' || inventory.properties[j].name === 'mAllowedItemDescriptors')
-                            {
-                                inventory.properties[j].value.values.splice(this.defaultInventorySize);
-
-                                // Give Xeno Zapper, Always get prepared ^^
-                                if(inventory.properties[j].name === 'mInventoryStacks')
-                                {
-                                    inventory.properties[j].value.values[0][0].value.itemName               = '/Game/FactoryGame/Resource/Equipment/ShockShank/BP_EquipmentDescriptorShockShank.BP_EquipmentDescriptorShockShank_C';
-                                    inventory.properties[j].value.values[0][0].value.properties[0].value    = 1;
-                                }
-                            }
-                        }
-                    }
-
-                let armSlot         = this.baseLayout.saveGameParser.getTargetObject(currentPlayer.pathName + '.ArmSlot');
-                                      this.baseLayout.deleteObjectProperty(armSlot, 'mEquipmentInSlot');
-                    for(let j = 0; j < armSlot.properties.length; j++)
-                    {
-                        if(armSlot.properties[j].name === 'mAdjustedSizeDiff' || armSlot.properties[j].name === 'mActiveEquipmentIndex')
-                        {
-                            armSlot.properties[j].value = 0;
-                        }
-                        if(armSlot.properties[j].name === 'mInventoryStacks' || armSlot.properties[j].name === 'mArbitrarySlotSizes' || armSlot.properties[j].name === 'mAllowedItemDescriptors')
-                        {
-                            armSlot.properties[j].value.values.splice(this.defaultArmSlots);
-                        }
-                    }
-            }
-    }
-
     delete()
     {
         if(this.isHost() === false)
