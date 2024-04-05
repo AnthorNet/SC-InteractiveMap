@@ -286,7 +286,7 @@ export default class SaveParser_Read
                 if(i % 2500 === 0 && levelName === 'Level ' + this.header.mapName)
                 {
                     this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
-                    this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 15))});
+                    this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 10))});
                 }
             }
 
@@ -362,7 +362,7 @@ export default class SaveParser_Read
                 if(i % 2500 === 0 && levelName === 'Level ' + this.header.mapName)
                 {
                     this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), Math.round(i / countEntities * 100)]});
-                    this.worker.postMessage({command: 'loaderProgress', percentage: (45 + (i / countEntities * 15))});
+                    this.worker.postMessage({command: 'loaderProgress', percentage: (50 + (i / countEntities * 10))});
 
                     // Try to fill up the data view with the remaining chunks...
                     if(this.isDegraded === true && this.currentChunks !== undefined && (this.maxByte - this.currentByte) > this.maxChunkSize)
@@ -840,6 +840,11 @@ export default class SaveParser_Read
 
                 break;
 
+            case '/Script/FactoryGame.FGLightweightBuildableSubsystem':
+                this.readLightweightBuildableSubsystem((startByte + entityLength) - this.currentByte);
+
+                break;
+
             default:
                 let missingBytes = (startByte + entityLength) - this.currentByte;
                     if(missingBytes > 4)
@@ -859,6 +864,77 @@ export default class SaveParser_Read
                         this.skipBytes(4);
                     }
         }
+    }
+
+    readLightweightBuildableSubsystem(subsystemLength)
+    {
+        let startLength     = this.currentByte;
+        let pathNamePool    = [];
+        let objectsToFlush  = {};
+            this.readInt(); // 0
+
+        let buildableLength = this.readInt();
+            for(let i = 0; i < buildableLength; i++)
+            {
+                    this.readInt(); // 0
+                let currentClassName = this.readString();
+
+                let currentBuildableLength = this.readInt();
+                    for(let j = 0; j < currentBuildableLength; j++)
+                    {
+                        let lightweightObjectPathName = this.generateFastPathName('LightweightBuildable_' + currentClassName.split('/').pop() + '_', pathNamePool);
+                            pathNamePool.push(lightweightObjectPathName);
+
+
+                        let lightweightObject = {
+                                className           : currentClassName,
+                                pathName            : lightweightObjectPathName,
+                                transform           : {
+                                    rotation            : [this.readDouble(), this.readDouble(), this.readDouble(), this.readDouble()],
+                                    translation         : [this.readDouble(), this.readDouble(), this.readDouble()],
+                                    scale3d             : [this.readDouble(), this.readDouble(), this.readDouble()]
+                                },
+                                customizationData   : {
+                                    SwatchDesc          : this.readObjectProperty(),
+                                    MaterialDesc        : this.readObjectProperty(),
+                                    PatternDesc         : this.readObjectProperty(),
+                                    SkinDesc            : this.readObjectProperty(),
+                                    PrimaryColor        : {r: this.readFloat(), g:this.readFloat(), b:this.readFloat(), a: this.readFloat()},
+                                    SecondaryColor      : {r: this.readFloat(), g:this.readFloat(), b:this.readFloat(), a: this.readFloat()},
+                                    PaintFinish         : this.readObjectProperty(),
+                                    PatternRotation     : {value: this.readInt8()}
+                                },
+                                properties          : [
+                                    {
+                                        name            : 'mBuiltWithRecipe',
+                                        value           : this.readObjectProperty()
+                                    },
+                                    {
+                                        name            : 'mBlueprintProxy',
+                                        value           : this.readObjectProperty()
+                                    }
+                                ]
+                            };
+
+                        objectsToFlush[lightweightObjectPathName] = lightweightObject;
+
+                        if(j > 0 && j % 5000 === 0)
+                        {
+                            this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
+                            objectsToFlush = {};
+
+                            this.worker.postMessage({command: 'loaderMessage', message: 'Parsing lightweight objects (%1$s%)...', replace: Math.round((this.currentByte - startLength) / subsystemLength * 100)});
+                            this.worker.postMessage({command: 'loaderProgress', percentage: (40 + ((this.currentByte - startLength) / subsystemLength * 10))});
+
+                        }
+                    }
+
+                this.worker.postMessage({command: 'loaderMessage', message: 'Parsing lightweight objects (%1$s%)...', replace: Math.round((this.currentByte - startLength) / subsystemLength * 100)});
+                this.worker.postMessage({command: 'loaderProgress', percentage: (40 + ((this.currentByte - startLength) / subsystemLength * 10))});
+
+                this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
+                objectsToFlush = {};
+            }
     }
 
     /*
@@ -2321,6 +2397,25 @@ export default class SaveParser_Read
             }
 
         return data;
+    }
+
+    /*
+     * UTILITIES
+     */
+    generateFastPathName(pathNamePattern, pathNamePool = [])
+    {
+        let pathName    = JSON.parse(JSON.stringify(pathNamePattern.split('_')));
+            pathName.pop();
+            pathName.push(Math.floor(Math.random() * Math.floor(2147483647)));
+
+        let newPathName = pathName.join('_');
+            if(pathNamePool.includes(newPathName))
+            {
+                console.log('Collision detected', newPathName);
+                return this.generateFastPathName(pathNamePattern, pathNamePool);
+            }
+
+        return newPathName;
     }
 };
 
