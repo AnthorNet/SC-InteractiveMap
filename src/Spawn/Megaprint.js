@@ -99,6 +99,43 @@ export default class Spawn_Megaprint
                 }
             }
 
+            // Fix old itemName to itemName.pathName
+            if(this.clipboard.saveVersion < 44)
+            {
+                for(let i = 0; i < this.clipboard.data.length; i++)
+                {
+                    if(this.clipboard.data[i].children !== undefined)
+                    {
+                        for(let j = 0; j < this.clipboard.data[i].children.length; j++)
+                        {
+                            if(this.clipboard.data[i].children[j].properties !== undefined)
+                            {
+                                for(let k = 0; k < this.clipboard.data[i].children[j].properties.length; k++)
+                                {
+                                    if(this.clipboard.data[i].children[j].properties[k].type === 'Array')
+                                    {
+                                        for(let l = 0; l < this.clipboard.data[i].children[j].properties[k].value.values.length; l++)
+                                        {
+                                            for(let m = 0; m < this.clipboard.data[i].children[j].properties[k].value.values[l].length; m++)
+                                            {
+                                                if(this.clipboard.data[i].children[j].properties[k].value.values[l][m].type !== undefined && this.clipboard.data[i].children[j].properties[k].value.values[l][m].type === 'Struct')
+                                                {
+                                                    if(this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemName !== undefined && this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemName.pathName === undefined)
+                                                    {
+                                                        let itemNamePathName = this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemName;
+                                                            this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemName = { levelName: '', pathName: itemNamePathName };
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             if(this.clipboard.buildVersion < 264901)
             {
                 let excludedSmashers    = [];
