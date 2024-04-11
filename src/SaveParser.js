@@ -201,7 +201,13 @@ export default class SaveParser
 
                     for(let i = 0; i < this.countObjects; i++)
                     {
-                        if(this.objects[this.objectsKeys[i]] !== undefined)
+                        // Always skip it as we parse it first manually...
+                        if(this.objects[this.objectsKeys[i]].pathName === 'Persistent_Level:PersistentLevel.LightweightBuildableSubsystem')
+                        {
+                            continue;
+                        }
+
+                        if(this.objects[this.objectsKeys[i]] !== undefined &&this.objectsKeys[i].startsWith('LightweightBuildable_') === false)
                         {
                             if(data.levelNames !== undefined && this.objects[this.objectsKeys[i]].levelName !== undefined && data.levelNames.includes(this.objects[this.objectsKeys[i]].levelName))
                             {
@@ -229,6 +235,27 @@ export default class SaveParser
                     messageId   : data.messageId,
                     command     : 'requestObjectKeys',
                     data        : currentObjectKeys
+                });
+                break;
+
+            case 'requestLightweightObjectKeys':
+                let currentLightweightObjectKeys = {};
+                    for(let i = 0; i < this.countObjects; i++)
+                    {
+                        if(this.objects[this.objectsKeys[i]] !== undefined && this.objectsKeys[i].startsWith('LightweightBuildable_') === true)
+                        {
+                            if(currentLightweightObjectKeys[this.objects[this.objectsKeys[i]].className] === undefined)
+                            {
+                                currentLightweightObjectKeys[this.objects[this.objectsKeys[i]].className] = [];
+                            }
+                            currentLightweightObjectKeys[this.objects[this.objectsKeys[i]].className].push(this.objectsKeys[i]);
+                        }
+                    }
+
+                this.worker.postMessage({
+                    messageId   : data.messageId,
+                    command     : 'requestLightweightObjectKeys',
+                    data        : currentLightweightObjectKeys
                 });
                 break;
 

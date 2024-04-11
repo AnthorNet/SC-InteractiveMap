@@ -44,6 +44,7 @@ export default class SaveParser_Write
         delete data.messageId;
         return callback(data.data);
     }
+
     postWorkerMessage(data)
     {
         data.messageId = this.worker.messageIds++;
@@ -168,9 +169,9 @@ export default class SaveParser_Write
             });
     }
 
-    generateObjectsChunks(currentLevel, objectKeys, collectables, step = 0, tempSaveBinaryLength = 0)
+    generateObjectsChunks(currentLevel, objectKeys, collectables, step = null, tempSaveBinaryLength = 0)
     {
-        if(step === 0)
+        if(step === null)
         {
             // objectsSaveBinaryLength replacer positions
             for(let i = 0; i < ((this.header.saveVersion >= 41) ? 8 : 4); i++)
@@ -188,8 +189,26 @@ export default class SaveParser_Write
                     this.saveBinary            += this.writeInt(0, false);
                 }
 
-            this.saveBinary            += this.writeInt(objectKeys.length, false);
-            tempSaveBinaryLength       += 4; // countObjects
+            // Start by grabbing the FGLightweightBuildableSubsystem
+            if(this.header.saveVersion >= 44 && currentLevel === (this.levels.length - 1))
+            {
+                this.saveBinary            += this.writeInt(objectKeys.length + 1, false);
+                tempSaveBinaryLength       += 4; // countObjects
+
+                return this.postWorkerMessage({command: 'requestObjects', objectKeys: ['Persistent_Level:PersistentLevel.LightweightBuildableSubsystem']}).then((objects) => {
+                    this.saveBinary        += this.writeActor(objects[0]);
+                    tempSaveBinaryLength   += this.currentEntityLength;
+
+                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, 0, tempSaveBinaryLength);
+                });
+            }
+            else
+            {
+                this.saveBinary            += this.writeInt(objectKeys.length, false);
+                tempSaveBinaryLength       += 4; // countObjects
+
+                return this.generateObjectsChunks(currentLevel, objectKeys, collectables, 0, tempSaveBinaryLength);
+            }
         }
 
         let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
@@ -215,7 +234,7 @@ export default class SaveParser_Write
                             {
                                 let progress = step / objectKeys.length * 100;
                                     this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
-                                    this.worker.postMessage({command: 'loaderProgress', percentage: 8 + (progress * 0.40)});
+                                    this.worker.postMessage({command: 'loaderProgress', percentage: 8 + (progress * 0.30)});
 
                                 this.pushSaveToChunk();
                             }
@@ -282,47 +301,74 @@ export default class SaveParser_Write
             console.log('Saved ' + objectKeys.length + ' objects...');
         }
 
-        return this.generateEntitiesChunks(currentLevel, objectKeys, collectables);
+        return this.generateEntitiesChunks({
+            currentLevel            : currentLevel,
+            objectKeys              : objectKeys,
+            collectables            : collectables,
+            step                    : null,
+            tempSaveBinaryLength    : 0
+        });
     }
 
-    generateEntitiesChunks(currentLevel, objectKeys, collectables, step = 0, tempSaveBinaryLength = 0)
+    generateEntitiesChunks(entitiesOptions)
     {
-        if(step === 0)
+        if(entitiesOptions.step === null)
         {
+            entitiesOptions.step = 0;
+
             // entitiesSaveBinaryLength replacer positions
             for(let i = 0; i < ((this.header.saveVersion >= 41) ? 8 : 4); i++)
             {
                 this.saveBinaryReplacer.push({
-                    key         : currentLevel + '-' + i + '-entitiesSaveBinaryLength',
+                    key         : entitiesOptions.currentLevel + '-' + i + '-entitiesSaveBinaryLength',
                     location    : (this.saveBinary.length + i),
                 });
             }
 
             // entitiesSaveBinaryLength placeholder
-            this.saveBinary                    += this.writeInt(0, false);
+            this.saveBinary                        += this.writeInt(0, false);
             if(this.header.saveVersion >= 41)
             {
-                this.saveBinary                += this.writeInt(0, false);
+                this.saveBinary                    += this.writeInt(0, false);
             }
 
-            this.saveBinary            += this.writeInt(objectKeys.length, false);
-            tempSaveBinaryLength       += 4; // countEntities
-
-            if(this.header.saveVersion >= 41)
+            // Start by grabbing the FGLightweightBuildableSubsystem
+            if(this.header.saveVersion >= 44 && entitiesOptions.currentLevel === (this.levels.length - 1))
             {
-                tempSaveBinaryLength       += objectKeys.length * 8;
+                this.saveBinary                        += this.writeInt(entitiesOptions.objectKeys.length + 1, false);
+                entitiesOptions.tempSaveBinaryLength   += 4; // countEntities
+                entitiesOptions.tempSaveBinaryLength   += (entitiesOptions.objectKeys.length + 1) * 8;
+
+                return this.postWorkerMessage({command: 'requestObjects', objectKeys: ['Persistent_Level:PersistentLevel.LightweightBuildableSubsystem']}).then((objects) => {
+                    console.log(objects[0]);
+                        let entityReturn = this.writeEntity(objects[0]);
+                            console.log(entityReturn)
+                            return this.writeLightweightBuildableSubsystem(entityReturn.preEntity, entityReturn.entity, entitiesOptions);
+                });
+            }
+            else
+            {
+                this.saveBinary                        += this.writeInt(entitiesOptions.objectKeys.length, false);
+                entitiesOptions.tempSaveBinaryLength   += 4; // countEntities
+
+                if(this.header.saveVersion >= 41)
+                {
+                    entitiesOptions.tempSaveBinaryLength += entitiesOptions.objectKeys.length * 8;
+                }
+
+                return this.generateEntitiesChunks(entitiesOptions);
             }
         }
 
-        let objectKeySpliced = objectKeys.slice(step, (step + this.stepsLength));
+        let objectKeySpliced = entitiesOptions.objectKeys.slice(entitiesOptions.step, (entitiesOptions.step + this.stepsLength));
             if(objectKeySpliced.length > 0)
             {
                 return this.postWorkerMessage({command: 'requestObjects', objectKeys: objectKeySpliced}).then((objects) => {
                     let countObjects = objects.length;
                         for(let i = 0; i < countObjects; i++)
                         {
-                            this.saveBinary            += this.writeEntity(objects[i]);
-                            tempSaveBinaryLength       += this.currentEntityLength;
+                            this.saveBinary                      += this.writeEntity(objects[i]);
+                            entitiesOptions.tempSaveBinaryLength += this.currentEntityLength;
 
                             // Force big entities to deflate to avoid memory error (Mainly foliage removal...)
                             if(this.currentEntityLength >= this.maxChunkSize)
@@ -331,61 +377,63 @@ export default class SaveParser_Write
                             }
 
                             // Only show progress for the main level
-                            if(i % 1000 === 0 && currentLevel === (this.levels.length - 1))
+                            if(i % 1000 === 0 && entitiesOptions.currentLevel === (this.levels.length - 1))
                             {
-                                let progress = step / objectKeys.length * 100;
-                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
-                                    this.worker.postMessage({command: 'loaderProgress', percentage: (48 + (progress * 0.48))});
+                                let progress = entitiesOptions.step / entitiesOptions.objectKeys.length * 100;
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(entitiesOptions.objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderProgress', percentage: (58 + (progress * 0.38))});
 
                                 this.pushSaveToChunk();
                             }
                         }
 
-                    return this.generateEntitiesChunks(currentLevel, objectKeys, collectables, (step + this.stepsLength), tempSaveBinaryLength);
+                    entitiesOptions.step = entitiesOptions.step + this.stepsLength;
+
+                    return this.generateEntitiesChunks(entitiesOptions);
                 });
             }
 
         // Save current level entities
-        this.saveBinary        += this.generateCollectablesChunks(collectables);
+        this.saveBinary        += this.generateCollectablesChunks(entitiesOptions.collectables);
 
         // Add the binary length to the replacer...
         if(this.header.saveVersion >= 41)
         {
-            let lo                                      = Number(BigInt(tempSaveBinaryLength) & BigInt(0xffffffff));
-                this.saveBinaryValues[currentLevel + '-0-entitiesSaveBinaryLength'] = lo;
+            let lo                                      = Number(BigInt(entitiesOptions.tempSaveBinaryLength) & BigInt(0xffffffff));
+                this.saveBinaryValues[entitiesOptions.currentLevel + '-0-entitiesSaveBinaryLength'] = lo;
                 lo                                      = lo >> 8;
-                this.saveBinaryValues[currentLevel + '-1-entitiesSaveBinaryLength'] = lo;
+                this.saveBinaryValues[entitiesOptions.currentLevel + '-1-entitiesSaveBinaryLength'] = lo;
                 lo                                      = lo >> 8;
-                this.saveBinaryValues[currentLevel + '-2-entitiesSaveBinaryLength'] = lo;
+                this.saveBinaryValues[entitiesOptions.currentLevel + '-2-entitiesSaveBinaryLength'] = lo;
                 lo                                      = lo >> 8;
-                this.saveBinaryValues[currentLevel + '-3-entitiesSaveBinaryLength'] = lo;
-            let hi                                      = Number(BigInt(tempSaveBinaryLength) >> BigInt(32) & BigInt(0xffffffff));
-                this.saveBinaryValues[currentLevel + '-7-entitiesSaveBinaryLength'] = hi;
+                this.saveBinaryValues[entitiesOptions.currentLevel + '-3-entitiesSaveBinaryLength'] = lo;
+            let hi                                      = Number(BigInt(entitiesOptions.tempSaveBinaryLength) >> BigInt(32) & BigInt(0xffffffff));
+                this.saveBinaryValues[entitiesOptions.currentLevel + '-7-entitiesSaveBinaryLength'] = hi;
                 hi                                      = hi >> 8;
-                this.saveBinaryValues[currentLevel + '-6-entitiesSaveBinaryLength'] = hi;
+                this.saveBinaryValues[entitiesOptions.currentLevel + '-6-entitiesSaveBinaryLength'] = hi;
                 hi                                      = hi >> 8;
-                this.saveBinaryValues[currentLevel + '-5-entitiesSaveBinaryLength'] = hi;
+                this.saveBinaryValues[entitiesOptions.currentLevel + '-5-entitiesSaveBinaryLength'] = hi;
                 hi                                      = hi >> 8;
-                this.saveBinaryValues[currentLevel + '-4-entitiesSaveBinaryLength'] = hi;
+                this.saveBinaryValues[entitiesOptions.currentLevel + '-4-entitiesSaveBinaryLength'] = hi;
         }
         else
         {
-            this.saveBinaryValues[currentLevel + '-3-entitiesSaveBinaryLength'] = (tempSaveBinaryLength >>> 24);
-            this.saveBinaryValues[currentLevel + '-2-entitiesSaveBinaryLength'] = (tempSaveBinaryLength >>> 16);
-            this.saveBinaryValues[currentLevel + '-1-entitiesSaveBinaryLength'] = (tempSaveBinaryLength >>> 8);
-            this.saveBinaryValues[currentLevel + '-0-entitiesSaveBinaryLength'] = (tempSaveBinaryLength & 0xff);
+            this.saveBinaryValues[entitiesOptions.currentLevel + '-3-entitiesSaveBinaryLength'] = (entitiesOptions.tempSaveBinaryLength >>> 24);
+            this.saveBinaryValues[entitiesOptions.currentLevel + '-2-entitiesSaveBinaryLength'] = (entitiesOptions.tempSaveBinaryLength >>> 16);
+            this.saveBinaryValues[entitiesOptions.currentLevel + '-1-entitiesSaveBinaryLength'] = (entitiesOptions.tempSaveBinaryLength >>> 8);
+            this.saveBinaryValues[entitiesOptions.currentLevel + '-0-entitiesSaveBinaryLength'] = (entitiesOptions.tempSaveBinaryLength & 0xff);
         }
 
         this.pushSaveToChunk();
 
-        if(currentLevel < (this.levels.length - 1))
+        if(entitiesOptions.currentLevel < (this.levels.length - 1))
         {
-            return this.generateLevelChunks(currentLevel + 1);
+            return this.generateLevelChunks(entitiesOptions.currentLevel + 1);
         }
 
-        if(currentLevel === (this.levels.length - 1))
+        if(entitiesOptions.currentLevel === (this.levels.length - 1))
         {
-            console.log('Saved ' + objectKeys.length + ' entities...');
+            console.log('Saved ' + entitiesOptions.objectKeys.length + ' entities...');
         }
 
         this.pushSaveToChunk();
@@ -515,18 +563,6 @@ export default class SaveParser_Write
                         {
                             totalInflated -= 4;
 
-                            /*
-                            let low                     = Number(BigInt(totalInflated) & BigInt(0xffffffff));
-                                currentChunk.output[3]      = (low >>> 24);
-                                currentChunk.output[2]      = (low >>> 16);
-                                currentChunk.output[1]      = (low >>> 8);
-                                currentChunk.output[0]      = (low & 0xff);
-                            let high                    = Number(BigInt(totalInflated) >> BigInt(32) & BigInt(0xffffffff));
-                                currentChunk.output[7]      = (high >>> 24);
-                                currentChunk.output[6]      = (high >>> 16);
-                                currentChunk.output[5]      = (high >>> 8);
-                                currentChunk.output[4]      = (high & 0xff);
-                            */
                             let lo                      = Number(BigInt(totalInflated) & BigInt(0xffffffff));
                                 currentChunk.output[0]  = lo;
                                 lo                      = lo >> 8;
@@ -654,24 +690,6 @@ export default class SaveParser_Write
     {
         this.currentEntityLength    = 0;
         let actor                   = this.writeInt(1, false);
-            /*
-            if(currentActor.className.startsWith('/FastConveyors/Buildable/Belts/Build_FastConveyorBelt'))
-            {
-                actor                  += this.writeString('/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk5/Build_ConveyorBeltMk5.Build_ConveyorBeltMk5_C', false);
-            }
-            else
-            {
-                if(currentActor.className.startsWith('/FastConveyors/Buildable/Lifts/Build_FastConveyorLift'))
-                {
-                    actor                  += this.writeString('/Game/FactoryGame/Buildable/Factory/ConveyorLiftMk5/Build_ConveyorLiftMk5.Build_ConveyorLiftMk5_C', false);
-                }
-                else
-                {
-                    actor                  += this.writeString(currentActor.className, false);
-                }
-            }
-            */
-
             actor                  += this.writeString(currentActor.className, false);
             actor                  += this.writeObjectProperty(currentActor, false);
 
@@ -964,6 +982,9 @@ export default class SaveParser_Write
 
                 break;
 
+            case '/Script/FactoryGame.FGLightweightBuildableSubsystem':
+                return { preEntity: preEntity, entity: entity };
+
             default:
                 if(currentObject.missing !== undefined)
                 {
@@ -978,6 +999,7 @@ export default class SaveParser_Write
                         entity += this.writeByte(0);
                         entity += this.writeByte(0);
                     }
+
                     entity += this.writeByte(0);
                     entity += this.writeByte(0);
                     entity += this.writeByte(0);
@@ -987,6 +1009,98 @@ export default class SaveParser_Write
 
         return preEntity + this.writeInt(this.currentEntityLength) + entity;
     }
+
+    writeLightweightBuildableSubsystem(preEntity, entity, entitiesOptions, lightweightBuildableSubsystemObjectKeys = null, currentStep = 0, countLightweightObjects = 0)
+    {
+        // First grab all needed lightweight objects keys
+        if(lightweightBuildableSubsystemObjectKeys === null)
+        {
+            entity += this.writeInt(0);
+
+            return this.postWorkerMessage({command: 'requestLightweightObjectKeys'}).then((dataObjectKeys) => {
+                entity += this.writeInt(Object.keys(dataObjectKeys).length);
+
+                for(let className in dataObjectKeys)
+                {
+                    countLightweightObjects += dataObjectKeys[className].length;
+                }
+
+                this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s lightweight objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countLightweightObjects), 0]});
+                this.worker.postMessage({command: 'loaderProgress', percentage: 38});
+
+                return this.writeLightweightBuildableSubsystem(preEntity, entity, entitiesOptions, dataObjectKeys, currentStep, countLightweightObjects);
+            });
+        }
+
+        // Loop all classes to write objects
+        if(lightweightBuildableSubsystemObjectKeys !== null && Object.keys(lightweightBuildableSubsystemObjectKeys).length > 0)
+        {
+            let currentClassName        = Object.keys(lightweightBuildableSubsystemObjectKeys)[0];
+            let requestedObjectKeys     = lightweightBuildableSubsystemObjectKeys[currentClassName];
+                entity                 += this.writeInt(0);
+                entity                 += this.writeString(currentClassName);
+                //entity                 += this.writeInt(requestedObjectKeys.length);
+                delete lightweightBuildableSubsystemObjectKeys[currentClassName];
+
+            return this.postWorkerMessage({command: 'requestObjects', objectKeys: requestedObjectKeys}).then((data) => {
+                entity             += this.writeInt(data.length);
+
+                for(let i = 0; i < data.length; i++)
+                {
+                    entity                 += this.writeDouble(data[i].transform.rotation[0]);
+                    entity                 += this.writeDouble(data[i].transform.rotation[1]);
+                    entity                 += this.writeDouble(data[i].transform.rotation[2]);
+                    entity                 += this.writeDouble(data[i].transform.rotation[3]);
+
+                    entity                 += this.writeDouble(data[i].transform.translation[0]);
+                    entity                 += this.writeDouble(data[i].transform.translation[1]);
+                    entity                 += this.writeDouble(data[i].transform.translation[2]);
+
+                    entity                 += this.writeDouble(data[i].transform.scale3d[0]);
+                    entity                 += this.writeDouble(data[i].transform.scale3d[1]);
+                    entity                 += this.writeDouble(data[i].transform.scale3d[2]);
+
+                    //console.log(data[i].customizationData.SwatchDesc, this.writeObjectProperty(data[i].customizationData.SwatchDesc))
+                    entity                 += this.writeObjectProperty(data[i].customizationData.SwatchDesc);
+                    entity                 += this.writeObjectProperty(data[i].customizationData.MaterialDesc);
+                    entity                 += this.writeObjectProperty(data[i].customizationData.PatternDesc);
+                    entity                 += this.writeObjectProperty(data[i].customizationData.SkinDesc);
+
+                    entity                 += this.writeFloat(data[i].customizationData.PrimaryColor.r);
+                    entity                 += this.writeFloat(data[i].customizationData.PrimaryColor.g);
+                    entity                 += this.writeFloat(data[i].customizationData.PrimaryColor.b);
+                    entity                 += this.writeFloat(data[i].customizationData.PrimaryColor.a);
+
+                    entity                 += this.writeFloat(data[i].customizationData.SecondaryColor.r);
+                    entity                 += this.writeFloat(data[i].customizationData.SecondaryColor.g);
+                    entity                 += this.writeFloat(data[i].customizationData.SecondaryColor.b);
+                    entity                 += this.writeFloat(data[i].customizationData.SecondaryColor.a);
+
+                    entity                 += this.writeObjectProperty(data[i].customizationData.PaintFinish);
+                    entity                 += this.writeInt8(data[i].customizationData.PatternRotation.value);
+
+                    entity                 += this.writeObjectProperty(data[i].properties[0].value);
+                    entity                 += this.writeObjectProperty(data[i].properties[1].value);
+                }
+
+                let progress        = currentStep / countLightweightObjects * 100;
+                    currentStep    += data.length;
+                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s lightweight objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countLightweightObjects), Math.round(progress)]});
+                    this.worker.postMessage({command: 'loaderProgress', percentage: (38 + (progress * 0.20))});
+
+                return this.writeLightweightBuildableSubsystem(preEntity, entity, entitiesOptions, lightweightBuildableSubsystemObjectKeys, currentStep, countLightweightObjects);
+            });
+        }
+
+        // End of lightweightBuildableSubsystem reconstruction, get back to entities...
+        //TODO: May be add a placeholder for lenght in case of a lot of lightweight objects?
+        this.saveBinary                      += preEntity + this.writeInt(this.currentEntityLength) + entity;
+        entitiesOptions.tempSaveBinaryLength += this.currentEntityLength;
+        this.pushSaveToChunk();
+
+        return this.generateEntitiesChunks(entitiesOptions);
+    }
+
     writeProperties(currentObject, parentType = null)
     {
         let propertiesLength    = currentObject.properties.length;
@@ -1943,7 +2057,6 @@ export default class SaveParser_Write
             {
                 property += this.writeString(this.header.mapName, count);
                 property += this.writeString(value.pathName, count);
-                //property += this.writeString(this.header.mapName + ':' + value.pathName, count);
             }
 
         return property;

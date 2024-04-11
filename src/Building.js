@@ -1,5 +1,5 @@
 /*
- * Also hold basic className from buildings to reduce the SaveParinsg module size...
+ * Also hold basic className from buildings to reduce the SaveParsing module size...
  */
 export default class Building
 {

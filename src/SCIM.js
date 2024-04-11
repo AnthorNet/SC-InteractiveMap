@@ -204,29 +204,28 @@ export default class SCIM
     checkVersion(currentVersion)
     {
         let alertMessage = "Good news, a new version of the interactive map was released! Please refresh your page / browser cache to make sure you'll get the latest fixes and features.";
-
-        if(currentVersion !== undefined && currentVersion !== null)
-        {
-            if(currentVersion > this.scriptsVERSION)
+            if(currentVersion !== undefined && currentVersion !== null)
             {
-                BaseLayout_Modal.alert(alertMessage);
-                return false;
+                if(currentVersion > this.scriptsVERSION)
+                {
+                    BaseLayout_Modal.alert(alertMessage);
+                    return false;
+                }
             }
-        }
-        else
-        {
-            if(this.urlScriptsVERSION !== null)
+            else
             {
-                $.get(this.urlScriptsVERSION, (data) => {
-                    if(data > this.scriptsVERSION)
-                    {
-                        BaseLayout_Modal.alert(alertMessage);
-                        clearInterval(this.intervalScriptsVERSION);
-                        return false;
-                    }
-                });
+                if(this.urlScriptsVERSION !== null)
+                {
+                    $.get(this.urlScriptsVERSION, (data) => {
+                        if(data > this.scriptsVERSION)
+                        {
+                            BaseLayout_Modal.alert(alertMessage);
+                            clearInterval(this.intervalScriptsVERSION);
+                            return false;
+                        }
+                    });
+                }
             }
-        }
 
         return true;
     };

@@ -539,10 +539,7 @@ export default class SaveParser_Read
                     break;
                 }
 
-                if(property.name !== 'CachedActorTransform') // Should be removed on release
-                {
-                    this.objects[objectKey].properties.push(property);
-                }
+                this.objects[objectKey].properties.push(property);
         }
 
         // Read Conveyor missing bytes
