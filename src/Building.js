@@ -183,6 +183,7 @@ export default class Building
         if(
                 currentObject.className === '/x3_mavegrag/Vehicles/Trains/Locomotive_Mk1/BP_X3Locomotive_Mk1.BP_X3Locomotive_Mk1_C'
              || currentObject.className === '/DI_Transportation_Darkplate/Trains/Locomotive/DI_Locomotive_400/Build_DI_Locomotive_400.Build_DI_Locomotive_400_C'
+             || currentObject.className === '/MkPlus/Buildables/Train/BP_Locomotive_Mk2.BP_Locomotive_Mk2_C'
         )
         {
             return true;
@@ -212,6 +213,7 @@ export default class Building
         if(
                 currentObject.className === '/x3_mavegrag/Vehicles/Trains/CargoWagon_Mk1/BP_X3CargoWagon_Mk1.BP_X3CargoWagon_Mk1_C'
              || currentObject.className === '/DI_Transportation_Darkplate/Trains/Wagon/DI_Wagon_512/Build_DI_FrieghtWagon512.Build_DI_FrieghtWagon512_C'
+             || currentObject.className === '/MkPlus/Buildables/Train/BP_FreightWagon_Mk2.BP_FreightWagon_Mk2_C'
         )
         {
             return true;
