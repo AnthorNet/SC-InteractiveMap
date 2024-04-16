@@ -671,12 +671,10 @@ export default class BaseLayout
             }
 
             // Mod nodes
-            //if(currentObject.className.includes('Node')){ console.log(currentObject); }
             if([
-                '/RefinedPower/World/ResourceNodes/Element65/BP_Element65_Impure.BP_Element65_Impure_C',
-                '/RefinedPower/World/ResourceNodes/Element65/BP_Element65_Normal.BP_Element65_Normal_C',
-                '/RefinedPower/World/ResourceNodes/Element65/BP_Element65_Pure.BP_Element65_Pure_C',
-
+                // Refined Power
+                '/RefinedPower/World/ResourceNodes/Thorium/BP_Thorium.BP_Thorium_C',
+                // Ficsit Farming
                 '/FicsitFarming/World/ResourceNodes/Dirt/BP_DirtNode.BP_DirtNode_C'
             ].includes(currentObject.className))
             {
@@ -684,16 +682,23 @@ export default class BaseLayout
                 {
                     $('#mods_resource_nodes').show();
 
-                    let layoutId    = currentObject.className.split('.').pop();
+                    let nodeType    = currentObject.className.split('.').pop();
+                    let nodePurity  = 'impure';
+                    let mNodePurity = this.getObjectProperty(currentObject, 'mNodePurity');
+                        if(mNodePurity !== null)
+                        {
+                            console.log('mNodePurity', mNodePurity);
+                        }
+                    let layoutId    = nodeType + '_' + nodePurity.charAt(0).toUpperCase() + nodePurity.slice(1);
                         if(this.satisfactoryMap.availableLayers[layoutId] === undefined)
                         {
                             this.satisfactoryMap.availableLayers[layoutId] = L.layerGroup();
                         }
 
-                    let button      = $('.updateLayerState[data-id="' + layoutId + '"]');
+                    let button      = $('.updateLayerState[data-type="' + nodeType + '"][data-purity="' + nodePurity + '"]');
                         button.attr('data-total', parseInt(button.attr('data-total')) + 1);
                         button.find('.badge').html(new Intl.NumberFormat(this.language).format(parseInt(button.attr('data-total'))));
-                        button.parent().parent().show();
+                        button.parent().parent().parent().show();
 
                     let currentMarkerOptions    = {
                             pathName    : currentObject.pathName,
@@ -713,12 +718,14 @@ export default class BaseLayout
                         this.satisfactoryMap.collectableMarkers[currentObject.pathName]                     = currentMarker;
                         this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId     = layoutId;
                         this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName    = currentObject.pathName;
+                        this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.purity      = nodePurity;
                 }
 
                 this.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(this);
 
                 continue;
             }
+            //if(currentObject.className.includes('Node')){ console.log(currentObject); }
 
             if(currentObject.className === '/Script/FactoryGame.FGPipeNetwork')
             {
