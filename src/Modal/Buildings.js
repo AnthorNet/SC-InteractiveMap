@@ -258,8 +258,17 @@ export default class Modal_Buildings
                                     }
                             htmlRow.push('</td>');
 
-                            let clockSpeed      = this.baseLayout.getClockSpeed(currentObject);
-                                htmlRow.push('<td class="text-center">' + Math.round(clockSpeed * 1000) / 10 + '%</td>');
+                            let clockSpeed      = this.baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
+                            let productionBoost = this.baseLayout.overclockingSubSystem.getProductionBoost(currentObject);
+                                if(productionBoost > 1)
+                                {
+                                    htmlRow.push('<td class="text-center">' + Math.round(clockSpeed * 1000) / 10 + '% <strong style="color: #a671a6;">(x' + productionBoost + ')</strong></td>');
+
+                                }
+                                else
+                                {
+                                    htmlRow.push('<td class="text-center">' + Math.round(clockSpeed * 1000) / 10 + '%</td>');
+                                }
 
                             let objectCircuit = this.baseLayout.circuitSubSystem.getObjectCircuit(currentObject);
                                 if(objectCircuit !== null)

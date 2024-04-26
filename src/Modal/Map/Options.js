@@ -18,19 +18,6 @@ export default class Modal_Map_Options
         let header                          = this.baseLayout.saveGameParser.getHeader();
         let gameState                       = this.baseLayout.gameStateSubSystem.get();
 
-        let unlockSubSystem                 = this.baseLayout.unlockSubSystem.get();
-
-        let mIsBuildingEfficiencyUnlocked   = 0;
-        let mIsBuildingOverclockUnlocked    = 0;
-        let mIsMapUnlocked                  = 0;
-
-        if(unlockSubSystem !== null)
-        {
-            mIsBuildingEfficiencyUnlocked   = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', 0);
-            mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', 0);
-            mIsMapUnlocked                  = this.baseLayout.getObjectProperty(unlockSubSystem, 'mIsMapUnlocked', 0);
-        }
-
         html.push('<div class="form-group row">');
             html.push('<label for="inputSessionName" class="col-sm-3 col-form-label">' + this.baseLayout.translate._('Session name') + '</label>');
             html.push('<div class="col-sm-9"><input type="text" name="sessionName" class="form-control" id="inputSessionName" value="' + header.sessionName + '"></div>');
@@ -58,29 +45,38 @@ export default class Modal_Map_Options
         html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch">');
-            html.push('<input type="checkbox" class="custom-control-input" name="inputBuildingEfficiencyUnlocked" id="inputBuildingEfficiencyUnlocked" ' + ((mIsBuildingEfficiencyUnlocked === 1) ? 'checked' : '') + ' />');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputBuildingEfficiencyUnlocked" id="inputBuildingEfficiencyUnlocked" ' + ((this.baseLayout.unlockSubSystem.haveEfficiency()) ? 'checked' : '') + ' />');
             html.push('<label class="custom-control-label" for="inputBuildingEfficiencyUnlocked">' + this.baseLayout.translate._('Building efficiency unlocked?') + '</label>');
             html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch">');
-            html.push('<input type="checkbox" class="custom-control-input" name="inputBuildingOverclockUnlocked" id="inputBuildingOverclockUnlocked" ' + ((mIsBuildingOverclockUnlocked === 1) ? 'checked' : '') + ' />');
-            html.push('<label class="custom-control-label" for="inputBuildingOverclockUnlocked">' + this.baseLayout.translate._('Building overclocking unlocked?') + '</label>');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputGameStateMapUnlocked" id="inputGameStateMapUnlocked" ' + ((this.baseLayout.unlockSubSystem.haveMap()) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputGameStateMapUnlocked">' + this.baseLayout.translate._('Map unlocked?') + '</label>');
             html.push('</div>');
         html.push('</div>');
         html.push('</div></div>');
 
+        html.push('<div class="row"><div class="col-6">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch">');
-            html.push('<input type="checkbox" class="custom-control-input" name="inputGameStateMapUnlocked" id="inputGameStateMapUnlocked" ' + ((mIsMapUnlocked === 1) ? 'checked' : '') + ' />');
-            html.push('<label class="custom-control-label" for="inputGameStateMapUnlocked">' + this.baseLayout.translate._('Map unlocked?') + '</label>');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputBuildingOverclockUnlocked" id="inputBuildingOverclockUnlocked" ' + ((this.baseLayout.unlockSubSystem.haveOverclocking()) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputBuildingOverclockUnlocked">' + this.baseLayout.translate._('Building overclocking unlocked?') + '</label>');
             html.push('</div>');
         html.push('</div>');
+        html.push('</div><div class="col-6">');
+        html.push('<div class="form-group">');
+            html.push('<div class="custom-control custom-switch">');
+            html.push('<input type="checkbox" class="custom-control-input" name="inputBuildingProductionBoostUnlocked" id="inputBuildingProductionBoostUnlocked" ' + ((this.baseLayout.unlockSubSystem.haveProductionBoost()) ? 'checked' : '') + ' />');
+            html.push('<label class="custom-control-label" for="inputBuildingProductionBoostUnlocked">' + this.baseLayout.translate._('Building production amplifier unlocked?') + '</label>');
+            html.push('</div>');
+        html.push('</div>');
+        html.push('</div></div>');
 
         html.push('<hr class="border-secondary" />');
         html.push('<h4>' + this.baseLayout.translate._('Map visibility:') + '</h4>');
-        html.push('<div class="row"><div class="col-6">');
+        html.push('<div class="row mb-3"><div class="col-6">');
             html.push('<button class="btn btn-secondary w-100" id="resetFogOfWar">' + this.baseLayout.translate._('Hide all map') + '</button>');
         html.push('</div><div class="col-6">');
             html.push('<button class="btn btn-secondary w-100" id="clearFogOfWar">' + this.baseLayout.translate._('Reveal all map') + '</button>');
@@ -313,12 +309,14 @@ export default class Modal_Map_Options
                     header.mapOptions = header.mapOptions + '?Visibility=SV_Private';
                 }
 
-            if(unlockSubSystem !== null)
-            {
-                this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
-                this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', (($('#inputBuildingOverclockUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
-                this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', (($('#inputGameStateMapUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
-            }
+            let unlockSubSystem                 = this.baseLayout.unlockSubSystem.get();
+                if(unlockSubSystem !== null)
+                {
+                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingEfficiencyUnlocked', (($('#inputBuildingEfficiencyUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
+                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingOverclockUnlocked', (($('#inputBuildingOverclockUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
+                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsBuildingProductionBoostUnlocked', (($('#inputBuildingProductionBoostUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
+                    this.baseLayout.setObjectProperty(unlockSubSystem, 'mIsMapUnlocked', (($('#inputGameStateMapUnlocked').is(':checked') === true) ? 1 : 0), 'Bool');
+                }
         });
 
         $('#resetFogOfWar').on('click', () => {

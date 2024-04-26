@@ -282,10 +282,11 @@ export default class SubSystem_Circuit extends SubSystem
                         // MAX CONSUMPTION
                         if(buildingData !== null && buildingData.powerUsed !== undefined)
                         {
-                            let clockSpeed                  = this.baseLayout.getClockSpeed(currentComponent);
+                            let clockSpeed                  = this.baseLayout.overclockingSubSystem.getClockSpeed(currentComponent);
                                 if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
                                 {
-                                    statistics.maxConsumption  += buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
+                                    let productionBoost             = this.baseLayout.overclockingSubSystem.getProductionBoost(currentComponent);
+                                        statistics.maxConsumption  += buildingData.powerUsed * Math.pow(clockSpeed, 1.321929) * Math.pow(productionBoost, 2);
                                 }
                                 else
                                 {

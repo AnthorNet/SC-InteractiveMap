@@ -1053,7 +1053,7 @@ export default class Modal_Selection
                                 if(contextMenu[j].callback !== undefined && contextMenu[j].callback.name.includes('updateObjectClockSpeed'))
                                 {
                                     let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                                    let currentClockSpeed   = baseLayout.getClockSpeed(currentObject) * 100;
+                                    let currentClockSpeed   = baseLayout.overclockingSubSystem.getClockSpeed(currentObject) * 100;
                                     let newClockSpeed       = parseFloat(values.value);
                                     let clockSpeed          = Math.max(1, Math.min(newClockSpeed, 250));
 

@@ -147,7 +147,7 @@ export default class BaseLayout_Tooltip
                                 {
                                     case '/Game/FactoryGame/Buildable/Factory/OilPump/Build_OilPump.Build_OilPump_C':
                                     case '/Game/FactoryGame/Buildable/Factory/WaterPump/Build_WaterPump.Build_WaterPump_C':
-                                        return this.setBuildingPumpTooltipContent(currentObject, buildingData);
+                                        return this.setBuildingWaterPumpTooltipContent(currentObject, buildingData);
                                     case '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C':
                                     case '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C':
                                         return this.setBuildingFluidStorageTooltipContent(currentObject, buildingData);
@@ -299,23 +299,18 @@ export default class BaseLayout_Tooltip
                 extractionRate      = buildingData.extractionRate[purity];
             }
 
-        let clockSpeed          = null;
+        let clockSpeed          = this.baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
         let powerUsed           = null;
 
         let craftingTime        = 60 / extractionRate;
 
         if(currentObject.className !== '/Game/FactoryGame/Equipment/PortableMiner/BP_PortableMiner.BP_PortableMiner_C')
         {
-            clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
-            powerUsed           = buildingData.powerUsed * clockSpeed;
-                if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
-                {
-                    powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
-                }
-                else
-                {
-                    powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
-                }
+            powerUsed           = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+            if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+            {
+                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
+            }
 
             extractionRate     *= clockSpeed;
         }
@@ -374,14 +369,14 @@ export default class BaseLayout_Tooltip
             content.push('</div>');
 
             // FOOTER
-            content.push(BaseLayout_Tooltip.getOverclockingPanel(this.baseLayout, currentObject, 356, 12));
+            content.push(this.baseLayout.overclockingSubSystem.getOverclockingPanel(currentObject, 356, 12));
             content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 365, 385, 434, 387));
         }
 
         return '<div style="' + this.genericExtractionBackgroundStyle + '">' + content.join('') + '</div>';
     }
 
-    setBuildingPumpTooltipContent(currentObject, buildingData)
+    setBuildingWaterPumpTooltipContent(currentObject, buildingData)
     {
         let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
         let itemType                = null;
@@ -406,7 +401,7 @@ export default class BaseLayout_Tooltip
             }
 
         let craftingTime        = 60 / buildingData.extractionRate[purity];
-        let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
+        let clockSpeed          = this.baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
         let powerUsed           = buildingData.powerUsed * clockSpeed;
             if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
             {
@@ -504,7 +499,7 @@ export default class BaseLayout_Tooltip
         content.push('<div style="position: absolute;margin-top: 22px;margin-left: 211px;width: 102px;height: 102px;"><img src="' + this.baseLayout.staticUrl + '/js/InteractiveMap/img/flowGlass.png?v=' + this.baseLayout.scriptVersion + '" style="width: 102px;height: 102px;" /></div>');
 
         // FOOTER
-        content.push(BaseLayout_Tooltip.getOverclockingPanel(this.baseLayout, currentObject, 256, 12));
+        content.push(this.baseLayout.overclockingSubSystem.getOverclockingPanel(currentObject, 256, 12));
         content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 265, 385, 334, 387));
 
         return '<div style="' + this.genericPumpBackground + '">' + content.join('') + '</div>';
@@ -928,18 +923,15 @@ export default class BaseLayout_Tooltip
         let recipeItem          = this.baseLayout.getItemDataFromRecipe(currentObject);
         let craftingTime        = (recipeItem !== null) ? recipeItem.mManufactoringDuration : 4;
 
-        let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
+        let clockSpeed          = this.baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
+        let productionBoost     = this.baseLayout.overclockingSubSystem.getProductionBoost(currentObject);
         let powerUsed           = 0;
             if(buildingData.powerUsed !== undefined)
             {
-                powerUsed = buildingData.powerUsed * clockSpeed;
+                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
                 if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
                 {
-                    powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
-                }
-                else
-                {
-                    powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+                    powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929) * Math.pow(productionBoost, 2);
                 }
             }
             else
@@ -955,7 +947,7 @@ export default class BaseLayout_Tooltip
                     }
             }
 
-            craftingTime       /= clockSpeed; // Overclocking...
+            craftingTime       /= clockSpeed * productionBoost; // Overclocking...
 
             if(buildingData.mManufacturingSpeedMultiplier !== undefined)
             {
@@ -1110,7 +1102,8 @@ export default class BaseLayout_Tooltip
             content.push('<div style="position: absolute;margin-top: 286px;margin-left: 370px; width: 60px;' + BaseLayout_Tooltip.styleLabels + '"><strong>OUTPUT</strong></div>');
 
             // FOOTER
-            content.push(BaseLayout_Tooltip.getOverclockingPanel(this.baseLayout, currentObject));
+            content.push(this.baseLayout.overclockingSubSystem.getOverclockingPanel(currentObject));
+            content.push(this.baseLayout.overclockingSubSystem.getProductionAmplifierPanel(currentObject));
             content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject));
 
         let footerBackground = this.baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_Manufacturer_BG_Constructor.png';
@@ -1135,7 +1128,7 @@ export default class BaseLayout_Tooltip
         let recipeItem                  = this.baseLayout.getItemDataFromRecipe(currentObject);
         let craftingTime                = (recipeItem !== null) ? recipeItem.mManufactoringDuration : 4;
 
-        let clockSpeed                  = this.baseLayout.getClockSpeed(currentObject);
+        let clockSpeed                  = this.baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
         let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
             if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
             {
@@ -1296,7 +1289,7 @@ export default class BaseLayout_Tooltip
             }
 
             // FOOTER
-            content.push(BaseLayout_Tooltip.getOverclockingPanel(this.baseLayout, currentObject, 356, 12));
+            content.push(this.baseLayout.overclockingSubSystem.getOverclockingPanel(currentObject, 356, 12));
             content.push(BaseLayout_Tooltip.getStandByPanel(this.baseLayout, currentObject, 365, 385, 434, 387));
 
         if(buildingData.supplementalLoadType !== undefined)
@@ -1474,50 +1467,6 @@ export default class BaseLayout_Tooltip
     /*
      * SHARED PARTS
      */
-
-
-    static getOverclockingPanel(baseLayout, currentObject, top = 312, left = 89)
-    {
-        if(baseLayout.unlockSubSystem.haveOverclocking() === true)
-        {
-            let content                 = [];
-            let clockSpeed              = baseLayout.getClockSpeed(currentObject);
-            let potentialInventory      = baseLayout.getObjectInventory(currentObject, 'mInventoryPotential');
-
-                content.push('<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + (parseInt(left) + 2) + 'px; width: 318px;height: 97px;background: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/ManufacutringMenu_OverclockBackground.png?v=' + baseLayout.scriptVersion + ')">');
-                content.push('<table style="margin: 10px;width: 298px;"><tr>');
-                content.push('<td><span class="text-small">Clockspeed:</span><br /><strong class="lead text-warning">' + +(Math.round(clockSpeed * 10000) / 100) + ' %</strong></td>');
-
-                if(potentialInventory !== null)
-                {
-                    for(let i = 0; i < potentialInventory.length; i++)
-                    {
-                        content.push('<td width="62">');
-                        content.push('<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + baseLayout.setInventoryTableSlot([potentialInventory[i]], null, 56, '', baseLayout.itemsData.Desc_CrystalShard_C.image) + '</td></tr></table></div>');
-                        content.push('</td>');
-                    }
-                }
-
-                content.push('</tr><tr>');
-                content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + Math.min(100, (clockSpeed * 10000) / 100) + '%"></div></div></td>');
-
-                if(potentialInventory !== null)
-                {
-                    for(let i = 0; i < potentialInventory.length; i++)
-                    {
-                        let potentialProgress = Math.min(100, ((clockSpeed * 10000) / 100 - (100 + (i * 50))) * 2);
-                            content.push('<td><div class="progress rounded-sm" style="height: 10px;"><div class="progress-bar bg-warning" style="width: ' + potentialProgress + '%"></div></div></td>');
-                    }
-                }
-
-                content.push('</tr></table>');
-                content.push('</div>');
-
-            return content.join('');
-        }
-
-        return '<div style="position: absolute;margin-top: ' + top + 'px;margin-left: ' + left + 'px; width: 322px;height: 105px;background: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/OverclockPanelLocked.png?v=' + baseLayout.scriptVersion + ');"></div>';
-    }
 
     static setTooltipFooter(options)
     {

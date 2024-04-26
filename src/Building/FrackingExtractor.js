@@ -47,7 +47,7 @@ export default class Building_FrackingExtractor
             }
 
         let craftingTime        = 60 / buildingData.extractionRate[purity];
-        let clockSpeed          = baseLayout.getClockSpeed(currentObject);
+        let clockSpeed          = baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
         let productionRatio     = buildingData.extractionRate[purity] * clockSpeed;
 
         // VOLUME

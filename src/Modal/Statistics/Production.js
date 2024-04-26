@@ -118,7 +118,7 @@ export default class Modal_Statistics_Production
                                         itemType        = 'Desc_Water_C';
                                     }
 
-                                    let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
+                                    let clockSpeed          = this.baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
                                     let productionRatio     = 0;
                                     let offProductionRatio  = 0;
 
@@ -180,9 +180,10 @@ export default class Modal_Statistics_Production
 
                                 if(recipeItem !== null)
                                 {
-                                    let clockSpeed          = this.baseLayout.getClockSpeed(currentObject);
+                                    let clockSpeed          = this.baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
+                                    let productionBoost     = this.baseLayout.overclockingSubSystem.getProductionBoost(currentObject);
                                     let craftingTime        = (recipeItem !== null) ? recipeItem.mManufactoringDuration : 4;
-                                        craftingTime       /= clockSpeed; // Overclocking...
+                                        craftingTime       /= clockSpeed * productionBoost; // Overclocking...
 
                                     for(let className in recipeItem.produce)
                                     {
@@ -262,7 +263,7 @@ export default class Modal_Statistics_Production
 
                             if(buildingData.category === 'generator')
                             {
-                                let clockSpeed                  = this.baseLayout.getClockSpeed(currentObject);
+                                let clockSpeed                  = this.baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
                                 let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
                                     if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
                                     {

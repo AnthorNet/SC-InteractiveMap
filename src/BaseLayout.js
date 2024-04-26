@@ -16,6 +16,7 @@ import SubSystem_Foliage                        from './SubSystem/Foliage.js';
 import SubSystem_GameRules                      from './SubSystem/GameRules.js';
 import SubSystem_GameState                      from './SubSystem/GameState.js';
 import SubSystem_Map                            from './SubSystem/Map.js';
+import SubSystem_Overclocking                   from './SubSystem/Overclocking.js';
 import SubSystem_PipeNetwork                    from './SubSystem/PipeNetwork.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
 import SubSystem_Railroad                       from './SubSystem/Railroad.js';
@@ -933,6 +934,7 @@ export default class BaseLayout
         this.foliageSubSystem       = new SubSystem_Foliage({baseLayout: this});
         this.gameRulesSubSystem     = new SubSystem_GameRules({baseLayout: this});
         this.mapSubSystem           = new SubSystem_Map({baseLayout: this});
+        this.overclockingSubSystem  = new SubSystem_Overclocking({baseLayout: this});
         this.statisticsSubSystem    = new SubSystem_Statistics({baseLayout: this});
         this.unlockSubSystem        = new SubSystem_Unlock({baseLayout: this});
         this.worldGridSubSystem     = new SubSystem_WorldGrid();
@@ -3911,6 +3913,7 @@ export default class BaseLayout
 
         return null;
     }
+
     getObjectRadioactivity(currentObject, inventoryPropertyName = 'mInventory')
     {
         if(this.useRadioactivity === true)
@@ -3957,6 +3960,7 @@ export default class BaseLayout
 
         return;
     }
+
     getObjectTargetInventory(currentObject)
     {
         let inventory               = [];
@@ -4173,6 +4177,7 @@ export default class BaseLayout
                 $('.updatePlayerLayerState[data-id=' + layerId + '] .radial > div').css('width', ((currentLength * 60) + 10) + 'px');
         }
     }
+
     updateDelayedBadgeCount()
     {
         if(this.delayedBadgeCount !== null)
@@ -4184,38 +4189,6 @@ export default class BaseLayout
 
             this.delayedBadgeCount = null;
         }
-    }
-
-    // Overclocking
-    getClockSpeed(currentObject)
-    {
-        let currentPotential = this.getObjectProperty(currentObject, 'mCurrentPotential');
-            if(currentPotential !== null)
-            {
-                return currentPotential;
-            }
-
-        let pendingPotential = this.getObjectProperty(currentObject, 'mPendingPotential');
-            if(pendingPotential !== null)
-            {
-                return pendingPotential;
-            }
-
-       return 1;
-    }
-
-    setInventoryPotential(currentObject)
-    {
-        let html                = '';
-        let potentialInventory  = this.getObjectInventory(currentObject, 'mInventoryPotential');
-            if(potentialInventory !== null)
-            {
-                html += '<div class="text-center"><table class="mr-auto ml-auto mt-3"><tr><td>';
-                html += this.setInventoryTableSlot(potentialInventory, null, 48, '', this.itemsData.Desc_CrystalShard_C.image);
-                html += '</td></tr></table></div>';
-            }
-
-        return html;
     }
 
     toggleDropPodHasBeenOpened(marker)
@@ -4358,7 +4331,7 @@ export default class BaseLayout
                 {
                     name        : 'clockSpeed',
                     inputType   : 'number',
-                    value       : baseLayout.getClockSpeed(currentObject) * 100,
+                    value       : baseLayout.overclockingSubSystem.getClockSpeed(currentObject) * 100,
                     min         : 1,
                     max         : 250
                 },

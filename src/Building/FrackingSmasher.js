@@ -29,7 +29,7 @@ export default class Building_FrackingSmasher
      */
     static getTooltip(baseLayout, currentObject, buildingData)
     {
-        let clockSpeed  = baseLayout.getClockSpeed(currentObject);
+        let clockSpeed  = baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
         let powerUsed   = buildingData.powerUsed * clockSpeed;
             if(baseLayout.saveGameParser.header.saveVersion >= 33)
             {
@@ -102,7 +102,7 @@ export default class Building_FrackingSmasher
             content.push('</div>');
 
             // FOOTER
-            content.push(BaseLayout_Tooltip.getOverclockingPanel(baseLayout, currentObject, 256, 12));
+            content.push(baseLayout.overclockingSubSystem.getOverclockingPanel(currentObject, 256, 12));
             content.push(BaseLayout_Tooltip.getStandByPanel(baseLayout, currentObject, 265, 385, 334, 387));
 
         return '<div style="width: 500px;height: 380px;background: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/Fracker_Smasher_BG.png?v=' + baseLayout.scriptVersion + ');margin: -7px;">' + content.join('') + '</div>';

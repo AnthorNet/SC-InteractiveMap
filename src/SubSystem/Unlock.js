@@ -14,8 +14,8 @@ export default class SubSystem_Unlock extends SubSystem
 
     haveEfficiency()
     {
-        let mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(this.subSystem, 'mIsBuildingOverclockUnlocked', 0);
-            if(mIsBuildingOverclockUnlocked === 1)
+        let mIsBuildingEfficiencyUnlocked    = this.baseLayout.getObjectProperty(this.subSystem, 'mIsBuildingEfficiencyUnlocked', 0);
+            if(mIsBuildingEfficiencyUnlocked === 1)
             {
                 return true;
             }
@@ -34,10 +34,21 @@ export default class SubSystem_Unlock extends SubSystem
         return false;
     }
 
+    haveProductionBoost()
+    {
+        let mIsBuildingProductionBoostUnlocked    = this.baseLayout.getObjectProperty(this.subSystem, 'mIsBuildingProductionBoostUnlocked', 0);
+            if(mIsBuildingProductionBoostUnlocked === 1)
+            {
+                return true;
+            }
+
+        return false;
+    }
+
     haveMap()
     {
-        let mIsBuildingOverclockUnlocked    = this.baseLayout.getObjectProperty(this.subSystem, 'mIsBuildingOverclockUnlocked', 0);
-            if(mIsBuildingOverclockUnlocked === 1)
+        let mIsMapUnlocked    = this.baseLayout.getObjectProperty(this.subSystem, 'mIsMapUnlocked', 0);
+            if(mIsMapUnlocked === 1)
             {
                 return true;
             }
