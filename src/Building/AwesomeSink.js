@@ -92,14 +92,30 @@ export default class Building_AwesomeSink
         return [1, 1];
     }
 
-    static getCouponCosts(currentLevel)
+    static getCouponCosts(baseLayout, currentLevel, type = 'STANDARD')
     {
-        if(currentLevel < 3)
-        {
-            return 1000;
-        }
+        let multiplier  = 500;
+            if(baseLayout.saveGameParser.header.saveVersion >= 44 && type === 'STANDARD')
+            {
+                /*
+                 * The exact change, is that the multiplier was 500 before and is now 250.
+                 * Level 0 was 1000 points and is now 500 (that one is set manually, as opposed to the others)
+                 */
+                multiplier  = 250;
 
-        return 500 * Math.pow((Math.ceil(currentLevel / 3) - 1), 2) + 1000;
+                if(currentLevel <= 3)
+                {
+                    return 500;
+                }
+            }
+
+            if(currentLevel <= 3)
+            {
+                return 1000;
+            }
+
+
+        return multiplier * Math.pow((Math.ceil(currentLevel / 3) - 1), 2) + 1000;
     }
 
     static getNextCouponCostRemaining(baseLayout)
@@ -109,17 +125,16 @@ export default class Building_AwesomeSink
 
             for(let i = 1; i < level[0]; i++)
             {
-
-                total[0] -= Building_AwesomeSink.getCouponCosts(i);
+                total[0] -= Building_AwesomeSink.getCouponCosts(baseLayout, i);
             }
             for(let i = 1; i < level[1]; i++)
             {
-                total[1] -= Building_AwesomeSink.getCouponCosts(i);
+                total[1] -= Building_AwesomeSink.getCouponCosts(baseLayout, i, 'DNA');
             }
 
         return [
-            Building_AwesomeSink.getCouponCosts(level[0]) - total[0],
-            Building_AwesomeSink.getCouponCosts(level[1]) - total[1]
+            Building_AwesomeSink.getCouponCosts(baseLayout, level[0]) - total[0],
+            Building_AwesomeSink.getCouponCosts(baseLayout, level[1], 'DNA') - total[1]
         ];
     }
 
@@ -144,6 +159,9 @@ export default class Building_AwesomeSink
         let resourceSinkSubSystem   = Building_AwesomeSink.getResourceSinkSubsystem(baseLayout);
             if(resourceSinkSubSystem !== null)
             {
+                baseLayout.deleteObjectProperty(resourceSinkSubSystem, 'mTotalPoints');
+                baseLayout.deleteObjectProperty(resourceSinkSubSystem, 'mCurrentPointLevels');
+
                 baseLayout.deleteObjectProperty(resourceSinkSubSystem, 'mTotalResourceSinkPoints');
                 baseLayout.deleteObjectProperty(resourceSinkSubSystem, 'mCurrentPointLevel');
                 baseLayout.deleteObjectProperty(resourceSinkSubSystem, 'mGlobalPointHistory');
@@ -156,8 +174,8 @@ export default class Building_AwesomeSink
     static getTooltip(baseLayout, currentObject, buildingData)
     {
         let currentLevels           = Building_AwesomeSink.getCurrentLevels(baseLayout);
-        let standardCouponsCost     = Building_AwesomeSink.getCouponCosts(currentLevels[0]);
-        let dnaCouponsCost          = Building_AwesomeSink.getCouponCosts(currentLevels[1]);
+        let standardCouponsCost     = Building_AwesomeSink.getCouponCosts(baseLayout, currentLevels[0]);
+        let dnaCouponsCost          = Building_AwesomeSink.getCouponCosts(baseLayout, currentLevels[1], 'DNA');
         let nextCouponsRemaining    = Building_AwesomeSink.getNextCouponCostRemaining(baseLayout);
 
         let content                 = [];
