@@ -20,7 +20,7 @@ export default class SubSystem_Player
             if(mOwnedPawn !== null)
             {
                 let mCachedPlayerName = this.baseLayout.getObjectProperty(mOwnedPawn, 'mCachedPlayerName');
-                    if(mCachedPlayerName !== null)
+                    if(mCachedPlayerName !== null && mCachedPlayerName !== 'Player')
                     {
                         displayName = mCachedPlayerName;
                     }

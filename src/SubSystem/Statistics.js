@@ -10,28 +10,54 @@ export default class SubSystem_Statistics extends SubSystem
         this.updateStatisticsLeaderBoard();
     }
 
-    convert(array)
+    convert(object, playerPathName = null, propertyName = null)
     {
-        let object = {};
-            for(let i = 0; i < array.length; i++)
+        let convertedObjects = {};
+            for(let i = 0; i < object.values.length; i++)
             {
-                let value = array[i].valueMap;
-                    if(Array.isArray(value))
-                    {
-                        value = {};
-                        for(let j = 0; j < array[i].valueMap.length; j++)
-                        {
-                            value[array[i].valueMap[j].name] = array[i].valueMap[j].value;
-                        }
-                    }
-
-                if(array[i].keyMap.pathName !== '')
+                if(object.values[i].keyMap.pathName !== '')
                 {
-                    object[array[i].keyMap.pathName] = value;
+                    switch(object.valueType)
+                    {
+                        case 'Struct':
+                            for(let j = 0; j < object.values[i].valueMap.length; j++)
+                            {
+                                if(playerPathName !== null && propertyName !== null)
+                                {
+                                    if(object.values[i].valueMap[j].name === propertyName)
+                                    {
+                                        for(let k = 0; k < object.values[i].valueMap[j].value.values.length; k++)
+                                        {
+                                            if(object.values[i].valueMap[j].value.values[k].keyMap.pathName === playerPathName)
+                                            {
+                                                convertedObjects[object.values[i].keyMap.pathName] = object.values[i].valueMap[j].value.values[k].valueMap;
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if(convertedObjects[object.values[i].keyMap.pathName] === undefined)
+                                    {
+                                        convertedObjects[object.values[i].keyMap.pathName] = {};
+                                    }
+
+                                    convertedObjects[object.values[i].keyMap.pathName][object.values[i].valueMap[j].name] = object.values[i].valueMap[j].value;
+                                }
+                            }
+
+                            break;
+
+                        case 'Int':
+                        default:
+                            convertedObjects[object.values[i].keyMap.pathName] = object.values[i].valueMap;
+                            break;
+
+                    }
                 }
             }
 
-        return object;
+        return convertedObjects;
     }
 
     getConsumablesConsumedCount()
@@ -39,7 +65,7 @@ export default class SubSystem_Statistics extends SubSystem
         let mConsumablesConsumedCount = this.baseLayout.getObjectProperty(this.subSystem, 'mConsumablesConsumedCount');
             if(mConsumablesConsumedCount !== null)
             {
-                return this.convert(mConsumablesConsumedCount.values);
+                return this.convert(mConsumablesConsumedCount);
             }
 
         return null;
@@ -50,29 +76,40 @@ export default class SubSystem_Statistics extends SubSystem
         let mCreaturesKilledCount = this.baseLayout.getObjectProperty(this.subSystem, 'mCreaturesKilledCount');
             if(mCreaturesKilledCount !== null)
             {
-                return this.convert(mCreaturesKilledCount.values);
+                return this.convert(mCreaturesKilledCount);
             }
 
         return null;
     }
 
-    getItemsManuallyCraftedCount()
+    getItemsManuallyCraftedCount(playerPathName = null, propertyName = null)
     {
         let mItemsManuallyCraftedCount = this.baseLayout.getObjectProperty(this.subSystem, 'mItemsManuallyCraftedCount');
             if(mItemsManuallyCraftedCount !== null)
             {
-                return this.convert(mItemsManuallyCraftedCount.values);
+                return this.convert(mItemsManuallyCraftedCount, playerPathName, propertyName);
             }
 
         return null;
     }
 
-    getActorsBuiltCount()
+    getActorsBuiltCount(playerPathName = null, propertyName = null)
     {
         let mActorsBuiltCount = this.baseLayout.getObjectProperty(this.subSystem, 'mActorsBuiltCount');
             if(mActorsBuiltCount !== null)
             {
-                return this.convert(mActorsBuiltCount.values);
+                return this.convert(mActorsBuiltCount, playerPathName, propertyName);
+            }
+
+        return null;
+    }
+
+    getItemsPickedUp(playerPathName = null, propertyName = null)
+    {
+        let mItemsPickedUp = this.baseLayout.getObjectProperty(this.subSystem, 'mItemsPickedUp');
+            if(mItemsPickedUp !== null)
+            {
+                return this.convert(mItemsPickedUp, playerPathName, propertyName);
             }
 
         return null;
@@ -83,22 +120,28 @@ export default class SubSystem_Statistics extends SubSystem
      */
     updateStatisticsLeaderBoard()
     {
-        let playerPlatformId = null;
-            for(let player in this.baseLayout.players)
-            {
-                if(playerPlatformId === null)
-                {
-                    playerPlatformId = this.baseLayout.players[player].getPlatformId();
-                }
-            }
-
-        if(playerPlatformId !== null)
+        for(let player in this.baseLayout.players)
         {
-            try
-            {
-                $.post(this.baseLayout.statisticsUrl, {playerPlatformId: playerPlatformId, data: Object.assign({}, this.getCreaturesKilledCount(), this.getConsumablesConsumedCount(), this.getItemsManuallyCraftedCount(), this.getActorsBuiltCount())});
-            }
-            catch(error){}
+            let playerName = this.baseLayout.players[player].getDisplayName(true);
+                if(playerName !== null)
+                {
+                    let postData = {
+                            playerName  : playerName,
+                            data        : Object.assign(
+                                {},
+                                this.getCreaturesKilledCount(),
+                                this.getConsumablesConsumedCount(),
+                                this.getItemsManuallyCraftedCount(player, 'BuiltPerPlayer'),
+                                this.getActorsBuiltCount(player, 'BuiltPerPlayer')
+                            )
+                        };
+
+                    try
+                    {
+                        $.post(this.baseLayout.statisticsUrl, postData);
+                    }
+                    catch(error){}
+                }
         }
     }
 }
