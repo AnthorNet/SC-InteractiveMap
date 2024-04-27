@@ -303,6 +303,20 @@ export default class GameMap
                                 tooltip.push('<br />');
                                 tooltip.push('Altitude: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.z / 100)) + 'm');
 
+                                if(marker.lastCheck !== undefined)
+                                {
+                                    tooltip.push('<br /><br />');
+                                    tooltip.push('Data was check on build: <strong class="' + ((data.lastBuild > marker.lastCheck) ? 'text-danger' : 'text-success') + '">#' + marker.lastCheck + '</strong>');
+                                }
+                                else
+                                {
+                                    if(option.purity !== undefined || option.layerId === 'hardDrives')
+                                    {
+                                        tooltip.push('<br /><br />');
+                                        tooltip.push('Data was check on build: <strong class="text-danger">Unknown</strong>');
+                                    }
+                                }
+
                                 if(option.type !== undefined){ currentMarkerOptions.type = option.type; }
                                 else{ if(options.type !== undefined){ currentMarkerOptions.type = options.type; } }
 
