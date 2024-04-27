@@ -35,154 +35,18 @@ export default class GameMap
 
         //See: https://static.wikia.nocookie.net/satisfactory_gamepedia_en/images/3/31/Biome_Map.jpg/revision/latest?cb=20210806163120
         this.biomes                     = {
-            1: {
-                 1: 'Paradise Island',
-                 2: 'Paradise Island',
-                 3: 'Paradise Island',
-                 4: 'Grass Fields',
-                 5: 'Grass Fields',
-                 6: 'Grass Fields',
-                 8: 'Blue Crater',
-                 9: 'Blue Crater'
-            },
-            2: {
-                 3: 'Grass Fields',
-                 4: 'Grass Fields',
-                 5: 'Grass Fields',
-                 6: 'Southern Forest',
-                 7: 'Southern Forest',
-                 8: 'Blue Crater',
-                 9: 'Blue Crater',
-                10: 'Abyss Cliffs'
-            },
-            3: {
-                 2: 'Dangle Spires',
-                 3: 'Dangle Spires',
-                 4: 'Snaketree Forest',
-                 5: 'Snaketree Forest',
-                 6: 'Grass Fields',
-                 7: 'Southern Forest',
-                 8: 'Blue Crater',
-                 9: 'Blue Crater',
-                10: 'Abyss Cliffs'
-            },
-            4: {
-                 1: 'Islands',
-                 2: 'Dangle Spires',
-                 3: 'Dangle Spires',
-                 4: 'Western Dune Forest',
-                 5: 'Western Dune Forest',
-                 6: 'Eastern Dune Forest',
-                 7: 'Eastern Dune Forest',
-                 8: 'Eastern Dune Forest',
-                 9: 'Eastern Dune Forest',
-                10: 'Abyss Cliffs'
-            },
-            5: {
-                 1: 'Islands',
-                 2: 'Dangle Spires',
-                 3: 'Western Dune Forest',
-                 4: 'Red Jungle',
-                 5: 'Red Bamboo Fields',
-                 6: 'Red Bamboo Fields',
-                 7: 'Eastern Dune Forest',
-                 8: 'Titan Forest',
-                 9: 'Eastern Dune Forest',
-                10: 'Swamp',
-                11: 'Swamp'
-            },
-            6: {
-                 1: 'Red Jungle',
-                 2: 'Red Jungle',
-                 3: 'Red Jungle',
-                 4: 'Red Jungle',
-                 5: 'Red Bamboo Fields',
-                 6: 'Red Bamboo Fields',
-                 7: 'Titan Forest',
-                 8: 'Titan Forest',
-                 9: 'Titan Forest',
-                10: 'Swamp',
-                11: 'Swamp'
-            },
-            7: {
-                 0: 'Rocky Desert',
-                 1: 'Rocky Desert',
-                 2: 'Rocky Desert',
-                 3: 'Rocky Desert',
-                 4: 'Crater Lake',
-                 5: 'Crater Lake',
-                 6: 'Lake Forest',
-                 7: 'Lake Forest',
-                 8: 'Maze Canyon',
-                 9: 'Titan Forest',
-                10: 'Titan Forest',
-                11: 'Titan Forest',
-                12: 'Swamp',
-                13: 'Dune Desert'
-            },
-            8: {
-                 0: 'Rocky Desert',
-                 1: 'Rocky Desert',
-                 2: 'Rocky Desert',
-                 3: 'Rocky Desert',
-                 4: 'Crater Lake',
-                 5: 'Crater Lake',
-                 6: 'Northern Forest',
-                 7: 'Northern Forest',
-                 8: 'Maze Canyon',
-                 9: 'Desert Canyons',
-                10: 'Dune Desert',
-                11: 'Dune Desert',
-                12: 'Dune Desert',
-                13: 'Dune Desert'
-            },
-            9: {
-                 0: 'Rocky Desert',
-                 1: 'Rocky Desert',
-                 2: 'Rocky Desert',
-                 3: 'Rocky Desert',
-                 4: 'Rocky Desert',
-                 5: 'Northern Forest',
-                 6: 'Northern Forest',
-                 7: 'Northern Forest',
-                 8: 'Desert Canyons',
-                 9: 'Desert Canyons',
-                10: 'Dune Desert',
-                11: 'Dune Desert',
-                12: 'Dune Desert',
-                13: 'Dune Desert'
-            },
-            10: {
-                 0: 'Rocky Desert',
-                 1: 'Rocky Desert',
-                 2: 'Rocky Desert',
-                 3: 'Rocky Desert',
-                 4: 'Rocky Desert',
-                 5: 'Desert Canyons',
-                 6: 'Spire Coast',
-                 7: 'Spire Coast',
-                 8: 'Spire Coast',
-                 9: 'Spire Coast',
-                10: 'Spire Coast',
-                11: 'Dune Desert',
-                12: 'Dune Desert',
-                13: 'Dune Desert'
-            },
-            11: {
-                 8: 'Spire Coast',
-                 9: 'Spire Coast',
-                10: 'Spire Coast',
-                11: 'Dune Desert',
-                12: 'Dune Desert',
-                13: 'Dune Desert'
-            },
-            12: {
-                 9: 'Spire Coast',
-                10: 'Spire Coast',
-                11: 'Dune Desert',
-                12: 'Dune Desert',
-                13: 'Dune Desert'
-            }
+           12: {                                                                                                                                                                                                                                                9: 'Spire Coast',           10: 'Spire Coast',      11: 'Dune Desert',      12: 'Dune Desert',  13: 'Dune Desert'   },
+           11: {                                                                                                                                5: 'Desert Canyons',        6: 'Spire Coast',           7: 'Spire Coast',           8: 'Spire Coast',           9: 'Spire Coast',           10: 'Spire Coast',      11: 'Dune Desert',      12: 'Dune Desert',  13: 'Dune Desert'   },
+           10: {    0: 'Rocky Desert',  1: 'Rocky Desert',      2: 'Rocky Desert',      3: 'Rocky Desert',          4: 'Rocky Desert',          5: 'Desert Canyons',        6: 'Spire Coast',           7: 'Spire Coast',           8: 'Spire Coast',           9: 'Spire Coast',           10: 'Spire Coast',      11: 'Dune Desert',      12: 'Dune Desert',  13: 'Dune Desert'   },
+            9: {    0: 'Rocky Desert',  1: 'Rocky Desert',      2: 'Rocky Desert',      3: 'Rocky Desert',          4: 'Rocky Desert',          5: 'Northern Forest',       6: 'Northern Forest',       7: 'Northern Forest',       8: 'Desert Canyons',        9: 'Desert Canyons',        10: 'Dune Desert',      11: 'Dune Desert',      12: 'Dune Desert',  13: 'Dune Desert'   },
+            8: {    0: 'Rocky Desert',  1: 'Rocky Desert',      2: 'Rocky Desert',      3: 'Rocky Desert',          4: 'Crater Lake',           5: 'Crater Lake',           6: 'Northern Forest',       7: 'Northern Forest',       8: 'Maze Canyon',           9: 'Desert Canyons',        10: 'Dune Desert',      11: 'Dune Desert',      12: 'Dune Desert',  13: 'Dune Desert'   },
+            7: {    0: 'Rocky Desert',  1: 'Rocky Desert',      2: 'Rocky Desert',      3: 'Rocky Desert',          4: 'Crater Lake',           5: 'Crater Lake',           6: 'Lake Forest',           7: 'Lake Forest',           8: 'Maze Canyon',           9: 'Titan Forest',          10: 'Titan Forest',     11: 'Titan Forest',     12: 'Swamp',        13: 'Dune Desert'   },
+            6: {                        1: 'Red Jungle',        2: 'Red Jungle',        3: 'Red Jungle',            4: 'Red Jungle',            5: 'Red Bamboo Fields',     6: 'Red Bamboo Fields',     7: 'Titan Forest',          8: 'Titan Forest',          9: 'Titan Forest',          10: 'Swamp',            11: 'Swamp'                                                     },
+            5: {                        1: 'Islands',           2: 'Dangle Spires',     3: 'Western Dune Forest',   4: 'Red Jungle',            5: 'Red Bamboo Fields',     6: 'Red Bamboo Fields',     7: 'Eastern Dune Forest',   8: 'Titan Forest',          9: 'Eastern Dune Forest',   10: 'Swamp',            11: 'Swamp'                                                     },
+            4: {                        1: 'Islands',           2: 'Dangle Spires',     3: 'Dangle Spires',         4: 'Western Dune Forest',   5: 'Western Dune Forest',   6: 'Eastern Dune Forest',   7: 'Eastern Dune Forest',   8: 'Eastern Dune Forest',   9: 'Eastern Dune Forest',   10: 'Abyss Cliffs'                                                                      },
+            3: {                                                2: 'Dangle Spires',     3: 'Dangle Spires',         4: 'Snaketree Forest',      5: 'Snaketree Forest',      6: 'Grass Fields',          7: 'Southern Forest',       8: 'Blue Crater',           9: 'Blue Crater',           10: 'Abyss Cliffs'                                                                      },
+            2: {                                                                        3: 'Grass Fields',          4: 'Grass Fields',          5: 'Grass Fields',          6: 'Southern Forest',       7: 'Southern Forest',       8: 'Blue Crater',           9: 'Blue Crater',           10: 'Abyss Cliffs'                                                                      },
+            1: {                        1: 'Paradise Island',   2: 'Paradise Island',   3: 'Paradise Island',       4: 'Grass Fields',          5: 'Grass Fields',          6: 'Grass Fields',                                      8: 'Blue Crater',           9: 'Blue Crater'                                                                                                    }
         };
 
         this.leafletMap                 = L.map('leafletMap', {
@@ -257,324 +121,321 @@ export default class GameMap
             if(data !== undefined)
             {
                 this.mapOptions     = data.options;
-                let isLastVersion   = window.SCIM.checkVersion(data.version);
+                window.SCIM.checkVersion(data.version);
 
-                if(isLastVersion === true)
+                for(let i = 0; i < this.mapOptions.length; i++)
                 {
-                    for(let i = 0; i < this.mapOptions.length; i++)
+                    let mainCategory = this.mapOptions[i];
+
+                    for(let j = 0; j < mainCategory.options.length; j++)
                     {
-                        let mainCategory = this.mapOptions[i];
+                        let options = mainCategory.options[j];
 
-                        for(let j = 0; j < mainCategory.options.length; j++)
+                        for(let k = 0; k < options.options.length; k++)
                         {
-                            let options = mainCategory.options[j];
+                            let option = options.options[k];
+                                if(this.availableLayers[option.layerId] === undefined)
+                                {
+                                    this.availableLayers[option.layerId] = L.layerGroup();
+                                }
 
-                            for(let k = 0; k < options.options.length; k++)
+                            if(option.layerId === 'worldBorder')
                             {
-                                let option = options.options[k];
-                                    if(this.availableLayers[option.layerId] === undefined)
+                                let borderPosition = [];
+                                    for(let m = 0; m < option.polygon.length; m++)
                                     {
-                                        this.availableLayers[option.layerId] = L.layerGroup();
+                                        borderPosition.push(this.unproject(option.polygon[m]));
                                     }
+                                    L.polyline(borderPosition, {color: 'red', weight: 3, interactive: false})
+                                             .addTo(this.availableLayers[option.layerId]);
 
-                                if(option.layerId === 'worldBorder')
+                                continue;
+                            }
+
+                            if(option.layerId === 'caves')
+                            {
+                                for(let caveId in option.markers)
                                 {
-                                    let borderPosition = [];
-                                        for(let m = 0; m < option.polygon.length; m++)
-                                        {
-                                            borderPosition.push(this.unproject(option.polygon[m]));
-                                        }
-                                        L.polyline(borderPosition, {color: 'red', weight: 3, interactive: false})
-                                                 .addTo(this.availableLayers[option.layerId]);
+                                    L.polygon(
+                                        option.markers[caveId].points.map((value) => { return this.unproject(value); }),
+                                        {color: 'yellow', weight: 1, interactive: false}
+                                    ).addTo(this.availableLayers[option.layerId]);
 
-                                    continue;
-                                }
-
-                                if(option.layerId === 'caves')
-                                {
-                                    for(let caveId in option.markers)
+                                    if(option.markers[caveId].entrances !== undefined)
                                     {
-                                        L.polygon(
-                                            option.markers[caveId].points.map((value) => { return this.unproject(value); }),
-                                            {color: 'yellow', weight: 1, interactive: false}
-                                        ).addTo(this.availableLayers[option.layerId]);
-
-                                        if(option.markers[caveId].entrances !== undefined)
+                                        for(let l = 0; l < option.markers[caveId].entrances.length; l++)
                                         {
-                                            for(let l = 0; l < option.markers[caveId].entrances.length; l++)
+                                            let currentEntrance     = L.polyline(
+                                                                          option.markers[caveId].entrances[l].map((value) => { return this.unproject(value); }),
+                                                                          {color: 'yellow', weight: 3, dashArray: '10 10'}
+                                                                      );
+                                            let entranceHeight      = 0;
+                                            let haveEntranceHeight  = false;
+
+                                            for(let m = 0; m < option.markers[caveId].entrances[l].length; m++)
                                             {
-                                                let currentEntrance     = L.polyline(
-                                                                              option.markers[caveId].entrances[l].map((value) => { return this.unproject(value); }),
-                                                                              {color: 'yellow', weight: 3, dashArray: '10 10'}
-                                                                          );
-                                                let entranceHeight      = 0;
-                                                let haveEntranceHeight  = false;
-
-                                                for(let m = 0; m < option.markers[caveId].entrances[l].length; m++)
+                                                if(option.markers[caveId].entrances[l][m].length > 2)
                                                 {
-                                                    if(option.markers[caveId].entrances[l][m].length > 2)
-                                                    {
-                                                        haveEntranceHeight = true;
-                                                        entranceHeight += option.markers[caveId].entrances[l][m][2];
-                                                    }
+                                                    haveEntranceHeight = true;
+                                                    entranceHeight += option.markers[caveId].entrances[l][m][2];
                                                 }
-
-                                                if(haveEntranceHeight !== false)
-                                                {
-                                                    entranceHeight = entranceHeight / option.markers[caveId].entrances[l].length;
-                                                    currentEntrance.bindTooltip('<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
-                                                        <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
-                                                            Entrance height: ' + new Intl.NumberFormat(this.language).format(Math.round(entranceHeight / 100)) + 'm\
-                                                        </div>\
-                                                    </div>');
-                                                }
-
-                                                currentEntrance.addTo(this.availableLayers[option.layerId]);
-                                            }
-                                        }
-                                    }
-
-                                    continue;
-                                }
-
-                                if(option.layerId === 'roads')
-                                {
-                                    for(let roadId in option.markers)
-                                    {
-                                        let road = L.conveyor(
-                                                       option.markers[roadId].points.map((value) => { return this.unproject(value); }),
-                                                       {
-                                                           weight   : ((option.markers[roadId].corridor !== undefined) ? option.markers[roadId].corridor : 2500),
-                                                           color    : 'purple'
-                                                       }
-                                                   );
-
-                                            if(option.markers[roadId].name !== undefined)
-                                            {
-                                                road.bindTooltip(option.markers[roadId].name)
                                             }
 
-                                            road.addTo(this.availableLayers[option.layerId]);
-                                    }
+                                            if(haveEntranceHeight !== false)
+                                            {
+                                                entranceHeight = entranceHeight / option.markers[caveId].entrances[l].length;
+                                                currentEntrance.bindTooltip('<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
+                                                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                                                        Entrance height: ' + new Intl.NumberFormat(this.language).format(Math.round(entranceHeight / 100)) + 'm\
+                                                    </div>\
+                                                </div>');
+                                            }
 
+                                            currentEntrance.addTo(this.availableLayers[option.layerId]);
+                                        }
+                                    }
+                                }
+
+                                continue;
+                            }
+
+                            if(option.layerId === 'roads')
+                            {
+                                for(let roadId in option.markers)
+                                {
+                                    let road = L.conveyor(
+                                                   option.markers[roadId].points.map((value) => { return this.unproject(value); }),
+                                                   {
+                                                       weight   : ((option.markers[roadId].corridor !== undefined) ? option.markers[roadId].corridor : 2500),
+                                                       color    : 'purple'
+                                                   }
+                                               );
+
+                                        if(option.markers[roadId].name !== undefined)
+                                        {
+                                            road.bindTooltip(option.markers[roadId].name)
+                                        }
+
+                                        road.addTo(this.availableLayers[option.layerId]);
+                                }
+
+                                continue;
+                            }
+
+                            if(option.layerId === 'hardDrives')
+                            {
+                                this.collectedHardDrives.setCollectedHardDrives(option.markers);
+                            }
+
+                            for(let l = 0; l < option.markers.length; l++)
+                            {
+                                let marker                  = option.markers[l];
+
+                                if(option.layerId === 'spawn')
+                                {
+                                    L.circle(this.unproject([marker.x, marker.y]), {radius: marker.radius / 6000})
+                                     .addTo(this.availableLayers[option.layerId]);
                                     continue;
                                 }
+
+                                let currentMarkerOptions    = { color: option.outsideColor, fillColor: option.insideColor, icon: option.icon };
+                                let tooltip                 = [];
 
                                 if(option.layerId === 'hardDrives')
                                 {
-                                    this.collectedHardDrives.setCollectedHardDrives(option.markers);
+                                    let explodedPathName = marker.pathName.split('.');
+                                        tooltip.push('<strong>' + option.name + ' (' + explodedPathName.pop() + ')</strong><br />');
+
+                                    if(marker.powerNeeded !== undefined && marker.powerNeeded !== false)
+                                    {
+                                        tooltip.push('Power needed: ' + new Intl.NumberFormat(this.language).format(marker.powerNeeded) + ' MW<br />');
+
+                                        currentMarkerOptions.extraIcon  = 'https://static.satisfactory-calculator.com/img/bolt.png';
+                                    }
+
+                                    if(marker.itemName !== undefined && marker.itemName !== null)
+                                    {
+                                        tooltip.push(new Intl.NumberFormat(this.language).format(marker.itemQuantity) + 'x ' + marker.itemName + '<br />');
+
+                                        if(marker.itemId === undefined && marker.toolId === undefined)
+                                        {
+                                            currentMarkerOptions.fillColor  = '#d9534f';
+
+                                            if(marker.powerNeeded !== undefined && marker.powerNeeded !== false)
+                                            {
+                                                currentMarkerOptions.extraIcon  = 'https://static.satisfactory-calculator.com/img/bolt.png';
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if(marker.powerNeeded === undefined || marker.powerNeeded === false)
+                                        {
+                                            tooltip.push('No requirements<br />');
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if(option.name !== undefined)
+                                    {
+                                        tooltip.push('<strong>' + option.name + '</strong><br />');
+                                    }
+                                    else
+                                    {
+                                        if(marker.pathName !== undefined)
+                                        {
+                                            tooltip.push('<strong>' + marker.pathName + '</strong><br />');
+                                        }
+                                    }
                                 }
 
-                                for(let l = 0; l < option.markers.length; l++)
+                                tooltip.push('<br />');
+                                if(this.showInternalCoordinates === true)
                                 {
-                                    let marker                  = option.markers[l];
+                                    tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.x)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(marker.y)));
+                                }
+                                else
+                                {
+                                    tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.x / 100)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(marker.y / 100)));
+                                }
 
-                                    if(option.layerId === 'spawn')
+                                tooltip.push('<br />');
+                                tooltip.push('Altitude: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.z / 100)) + 'm');
+
+                                if(option.type !== undefined){ currentMarkerOptions.type = option.type; }
+                                else{ if(options.type !== undefined){ currentMarkerOptions.type = options.type; } }
+
+                                if(option.purity !== undefined)
+                                {
+                                    currentMarkerOptions.purity = option.purity;
+
+                                    if(currentMarkerOptions.type !== 'Desc_Geyser_C') // Avoid geysers
                                     {
-                                        L.circle(this.unproject([marker.x, marker.y]), {radius: marker.radius / 6000})
-                                         .addTo(this.availableLayers[option.layerId]);
-                                        continue;
-                                    }
-
-                                    let currentMarkerOptions    = { color: option.outsideColor, fillColor: option.insideColor, icon: option.icon };
-                                    let tooltip                 = [];
-
-                                    if(option.layerId === 'hardDrives')
-                                    {
-                                        let explodedPathName = marker.pathName.split('.');
-                                            tooltip.push('<strong>' + option.name + ' (' + explodedPathName.pop() + ')</strong><br />');
-
-                                        if(marker.powerNeeded !== undefined && marker.powerNeeded !== false)
-                                        {
-                                            tooltip.push('Power needed: ' + new Intl.NumberFormat(this.language).format(marker.powerNeeded) + ' MW<br />');
-
-                                            currentMarkerOptions.extraIcon  = 'https://static.satisfactory-calculator.com/img/bolt.png';
-                                        }
-
-                                        if(marker.itemName !== undefined && marker.itemName !== null)
-                                        {
-                                            tooltip.push(new Intl.NumberFormat(this.language).format(marker.itemQuantity) + 'x ' + marker.itemName + '<br />');
-
-                                            if(marker.itemId === undefined && marker.toolId === undefined)
+                                        let purityModifier = 1;
+                                            if(option.purity === 'impure')
                                             {
-                                                currentMarkerOptions.fillColor  = '#d9534f';
-
-                                                if(marker.powerNeeded !== undefined && marker.powerNeeded !== false)
-                                                {
-                                                    currentMarkerOptions.extraIcon  = 'https://static.satisfactory-calculator.com/img/bolt.png';
-                                                }
+                                                purityModifier = 0.5;
                                             }
+                                            if(option.purity === 'pure')
+                                            {
+                                                purityModifier = 2;
+                                            }
+
+                                        tooltip.push('<table class="table table-bordered table-sm mt-3 mb-0 border-0"><thead><tr><th class="border-top-0 border-left-0"></th><th>50%</th><th>100%</th><th>150%</th><th>200%</th><th>250%</th></tr></thead><tbody>');
+                                        if(['Desc_LiquidOil_C', 'Desc_LiquidOilWell_C', 'Desc_Water_C', 'Desc_NitrogenGas_C'].includes(currentMarkerOptions.type))
+                                        {
+                                            let defaultSpeed    = 120;
+                                            let buildingName    = 'Oil Extractor';
+
+                                                if(['Desc_Water_C', 'Desc_NitrogenGas_C', 'Desc_LiquidOilWell_C'].includes(currentMarkerOptions.type))
+                                                {
+                                                    defaultSpeed    = 60;
+                                                    buildingName    = 'Resource Well Extractor';
+                                                }
+
+                                            tooltip.push('<tr>');
+                                            tooltip.push('<td>' + buildingName + '</td>');
+
+                                            for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
+                                            {
+                                                tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + 'm³ / min</td>');
+                                            }
+
+                                            tooltip.push('</tr>');
                                         }
                                         else
                                         {
-                                            if(marker.powerNeeded === undefined || marker.powerNeeded === false)
+                                            for(let mk = 1; mk <= 3; mk++)
                                             {
-                                                tooltip.push('No requirements<br />');
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(option.name !== undefined)
-                                        {
-                                            tooltip.push('<strong>' + option.name + '</strong><br />');
-                                        }
-                                        else
-                                        {
-                                            if(marker.pathName !== undefined)
-                                            {
-                                                tooltip.push('<strong>' + marker.pathName + '</strong><br />');
-                                            }
-                                        }
-                                    }
-
-                                    tooltip.push('<br />');
-                                    if(this.showInternalCoordinates === true)
-                                    {
-                                        tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.x)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(marker.y)));
-                                    }
-                                    else
-                                    {
-                                        tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.x / 100)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(marker.y / 100)));
-                                    }
-
-                                    tooltip.push('<br />');
-                                    tooltip.push('Altitude: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.z / 100)) + 'm');
-
-                                    if(option.type !== undefined){ currentMarkerOptions.type = option.type; }
-                                    else{ if(options.type !== undefined){ currentMarkerOptions.type = options.type; } }
-
-                                    if(option.purity !== undefined)
-                                    {
-                                        currentMarkerOptions.purity = option.purity;
-
-                                        if(currentMarkerOptions.type !== 'Desc_Geyser_C') // Avoid geysers
-                                        {
-                                            let purityModifier = 1;
-                                                if(option.purity === 'impure')
-                                                {
-                                                    purityModifier = 0.5;
-                                                }
-                                                if(option.purity === 'pure')
-                                                {
-                                                    purityModifier = 2;
-                                                }
-
-                                            tooltip.push('<table class="table table-bordered table-sm mt-3 mb-0 border-0"><thead><tr><th class="border-top-0 border-left-0"></th><th>50%</th><th>100%</th><th>150%</th><th>200%</th><th>250%</th></tr></thead><tbody>');
-                                            if(['Desc_LiquidOil_C', 'Desc_LiquidOilWell_C', 'Desc_Water_C', 'Desc_NitrogenGas_C'].includes(currentMarkerOptions.type))
-                                            {
-                                                let defaultSpeed    = 120;
-                                                let buildingName    = 'Oil Extractor';
-
-                                                    if(['Desc_Water_C', 'Desc_NitrogenGas_C', 'Desc_LiquidOilWell_C'].includes(currentMarkerOptions.type))
+                                                let defaultSpeed = mk * 60;
+                                                    if(mk === 3)
                                                     {
-                                                        defaultSpeed    = 60;
-                                                        buildingName    = 'Resource Well Extractor';
+                                                        defaultSpeed = 240;
                                                     }
 
                                                 tooltip.push('<tr>');
-                                                tooltip.push('<td>' + buildingName + '</td>');
+                                                tooltip.push('<td>Miner Mk' + mk + '</td>');
 
                                                 for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
                                                 {
-                                                    tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + 'm³ / min</td>');
+                                                    tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + ' / min</td>');
                                                 }
 
                                                 tooltip.push('</tr>');
                                             }
-                                            else
+                                        }
+                                        tooltip.push('</tbody></table>');
+                                    }
+                                }
+                                if(marker.core !== undefined){ currentMarkerOptions.core = marker.core; }
+
+                                tooltip = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
+                                                <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                                                    ' + tooltip.join('') + '\
+                                                </div>\
+                                            </div>';
+
+                                let currentMarker = null;
+                                    if(option.layerId === 'sporeFlowers' || option.layerId === 'pillars' || option.layerId === 'smallRocks' || option.layerId === 'largeRocks')
+                                    {
+                                        currentMarkerOptions.radius = 0.6;
+                                        currentMarkerOptions.color  = '#9cbc7d';
+
+                                        if(option.layerId === 'smallRocks')
+                                        {
+                                            currentMarkerOptions.radius = 0.1;
+                                            currentMarkerOptions.color  = '#555555';
+                                        }
+                                        if(option.layerId === 'largeRocks')
+                                        {
+                                            currentMarkerOptions.radius = 0.3;
+                                            currentMarkerOptions.color  = '#555555';
+                                        }
+
+                                        if(option.type === 'pillars')
+                                        {
+                                            currentMarkerOptions.color = '#bee597';
+                                        }
+
+                                        currentMarker = L.circle(this.unproject([marker.x, marker.y]), currentMarkerOptions);
+                                    }
+                                    else
+                                    {
+                                        currentMarker = L.mapMarker(this.unproject([marker.x, marker.y]), currentMarkerOptions);
+                                    }
+
+                                    currentMarker.bindTooltip(tooltip)
+                                                 .addTo(this.availableLayers[option.layerId]);
+
+                                if(marker.pathName !== undefined)
+                                {
+                                    this.collectableMarkers[marker.pathName]                    = currentMarker;
+                                    this.collectableMarkers[marker.pathName].options.layerId    = option.layerId;
+
+                                    if(option.layerId === 'hardDrives')
+                                    {
+                                        let isCollected = this.collectedHardDrives.isCollected(marker.pathName);
+                                            if(isCollected === true)
                                             {
-                                                for(let mk = 1; mk <= 3; mk++)
-                                                {
-                                                    let defaultSpeed = mk * 60;
-                                                        if(mk === 3)
-                                                        {
-                                                            defaultSpeed = 240;
-                                                        }
+                                                $('#resetPreviousCollected').show();
 
-                                                    tooltip.push('<tr>');
-                                                    tooltip.push('<td>Miner Mk' + mk + '</td>');
-
-                                                    for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
+                                                let showCollected = (this.localStorage !== null && this.localStorage.getItem('mapShowCollected') !== null) ? (this.localStorage.getItem('mapShowCollected') === 'true') : false;
+                                                    if(showCollected === false)
                                                     {
-                                                        tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + ' / min</td>');
+                                                        this.availableLayers[option.layerId].removeLayer(this.collectableMarkers[marker.pathName]);
+                                                    }
+                                                    else
+                                                    {
+                                                        this.collectableMarkers[marker.pathName].setOpacity(this.collectedOpacity);
                                                     }
 
-                                                    tooltip.push('</tr>');
-                                                }
+                                                // Update badge!
+                                                let dataCollected   = parseInt($('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-collected')) + 1;
+                                                let dataTotal       = parseInt($('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-total'));
+                                                    $('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-collected', dataCollected);
+                                                    $('.updateLayerState[data-id="' + option.layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
                                             }
-                                            tooltip.push('</tbody></table>');
-                                        }
-                                    }
-                                    if(marker.core !== undefined){ currentMarkerOptions.core = marker.core; }
-
-                                    tooltip = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
-                                                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
-                                                        ' + tooltip.join('') + '\
-                                                    </div>\
-                                                </div>';
-
-                                    let currentMarker = null;
-                                        if(option.layerId === 'sporeFlowers' || option.layerId === 'pillars' || option.layerId === 'smallRocks' || option.layerId === 'largeRocks')
-                                        {
-                                            currentMarkerOptions.radius = 0.6;
-                                            currentMarkerOptions.color  = '#9cbc7d';
-
-                                            if(option.layerId === 'smallRocks')
-                                            {
-                                                currentMarkerOptions.radius = 0.1;
-                                                currentMarkerOptions.color  = '#555555';
-                                            }
-                                            if(option.layerId === 'largeRocks')
-                                            {
-                                                currentMarkerOptions.radius = 0.3;
-                                                currentMarkerOptions.color  = '#555555';
-                                            }
-
-                                            if(option.type === 'pillars')
-                                            {
-                                                currentMarkerOptions.color = '#bee597';
-                                            }
-
-                                            currentMarker = L.circle(this.unproject([marker.x, marker.y]), currentMarkerOptions);
-                                        }
-                                        else
-                                        {
-                                            currentMarker = L.mapMarker(this.unproject([marker.x, marker.y]), currentMarkerOptions);
-                                        }
-
-                                        currentMarker.bindTooltip(tooltip)
-                                                     .addTo(this.availableLayers[option.layerId]);
-
-                                    if(marker.pathName !== undefined)
-                                    {
-                                        this.collectableMarkers[marker.pathName]                    = currentMarker;
-                                        this.collectableMarkers[marker.pathName].options.layerId    = option.layerId;
-
-                                        if(option.layerId === 'hardDrives')
-                                        {
-                                            let isCollected = this.collectedHardDrives.isCollected(marker.pathName);
-                                                if(isCollected === true)
-                                                {
-                                                    $('#resetPreviousCollected').show();
-
-                                                    let showCollected = (this.localStorage !== null && this.localStorage.getItem('mapShowCollected') !== null) ? (this.localStorage.getItem('mapShowCollected') === 'true') : false;
-                                                        if(showCollected === false)
-                                                        {
-                                                            this.availableLayers[option.layerId].removeLayer(this.collectableMarkers[marker.pathName]);
-                                                        }
-                                                        else
-                                                        {
-                                                            this.collectableMarkers[marker.pathName].setOpacity(this.collectedOpacity);
-                                                        }
-
-                                                    // Update badge!
-                                                    let dataCollected   = parseInt($('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-collected')) + 1;
-                                                    let dataTotal       = parseInt($('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-total'));
-                                                        $('.updateLayerState[data-id="' + option.layerId + '"]').attr('data-collected', dataCollected);
-                                                        $('.updateLayerState[data-id="' + option.layerId + '"] > .badge').html(new Intl.NumberFormat(this.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.language).format(dataTotal));
-                                                }
-                                        }
                                     }
                                 }
                             }
