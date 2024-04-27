@@ -982,6 +982,19 @@ export default class BaseLayout_Tooltip
                                     }
                                 }
 
+                                // Default nulled image
+                                if(currentInventoryIn === null)
+                                {
+                                    currentInventoryIn = {
+                                        category        : currentItem.category,
+                                        name            : currentItem.name,
+                                        image           : currentItem.image,
+                                        qty             : recipeItem.ingredients[itemClassName],
+                                        isActive        : false,
+                                        isNulled        : true
+                                    };
+                                }
+
                             content.push('<div style="border-top: 1px solid #e7e7e7;border-bottom: 1px solid #e7e7e7;height: 50px;padding-top: 3px;font-size: 12px;line-height: 1;margin-top: -1px;" class="d-block">');
                             content.push('<table><tr><td>');
                                 content.push(this.baseLayout.getInventoryImage(currentInventoryIn, 40));
@@ -1072,6 +1085,18 @@ export default class BaseLayout_Tooltip
                                         currentInventoryOut = inventoryOut[i];
                                         break;
                                     }
+                                }
+
+                                // Default nulled image
+                                if(currentInventoryOut === null)
+                                {
+                                    currentInventoryOut = {
+                                        category        : currentItem.category,
+                                        name            : currentItem.name,
+                                        image           : currentItem.image,
+                                        qty             : 0,
+                                        isActive        : false
+                                    };
                                 }
 
                             content.push('<div style="border-top: 1px solid #e7e7e7;border-bottom: 1px solid #e7e7e7;height: 50px;padding-top: 3px;font-size: 12px;line-height: 1;margin-top: -1px;" class="d-block">');

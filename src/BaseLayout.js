@@ -4023,19 +4023,19 @@ export default class BaseLayout
                 {
                     if(nullItemImage !== null)
                     {
-                        html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background-color: #FFFFFF;">';
+                        html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border-radius: 5px;padding: 6px;background-color: #cecdcd;">';
                         html += '<img src="' + nullItemImage + '" class="img-fluid" style="opacity: 0.2;" />';
                         html += '</div>';
                     }
                     else
                     {
-                        html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background-color: #FFFFFF;"></div>';
+                        html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border-radius: 5px;padding: 6px;background-color: #cecdcd;"></div>';
                     }
                 }
             }
             else
             {
-                html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background-color: #FFFFFF;"></div>';
+                html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border-radius: 5px;padding: 6px;background-color: #cecdcd;"></div>';
             }
 
             if((i+1) % maxInLine === 0 || (i + 1) === maxSlot)
@@ -4056,13 +4056,13 @@ export default class BaseLayout
     {
         if(inventory === null || inventory === undefined)
         {
-            return '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border: 1px solid #000000;border-radius: 5px;padding: 5px;background-color: #FFFFFF;"></div>';
+            return '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border-radius: 5px;padding: 6px;background-color: #cecdcd;"></div>';
         }
 
         let itemQty         = (inventory.qty !== undefined) ? inventory.qty : null;
         let itemUnits       = '';
         let itemStyle       = 'border-radius: 5px;';
-        let itemBackground  = '#FFFFFF';
+        let itemBackground  = '#cecdcd';
             if(itemQty !== null && inventory.category !== undefined && (inventory.category === 'liquid' || inventory.category === 'gas'))
             {
                 itemQty     = Math.round(Math.round(itemQty) / 1000);
@@ -4074,8 +4074,22 @@ export default class BaseLayout
                 itemBackground = inventory.backgroundColor;
             }
 
+        if(inventory.isNulled !== undefined && inventory.isNulled === true)
+        {
+            let html = '';
+                html += '<div class="d-flex flex-row" style="position:relative;margin: 1px;width: ' + cellWidth + 'px;height: ' + cellWidth + 'px;border-radius: 5px;padding: 6px;background-color: #cecdcd;">';
+                html += '<img src="' + inventory.image + '" class="img-fluid" style="opacity: 0.2;" />';
+                if(itemQty !== null)
+                {
+                    html += '<span class="badge ' + badgeClass + ' align-middle" style="position: absolute;bottom: -2px; right: -2px;background-color: #676768;color: #FFFFFF;">' + new Intl.NumberFormat(this.language).format(itemQty) + itemUnits + '</span>';
+                }
+                html += '</div>';
 
-        let isActiveStyle   = 'border: 1px solid #000000;padding: 5px;';
+            return html;
+        }
+
+
+        let isActiveStyle   = 'padding: 6px;';
             if(inventory.isActive !== undefined && inventory.isActive === true)
             {
                 isActiveStyle   = 'border: 3px solid #F39C12;padding: 3px;';

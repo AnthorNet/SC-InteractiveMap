@@ -106,19 +106,26 @@ export default class SubSystem_Overclocking
                 content.push('<tr><td>');
                     content.push('<div style="position: relative;background: #FFFFFF;border: 1px solid #000000;border-radius: 5px;overflow: hidden;padding: 5px;">');
 
+                        let inventoryImage = '<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + this.baseLayout.setInventoryTableSlot(
+                                [((potentialInventory[3] === undefined) ? null : potentialInventory[3])],
+                                null,
+                                40,
+                                '',
+                                this.baseLayout.toolsData.Desc_WAT1_C.image
+                            ) + '</td></tr></table></div>';
+
                         if(potentialInventory[3] !== undefined && potentialInventory[3] !== null)
                         {
                             content.push('<div style="position: absolute;top: 50%;left: 50%;margin-top: -150px;margin-left: -150px;width: 300px;height: 300px;background-image: linear-gradient(135deg, #9f6d9f 23.81%, #855b85 23.81%, #855b85 25%, #bd82bd 25%, #bd82bd 48.81%, #855b85 48.81%, #855b85 50%, #9f6d9f 50%, #9f6d9f 73.81%, #855b85 73.81%, #855b85 75%, #bd82bd 75%, #bd82bd 98.81%, #855b85 98.81%, #855b85 100%);background-size: 30px 30px;animation: productionBoost 20s linear infinite;">');
                             content.push('</div>');
+                            content.push('<div style="animation: interference 4s infinite;">' + inventoryImage + '</div>');
+                        }
+                        else
+                        {
+                            content.push(inventoryImage);
                         }
 
-                        content.push('<div class="text-center"><table class="mr-auto ml-auto"><tr><td>' + this.baseLayout.setInventoryTableSlot(
-                            [((potentialInventory[3] === undefined) ? null : potentialInventory[3])],
-                            null,
-                            40,
-                            '',
-                            this.baseLayout.toolsData.Desc_WAT1_C.image
-                        ) + '</td></tr></table></div>');
+
 
                     content.push('</div>');
                 content.push('</td></tr>');
