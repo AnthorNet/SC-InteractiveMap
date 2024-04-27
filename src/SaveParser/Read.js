@@ -344,6 +344,7 @@ export default class SaveParser_Read
 
             for(let i = 0; i < countEntities; i++)
             {
+                //console.log(i, entitiesToObjects[i]);
                 this.readEntity(entitiesToObjects[i]);
 
                 // Avoid memory error on very large save!
@@ -462,11 +463,15 @@ export default class SaveParser_Read
             };
 
             // Enforce bounding on the map to avoid the game from skipping physics!
-            if(actor.transform.translation[0] < -500000 || actor.transform.translation[0] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000 || actor.transform.translation[2] < -500000 || actor.transform.translation[2] > 500000)
+            if(actor.className !== '/Game/FactoryGame/Buildable/Factory/ProjectAssembly/BP_ProjectAssembly.BP_ProjectAssembly_C')
             {
-                actor.transform.translation = [0, 0, 2000];
-                console.log('Out of bounds translation', actor.pathName);
+                if(actor.transform.translation[0] < -500000 || actor.transform.translation[0] > 500000 || actor.transform.translation[1] < -500000 || actor.transform.translation[1] > 500000 || actor.transform.translation[2] < -500000 || actor.transform.translation[2] > 500000)
+                {
+                    actor.transform.translation = [0, 0, 2000];
+                    console.log('Out of bounds translation', actor.pathName);
+                }
             }
+
             // Avoid lost vehicles in the game!
             if(isNaN(actor.transform.translation[0]) || isNaN(actor.transform.translation[1]) || isNaN(actor.transform.translation[2]))
             {
