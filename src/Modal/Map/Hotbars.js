@@ -18,10 +18,7 @@ export default class Modal_Map_Hotbars
 
         for(let pathName in this.baseLayout.players)
         {
-            if(this.baseLayout.players[pathName].isHost() === true && this.lastPathName === null)
-            {
-                this.lastPathName = pathName;
-            }
+            if(this.lastPathName === null){ this.lastPathName = pathName; } // Use first tab
 
             hotbarHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((pathName === this.lastPathName) ? 'active' : '') + '" data-toggle="tab" href="#playerHotBars-' + pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;" data-pathName="' + pathName +'">');
             hotbarHeaderHtml.push(this.baseLayout.players[pathName].getDisplayName());

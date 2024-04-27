@@ -678,86 +678,6 @@ export default class SaveParser_Read
             case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
                 let missingPlayerState                      = (startByte + entityLength) - this.currentByte;
                     this.objects[objectKey].missing         = this.readHex(missingPlayerState);
-                    this.currentByte                       -= missingPlayerState; // Reset back to grab the user ID if possible!
-
-                    if(missingPlayerState > 0)
-                    {
-                        this.readInt(); // Skip count
-                        let playerType = this.readByte();
-                            switch(playerType)
-                            {
-                                case 241: // EOS UE5.2
-                                    this.readByte();
-                                    let epicHexLength241    = this.readInt();
-                                    let epicHex241          = '';
-                                        for(let i = 0; i < epicHexLength241; i++)
-                                        {
-                                            epicHex241 += this.readByte().toString(16).padStart(2, '0');
-                                        }
-
-                                    this.objects[objectKey].eosId       = epicHex241.replace(/^0+/, '').substring(1, 33);
-
-
-                                    break;
-
-                                case 248: // EOS
-                                        this.readString();
-                                    let eosStr2                         = this.readString().split('|');
-                                        this.objects[objectKey].eosId   = eosStr2[0];
-
-                                    break;
-
-                                case 249: // EOS
-                                        this.readString(); // EOS, then follow 17
-                                case 17: // Old EOS
-                                    let epicHexLength   = this.readByte();
-                                    let epicHex         = '';
-                                        for(let i = 0; i < epicHexLength; i++)
-                                        {
-                                            epicHex += this.readByte().toString(16).padStart(2, '0');
-                                        }
-
-                                    this.objects[objectKey].eosId       = epicHex.replace(/^0+/, '');
-
-                                    break;
-
-                                case 25: // Steam
-                                case 29: // Steam
-                                    let steamHexLength  = this.readByte();
-                                    let steamHex        = '';
-                                        for(let i = 0; i < steamHexLength; i++)
-                                        {
-                                            steamHex += this.readByte().toString(16).padStart(2, '0');
-                                        }
-
-                                    this.objects[objectKey].steamId     = steamHex.replace(/^0+/, '');
-
-                                    break;
-
-                                case 8: // ???
-                                    this.objects[objectKey].platformId  = this.readString();
-
-                                    break;
-
-                                case 3: // Offline
-
-                                    break;
-
-                                default:
-                                    this.worker.postMessage({command: 'alertParsing'});
-                                    if(typeof Sentry !== 'undefined')
-                                    {
-                                        Sentry.setContext('BP_PlayerState_C', this.objects[objectKey]);
-                                        Sentry.setContext('playerType', playerType);
-                                    }
-
-                                    console.log(playerType, this.objects[objectKey]);
-                                    //throw new Error('Unimplemented BP_PlayerState_C type: ' + playerType);
-
-                                    // By pass, and hope that the user will still continue to send us the save!
-                                    this.currentByte += missingPlayerState - 5;
-                            }
-                    }
                 break;
 
             case '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C':
@@ -874,14 +794,12 @@ export default class SaveParser_Read
             for(let i = 0; i < buildableLength; i++)
             {
                     this.readInt(); // 0
-                let currentClassName = this.readString();
-
-                let currentBuildableLength = this.readInt();
+                let currentClassName        = this.readString();
+                let currentBuildableLength  = this.readInt();
                     for(let j = 0; j < currentBuildableLength; j++)
                     {
                         let lightweightObjectPathName = this.generateFastPathName('LightweightBuildable_' + currentClassName.split('/').pop() + '_', pathNamePool);
                             pathNamePool.push(lightweightObjectPathName);
-
 
                         let lightweightObject = {
                                 className           : currentClassName,
@@ -912,6 +830,12 @@ export default class SaveParser_Read
                                     }
                                 ]
                             };
+
+                        // Skip already deleted actors...
+                        if(lightweightObject.customizationData.SwatchDesc.pathName === '' || lightweightObject.properties[0].value.pathName === '')
+                        {
+                            continue;
+                        }
 
                         objectsToFlush[lightweightObjectPathName] = lightweightObject;
 

@@ -446,7 +446,7 @@ export default class SubSystem_Buildable extends SubSystem
                         }
                     }
 
-                    if(pathName === null && this.baseLayout.players[currentPathName].isHost())
+                    if(pathName === null) // Return first player custom color
                     {
                         return customColor;
                     }

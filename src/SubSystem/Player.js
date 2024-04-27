@@ -11,104 +11,32 @@ export default class SubSystem_Player
 
         this.defaultInventorySize   = 16;
         this.defaultArmSlots        = 1;
-
-        this.displayName            = false;
-        this.doDisplayNameLookup();
     }
 
-    isHost()
+    getDisplayName(raw = false)
     {
-        if(this.baseLayout.saveGameParser.playerHostPathName !== null)
-        {
-            return (this.baseLayout.saveGameParser.playerHostPathName === this.player.pathName);
-        }
-
-        // A temporary fix for Update 8...
-        if(Object.keys(this.baseLayout.players)[0] === this.player.pathName)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    getPlatformId()
-    {
-        if(this.player.eosId !== undefined)
-        {
-            return this.player.eosId;
-        }
-        if(this.player.steamId !== undefined)
-        {
-            return this.player.steamId;
-        }
-
-        return null;
-    }
-
-    doDisplayNameLookup()
-    {
-        let mOwnedPawn = this.getOwnedPawn();
+        let displayName = null;
+        let mOwnedPawn  = this.getOwnedPawn();
             if(mOwnedPawn !== null)
             {
                 let mCachedPlayerName = this.baseLayout.getObjectProperty(mOwnedPawn, 'mCachedPlayerName');
                     if(mCachedPlayerName !== null)
                     {
-                        this.displayName = mCachedPlayerName;
-                        //console.log('mCachedPlayerName', this.displayName);
-                        return;
+                        displayName = mCachedPlayerName;
                     }
             }
 
-
-        if(this.displayName === false)
-        {
-            this.displayName = null; // Do lookup only once per session
-
-            if(this.player.eosId !== undefined)
-            {
-                $.getJSON(this.baseLayout.usersUrl + '?eosId=' + this.player.eosId, (data) => {
-                    if(data !== null)
-                    {
-                        this.displayName = data;
-                    }
-                });
-            }
-            if(this.player.steamId !== undefined)
-            {
-                $.getJSON(this.baseLayout.usersUrl + '?steamId=' + this.player.steamId, (data) => {
-                    if(data !== null)
-                    {
-                        this.displayName = data;
-                    }
-                });
-            }
-        }
-    }
-
-    getDisplayName(raw = false)
-    {
         if(raw === true)
         {
-            return this.displayName;
+            return displayName;
         }
 
-        if(this.isHost() === true)
+        if(displayName !== null)
         {
-            if(this.displayName !== null)
-            {
-                return this.displayName + ' <em>(Host)</em>';
-            }
-
-            return 'Host';
+            return displayName;
         }
 
-        if(this.displayName !== null)
-        {
-            return this.displayName + ' <em>(Guest #' + this.player.pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', '') + ')</em>';
-        }
-
-        return 'Guest #' + this.player.pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', '');
+        return 'Player #' + this.player.pathName.replace('Persistent_Level:PersistentLevel.BP_PlayerState_C_', '');
     }
 
     getOwnedPawn()
@@ -177,7 +105,7 @@ export default class SubSystem_Player
                         {
                             pathName        : this.player.pathName,
                             color           : '#FFFFFF',
-                            fillColor       : ((this.isHost() === true) ? '#b3b3b3' : '#666666'),
+                            fillColor       : '#666666',
                             icon            : this.baseLayout.staticUrl + '/img/mapPlayerIcon.png'
                         }
                     );
@@ -185,11 +113,6 @@ export default class SubSystem_Player
                 this.baseLayout.playerLayers.playerPositionLayer.elements.push(playerMarker);
                 this.baseLayout.bindMouseEvents(playerMarker);
                 playerMarker.addTo(this.baseLayout.playerLayers.playerPositionLayer.subLayer);
-
-                //if(this.isHost() === true)
-                //{
-                //    this.baseLayout.satisfactoryMap.leafletMap.setView(position, 7);
-                //}
 
                 return playerMarker;
             }
@@ -224,7 +147,7 @@ export default class SubSystem_Player
 
     delete()
     {
-        if(this.isHost() === false)
+        if(Object.keys(this.baseLayout.players).length > 1) // We need to keep at least one player in the map...
         {
             let mOwnedPawn  = this.baseLayout.getObjectProperty(this.player, 'mOwnedPawn');
                 if(mOwnedPawn !== null)

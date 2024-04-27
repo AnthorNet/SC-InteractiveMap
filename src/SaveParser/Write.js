@@ -340,10 +340,8 @@ export default class SaveParser_Write
                 entitiesOptions.tempSaveBinaryLength   += (entitiesOptions.objectKeys.length + 1) * 8;
 
                 return this.postWorkerMessage({command: 'requestObjects', objectKeys: ['Persistent_Level:PersistentLevel.LightweightBuildableSubsystem']}).then((objects) => {
-                    console.log(objects[0]);
-                        let entityReturn = this.writeEntity(objects[0]);
-                            console.log(entityReturn)
-                            return this.writeLightweightBuildableSubsystem(entityReturn.preEntity, entityReturn.entity, entitiesOptions);
+                    let entityReturn = this.writeEntity(objects[0]);
+                        return this.writeLightweightBuildableSubsystem(entityReturn.preEntity, entityReturn.entity, entitiesOptions);
                 });
             }
             else

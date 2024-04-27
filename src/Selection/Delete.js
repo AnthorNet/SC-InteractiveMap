@@ -146,29 +146,28 @@ export default class Selection_Delete
                 }
 
                 let currentLootCrateInventory = null;
-
-                for(let i = 0; i < tempCrate.length; i++)
-                {
-                    if(i % maxInCrate === 0)
+                    for(let i = 0; i < tempCrate.length; i++)
                     {
-                        currentLootCrateInventory = this.baseLayout.spawnNewLootCrateNearPlayer();
-                    }
-
-                    let newItem = [{
-                        name    : 'Item',
-                        type    : 'Struct',
-                        value   : {
-                            type        : 'InventoryItem',
-                            unk1        : 0,
-                            itemName    : {levelName: '', pathName: tempCrate[i].className},
-                            itemState   : {levelName: '', pathName: ''},
-                            properties  : [{name: 'NumItems', type: 'Int', value: tempCrate[i].amount}]
+                        if(i % maxInCrate === 0)
+                        {
+                            currentLootCrateInventory = this.baseLayout.spawnNewLootCrateNearPlayer();
                         }
-                    }];
 
-                    currentLootCrateInventory.properties[0].value.values.push(newItem);
-                    currentLootCrateInventory.properties[1].value.values.push(0);
-                }
+                        let newItem = [{
+                            name    : 'Item',
+                            type    : 'Struct',
+                            value   : {
+                                type        : 'InventoryItem',
+                                unk1        : 0,
+                                itemName    : {levelName: '', pathName: tempCrate[i].className},
+                                itemState   : {levelName: '', pathName: ''},
+                                properties  : [{name: 'NumItems', type: 'Int', value: tempCrate[i].amount}]
+                            }
+                        }];
+
+                        currentLootCrateInventory.properties[0].value.values.push(newItem);
+                        currentLootCrateInventory.properties[1].value.values.push(0);
+                    }
 
                 this.baseLayout.setBadgeLayerCount('playerCratesLayer');
             }

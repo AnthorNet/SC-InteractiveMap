@@ -35,10 +35,7 @@ export default class Modal_Map_Players
                 let mOwnedPawn  = this.baseLayout.players[pathName].getOwnedPawn();
                     if(mOwnedPawn !== null)
                     {
-                        if(this.baseLayout.players[pathName].isHost() === true && this.lastPathName === null)
-                        {
-                            this.lastPathName = pathName;
-                        }
+                        if(this.lastPathName === null){ this.lastPathName = pathName; } // Use first tab
 
                         inventoryHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((pathName === this.lastPathName) ? 'active' : '') + '" data-toggle="tab" href="#playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;" data-pathName="' + pathName +'">');
                         inventoryHeaderHtml.push(this.baseLayout.players[pathName].getDisplayName());
@@ -101,7 +98,7 @@ export default class Modal_Map_Players
                                         inventoryHtml.push('</div>');
                                     inventoryHtml.push('</div>');
 
-                                    if(this.baseLayout.players[pathName].isHost() === false)
+                                    if(Object.keys(this.baseLayout.players).length > 1)
                                     {
                                         inventoryHtml.push('<button class="btn btn-danger w-100 parseStatisticsPlayerInventoryDeleteGuest">Delete player</button>')
                                     }
@@ -157,6 +154,7 @@ export default class Modal_Map_Players
                 if(this.baseLayout.players[this.lastPathName] !== undefined)
                 {
                     this.baseLayout.players[this.lastPathName].delete();
+                    this.lastPathName = Object.keys(this.baseLayout.players)[0];
                     this.parse();
                 }
             });

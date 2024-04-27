@@ -630,6 +630,13 @@ export default class BaseLayout
                 {
                     continue;
                 }
+                /*
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/ProjectAssembly/BP_ProjectAssembly.BP_ProjectAssembly_C')
+                {
+                    console.log(currentObject);
+                }
+                /**/
+                //if(currentObject.className.includes('Rock')){ console.log(currentObject); }
 
             // Add menu to nodes/foliages...
             if([
@@ -1606,10 +1613,7 @@ export default class BaseLayout
                         {
                             playerPosition = player.transform.translation;
                             playerRotation = player.transform.rotation;
-                        }
 
-                        if(this.players[pathName].isHost())
-                        {
                             break; // No need to check further...
                         }
                 }

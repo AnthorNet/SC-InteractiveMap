@@ -5,6 +5,7 @@ export default class Modal_Map_Todo
     constructor(options)
     {
         this.baseLayout = options.baseLayout;
+        this.lastPathName   = null;
     }
 
     parse()
@@ -17,11 +18,13 @@ export default class Modal_Map_Todo
             let mOwnedPawn  = this.baseLayout.players[pathName].getOwnedPawn();
                 if(mOwnedPawn !== null)
                 {
-                    todoHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'active' : '') + '" data-toggle="tab" href="#playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
+                    if(this.lastPathName === null){ this.lastPathName = pathName; } // Use first tab
+
+                    todoHeaderHtml.push('<li class="nav-item"><span class="nav-link ' + ((pathName === this.lastPathName) ? 'active' : '') + '" data-toggle="tab" href="#playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '" style="cursor:pointer;">');
                     todoHeaderHtml.push(this.baseLayout.players[pathName].getDisplayName());
                     todoHeaderHtml.push('</span></li>');
 
-                    todoHtml.push('<div class="tab-pane fade ' + ((this.baseLayout.players[pathName].isHost() === true) ? 'show active' : '') + '" id="playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
+                    todoHtml.push('<div class="tab-pane fade ' + ((pathName === this.lastPathName) ? 'show active' : '') + '" id="playerInventory-' + mOwnedPawn.pathName.replace('Persistent_Level:PersistentLevel.', '') + '">');
                     todoHtml.push('<div class="row">');
                     todoHtml.push('<div class="col-4">');
                         todoHtml.push('<h5 class="border-bottom border-warning">' + this.baseLayout.translate._('Public Notes') + '</h5>');
