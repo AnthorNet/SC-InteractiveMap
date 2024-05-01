@@ -4897,6 +4897,11 @@ export default class BaseLayout
 
     getIconSrcFromId(iconId, defaultIcon = null)
     {
+        if(iconId === 191)
+        {
+            return this.staticUrl + '/img/gameUpdate8/IconDesc_SnowballMittens_256.png';
+        }
+
         for(let i in this.itemsData)
         {
             if(this.itemsData[i].iconId !== undefined && this.itemsData[i].iconId === iconId)

@@ -7,12 +7,13 @@ export default class Building_Sign
     static get getConversionIcons()
     {
         return {
-            16: 514,    17: 386,    39: 384,    40: 385,    127: 408,
-            128: 409,   129: 410,   130: 411,   131: 412,   315: 678,
+            16: 514,    17: 386,    39: 384,    40: 385,    50: 787,
+            127: 408,   128: 409,   129: 410,   130: 411,   131: 412,
             132: 413,   143: 433,   144: 434,   145: 435,
             146: 441,   150: 448,   151: 449,   152: 450,
             153: 451,   154: 452,   155: 453,   156: 454,
-            157: 455,   158: 456,   306: 673,   377: 619,
+            157: 455,   158: 456,   306: 673,
+            315: 678,   377: 619,
 
             // OLD: Wall Conveyor Perpendicular, put a warning sign to avoid error popping in...
             649: 362
@@ -1374,7 +1375,7 @@ export default class Building_Sign
             /**/
             if(baseLayout.useDebug === true)
             {
-                options.push({value: 649, text: 'TEST ICON ID'});
+                options.push({value: 191, text: 'TEST ICON ID'});
             }
             /**/
 
