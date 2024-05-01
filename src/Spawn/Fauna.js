@@ -98,9 +98,7 @@ export default class Spawn_Fauna
                                     type    : 'Struct',
                                     value   : {
                                         itemName    : {levelName: '', pathName: ''},
-                                        itemState   : {levelName: '', pathName: ''},
                                         type        : 'InventoryItem',
-                                        unk1        : 0,
                                         properties  : [{name: 'NumItems', type: 'Int', value: 0}]
                                     }
                                 }]]

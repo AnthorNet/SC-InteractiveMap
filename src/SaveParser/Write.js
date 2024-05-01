@@ -1902,7 +1902,14 @@ export default class SaveParser_Write
                 }
                 else
                 {
-                    property += this.writeObjectProperty(currentProperty.value.itemState);
+                    if(currentProperty.value.itemState !== undefined)
+                    {
+                        property += this.writeObjectProperty(currentProperty.value.itemState);
+                    }
+                    else
+                    {
+                        property += this.writeObjectProperty({levelName: '', pathName: ''});
+                    }
                 }
 
                 let oldLength   = this.currentBufferLength;
