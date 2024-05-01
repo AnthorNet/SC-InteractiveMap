@@ -9,7 +9,7 @@ export default class Building_RadarTower
 {
     static getCoverageRadius()
     {
-        return 1100 * 100;
+        return 1000 * 100;
     }
 
     static getCollectablesInCoverageRadius(baseLayout, currentObject)
