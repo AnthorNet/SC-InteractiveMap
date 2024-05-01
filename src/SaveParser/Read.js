@@ -254,7 +254,8 @@ export default class SaveParser_Read
             let countObjects        = this.readInt();
                 if(levelName === 'Level ' + this.header.mapName)
                 {
-                    console.log('Loaded ' + countObjects + ' objects...');
+                    console.time('Loaded ' + countObjects + ' objects...');
+                    console.log('Loading ' + countObjects + ' objects...');
                 }
 
             for(let i = 0; i < countObjects; i++)
@@ -288,6 +289,11 @@ export default class SaveParser_Read
                     this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
                     this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 10))});
                 }
+            }
+
+            if(levelName === 'Level ' + this.header.mapName)
+            {
+                console.timeEnd('Loaded ' + countObjects + ' objects...');
             }
 
             //TODO: Was it the same early?
@@ -338,7 +344,8 @@ export default class SaveParser_Read
             let countEntities           = this.readInt();
                 if(levelName === 'Level ' + this.header.mapName)
                 {
-                    console.log('Loaded ' + countEntities + ' entities...');
+                    console.time('Loaded ' + countEntities + ' entities...');
+                    console.log('Loading ' + countEntities + ' entities...');
                 }
             let objectsToFlush      = {};
 
@@ -407,6 +414,11 @@ export default class SaveParser_Read
                         }
                     }
                 }
+            }
+
+            if(levelName === 'Level ' + this.header.mapName)
+            {
+                console.timeEnd('Loaded ' + countEntities + ' entities...');
             }
 
             let countCollected = this.readInt();
@@ -793,6 +805,7 @@ export default class SaveParser_Read
         let startLength     = this.currentByte;
         let pathNamePool    = [];
         let objectsToFlush  = {};
+        let objectCount     = 0;
             this.readInt(); // 0
 
         let buildableLength = this.readInt();
@@ -801,6 +814,7 @@ export default class SaveParser_Read
                     this.readInt(); // 0
                 let currentClassName        = this.readString();
                 let currentBuildableLength  = this.readInt();
+                    objectCount            += currentBuildableLength;
                     for(let j = 0; j < currentBuildableLength; j++)
                     {
                         let lightweightObjectPathName = this.generateFastPathName('LightweightBuildable_' + currentClassName.split('/').pop() + '_', pathNamePool);
@@ -861,6 +875,8 @@ export default class SaveParser_Read
                 this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
                 objectsToFlush = {};
             }
+
+            console.log('Loaded ' + objectCount + ' lightweight objects...');
     }
 
     /*

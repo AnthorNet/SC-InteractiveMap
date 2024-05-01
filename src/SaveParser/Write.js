@@ -1090,6 +1090,8 @@ export default class SaveParser_Write
             });
         }
 
+        console.log('Saved ' + countLightweightObjects + ' lightweight objects...');
+
         // End of lightweightBuildableSubsystem reconstruction, get back to entities...
         //TODO: May be add a placeholder for lenght in case of a lot of lightweight objects?
         this.saveBinary                      += preEntity + this.writeInt(this.currentEntityLength) + entity;
