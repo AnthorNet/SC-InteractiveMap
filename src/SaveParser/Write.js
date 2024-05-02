@@ -1882,19 +1882,18 @@ export default class SaveParser_Write
                         property += this.writeInt(1);
                         property += this.writeObjectProperty(currentProperty.value.itemState);
 
-                        let itemStateStartLength        = this.currentEntityLength;
-                            this.currentEntityLength    = 0;
-                        let itemStateProperties         = '';
+                        let currentBufferStartingLength     = this.currentBufferLength;
+                        let structPropertyBufferLength      = this.currentEntityLength;
+                        let itemStateProperties             = '';
                             for(let i = 0; i < currentProperty.value.itemStateProperties.length; i++)
                             {
                                 itemStateProperties += this.writeProperty(currentProperty.value.itemStateProperties[i]);
                             }
                             itemStateProperties += this.writeString('None');
 
-                             let propertyLength              = parseInt(this.currentEntityLength) || 0; // Prevent NaN
-                                 this.currentEntityLength    = itemStateStartLength + propertyLength;
+                            this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
 
-                            property += this.writeInt(propertyLength);
+                            property += this.writeInt((this.currentEntityLength - structPropertyBufferLength));
                             property += itemStateProperties;
                     }
                     else

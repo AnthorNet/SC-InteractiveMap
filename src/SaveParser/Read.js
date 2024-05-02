@@ -1806,25 +1806,25 @@ export default class SaveParser_Read
                     let itemState = this.readInt();
                         if(itemState !== 0)
                         {
-                            currentProperty.value.itemState = this.readObjectProperty();
+                            currentProperty.value.itemState             = this.readObjectProperty();
+                            currentProperty.value.itemStateProperties   = [];
 
                             this.readInt(); // itemStateLength
-                            currentProperty.value.itemStateProperties = [];
-                                while(true)
-                                {
-                                    let property = this.readProperty();
-                                        if(property === null)
-                                        {
-                                            break;
-                                        }
+                            while(true)
+                            {
+                                let property = this.readProperty();
+                                    if(property === null)
+                                    {
+                                        break;
+                                    }
 
-                                        currentProperty.value.itemStateProperties.push(property);
-                                }
+                                    currentProperty.value.itemStateProperties.push(property);
+                            }
                         }
                 }
                 else
                 {
-                    currentProperty.value.itemState               = this.readObjectProperty();
+                    currentProperty.value.itemState = this.readObjectProperty();
                 }
 
                 currentProperty.value.properties    = [this.readProperty()];
