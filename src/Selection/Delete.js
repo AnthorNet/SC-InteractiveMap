@@ -115,7 +115,7 @@ export default class Selection_Delete
 
             if(this.keepDeleted === true)
             {
-                let maxInCrate  = 64;
+                let maxInCrate  = 128;
                 let tempCrate   = [];
 
                 for(let className in putInCrate)
@@ -158,6 +158,7 @@ export default class Selection_Delete
                             type    : 'Struct',
                             value   : {
                                 type        : 'InventoryItem',
+                                itemName    : {levelName: '', pathName: tempCrate[i].className},
                                 properties  : [{name: 'NumItems', type: 'Int', value: tempCrate[i].amount}]
                             }
                         }];
