@@ -305,8 +305,15 @@ export default class GameMap
 
                                 if(marker.lastCheck !== undefined)
                                 {
+                                    /*
+                                    // TO DEBUG LAST CHECK DATA
+                                    if(parseInt(data.lastBuild) <= parseInt(marker.lastCheck))
+                                    {
+                                        continue;
+                                    }
+                                    /**/
                                     tooltip.push('<br /><br />');
-                                    tooltip.push('Data was check on build: <strong class="' + ((data.lastBuild > marker.lastCheck) ? 'text-danger' : 'text-success') + '">#' + marker.lastCheck + '</strong>');
+                                    tooltip.push('Data was check on build: <strong class="' + ((parseInt(data.lastBuild) > parseInt(marker.lastCheck)) ? 'text-warning' : 'text-success') + '">#' + marker.lastCheck + '</strong>');
                                 }
                                 else
                                 {
