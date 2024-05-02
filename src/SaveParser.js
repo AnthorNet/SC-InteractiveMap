@@ -201,13 +201,18 @@ export default class SaveParser
 
                     for(let i = 0; i < this.countObjects; i++)
                     {
+                        if(this.objects[this.objectsKeys[i]] === undefined)
+                        {
+                            continue;
+                        }
+                        
                         // Always skip it as we parse it first manually...
                         if(this.objects[this.objectsKeys[i]].pathName === 'Persistent_Level:PersistentLevel.LightweightBuildableSubsystem')
                         {
                             continue;
                         }
 
-                        if(this.objects[this.objectsKeys[i]] !== undefined &&this.objectsKeys[i].startsWith('LightweightBuildable_') === false)
+                        if(this.objectsKeys[i].startsWith('LightweightBuildable_') === false)
                         {
                             if(data.levelNames !== undefined && this.objects[this.objectsKeys[i]].levelName !== undefined && data.levelNames.includes(this.objects[this.objectsKeys[i]].levelName))
                             {
