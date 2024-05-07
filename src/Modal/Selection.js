@@ -430,7 +430,7 @@ export default class Modal_Selection
             {
                 inputOptions.push({group: 'Statistics', text: 'Show selected items production statistics', value: 'modalProductionStatistics'});
                 inputOptions.push({group: 'Statistics', text: 'Show selected items storage statistics', value: 'modalStorageStatistics'});
-                inputOptions.push({group: 'Statistics', text: 'Show selected power circuits statistics', value: 'modalPowerCircuitsStatistics'});
+                inputOptions.push({group: 'Statistics', text: 'Show selected power grids statistics', value: 'modalPowerCircuitsStatistics'});
             }
 
             // Foliage

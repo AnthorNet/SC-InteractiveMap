@@ -18,7 +18,7 @@ export default class Building_GeneratorGeoThermal
         // HEADER
         if(objectCircuit !== null)
         {
-            content.push('<div style="position: absolute;width: 315px;text-align: center;margin-left: 166px;margin-top: 15px;' + BaseLayout_Tooltip.defaultTextStyle + '">' + buildingData.name + ' (Circuit #' + objectCircuit.circuitId + ')</div>');
+            content.push('<div style="position: absolute;width: 315px;text-align: center;margin-left: 166px;margin-top: 15px;' + BaseLayout_Tooltip.defaultTextStyle + '">' + buildingData.name + ' (Power Grid #' + objectCircuit.circuitId + ')</div>');
         }
         else
         {
@@ -75,12 +75,7 @@ export default class Building_GeneratorGeoThermal
         content.push('<div style="position: absolute;margin-top: 40px;margin-left: 166px; width: 315px;height: 130px;color: #5b5b5b;text-shadow: none;' + BaseLayout_Tooltip.genericUIBackgroundStyle(baseLayout) + '">');
         if(objectCircuit !== null)
         {
-            let circuitStatistics = baseLayout.circuitSubSystem.getStatistics(objectCircuit.circuitId);
-                content.push(BaseLayout_Tooltip.setCircuitStatisticsGraph(baseLayout, circuitStatistics));
-        }
-        else
-        {
-
+            content.push(baseLayout.circuitSubSystem.getStatisticsGraph(objectCircuit.circuitId));
         }
         content.push('</div>');
 

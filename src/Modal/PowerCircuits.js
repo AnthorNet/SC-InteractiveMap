@@ -89,7 +89,7 @@ export default class Modal_PowerCircuits
             }
             header.push('</ul>');
 
-            $('#genericModal .modal-title').empty().html('Power Circuits' + header.join(''));
+            $('#genericModal .modal-title').empty().html('Power Grids' + header.join(''));
 
         let html    = [];
             html.push('<div class="tab-content">');
@@ -100,8 +100,7 @@ export default class Modal_PowerCircuits
 
                 // CIRCUIT GRAPHICS
                 html.push('<div style="margin: 0 auto;width: 630px;height: 130px;color: #5b5b5b;text-shadow: none;' + BaseLayout_Tooltip.genericUIBackgroundStyle(this.baseLayout) + '">');
-                let circuitStatistics = this.baseLayout.circuitSubSystem.getStatistics(this.requiredCircuits[i]);
-                    html.push(BaseLayout_Tooltip.setCircuitStatisticsGraph(this.baseLayout, circuitStatistics, 630));
+                html.push(this.baseLayout.circuitSubSystem.getStatisticsGraph(this.requiredCircuits[i], 630));
                 html.push('</div>');
 
                 // COMPONENTS

@@ -198,7 +198,7 @@ export default class Modal_Map_Options
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch">');
             html.push('<input type="checkbox" class="custom-control-input" name="inputShowCircuitsColors" id="inputShowCircuitsColors" ' + ((this.baseLayout.showCircuitsColors === true) ? 'checked' : '') + ' />');
-            html.push('<label class="custom-control-label" for="inputShowCircuitsColors">' + this.baseLayout.translate._('Show colored power circuits?') + '</label>');
+            html.push('<label class="custom-control-label" for="inputShowCircuitsColors">' + this.baseLayout.translate._('Show colored power grids?') + '</label>');
             html.push('</div>');
         html.push('</div>');
         html.push('</div><div class="col-6">');

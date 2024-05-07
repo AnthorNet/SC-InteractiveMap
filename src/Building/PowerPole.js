@@ -155,7 +155,7 @@ export default class Building_PowerPole
                             circuitColorContent = '<span style="display: inline-block;width: 12px;height:12px;border-radius: 50%;background: rgb(' + circuitColor[0] + ', ' + circuitColor[1] + ', ' + circuitColor[2] + ');margin-left: 5px;"></span>';
                     }
 
-                content.push('<div style="position: absolute;width: 100%;text-align: center;">' + buildingData.name + ' (Circuit #' + objectCircuit.circuitId + circuitColorContent + ')</div>');
+                content.push('<div style="position: absolute;width: 100%;text-align: center;">' + buildingData.name + ' (Power Grid #' + objectCircuit.circuitId + circuitColorContent + ')</div>');
             }
             else
             {
@@ -170,8 +170,7 @@ export default class Building_PowerPole
         content.push('<div style="position: absolute;margin-top: 25px;margin-left: 145px; width: 315px;height: 130px;color: #5b5b5b;text-shadow: none;' + BaseLayout_Tooltip.genericUIBackgroundStyle(baseLayout) + '">');
         if(objectCircuit !== null)
         {
-            let circuitStatistics = baseLayout.circuitSubSystem.getStatistics(objectCircuit.circuitId);
-                content.push(BaseLayout_Tooltip.setCircuitStatisticsGraph(baseLayout, circuitStatistics));
+            content.push(baseLayout.circuitSubSystem.getStatisticsGraph(objectCircuit.circuitId));
         }
         content.push('</div>');
 

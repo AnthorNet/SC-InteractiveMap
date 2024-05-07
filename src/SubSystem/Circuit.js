@@ -194,6 +194,7 @@ export default class SubSystem_Circuit extends SubSystem
         let statistics      = {
                 capacity                    : 0,
                 production                  : 0,
+                productionBoost             : 0,
                 consumption                 : 0,
                 maxConsumption              : 0,
 
@@ -205,6 +206,8 @@ export default class SubSystem_Circuit extends SubSystem
 
                 powerStorageDrainRate       : 0,
                 powerStoredTimeUntilDrained : null,
+
+                alienPowerBuildings         : {}
             };
             if(circuitID === null)
             {
@@ -214,6 +217,7 @@ export default class SubSystem_Circuit extends SubSystem
         let components                      = this.getCircuitComponents(circuitID);
         let availablePowerStorageForCharge  = [];
         let availablePowerStorageForDrain   = [];
+        let availableAlienPowerBuilding     = [];
 
             for(let i = 0; i < components.length; i++)
             {
@@ -222,6 +226,12 @@ export default class SubSystem_Circuit extends SubSystem
                     {
                         let currentComponent            = this.baseLayout.saveGameParser.getTargetObject(components[i]);
                         let buildingData                = this.baseLayout.getBuildingDataFromClassName(currentComponent.className);
+
+                        if(currentComponent.className === '/Game/FactoryGame/Buildable/Factory/AlienPower/Build_AlienPowerBuilding.Build_AlienPowerBuilding_C')
+                        {
+                            availableAlienPowerBuilding.push(currentComponent);
+                            continue;
+                        }
 
                         // PRODUCTION
                         let fuelClass = this.baseLayout.getObjectProperty(currentComponent, 'mCurrentFuelClass');
@@ -315,11 +325,44 @@ export default class SubSystem_Circuit extends SubSystem
                     }
             }
 
+            if(availableAlienPowerBuilding.length > 0)
+            {
+                for(let i = 0; i < availableAlienPowerBuilding.length; i++)
+                {
+                    let buildingPowerInfo   = this.baseLayout.saveGameParser.getTargetObject(availableAlienPowerBuilding[i].pathName + '.powerInfo');
+                        if(buildingPowerInfo !== null)
+                        {
+                            let mBaseProduction = this.baseLayout.getObjectProperty(buildingPowerInfo, 'mBaseProduction');
+                                if(mBaseProduction !== null)
+                                {
+                                    statistics.production += mBaseProduction;
+                                }
+                        }
+                }
+
+                for(let i = 0; i < availableAlienPowerBuilding.length; i++)
+                {
+                    let circuitBoost            = 0.1;
+                    let currentObject           = this.baseLayout.saveGameParser.getTargetObject(availableAlienPowerBuilding[i].pathName);
+                        if(currentObject !== null)
+                        {
+                            let mCurrentFuelClass       = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
+                                if(mCurrentFuelClass !== null && mCurrentFuelClass.pathName === '/Game/FactoryGame/Resource/Parts/AlienPowerFuel/Desc_AlienPowerFuel.Desc_AlienPowerFuel_C')
+                                {
+                                    circuitBoost = 0.3;
+                                }
+                        }
+
+                        statistics.alienPowerBuildings[availableAlienPowerBuilding[i].pathName]  = statistics.production * circuitBoost;
+                        statistics.productionBoost                                              += statistics.production * circuitBoost;
+                }
+            }
+
             if(availablePowerStorageForCharge.length > 0)
             {
-                if(statistics.production > statistics.consumption)
+                if((statistics.production + statistics.productionBoost) > statistics.consumption)
                 {
-                    statistics.powerStorageChargeRate       = (statistics.production - statistics.consumption) / availablePowerStorageForCharge.length;
+                    statistics.powerStorageChargeRate       = ((statistics.production + statistics.productionBoost) - statistics.consumption) / availablePowerStorageForCharge.length;
                     statistics.powerStoredTimeUntilCharged  = 0;
 
                     for(let i = 0; i < availablePowerStorageForCharge.length; i++)
@@ -334,9 +377,9 @@ export default class SubSystem_Circuit extends SubSystem
 
             if(availablePowerStorageForDrain.length > 0)
             {
-                if(statistics.production < statistics.consumption)
+                if((statistics.production + statistics.productionBoost) < statistics.consumption)
                 {
-                    statistics.powerStorageDrainRate        = (statistics.consumption - statistics.production) / availablePowerStorageForDrain.length;
+                    statistics.powerStorageDrainRate        = (statistics.consumption - (statistics.production + statistics.productionBoost)) / availablePowerStorageForDrain.length;
                     statistics.powerStoredTimeUntilDrained  = 0;
 
                     for(let i = 0; i < availablePowerStorageForDrain.length; i++)
@@ -352,7 +395,7 @@ export default class SubSystem_Circuit extends SubSystem
             // Can't have more consumption if we don't have stored power!
             if(statistics.powerStored === 0)
             {
-                statistics.consumption = Math.min(statistics.consumption, statistics.production);
+                statistics.consumption = Math.min(statistics.consumption, (statistics.production + statistics.productionBoost));
             }
 
             return statistics;
@@ -382,5 +425,148 @@ export default class SubSystem_Circuit extends SubSystem
                 }
             }
         }
+    }
+
+    /**
+     * TOOLTIP
+     */
+    getStatisticsGraph(circuitID, width = 315)
+    {
+        let circuitStatistics   = this.getStatistics(circuitID);
+        let content             = [];
+        let maxValue            = Math.max(
+                                    circuitStatistics.consumption,
+                                    (circuitStatistics.production + circuitStatistics.productionBoost),
+                                    circuitStatistics.capacity,
+                                    circuitStatistics.maxConsumption
+                                );
+
+            content.push('<div class="d-flex" style="margin: -9px;margin-top: -11px;height: 113px;">');
+                content.push('<div class="justify-content-center align-self-center h-100 text-center" style="width: ' + ((circuitStatistics.powerStoredCapacity > 0) ? (width - 89) : (width - 19)) + 'px;">');
+                    content.push('<div style="height: 75px;padding-top: 5px;position: relative;">');
+                        content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - (circuitStatistics.consumption / maxValue * 65)) + 'px;background-color: #e59344;" />')
+                        content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - ((circuitStatistics.production + circuitStatistics.productionBoost) / maxValue * 65)) + 'px;background-color: #717172;" />')
+
+                        if(circuitStatistics.productionBoost > 0)
+                        {
+                            content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - (circuitStatistics.productionBoost / maxValue * 65)) + 'px;background-color: #9f6d9f;" />')
+                        }
+
+                        content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - (circuitStatistics.capacity / maxValue * 65)) + 'px;background-color: #cccbcb;" />')
+                        content.push('<hr style="position: absolute;width: 100%;margin-top: ' + Math.round(65 - (circuitStatistics.maxConsumption / maxValue * 65)) + 'px;background-color: #62aac7;" />')
+                    content.push('</div>');
+
+                    content.push('<div style="border-top: 1px solid #666666;height: 30px;padding-top: 3px;">');
+                        content.push('<table style="line-height: ' + ((circuitStatistics.productionBoost > 0) ? 8 : 12) + 'px;font-size: 9px;" class="w-100">');
+
+                            content.push('<tr>');
+                                content.push('<td style="color: #e59344;">Consum. <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.consumption * 10) / 10) + 'MW</strong></td>');
+                                content.push('<td style="color: #717172;">Production <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round((circuitStatistics.production + circuitStatistics.productionBoost) * 10) / 10) + 'MW</strong></td>');
+                            content.push('</tr>');
+
+                            content.push('<tr>');
+                                content.push('<td style="color: #cccbcb;">Capacity <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.capacity * 10) / 10) + 'MW</strong></td>');
+                                content.push('<td style="color: #62aac7;">Max. Cons. <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.maxConsumption * 10) / 10) + 'MW</strong></td>');
+                            content.push('</tr>');
+
+                            if(circuitStatistics.productionBoost > 0)
+                            {
+                                content.push('<tr>');
+                                    content.push('<td colspan="2" style="color: #9f6d9f;">Production Boost <strong>' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(circuitStatistics.productionBoost * 10) / 10) + 'MW</strong></td>');
+                                content.push('</tr>');
+                            }
+
+                    content.push('</table>');
+                    content.push('</div>');
+                content.push('</div>');
+
+                if(circuitStatistics.powerStoredCapacity > 0)
+                {
+                    let percentageCharge = circuitStatistics.powerStored / circuitStatistics.powerStoredCapacity * 100;
+                        content.push('<div class="h-100 text-center" style="width: 70px;background-color: #151515;margin-right: -1px;">');
+
+                            // PROGRESS
+                            content.push('<div style="position: absolute;margin-top: 3px;margin-left: 5px; width: 60px;height: 89px;border:2px solid #FFFFFF;border-radius: 4px;">');
+
+                                content.push('<div style="position: absolute;margin-top: 1px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 80) ? '#666666' : '#313131') + ';"></div>');
+                                if(circuitStatistics.powerStorageChargeRate > 0 && percentageCharge > 80 && percentageCharge < 100)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 1px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ff33;"' + ((percentageCharge > 80 && percentageCharge < 100) ? ' class="blink"' : '') + '></div>');
+                                }
+                                if(circuitStatistics.powerStorageDrainRate > 0 && percentageCharge > 80)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 1px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #F39C12;"' + ((percentageCharge > 80 && percentageCharge <= 100) ? ' class="blink"' : '') + '></div>');
+                                }
+
+                                content.push('<div style="position: absolute;margin-top: 15px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 60) ? '#666666' : '#313131') + ';"></div>');
+                                if(circuitStatistics.powerStorageChargeRate > 0 && percentageCharge > 60 && percentageCharge < 100)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 15px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ff66;"' + ((percentageCharge > 60 && percentageCharge <= 80) ? ' class="blink"' : '') + '></div>');
+                                }
+                                if(circuitStatistics.powerStorageDrainRate > 0 && percentageCharge > 60)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 15px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #F39C12;"' + ((percentageCharge > 60 && percentageCharge <= 80) ? ' class="blink"' : '') + '></div>');
+                                }
+
+                                content.push('<div style="position: absolute;margin-top: 29px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 40) ? '#666666' : '#313131') + ';"></div>');
+                                if(circuitStatistics.powerStorageChargeRate > 0 && percentageCharge > 40 && percentageCharge < 100)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 29px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ff99;"' + ((percentageCharge > 40 && percentageCharge <= 60) ? ' class="blink"' : '') + '></div>');
+                                }
+                                if(circuitStatistics.powerStorageDrainRate > 0 && percentageCharge > 40)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 29px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #F39C12;"' + ((percentageCharge > 40 && percentageCharge <= 60) ? ' class="blink"' : '') + '></div>');
+                                }
+
+                                content.push('<div style="position: absolute;margin-top: 43px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 20) ? '#666666' : '#313131') + ';"></div>');
+                                if(circuitStatistics.powerStorageChargeRate > 0 && percentageCharge > 20 && percentageCharge < 100)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 43px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ffcc;"' + ((percentageCharge > 20 && percentageCharge <= 40) ? ' class="blink"' : '') + '></div>');
+                                }
+                                if(circuitStatistics.powerStorageDrainRate > 0 && percentageCharge > 20)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 43px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #F39C12;"' + ((percentageCharge > 20 && percentageCharge <= 40) ? ' class="blink"' : '') + '></div>');
+                                }
+
+                                content.push('<div style="position: absolute;margin-top: 57px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: ' + ((percentageCharge > 0) ? '#666666' : '#313131') + ';"></div>');
+                                if(circuitStatistics.powerStorageChargeRate > 0 && percentageCharge < 100)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 57px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #00ffff;"' + ((percentageCharge > 0 && percentageCharge <= 20) ? ' class="blink"' : '') + '></div>');
+                                }
+                                if(circuitStatistics.powerStorageDrainRate > 0)
+                                {
+                                    content.push('<div style="position: absolute;margin-top: 57px;margin-left: 1px; width: 54px;height: 13px;border-radius: 4px;background: #F39C12;"' + ((percentageCharge > 0 && percentageCharge <= 20) ? ' class="blink"' : '') + '></div>');
+                                }
+
+                                content.push('<div style="position: absolute;margin-top: 71px;width: 56px;height: 15px;background: #FFFFFF;line-height: 15px;text-align: center;" class="small ' + ((circuitStatistics.powerStorageDrainRate > 0) ? 'text-warning' : '') + '"><strong>' + Math.floor(percentageCharge) + '%</strong></div>');
+
+                                if(circuitStatistics.powerStoredTimeUntilCharged !== null)
+                                {
+                                    let pad                 = function(num, size) { return ('000' + num).slice(size * -1); },
+                                        time                = parseFloat(circuitStatistics.powerStoredTimeUntilCharged).toFixed(3),
+                                        hours               = Math.floor(time / 60 / 60),
+                                        minutes             = Math.floor(time / 60) % 60,
+                                        seconds             = Math.floor(time - minutes * 60);
+
+                                        content.push('<div style="position: absolute;margin-top: 90px;width: 56px;height: 15px;color: #FFFFFF;line-height: 15px;text-align: center;font-size: 9px;"><strong>' + hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's</strong></div>');
+                                }
+                                if(circuitStatistics.powerStoredTimeUntilDrained !== null)
+                                {
+                                    let pad                 = function(num, size) { return ('000' + num).slice(size * -1); },
+                                        time                = parseFloat(circuitStatistics.powerStoredTimeUntilDrained).toFixed(3),
+                                        hours               = Math.floor(time / 60 / 60),
+                                        minutes             = Math.floor(time / 60) % 60,
+                                        seconds             = Math.floor(time - minutes * 60);
+
+                                        content.push('<div style="position: absolute;margin-top: 90px;width: 56px;height: 15px;color: #FFFFFF;line-height: 15px;text-align: center;font-size: 9px;"><strong>' + hours + 'h ' + pad(minutes, 2) + 'm ' + pad(seconds, 2) + 's</strong></div>');
+                                }
+
+                            content.push('</div>');
+
+                        content.push('</div>');
+                }
+            content.push('</div>');
+
+        return content.join('');
     }
 }
