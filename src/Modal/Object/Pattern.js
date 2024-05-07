@@ -44,24 +44,31 @@ export default class Modal_Object_Pattern
             }],
             callback    : function(values)
             {
-                let mCustomizationData      = baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject);
-                    if(mCustomizationData !== null)
-                    {
-                        // Delete
-                        for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
+                if(currentObject.customizationData !== undefined)
+                {
+                    currentObject.customizationData.PatternDesc.pathName = values.PatternDesc;
+                }
+                else
+                {
+                    let mCustomizationData      = baseLayout.buildableSubSystem.getObjectCustomizationData(currentObject);
+                        if(mCustomizationData !== null)
                         {
-                            if(mCustomizationData.values[i].name === 'PatternDesc')
+                            // Delete
+                            for(let i = (mCustomizationData.values.length - 1); i >= 0; i--)
                             {
-                                mCustomizationData.values.splice(i, 1);
+                                if(mCustomizationData.values[i].name === 'PatternDesc')
+                                {
+                                    mCustomizationData.values.splice(i, 1);
+                                }
+                            }
+
+                            // Push
+                            if(values.PatternDesc !== 'NULL')
+                            {
+                                mCustomizationData.values.push({name: 'PatternDesc', type: 'Object', value: {levelName: '', pathName: values.PatternDesc}});
                             }
                         }
-
-                        // Push
-                        if(values.PatternDesc !== 'NULL')
-                        {
-                            mCustomizationData.values.push({name: 'PatternDesc', type: 'Object', value: {levelName: '', pathName: values.PatternDesc}});
-                        }
-                    }
+                }
 
                 // Redraw!
                 new Promise(function(resolve){

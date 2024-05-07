@@ -608,7 +608,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : this.baseLayout.translate._('Switch to "%1$s"', 'FICSIT Foundation'),
+                                text        : this.baseLayout.translate._('Switch to "%1$s"', ((buildingData.className.includes('Build_Stair')) ? 'FICSIT Stairs' : 'FICSIT Foundation')),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'Ficsit'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -618,7 +618,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : this.baseLayout.translate._('Switch to "%1$s"', 'Concrete Foundation'),
+                                text        : this.baseLayout.translate._('Switch to "%1$s"', ((buildingData.className.includes('Build_Stair')) ? 'Concrete Stairs' : 'Concrete Foundation')),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'Concrete'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -628,7 +628,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : this.baseLayout.translate._('Switch to "%1$s"', 'Grip Metal Foundation'),
+                                text        : this.baseLayout.translate._('Switch to "%1$s"', ((buildingData.className.includes('Build_Stair')) ? 'Grip Metal Stairs' : 'Grip Metal Foundation')),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'GripMetal'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -638,7 +638,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : this.baseLayout.translate._('Switch to "%1$s"', 'Coated Concrete Foundation'),
+                                text        : this.baseLayout.translate._('Switch to "%1$s"', ((buildingData.className.includes('Build_Stair')) ? 'Coated Concrete Stairs' : 'Coated Concrete Foundation')),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'ConcretePolished'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
@@ -648,7 +648,7 @@ export default class BaseLayout_ContextMenu
                         {
                             contextMenu.push({
                                 icon        : 'fa-magic',
-                                text        : this.baseLayout.translate._('Switch to "%1$s"', 'Asphalt Foundation'),
+                                text        : this.baseLayout.translate._('Switch to "%1$s"', ((buildingData.className.includes('Build_Stair')) ? 'Asphalt Stairs' : 'Asphalt Foundation')),
                                 callback    : this.baseLayout.buildableSubSystem.switchObjectMaterial,
                                 argument    : ['foundation', 'Asphalt'],
                                 className   : 'buildableSubSystem_switchObjectMaterial'
