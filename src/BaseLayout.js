@@ -39,7 +39,7 @@ import Modal_Statistics_Storage                 from './Modal/Statistics/Storage
 import Modal_Buildings                          from './Modal/Buildings.js';
 import Modal_ColorSlots                         from './Modal/ColorSlots.js';
 import Modal_LightColorSlots                    from './Modal/LightColorSlots.js';
-import Modal_PowerCircuits                      from './Modal/PowerCircuits.js';
+import Modal_Power_Circuits                     from './Modal/Power/Circuits.js';
 import Modal_Schematics                         from './Modal/Schematics.js';
 import Modal_Selection                          from './Modal/Selection.js';
 import Modal_Trains                             from './Modal/Trains.js';
@@ -243,6 +243,7 @@ export default class BaseLayout
         $('#buildingsModal').off('show.bs.modal');
         $('#colorSlotsModal').off('click');
         $('#lightSlotsModal').off('click');
+        $('modalPowerCircuitsBreakPriority').off('click').hide();
         $('#modalPowerCircuits').off('click');
 
         for(let pathName in this.satisfactoryMap.collectableMarkers)
@@ -938,13 +939,13 @@ export default class BaseLayout
         this.maxAltitude = Number.MIN_SAFE_INTEGER;
 
         // Hold sub system to get better performance
-        this.foliageSubSystem       = new SubSystem_Foliage({baseLayout: this});
-        this.gameRulesSubSystem     = new SubSystem_GameRules({baseLayout: this});
-        this.mapSubSystem           = new SubSystem_Map({baseLayout: this});
-        this.overclockingSubSystem  = new SubSystem_Overclocking({baseLayout: this});
-        this.statisticsSubSystem    = new SubSystem_Statistics({baseLayout: this});
-        this.unlockSubSystem        = new SubSystem_Unlock({baseLayout: this});
-        this.worldGridSubSystem     = new SubSystem_WorldGrid();
+        this.foliageSubSystem           = new SubSystem_Foliage({baseLayout: this});
+        this.gameRulesSubSystem         = new SubSystem_GameRules({baseLayout: this});
+        this.mapSubSystem               = new SubSystem_Map({baseLayout: this});
+        this.overclockingSubSystem      = new SubSystem_Overclocking({baseLayout: this});
+        this.statisticsSubSystem        = new SubSystem_Statistics({baseLayout: this});
+        this.unlockSubSystem            = new SubSystem_Unlock({baseLayout: this});
+        this.worldGridSubSystem         = new SubSystem_WorldGrid();
 
         console.time('addMapLayers');
 
@@ -985,6 +986,9 @@ export default class BaseLayout
 
         // Check for blueprints proxies...
         this.blueprintSubSystem.addToProxy(currentObject);
+
+        // Add priority switches to circuits
+        this.circuitSubSystem.addPrioritySwitch(currentObject);
 
         // Needed when moving players
         if(currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C' && this.players[currentObject.pathName] !== undefined)
@@ -1190,6 +1194,7 @@ export default class BaseLayout
             $('#statisticsModal').on('hide.bs.modal', () => {
                 $('#statisticsModal .tab-content .tab-pane').html('');
             });
+
             // Swicth statistics tabs
             $('#statisticsModal a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
                 let newTab = $(e.target).attr('href');
@@ -1246,6 +1251,7 @@ export default class BaseLayout
                             break;
                     }
             });
+
             $('#researchModal').on('show.bs.modal', () => {
                 let statisticsSchematics = new Modal_Schematics({
                         baseLayout      : this
@@ -1265,7 +1271,7 @@ export default class BaseLayout
                     lightColorSlots.parse();
             });
             $('#modalPowerCircuits').on('click', () => {
-                let modalPowerCircuits = new Modal_PowerCircuits({
+                let modalPowerCircuits = new Modal_Power_Circuits({
                         baseLayout      : this
                     });
                     modalPowerCircuits.parse();
@@ -1324,6 +1330,7 @@ export default class BaseLayout
             $('#researchButton').show();
             $('#optionsButton').show();
 
+            // Force filling schematcis...
             // Delay radioactivity to avoid canvas error when map isn't fully loaded...
             window.requestAnimationFrame(() => { this.updateRadioactivityLayer(); });
 
@@ -3072,7 +3079,6 @@ export default class BaseLayout
 
 
         // Delete buildings affected to the Blueprint Designer
-        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner.Build_BlueprintDesigner_C')
         {
             let mBuildables = baseLayout.getObjectProperty(currentObject, 'mBuildables');
                 if(mBuildables !== null)

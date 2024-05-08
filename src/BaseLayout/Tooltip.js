@@ -8,6 +8,7 @@ import Building                                 from '../Building.js';
 
 import Building_AwesomeSink                     from '../Building/AwesomeSink.js';
 import Building_Beacon                          from '../Building/Beacon.js';
+import Building_CentralStorage                  from '../Building/CentralStorage.js';
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_FrackingExtractor               from '../Building/FrackingExtractor.js';
@@ -169,6 +170,8 @@ export default class BaseLayout_Tooltip
                                     case '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C':
                                     case '/Game/FactoryGame/Buildable/Factory/PriorityPowerSwitch/Build_PriorityPowerSwitch.Build_PriorityPowerSwitch_C':
                                         return Building_PowerSwitch.getTooltip(this.baseLayout, currentObject);
+                                    case '/Game/FactoryGame/Buildable/Factory/CentralStorage/Build_CentralStorage.Build_CentralStorage_C':
+                                        return Building_CentralStorage.getTooltip(this.baseLayout, currentObject);
                                 }
                                 switch(buildingData.category)
                                 {

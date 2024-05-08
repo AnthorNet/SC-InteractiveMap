@@ -1,8 +1,8 @@
 /* global Intl, gtag */
 
-import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
+import BaseLayout_Tooltip                       from '../../BaseLayout/Tooltip.js';
 
-export default class Modal_PowerCircuits
+export default class Modal_Power_Circuits
 {
     constructor(options)
     {

@@ -26,6 +26,33 @@ export default class Building_PowerSwitch
     }
 
     /**
+     * PRIORITY GROUP
+     */
+    static getPriorityGroup(baseLayout, currentObject)
+    {
+        let currentPriority = 0;
+        let mPriority = baseLayout.getObjectProperty(currentObject, 'mPriority');
+            if(mPriority !== null)
+            {
+                currentPriority = mPriority;
+            }
+
+        return currentPriority;
+    }
+
+    static setPriorityGroup(baseLayout, currentObject, priority)
+    {
+        if(priority === 0)
+        {
+            baseLayout.deleteObjectProperty(currentObject, 'mPriority');
+        }
+        else
+        {
+            baseLayout.setObjectProperty(currentObject, 'mPriority', priority, 'Int');
+        }
+    }
+
+    /**
      * CONTEXT MENU
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)

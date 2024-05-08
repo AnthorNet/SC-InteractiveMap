@@ -3,14 +3,24 @@ import SubSystem                                from '../SubSystem.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
 
+import Modal_Power_CircuitsBreakPriority        from '../Modal/Power/CircuitsBreakPriority.js';
+
 export default class SubSystem_Circuit extends SubSystem
 {
+    static get totalPriorityGroups(){ return 8; }
+
     constructor(options)
     {
         options.pathName        = 'Persistent_Level:PersistentLevel.CircuitSubsystem';
         super(options);
 
         this.circuitsColor      = {};
+        this.prioritySwitches   = [];
+
+        for(let i = 0; i <= SubSystem_Circuit.totalPriorityGroups; i++)
+        {
+            this.prioritySwitches[i] = [];
+        }
     }
 
 
@@ -401,6 +411,29 @@ export default class SubSystem_Circuit extends SubSystem
             return statistics;
     }
 
+    /**
+     * PRIORITY SWITCH
+     */
+    addPrioritySwitch(currentObject)
+    {
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PriorityPowerSwitch/Build_PriorityPowerSwitch.Build_PriorityPowerSwitch_C')
+        {
+            this.prioritySwitches[Building_PowerSwitch.getPriorityGroup(this.baseLayout, currentObject)].push(currentObject.pathName);
+
+            if($('#modalPowerCircuitsBreakPriority').css('display') === 'none')
+            {
+                $('#modalPowerCircuitsBreakPriority')
+                    .show()
+                    .on('click', () => {
+                        let modalPowerCircuitsBreakPriority = new Modal_Power_CircuitsBreakPriority({
+                                baseLayout      : this.baseLayout
+                            });
+                            modalPowerCircuitsBreakPriority.parse();
+                    });
+            }
+        }
+    }
+
     /*
      * DELETE NULLED OBJECTS
      */
@@ -408,22 +441,19 @@ export default class SubSystem_Circuit extends SubSystem
     {
         for(let i = 0; i < this.subSystem.extra.circuits.length; i++)
         {
-            let currentCiruitSubSystem = this.baseLayout.saveGameParser.getTargetObject(this.subSystem.extra.circuits[i].pathName);
-
-            for(let j = 0; j < currentCiruitSubSystem.properties.length; j++)
-            {
-                if(currentCiruitSubSystem.properties[j].name === 'mComponents')
+            let currentCiruitSubSystem  = this.baseLayout.saveGameParser.getTargetObject(this.subSystem.extra.circuits[i].pathName);
+            let mComponents             = this.baseLayout.getObjectProperty(currentCiruitSubSystem, 'mComponents');
+                if(mComponents !== null)
                 {
-                    for(let k = (currentCiruitSubSystem.properties[j].value.values.length - 1); k >= 0; k--)
+                    for(let k = (mComponents.values.length - 1); k >= 0; k--)
                     {
-                        let currentObject = this.baseLayout.saveGameParser.getTargetObject(currentCiruitSubSystem.properties[j].value.values[k].pathName);
+                        let currentObject = this.baseLayout.saveGameParser.getTargetObject(mComponents.values[k].pathName);
                             if(currentObject === null)
                             {
-                                currentCiruitSubSystem.properties[j].value.values.splice(k, 1);
+                                mComponents.values.splice(k, 1);
                             }
                     }
                 }
-            }
         }
     }
 

@@ -8,7 +8,7 @@ import Building_PowerLine                       from '../Building/PowerLine.js';
 import Modal_Statistics_Production              from '../Modal/Statistics/Production.js';
 import Modal_Statistics_Storage                 from '../Modal/Statistics/Storage.js';
 
-import Modal_PowerCircuits                      from '../Modal/PowerCircuits.js';
+import Modal_Power_Circuits                     from '../Modal/Power/Circuits.js';
 
 import Selection_Copy                           from '../Selection/Copy.js';
 import Selection_Delete                         from '../Selection/Delete.js';
@@ -1198,7 +1198,7 @@ export default class Modal_Selection
 
     static callbackModalPowerCircuitsStatistics(baseLayout, markers)
     {
-        let modalPowerCircuits = new Modal_PowerCircuits({
+        let modalPowerCircuits = new Modal_Power_Circuits({
                 baseLayout  : baseLayout,
                 markers     : markers
             });
