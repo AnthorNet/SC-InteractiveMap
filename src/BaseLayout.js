@@ -1331,6 +1331,9 @@ export default class BaseLayout
             $('#optionsButton').show();
 
             // Force filling schematcis...
+            let statisticsSchematics = new Modal_Schematics({baseLayout: this});
+                statisticsSchematics.getPurchasedSchematics();
+
             // Delay radioactivity to avoid canvas error when map isn't fully loaded...
             window.requestAnimationFrame(() => { this.updateRadioactivityLayer(); });
 
@@ -3079,6 +3082,11 @@ export default class BaseLayout
 
 
         // Delete buildings affected to the Blueprint Designer
+        if([
+            '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner.Build_BlueprintDesigner_C',
+            '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner_Mk2.Build_BlueprintDesigner_Mk2_C',
+            '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner_Mk3.Build_BlueprintDesigner_Mk3_C'
+        ].includes(currentObject.className))
         {
             let mBuildables = baseLayout.getObjectProperty(currentObject, 'mBuildables');
                 if(mBuildables !== null)
@@ -4582,26 +4590,25 @@ export default class BaseLayout
     getItemDataFromRecipe(currentObject, propertyName = 'mCurrentRecipe')
     {
         let recipe              = this.getObjectProperty(currentObject, propertyName);
+            if(recipe !== null)
+            {
+                // Extract recipe name
+                let recipeName = recipe.pathName.split('.')[1];
+                    if(this.recipesData[recipeName] !== undefined) //TODO: Bypass mod override?! ('|#|')
+                    {
+                        return this.recipesData[recipeName];
+                    }
+                    else
+                    {
+                        let fromClassName =  this.getRecipeFromClassName(recipe.pathName);
+                            if(fromClassName !== null)
+                            {
+                                return fromClassName;
+                            }
 
-        if(recipe !== null)
-        {
-            // Extract recipe name
-            let recipeName = recipe.pathName.split('.')[1];
-                if(this.recipesData[recipeName] !== undefined) //TODO: Bypass mod override?! ('|#|')
-                {
-                    return this.recipesData[recipeName];
-                }
-                else
-                {
-                    let fromClassName =  this.getRecipeFromClassName(recipe.pathName);
-                        if(fromClassName !== null)
-                        {
-                            return fromClassName;
-                        }
-
-                    console.log('Recipe not found?', recipeName, currentObject);
-                }
-        }
+                        console.log('Recipe not found?', recipeName, currentObject);
+                    }
+            }
 
         return null;
     }
@@ -4779,7 +4786,8 @@ export default class BaseLayout
             return this.buildingsData[this.buildingDataClassNameHashTable[className]];
         }
 
-        if(className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C'){ className = '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass.Build_GeneratorBiomass_C'; }
+        if(className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass.Build_GeneratorBiomass_C'){ className = '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass_Automated.Build_GeneratorBiomass_Automated_C'; }
+        if(className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C'){ className = '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass_Automated.Build_GeneratorBiomass_Automated_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C'){ className = '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StoragePlayer.Build_StoragePlayer_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageBlueprint.Build_StorageBlueprint_C'){ className = '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StoragePlayer.Build_StoragePlayer_C'; }
         if(className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C'){ className = '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C'; }

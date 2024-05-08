@@ -178,7 +178,6 @@ export default class Modal_Schematics
     parseAlternateRecipes()
     {
         $('#statisticsModalAlternateRecipes').empty();
-        this.baseLayout.collectedSchematics.resetCollected();
 
         let purchased   = this.getPurchasedSchematics();
         let unlocked    = 0;
@@ -263,7 +262,6 @@ export default class Modal_Schematics
 
                 if(currentSchematic.className !== undefined && purchased.includes(currentSchematic.className))
                 {
-                    this.baseLayout.collectedSchematics.addCollected(className);
                     htmlData.push('<td class="align-middle text-center text-success updateAlternativeStatus" width="30" data-schematic="' + className + '" data-status="purchased"><i class="fas fa-lock-open-alt" data-hover="tooltip" title="Available"></i></td>');
                     unlocked++;
                 }
@@ -754,6 +752,7 @@ export default class Modal_Schematics
     {
         if(this.purchasedSchematics === null)
         {
+                this.baseLayout.collectedSchematics.resetCollected();
             let purchasedAlternate      = [];
             let schematicManager        = this.baseLayout.saveGameParser.getTargetObject("Persistent_Level:PersistentLevel.schematicManager");
                 if(schematicManager !== null)
@@ -788,6 +787,7 @@ export default class Modal_Schematics
                                     }
 
                                     purchasedAlternate.push(mPurchasedSchematics.values[i].pathName);
+                                    this.baseLayout.collectedSchematics.addCollected(mPurchasedSchematics.values[i].pathName);
                                 }
                                 else
                                 {
