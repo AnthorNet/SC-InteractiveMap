@@ -1,7 +1,5 @@
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 
-import Modal_Schematics                         from '../Modal/Schematics.js';
-
 export default class Building_Production
 {
     static addContextMenu(baseLayout, currentObject, contextMenu)
@@ -43,19 +41,14 @@ export default class Building_Production
         let mCurrentRecipe      = baseLayout.getObjectProperty(currentObject, 'mCurrentRecipe');
         let selectedRecipes     = [];
         let selectOptions       = [];
-
-        let statisticsSchematics = new Modal_Schematics({
-                baseLayout      : baseLayout
-            });
-        let purchasedSchematics = statisticsSchematics.getPurchasedSchematics();
-
-        for(let recipeId in baseLayout.recipesData)
-        {
-            if(baseLayout.recipesData[recipeId].mProducedIn !== undefined && baseLayout.recipesData[recipeId].mProducedIn.includes(currentObject.className))
+        let purchasedSchematics = baseLayout.schematicSubSystem.getPurchasedSchematics();
+            for(let recipeId in baseLayout.recipesData)
             {
-                selectedRecipes.push(recipeId);
+                if(baseLayout.recipesData[recipeId].mProducedIn !== undefined && baseLayout.recipesData[recipeId].mProducedIn.includes(currentObject.className))
+                {
+                    selectedRecipes.push(recipeId);
+                }
             }
-        }
 
         selectedRecipes.sort(function(a, b){
             return baseLayout.recipesData[a].name.localeCompare(baseLayout.recipesData[b].name);

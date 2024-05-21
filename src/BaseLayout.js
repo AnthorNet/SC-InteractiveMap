@@ -20,6 +20,7 @@ import SubSystem_Overclocking                   from './SubSystem/Overclocking.j
 import SubSystem_PipeNetwork                    from './SubSystem/PipeNetwork.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
 import SubSystem_Railroad                       from './SubSystem/Railroad.js';
+import SubSystem_Schematic                      from './SubSystem/Schematic.js';
 import SubSystem_Statistics                     from './SubSystem/Statistics.js';
 import SubSystem_Time                           from './SubSystem/Time.js';
 import SubSystem_Unlock                         from './SubSystem/Unlock.js';
@@ -110,7 +111,6 @@ export default class BaseLayout
         this.translate                          = options.translate;
 
         this.collectedHardDrives                = new HardDrives({language: options.language});
-        this.collectedSchematics                = new Schematics({language: options.language});
         this.localStorage                       = this.collectedHardDrives.getLocaleStorage();
 
         this.showPlayersOnLoad                  = (this.localStorage !== null && this.localStorage.getItem('mapShowPlayersOnLoad') !== null) ? (this.localStorage.getItem('mapShowPlayersOnLoad') === 'true') : true;
@@ -353,7 +353,6 @@ export default class BaseLayout
     draw()
     {
         this.collectedHardDrives.resetCollected();
-        this.collectedSchematics.resetCollected();
 
         this.saveGameParser.load(() => {
             // Hold sub system to get better performance (Needed to parse objects)
@@ -943,6 +942,7 @@ export default class BaseLayout
         this.gameRulesSubSystem         = new SubSystem_GameRules({baseLayout: this});
         this.mapSubSystem               = new SubSystem_Map({baseLayout: this});
         this.overclockingSubSystem      = new SubSystem_Overclocking({baseLayout: this});
+        this.schematicSubSystem         = new SubSystem_Schematic({baseLayout: this});
         this.statisticsSubSystem        = new SubSystem_Statistics({baseLayout: this});
         this.unlockSubSystem            = new SubSystem_Unlock({baseLayout: this});
         this.worldGridSubSystem         = new SubSystem_WorldGrid();
@@ -1329,10 +1329,6 @@ export default class BaseLayout
             $('#statisticsButton').show();
             $('#researchButton').show();
             $('#optionsButton').show();
-
-            // Force filling schematcis...
-            let statisticsSchematics = new Modal_Schematics({baseLayout: this});
-                statisticsSchematics.getPurchasedSchematics();
 
             // Delay radioactivity to avoid canvas error when map isn't fully loaded...
             window.requestAnimationFrame(() => { this.updateRadioactivityLayer(); });
