@@ -375,7 +375,10 @@ export default class BaseLayout_ContextMenu
                 {
                     contextMenu = Building_PowerStorage.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
+                if(
+                        currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C'
+                     || currentObject.className === '/Game/FactoryGame/Buildable/Factory/PriorityPowerSwitch/Build_PriorityPowerSwitch.Build_PriorityPowerSwitch_C'
+                )
                 {
                     contextMenu = Building_PowerSwitch.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
@@ -420,10 +423,6 @@ export default class BaseLayout_ContextMenu
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PipeHyperStart/Build_PipeHyperStart.Build_PipeHyperStart_C')
                 {
                     contextMenu = Building_HyperTube.addContextMenu(this.baseLayout, currentObject, contextMenu);
-                }
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerSwitch/Build_PowerSwitch.Build_PowerSwitch_C')
-                {
-                    contextMenu = Building_PowerSwitch.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
                 if(buildingData.category === 'production')
                 {
