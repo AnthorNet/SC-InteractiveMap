@@ -206,9 +206,12 @@ export default class Modal_Map_GameRules
 
             if(gameRules !== null)
             {
+                this.baseLayout.saveGameParser.header.mapOptions = this.baseLayout.saveGameParser.header.mapOptions.replaceAll('?enableAdvancedGameSettings', '');
+
                 if($('#inputIsCreativeModeEnabled').is(':checked') === true)
                 {
                     this.baseLayout.saveGameParser.header.isCreativeModeEnabled = 1;
+                    this.baseLayout.saveGameParser.header.mapOptions = this.baseLayout.saveGameParser.header.mapOptions + '?enableAdvancedGameSettings';
 
                     this.baseLayout.setObjectProperty(gameState, 'mIsCreativeModeEnabled', (($('#inputHasInitialized').is(':checked') === true) ? 1 : 0), 'Bool');
                     this.baseLayout.setObjectProperty(gameRules, 'mHasInitialized', (($('#inputHasInitialized').is(':checked') === true) ? 1 : 0), 'Bool');
