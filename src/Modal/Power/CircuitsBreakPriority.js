@@ -1,6 +1,4 @@
 /* global Intl, gtag */
-import BaseLayout_Tooltip                       from '../../BaseLayout/Tooltip.js';
-
 import Building_PowerSwitch                     from '../../Building/PowerSwitch.js';
 
 export default class Modal_Power_CircuitsBreakPriority
