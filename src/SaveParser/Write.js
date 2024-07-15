@@ -990,7 +990,10 @@ export default class SaveParser_Write
                 }
                 else
                 {
-                    if(this.header.saveVersion >= 41 && currentObject.className.startsWith('/Script/FactoryGame.FG'))
+                    if(
+                            this.header.saveVersion >= 41
+                         && (currentObject.className.startsWith('/Script/FactoryGame.FG') || currentObject.className.startsWith('/Script/FicsitFarming.') || currentObject.className.startsWith('/Script/RefinedRDLib.'))
+                    )
                     {
                         entity += this.writeByte(0);
                         entity += this.writeByte(0);
@@ -1432,6 +1435,12 @@ export default class SaveParser_Write
                         // MOD: FicsIt-Networks
                         case 'FINGPUT1BufferPixel':
                             structure += this.writeFINGPUT1BufferPixel(currentProperty.value.values[i]);
+
+                            break;
+
+                        // MOD: FicsIt-Networks
+                        case 'FINDynamicStructHolder':
+                            structure += this.writeFINDynamicStructHolder(currentProperty.value.values[i]);
 
                             break;
 
@@ -2433,6 +2442,35 @@ export default class SaveParser_Write
                         break;
                 }
             }
+
+        return saveBinary;
+    }
+
+    writeFINDynamicStructHolder(value)
+    {
+        let saveBinary  = '';
+            saveBinary += this.writeInt(value.unk0);
+            saveBinary += this.writeString(value.type);
+
+            if(value.type === '/Script/FicsItNetworks.FINGPUT2DC_Lines')
+            {
+                saveBinary += this.writeString(value.unk1);
+                saveBinary += this.writeString(value.unk2);
+                saveBinary += this.writeInt(value.unk3);
+                saveBinary += this.writeInt(value.unk4);
+                saveBinary += this.writeString(value.unk5);
+                saveBinary += this.writeByte(value.unk6);
+                saveBinary += this.writeInt(value.unk7);
+                saveBinary += this.writeProperty(value.unk8);
+                saveBinary += this.writeDouble(value.unk9);
+                saveBinary += this.writeDouble(value.unk10);
+            }
+
+            for(let i = 0; i < value.properties; i++)
+            {
+                saveBinary += this.writeProperty(value.properties[i]);
+            }
+            saveBinary += this.writeString('None');
 
         return saveBinary;
     }

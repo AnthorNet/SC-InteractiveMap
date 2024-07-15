@@ -783,7 +783,10 @@ export default class SaveParser_Read
                 let missingBytes = (startByte + entityLength) - this.currentByte;
                     if(missingBytes > 4)
                     {
-                        if(this.header.saveVersion >= 41 && this.objects[objectKey].className.startsWith('/Script/FactoryGame.FG'))
+                        if(
+                                this.header.saveVersion >= 41
+                            && (this.objects[objectKey].className.startsWith('/Script/FactoryGame.FG') || this.objects[objectKey].className.startsWith('/Script/FicsitFarming.') || this.objects[objectKey].className.startsWith('/Script/RefinedRDLib.'))
+                        )
                         {
                             this.skipBytes(8);
                         }
@@ -1272,6 +1275,12 @@ export default class SaveParser_Read
                         // See: https://github.com/CoderDE/FicsIt-Networks/blob/3472a437bcd684deb7096ede8f03a7e338b4a43d/Source/FicsItNetworks/Computer/FINComputerGPUT1.h#L42
                         case 'FINGPUT1BufferPixel':
                             currentProperty.value.values.push(this.readFINGPUT1BufferPixel());
+
+                            break;
+
+                        // MOD: FicsIt-Networks
+                        case 'FINDynamicStructHolder':
+                            currentProperty.value.values.push(this.readFINDynamicStructHolder());
 
                             break;
 
@@ -2336,6 +2345,58 @@ export default class SaveParser_Read
                     }
 
                     data.structs.push(structure);
+            }
+
+        return data;
+    }
+
+    readFINDynamicStructHolder()
+    {
+        let data                 = {};
+            data.unk0            = this.readInt();
+            data.type            = this.readString();
+
+            switch(data.type)
+            {
+                // See: https://github.com/Panakotta00/FicsIt-Networks/blob/e2fda3bb7c3701504e419db43dd221b64e36312e/Source/FicsItNetworks/Public/Computer/FINComputerGPUT2.h#L265
+                case '/Script/FicsItNetworks.FINGPUT2DC_Box':
+                    break;
+
+                // See: https://github.com/Panakotta00/FicsIt-Networks/blob/e2fda3bb7c3701504e419db43dd221b64e36312e/Source/FicsItNetworks/Public/Computer/FINComputerGPUT2.h#L165
+                case '/Script/FicsItNetworks.FINGPUT2DC_Lines':
+                    data.unk1   = this.readString();
+                    data.unk2   = this.readString(); // Array
+                    data.unk3   = this.readInt();
+                    data.unk4   = this.readInt();
+                    data.unk5   = this.readString(); // Struct
+                    data.unk6   = this.readByte();
+                    data.unk7   = this.readInt();
+                    data.unk8   = this.readProperty();
+                    data.unk9   = this.readDouble();
+                    data.unk10  = this.readDouble();
+
+                    break;
+
+                default:
+                    this.worker.postMessage({command: 'alertParsing'});
+                    if(typeof Sentry !== 'undefined')
+                    {
+                        Sentry.setContext('currentData', data);
+                    }
+
+                    throw new Error('Unimplemented `' + data.type + '` in FINDynamicStructHolder');
+            }
+
+            data.properties      = [];
+            while(true)
+            {
+                let subStructProperty = this.readProperty();
+                    if(subStructProperty === null)
+                    {
+                        break;
+                    }
+
+                data.properties.push(subStructProperty);
             }
 
         return data;
