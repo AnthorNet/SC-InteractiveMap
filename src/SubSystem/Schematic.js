@@ -233,8 +233,13 @@ export default class SubSystem_Schematic extends SubSystem
                                 switch(currentResearch[1])
                                 {
                                     //{levelName: "", pathName: "/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_HardDrive.BPD_ResearchTree_HardDrive_C"}
+                                    case 'AO':
+                                    case 'AOrgans':
                                     case 'AlienOrganisms':
                                         currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_AlienOrganisms.BPD_ResearchTree_AlienOrganisms_C';
+                                        break;
+                                    case 'Alien':
+                                        currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_AlienTech.BPD_ResearchTree_AlienTech_C';
                                         break;
                                     case 'Caterium':
                                         currentTree = '/Game/FactoryGame/Schematics/Research/BPD_ResearchTree_Caterium.BPD_ResearchTree_Caterium_C';
