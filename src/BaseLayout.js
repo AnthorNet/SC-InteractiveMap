@@ -10,6 +10,7 @@ import BaseLayout_Tooltip                       from './BaseLayout/Tooltip.js';
 
 import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Blueprint                      from './SubSystem/Blueprint.js';
+import SubSystem_CentralStorage                 from './SubSystem/CentralStorage.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
 import SubSystem_Fauna                          from './SubSystem/Fauna.js';
 import SubSystem_Foliage                        from './SubSystem/Foliage.js';
@@ -163,6 +164,7 @@ export default class BaseLayout
             playerCratesLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], count: 0},
             playerMinersLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
             playerProductorsLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
+            playerPortalsLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], filters: []},
             playerPadsLayer                         : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], filters: []},
 
             playerBiomassGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
@@ -243,7 +245,8 @@ export default class BaseLayout
         $('#buildingsModal').off('show.bs.modal');
         $('#colorSlotsModal').off('click');
         $('#lightSlotsModal').off('click');
-        $('modalPowerCircuitsBreakPriority').off('click').hide();
+        $('#modalPowerCircuitsBreakPriority').off('click').hide();
+        $('#modalCentralStorage').off('click').hide();
         $('#modalPowerCircuits').off('click');
 
         for(let pathName in this.satisfactoryMap.collectableMarkers)
@@ -938,6 +941,7 @@ export default class BaseLayout
         this.maxAltitude = Number.MIN_SAFE_INTEGER;
 
         // Hold sub system to get better performance
+        this.centralStorageSubSystem    = new SubSystem_CentralStorage({baseLayout: this});
         this.foliageSubSystem           = new SubSystem_Foliage({baseLayout: this});
         this.gameRulesSubSystem         = new SubSystem_GameRules({baseLayout: this});
         this.mapSubSystem               = new SubSystem_Map({baseLayout: this});
