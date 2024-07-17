@@ -61,7 +61,7 @@ export default class BaseLayout_Tooltip
             {
                 if(Building_Conveyor.isConveyor(currentObject))
                 {
-                    return this.setBeltTooltipContent(currentObject);
+                    return Building_Conveyor.getTooltip(this.baseLayout, this, currentObject);
                 }
                 if(Building_Pipeline.isPipeline(currentObject))
                 {
@@ -197,79 +197,6 @@ export default class BaseLayout_Tooltip
             }
 
         return null;
-    }
-
-    setBeltTooltipContent(currentObject)
-    {
-        let beltInventory = [];
-            if(currentObject.extra !== undefined && currentObject.extra.items.length > 0)
-            {
-                for(let i = 0; i < currentObject.extra.items.length; i++)
-                {
-                    let currentItemData = this.baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name);
-                        if(currentItemData !== null)
-                        {
-                            beltInventory.push({
-                                className   : currentItemData.className,
-                                name        : currentItemData.name,
-                                image       : currentItemData.image,
-                                qty         : 1
-                            });
-                        }
-                }
-            }
-
-        let beltData        = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let distance        = '';
-
-        // Belt
-        let splineData      = BaseLayout_Math.extractSplineData(this.baseLayout, currentObject);
-            if(splineData !== null)
-            {
-                distance = ' (' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(splineData.distance * 10) / 10) + 'm)';
-            }
-
-        // Conveyor lift
-        let mTopTransform = this.baseLayout.getObjectProperty(currentObject, 'mTopTransform');
-            if(mTopTransform !== null)
-            {
-                for(let i = 0; i < mTopTransform.values.length; i++)
-                {
-                    if(mTopTransform.values[i].name === 'Translation')
-                    {
-                        let height      = Math.abs(mTopTransform.values[i].value.values.z) / 100;
-                            distance    = ' (' + new Intl.NumberFormat(this.baseLayout.language).format(Math.round(height * 10) / 10) + 'm)';
-                    }
-                }
-            }
-
-        let content         = [];
-
-            // HEADER
-            if(beltData !== null)
-            {
-                content.push('<div><strong>' + beltData.name + distance + '</strong></div>');
-            }
-            else
-            {
-                content.push('<div><strong>' + currentObject.className + distance + '</strong></div>');
-            }
-
-            // INVENTORY
-            content.push('<div style="' + this.genericStorageBackgroundStyle + '" class="mt-3">');
-                content.push('<div style="margin: 0 auto;width: 400px;">');
-                    if(beltInventory.length > 0)
-                    {
-                        content.push(this.baseLayout.setInventoryTableSlot(beltInventory));
-                    }
-                content.push('</div>');
-            content.push('</div>');
-
-        return '<div class="d-flex" style="' + this.genericTooltipBackgroundStyle + '">\
-                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
-                        ' + content.join('') + '\
-                    </div>\
-                </div>';
     }
 
     setBuildingExtractionTooltipContent(currentObject, buildingData)

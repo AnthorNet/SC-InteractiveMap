@@ -417,6 +417,79 @@ export default class Building_Conveyor extends Building
     /**
      * TOOLTIP
      */
+    static getTooltip(baseLayout, tooltip, currentObject)
+    {
+        let beltInventory = [];
+            if(currentObject.extra !== undefined && currentObject.extra.items.length > 0)
+            {
+                for(let i = 0; i < currentObject.extra.items.length; i++)
+                {
+                    let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name);
+                        if(currentItemData !== null)
+                        {
+                            beltInventory.push({
+                                className   : currentItemData.className,
+                                name        : currentItemData.name,
+                                image       : currentItemData.image,
+                                qty         : 1
+                            });
+                        }
+                }
+            }
+
+        let beltData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
+        let distance        = '';
+
+        // Belt
+        let splineData      = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
+            if(splineData !== null)
+            {
+                distance = ' (' + new Intl.NumberFormat(baseLayout.language).format(Math.round(splineData.distance * 10) / 10) + 'm)';
+            }
+
+        // Conveyor lift
+        let mTopTransform = baseLayout.getObjectProperty(currentObject, 'mTopTransform');
+            if(mTopTransform !== null)
+            {
+                for(let i = 0; i < mTopTransform.values.length; i++)
+                {
+                    if(mTopTransform.values[i].name === 'Translation')
+                    {
+                        let height      = Math.abs(mTopTransform.values[i].value.values.z) / 100;
+                            distance    = ' (' + new Intl.NumberFormat(baseLayout.language).format(Math.round(height * 10) / 10) + 'm)';
+                    }
+                }
+            }
+
+        let content         = [];
+
+            // HEADER
+            if(beltData !== null)
+            {
+                content.push('<div><strong>' + beltData.name + distance + '</strong></div>');
+            }
+            else
+            {
+                content.push('<div><strong>' + currentObject.className + distance + '</strong></div>');
+            }
+
+            // INVENTORY
+            content.push('<div style="' + tooltip.genericStorageBackgroundStyle + '" class="mt-3">');
+                content.push('<div style="margin: 0 auto;width: 400px;">');
+                    if(beltInventory.length > 0)
+                    {
+                        content.push(baseLayout.setInventoryTableSlot(beltInventory));
+                    }
+                content.push('</div>');
+            content.push('</div>');
+
+        return '<div class="d-flex" style="' + tooltip.genericTooltipBackgroundStyle + '">\
+                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                        ' + content.join('') + '\
+                    </div>\
+                </div>';
+    }
+
     static bindTooltip(baseLayout, currentObject, tooltipOptions)
     {
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
@@ -434,7 +507,7 @@ export default class Building_Conveyor extends Building
 
                     if(typeof marker.setDashArray === 'function')
                     {
-                        marker.setDashArray();
+                        marker.setDashArray(baseLayout);
                     }
             }
 
@@ -477,7 +550,7 @@ export default class Building_Conveyor extends Building
 
                                                     if(typeof connectedMarker.setDashArray === 'function')
                                                     {
-                                                        connectedMarker.setDashArray();
+                                                        connectedMarker.setDashArray(baseLayout);
                                                     }
                                                 }
                                         }
@@ -765,14 +838,14 @@ if('undefined' !== typeof L) // Avoid worker error
             L.Polyline.prototype.onRemove.call(this, map);
         },
 
-        setDashArray()
+        setDashArray(baseLayout)
         {
             // Check conveyor direction
             let flowDirection   = 1;
-            let conveyorAny0    = this.baseLayout.saveGameParser.getTargetObject(this.options.pathName + '.ConveyorAny0'); //TODO: Dynamic?!
+            let conveyorAny0    = baseLayout.saveGameParser.getTargetObject(this.options.pathName + '.ConveyorAny0'); //TODO: Dynamic?!
                 if(conveyorAny0 !== null)
                 {
-                    let mDirection = this.baseLayout.getObjectProperty(conveyorAny0, 'mDirection');
+                    let mDirection = baseLayout.getObjectProperty(conveyorAny0, 'mDirection');
                         if(mDirection.value === 'EFactoryConnectionDirection::FCD_INPUT')
                         {
                             flowDirection = -1;
