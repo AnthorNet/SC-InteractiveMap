@@ -230,7 +230,7 @@ export default class SubSystem_Map extends SubSystem
                 boundaries = {xMin: Infinity, xMax: -Infinity, yMin: Infinity, yMax: -Infinity};
                 for(let currentSplineData in splineData)
                 {
-                    for(let i = 0; i < (splineData[currentSplineData].length - 1); i++)
+                    for(let i = 0; i < splineData[currentSplineData].length; i++)
                     {
                         boundaries.xMin = Math.min(boundaries.xMin, splineData[currentSplineData][i][0]);
                         boundaries.xMax = Math.max(boundaries.xMax, splineData[currentSplineData][i][0]);
@@ -240,8 +240,8 @@ export default class SubSystem_Map extends SubSystem
                 }
 
                 // Add padding to boundaries
-                let xPadding            = (boundaries.xMax - boundaries.xMin) * 0.2;
-                let yPadding            = (boundaries.yMax - boundaries.yMin) * 0.2;
+                let xPadding            = Math.max((boundaries.xMax - boundaries.xMin), 50000) * 0.2;
+                let yPadding            = Math.max((boundaries.yMax - boundaries.yMin), 50000) * 0.2;
                     boundaries.xMin    -= xPadding;
                     boundaries.xMax    += xPadding;
                     boundaries.yMin    -= yPadding;
@@ -292,22 +292,25 @@ export default class SubSystem_Map extends SubSystem
             {
                 for(let currentSplineData in splineData)
                 {
-                    let points = [];
-                        for(let i = 0; i < splineData[currentSplineData].length; i++)
-                        {
-                            let x               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + splineData[currentSplineData][i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
-                            let y               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + splineData[currentSplineData][i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
-                                points.push(x + ',' + y);
-                        }
+                    if(splineData[currentSplineData].length > 1)
+                    {
+                        let points = [];
+                            for(let i = 0; i < splineData[currentSplineData].length; i++)
+                            {
+                                let x               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + splineData[currentSplineData][i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
+                                let y               = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + splineData[currentSplineData][i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
+                                    points.push(x + ',' + y);
+                            }
 
-                    html.push('<svg viewBox="0 0 ' + containerSize + ' ' + containerSize + '" xmlns="http://www.w3.org/2000/svg" style="position: absolute;" id="miniMap_' + currentSplineData.replace(':', '-').replace('.', '-').replace('.', '-') + '"><polyline points="' + points.join(' ') + '" stroke="#FFC0CB" stroke-width="2" fill="none" /></svg>');
+                        html.push('<svg viewBox="0 0 ' + containerSize + ' ' + containerSize + '" xmlns="http://www.w3.org/2000/svg" style="position: absolute;" id="miniMap_' + currentSplineData.replace(':', '-').replace('.', '-').replace('.', '-') + '"><polyline points="' + points.join(' ') + '" stroke="#FFC0CB" stroke-width="2" fill="none" /></svg>');
+                    }
                 }
             }
 
             // Generate icons
             if(iconsData !== null)
             {
-                for(let i = 0; i < (iconsData.length - 1); i++)
+                for(let i = 0; i < (iconsData.length - ((iconsData.length > 1) ? 1 : 0)); i++)
                 {
                     let x           = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundWest + this.baseLayout.satisfactoryMap.westOffset) + iconsData[i][0]) / westEastLength * backgroundSize) - xMiniMapOffset;
                     let y           = ((Math.abs(this.baseLayout.satisfactoryMap.mappingBoundNorth + this.baseLayout.satisfactoryMap.northOffset) + iconsData[i][1]) / northSouthLength * backgroundSize) - yMiniMapOffset;
