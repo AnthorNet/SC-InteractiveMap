@@ -11,6 +11,7 @@ import Building_Locomotive                      from '../Building/Locomotive.js'
 import Building_MapMarker                       from '../Building/MapMarker.js';
 import Building_Miner                           from '../Building/Miner.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
+import Building_Portal                          from '../Building/Portal.js';
 import Building_PowerLine                       from '../Building/PowerLine.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
@@ -257,6 +258,10 @@ export default class BaseLayout_ContextMenu
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
                 {
                     contextMenu = Building_RadarTower.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                }
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Portal/Build_Portal.Build_Portal_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Portal/Build_PortalSatellite.Build_PortalSatellite_C')
+                {
+                    contextMenu = Building_Portal.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
 
                 if(buildingData.category === 'frame' || buildingData.category === 'foundation' || buildingData.category === 'roof')

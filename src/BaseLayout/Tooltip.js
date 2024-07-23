@@ -16,6 +16,7 @@ import Building_FrackingSmasher                 from '../Building/FrackingSmashe
 import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoThermal.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_Pipeline                        from '../Building/Pipeline.js';
+import Building_Portal                          from '../Building/Portal.js';
 import Building_PowerPole                       from '../Building/PowerPole.js';
 import Building_PowerStorage                    from '../Building/PowerStorage.js';
 import Building_PowerSwitch                     from '../Building/PowerSwitch.js';
@@ -172,6 +173,9 @@ export default class BaseLayout_Tooltip
                                         return Building_PowerSwitch.getTooltip(this.baseLayout, currentObject);
                                     case '/Game/FactoryGame/Buildable/Factory/CentralStorage/Build_CentralStorage.Build_CentralStorage_C':
                                         return Building_CentralStorage.getTooltip(this.baseLayout, currentObject);
+                                    case '/Game/FactoryGame/Buildable/Factory/Portal/Build_Portal.Build_Portal_C':
+                                    case '/Game/FactoryGame/Buildable/Factory/Portal/Build_PortalSatellite.Build_PortalSatellite_C':
+                                        return Building_Portal.getTooltip(this.baseLayout, currentObject, this.genericTooltipBackgroundStyle);
                                 }
                                 switch(buildingData.category)
                                 {

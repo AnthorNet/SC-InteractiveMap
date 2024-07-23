@@ -20,6 +20,7 @@ import SubSystem_Map                            from './SubSystem/Map.js';
 import SubSystem_Overclocking                   from './SubSystem/Overclocking.js';
 import SubSystem_PipeNetwork                    from './SubSystem/PipeNetwork.js';
 import SubSystem_Player                         from './SubSystem/Player.js';
+import SubSystem_Portal                         from './SubSystem/Portal.js';
 import SubSystem_Railroad                       from './SubSystem/Railroad.js';
 import SubSystem_Schematic                      from './SubSystem/Schematic.js';
 import SubSystem_Statistics                     from './SubSystem/Statistics.js';
@@ -56,6 +57,7 @@ import Building_Locomotive                      from './Building/Locomotive.js';
 import Building_MapMarker                       from './Building/MapMarker.js';
 import Building_Pipeline                        from './Building/Pipeline.js';
 import Building_Light                           from './Building/Light.js';
+import Building_Portal                          from './Building/Portal.js';
 import Building_PowerLine                       from './Building/PowerLine.js';
 import Building_RadarTower                      from './Building/RadarTower.js';
 import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
@@ -364,6 +366,7 @@ export default class BaseLayout
             this.circuitSubSystem       = new SubSystem_Circuit({baseLayout: this});
             this.gameStateSubSystem     = new SubSystem_GameState({baseLayout: this});
             this.pipeNetworkSubSystem   = new SubSystem_PipeNetwork({baseLayout: this});
+            this.portalSubSystem        = new SubSystem_Portal({baseLayout: this});
             this.railroadSubSystem      = new SubSystem_Railroad({baseLayout: this});
             this.timeSubSystem          = new SubSystem_Time({baseLayout: this});
 
@@ -990,6 +993,9 @@ export default class BaseLayout
 
         // Check for blueprints proxies...
         this.blueprintSubSystem.addToProxy(currentObject);
+
+        // Hold portals for performance...
+        this.portalSubSystem.add(currentObject);
 
         // Add priority switches to circuits
         this.circuitSubSystem.addPrioritySwitch(currentObject);
@@ -5246,6 +5252,10 @@ export default class BaseLayout
                         {
                             Building_RadarTower.bindTooltip(this, currentObject, tooltipOptions);
                         }
+                        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Portal/Build_Portal.Build_Portal_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Portal/Build_PortalSatellite.Build_PortalSatellite_C')
+                        {
+                            Building_Portal.bindTooltip(this, currentObject, tooltipOptions);
+                        }
                         if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                         {
                             Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
@@ -5277,6 +5287,10 @@ export default class BaseLayout
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
                 {
                     Building_RadarTower.unbindTooltip(this, currentObject);
+                }
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Portal/Build_Portal.Build_Portal_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Portal/Build_PortalSatellite.Build_PortalSatellite_C')
+                {
+                    Building_Portal.unbindTooltip(this, currentObject);
                 }
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {

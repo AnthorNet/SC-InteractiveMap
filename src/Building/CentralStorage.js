@@ -45,7 +45,7 @@ export default class Building_CentralStorage
         if(storageContent !== null)
         {
             let currentItem         = baseLayout.getItemDataFromClassName(storageContent.currentItem);
-                content.push('<table class="mx-auto"><tr><td>' + baseLayout.getInventoryImage(currentItem, 96) + '</td></tr></table>');
+                content.push('<table class="mx-auto"><tr><td><div style="animation: interference 4s infinite;">' + baseLayout.getInventoryImage(currentItem, 96) + '</div></td></tr></table>');
                 content.push('<br />');
         }
 

@@ -420,24 +420,21 @@ if('undefined' !== typeof L) // Avoid worker error
             // Check powerline direction
             let flowDirection   = 1;
 
-            /*
-            let source          = currentObject.extra.source.pathName.split('.');
-                source.pop();
-            let sourceObject    = baseLayout.saveGameParser.getTargetObject(source.join('.'));
-            */
-
-            let target          = currentObject.extra.target.pathName.split('.');
-                target.pop();
-            let targetObject    = baseLayout.saveGameParser.getTargetObject(target.join('.'));
-
-
-            if(targetObject !== null)
+            if(currentObject.extra !== undefined)
             {
-                let targetBuildingData = baseLayout.getBuildingDataFromClassName(targetObject.className);
-                    if(targetBuildingData !== null && targetBuildingData.category !== 'generator' && targetBuildingData.category !== 'powerPole')
-                    {
-                        flowDirection = -1;
-                    }
+                let target          = currentObject.extra.target.pathName.split('.');
+                    target.pop();
+                let targetObject    = baseLayout.saveGameParser.getTargetObject(target.join('.'));
+
+
+                if(targetObject !== null)
+                {
+                    let targetBuildingData = baseLayout.getBuildingDataFromClassName(targetObject.className);
+                        if(targetBuildingData !== null && targetBuildingData.category !== 'generator' && targetBuildingData.category !== 'powerPole')
+                        {
+                            flowDirection = -1;
+                        }
+                }
             }
 
             // Flow animation
