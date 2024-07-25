@@ -661,6 +661,10 @@ export default class BaseLayout_Modal
                     {
                         backgroundStyle = 'background: linear-gradient(135deg, ' + options.inputOptions[slotIndex].primaryColor + ' 0%, ' + options.inputOptions[slotIndex].primaryColor + ' 50%, ' + options.inputOptions[slotIndex].secondaryColor + ' 51%, ' + options.inputOptions[slotIndex].secondaryColor + ' 100%);';
                     }
+                    if(options.inputOptions[slotIndex].backgroundImage !== undefined)
+                    {
+                        backgroundStyle += 'background-image: url(' + options.inputOptions[slotIndex].backgroundImage + ');background-position: center;';
+                    }
 
                 let borderStyle     = 'border: 1px solid #000000;';
                 let sizeStyle       = 'width: 96px;height: 96px;';
@@ -676,13 +680,12 @@ export default class BaseLayout_Modal
                         radiusStyle     = 'border-radius: 5px;';
                     }
 
-                    html.push('<div class="d-flex flex-row modal-selectColorSlot align-items-center" style="position: relative;' + backgroundStyle + sizeStyle + borderStyle + radiusStyle + 'margin: 2px;" data-slot="' + options.inputOptions[slotIndex].value + '">');
+                    html.push('<div class="d-flex flex-row modal-selectColorSlot align-items-center" style="position: relative;' + backgroundStyle + sizeStyle + borderStyle + radiusStyle + 'margin: 2px;cursor: pointer;" data-slot="' + options.inputOptions[slotIndex].value + '">');
                         html.push('<div class="w-100 text-center">');
-                            html.push('<strong style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">' + options.inputOptions[slotIndex].text + '</strong>');
+                            html.push('<strong style="font-size: 95%;text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">' + options.inputOptions[slotIndex].text + '</strong>');
                         html.push('</div>');
                     html.push('</div>');
             }
-            html.push('</div>');
 
             group.append(html.join(''));
             input.hide();

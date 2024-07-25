@@ -33,8 +33,15 @@ export default class SubSystem_Buildable extends SubSystem
         // Hidden slots
         {r: 0.1098039299249649, g: 0.1098039299249649, b: 0.1098039299249649, a: 1},    // Foundations
         {r: 0.9529412388801575, g: 0.3019607961177826, b: 0.06666667014360428, a: 1},   // Pipes
-        {r: 1, g: 1, b: 1, a: 1}                                                        // Concrete
+        {r: 1, g: 1, b: 1, a: 1},                                                       // Concrete
+
+        // Finishes
+        {r: 0.3450980392156863, g: 0.3686274509803922, b: 0.3686274509803922, a: 1},    // Carbon Steel
+        {r: 1, g : 0.8431372549019608, b: 0, a: 1},                                     // Caterium
+        {r: 0.8470588235294118, g: 0.8588235294117647, b: 0.8705882352941176, a: 1},    // Chrome
+        {r: 0.7215686274509804, g: 0.4509803921568627, b: 0.2, a: 1}                    // Copper
     ]; }
+
     static get secondaryColors(){ return [
         {r: 0.11372549831867218, g: 0.13333329558372498, b: 0.26274511218070984, a: 1},
 
@@ -112,21 +119,30 @@ export default class SubSystem_Buildable extends SubSystem
             if(SwatchDesc !== null)
             {
                 let currentSwatchDesc = SwatchDesc.value.pathName;
+                    if(currentSwatchDesc === '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Unpainted.PaintFinishDesc_Unpainted_C')
+                    {
+                        return 0;
+                    }
+
                     switch(currentSwatchDesc)
                     {
-                        case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Caterium.PaintFinishDesc_Caterium_C':
+                        case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C':
+                            return 16;
+                        case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C':
+                            return 18;
+
                         case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_CarbonSteel.PaintFinishDesc_CarbonSteel_C':
+                            return 19;
+                        case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Caterium.PaintFinishDesc_Caterium_C':
+                            return 20;
                         case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Chrome.PaintFinishDesc_Chrome_C':
+                            return 21;
                         case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Copper.PaintFinishDesc_Copper_C':
-                        case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Unpainted.PaintFinishDesc_Unpainted_C':
-                            return 9999;
+                            return 22;
 
                         case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C':
                             return 255;
-                        case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C':
-                            return 18;
-                        case '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C':
-                            return 16;
+
                         default:
                             let slot = currentSwatchDesc.split('.');
                                 slot = parseInt(slot[0].replace('/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot', ''));
@@ -192,9 +208,24 @@ export default class SubSystem_Buildable extends SubSystem
                 case 255:
                     currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C';
                     break;
+
+                case 19:
+                    currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_CarbonSteel.PaintFinishDesc_CarbonSteel_C';
+                    break;
+                case 20:
+                    currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Caterium.PaintFinishDesc_Caterium_C';
+                    break;
+                case 21:
+                    currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Chrome.PaintFinishDesc_Chrome_C';
+                    break;
+                case 22:
+                    currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Copper.PaintFinishDesc_Copper_C';
+                    break;
+
                 case 18:
                     currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C';
                     break;
+
                 default:
                     currentObject.customizationData.SwatchDesc.pathName = '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Slot' + slotIndex + '.SwatchDesc_Slot' + slotIndex + '_C';
             }
@@ -334,11 +365,6 @@ export default class SubSystem_Buildable extends SubSystem
     getObjectPrimaryColor(currentObject)
     {
         let colorSlot           = this.getObjectColorSlot(currentObject);
-            if(colorSlot === 9999)
-            {
-                return this.getPaintFinishColor(currentObject);
-            }
-
             if(colorSlot === 255)
             {
                 let PrimaryColorCustomizationData = this.getObjectCustomizationData(currentObject, 'PrimaryColor');
@@ -394,6 +420,10 @@ export default class SubSystem_Buildable extends SubSystem
                 let customColor = this.getPlayerCustomColor();
                     return customColor.primaryColor;
             }
+            if(colorSlot >= 19 && colorSlot <= 22)
+            {
+                return this.getDefaultPrimaryColorSlot(colorSlot);
+            }
 
         let playerColorSlots    = this.getPlayerColorSlots();
             if(playerColorSlots[colorSlot] === undefined)
@@ -408,11 +438,6 @@ export default class SubSystem_Buildable extends SubSystem
     getObjectSecondaryColor(currentObject)
     {
         let colorSlot           = this.getObjectColorSlot(currentObject);
-            if(colorSlot === 9999)
-            {
-                return this.getPaintFinishColor(currentObject);
-            }
-
             if(colorSlot === 255)
             {
                 let SecondaryColorCustomizationData = this.getObjectCustomizationData(currentObject, 'SecondaryColor');
@@ -468,6 +493,10 @@ export default class SubSystem_Buildable extends SubSystem
                 let customColor = this.getPlayerCustomColor();
                     return customColor.secondaryColor;
             }
+            if(colorSlot >= 19 && colorSlot <= 22)
+            {
+                return this.getDefaultPrimaryColorSlot(colorSlot);
+            }
 
         let playerColorSlots    = this.getPlayerColorSlots();
             if(playerColorSlots[colorSlot] === undefined)
@@ -478,49 +507,6 @@ export default class SubSystem_Buildable extends SubSystem
 
         return playerColorSlots[colorSlot].secondaryColor;
     }
-
-    getPaintFinishColor(currentObject)
-    {
-        let SwatchDesc  = this.getObjectCustomizationData(currentObject, 'SwatchDesc');
-            if(SwatchDesc !== null)
-            {
-                let currentSwatchDesc = SwatchDesc.value.pathName;
-                    switch(currentSwatchDesc)
-                    {
-                        case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Caterium.PaintFinishDesc_Caterium_C':
-                            return {
-                                r : BaseLayout_Math.linearColorToRGB(1),
-                                g : BaseLayout_Math.linearColorToRGB(0.8431372549019608),
-                                b : BaseLayout_Math.linearColorToRGB(0),
-                                a : BaseLayout_Math.linearColorToRGB(1)
-                            };
-                        case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_CarbonSteel.PaintFinishDesc_CarbonSteel_C':
-                        case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Unpainted.PaintFinishDesc_Unpainted_C':
-                            return {
-                                r : BaseLayout_Math.linearColorToRGB(0.3450980392156863),
-                                g : BaseLayout_Math.linearColorToRGB(0.3686274509803922),
-                                b : BaseLayout_Math.linearColorToRGB(0.3686274509803922),
-                                a : BaseLayout_Math.linearColorToRGB(1)
-                            };
-                        case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Chrome.PaintFinishDesc_Chrome_C':
-                            return {
-                                r : BaseLayout_Math.linearColorToRGB(0.8470588235294118),
-                                g : BaseLayout_Math.linearColorToRGB(0.8588235294117647),
-                                b : BaseLayout_Math.linearColorToRGB(0.8705882352941176),
-                                a : BaseLayout_Math.linearColorToRGB(1)
-                            };
-                        case '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Copper.PaintFinishDesc_Copper_C':
-                            return {
-                                r : BaseLayout_Math.linearColorToRGB(0.7215686274509804),
-                                g : BaseLayout_Math.linearColorToRGB(0.4509803921568627),
-                                b : BaseLayout_Math.linearColorToRGB(0.2),
-                                a : BaseLayout_Math.linearColorToRGB(1)
-                            };
-                    }
-            }
-    }
-
-
 
     getPlayerColorSlots()
     {

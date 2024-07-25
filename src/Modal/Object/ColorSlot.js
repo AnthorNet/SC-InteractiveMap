@@ -45,16 +45,6 @@ export default class Modal_Object_ColorSlot
                 text            : 'FICSIT Foundation'
             });
         }
-        if(buildingData.category === 'foundation' || buildingData.category === 'wall')
-        {
-            selectOptions.push({
-                fullWidth       : true,
-                primaryColor    : 'rgb(' + playerColors[18].primaryColor.r + ', ' + playerColors[18].primaryColor.g + ', ' + playerColors[18].primaryColor.b + ')',
-                secondaryColor  : 'rgb(' + playerColors[18].secondaryColor.r + ', ' + playerColors[18].secondaryColor.g + ', ' + playerColors[18].secondaryColor.b + ')',
-                value           : 18,
-                text            : 'Concrete Structure'
-            });
-        }
         if(Building_Pipeline.isPipeline(currentObject))
         {
             selectOptions.push({
@@ -63,6 +53,16 @@ export default class Modal_Object_ColorSlot
                 secondaryColor  : 'rgb(' + playerColors[17].secondaryColor.r + ', ' + playerColors[17].secondaryColor.g + ', ' + playerColors[17].secondaryColor.b + ')',
                 value           : 17,
                 text            : 'FICSIT Pipe'
+            });
+        }
+        if(buildingData.category === 'foundation' || buildingData.category === 'wall')
+        {
+            selectOptions.push({
+                fullWidth       : true,
+                primaryColor    : 'rgb(' + playerColors[18].primaryColor.r + ', ' + playerColors[18].primaryColor.g + ', ' + playerColors[18].primaryColor.b + ')',
+                secondaryColor  : 'rgb(' + playerColors[18].secondaryColor.r + ', ' + playerColors[18].secondaryColor.g + ', ' + playerColors[18].secondaryColor.b + ')',
+                value           : 18,
+                text            : 'Concrete Structure'
             });
         }
 
@@ -82,6 +82,36 @@ export default class Modal_Object_ColorSlot
                 value           : 255,
                 text            : 'Custom Swatch'
             });
+
+        // Finishes
+        let finishes = {
+            19: {
+                name    : 'Carbon Steel Finish',
+                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_CarbonSteel_C.png?v=' + baseLayout.scriptVersion
+            },
+            20: {
+                name: 'Caterium Finish',
+                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_Caterium_C.png?v=' + baseLayout.scriptVersion
+            },
+            21: {
+                name: 'Chrome Finish',
+                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_Chrome_C.png?v=' + baseLayout.scriptVersion
+            },
+            22: {
+                name: 'Copper Finish',
+                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_Copper_C.png?v=' + baseLayout.scriptVersion
+            }
+        };
+            for(let i = 19; i <= 22; i++)
+            {
+                let primaryColor = baseLayout.buildableSubSystem.getDefaultPrimaryColorSlot(i);
+                    selectOptions.push({
+                        primaryColor    : 'rgb(' + primaryColor.r + ', ' + primaryColor.g + ', ' + primaryColor.b + ')',
+                        backgroundImage : finishes[i].image,
+                        value           : i,
+                        text            : finishes[i].name
+                    });
+            }
 
         BaseLayout_Modal.form({
             title       : 'Update "<strong>' + buildingData.name + '</strong>" color swatch',

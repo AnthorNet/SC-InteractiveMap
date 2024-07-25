@@ -812,6 +812,38 @@ export default class Modal_Selection
                 text            : 'Custom Swatch'
             });
 
+
+
+        // Finishes
+        let finishes = {
+            19: {
+                name    : 'Carbon Steel Finish',
+                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_CarbonSteel_C.png?v=' + baseLayout.scriptVersion
+            },
+            20: {
+                name: 'Caterium Finish',
+                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_Caterium_C.png?v=' + baseLayout.scriptVersion
+            },
+            21: {
+                name: 'Chrome Finish',
+                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_Chrome_C.png?v=' + baseLayout.scriptVersion
+            },
+            22: {
+                name: 'Copper Finish',
+                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_Copper_C.png?v=' + baseLayout.scriptVersion
+            }
+        };
+            for(let i = 19; i <= 22; i++)
+            {
+                let primaryColor = baseLayout.buildableSubSystem.getDefaultPrimaryColorSlot(i);
+                    selectOptionsColors.push({
+                        primaryColor    : 'rgb(' + primaryColor.r + ', ' + primaryColor.g + ', ' + primaryColor.b + ')',
+                        backgroundImage : finishes[i].image,
+                        value           : i,
+                        text            : finishes[i].name
+                    });
+            }
+
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
             container   : '#leafletMap',

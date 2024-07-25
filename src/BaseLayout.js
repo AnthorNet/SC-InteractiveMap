@@ -5168,9 +5168,9 @@ export default class BaseLayout
             if(buildingData.mapUseSlotColor !== undefined && buildingData.mapUseSlotColor === false)
             {
                 marker.setStyle({
-                    color: buildingData.mapColor,
-                    fillColor: ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
-                    fillOpacity: mapOpacity
+                    color       : buildingData.mapColor,
+                    fillColor   : ((buildingData.mapFillColor !== undefined) ? buildingData.mapFillColor : buildingData.mapColor),
+                    fillOpacity : mapOpacity
                 });
             }
             else
