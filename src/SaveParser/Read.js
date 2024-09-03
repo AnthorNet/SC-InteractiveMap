@@ -1611,7 +1611,7 @@ export default class SaveParser_Read
                         break;
 
                     case 'Struct':
-                        if(parentType === '/Script/FactoryGame.FGFoliageRemoval' || parentType === '/Script/FactoryGame.FGScannableSubsystem')
+                        if(parentType === '/Script/FactoryGame.FGFoliageRemoval')
                         {
                             currentProperty.value.values.push({
                                 x: this.readFloat(),
@@ -1621,7 +1621,13 @@ export default class SaveParser_Read
 
                             break;
                         }
-                        
+                        if(parentType === '/Script/FactoryGame.FGScannableSubsystem')
+                        {
+                            currentProperty.value.values.push({guid: this.readHex(16)});
+
+                            break;
+                        }
+
                         // MOD: FicsIt-Networks
                         currentProperty.value.values.push(this.readFINNetworkTrace());
                         break;

@@ -1717,11 +1717,17 @@ export default class SaveParser_Write
                     break;
 
                 case 'Struct':
-                    if(this.header.saveVersion >= 29 && (parentType === '/Script/FactoryGame.FGFoliageRemoval' || parentType === '/Script/FactoryGame.FGScannableSubsystem'))
+                    if(this.header.saveVersion >= 29 && parentType === '/Script/FactoryGame.FGFoliageRemoval')
                     {
                         property += this.writeFloat(currentProperty.value.values[iSetProperty].x);
                         property += this.writeFloat(currentProperty.value.values[iSetProperty].y);
                         property += this.writeFloat(currentProperty.value.values[iSetProperty].z);
+
+                        break;
+                    }
+                    if(this.header.saveVersion >= 45 && parentType === '/Script/FactoryGame.FGScannableSubsystem')
+                    {
+                        property += this.writeHex(currentProperty.value.values[iSetProperty].guid);
 
                         break;
                     }
