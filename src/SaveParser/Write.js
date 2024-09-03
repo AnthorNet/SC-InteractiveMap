@@ -1717,7 +1717,7 @@ export default class SaveParser_Write
                     break;
 
                 case 'Struct':
-                    if(this.header.saveVersion >= 29 && parentType === '/Script/FactoryGame.FGFoliageRemoval')
+                    if(this.header.saveVersion >= 29 && (parentType === '/Script/FactoryGame.FGFoliageRemoval' || parentType === '/Script/FactoryGame.FGScannableSubsystem'))
                     {
                         property += this.writeFloat(currentProperty.value.values[iSetProperty].x);
                         property += this.writeFloat(currentProperty.value.values[iSetProperty].y);
