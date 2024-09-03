@@ -1,3 +1,4 @@
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 export default class SubSystem_Overclocking
@@ -24,6 +25,95 @@ export default class SubSystem_Overclocking
        return 1;
     }
 
+    updateClockSpeed(currentObject, clockSpeed, useOwnPowershards = false)
+    {
+            clockSpeed          = Math.max(1, Math.min(Math.round(clockSpeed * 1000000) / 1000000, 250));
+        let totalPowerShards    = Math.ceil((clockSpeed - 100) / 50);
+
+        if(totalPowerShards > 0)
+        {
+            let potentialInventory = this.baseLayout.getObjectInventory(currentObject, 'mInventoryPotential', true);
+                if(potentialInventory !== null)
+                {
+                    for(let i = 0; i < potentialInventory.properties.length; i++)
+                    {
+                        if(potentialInventory.properties[i].name === 'mInventoryStacks')
+                        {
+                            for(let j = 0; j < totalPowerShards; j++)
+                            {
+                                if(useOwnPowershards === true || parseInt(useOwnPowershards) === 1)
+                                {
+                                    let result = this.baseLayout.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
+                                        if(result === false)
+                                        {
+                                            clockSpeed = Math.min(clockSpeed, 100 + (j * 50)); // Downgrade...
+                                            break;
+                                        }
+                                }
+
+                                potentialInventory.properties[i].value.values[j][0].value.itemName.pathName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
+                                this.baseLayout.setObjectProperty(potentialInventory.properties[i].value.values[j][0].value, 'NumItems', 1, 'Int');
+                            }
+                        }
+                    }
+                }
+        }
+
+        this.baseLayout.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'Float');
+        this.baseLayout.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'Float');
+
+        // UPDATE 8: Update mDynamicProductionCapacity to force circuits capacity?
+        let mPowerInfo = this.baseLayout.getObjectProperty(currentObject, 'mPowerInfo');
+            if(mPowerInfo !== null)
+            {
+                let powerInfo = this.baseLayout.saveGameParser.getTargetObject(mPowerInfo.pathName);
+                    if(powerInfo !== null)
+                    {
+                        let mDynamicProductionCapacity = this.baseLayout.getObjectProperty(powerInfo, 'mDynamicProductionCapacity');
+                            if(mDynamicProductionCapacity !== null)
+                            {
+                                let buildingData = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
+                                    if(buildingData !== null && buildingData.category === 'generator')
+                                    {
+                                        let mPowerProductionExponent    = buildingData.powerProductionExponent || 1.3;
+                                            if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
+                                            {
+                                                mPowerProductionExponent = 1.0;
+                                            }
+
+                                        this.baseLayout.setObjectProperty(
+                                            powerInfo,
+                                            'mDynamicProductionCapacity',
+                                            (buildingData.powerGenerated * Math.pow(clockSpeed / 100, 1 / mPowerProductionExponent)),
+                                            'Float'
+                                        );
+                                    }
+                            }
+                    }
+            }
+
+        if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/FrackingSmasher/Build_FrackingSmasher.Build_FrackingSmasher_C')
+        {
+            // Update all linked extractors
+            let satellites  = Building_FrackingSmasher.getSatellites(this.baseLayout, currentObject);
+                for(let i = 0; i < satellites.length; i++)
+                {
+                    if(satellites[i].options.extractorPathName !== undefined)
+                    {
+                        let currentExtractor = this.baseLayout.saveGameParser.getTargetObject(satellites[i].options.extractorPathName);
+                            if(currentExtractor !== null)
+                            {
+                                this.baseLayout.setObjectProperty(currentExtractor, 'mCurrentPotential', clockSpeed / 100, 'Float');
+                                this.baseLayout.setObjectProperty(currentExtractor, 'mPendingPotential', clockSpeed / 100, 'Float');
+                            }
+                    }
+                }
+        }
+
+
+        return true;
+    }
+
     getProductionBoost(currentObject)
     {
         let currentPotential = this.baseLayout.getObjectProperty(currentObject, 'mCurrentProductionBoost');
@@ -39,6 +129,44 @@ export default class SubSystem_Overclocking
             }
 
        return 1;
+    }
+
+    /**
+     * MODALS
+     */
+    updateObjectClockSpeed(marker)
+    {
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+        BaseLayout_Modal.form({
+            title       : 'Update "<strong>' + buildingData.name + '</strong>" clock speed',
+            container   : '#leafletMap',
+            inputs      : [
+                {
+                    name        : 'clockSpeed',
+                    inputType   : 'number',
+                    value       : baseLayout.overclockingSubSystem.getClockSpeed(currentObject) * 100,
+                    min         : 1,
+                    max         : 250
+                },
+                {
+                    label       : 'Use power shards from your containers?',
+                    name        : 'useOwnPowershards',
+                    inputType   : 'toggle'
+                }
+            ],
+            callback    : function(values)
+            {
+                return baseLayout.overclockingSubSystem.updateClockSpeed(currentObject, values.clockSpeed, parseInt(values.useOwnPowershards));
+            }
+        });
+    }
+
+    updateOutputMultiplier(marker)
+    {
+
     }
 
     /*

@@ -1086,44 +1086,11 @@ export default class Modal_Selection
                                 {
                                     let currentObject       = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
                                     let currentClockSpeed   = baseLayout.overclockingSubSystem.getClockSpeed(currentObject) * 100;
-                                    let newClockSpeed       = parseFloat(values.value);
-                                    let clockSpeed          = Math.max(1, Math.min(newClockSpeed, 250));
+                                    let clockSpeed          = Math.max(1, Math.min(parseFloat(values.value), 250));
 
                                     if(currentClockSpeed !== clockSpeed)
                                     {
-                                        let totalPowerShards    = Math.ceil((clockSpeed - 100) / 50);
-
-                                            if(totalPowerShards > 0 && clockSpeed > currentClockSpeed)
-                                            {
-                                                let potentialInventory = baseLayout.getObjectInventory(currentObject, 'mInventoryPotential', true);
-                                                    if(potentialInventory !== null)
-                                                    {
-                                                        for(let k = 0; k < potentialInventory.properties.length; k++)
-                                                        {
-                                                            if(potentialInventory.properties[k].name === 'mInventoryStacks')
-                                                            {
-                                                                for(let m = 0; m < totalPowerShards; m++)
-                                                                {
-                                                                    if(parseInt(values.useOwnPowershards) === 1)
-                                                                    {
-                                                                        let result = baseLayout.removeFromStorage('/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C');
-                                                                            if(result === false)
-                                                                            {
-                                                                                clockSpeed = Math.min(clockSpeed, 100 + (m * 50)); // Downgrade...
-                                                                                break;
-                                                                            }
-                                                                    }
-
-                                                                    potentialInventory.properties[k].value.values[m][0].value.itemName.pathName = '/Game/FactoryGame/Resource/Environment/Crystal/Desc_CrystalShard.Desc_CrystalShard_C';
-                                                                    baseLayout.setObjectProperty(potentialInventory.properties[k].value.values[m][0].value, 'NumItems', 1, 'Int');
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                            }
-
-                                        baseLayout.setObjectProperty(currentObject, 'mCurrentPotential', clockSpeed / 100, 'Float');
-                                        baseLayout.setObjectProperty(currentObject, 'mPendingPotential', clockSpeed / 100, 'Float');
+                                        baseLayout.overclockingSubSystem.updateClockSpeed(currentObject, clockSpeed, parseInt(values.useOwnPowershards));
                                     }
                                 }
                             }

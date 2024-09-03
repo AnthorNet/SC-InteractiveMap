@@ -333,7 +333,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             icon        : 'fa-tachometer-alt-slow',
                             text        : this.baseLayout.translate._('Update clock speed'),
-                            callback    : this.baseLayout.updateObjectClockSpeed
+                            callback    : this.baseLayout.overclockingSubSystem.updateObjectClockSpeed
                         });
                     }
 
