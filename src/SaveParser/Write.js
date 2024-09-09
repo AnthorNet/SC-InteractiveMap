@@ -1937,6 +1937,11 @@ export default class SaveParser_Write
 
                 break;
 
+            case 'ClientIdentityInfo':
+                property += this.writeHex(currentProperty.value);
+
+                break;
+
             case 'FluidBox':
                 property += this.writeFloat(currentProperty.value.value);
 

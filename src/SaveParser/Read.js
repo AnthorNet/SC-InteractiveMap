@@ -913,8 +913,8 @@ export default class SaveParser_Read
                 }
             }
 
-        currentProperty.type    = this.readString().replace('Property', '');
-                                  this.readInt(); // Length of the property, this is calculated when writing back ;)
+        currentProperty.type        = this.readString().replace('Property', '');
+        this.currentPropertyLength  = this.readInt(); // Length of the property, this is calculated when writing back ;)
 
         let index = this.readInt();
             if(index !== 0)
@@ -1844,6 +1844,27 @@ export default class SaveParser_Read
                 }
 
                 currentProperty.value.properties    = [this.readProperty()];
+
+                break;
+
+            case 'ClientIdentityInfo':
+                currentProperty.value = this.readHex(this.currentPropertyLength);
+
+                /*
+
+                console.log(this.readInt());
+                let platformType = this.readByte();
+                    console.log('platformType', platformType);
+
+                    switch(platformType)
+                    {
+                        case 6: // Steam?
+                            console.log(this.readHex(12));
+                            break;
+                        default:
+
+                    }
+                */
 
                 break;
 
