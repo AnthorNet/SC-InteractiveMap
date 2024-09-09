@@ -522,7 +522,7 @@ export default class SaveParser_Read
 
         let entityLength                            = this.readInt();
         let startByte                               = this.currentByte;
-            //console.log(this.objects[objectKey].pathName, entityLength);
+            //console.log(this.objects[objectKey].className, this.objects[objectKey].pathName, entityLength);
 
         if(this.objects[objectKey] !== undefined && this.objects[objectKey].outerPathName === undefined)
         {
@@ -547,7 +547,10 @@ export default class SaveParser_Read
         }
 
         // Read properties
-        this.objects[objectKey].properties       = [];
+        this.currentEntityClassName             = this.objects[objectKey].className;
+        this.currentEntityPathName              = this.objects[objectKey].pathName;
+        this.objects[objectKey].properties      = [];
+
         while(true)
         {
             let property = this.readProperty(this.objects[objectKey].className, objectKey);
@@ -1064,6 +1067,7 @@ export default class SaveParser_Read
                     Sentry.setContext('currentProperty', currentProperty);
                 }
 
+                console.log(this.currentEntityClassName, this.currentEntityPathName);
                 console.log('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.currentByte + ')');
                 throw new Error('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.currentByte + ')');
         }
@@ -1841,6 +1845,19 @@ export default class SaveParser_Read
                 else
                 {
                     currentProperty.value.itemState = this.readObjectProperty();
+                }
+
+                if(this.header.saveVersion >= 46)
+                {
+                    let buggyInt = this.readInt();
+                        if(buggyInt !== 0)
+                        {
+                            this.currentByte -=4;
+                        }
+                        else
+                        {
+                            console.log('HAS BUGGYINT, REMOVING...', this.currentEntityPathName);
+                        }
                 }
 
                 currentProperty.value.properties    = [this.readProperty()];
