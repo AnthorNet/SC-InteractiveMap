@@ -818,19 +818,19 @@ export default class Modal_Selection
         let finishes = {
             19: {
                 name    : 'Carbon Steel Finish',
-                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_CarbonSteel_C.png?v=' + baseLayout.scriptVersion
+                image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_SteelFinish_256.png?v=' + baseLayout.scriptVersion
             },
             20: {
                 name: 'Caterium Finish',
-                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_Caterium_C.png?v=' + baseLayout.scriptVersion
+                image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_CateriumFinish_256.png?v=' + baseLayout.scriptVersion
             },
             21: {
                 name: 'Chrome Finish',
-                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_Chrome_C.png?v=' + baseLayout.scriptVersion
+                image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_ChromeFinish_256.png?v=' + baseLayout.scriptVersion
             },
             22: {
                 name: 'Copper Finish',
-                image   : baseLayout.staticUrl + '/js/InteractiveMap/img/PaintFinishDesc_Copper_C.png?v=' + baseLayout.scriptVersion
+                image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_CopperFinish_256.png?v=' + baseLayout.scriptVersion
             }
         };
             for(let i = 19; i <= 22; i++)
