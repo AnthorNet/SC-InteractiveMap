@@ -125,6 +125,11 @@ export default class Spawn_Megaprint
                                                         let itemNamePathName = this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemName;
                                                             this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemName = { levelName: '', pathName: itemNamePathName };
                                                     }
+
+                                                    if(this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemState !== undefined && this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemState.pathName === '')
+                                                    {
+                                                        delete this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemState;
+                                                    }
                                                 }
                                             }
                                         }
