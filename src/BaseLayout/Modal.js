@@ -663,7 +663,7 @@ export default class BaseLayout_Modal
                     }
                     if(options.inputOptions[slotIndex].backgroundImage !== undefined)
                     {
-                        backgroundStyle += 'background-image: url(' + options.inputOptions[slotIndex].backgroundImage + ');background-position: center;';
+                        backgroundStyle += 'background-image: url(' + options.inputOptions[slotIndex].backgroundImage + ');background-position: center;background-size: contain;';
                     }
 
                 let borderStyle     = 'border: 1px solid #000000;';
