@@ -57,7 +57,7 @@ export default class Modal_Debug
                 'mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn',
                 'mTargetNodeLinkedList', 'mTargetList', 'mSignPoles', 'mFlowIndicator', 'mBottomSnappedConnection', 'mTopSnappedConnection',
                 'mHubTerminal', 'mWorkBench', 'mLocker', 'mGenerators', 'mBlueprintProxy', 'mExtractableResource',
-                'mLinkedPortal',
+                'mLinkedPortal', 'mConveyorChainActor'
             ];
             for(let i = 0; i < extraProperties.length; i++)
             {

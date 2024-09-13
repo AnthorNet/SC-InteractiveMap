@@ -577,6 +577,7 @@ export default class SaveParser_Read
                         }
                         currentItem.name        = this.readString();
 
+                        //TODO: Was always probably itemstate? :D
                         if(this.header.saveVersion >= 44)
                         {
                             this.readString(); // Not sure but seems to be always 0?
@@ -595,7 +596,82 @@ export default class SaveParser_Read
             return;
         }
 
-        // Read Conveyor missing bytes
+        // Read ConveyorChainActor missing bytes
+        if(Building.isConveyorChainActor(this.objects[objectKey]))
+        {
+            this.objects[objectKey].extra   = {count: this.readInt(), mConveyors: []};
+
+            // This will be generated from the Array of conveyors...
+            this.readObjectProperty(); // this.objects[objectKey].extra.mFirstConveyor = this.readObjectProperty();
+            //this.readObjectProperty();
+            this.objects[objectKey].extra.mLastConveyor  = this.readObjectProperty();
+
+            let mConveyorLength = this.readInt();
+                for(let i = 0; i < mConveyorLength; i++)
+                {
+                    let currentConveyor                 = {};
+                        this.readObjectProperty(); // currentConveyor.mChainActor     = this.readObjectProperty();
+                        currentConveyor.mConveyorBase   = this.readObjectProperty();
+                        currentConveyor.splineData      = [];
+
+                    let splineLength    = this.readInt();
+                        for(let j = 0; j < splineLength; j++)
+                        {
+                            currentConveyor.splineData.push({
+                                location        : {x: this.readDouble(), y: this.readDouble(), z: this.readDouble()},
+                                arriveTangent   : {x: this.readDouble(), y: this.readDouble(), z: this.readDouble()},
+                                leaveTangent    : {x: this.readDouble(), y: this.readDouble(), z: this.readDouble()}
+                            });
+                        }
+
+                    currentConveyor.OffsetAtStart       = this.readFloat();
+                    currentConveyor.StartsAtLength      = this.readFloat();
+                    currentConveyor.EndsAtLength        = this.readFloat();
+                    currentConveyor.FirstItemIndex      = this.readInt();
+                    currentConveyor.LastItemIndex       = this.readInt();
+                    currentConveyor.IndexInChainArray   = this.readInt();
+
+                    this.objects[objectKey].extra.mConveyors.push(currentConveyor);
+                }
+
+            this.objects[objectKey].extra.mTotalLength      = this.readFloat();
+            this.objects[objectKey].extra.mNumItems         = this.readInt();
+            this.objects[objectKey].extra.mLeadItemIndex    = this.readInt();
+            this.objects[objectKey].extra.mTailItemIndex    = this.readInt();
+            this.objects[objectKey].extra.mActualItems      = [];
+
+            let mActualItems = this.readInt();
+                for(let i = 0; i < mActualItems; i++)
+                {
+                    let currentItem = {itemName: this.readObjectProperty()};
+                    let itemState   = this.readInt();
+                        if(itemState !== 0)
+                        {
+                            currentItem.itemState             = this.readObjectProperty();
+                            currentItem.itemStateProperties   = [];
+
+                            this.readInt(); // itemStateLength
+                            while(true)
+                            {
+                                let property = this.readProperty();
+                                    if(property === null)
+                                    {
+                                        break;
+                                    }
+
+                                    currentItem.itemStateProperties.push(property);
+                            }
+                        }
+
+                    currentItem.position = this.readFloat();
+                    this.objects[objectKey].extra.mActualItems.push(currentItem);
+                }
+
+            return;
+        }
+
+
+        // Read Powerline missing bytes
         if(Building.isPowerline(this.objects[objectKey]))
         {
             this.objects[objectKey].extra       = {
@@ -1865,7 +1941,7 @@ export default class SaveParser_Read
                 break;
 
             case 'ClientIdentityInfo':
-                currentProperty.value = this.readHex(this.currentPropertyLength);
+                currentProperty.value.hex = this.readHex(this.currentPropertyLength);
 
                 /*
 

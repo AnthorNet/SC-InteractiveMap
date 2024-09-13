@@ -816,6 +816,7 @@ export default class SaveParser_Write
 
                     entity += this.writeString(currentObject.extra.items[i].name);
 
+                    //TODO: Was always probably itemstate? :D
                     if(this.header.saveVersion >= 44)
                     {
                         entity += this.writeString('');
@@ -830,6 +831,84 @@ export default class SaveParser_Write
 
                     entity += this.writeFloat(currentObject.extra.items[i].position);
                 }
+
+            return preEntity + this.writeInt(this.currentEntityLength) + entity;
+        }
+
+        if(Building.isConveyorChainActor(currentObject))
+        {
+            entity += this.writeInt(currentObject.extra.count);
+            entity += this.writeObjectProperty(currentObject.extra.mConveyors[0].mConveyorBase); // mFirstConveyor
+            entity += this.writeObjectProperty(currentObject.extra.mConveyors[currentObject.extra.mConveyors.length - 1].mConveyorBase); // mLastConveyor
+
+            entity += this.writeInt(currentObject.extra.mConveyors.length);
+            for(let i = 0; i < currentObject.extra.mConveyors.length; i++)
+            {
+                entity += this.writeObjectProperty({pathName: currentObject.pathName}); // mChainActor
+                entity += this.writeObjectProperty(currentObject.extra.mConveyors[i].mConveyorBase);
+                entity += this.writeInt(currentObject.extra.mConveyors[i].splineData.length);
+
+                for(let j = 0; j < currentObject.extra.mConveyors[i].splineData.length; j++)
+                {
+                    entity += this.writeDouble(currentObject.extra.mConveyors[i].splineData[j].location.x);
+                    entity += this.writeDouble(currentObject.extra.mConveyors[i].splineData[j].location.y);
+                    entity += this.writeDouble(currentObject.extra.mConveyors[i].splineData[j].location.z);
+
+                    entity += this.writeDouble(currentObject.extra.mConveyors[i].splineData[j].arriveTangent.x);
+                    entity += this.writeDouble(currentObject.extra.mConveyors[i].splineData[j].arriveTangent.y);
+                    entity += this.writeDouble(currentObject.extra.mConveyors[i].splineData[j].arriveTangent.z);
+
+                    entity += this.writeDouble(currentObject.extra.mConveyors[i].splineData[j].leaveTangent.x);
+                    entity += this.writeDouble(currentObject.extra.mConveyors[i].splineData[j].leaveTangent.y);
+                    entity += this.writeDouble(currentObject.extra.mConveyors[i].splineData[j].leaveTangent.z);
+                }
+
+                entity += this.writeFloat(currentObject.extra.mConveyors[i].OffsetAtStart);
+                entity += this.writeFloat(currentObject.extra.mConveyors[i].StartsAtLength);
+                entity += this.writeFloat(currentObject.extra.mConveyors[i].EndsAtLength);
+
+                entity += this.writeInt(currentObject.extra.mConveyors[i].FirstItemIndex);
+                entity += this.writeInt(currentObject.extra.mConveyors[i].LastItemIndex);
+                entity += this.writeInt(currentObject.extra.mConveyors[i].IndexInChainArray);
+            }
+
+            entity += this.writeFloat(currentObject.extra.mTotalLength);
+            entity += this.writeInt(currentObject.extra.mNumItems);
+            entity += this.writeInt(currentObject.extra.mLeadItemIndex);
+            entity += this.writeInt(currentObject.extra.mTailItemIndex);
+            entity += this.writeInt(currentObject.extra.mActualItems.length);
+
+            for(let i = 0; i < currentObject.extra.mActualItems.length; i++)
+            {
+                entity += this.writeObjectProperty(currentObject.extra.mActualItems[i].itemName);
+
+                //TODO: To be tested!
+                if(currentObject.extra.mActualItems[i].itemState !== undefined)
+                {
+                    entity += this.writeInt(1);
+                    entity += this.writeObjectProperty(currentObject.extra.mActualItems[i].itemState);
+
+                    let currentBufferStartingLength     = this.currentBufferLength;
+                    let structPropertyBufferLength      = this.currentEntityLength;
+                    let itemStateProperties             = '';
+                        for(let i = 0; i < currentObject.extra.mActualItems[i].itemStateProperties.length; i++)
+                        {
+                            itemStateProperties += this.writeProperty(currentObject.extra.mActualItems[i].itemStateProperties[i]);
+                        }
+                        itemStateProperties += this.writeString('None');
+
+                        this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+
+                        entity += this.writeInt((this.currentEntityLength - structPropertyBufferLength));
+                        entity += itemStateProperties;
+                }
+                else
+                {
+                    entity += this.writeInt(0);
+                }
+
+                entity += this.writeFloat(currentObject.extra.mActualItems[i].position);
+            }
 
             return preEntity + this.writeInt(this.currentEntityLength) + entity;
         }
@@ -1938,7 +2017,7 @@ export default class SaveParser_Write
                 break;
 
             case 'ClientIdentityInfo':
-                property += this.writeHex(currentProperty.value);
+                property += this.writeHex(currentProperty.value.hex);
 
                 break;
 

@@ -30,6 +30,17 @@ export default class Building
         ];
     }
 
+    static get availableConveyorChainActor()
+    {
+        return [
+            '/Script/FactoryGame.FGConveyorChainActor',
+            '/Script/FactoryGame.FGConveyorChainActor_RepSizeMedium',
+            '/Script/FactoryGame.FGConveyorChainActor_RepSizeLarge',
+            '/Script/FactoryGame.FGConveyorChainActor_RepSizeHuge',
+            '/Script/FactoryGame.FGConveyorChainActor_RepSizeNoCull'
+        ];
+    }
+
     static isConveyor(currentObject)
     {
         return Building.isConveyorBelt(currentObject) || Building.isConveyorLift(currentObject);
@@ -62,6 +73,16 @@ export default class Building
         }
 
         return false;
+    }
+
+    static isConveyorChainActor(currentObject)
+    {
+        if(Building.availableConveyorChainActor.includes(currentObject.className))
+        {
+            return true;
+        }
+
+        return false
     }
 
     static isConveyorLift(currentObject)
