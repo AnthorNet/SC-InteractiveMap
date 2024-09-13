@@ -1011,6 +1011,11 @@ export default class BaseLayout
         {
             return resolve(null);
         }
+        // Skip, was a closed beta bug...
+        if(currentObject.className === '/Script/FactoryGame.FGAmmoTypeHoming')
+        {
+            return resolve(null);
+        }
 
         if(currentObject.className === '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C')
         {
