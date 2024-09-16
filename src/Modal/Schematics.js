@@ -577,7 +577,14 @@ export default class Modal_Schematics
             let currentData = {};
                 for(let schematicId in this.baseLayout.schematicsData)
                 {
-                    if(schematicId.startsWith('Ficsmas_Schematic_') || schematicId.startsWith('Schematic_XMassTree_') || ['Schematic_DeepRockGalactic_C', 'Schematic_Huntdown_C', 'Schematic_SongsOfConquest_C'].includes(schematicId))
+                    if(
+                            schematicId.startsWith('Ficsmas_Schematic_')
+                         || schematicId.startsWith('Schematic_Skin_Buildgun_')
+                         || schematicId.startsWith('Schematic_Helmet_')
+                         || schematicId.startsWith('Schematic_Trinket_')
+                         || schematicId.startsWith('Schematic_XMassTree_')
+                         || ['Schematic_DeepRockGalactic_C', 'Schematic_Huntdown_C', 'Schematic_SongsOfConquest_C'].includes(schematicId)
+                    )
                     {
                         currentData[schematicId] = this.baseLayout.schematicsData[schematicId];
                     }
