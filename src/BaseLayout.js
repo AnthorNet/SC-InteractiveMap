@@ -637,6 +637,11 @@ export default class BaseLayout
                     continue;
                 }
                 /*
+                if(currentObject.className.includes('Subsystem'))
+                {
+                    console.log(currentObject)
+                }
+                /*
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/ProjectAssembly/BP_ProjectAssembly.BP_ProjectAssembly_C')
                 {
                     console.log(currentObject);
@@ -3150,20 +3155,7 @@ export default class BaseLayout
         // Refresh radioactivity
         if(Building_Conveyor.isConveyorBelt(currentObject))
         {
-            if(baseLayout.useRadioactivity && currentObject.extra !== undefined && currentObject.extra.items.length > 0)
-            {
-                for(let i = 0; i < currentObject.extra.items.length; i++)
-                {
-                    let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name);
-                        if(currentItemData !== null)
-                        {
-                            if(currentItemData.radioactiveDecay !== undefined)
-                            {
-                                delete baseLayout.playerLayers.playerRadioactivityLayer.elements[pathName + '_' + i];
-                            }
-                        }
-                }
-            }
+            Building_Conveyor.refreshRadioactivity(baseLayout, currentObject);
         }
         else
         {

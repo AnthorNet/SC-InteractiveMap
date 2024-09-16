@@ -603,8 +603,7 @@ export default class SaveParser_Read
 
             // This will be generated from the Array of conveyors...
             this.readObjectProperty(); // this.objects[objectKey].extra.mFirstConveyor = this.readObjectProperty();
-            //this.readObjectProperty();
-            this.objects[objectKey].extra.mLastConveyor  = this.readObjectProperty();
+            this.readObjectProperty(); // this.objects[objectKey].extra.mLastConveyor  = this.readObjectProperty();
 
             let mConveyorLength = this.readInt();
                 for(let i = 0; i < mConveyorLength; i++)
