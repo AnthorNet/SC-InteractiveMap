@@ -50,14 +50,17 @@ export default class SubSystem_Schematic extends SubSystem
                         {
                             if(purchasedSchematics.includes(mPurchasedSchematics.values[i].pathName) === false)
                             {
-                                // Convert old schematics...
-                                if(mPurchasedSchematics.values[i].pathName === '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_AOrgans_0.Research_AOrgans_0_C')
+                                // Convert old schematics, but renamed again in 1.0...
+                                if(this.baseLayout.saveGameParser.header.saveVersion < 46)
                                 {
-                                    mPurchasedSchematics.values[i].pathName = '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_AO_Spitter.Research_AO_Spitter_C';
-                                }
-                                if(mPurchasedSchematics.values[i].pathName === '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_ACarapace_0.Research_ACarapace_0_C')
-                                {
-                                    mPurchasedSchematics.values[i].pathName = '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_AO_Hog.Research_AO_Hog_C';
+                                    if(mPurchasedSchematics.values[i].pathName === '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_AOrgans_0.Research_AOrgans_0_C')
+                                    {
+                                        mPurchasedSchematics.values[i].pathName = '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_AO_Spitter.Research_AO_Spitter_C';
+                                    }
+                                    if(mPurchasedSchematics.values[i].pathName === '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_ACarapace_0.Research_ACarapace_0_C')
+                                    {
+                                        mPurchasedSchematics.values[i].pathName = '/Game/FactoryGame/Schematics/Research/AlienOrganisms_RS/Research_AO_Hog.Research_AO_Hog_C';
+                                    }
                                 }
 
                                 purchasedSchematics.push(mPurchasedSchematics.values[i].pathName);
