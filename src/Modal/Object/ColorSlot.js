@@ -25,12 +25,22 @@ export default class Modal_Object_ColorSlot
             text            : 'FICSIT Factory'
         });
 
-        for(let slotIndex = 1; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
+        selectOptions.push({
+            fullWidth       : true,
+            primaryColor    : 'rgb(' + playerColors[27].primaryColor.r + ', ' + playerColors[27].primaryColor.g + ', ' + playerColors[27].primaryColor.b + ')',
+            secondaryColor  : 'rgb(' + playerColors[27].secondaryColor.r + ', ' + playerColors[27].secondaryColor.g + ', ' + playerColors[27].secondaryColor.b + ')',
+            value           : 27,
+            text            : 'Project Assembly'
+        });
+
+        for(let slotIndex = 1; slotIndex <= SubSystem_Buildable.totalColorSlots; slotIndex++)
         {
+            let inGameSlot = (slotIndex >= 16) ? slotIndex + 8 : slotIndex;
+
             selectOptions.push({
-                primaryColor    : 'rgb(' + playerColors[slotIndex].primaryColor.r + ', ' + playerColors[slotIndex].primaryColor.g + ', ' + playerColors[slotIndex].primaryColor.b + ')',
-                secondaryColor  : 'rgb(' + playerColors[slotIndex].secondaryColor.r + ', ' + playerColors[slotIndex].secondaryColor.g + ', ' + playerColors[slotIndex].secondaryColor.b + ')',
-                value           : slotIndex,
+                primaryColor    : 'rgb(' + playerColors[inGameSlot].primaryColor.r + ', ' + playerColors[inGameSlot].primaryColor.g + ', ' + playerColors[inGameSlot].primaryColor.b + ')',
+                secondaryColor  : 'rgb(' + playerColors[inGameSlot].secondaryColor.r + ', ' + playerColors[inGameSlot].secondaryColor.g + ', ' + playerColors[inGameSlot].secondaryColor.b + ')',
+                value           : inGameSlot,
                 text            : 'Swatch ' + slotIndex
             });
         }
@@ -45,6 +55,7 @@ export default class Modal_Object_ColorSlot
                 text            : 'FICSIT Foundation'
             });
         }
+
         if(Building_Pipeline.isPipeline(currentObject))
         {
             selectOptions.push({

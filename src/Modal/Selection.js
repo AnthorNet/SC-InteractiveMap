@@ -667,13 +667,15 @@ export default class Modal_Selection
         let playerColorsHelpers = baseLayout.buildableSubSystem.getPlayerColorSlots();
         let selectOptions       = [];
 
-            for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
+            for(let slotIndex = 0; slotIndex <= SubSystem_Buildable.totalColorSlots; slotIndex++)
             {
+                let inGameSlot = (slotIndex >= 16) ? slotIndex + 8 : slotIndex;
+
                 selectOptions.push({
                     fullWidth       : ((slotIndex === 0) ? true : false),
-                    primaryColor    : 'rgb(' + playerColorsHelpers[slotIndex].primaryColor.r + ', ' + playerColorsHelpers[slotIndex].primaryColor.g + ', ' + playerColorsHelpers[slotIndex].primaryColor.b + ')',
-                    secondaryColor  : 'rgb(' + playerColorsHelpers[slotIndex].secondaryColor.r + ', ' + playerColorsHelpers[slotIndex].secondaryColor.g + ', ' + playerColorsHelpers[slotIndex].secondaryColor.b + ')',
-                    value           : slotIndex,
+                    primaryColor    : 'rgb(' + playerColorsHelpers[inGameSlot].primaryColor.r + ', ' + playerColorsHelpers[inGameSlot].primaryColor.g + ', ' + playerColorsHelpers[inGameSlot].primaryColor.b + ')',
+                    secondaryColor  : 'rgb(' + playerColorsHelpers[inGameSlot].secondaryColor.r + ', ' + playerColorsHelpers[inGameSlot].secondaryColor.g + ', ' + playerColorsHelpers[inGameSlot].secondaryColor.b + ')',
+                    value           : inGameSlot,
                     text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
                 });
             }
@@ -772,7 +774,7 @@ export default class Modal_Selection
     {
         let playerColors        = baseLayout.buildableSubSystem.getPlayerColorSlots();
         let selectOptionsColors = [];
-            for(let slotIndex = 0; slotIndex < SubSystem_Buildable.totalColorSlots; slotIndex++)
+            for(let slotIndex = 0; slotIndex <= SubSystem_Buildable.totalColorSlots; slotIndex++)
             {
                 selectOptionsColors.push({
                     fullWidth       : ((slotIndex === 0) ? true : false),

@@ -16,7 +16,7 @@ export default class Modal_Map_Paste
             colorSlotOptions.push({text: 'No foundation helper', value: 'NONE'});
             for(let slotIndex = 1; slotIndex <= SubSystem_Buildable.totalColorSlots; slotIndex++)
             {
-                colorSlotOptions.push({text: 'Swatch #' + slotIndex, value: slotIndex});
+                colorSlotOptions.push({text: 'Swatch #' + slotIndex, value: ((slotIndex >= 16) ? slotIndex + 8 : slotIndex)});
             }
 
         BaseLayout_Modal.form({

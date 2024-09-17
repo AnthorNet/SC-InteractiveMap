@@ -638,7 +638,7 @@ export default class BaseLayout_Modal
 
             for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
             {
-                if(column % 5 === 0)
+                if(column % 5 === 0 || (options.inputOptions[slotIndex].fullWidth !== undefined && options.inputOptions[slotIndex].fullWidth === true))
                 {
                     if(slotIndex > 0)
                     {
