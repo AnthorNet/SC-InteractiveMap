@@ -9,6 +9,8 @@ import Building_PowerLine                       from '../Building/PowerLine.js';
 import Building_RailroadTrack                   from '../Building/RailroadTrack.js';
 import Building_TrainStation                    from '../Building/TrainStation.js';
 
+import SubSystem_ConveyorChainActor             from '../SubSystem/ConveyorChainActor.js';
+
 export default class Selection_Copy
 {
     constructor(options)
@@ -122,6 +124,29 @@ export default class Selection_Copy
                             }
                     }
                 }
+
+                // Take all conveyor and convert them back to old format, forcing the game to just recreate what it needs!
+                let mConveyorChainActor = this.baseLayout.getObjectProperty(newDataObject.parent, 'mConveyorChainActor');
+                    if(mConveyorChainActor !== null)
+                    {
+                        let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: this.baseLayout, pathName: mConveyorChainActor.pathName});
+                        let conveyorBase                = conveyorChainActorSubsystem.getConveyorBase(newDataObject.parent.pathName);
+                            if(conveyorBase !== null)
+                            {
+                                let beltItems                   = conveyorChainActorSubsystem.getBeltItems(newDataObject.parent.pathName);
+                                    for(let j = 0; j < beltItems.length; j++)
+                                    {
+                                        newDataObject.parent.extra.items.push({
+                                            name        : beltItems[j].itemName.pathName,
+                                            position    : (beltItems[j].position - conveyorBase.StartsAtLength)
+                                        });
+                                    }
+
+                                this.baseLayout.deleteObjectProperty(newDataObject.parent, 'mConveyorChainActor');
+                                newDataObject.parent.entitySaveVersion = 44;
+                            }
+                    }
+
 
                 // Need some extra linked properties?
                 //TODO: Check mPairedStation?
