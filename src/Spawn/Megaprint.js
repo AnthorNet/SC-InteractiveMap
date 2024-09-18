@@ -112,13 +112,13 @@ export default class Spawn_Megaprint
                             {
                                 for(let k = 0; k < this.clipboard.data[i].children[j].properties.length; k++)
                                 {
-                                    if(this.clipboard.data[i].children[j].properties[k].type === 'Array')
+                                    if(this.clipboard.data[i].children[j].properties[k].type === 'Array' || this.clipboard.data[i].children[j].properties[k].type === 'ArrayProperty')
                                     {
                                         for(let l = 0; l < this.clipboard.data[i].children[j].properties[k].value.values.length; l++)
                                         {
                                             for(let m = 0; m < this.clipboard.data[i].children[j].properties[k].value.values[l].length; m++)
                                             {
-                                                if(this.clipboard.data[i].children[j].properties[k].value.values[l][m].type !== undefined && this.clipboard.data[i].children[j].properties[k].value.values[l][m].type === 'Struct')
+                                                if(this.clipboard.data[i].children[j].properties[k].value.values[l][m].type !== undefined && (this.clipboard.data[i].children[j].properties[k].value.values[l][m].type === 'Struct' || this.clipboard.data[i].children[j].properties[k].value.values[l][m].type === 'StructProperty'))
                                                 {
                                                     if(this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemName !== undefined && this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemName.pathName === undefined)
                                                     {
@@ -283,6 +283,21 @@ export default class Spawn_Megaprint
                 if(this.clipboard.data[i].parent === null)
                 {
                     this.clipboard.data.splice(i, 1);
+                }
+                else
+                {
+                    // Fix old belt format...
+                    if(this.clipboard.data[i].parent.extra !== undefined && this.clipboard.data[i].parent.extra.items !== undefined)
+                    {
+                        for(let j = 0; j < this.clipboard.data[i].parent.extra.items.length; j++)
+                        {
+                            if(this.clipboard.data[i].parent.extra.items[j].name !== undefined)
+                            {
+                                this.clipboard.data[i].parent.extra.items[j].itemName = {levelName: '', pathName: this.clipboard.data[i].parent.extra.items[j].name};
+                                delete this.clipboard.data[i].parent.extra.items[j].name;
+                            }
+                        }
+                    }
                 }
             }
 
