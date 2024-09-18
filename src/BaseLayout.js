@@ -4715,6 +4715,12 @@ export default class BaseLayout
             this.buildingsData.Build_SM_RailingRamp_8x1_01_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_SM_RailingRamp_8x1_01.Build_SM_RailingRamp_8x1_01_C';
             this.buildingsData.Build_SM_RailingRamp_8x1_01_C.length     = 8;
         }
+        if(this.buildingsData.Build_FenceRamp_8x4_R_C === undefined && this.buildingsData.Build_Fence_01_C !== undefined)
+        {
+            this.buildingsData.Build_FenceRamp_8x4_R_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_Fence_01_C));
+            this.buildingsData.Build_FenceRamp_8x4_R_C.className  = '/Game/FactoryGame/Buildable/Building/Fence/Build_FenceRamp_8x4_R.Build_FenceRamp_8x4_R_C';
+            this.buildingsData.Build_FenceRamp_8x4_R_C.length     = 8;
+        }
 
         // Add equipment vehicles
         if(this.buildingsData.Desc_GolfCart_C === undefined && this.toolsData.Desc_GolfCart_C !== undefined)
