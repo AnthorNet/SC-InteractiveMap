@@ -3,6 +3,8 @@ import Modal_Selection                          from '../Modal/Selection.js';
 
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import SubSystem_ConveyorChainActor             from '../SubSystem/ConveyorChainActor.js';
+
 export default class Selection_Offset
 {
     constructor(options)
@@ -53,47 +55,54 @@ export default class Selection_Offset
                                     }
                             }
 
-                        let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
-                            switch(currentObject.className)
-                            {
-                                case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                                    // Find target
-                                    let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
-                                        if(mOwnedPawn !== null)
+                            let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
+                                switch(currentObject.className)
+                                {
+                                    case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
+                                        // Find target
+                                        let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
+                                            if(mOwnedPawn !== null)
+                                            {
+                                                let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                                                    if(currentObjectTarget !== null)
+                                                    {
+                                                        if(isNaN(this.offsetX) === false)
+                                                        {
+                                                            currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
+                                                        }
+                                                        if(isNaN(this.offsetY) === false)
+                                                        {
+                                                            currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
+                                                        }
+                                                        if(isNaN(this.offsetZ) === false)
+                                                        {
+                                                            currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
+                                                        }
+                                                    }
+                                            }
+                                        break;
+                                    default:
+                                        if(isNaN(this.offsetX) === false)
                                         {
-                                            let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-                                                if(currentObjectTarget !== null)
-                                                {
-                                                    if(isNaN(this.offsetX) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + this.offsetX;
-                                                    }
-                                                    if(isNaN(this.offsetY) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + this.offsetY;
-                                                    }
-                                                    if(isNaN(this.offsetZ) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + this.offsetZ;
-                                                    }
-                                                }
+                                            newTransform.translation[0] = currentObject.transform.translation[0] + this.offsetX;
                                         }
-                                    break;
-                                default:
-                                    if(isNaN(this.offsetX) === false)
-                                    {
-                                        newTransform.translation[0] = currentObject.transform.translation[0] + this.offsetX;
-                                    }
-                                    if(isNaN(this.offsetY) === false)
-                                    {
-                                        newTransform.translation[1] = currentObject.transform.translation[1] + this.offsetY;
-                                    }
-                                    if(isNaN(this.offsetZ) === false)
-                                    {
-                                        newTransform.translation[2] = currentObject.transform.translation[2] + this.offsetZ;
-                                    }
-                                    break;
-                            }
+                                        if(isNaN(this.offsetY) === false)
+                                        {
+                                            newTransform.translation[1] = currentObject.transform.translation[1] + this.offsetY;
+                                        }
+                                        if(isNaN(this.offsetZ) === false)
+                                        {
+                                            newTransform.translation[2] = currentObject.transform.translation[2] + this.offsetZ;
+                                        }
+                                        break;
+                                }
+
+                            let mConveyorChainActor = this.baseLayout.getObjectProperty(currentObject, 'mConveyorChainActor');
+                                if(mConveyorChainActor !== null)
+                                {
+                                    let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: this.baseLayout, pathName: mConveyorChainActor.pathName});
+                                        conveyorChainActorSubsystem.killMe();
+                                }
 
                             offsetResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: newTransform, object: currentObject}, true));
                         }

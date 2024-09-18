@@ -142,7 +142,7 @@ export default class Building_Conveyor extends Building
                     {
                         for(let i = 0; i < currentObject.extra.items.length; i++)
                         {
-                            let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name, false);
+                            let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].itemName.pathName, false);
                                 if(currentItemData !== null)
                                 {
                                     if(currentItemData.radioactiveDecay !== undefined)
@@ -399,10 +399,16 @@ export default class Building_Conveyor extends Building
 
         // RADIOACTIVITY
         Building_Conveyor.refreshRadioactivity(baseLayout, currentObject);
-        currentObject.extra.items = [];
-
         baseLayout.radioactivityLayerNeedsUpdate = true;
-        baseLayout.updateRadioactivityLayer();
+
+        let mConveyorChainActor = baseLayout.getObjectProperty(currentObject, 'mConveyorChainActor');
+            if(mConveyorChainActor !== null)
+            {
+                let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: baseLayout, pathName: mConveyorChainActor.pathName});
+                    conveyorChainActorSubsystem.killMe();
+            }
+
+        currentObject.extra.items = [];
 
         if(updateRadioactivityLayer === true)
         {
@@ -410,7 +416,7 @@ export default class Building_Conveyor extends Building
         }
     }
 
-    refreshRadioactivity(baseLayout, currentObject)
+    static refreshRadioactivity(baseLayout, currentObject)
     {
         if(baseLayout.useRadioactivity)
         {
@@ -437,7 +443,7 @@ export default class Building_Conveyor extends Building
                     {
                         for(let i = 0; i < currentObject.extra.items.length; i++)
                         {
-                            let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name);
+                            let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].itemName.pathName);
                                 if(currentItemData !== null)
                                 {
                                     if(currentItemData.radioactiveDecay !== undefined)
@@ -472,7 +478,7 @@ export default class Building_Conveyor extends Building
                 {
                     for(let i = 0; i < currentObject.extra.items.length; i++)
                     {
-                        let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].name);
+                        let currentItemData = baseLayout.getItemDataFromClassName(currentObject.extra.items[i].itemName.pathName);
                             if(currentItemData !== null)
                             {
                                 beltInventory.push({

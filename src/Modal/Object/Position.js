@@ -5,6 +5,8 @@ import Building                                 from '../../Building.js';
 import Building_Pipeline                        from '../../Building/Pipeline.js';
 import Building_RailroadTrack                   from '../../Building/RailroadTrack.js';
 
+import SubSystem_ConveyorChainActor             from '../../SubSystem/ConveyorChainActor.js';
+
 export default class Modal_Object_Position
 {
     static getHTML(marker)
@@ -189,6 +191,13 @@ export default class Modal_Object_Position
                             }
                             newTransform.scale3d[2] = values.scaleZ;
                         }
+                    }
+
+                let mConveyorChainActor = baseLayout.getObjectProperty(currentObject, 'mConveyorChainActor');
+                    if(mConveyorChainActor !== null)
+                    {
+                        let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: baseLayout, pathName: mConveyorChainActor.pathName});
+                            conveyorChainActorSubsystem.killMe();
                     }
 
                 if(teleportPlayer !== false)

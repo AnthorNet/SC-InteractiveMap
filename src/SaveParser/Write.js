@@ -804,29 +804,41 @@ export default class SaveParser_Write
 
                 for(let i = 0; i < itemsLength; i++)
                 {
-                    //TODO: Proper length handle?
-                    if(currentObject.extra.items[i].length !== undefined)
+                    //entity += this.writeObjectProperty(currentObject.extra.items[i].itemName);
+                    entity += this.writeInt(0);
+                    entity += this.writeString(currentObject.extra.items[i].itemName.pathName);
+
+                    if(this.header.saveVersion >= 44 && this.currentEntitySaveVersion >= 44)
                     {
-                        entity += this.writeInt(currentObject.extra.items[i].length);
+                        if(currentObject.extra.items[i].itemState !== undefined)
+                        {
+                            entity += this.writeInt(0);
+                            entity += this.writeObjectProperty(currentObject.extra.items[i].itemState);
+
+                            let currentBufferStartingLength     = this.currentBufferLength;
+                            let structPropertyBufferLength      = this.currentEntityLength;
+                            let itemStateProperties             = '';
+                                for(let j = 0; j < currentObject.extra.items[i].itemStateProperties.length; j++)
+                                {
+                                    itemStateProperties += this.writeProperty(currentObject.extra.items[i].itemStateProperties[j]);
+                                }
+                                itemStateProperties += this.writeString('None');
+
+                                this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+
+                                entity += this.writeInt((this.currentEntityLength - structPropertyBufferLength));
+                                entity += itemStateProperties;
+                        }
+                        else
+                        {
+                            entity += this.writeInt(0);
+                        }
                     }
                     else
                     {
-                        entity += this.writeInt(0);
-                    }
-
-                    entity += this.writeString(currentObject.extra.items[i].name);
-
-                    //TODO: Was always probably itemstate? :D
-                    if(this.header.saveVersion >= 44)
-                    {
-                        entity += this.writeString('');
-                    }
-                    else
-                    {
-                        // Always empty
-                        //entity += this.writeObjectProperty(currentObject.extra.items[i]);
                         entity += this.writeString('');
                         entity += this.writeString('');
+                        //entity += this.writeObjectProperty(currentObject.extra.items[i].itemState);
                     }
 
                     entity += this.writeFloat(currentObject.extra.items[i].position);
@@ -882,7 +894,6 @@ export default class SaveParser_Write
             {
                 entity += this.writeObjectProperty(currentObject.extra.mActualItems[i].itemName);
 
-                //TODO: To be tested!
                 if(currentObject.extra.mActualItems[i].itemState !== undefined)
                 {
                     entity += this.writeInt(1);
@@ -891,9 +902,9 @@ export default class SaveParser_Write
                     let currentBufferStartingLength     = this.currentBufferLength;
                     let structPropertyBufferLength      = this.currentEntityLength;
                     let itemStateProperties             = '';
-                        for(let i = 0; i < currentObject.extra.mActualItems[i].itemStateProperties.length; i++)
+                        for(let j = 0; j < currentObject.extra.mActualItems[i].itemStateProperties.length; j++)
                         {
-                            itemStateProperties += this.writeProperty(currentObject.extra.mActualItems[i].itemStateProperties[i]);
+                            itemStateProperties += this.writeProperty(currentObject.extra.mActualItems[i].itemStateProperties[j]);
                         }
                         itemStateProperties += this.writeString('None');
 

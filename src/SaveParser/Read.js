@@ -570,25 +570,35 @@ export default class SaveParser_Read
                 for(let i = 0; i < itemsLength; i++)
                 {
                     let currentItem             = {};
-                    let currentItemLength       = this.readInt();
-                        if(currentItemLength !== 0)
-                        {
-                            currentItem.length  = currentItemLength;
-                        }
-                        currentItem.name        = this.readString();
+                        currentItem.itemName    = this.readObjectProperty();
 
-                        //TODO: Was always probably itemstate? :D
-                        if(this.header.saveVersion >= 44)
+                        if(this.header.saveVersion >= 44 && this.currentEntitySaveVersion >= 44)
                         {
-                            this.readString(); // Not sure but seems to be always 0?
+                            let itemState   = this.readInt();
+                                if(itemState !== 0)
+                                {
+                                    currentItem.itemState             = this.readObjectProperty();
+                                    currentItem.itemStateProperties   = [];
+
+                                    this.readInt(); // itemStateLength
+                                    while(true)
+                                    {
+                                        let property = this.readProperty();
+                                            if(property === null)
+                                            {
+                                                break;
+                                            }
+
+                                            currentItem.itemStateProperties.push(property);
+                                    }
+                                }
                         }
                         else
                         {
-                            this.readString(); //currentItem.levelName   = this.readString();
-                            this.readString(); //currentItem.pathName    = this.readString();
+                            currentItem.itemState = this.readObjectProperty();
                         }
 
-                        currentItem.position    = this.readFloat();
+                        currentItem.position = this.readFloat();
 
                     this.objects[objectKey].extra.items.push(currentItem);
                 }

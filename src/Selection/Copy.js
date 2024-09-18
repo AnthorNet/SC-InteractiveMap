@@ -136,10 +136,9 @@ export default class Selection_Copy
                                 let beltItems                   = conveyorChainActorSubsystem.getBeltItems(newDataObject.parent.pathName);
                                     for(let j = 0; j < beltItems.length; j++)
                                     {
-                                        newDataObject.parent.extra.items.push({
-                                            name        : beltItems[j].itemName.pathName,
-                                            position    : (beltItems[j].position - conveyorBase.StartsAtLength)
-                                        });
+                                        let oldItemFormat = JSON.parse(JSON.stringify(beltItems[j]));
+                                            oldItemFormat.position -= conveyorBase.StartsAtLength;
+                                        newDataObject.parent.extra.items.push(oldItemFormat);
                                     }
 
                                 this.baseLayout.deleteObjectProperty(newDataObject.parent, 'mConveyorChainActor');

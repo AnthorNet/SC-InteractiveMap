@@ -12,6 +12,7 @@ import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Blueprint                      from './SubSystem/Blueprint.js';
 import SubSystem_CentralStorage                 from './SubSystem/CentralStorage.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
+import SubSystem_ConveyorChainActor             from './SubSystem/ConveyorChainActor.js';
 import SubSystem_Fauna                          from './SubSystem/Fauna.js';
 import SubSystem_Foliage                        from './SubSystem/Foliage.js';
 import SubSystem_GameRules                      from './SubSystem/GameRules.js';
@@ -2814,6 +2815,13 @@ export default class BaseLayout
         // Remove belt/track connection if needed
         baseLayout.unlinkObjectComponentConnection(currentObject);
 
+        let mConveyorChainActor = baseLayout.getObjectProperty(currentObject, 'mConveyorChainActor');
+            if(mConveyorChainActor !== null)
+            {
+                let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: baseLayout, pathName: mConveyorChainActor.pathName});
+                    conveyorChainActorSubsystem.killMe();
+            }
+
         // Clear blueprintProxy
         baseLayout.blueprintSubSystem.deleteFromProxy(currentObject);
 
@@ -5301,48 +5309,46 @@ export default class BaseLayout
             if(storages[i].options.pathName !== undefined)
             {
                 let currentStorage = this.saveGameParser.getTargetObject(storages[i].options.pathName);
-
-                if(currentStorage !== null)
-                {
-                    let storageInventory    = this.getObjectInventory(currentStorage, 'mStorageInventory', true);
-
-                    if(storageInventory !== null)
+                    if(currentStorage !== null)
                     {
-                        for(let j = 0; j < storageInventory.properties.length; j++)
-                        {
-                            if(storageInventory.properties[j].name === 'mInventoryStacks')
+                        let storageInventory    = this.getObjectInventory(currentStorage, 'mStorageInventory', true);
+                            if(storageInventory !== null)
                             {
-                                for(let k = 0; k < storageInventory.properties[j].value.values.length; k++)
+                                for(let j = 0; j < storageInventory.properties.length; j++)
                                 {
-                                    if(storageInventory.properties[j].value.values[k][0].value.itemName.pathName !== '')
+                                    if(storageInventory.properties[j].name === 'mInventoryStacks')
                                     {
-                                        while(recipe.includes(storageInventory.properties[j].value.values[k][0].value.itemName.pathName))
+                                        for(let k = 0; k < storageInventory.properties[j].value.values.length; k++)
                                         {
-                                            let currentIndex = recipe.indexOf(storageInventory.properties[j].value.values[k][0].value.itemName.pathName);
-                                                if(currentIndex !== -1)
+                                            if(storageInventory.properties[j].value.values[k][0].value.itemName.pathName !== '')
+                                            {
+                                                while(recipe.includes(storageInventory.properties[j].value.values[k][0].value.itemName.pathName))
                                                 {
-                                                    recipe.splice(currentIndex, 1);
-                                                    storageInventory.properties[j].value.values[k][0].value.properties[0].value--;
+                                                    let currentIndex = recipe.indexOf(storageInventory.properties[j].value.values[k][0].value.itemName.pathName);
+                                                        if(currentIndex !== -1)
+                                                        {
+                                                            recipe.splice(currentIndex, 1);
+                                                            storageInventory.properties[j].value.values[k][0].value.properties[0].value--;
 
-                                                    if(storageInventory.properties[j].value.values[k][0].value.properties[0].value === 0)
-                                                    {
-                                                        storageInventory.properties[j].value.values[k][0].value.itemName.pathName    = '';
+                                                            if(storageInventory.properties[j].value.values[k][0].value.properties[0].value === 0)
+                                                            {
+                                                                storageInventory.properties[j].value.values[k][0].value.itemName.pathName    = '';
 
-                                                        break;
-                                                    }
+                                                                break;
+                                                            }
+                                                        }
                                                 }
-                                        }
 
-                                        if(recipe.length === 0) // We found everything!
-                                        {
-                                            return true;
+                                                if(recipe.length === 0) // We found everything!
+                                                {
+                                                    return true;
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
                     }
-                }
 
                 if(recipe.length === 0) // We found everything!
                 {

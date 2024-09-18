@@ -3,6 +3,8 @@ import Modal_Selection                          from '../Modal/Selection.js';
 
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import SubSystem_ConveyorChainActor             from '../SubSystem/ConveyorChainActor.js';
+
 export default class Selection_MoveTo
 {
     constructor(options)
@@ -55,47 +57,54 @@ export default class Selection_MoveTo
                                     }
                             }
 
-                        let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
-                            switch(currentObject.className)
-                            {
-                                case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
-                                    // Find target
-                                    let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
-                                        if(mOwnedPawn !== null)
+                            let newTransform = JSON.parse(JSON.stringify(currentObject.transform));
+                                switch(currentObject.className)
+                                {
+                                    case '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C':
+                                        // Find target
+                                        let mOwnedPawn = this.baseLayout.getObjectProperty(currentObject, 'mOwnedPawn');
+                                            if(mOwnedPawn !== null)
+                                            {
+                                                let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
+                                                    if(currentObjectTarget !== null)
+                                                    {
+                                                        if(isNaN(this.moveToX) === false)
+                                                        {
+                                                            currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + (this.moveToX - this.boundaries.centerX);
+                                                        }
+                                                        if(isNaN(this.moveToY) === false)
+                                                        {
+                                                            currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + (this.moveToY - this.boundaries.centerY);
+                                                        }
+                                                        if(isNaN(this.moveToZ) === false)
+                                                        {
+                                                            currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + (this.moveToZ - this.boundaries.centerZ);
+                                                        }
+                                                    }
+                                            }
+                                        break;
+                                    default:
+                                        if(isNaN(this.moveToX) === false)
                                         {
-                                            let currentObjectTarget = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName);
-                                                if(currentObjectTarget !== null)
-                                                {
-                                                    if(isNaN(this.moveToX) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[0] = currentObjectTarget.transform.translation[0] + (this.moveToX - this.boundaries.centerX);
-                                                    }
-                                                    if(isNaN(this.moveToY) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[1] = currentObjectTarget.transform.translation[1] + (this.moveToY - this.boundaries.centerY);
-                                                    }
-                                                    if(isNaN(this.moveToZ) === false)
-                                                    {
-                                                        currentObjectTarget.transform.translation[2] = currentObjectTarget.transform.translation[2] + (this.moveToZ - this.boundaries.centerZ);
-                                                    }
-                                                }
+                                            newTransform.translation[0] = currentObject.transform.translation[0] + (this.moveToX - this.boundaries.centerX);
                                         }
-                                    break;
-                                default:
-                                    if(isNaN(this.moveToX) === false)
-                                    {
-                                        newTransform.translation[0] = currentObject.transform.translation[0] + (this.moveToX - this.boundaries.centerX);
-                                    }
-                                    if(isNaN(this.moveToY) === false)
-                                    {
-                                        newTransform.translation[1] = currentObject.transform.translation[1] + (this.moveToY - this.boundaries.centerY);
-                                    }
-                                    if(isNaN(this.moveToZ) === false)
-                                    {
-                                        newTransform.translation[2] = currentObject.transform.translation[2] + (this.moveToZ - this.boundaries.centerZ);
-                                    }
-                                    break;
-                            }
+                                        if(isNaN(this.moveToY) === false)
+                                        {
+                                            newTransform.translation[1] = currentObject.transform.translation[1] + (this.moveToY - this.boundaries.centerY);
+                                        }
+                                        if(isNaN(this.moveToZ) === false)
+                                        {
+                                            newTransform.translation[2] = currentObject.transform.translation[2] + (this.moveToZ - this.boundaries.centerZ);
+                                        }
+                                        break;
+                                }
+
+                            let mConveyorChainActor = this.baseLayout.getObjectProperty(currentObject, 'mConveyorChainActor');
+                                if(mConveyorChainActor !== null)
+                                {
+                                    let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: this.baseLayout, pathName: mConveyorChainActor.pathName});
+                                        conveyorChainActorSubsystem.killMe();
+                                }
 
                             moveToResults.push(this.baseLayout.refreshMarkerPosition({marker: this.markers[i], transform: newTransform, object: currentObject}, true));
                         }

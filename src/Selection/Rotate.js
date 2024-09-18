@@ -3,6 +3,8 @@ import Modal_Selection                          from '../Modal/Selection.js';
 
 import BaseLayout_Math                          from '../BaseLayout/Math.js';
 
+import SubSystem_ConveyorChainActor             from '../SubSystem/ConveyorChainActor.js';
+
 export default class Selection_Rotate
 {
     constructor(options)
@@ -114,6 +116,13 @@ export default class Selection_Rotate
                                             {
                                                 refreshProperties.transform.rotation = BaseLayout_Math.getNewQuaternionRotate(refreshProperties.transform.rotation, this.angle);
                                             }
+                                }
+
+                            let mConveyorChainActor = this.baseLayout.getObjectProperty(currentObject, 'mConveyorChainActor');
+                                if(mConveyorChainActor !== null)
+                                {
+                                    let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: this.baseLayout, pathName: mConveyorChainActor.pathName});
+                                        conveyorChainActorSubsystem.killMe();
                                 }
 
                             rotateResults.push(this.baseLayout.refreshMarkerPosition(refreshProperties, true));
