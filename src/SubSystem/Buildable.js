@@ -700,9 +700,9 @@ export default class SubSystem_Buildable extends SubSystem
                         value               : {type: 'Struct', values: []}
                     };
 
-                    for(let slotIndex = 0; slotIndex < (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
+                    for(let slotIndex = 0; slotIndex <= (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
                     {
-                        mColorSlots_Data.value.values.push([
+                        let slotData = [
                             {
                                 name    : 'PrimaryColor',
                                 type    : 'Struct',
@@ -712,10 +712,54 @@ export default class SubSystem_Buildable extends SubSystem
                                 name    : 'SecondaryColor',
                                 type    : 'Struct',
                                 value   : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
-                            },
-                            {name: 'Metallic', type: 'Float', value: 0},
-                            {name: 'Roughness', type: 'Float', value: 0}
-                        ]);
+                            }
+                        ];
+
+                        if(this.baseLayout.saveGameParser.header.saveVersion >= 44)
+                        {
+                            let paintFinishPathName = '';
+                                switch(slotIndex)
+                                {
+                                    case 19:
+                                        paintFinishPathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_CarbonSteel.PaintFinishDesc_CarbonSteel_C';
+                                        slotData[0].value.values = {r: 0, g: 0, b: 0, a: 1};
+                                        slotData[1].value.values = {r: 0, g: 0, b: 0, a: 1};
+                                        break;
+                                    case 20:
+                                        paintFinishPathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Caterium.PaintFinishDesc_Caterium_C';
+                                        slotData[0].value.values = {r: 0, g: 0, b: 0, a: 1};
+                                        slotData[1].value.values = {r: 0, g: 0, b: 0, a: 1};
+                                        break;
+                                    case 21:
+                                        paintFinishPathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Chrome.PaintFinishDesc_Chrome_C';
+                                        slotData[0].value.values = {r: 0, g: 0, b: 0, a: 1};
+                                        slotData[1].value.values = {r: 0, g: 0, b: 0, a: 1};
+                                        break;
+                                    case 22:
+                                        paintFinishPathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Copper.PaintFinishDesc_Copper_C';
+                                        slotData[0].value.values = {r: 0, g: 0, b: 0, a: 1};
+                                        slotData[1].value.values = {r: 0, g: 0, b: 0, a: 1};
+                                        break;
+                                    case 23:
+                                        paintFinishPathName = '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Unpainted.PaintFinishDesc_Unpainted_C';
+                                        slotData[0].value.values = {r: 0, g: 0, b: 0, a: 1};
+                                        slotData[1].value.values = {r: 0, g: 0, b: 0, a: 1};
+                                        break;
+                                }
+
+                                slotData.push({
+                                    name    : 'PaintFinish',
+                                    type    : 'Object',
+                                    value   : { levelName: '', pathName: paintFinishPathName}
+                                });
+                        }
+                        else
+                        {
+                            slotData.push({name: 'Metallic', type: 'Float', value: 0});
+                            slotData.push({name: 'Roughness', type: 'Float', value: 0});
+                        }
+
+                        mColorSlots_Data.value.values.push(slotData);
                     }
 
                     this.subSystem.properties.push(mColorSlots_Data);

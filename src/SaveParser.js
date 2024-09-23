@@ -205,7 +205,7 @@ export default class SaveParser
                         {
                             continue;
                         }
-                        
+
                         // Always skip it as we parse it first manually...
                         if(this.objects[this.objectsKeys[i]].pathName === 'Persistent_Level:PersistentLevel.LightweightBuildableSubsystem')
                         {
