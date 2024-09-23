@@ -426,8 +426,8 @@ export default class SaveParser_Read
                 {
                     for(let i = 0; i < countCollected; i++)
                     {
-                        // Silently read as we reuse the first batch...
-                        this.readObjectProperty();
+                        let collectable = this.readObjectProperty();
+                            collectables.push(collectable);
                     }
                 }
 
@@ -436,8 +436,17 @@ export default class SaveParser_Read
 
         // SKIP LAST COLLECTED - They represent old actor not exisiting in game anymore
         //TODO: Still correct after update 8?
+        /*
+        let collectablesEnd    = [];
+        let countCollected  = this.readInt();
+            for(let i = 0; i < countCollected; i++)
+            {
+                collectablesEnd.push(this.readObjectProperty({}));
+            }
+            console.log(collectablesEnd)
+        /**/
 
-        this.worker.postMessage({command: 'transferData', data: {collectables: collectables}});
+        this.worker.postMessage({command: 'transferData', data: {collectables: [...new Map(collectables.map(item => [item.pathName, item])).values()]}});
         this.worker.postMessage({command: 'transferData', data: {levels: levels}});
         this.worker.postMessage({command: 'endSaveLoading'});
         return;
