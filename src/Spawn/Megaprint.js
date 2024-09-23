@@ -296,6 +296,14 @@ export default class Spawn_Megaprint
                                 this.clipboard.data[i].parent.extra.items[j].itemName = {levelName: '', pathName: this.clipboard.data[i].parent.extra.items[j].name};
                                 delete this.clipboard.data[i].parent.extra.items[j].name;
                             }
+
+                            if(this.baseLayout.saveGameParser.header.saveVersion >= 44)
+                            {
+                                if(this.clipboard.data[i].parent.extra.items[j].itemState !== undefined && this.clipboard.data[i].parent.extra.items[j].itemState.pathName === '')
+                                {
+                                    delete this.clipboard.data[i].parent.extra.items[j].itemState;
+                                }
+                            }
                         }
                     }
                 }
