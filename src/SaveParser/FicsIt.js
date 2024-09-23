@@ -377,7 +377,7 @@ export default class SaveParser_FicsIt
 
     /*
      * Fix FGPipeConnectionFactory with a pipe network id but no pipe connected or no real network...
-     * TODO: IT seems that forcing the ga   me to recreate a faulty pipe network could make it crash?
+     * TODO: IT seems that forcing the game to recreate a faulty pipe network could make it crash?
      */
     /*
     static fixPipeConnectionFactory(baseLayout, currentObject)
