@@ -183,7 +183,7 @@ export default class Modal_Statistics_Production
                                     let clockSpeed          = this.baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
                                     let productionBoost     = this.baseLayout.overclockingSubSystem.getProductionBoost(currentObject);
                                     let craftingTime        = (recipeItem !== null) ? recipeItem.mManufactoringDuration : 4;
-                                        craftingTime       /= clockSpeed * productionBoost; // Overclocking...
+                                        craftingTime       /= clockSpeed; // Overclocking...
 
                                     for(let className in recipeItem.produce)
                                     {
@@ -208,8 +208,8 @@ export default class Modal_Statistics_Production
                                                         name        : currentItem.name,
                                                         image       : currentItem.image,
                                                         category    : currentItem.category,
-                                                        produced    : productionRatio,
-                                                        offProduced : offProductionRatio,
+                                                        produced    : productionRatio * productionBoost,
+                                                        offProduced : offProductionRatio * productionBoost,
                                                         consumed    : 0,
                                                         offConsumed : 0
                                                     };
@@ -217,8 +217,8 @@ export default class Modal_Statistics_Production
                                         }
                                         else
                                         {
-                                            playerProduction[className].produced    += productionRatio;
-                                            playerProduction[className].offProduced += offProductionRatio;
+                                            playerProduction[className].produced    += productionRatio * productionBoost;
+                                            playerProduction[className].offProduced += offProductionRatio * productionBoost;
                                         }
                                     }
 

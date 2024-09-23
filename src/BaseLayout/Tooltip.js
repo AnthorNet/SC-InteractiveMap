@@ -641,7 +641,7 @@ export default class BaseLayout_Tooltip
                     }
             }
 
-            craftingTime       /= clockSpeed * productionBoost; // Overclocking...
+            craftingTime       /= clockSpeed; // Overclocking...
 
             if(buildingData.mManufacturingSpeedMultiplier !== undefined)
             {
@@ -798,7 +798,7 @@ export default class BaseLayout_Tooltip
                                 content.push(this.baseLayout.getInventoryImage(currentInventoryOut, 40));
                             content.push('</td><td class="align-middle pl-2 text-left">');
 
-                            let productionRatio = 60 / craftingTime * recipeItem.produce[itemClassName];
+                            let productionRatio = 60 / craftingTime * recipeItem.produce[itemClassName] * productionBoost;
 
                                 if(currentItem.category === 'liquid' || currentItem.category === 'gas')
                                 {
