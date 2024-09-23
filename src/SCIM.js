@@ -10,7 +10,7 @@ export default class SCIM
 {
     constructor()
     {
-        this.build                      = 'EarlyAccess';
+        this.build                      = 'Stable';
         this.buildVersion               = null;
         this.debug                      = false;
         this.language                   = 'en';
