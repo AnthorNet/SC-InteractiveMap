@@ -5,6 +5,7 @@ import Building_Beacon                          from '../Building/Beacon.js';
 import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_Door                            from '../Building/Door.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
+import Building_DropPod                         from '../Building/DropPod.js';
 import Building_HyperTube                       from '../Building/HyperTube.js';
 import Building_Light                           from '../Building/Light.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
@@ -242,11 +243,7 @@ export default class BaseLayout_ContextMenu
 
                         if(currentObject.className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                         {
-                            let hasBeenOpened = this.baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
-                                contextMenu.push({
-                                    text    : ((hasBeenOpened === 1) ? '<strong class="text-danger">Close</strong>' : '<strong class="text-success">Open</strong>') + ' drop-pod',
-                                    callback: this.baseLayout.toggleDropPodHasBeenOpened
-                                });
+                            contextMenu = Building_DropPod.addContextMenu(this.baseLayout, currentObject, contextMenu);
                         }
                         break;
                 }
@@ -336,6 +333,17 @@ export default class BaseLayout_ContextMenu
                             callback    : this.baseLayout.overclockingSubSystem.updateObjectClockSpeed
                         });
                     }
+
+                    /*
+                    if(buildingData.category === 'production')
+                    {
+                        contextMenu.push({
+                            icon        : 'fa-flame',
+                            text        : this.baseLayout.translate._('Update output multiplier'),
+                            callback    : this.baseLayout.overclockingSubSystem.updateOutputMultiplier
+                        });
+                    }
+                    */
 
                     contextMenu.push('-');
                 }

@@ -222,7 +222,7 @@ export default class BaseLayout
                 '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C': {items: [], layerId: 'somersloops', needDiscovery: true},
                 '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C': {items: [], layerId: 'mercerSpheres', needDiscovery: true},
 
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C': {items: [], layerId: 'hardDrives'},
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C': {items: [], layerId: 'hardDrives', needDiscovery: true},
 
                 '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C': {items: [], layerId: 'playerFaunaLayer'}
             }
@@ -4231,41 +4231,6 @@ export default class BaseLayout
             }
 
             this.delayedBadgeCount = null;
-        }
-    }
-
-    toggleDropPodHasBeenOpened(marker)
-    {
-        let baseLayout      = marker.baseLayout;
-        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let layerId         = marker.relatedTarget.options.layerId;
-
-        let dataCollected   = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected'));
-        let dataTotal       = parseInt($('.updateLayerState[data-id="' + layerId + '"]').attr('data-total'));
-
-        let hasBeenOpened   = baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
-            if(hasBeenOpened == 0)
-            {
-                dataCollected++;
-                baseLayout.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'Bool');
-                marker.relatedTarget.setOpacity(window.SCIM.collectedOpacity);
-            }
-            else
-            {
-                dataCollected--;
-                baseLayout.deleteObjectProperty(currentObject, 'mHasBeenOpened');
-                marker.relatedTarget.setOpacity(1);
-            }
-
-        $('.updateLayerState[data-id="' + layerId + '"]').attr('data-collected', dataCollected);
-
-        if(dataCollected === 0)
-        {
-            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(baseLayout.language).format(dataTotal));
-        }
-        else
-        {
-            $('.updateLayerState[data-id="' + layerId + '"] > .badge').html(new Intl.NumberFormat(baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(baseLayout.language).format(dataTotal));
         }
     }
 
