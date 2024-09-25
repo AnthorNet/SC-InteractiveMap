@@ -131,6 +131,7 @@ export default class BaseLayout
 
         this.useRadioactivity                   = (this.localStorage !== null && this.localStorage.getItem('mapUseRadioactivity') !== null) ? (this.localStorage.getItem('mapUseRadioactivity') === 'true') : true;
         this.useFogOfWar                        = (this.localStorage !== null && this.localStorage.getItem('mapUseFogOfWar') !== null) ? (this.localStorage.getItem('mapUseFogOfWar') === 'true') : true;
+        this.showInternalCoordinates            = (this.localStorage !== null && this.localStorage.getItem('mapInternalCoordinates') !== null) ? (this.localStorage.getItem('mapInternalCoordinates') === 'true') : true;
         this.useGlobalStats                     = (this.localStorage !== null && this.localStorage.getItem('mapUseGlobalStats') !== null) ? (this.localStorage.getItem('mapUseGlobalStats') === 'true') : true;
         this.mapStructuresModelsQuality         = (this.localStorage !== null && this.localStorage.getItem('mapStructuresModelsQuality') !== null) ? this.localStorage.getItem('mapStructuresModelsQuality') : 'medium';
         this.mapModelsQuality                   = (this.localStorage !== null && this.localStorage.getItem('mapModelsQuality') !== null) ? this.localStorage.getItem('mapModelsQuality') : 'high';

@@ -68,7 +68,8 @@ export default class GameMap
         this.localStorage               = this.collectedHardDrives.getLocaleStorage();
         this.mapOptions                 = null;
         this.activeLayers               = null;
-        this.showInternalCoordinates    = (this.localStorage !== null && this.localStorage.getItem('mapInternalCoordinates') !== null) ? (this.localStorage.getItem('mapInternalCoordinates') === 'false') : true;
+
+        this.showInternalCoordinates    = (this.localStorage !== null && this.localStorage.getItem('mapInternalCoordinates') !== null) ? (this.localStorage.getItem('mapInternalCoordinates') === 'true') : true;
 
         this.start();
     }
@@ -121,6 +122,7 @@ export default class GameMap
             if(data !== undefined)
             {
                 this.mapOptions     = data.options;
+                this.lastBuild      = data.lastBuild;
                 window.SCIM.checkVersion(data.version);
 
                 for(let i = 0; i < this.mapOptions.length; i++)
@@ -229,33 +231,37 @@ export default class GameMap
 
                             for(let l = 0; l < option.markers.length; l++)
                             {
-                                let marker                  = option.markers[l];
+                                let marker  = option.markers[l];
+                                    if(option.layerId === 'spawn')
+                                    {
+                                        L.circle(this.unproject([marker.x, marker.y]), {radius: marker.radius / 6000})
+                                         .addTo(this.availableLayers[option.layerId]);
+                                        continue;
+                                    }
 
-                                if(option.layerId === 'spawn')
-                                {
-                                    L.circle(this.unproject([marker.x, marker.y]), {radius: marker.radius / 6000})
-                                     .addTo(this.availableLayers[option.layerId]);
-                                    continue;
-                                }
-
-                                let currentMarkerOptions    = { color: option.outsideColor, fillColor: option.insideColor, icon: option.icon };
-                                let tooltip                 = [];
+                                let currentMarkerOptions    = {
+                                        pathName    : marker.pathName,
+                                        color       : option.outsideColor,
+                                        fillColor   : option.insideColor,
+                                        icon        : option.icon,
+                                        x           : marker.x,
+                                        y           : marker.y,
+                                        z           : marker.z,
+                                    };
+                                    if(option.name !== undefined){ currentMarkerOptions.name = option.name; }
 
                                 if(option.layerId === 'hardDrives')
                                 {
-                                    let explodedPathName = marker.pathName.split('.');
-                                        tooltip.push('<strong>' + option.name + ' (' + explodedPathName.pop() + ')</strong><br />');
-
                                     if(marker.powerNeeded !== undefined && marker.powerNeeded !== false)
                                     {
-                                        tooltip.push('Power needed: ' + new Intl.NumberFormat(this.language).format(marker.powerNeeded) + ' MW<br />');
-
-                                        currentMarkerOptions.extraIcon  = 'https://static.satisfactory-calculator.com/img/bolt.png';
+                                        currentMarkerOptions.powerNeeded    = marker.powerNeeded;
+                                        currentMarkerOptions.extraIcon      = 'https://static.satisfactory-calculator.com/img/bolt.png';
                                     }
 
                                     if(marker.itemName !== undefined && marker.itemName !== null)
                                     {
-                                        tooltip.push(new Intl.NumberFormat(this.language).format(marker.itemQuantity) + 'x ' + marker.itemName + '<br />');
+                                        currentMarkerOptions.itemName       = marker.itemName;
+                                        currentMarkerOptions.itemQuantity   = marker.itemQuantity;
 
                                         if(marker.itemId === undefined && marker.toolId === undefined)
                                         {
@@ -267,44 +273,11 @@ export default class GameMap
                                             }
                                         }
                                     }
-                                    else
-                                    {
-                                        if(marker.powerNeeded === undefined || marker.powerNeeded === false)
-                                        {
-                                            tooltip.push('No requirements<br />');
-                                        }
-                                    }
                                 }
-                                else
-                                {
-                                    if(option.name !== undefined)
-                                    {
-                                        tooltip.push('<strong>' + option.name + '</strong><br />');
-                                    }
-                                    else
-                                    {
-                                        if(marker.pathName !== undefined)
-                                        {
-                                            tooltip.push('<strong>' + marker.pathName + '</strong><br />');
-                                        }
-                                    }
-                                }
-
-                                tooltip.push('<br />');
-                                if(this.showInternalCoordinates === true)
-                                {
-                                    tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.x)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(marker.y)));
-                                }
-                                else
-                                {
-                                    tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.x / 100)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(marker.y / 100)));
-                                }
-
-                                tooltip.push('<br />');
-                                tooltip.push('Altitude: ' + new Intl.NumberFormat(this.language).format(Math.round(marker.z / 100)) + 'm');
 
                                 if(marker.lastCheck !== undefined)
                                 {
+                                    currentMarkerOptions.lastCheck = marker.lastCheck;
                                     /*
                                     // TO DEBUG LAST CHECK DATA
                                     if(parseInt(data.lastBuild) <= parseInt(marker.lastCheck))
@@ -312,90 +285,13 @@ export default class GameMap
                                         continue;
                                     }
                                     /**/
-                                    tooltip.push('<br /><br />');
-                                    tooltip.push('Data was check on build: <strong class="' + ((parseInt(data.lastBuild) > parseInt(marker.lastCheck)) ? 'text-warning' : 'text-success') + '">#' + marker.lastCheck + '</strong>');
-                                }
-                                else
-                                {
-                                    if(option.purity !== undefined || option.layerId === 'hardDrives')
-                                    {
-                                        tooltip.push('<br /><br />');
-                                        tooltip.push('Data was check on build: <strong class="text-danger">Unknown</strong>');
-                                    }
                                 }
 
                                 if(option.type !== undefined){ currentMarkerOptions.type = option.type; }
                                 else{ if(options.type !== undefined){ currentMarkerOptions.type = options.type; } }
 
-                                if(option.purity !== undefined)
-                                {
-                                    currentMarkerOptions.purity = option.purity;
-
-                                    if(currentMarkerOptions.type !== 'Desc_Geyser_C') // Avoid geysers
-                                    {
-                                        let purityModifier = 1;
-                                            if(option.purity === 'impure')
-                                            {
-                                                purityModifier = 0.5;
-                                            }
-                                            if(option.purity === 'pure')
-                                            {
-                                                purityModifier = 2;
-                                            }
-
-                                        tooltip.push('<table class="table table-bordered table-sm mt-3 mb-0 border-0"><thead><tr><th class="border-top-0 border-left-0"></th><th>50%</th><th>100%</th><th>150%</th><th>200%</th><th>250%</th></tr></thead><tbody>');
-                                        if(['Desc_LiquidOil_C', 'Desc_LiquidOilWell_C', 'Desc_Water_C', 'Desc_NitrogenGas_C'].includes(currentMarkerOptions.type))
-                                        {
-                                            let defaultSpeed    = 120;
-                                            let buildingName    = 'Oil Extractor';
-
-                                                if(['Desc_Water_C', 'Desc_NitrogenGas_C', 'Desc_LiquidOilWell_C'].includes(currentMarkerOptions.type))
-                                                {
-                                                    defaultSpeed    = 60;
-                                                    buildingName    = 'Resource Well Extractor';
-                                                }
-
-                                            tooltip.push('<tr>');
-                                            tooltip.push('<td>' + buildingName + '</td>');
-
-                                            for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
-                                            {
-                                                tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + 'm³ / min</td>');
-                                            }
-
-                                            tooltip.push('</tr>');
-                                        }
-                                        else
-                                        {
-                                            for(let mk = 1; mk <= 3; mk++)
-                                            {
-                                                let defaultSpeed = mk * 60;
-                                                    if(mk === 3)
-                                                    {
-                                                        defaultSpeed = 240;
-                                                    }
-
-                                                tooltip.push('<tr>');
-                                                tooltip.push('<td>Miner Mk' + mk + '</td>');
-
-                                                for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
-                                                {
-                                                    tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + ' / min</td>');
-                                                }
-
-                                                tooltip.push('</tr>');
-                                            }
-                                        }
-                                        tooltip.push('</tbody></table>');
-                                    }
-                                }
+                                if(option.purity !== undefined){ currentMarkerOptions.purity = option.purity; }
                                 if(marker.core !== undefined){ currentMarkerOptions.core = marker.core; }
-
-                                tooltip = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
-                                                <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
-                                                    ' + tooltip.join('') + '\
-                                                </div>\
-                                            </div>';
 
                                 let currentMarker = null;
                                     if(option.layerId === 'sporeFlowers' || option.layerId === 'pillars' || option.layerId === 'smallRocks' || option.layerId === 'largeRocks')
@@ -426,8 +322,14 @@ export default class GameMap
                                         currentMarker = L.mapMarker(this.unproject([marker.x, marker.y]), currentMarkerOptions);
                                     }
 
-                                    currentMarker.bindTooltip(tooltip)
+                                    currentMarker.on('mouseover', (e) => { this.showTooltip(e); })
+                                                 .on('mouseout', (e) => { this.closeTooltip(e); })
                                                  .addTo(this.availableLayers[option.layerId]);
+
+                                    if(L.Browser.touch)
+                                    {
+                                        currentMarker.on('click', (e) => { this.showTooltip(e) });
+                                    }
 
                                 if(marker.pathName !== undefined)
                                 {
@@ -944,6 +846,158 @@ export default class GameMap
             }
 
         return currentHash;
+    }
+
+
+    /*
+     * TOOLTIP FUNCTIONS
+     */
+    showTooltip(e)
+    {
+        let tooltip = [];
+        let options = e.target.options;
+
+            if(options.layerId === 'hardDrives')
+            {
+                let explodedPathName = options.pathName.split('.');
+                    tooltip.push('<strong>' + options.name + ' (' + explodedPathName.pop() + ')</strong><br />');
+
+                if(options.powerNeeded !== undefined)
+                {
+                    tooltip.push('Power needed: ' + new Intl.NumberFormat(this.language).format(options.powerNeeded) + ' MW<br />');
+                }
+
+                if(options.itemName !== undefined && options.itemName !== null)
+                {
+                    tooltip.push(new Intl.NumberFormat(this.language).format(options.itemQuantity) + 'x ' + options.itemName + '<br />');
+                }
+                else
+                {
+                    if(options.powerNeeded === undefined)
+                    {
+                        tooltip.push('No requirements<br />');
+                    }
+                }
+            }
+            else
+            {
+                if(options.name !== undefined)
+                {
+                    tooltip.push('<strong>' + options.name + '</strong><br />');
+                }
+                else
+                {
+                    if(options.pathName !== undefined)
+                    {
+                        tooltip.push('<strong>' + options.pathName + '</strong><br />');
+                    }
+                }
+            }
+
+            tooltip.push('<br />');
+            if(this.showInternalCoordinates === true)
+            {
+                tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(options.x)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(options.y)));
+            }
+            else
+            {
+                tooltip.push('Coordinates: ' + new Intl.NumberFormat(this.language).format(Math.round(options.x / 100)) + ' / ' + new Intl.NumberFormat(this.language).format(Math.round(options.y / 100)));
+            }
+
+            tooltip.push('<br />');
+            tooltip.push('Altitude: ' + new Intl.NumberFormat(this.language).format(Math.round(options.z / 100)) + 'm');
+
+            if(options.lastCheck !== undefined)
+            {
+                tooltip.push('<br /><br />');
+                tooltip.push('Data was check on build: <strong class="' + ((parseInt(this.lastBuild) > parseInt(options.lastCheck)) ? 'text-warning' : 'text-success') + '">#' + options.lastCheck + '</strong>');
+            }
+            else
+            {
+                if(options.purity !== undefined || options.layerId === 'hardDrives')
+                {
+                    tooltip.push('<br /><br />');
+                    tooltip.push('Data was check on build: <strong class="text-danger">Unknown</strong>');
+                }
+            }
+
+            if(options.purity !== undefined)
+            {
+                if(options.type !== 'Desc_Geyser_C') // Avoid geysers
+                {
+                    let purityModifier = 1;
+                        if(options.purity === 'impure')
+                        {
+                            purityModifier = 0.5;
+                        }
+                        if(options.purity === 'pure')
+                        {
+                            purityModifier = 2;
+                        }
+
+                    tooltip.push('<table class="table table-bordered table-sm mt-3 mb-0 border-0"><thead><tr><th class="border-top-0 border-left-0"></th><th>50%</th><th>100%</th><th>150%</th><th>200%</th><th>250%</th></tr></thead><tbody>');
+                    if(['Desc_LiquidOil_C', 'Desc_LiquidOilWell_C', 'Desc_Water_C', 'Desc_NitrogenGas_C'].includes(options.type))
+                    {
+                        let defaultSpeed    = 120;
+                        let buildingName    = 'Oil Extractor';
+
+                            if(['Desc_Water_C', 'Desc_NitrogenGas_C', 'Desc_LiquidOilWell_C'].includes(options.type))
+                            {
+                                defaultSpeed    = 60;
+                                buildingName    = 'Resource Well Extractor';
+                            }
+
+                        tooltip.push('<tr>');
+                        tooltip.push('<td>' + buildingName + '</td>');
+
+                        for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
+                        {
+                            tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + 'm³ / min</td>');
+                        }
+
+                        tooltip.push('</tr>');
+                    }
+                    else
+                    {
+                        for(let mk = 1; mk <= 3; mk++)
+                        {
+                            let defaultSpeed = mk * 60;
+                                if(mk === 3)
+                                {
+                                    defaultSpeed = 240;
+                                }
+
+                            tooltip.push('<tr>');
+                            tooltip.push('<td>Miner Mk' + mk + '</td>');
+
+                            for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
+                            {
+                                tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + ' / min</td>');
+                            }
+
+                            tooltip.push('</tr>');
+                        }
+                    }
+                    tooltip.push('</tbody></table>');
+                }
+            }
+
+        if(tooltip.length > 0)
+        {
+            tooltip = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(https://static.satisfactory-calculator.com/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
+                <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
+                    ' + tooltip.join('') + '\
+                </div>\
+            </div>';
+
+            e.target.closeTooltip.bind(this);
+            e.target.bindTooltip(tooltip);
+            e.target.openTooltip();
+        }
+    }
+    closeTooltip(e)
+    {
+        e.target.unbindTooltip();
     }
 
     /*
