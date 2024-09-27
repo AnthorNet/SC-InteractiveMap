@@ -13,7 +13,7 @@ export default class SubSystem_Schematic extends SubSystem
 
         this.collectedSchematics    = new Schematics({language: this.baseLayout.language});
 
-        // Force filling schematcis...
+        // Force filling schematics...
         this.getPurchasedSchematics();
     }
 

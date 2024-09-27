@@ -67,25 +67,28 @@ export default class SubSystem_ConveyorChainActor
      */
     killMe()
     {
-        for(let i = 0; i < this.conveyorChainActor.extra.mConveyors.length; i++)
+        if(this.conveyorChainActor !== null)
         {
-            let currentObject = this.baseLayout.saveGameParser.getTargetObject(this.conveyorChainActor.extra.mConveyors[i].mConveyorBase.pathName);
-                if(currentObject !== null)
-                {
-                    let conveyorBase    = this.getConveyorBase(currentObject.pathName);
-                    let beltItems       = this.getBeltItems(currentObject.pathName);
-                        for(let j = 0; j < beltItems.length; j++)
-                        {
-                            let oldItemFormat = JSON.parse(JSON.stringify(beltItems[j]));
-                                oldItemFormat.position -= conveyorBase.StartsAtLength;
-                                currentObject.extra.items.push(oldItemFormat);
-                        }
+            for(let i = 0; i < this.conveyorChainActor.extra.mConveyors.length; i++)
+            {
+                let currentObject = this.baseLayout.saveGameParser.getTargetObject(this.conveyorChainActor.extra.mConveyors[i].mConveyorBase.pathName);
+                    if(currentObject !== null)
+                    {
+                        let conveyorBase    = this.getConveyorBase(currentObject.pathName);
+                        let beltItems       = this.getBeltItems(currentObject.pathName);
+                            for(let j = 0; j < beltItems.length; j++)
+                            {
+                                let oldItemFormat = JSON.parse(JSON.stringify(beltItems[j]));
+                                    oldItemFormat.position -= conveyorBase.StartsAtLength;
+                                    currentObject.extra.items.push(oldItemFormat);
+                            }
 
-                    this.baseLayout.deleteObjectProperty(currentObject, 'mConveyorChainActor');
-                    currentObject.entitySaveVersion = 44;
-                }
+                        this.baseLayout.deleteObjectProperty(currentObject, 'mConveyorChainActor');
+                        currentObject.entitySaveVersion = 44;
+                    }
+            }
+
+            this.baseLayout.saveGameParser.deleteObject(this.conveyorChainActor.pathName);
         }
-
-        this.baseLayout.saveGameParser.deleteObject(this.conveyorChainActor.pathName);
     }
 }
