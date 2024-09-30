@@ -149,8 +149,8 @@ export default class Modal_Statistics_Production
                                         }
                                         else
                                         {
-                                            productionRatio     = Math.min(780, productionRatio);
-                                            offProductionRatio  = Math.min(780, offProductionRatio);
+                                            productionRatio     = Math.min(1200, productionRatio);
+                                            offProductionRatio  = Math.min(1200, offProductionRatio);
                                         }
 
                                         if(playerProduction[itemClassName] === undefined)
