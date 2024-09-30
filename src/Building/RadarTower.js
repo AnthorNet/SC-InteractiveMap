@@ -3,8 +3,6 @@ import BaseLayout_Math                          from '../BaseLayout/Math.js';
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
-import Modal_Map_Collectables                   from '../Modal/Map/Collectables.js';
-
 export default class Building_RadarTower
 {
     static getCoverageRadius()
@@ -14,7 +12,6 @@ export default class Building_RadarTower
 
     static getCollectablesInCoverageRadius(baseLayout, currentObject)
     {
-        let statisticsCollectables  = new Modal_Map_Collectables({baseLayout: baseLayout});
         let playerCollectables      = baseLayout.satisfactoryMap.collectableMarkers;
         let collectablesInRadius    = {};
         let currentRadius           = Building_RadarTower.getCoverageRadius();
@@ -54,7 +51,7 @@ export default class Building_RadarTower
                                                 //console.log(collectableObject, currentCollectableMarker);
                                                 break;
                                             default:
-                                                let collectedStatus = statisticsCollectables.getStatusFromPathName(pathName, collectableObject.className);
+                                                let collectedStatus = baseLayout.collectablesSubSystem.getStatusFromPathName(pathName);
                                                     if(collectedStatus === false)
                                                     {
                                                         if(collectablesInRadius[collectableObject.className] === undefined)

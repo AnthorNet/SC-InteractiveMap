@@ -169,6 +169,30 @@ export default class BaseLayout_ContextMenu
                         contextMenu.push({
                             text        : 'Consumable'
                         });
+
+                        if(['/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C', '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C'].includes(currentObject.className))
+                        {
+                            let collectedStatus = this.baseLayout.collectablesSubSystem.getStatusFromPathName(currentObject.pathName);
+                                if(collectedStatus === true)
+                                {
+                                    contextMenu.push({
+                                        icon        : 'fa-acorn',
+                                        text        : 'Respawn',
+                                        callback    : this.baseLayout.collectablesSubSystem.resetMarker
+                                    });
+                                }
+                                else
+                                {
+                                    contextMenu.push({
+                                        icon        : 'fa-acorn',
+                                        text        : 'Collect',
+                                        callback    : this.baseLayout.collectablesSubSystem.clearMarker
+                                    });
+                                }
+
+                            contextMenu.push('-');
+                        }
+
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
                             text        : 'Teleport player',

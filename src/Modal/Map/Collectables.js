@@ -6,167 +6,14 @@ export default class Modal_Map_Collectables
         this.baseLayout         = options.baseLayout;
     }
 
-    get()
-    {
-        let playerCollectables  = this.baseLayout.playerStatistics.collectables;
-            for(let className in playerCollectables)
-            {
-                let dataTotal                           = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-total'));
-                    playerCollectables[className].used  = 0;
-                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', 0);
-                    $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
-
-                if(typeof this.baseLayout.satisfactoryMap.mapOptions !== 'undefined' && this.baseLayout.satisfactoryMap.mapOptions !== undefined && this.baseLayout.satisfactoryMap.mapOptions !== null)
-                {
-                    for(let i = 0; i < this.baseLayout.satisfactoryMap.mapOptions.length; i++)
-                    {
-                        for(let j = 0; j < this.baseLayout.satisfactoryMap.mapOptions[i].options.length; j++)
-                        {
-                            for(let k = 0; k < this.baseLayout.satisfactoryMap.mapOptions[i].options[j].options.length; k++)
-                            {
-                                if(this.baseLayout.satisfactoryMap.mapOptions[i].options[j].options[k].layerId === playerCollectables[className].layerId)
-                                {
-                                    playerCollectables[className].name      = this.baseLayout.satisfactoryMap.mapOptions[i].options[j].options[k].name;
-                                    playerCollectables[className].image     = this.baseLayout.satisfactoryMap.mapOptions[i].options[j].options[k].icon;
-                                    playerCollectables[className].markers   = this.baseLayout.satisfactoryMap.mapOptions[i].options[j].options[k].markers;
-
-                                    for(let m = 0; m < playerCollectables[className].markers.length; m++)
-                                    {
-                                        let collectedStatus = this.getStatusFromPathName(playerCollectables[className].markers[m].pathName, className);
-                                            if(collectedStatus === true)
-                                            {
-                                                playerCollectables[className].used++;
-                                            }
-                                            if(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName] !== undefined)
-                                            {
-                                                if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
-                                                {
-                                                    let dataCollected   = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected'));
-                                                    let updatedOpacity  = 1;
-                                                        if(collectedStatus === true)
-                                                        {
-                                                            updatedOpacity = window.SCIM.collectedOpacity;
-                                                            dataCollected++;
-                                                        }
-
-                                                        this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(updatedOpacity);
-
-                                                        $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', dataCollected);
-
-                                                        if(dataCollected > 0)
-                                                        {
-                                                            $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
-                                                        }
-                                                }
-                                                else
-                                                {
-                                                    if(collectedStatus === true)
-                                                    {
-                                                        if(this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].hasLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]))
-                                                        {
-                                                            if(this.baseLayout.showCollected === true)
-                                                            {
-                                                                if(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].options.opacity !== window.SCIM.collectedOpacity)
-                                                                {
-                                                                    this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(window.SCIM.collectedOpacity);
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].removeLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]);
-                                                            }
-
-
-                                                            let dataCollected   = parseInt($('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected')) + 1;
-                                                                $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"]').attr('data-collected', dataCollected);
-                                                                $('.updateLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(new Intl.NumberFormat(this.baseLayout.language).format(dataCollected) + '/' + new Intl.NumberFormat(this.baseLayout.language).format(dataTotal));
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if(this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].hasLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]) === false)
-                                                        {
-                                                            this.baseLayout.satisfactoryMap.availableLayers[playerCollectables[className].layerId].addLayer(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName]);
-                                                        }
-                                                        else
-                                                        {
-                                                            if(this.baseLayout.showCollected === true)
-                                                            {
-                                                                if(this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].options.opacity !== 1)
-                                                                {
-                                                                    this.baseLayout.satisfactoryMap.collectableMarkers[playerCollectables[className].markers[m].pathName].setOpacity(1);
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if(className === '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C')
-                {
-                    let isFilterShown                           = $('.updatePlayerLayerState[data-id="' + playerCollectables[className].layerId + '"] .updatePlayerLayerFilter[data-filter="' + className + '"]').hasClass('btn-warning');
-                    let faunaData                               = this.baseLayout.faunaSubsystem.getDataFromClassName(className);
-                        playerCollectables[className].name      = faunaData.name;
-                        playerCollectables[className].image     = faunaData.image;
-                        playerCollectables[className].markers   = [];
-
-                    for(let i = 0; i < playerCollectables[className].items.length; i++)
-                    {
-                        let currentObject = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].items[i]);
-                            if(currentObject !== null)
-                            {
-                                let marker          = this.baseLayout.getMarkerFromPathName(currentObject.pathName, playerCollectables[className].layerId);
-                                let mCurrentHealth  = this.baseLayout.getObjectProperty(currentObject, 'mCurrentHealth');
-                                    if(mCurrentHealth !== null && mCurrentHealth === 0)
-                                    {
-                                        playerCollectables[className].used++;
-
-                                        if(marker !== null && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer !== null && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.hasLayer(marker))
-                                        {
-                                            this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.removeLayer(marker);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(marker !== null && isFilterShown === true && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer !== null && this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.hasLayer(marker) === false)
-                                        {
-                                            this.baseLayout.playerLayers[playerCollectables[className].layerId].subLayer.addLayer(marker);
-                                        }
-                                    }
-
-                                    if(marker !== null)
-                                    {
-                                        playerCollectables[className].markers.push(marker);
-                                    }
-                            }
-                    }
-
-                    let dataCollected = playerCollectables[className].markers.length - playerCollectables[className].used;
-                        $('.updatePlayerLayerState[data-id="' + playerCollectables[className].layerId + '"] .updatePlayerLayerFilter[data-filter="' + className + '"] > .badge').html(dataCollected);
-
-                    let totalCollected = 0;
-                        $('.updatePlayerLayerState[data-id="' + playerCollectables[className].layerId + '"] .updatePlayerLayerFilter[data-filter] > .badge').each(function(){
-                            totalCollected += parseInt($(this).html()) || 0;
-                        })
-                        $('.updatePlayerLayerState[data-id="' + playerCollectables[className].layerId + '"] > .badge').html(totalCollected);
-                }
-            }
-
-        return playerCollectables;
-    }
-
     parse()
     {
         $('#statisticsModalCollectables').empty();
 
         let html                = [];
-        let playerCollectables  = this.get();
+        let playerCollectables  = this.baseLayout.collectablesSubSystem.get();
+
+        html.push('<div class="alert alert-danger text-center">Reset and Clear function are disabled for some types as we need to handle the new format.</div>')
 
         html.push('<table class="table mb-0">');
 
@@ -193,14 +40,24 @@ export default class Modal_Map_Collectables
                     html.push('</td>');
 
                     html.push('<td class="text-right" width="20%">');
-                    if(currentItem.used > 0)
-                    {
-                        html.push('<button class="btn btn-danger btn-sm resetCollectables" data-id="' + className + '">Reset</button>');
-                    }
-                    if((currentItem.markers.length - currentItem.used) > 0)
-                    {
-                        html.push('<button class="btn btn-success btn-sm clearCollectables" data-id="' + className + '">Clear</button>');
-                    }
+
+                    let updatableCollectables = [
+                            '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C',
+                            '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C',
+                            '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C',
+                            '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C'
+                        ];
+                        if(updatableCollectables.includes(className))
+                        {
+                            if(currentItem.used > 0)
+                            {
+                                html.push('<button class="btn btn-danger btn-sm resetCollectables" data-id="' + className + '">Reset</button>');
+                            }
+                            if((currentItem.markers.length - currentItem.used) > 0)
+                            {
+                                html.push('<button class="btn btn-success btn-sm clearCollectables" data-id="' + className + '">Clear</button>');
+                            }
+                        }
                     html.push('</td>');
 
                     html.push('</tr>');
@@ -216,253 +73,21 @@ export default class Modal_Map_Collectables
         $('#statisticsModalCollectables').html(html.join(''));
 
         $('.resetCollectables').on('click', (e) => {
-            let currentId = $(e.currentTarget).attr('data-id');
+            let currentClassName = $(e.currentTarget).attr('data-id');
                 $(e.currentTarget).parent().html('<i class="fas fa-cog fa-spin"></i>');
-                window.requestAnimationFrame(() => { this.reset(currentId); });
+                window.requestAnimationFrame(() => {
+                    this.baseLayout.collectablesSubSystem.resetAll(currentClassName);
+                    return this.parse();
+                });
         });
 
         $('.clearCollectables').on('click', (e) => {
-            let currentId = $(e.currentTarget).attr('data-id');
+            let currentClassName = $(e.currentTarget).attr('data-id');
                 $(e.currentTarget).parent().html('<i class="fas fa-cog fa-spin"></i>');
-                window.requestAnimationFrame(() => { this.clear(currentId); });
+                window.requestAnimationFrame(() => {
+                    this.baseLayout.collectablesSubSystem.clearAll(currentClassName);
+                    return this.parse();
+                });
         });
-    }
-
-    reset(className)
-    {
-        let collectables        = this.baseLayout.saveGameParser.getCollectables();
-        let playerCollectables  = this.baseLayout.playerStatistics.collectables;
-
-        switch(className)
-        {
-            case '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C':
-                for(let m = 0; m < playerCollectables[className].markers.length; m++)
-                {
-                    let currentObject = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].markers[m].options.pathName);
-                        if(currentObject !== null)
-                        {
-                            this.baseLayout.deleteObjectProperty(currentObject, 'mTriggered');
-                            this.baseLayout.deleteObjectProperty(currentObject, 'mDayOfDeath');
-                            this.baseLayout.deleteObjectProperty(currentObject, 'mCurrentHealth');
-                        }
-                }
-                break;
-
-            case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
-                this.baseLayout.collectedHardDrives.resetCollected();
-                // Continue ;)
-
-            default:
-                for(let m = 0; m < playerCollectables[className].markers.length; m++)
-                {
-                    let collectedStatus = this.getStatusFromPathName(playerCollectables[className].markers[m].pathName, className);
-                        if(collectedStatus === true)
-                        {
-                            let currentObject = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].markers[m].pathName);
-                                if(currentObject !== null)
-                                {
-                                    switch(className)
-                                    {
-                                        case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
-                                            this.baseLayout.deleteObjectProperty(currentObject, 'mHasBeenOpened');
-                                            break;
-                                        default:
-                                            if(playerCollectables[className].markers[m].defaultValue !== undefined)
-                                            {
-                                                this.baseLayout.setObjectProperty(currentObject, 'mPickupItems', {
-                                                    type    : 'InventoryStack',
-                                                    values  : [
-                                                        {
-                                                            name    : 'NumItems',
-                                                            type    : 'Int',
-                                                            value   : playerCollectables[className].markers[m].defaultValue
-                                                        }
-                                                    ]
-                                                }, 'Struct');
-                                            }
-                                            else
-                                            {
-                                                this.baseLayout.deleteObjectProperty(currentObject, 'mPickupItems');
-                                            }
-                                    }
-                                }
-                                else
-                                {
-                                    for(let i = (collectables.length - 1); i >= 0; i--)
-                                    {
-                                        if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
-                                        {
-                                            // Removes from collectables...
-                                            collectables.splice(i, 1);
-                                            break;
-                                        }
-                                    }
-                                }
-                        }
-                }
-        }
-
-        return this.parse();
-    }
-
-    clear(className)
-    {
-        let collectables        = this.baseLayout.saveGameParser.getCollectables();
-        let playerCollectables  = this.baseLayout.playerStatistics.collectables;
-
-        switch(className)
-        {
-            case '/Game/FactoryGame/Character/Creature/Enemy/CrabHatcher/Char_CrabHatcher.Char_CrabHatcher_C':
-                for(let m = 0; m < playerCollectables[className].markers.length; m++)
-                {
-                    let currentObject = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].markers[m].options.pathName);
-                        if(currentObject !== null)
-                        {
-                            this.baseLayout.setObjectProperty(currentObject, 'mTriggered', 1, 'Bool');
-                            this.baseLayout.setObjectProperty(currentObject, 'mDayOfDeath', 1, 'Int');
-                            this.baseLayout.setObjectProperty(currentObject, 'mCurrentHealth', 0, 'Float');
-                        }
-                }
-                break;
-            default:
-                for(let m = 0; m < playerCollectables[className].markers.length; m++)
-                {
-                    let collectedStatus = this.getStatusFromPathName(playerCollectables[className].markers[m].pathName, className);
-                        if(collectedStatus === false)
-                        {
-                            let currentObject   = this.baseLayout.saveGameParser.getTargetObject(playerCollectables[className].markers[m].pathName);
-                                if(currentObject !== null)
-                                {
-                                    if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
-                                    {
-                                        this.baseLayout.setObjectProperty(currentObject, 'mHasBeenOpened', 1, 'Bool');
-                                    }
-                                    else
-                                    {
-                                        this.baseLayout.setObjectProperty(currentObject, 'mPickupItems', {
-                                            type    : 'InventoryStack',
-                                            values  : [
-                                                {
-                                                    name    : 'NumItems',
-                                                    type    : 'Int',
-                                                    value   : 0
-                                                }
-                                            ]
-                                        }, 'Struct');
-                                    }
-                                }
-                                else
-                                {
-                                    if(playerCollectables[className].needDiscovery === undefined)
-                                    {
-                                        let collectableAlreadyIn = false;
-                                            for(let i = (collectables.length - 1); i >= 0; i--)
-                                            {
-                                                if(playerCollectables[className].markers[m].pathName === collectables[i].pathName)
-                                                {
-                                                    collectableAlreadyIn = true;
-                                                    break;
-                                                }
-                                            }
-
-                                            if(collectableAlreadyIn === false)
-                                            {
-                                                let levelName = playerCollectables[className].markers[m].pathName.split(':');
-                                                    console.log(levelName, this.baseLayout.saveGameParser.levels);
-                                                    collectables.push({
-                                                        levelName   : levelName.shift(),
-                                                        pathName    : playerCollectables[className].markers[m].pathName
-                                                    });
-                                            }
-                                    }
-                                }
-                        }
-                }
-        }
-
-        return this.parse();
-    }
-
-    getStatusFromPathName(pathName, className = null)
-    {
-        let currentObject       = this.baseLayout.saveGameParser.getTargetObject(pathName);
-
-        if(currentObject !== null)
-        {
-            if(currentObject.properties.length > 0)
-            {
-                for(let n = 0; n < currentObject.properties.length; n++)
-                {
-                    if(currentObject.properties[n].name === 'mHasBeenOpened')
-                    {
-                        if(currentObject.properties[n].value === 1)
-                        {
-                            this.baseLayout.collectedHardDrives.setCollected(currentObject.pathName);
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-
-                    if(currentObject.properties[n].name === 'mPickupItems')
-                    {
-                        let intValue = null;
-
-                        switch(currentObject.properties[n].value.values[0].type)
-                        {
-                            case 'Int':
-                                intValue = currentObject.properties[n].value.values[0].value;
-                                break;
-                            case 'Struct':
-                                if(currentObject.properties[n].value.values[0].value.properties[0] === null)
-                                {
-                                    intValue = 0;
-                                }
-                                else
-                                {
-                                    intValue = currentObject.properties[n].value.values[0].value.properties[0].value;
-                                }
-                                break;
-                            default:
-                                console.log('Modal_Map_Collectables::getStatusFromPathName', currentObject.properties[n].value.values[0]);
-                                break;
-                        }
-
-                        if(intValue === 0)
-                        {
-                            return true;
-                        }
-
-                        return false;
-                    }
-
-                    if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C' && currentObject.properties[n].name === 'mIsEmptied')
-                    {
-                        if(currentObject.properties[n].value === 1)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        else // Object don't exists, use the old collectable
-        {
-            if(className !== null)
-            {
-                let collectables = this.baseLayout.saveGameParser.getCollectables();
-                    for(let n = 0; n < collectables.length; n++)
-                    {
-                        if(pathName === collectables[n].pathName)
-                        {
-                            return true;
-                        }
-                    }
-            }
-        }
-
-        return false;
     }
 }

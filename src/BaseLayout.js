@@ -12,6 +12,7 @@ import SubSystem_Buildable                      from './SubSystem/Buildable.js';
 import SubSystem_Blueprint                      from './SubSystem/Blueprint.js';
 import SubSystem_CentralStorage                 from './SubSystem/CentralStorage.js';
 import SubSystem_Circuit                        from './SubSystem/Circuit.js';
+import SubSystem_Collectables                   from './SubSystem/Collectables.js';
 import SubSystem_ConveyorChainActor             from './SubSystem/ConveyorChainActor.js';
 import SubSystem_Fauna                          from './SubSystem/Fauna.js';
 import SubSystem_Foliage                        from './SubSystem/Foliage.js';
@@ -947,11 +948,12 @@ export default class BaseLayout
 
         console.timeEnd('renderObjects');
 
-        this.minAltitude = Number.MAX_SAFE_INTEGER;
-        this.maxAltitude = Number.MIN_SAFE_INTEGER;
+        this.minAltitude                = Number.MAX_SAFE_INTEGER;
+        this.maxAltitude                = Number.MIN_SAFE_INTEGER;
 
         // Hold sub system to get better performance
         this.centralStorageSubSystem    = new SubSystem_CentralStorage({baseLayout: this});
+        this.collectablesSubSystem      = new SubSystem_Collectables({baseLayout: this});
         this.foliageSubSystem           = new SubSystem_Foliage({baseLayout: this});
         this.gameRulesSubSystem         = new SubSystem_GameRules({baseLayout: this});
         this.mapSubSystem               = new SubSystem_Map({baseLayout: this});
@@ -1189,9 +1191,8 @@ export default class BaseLayout
             this.satisfactoryMap.leafletMap.addControl(this.altitudeSliderControl);
             this.altitudeSliderControl.startSlider();
 
-            // Collectables
-            let statisticsCollectables = new Modal_Map_Collectables({baseLayout: this});
-                statisticsCollectables.get();
+            // Collectables (Force refreshing status and icons after loading)
+            this.collectablesSubSystem.get();
 
             // Refresh MapMarkers layers to push them on top
             for(let index in this.satisfactoryMap.activeLayers)
