@@ -90,6 +90,7 @@ export default class BaseLayout_Tooltip
                                 });
                         }
                         break;
+
                     case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
                         let mDecorationDescriptor = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
                             if(mDecorationDescriptor !== null)
@@ -101,6 +102,7 @@ export default class BaseLayout_Tooltip
                                     }
                             }
                         break;
+
                     case '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C':
                     case '/Script/FactoryGame.FGItemPickup_Spawnable':
                     case '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C':
@@ -109,6 +111,7 @@ export default class BaseLayout_Tooltip
                     case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_HogParts.BP_HogParts_C':
                     case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_CrabEggParts.BP_CrabEggParts_C':
                     case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaHogParts.BP_AlphaHogParts_C':
+                    case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_NuclearHogParts.BP_NuclearHogParts_C':
                     case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C':
                     case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaStingerParts.BP_AlphaStingerParts_C':
                     case '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_EliteStingerParts.BP_EliteStingerParts_C':

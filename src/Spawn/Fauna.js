@@ -73,10 +73,16 @@ export default class Spawn_Fauna
             {
                 newFauna.children.unshift({pathName: pathName + '.mInventory'});
 
-                let currentPlayerObject = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGameParser.playerHostPathName);
-                let mOwnedPawn          = this.baseLayout.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
+                if(this.baseLayout.saveGameParser.playerHostPathName !== null)
+                {
+                    let currentPlayerObject = this.baseLayout.saveGameParser.getTargetObject(this.baseLayout.saveGameParser.playerHostPathName);
+                    let mOwnedPawn          = this.baseLayout.getObjectProperty(currentPlayerObject, 'mOwnedPawn');
+                        if(mOwnedPawn !== null)
+                        {
+                            newFauna.properties.push({name: 'mFriendActor', type: 'Object', value: {pathName: mOwnedPawn.pathName}});
+                        }
+                }
 
-                newFauna.properties.push({name: 'mFriendActor', type: 'Object', value: {pathName: mOwnedPawn.pathName}});
                 newFauna.properties.push({name: 'mTamed', type: 'Bool', value: 1});
                 newFauna.properties.push({name: 'mLootTableIndex', type: 'Int', value: 0});
                 newFauna.properties.push({name: 'mLootTimerHandle', type: 'Struct', value: {handle: 'None', type: 'TimerHandle'}});
