@@ -961,7 +961,7 @@ export default class BaseLayout
         this.schematicSubSystem         = new SubSystem_Schematic({baseLayout: this});
         this.statisticsSubSystem        = new SubSystem_Statistics({baseLayout: this});
         this.unlockSubSystem            = new SubSystem_Unlock({baseLayout: this});
-        this.worldGridSubSystem         = new SubSystem_WorldGrid();
+        this.worldGridSubSystem         = new SubSystem_WorldGrid({baseLayout: this});
 
         console.time('addMapLayers');
 
