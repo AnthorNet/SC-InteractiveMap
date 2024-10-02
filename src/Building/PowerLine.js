@@ -122,8 +122,19 @@ export default class Building_PowerLine extends Building
                         baseLayout.playerLayers.playerPowerGridLayer.elements.push(powerline);
 
                         //TODO: Is powerline distance using building anchor or center?
-                        //baseLayout.playerLayers.playerPowerGridLayer.distance += BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
-                        baseLayout.playerLayers.playerPowerGridLayer.distance += BaseLayout_Math.getDistance(sourceTranslation, targetTranslation) / 100;
+                        //let powerLineDistance = BaseLayout_Math.getDistance(currentObjectSourceOuterPath.transform.translation, currentObjectTargetOuterPath.transform.translation) / 100;
+                        let powerLineDistance = BaseLayout_Math.getDistance(sourceTranslation, targetTranslation) / 100;
+                            baseLayout.playerLayers.playerPowerGridLayer.distance += powerLineDistance;
+
+                        if(baseLayout.playerLayers.playerPowerGridLayer.filtersCount !== undefined)
+                        {
+                            let powerLineClassName = '/Game/FactoryGame/Buildable/Factory/PowerLine/Build_PowerLine.Build_PowerLine_C';
+                                if(baseLayout.playerLayers.playerPowerGridLayer.filtersCount[powerLineClassName] === undefined)
+                                {
+                                    baseLayout.playerLayers.playerPowerGridLayer.filtersCount[powerLineClassName] = {distance: 0};
+                                }
+                                baseLayout.playerLayers.playerPowerGridLayer.filtersCount[powerLineClassName].distance += powerLineDistance;
+                        }
 
                         return {layer: 'playerPowerGridLayer', marker: powerline};
                     }
