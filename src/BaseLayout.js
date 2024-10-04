@@ -64,6 +64,7 @@ import Building_PowerLine                       from './Building/PowerLine.js';
 import Building_RadarTower                      from './Building/RadarTower.js';
 import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
+import Building_ResourceDeposit                 from './Building/ResourceDeposit.js';
 import Building_Sign                            from './Building/Sign.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
 
@@ -799,7 +800,7 @@ export default class BaseLayout
             }
             if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C')
             {
-                this.addResourceDeposit(currentObject);
+                Building_ResourceDeposit.add(this, currentObject);
                 continue;
             }
             if(currentObject.className.startsWith('/Game/FactoryGame/Resource/Environment/AnimalParts/BP_'))
@@ -1437,61 +1438,6 @@ export default class BaseLayout
         {
             element.options.extraMarker.addTo(this.playerLayers[layerId].subLayer);
         }
-    }
-
-    addResourceDeposit(currentObject)
-    {
-        let layerId                     = 'playerResourceDepositsLayer';
-        let mResourcesLeft              = this.getObjectProperty(currentObject, 'mResourcesLeft');
-        let mIsEmptied                  = this.getObjectProperty(currentObject, 'mIsEmptied');
-
-            if(mIsEmptied === null && mResourcesLeft !== null)
-            {
-                let itemId = this.getItemIdFromDepositTableIndex(currentObject);
-                    if(itemId !== null)
-                    {
-                        this.setupSubLayer(layerId, false);
-
-                        let depositMarker = L.mapMarker(
-                                this.satisfactoryMap.unproject(currentObject.transform.translation),
-                                {
-                                    pathName    : currentObject.pathName,
-                                    itemId      : itemId,
-                                    itemQty     : mResourcesLeft,
-                                    icon        : this.itemsData[itemId].image
-                                }
-                            );
-                            this.bindMouseEvents(depositMarker);
-
-                        this.playerLayers[layerId].elements.push(depositMarker);
-
-                        if(this.playerLayers[layerId].filtersCount !== undefined)
-                        {
-                            if(this.playerLayers[layerId].filtersCount[itemId] === undefined)
-                            {
-                                this.playerLayers[layerId].filtersCount[itemId] = 0;
-                            }
-                            this.playerLayers[layerId].filtersCount[itemId]++;
-                        }
-                    }
-            }
-    }
-
-    deleteResourceDeposit(marker)
-    {
-        let baseLayout      = marker.baseLayout;
-        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-        let mIsEmptied      = baseLayout.getObjectProperty(currentObject, 'mIsEmptied');
-
-            if(mIsEmptied === null)
-            {
-                currentObject.properties.push({name: 'mIsEmptied', type: 'Bool', value: 1});
-            }
-
-            baseLayout.deleteObjectProperty(currentObject, 'mResourcesLeft');
-
-        baseLayout.deleteMarkerFromElements('playerResourceDepositsLayer', marker.relatedTarget);
-        baseLayout.setBadgeLayerCount('playerResourceDepositsLayer');
     }
 
     addAnimalParts(currentObject)
@@ -3644,7 +3590,7 @@ export default class BaseLayout
                                             let currentClassName = currentObject.className;
                                                 if(layerId === 'playerResourceDepositsLayer')
                                                 {
-                                                    currentClassName = this.getItemIdFromDepositTableIndex(currentObject);
+                                                    currentClassName = Building_ResourceDeposit.getItemId(this, currentObject);
                                                 }
 
                                             if(currentSubLayer.hasLayer(currentMarker) && this.playerLayers[layerId].filters.includes(currentClassName))
@@ -4597,38 +4543,6 @@ export default class BaseLayout
         }
 
         console.log('Missing item itemId', itemId);
-
-        return null;
-    }
-
-    getItemIdFromDepositTableIndex(currentObject)
-    {
-        let mResourceDepositTableIndex  = this.getObjectProperty(currentObject, 'mResourceDepositTableIndex');
-            switch(mResourceDepositTableIndex)
-            {
-                case 0:
-                    return 'Desc_Stone_C';
-                case 1:
-                    return 'Desc_OreIron_C';
-                case 2:
-                    return 'Desc_OreCopper_C';
-                case 3:
-                    return 'Desc_Coal_C';
-                case 4:
-                    return 'Desc_OreGold_C';
-                case 5:
-                    return 'Desc_Sulfur_C';
-                case 6:
-                    return 'Desc_RawQuartz_C';
-                case 7:
-                    return 'Desc_OreBauxite_C';
-                case 8:
-                    return 'Desc_SAM_C';
-                case 9:
-                    return 'Desc_OreUranium_C';
-                default:
-                    console.log('Unknown mResourceDepositTableIndex', currentObject);
-            }
 
         return null;
     }

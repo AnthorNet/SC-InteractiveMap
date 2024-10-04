@@ -20,6 +20,7 @@ import Building_PowerSwitch                     from '../Building/PowerSwitch.js
 import Building_Production                      from '../Building/Production.js';
 import Building_RadarTower                      from '../Building/RadarTower.js';
 import Building_RailroadSwitchControl           from '../Building/RailroadSwitchControl.js';
+import Building_ResourceDeposit                 from '../Building/ResourceDeposit.js';
 import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
@@ -148,20 +149,7 @@ export default class BaseLayout_ContextMenu
                         contextMenu = Building_Beacon.addContextMenu(this.baseLayout, currentObject, contextMenu);
                         break;
                     case '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C':
-                        contextMenu.push({
-                            text        : 'Resource Deposit'
-                        });
-                        contextMenu.push({
-                            icon        : 'fa-portal-exit',
-                            text        : 'Teleport player',
-                            callback    : this.baseLayout.teleportPlayer
-                        });
-                        contextMenu.push('-');
-                        contextMenu.push({
-                            icon        : 'fa-trash-alt',
-                            text        : 'Delete',
-                            callback    : this.baseLayout.deleteResourceDeposit
-                        });
+                        contextMenu = Building_ResourceDeposit.addContextMenu(this.baseLayout, currentObject, contextMenu);
                         break;
                     case '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C':
                     case '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C':
