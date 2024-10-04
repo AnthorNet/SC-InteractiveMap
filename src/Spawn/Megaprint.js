@@ -130,6 +130,10 @@ export default class Spawn_Megaprint
                                                     {
                                                         delete this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemState;
                                                     }
+                                                    else
+                                                    {
+                                                        this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemProperties = [];
+                                                    }
                                                 }
                                             }
                                         }
