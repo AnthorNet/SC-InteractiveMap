@@ -8,7 +8,7 @@ This repository is here for bug reporting and is not intended to be forked or de
 The interactive map acts as a 2D map rendering engine and a full-featured save editor for Satisfactory.  
 A game from [Coffee Stain Studios](https://www.coffeestainstudios.com/)
 
-You can see a [Live Example](https://satisfactory-calculator.com/en/interactive-map?url=https://github.com/AnthorNet/SC-InteractiveMap/raw/main/CREATIVE%20TEST.sav)
+You can see a [Live Example](https://satisfactory-calculator.com/en/interactive-map?url=https://github.com/AnthorNet/SC-InteractiveMap/raw/dev/CREATIVE%20TEST.sav)
 
 [![SCIM](./img/readmeImage.jpg)](https://satisfactory-calculator.com/en/interactive-map)
 
