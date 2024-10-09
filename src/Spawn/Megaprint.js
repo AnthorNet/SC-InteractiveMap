@@ -126,13 +126,19 @@ export default class Spawn_Megaprint
                                                             this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemName = { levelName: '', pathName: itemNamePathName };
                                                     }
 
-                                                    if(this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemState !== undefined && this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemState.pathName === '')
+                                                    if(this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemState !== undefined)
                                                     {
-                                                        delete this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemState;
-                                                    }
-                                                    else
-                                                    {
-                                                        this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemProperties = [];
+                                                        if(this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemState.pathName === '')
+                                                        {
+                                                            delete this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemState;
+                                                        }
+                                                        else
+                                                        {
+                                                            if(this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemStateProperties === undefined)
+                                                            {
+                                                                this.clipboard.data[i].children[j].properties[k].value.values[l][m].value.itemStateProperties = [];
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -303,9 +309,12 @@ export default class Spawn_Megaprint
 
                             if(this.baseLayout.saveGameParser.header.saveVersion >= 44)
                             {
-                                if(this.clipboard.data[i].parent.extra.items[j].itemState !== undefined && this.clipboard.data[i].parent.extra.items[j].itemState.pathName === '')
+                                if(this.clipboard.data[i].parent.extra.items[j].itemState !== undefined)
                                 {
-                                    delete this.clipboard.data[i].parent.extra.items[j].itemState;
+                                    if(this.clipboard.data[i].parent.extra.items[j].itemState.pathName === '')
+                                    {
+                                        delete this.clipboard.data[i].parent.extra.items[j].itemState;
+                                    }
                                 }
                             }
                         }
