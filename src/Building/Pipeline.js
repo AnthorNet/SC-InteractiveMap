@@ -283,7 +283,7 @@ export default class Building_Pipeline
         let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
 
         let splineData          = BaseLayout_Math.extractSplineData(baseLayout, currentObject);
-        let maxFluid            = 3.1415926535897932 * Math.pow((1.3 / 2), 2) * splineData.distanceStraight * 1000; // Use straigth calculation
+        let maxFluid            = 3.1415926535897932 * Math.pow((1.3 / 2), 2) * splineData.distanceStraight; // Use straigth calculation
 
             baseLayout.setObjectProperty(currentObject, 'mFluidBox', {
                 type    : 'FluidBox',
