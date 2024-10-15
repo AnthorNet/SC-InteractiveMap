@@ -903,7 +903,7 @@ export default class SaveParser_Read
     readLightweightBuildableSubsystem(subsystemLength)
     {
         let startLength     = this.currentByte;
-        let pathNamePool    = [];
+        let pathNamePool    = {};
         let objectsToFlush  = {};
         let objectCount     = 0;
             this.readInt(); // 0
@@ -918,7 +918,7 @@ export default class SaveParser_Read
                     for(let j = 0; j < currentBuildableLength; j++)
                     {
                         let lightweightObjectPathName = this.generateFastPathName('LightweightBuildable_' + currentClassName.split('/').pop() + '_', pathNamePool);
-                            pathNamePool.push(lightweightObjectPathName);
+                            pathNamePool[lightweightObjectPathName] = true;
 
                         let lightweightObject = {
                                 className           : currentClassName,
@@ -2544,14 +2544,14 @@ export default class SaveParser_Read
     /*
      * UTILITIES
      */
-    generateFastPathName(pathNamePattern, pathNamePool = [])
+    generateFastPathName(pathNamePattern, pathNamePool = {})
     {
         let pathName    = JSON.parse(JSON.stringify(pathNamePattern.split('_')));
             pathName.pop();
             pathName.push(Math.floor(Math.random() * Math.floor(2147483647)));
 
         let newPathName = pathName.join('_');
-            if(pathNamePool.includes(newPathName))
+            if(pathNamePool[newPathName] !== undefined)
             {
                 console.log('Collision detected', newPathName);
                 return this.generateFastPathName(pathNamePattern, pathNamePool);
