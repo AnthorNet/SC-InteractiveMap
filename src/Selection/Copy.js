@@ -41,7 +41,7 @@ export default class Selection_Copy
     {
         if(this.markers)
         {
-            let availablePathName   = [];
+            let availablePathName   = {}; // TODO: Switch to object
             let trainTimeTables     = [];
 
             // Filter not wanted
@@ -56,8 +56,7 @@ export default class Selection_Copy
                 let currentObjectData   = this.baseLayout.getBuildingDataFromClassName(currentObject.className);
 
                 // We use that to actually map the caves
-                // TODO: Beacons are a thing of the past...
-                if(this.baseLayout.useDebug === true && currentObject.className === '/Game/FactoryGame/Equipment/Beacon/BP_Beacon.BP_Beacon_C')
+                if(this.baseLayout.useDebug === true && currentObject.className === '/Game/FactoryGame/Buildable/Factory/PowerPoleMk1/Build_PowerPoleMk1.Build_PowerPoleMk1_C')
                 {
                     console.log([Math.round(currentObject.transform.translation[0]), Math.round(currentObject.transform.translation[1])]);
                 }
@@ -102,7 +101,7 @@ export default class Selection_Copy
                     continue;
                 }
 
-                if(availablePathName.includes(this.markers[i].options.pathName))
+                if(availablePathName[this.markers[i].options.pathName] !== undefined)
                 {
                     continue; // Skip duplicates...
                 }
@@ -200,7 +199,7 @@ export default class Selection_Copy
                                                 }
 
                                             this.clipboard.data.push(extraPropertyNewObject);
-                                            availablePathName.push(extraPropertyNewObject.parent.pathName);
+                                            availablePathName[extraPropertyNewObject.parent.pathName] = true;
                                         }
                                 }
                             }
@@ -265,13 +264,13 @@ export default class Selection_Copy
                                     }
 
                                 this.clipboard.data.push(trainIdentifierNewObject);
-                                availablePathName.push(trainIdentifierNewObject.parent.pathName);
+                                availablePathName[trainIdentifierNewObject.parent.pathName] = true;
                         }
                 }
 
                 // Add object
                 this.clipboard.data.push(newDataObject);
-                availablePathName.push(newDataObject.parent.pathName);
+                availablePathName[newDataObject.parent.pathName] = true;
             }
 
             for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
@@ -285,7 +284,7 @@ export default class Selection_Copy
                                 testPathName.pop();
                                 testPathName    = testPathName.join('.');
 
-                            if(availablePathName.includes(testPathName) === false)
+                            if(availablePathName[testPathName] === undefined)
                             {
                                 this.clipboard.data.splice(i, 1);
                             }
@@ -318,7 +317,7 @@ export default class Selection_Copy
                                                             testPathName.pop();
                                                             testPathName    = testPathName.join('.');
 
-                                                        if(availablePathName.includes(testPathName) === false)
+                                                        if(availablePathName[testPathName] === undefined)
                                                         {
                                                             mComponents.values.splice(k, 1);
                                                         }
@@ -339,7 +338,7 @@ export default class Selection_Copy
                                                 testPathName.pop();
                                                 testPathName    = testPathName.join('.');
 
-                                            if(availablePathName.includes(testPathName) === false)
+                                            if(availablePathName[testPathName] === undefined)
                                             {
                                                 this.baseLayout.deleteObjectProperty(currentChildren, 'mConnectedComponent');
                                             }
@@ -352,7 +351,7 @@ export default class Selection_Copy
                                                 testPathName.pop();
                                                 testPathName    = testPathName.join('.');
 
-                                                if(availablePathName.includes(testPathName) === false)
+                                                if(availablePathName[testPathName] === undefined)
                                                 {
                                                     this.baseLayout.deleteObjectProperty(currentChildren, 'mConnectedComponent');
 
@@ -416,7 +415,7 @@ export default class Selection_Copy
                                                 testPathName.pop();
                                                 testPathName    = testPathName.join('.');
 
-                                            if(availablePathName.includes(testPathName) === false)
+                                            if(availablePathName[testPathName] === undefined)
                                             {
                                                 mConnectedComponents.values.splice(n, 1);
                                             }
@@ -431,7 +430,7 @@ export default class Selection_Copy
                                             testPathName.pop();
                                             testPathName    = testPathName.join('.');
 
-                                        if(availablePathName.includes(testPathName) === false)
+                                        if(availablePathName[testPathName] === undefined)
                                         {
                                             this.baseLayout.deleteObjectProperty(currentChildren, 'mConnectedTo');
                                         }
@@ -470,7 +469,7 @@ export default class Selection_Copy
                                                                     testSourcePathName.pop();
                                                                     testSourcePathName  = testSourcePathName.join('.');
 
-                                                                if(availablePathName.includes(testSourcePathName) === false)
+                                                                if(availablePathName[testSourcePathName] === undefined)
                                                                 {
                                                                     keepPowerLine = false;
                                                                 }
@@ -479,7 +478,7 @@ export default class Selection_Copy
                                                                     testTargetPathName.pop();
                                                                     testTargetPathName  = testTargetPathName.join('.');
 
-                                                                if(availablePathName.includes(testTargetPathName) === false)
+                                                                if(availablePathName[testTargetPathName] === undefined)
                                                                 {
                                                                     keepPowerLine = false;
                                                                 }
@@ -495,10 +494,10 @@ export default class Selection_Copy
                                                             }
                                                             else
                                                             {
-                                                                if(availablePathName.includes(currentPowerline.pathName) === false)
+                                                                if(availablePathName[currentPowerline.pathName] === undefined)
                                                                 {
                                                                     this.clipboard.data.push({parent: currentPowerline, children: []});
-                                                                    availablePathName.push(currentPowerline.pathName);
+                                                                    availablePathName[currentPowerline.pathName] = true;
                                                                 }
                                                             }
                                                     }
@@ -523,7 +522,7 @@ export default class Selection_Copy
                                                                                 testSourcePathName.pop();
                                                                                 testSourcePathName  = testSourcePathName.join('.');
 
-                                                                                if(availablePathName.includes(testSourcePathName) === false)
+                                                                                if(availablePathName[testSourcePathName] === undefined)
                                                                                 {
                                                                                     mCurrentHiddenConnections.values.splice(n, 1);
                                                                                 }
@@ -568,7 +567,7 @@ export default class Selection_Copy
                                     {
                                         if(mStops.values[j] !== undefined && mStops.values[j][k].name === 'Station')
                                         {
-                                            if(availablePathName.includes(mStops.values[j][k].value.pathName) === false)
+                                            if(availablePathName[mStops.values[j][k].value.pathName] === undefined)
                                             {
                                                 mStops.values.splice(j, 1);
                                             }
@@ -578,7 +577,7 @@ export default class Selection_Copy
                             }
 
                             this.clipboard.data.push({parent: newTimeTable, children: []});
-                            availablePathName.push(newTimeTable.pathName);
+                            availablePathName[newTimeTable.pathName] = true;
                     }
             }
 

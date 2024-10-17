@@ -420,16 +420,16 @@ export default class Spawn_Megaprint
 
     generatePathName()
     {
-        let pathNameToConvert       = [];
+        let pathNameToConvert       = {};
         let pathNameConversion      = {};
 
         return new Promise((resolve) => {
             // Generate proper path name...
             for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
             {
-                if(pathNameToConvert.includes(this.clipboard.data[i].parent.pathName) === false)
+                if(pathNameToConvert[this.clipboard.data[i].parent.pathName] === undefined)
                 {
-                    pathNameToConvert.push(this.clipboard.data[i].parent.pathName);
+                    pathNameToConvert[this.clipboard.data[i].parent.pathName] = true;
                 }
                 else // Try to remove duplicates...
                 {
@@ -441,9 +441,9 @@ export default class Spawn_Megaprint
             {
                 for(let pathName in this.clipboard.hiddenConnections)
                 {
-                    if(pathNameToConvert.includes(pathName) === false)
+                    if(pathNameToConvert[pathName] === undefined)
                     {
-                        pathNameToConvert.push(pathName);
+                        pathNameToConvert[pathName] = true;
                     }
                 }
             }
@@ -452,7 +452,7 @@ export default class Spawn_Megaprint
             {
                 let newPathName         = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
 
-                    while(pathNameToConvert.includes(newPathName))
+                    while(pathNameToConvert[newPathName] !== undefined)
                     {
                         newPathName = this.baseLayout.generateFastPathName(this.clipboard.data[i].parent);
                     }
@@ -481,11 +481,11 @@ export default class Spawn_Megaprint
                             pathName: oldPathName
                         });
 
-                            while(pathNameToConvert.includes(newPathName))
+                            while(pathNameToConvert[newPathName] !== undefined)
                             {
                                 newPathName = this.baseLayout.generateFastPathName({
-                                    className: this.clipboard.hiddenConnections[pathName].className,
-                                    pathName: oldPathName
+                                    className   : this.clipboard.hiddenConnections[pathName].className,
+                                    pathName    : oldPathName
                                 });
                             }
 
