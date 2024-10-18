@@ -196,6 +196,7 @@ export default class Selection_Copy
                                                     }, 'Struct');
                                                     this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mCurrentAction');
                                                     this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mActionsToExecute');
+                                                    extraPropertyNewObject.parent.extra = {unk1 :0, unk2 :0, mActiveAction: [], mActionQueue: []};
                                                 }
 
                                             this.clipboard.data.push(extraPropertyNewObject);
