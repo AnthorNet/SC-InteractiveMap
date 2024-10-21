@@ -1334,11 +1334,6 @@ export default class SaveParser_Read
 
                             break;
 
-                        case 'FINNetworkTrace': // MOD: FicsIt-Networks
-                            currentProperty.value.values.push(this.readFINNetworkTrace());
-
-                            break;
-
                         case 'Vector':
                             if(this.header.saveVersion >= 41)
                             {
@@ -1369,6 +1364,13 @@ export default class SaveParser_Read
 
                             break;
 
+                         // MOD: FicsIt-Networks
+                        case 'FINNetworkTrace':
+                        case 'FIRTrace':
+                            currentProperty.value.values.push(this.readFINNetworkTrace());
+
+                            break;
+
                         // MOD: FicsIt-Networks
                         // See: https://github.com/CoderDE/FicsIt-Networks/blob/3472a437bcd684deb7096ede8f03a7e338b4a43d/Source/FicsItNetworks/Computer/FINComputerGPUT1.h#L42
                         case 'FINGPUT1BufferPixel':
@@ -1378,6 +1380,7 @@ export default class SaveParser_Read
 
                         // MOD: FicsIt-Networks
                         case 'FINDynamicStructHolder':
+                        case 'FIRInstancedStruct':
                             currentProperty.value.values.push(this.readFINDynamicStructHolder());
 
                             break;
@@ -1995,6 +1998,7 @@ export default class SaveParser_Read
                 break;
 
             case 'FINNetworkTrace': // MOD: FicsIt-Networks
+            case 'FIRTrace':
                 currentProperty.value.values        = this.readFINNetworkTrace();
 
                 break;
@@ -2408,6 +2412,12 @@ export default class SaveParser_Read
 
                             break;
 
+                        case '/Script/CoreUObject.Vector2D':
+                            structure.x         = this.readDouble();
+                            structure.y         = this.readDouble();
+
+                            break;
+
                         case '/Script/CoreUObject.LinearColor':
                             structure.r         = this.readFloat();
                             structure.g         = this.readFloat();
@@ -2499,10 +2509,15 @@ export default class SaveParser_Read
             {
                 // See: https://github.com/Panakotta00/FicsIt-Networks/blob/e2fda3bb7c3701504e419db43dd221b64e36312e/Source/FicsItNetworks/Public/Computer/FINComputerGPUT2.h#L265
                 case '/Script/FicsItNetworks.FINGPUT2DC_Box':
+                case '/Script/FicsItNetworksComputer.FINGPUT2DC_Box':
+                    break;
+
+                case '/Script/FicsItNetworksComputer.FINGPUT2DC_Text':
                     break;
 
                 // See: https://github.com/Panakotta00/FicsIt-Networks/blob/e2fda3bb7c3701504e419db43dd221b64e36312e/Source/FicsItNetworks/Public/Computer/FINComputerGPUT2.h#L165
                 case '/Script/FicsItNetworks.FINGPUT2DC_Lines':
+                case '/Script/FicsItNetworksComputer.FINGPUT2DC_Lines':
                     data.unk1   = this.readString();
                     data.unk2   = this.readString(); // Array
                     data.unk3   = this.readInt();
@@ -2511,8 +2526,11 @@ export default class SaveParser_Read
                     data.unk6   = this.readByte();
                     data.unk7   = this.readInt();
                     data.unk8   = this.readProperty();
-                    data.unk9   = this.readDouble();
-                    data.unk10  = this.readDouble();
+                    data.unk9   = [];
+                    for(let i = 0; i < (data.unk7 - 1); i++)
+                    {
+                        data.unk9.push({x: this.readDouble(), y: this.readDouble()});
+                    }
 
                     break;
 

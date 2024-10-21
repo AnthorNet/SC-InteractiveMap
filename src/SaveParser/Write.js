@@ -1496,11 +1496,6 @@ export default class SaveParser_Write
 
                             break;
 
-                        case 'FINNetworkTrace': // MOD: FicsIt-Networks
-                            structure += this.writeFINNetworkTrace(currentProperty.value.values[i]);
-
-                            break;
-
                         case 'Vector':
                             if(this.header.saveVersion >= 41)
                             {
@@ -1526,6 +1521,13 @@ export default class SaveParser_Write
                             break;
 
                         // MOD: FicsIt-Networks
+                        case 'FINNetworkTrace':
+                        case 'FIRTrace':
+                            structure += this.writeFINNetworkTrace(currentProperty.value.values[i]);
+
+                            break;
+
+                        // MOD: FicsIt-Networks
                         case 'FINGPUT1BufferPixel':
                             structure += this.writeFINGPUT1BufferPixel(currentProperty.value.values[i]);
 
@@ -1533,6 +1535,7 @@ export default class SaveParser_Write
 
                         // MOD: FicsIt-Networks
                         case 'FINDynamicStructHolder':
+                        case 'FIRInstancedStruct':
                             structure += this.writeFINDynamicStructHolder(currentProperty.value.values[i]);
 
                             break;
@@ -2051,6 +2054,7 @@ export default class SaveParser_Write
                 break;
 
             case 'FINNetworkTrace': // MOD: FicsIt-Networks
+            case 'FIRTrace':
                 property += this.writeFINNetworkTrace(currentProperty.value.values);
 
                 break;
@@ -2486,6 +2490,12 @@ export default class SaveParser_Write
 
                         break;
 
+                    case '/Script/CoreUObject.Vector2D':
+                        saveBinary += this.writeDouble(value.structs[i].x);
+                        saveBinary += this.writeDouble(value.structs[i].y);
+
+                        break;
+
                     case '/Script/CoreUObject.LinearColor':
                         saveBinary += this.writeFloat(value.structs[i].r);
                         saveBinary += this.writeFloat(value.structs[i].g);
@@ -2556,7 +2566,7 @@ export default class SaveParser_Write
             saveBinary += this.writeInt(value.unk0);
             saveBinary += this.writeString(value.type);
 
-            if(value.type === '/Script/FicsItNetworks.FINGPUT2DC_Lines')
+            if(['/Script/FicsItNetworks.FINGPUT2DC_Lines', '/Script/FicsItNetworksComputer.FINGPUT2DC_Lines'].includes(value.type))
             {
                 saveBinary += this.writeString(value.unk1);
                 saveBinary += this.writeString(value.unk2);
@@ -2566,8 +2576,12 @@ export default class SaveParser_Write
                 saveBinary += this.writeByte(value.unk6);
                 saveBinary += this.writeInt(value.unk7);
                 saveBinary += this.writeProperty(value.unk8);
-                saveBinary += this.writeDouble(value.unk9);
-                saveBinary += this.writeDouble(value.unk10);
+
+                for(let i = 0; i < value.unk9.length; i++)
+                {
+                    saveBinary += this.writeDouble(value.unk9[i].x);
+                    saveBinary += this.writeDouble(value.unk9[i].y);
+                }
             }
 
             for(let i = 0; i < value.properties; i++)
