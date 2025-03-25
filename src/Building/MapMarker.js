@@ -34,6 +34,10 @@ export default class Building_MapMarker
             {
                 for(let j = 0; j < mapMarkers[i].length; j++)
                 {
+                    if(mapMarkers[i][j].name === 'markerGuid' && mapMarkers[i][j].value.guid === mapMarkerId)
+                    {
+                        return mapMarkers[i];
+                    }
                     if(mapMarkers[i][j].name === 'MarkerID' && mapMarkers[i][j].value.value === mapMarkerId)
                     {
                         return mapMarkers[i];
@@ -53,6 +57,8 @@ export default class Building_MapMarker
                 return mapMarker[i].value;
             }
         }
+
+        return null;
     }
 
     static getFormattedColor(mapMarker)
@@ -88,27 +94,39 @@ export default class Building_MapMarker
     {
         baseLayout.setupSubLayer('playerOrientationLayer');
 
-        let location    = Building_MapMarker.getProperty(mapMarker, 'Location');
-        let mapMarkerId = Building_MapMarker.getProperty(mapMarker, 'MarkerID');
-            if(mapMarkerId.value !== 255)
+        let currentMarkerId = null;
+        let location        = Building_MapMarker.getProperty(mapMarker, 'Location');
+        let mapMarkerGuid   = Building_MapMarker.getProperty(mapMarker, 'markerGuid');
+            if(mapMarkerGuid !== null)
             {
-                let marker      = new L.mapMarker(
-                    baseLayout.satisfactoryMap.unproject([location.values[0].value, location.values[1].value, location.values[2].value]),
-                    {
-                        mapMarkerId     : mapMarkerId.value,
-                        color           : '#FFFFFF',
-                        fillColor       : Building_MapMarker.getFormattedColor(mapMarker),
-                        icon            : Building_MapMarker.getIconSrc(baseLayout, mapMarker),
-                        zIndexOffset    : 900
-                    }
-                );
-
-                baseLayout.playerLayers.playerOrientationLayer.count++;
-                baseLayout.bindMouseEvents(marker);
-                baseLayout.playerLayers.playerOrientationLayer.elements.push(marker);
-
-                return {layer: 'playerOrientationLayer', marker: marker};
+                currentMarkerId = mapMarkerGuid.guid;
             }
+
+        let mapMarkerId = Building_MapMarker.getProperty(mapMarker, 'MarkerID');
+            if(mapMarkerId !== null && mapMarkerId.value !== 255)
+            {
+                currentMarkerId = mapMarkerId.value;
+            }
+
+        if(currentMarkerId !== null)
+        {
+            let marker      = new L.mapMarker(
+                baseLayout.satisfactoryMap.unproject([location.values[0].value, location.values[1].value, location.values[2].value]),
+                {
+                    mapMarkerId     : currentMarkerId,
+                    color           : '#FFFFFF',
+                    fillColor       : Building_MapMarker.getFormattedColor(mapMarker),
+                    icon            : Building_MapMarker.getIconSrc(baseLayout, mapMarker),
+                    zIndexOffset    : 900
+                }
+            );
+
+            baseLayout.playerLayers.playerOrientationLayer.count++;
+            baseLayout.bindMouseEvents(marker);
+            baseLayout.playerLayers.playerOrientationLayer.elements.push(marker);
+
+            return {layer: 'playerOrientationLayer', marker: marker};
+        }
 
         return null;
     }
@@ -122,6 +140,16 @@ export default class Building_MapMarker
             {
                 for(let j = 0; j < mapMarkers[i].length; j++)
                 {
+                    if(mapMarkers[i][j].name === 'markerGuid' && mapMarkers[i][j].value.guid === mapMarkerId)
+                    {
+                        mapMarkers.splice(i, 1);
+                        baseLayout.deleteMarkerFromElements('playerOrientationLayer', marker.relatedTarget);
+                        baseLayout.playerLayers.playerOrientationLayer.count--;
+                        baseLayout.setBadgeLayerCount('playerOrientationLayer');
+
+                        SaveParser_FicsIt.fixMapManager(baseLayout, baseLayout.mapSubSystem.subSystem, true);
+                        return;
+                    }
                     if(mapMarkers[i][j].name === 'MarkerID' && mapMarkers[i][j].value.value === mapMarkerId)
                     {
                         mapMarkers.splice(i, 1);
