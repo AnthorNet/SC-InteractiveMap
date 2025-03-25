@@ -726,8 +726,9 @@ if('undefined' !== typeof L) // Avoid worker error
             let conveyorAny0    = baseLayout.saveGameParser.getTargetObject(this.options.pathName + '.ConveyorAny0'); //TODO: Dynamic?!
                 if(conveyorAny0 !== null)
                 {
+                    //TODO: Missing from 1.1, is conveyor0 always the start now?
                     let mDirection = baseLayout.getObjectProperty(conveyorAny0, 'mDirection');
-                        if(mDirection.value === 'EFactoryConnectionDirection::FCD_INPUT')
+                        if(mDirection === null || (mDirection !== null && mDirection.value === 'EFactoryConnectionDirection::FCD_INPUT'))
                         {
                             flowDirection = -1;
                         }
