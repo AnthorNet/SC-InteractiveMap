@@ -33,6 +33,10 @@ export default class SaveParser_Read
         {
             this.header.saveVersion          = this.readInt();
             this.header.buildVersion         = this.readInt();
+            if(this.header.saveHeaderType >= 14)
+            {
+                this.header.saveName = this.readString();
+            }
             this.header.mapName              = this.readString();
             this.header.mapOptions           = this.readString();
             this.header.sessionName          = this.readString();

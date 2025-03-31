@@ -643,6 +643,10 @@ export default class SaveParser_Write
             header += this.writeInt(this.header.saveHeaderType, false);
             header += this.writeInt(this.header.saveVersion, false);
             header += this.writeInt(this.header.buildVersion, false);
+            if(this.header.saveHeaderType >= 14)
+            {
+                header += this.writeString(this.header.saveName, false);
+            }
             header += this.writeString(this.header.mapName, false);
             header += this.writeString(this.header.mapOptions, false);
             header += this.writeString(this.header.sessionName, false);
