@@ -212,33 +212,40 @@ export default class SaveParser_Read
 
         if(this.header.saveVersion >= 41)
         {
-            let partitions      = {};
-                partitions.unk2 = this.readInt();
-                partitions.unk3 = this.readString();
+            let partitions                  = {};
+                partitions.partitionCount   = this.readInt();
+                this.readString();          // None
+                this.readUint();            // 0
+                partitions.headHex1         = this.readUint();
+                this.readInt();             // 1
+                this.readString();          // None
 
-                partitions.unk4 = this.readInt64();
-                partitions.unk5 = this.readInt();
-                partitions.unk6 = this.readString();
+                partitions.headHex2     = this.readUint();
 
-                partitions.unk7 = this.readInt();
+                partitions.data     = {};
 
-                partitions.data = {};
-
-            for(let i = 1; i < partitions.unk2; i++)
+            for(let i = 1; i < partitions.partitionCount; i++)
             {
-                let partitionName                           = this.readString();
+                let partitionName                           = this.readString(); // MainGrid, LandscapeGrid, ExplorationGrid, FoliageGrid, HLOD0_256m_1023m
                     partitions.data[partitionName]          = {};
-                    partitions.data[partitionName].unk1     = this.readInt();
-                    partitions.data[partitionName].unk2     = this.readInt();
+                    partitions.data[partitionName].gridHex  = this.readUint();
+                    partitions.data[partitionName].count    = this.readUint();
                     partitions.data[partitionName].levels   = {};
 
                 let nbLevels = this.readInt();
-                    for(let j = 0; j < nbLevels; j++)
+                    for(let j = 0; j < nbLevels; j++) // levelHex
                     {
-                        partitions.data[partitionName].levels[this.readString()] = this.readUint();
+                        let levelName = this.readString();
+                            partitions.data[partitionName].levels[levelName] = this.readUint();
+
+                            //if(levelName === '11MSWN6NQ4TW6L7DRTKESBKZM')
+                            {
+                                //console.log(partitionName, levelName, partitions.data[partitionName].levels[levelName], partitions.data[partitionName]);
+                            }
                     }
             }
 
+            //console.log(partitions);
             this.worker.postMessage({command: 'transferData', data: {partitions: partitions}});
         }
 

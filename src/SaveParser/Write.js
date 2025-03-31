@@ -79,20 +79,19 @@ export default class SaveParser_Write
         {
             this.worker.postMessage({command: 'loaderMessage', message: 'Saving world partitions...'});
 
-            this.saveBinary        += this.writeInt(this.partitions.unk2, false);
-            this.saveBinary        += this.writeString(this.partitions.unk3, false);
-
-            this.saveBinary        += this.writeInt64(this.partitions.unk4, false);
-            this.saveBinary        += this.writeInt(this.partitions.unk5, false);
-            this.saveBinary        += this.writeString(this.partitions.unk6, false);
-
-            this.saveBinary        += this.writeInt(this.partitions.unk7, false);
+            this.saveBinary        += this.writeInt(this.partitions.partitionCount, false);
+            this.saveBinary        += this.writeString('None', false);
+            this.saveBinary        += this.writeUint(0, false);
+            this.saveBinary        += this.writeUint(this.partitions.headHex1, false);
+            this.saveBinary        += this.writeInt(1, false);
+            this.saveBinary        += this.writeString('None', false);
+            this.saveBinary        += this.writeUint(this.partitions.headHex2, false);
 
             for(let partitionName in this.partitions.data)
             {
                 this.saveBinary        += this.writeString(partitionName, false);
-                this.saveBinary        += this.writeInt(this.partitions.data[partitionName].unk1, false);
-                this.saveBinary        += this.writeInt(this.partitions.data[partitionName].unk2, false);
+                this.saveBinary        += this.writeUint(this.partitions.data[partitionName].gridHex, false);
+                this.saveBinary        += this.writeUint(this.partitions.data[partitionName].count, false);
 
                 let levelKeys           = Object.keys(this.partitions.data[partitionName].levels);
                     this.saveBinary    += this.writeInt(levelKeys.length, false);
