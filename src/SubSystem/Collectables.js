@@ -41,6 +41,17 @@ export default class SubSystem_Collectables
                                         {
                                             if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                                             {
+                                                let dismantled      = false;
+                                                let currentObject   = this.baseLayout.saveGameParser.getTargetObject(this.collectables[className].markers[m].pathName);
+                                                    if(currentObject === null)
+                                                    {
+                                                        dismantled      = true; //TODO: Use it to reddish the icon...
+                                                        collectedStatus = true;
+                                                        this.collectables[className].used++;
+
+                                                        console.log('dismantled', this.collectables[className].markers[m].pathName)
+                                                    }
+
                                                 let dataCollected   = parseInt($('.updateLayerState[data-id="' + this.collectables[className].layerId + '"]').attr('data-collected'));
                                                 let updatedOpacity  = 1;
                                                     if(collectedStatus === true)
