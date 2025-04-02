@@ -255,12 +255,34 @@ export default class SaveParser_Read
 
         for(let j = 0; j <= nbLevels; j++)
         {
-            let levelName = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
-                levels.push(levelName);
+            let levelName                   = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
+            let levelSaveVersion            = null;
 
             let objectsBinaryLength         = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
             let objectsBinaryLengthStart    = this.currentByte;
                 //console.log('objectsBinaryLength', levelName, objectsBinaryLength, objectsBinaryLengthStart)
+
+                // Archengius leap of faith!
+                if(this.header.saveVersion >= 51)
+                {
+                    if(levelName === 'Level ' + this.header.mapName)
+                    {
+                        levelSaveVersion = this.header.saveVersion;
+                    }
+                    else
+                    {
+                            this.currentByte   += objectsBinaryLength;
+                        let entitiesBinaryLength = this.readInt64();
+                            this.currentByte   += entitiesBinaryLength;
+                            levelSaveVersion    = this.readUint();
+
+                        // Get back to initial state...
+                        this.currentByte = objectsBinaryLengthStart;
+                    }
+                }
+
+                levels.push({name: levelName, saveVersion: levelSaveVersion});
+
             let entitiesToObjects   = [];
             let countObjects        = this.readInt();
                 if(levelName === 'Level ' + this.header.mapName)
@@ -272,15 +294,16 @@ export default class SaveParser_Read
             for(let i = 0; i < countObjects; i++)
             {
                 let objectType = this.readInt();
+                    //console.log(levelName, countObjects, i, objectType);
                     switch(objectType)
                     {
                         case 0:
-                            let object                          = this.readObject();
+                            let object                          = this.readObject(levelSaveVersion);
                                 this.objects[object.pathName]   = object;
                                 entitiesToObjects[i]            = object.pathName;
                             break;
                         case 1:
-                            let actor                           = this.readActor();
+                            let actor                           = this.readActor(levelSaveVersion);
                                 this.objects[actor.pathName]    = actor;
                                 entitiesToObjects[i]            = actor.pathName;
 
@@ -290,7 +313,7 @@ export default class SaveParser_Read
                                 }
                             break;
                         default:
-                            console.log('Unknown object type', objectType);
+                            console.log(levelName, 'Unknown object type', objectType);
                             break;
                     }
 
@@ -432,6 +455,12 @@ export default class SaveParser_Read
                 console.timeEnd('Loaded ' + countEntities + ' entities...');
             }
 
+            // That's the levelSaveVersion, but we alrady got it during our leap of faith!
+            if(levelName !== 'Level ' + this.header.mapName && this.header.saveVersion >= 51)
+            {
+                this.readUint();
+            }
+
             let countCollected = this.readInt();
                 if(countCollected > 0)
                 {
@@ -466,21 +495,32 @@ export default class SaveParser_Read
     /*
      * Main objects
      */
-    readObject()
+    readObject(levelSaveVersion)
     {
         let object                  = {};
             object.className        = this.readString();
             object                  = this.readObjectProperty(object);
+
+            if(levelSaveVersion >= 51)
+            {
+                object.objectFlags = this.readUint();
+            }
+
             object.outerPathName    = this.readString();
 
         return object;
     }
 
-    readActor()
+    readActor(levelSaveVersion)
     {
         let actor               = {};
             actor.className     = this.readString();
             actor               = this.readObjectProperty(actor);
+
+            if(levelSaveVersion >= 51)
+            {
+                actor.objectFlags = this.readUint();
+            }
 
         let needTransform       = this.readInt();
             if(needTransform !== 0)
@@ -779,7 +819,7 @@ export default class SaveParser_Read
                                     properties  : []
                                 };
 
-                                    while(true)
+                                while(true)
                                 {
                                     let mActiveActionProperty = this.readProperty();
                                         if(mActiveActionProperty === null)
@@ -1880,7 +1920,7 @@ export default class SaveParser_Read
 
                 break;
 
-            case 'Guid': // MOD?
+            case 'Guid':
                 currentProperty.value.guid          = this.readHex(16);
 
                 break;

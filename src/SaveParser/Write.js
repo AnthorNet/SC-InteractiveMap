@@ -128,9 +128,9 @@ export default class SaveParser_Write
                 this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.08)});
         }
 
-        let currentLevelName = this.levels[currentLevel].replace('Level ', '');
+        let currentLevelName = this.levels[currentLevel].name.replace('Level ', '');
             //console.log('levelName', this.levels[currentLevel])
-            this.saveBinary += this.writeString(this.levels[currentLevel], false);
+            this.saveBinary += this.writeString(this.levels[currentLevel].name, false);
 
             if(this.header.saveVersion < 41)
             {
@@ -148,19 +148,19 @@ export default class SaveParser_Write
                         this.subLevelObjectKeys     = objectKeys;
                         this.subLevelCollectables   = collectables;
 
-                        return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName]);
+                        return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName], this.levels[currentLevel].saveVersion);
                     });
                 });
         }
         else
         {
-            return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName]);
+            return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName], this.levels[currentLevel].saveVersion);
         }
     }
 
     generateMainLevelChunks()
     {
-        let currentLevelName = this.levels[this.levels.length - 1].replace('Level ', '');
+        let currentLevelName = this.levels[this.levels.length - 1].name.replace('Level ', '');
             this.postWorkerMessage({command: 'requestObjectKeys', levelName: currentLevelName}).then((objectKeys) => {
                 this.postWorkerMessage({command: 'requestCollectables', levelName: currentLevelName}).then((collectables) => {
                     return this.generateObjectsChunks((this.levels.length - 1), objectKeys[currentLevelName], collectables[currentLevelName]);
@@ -168,7 +168,7 @@ export default class SaveParser_Write
             });
     }
 
-    generateObjectsChunks(currentLevel, objectKeys, collectables, step = null, tempSaveBinaryLength = 0)
+    generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion = null, step = null, tempSaveBinaryLength = 0)
     {
         if(step === null)
         {
@@ -195,10 +195,10 @@ export default class SaveParser_Write
                 tempSaveBinaryLength       += 4; // countObjects
 
                 return this.postWorkerMessage({command: 'requestObjects', objectKeys: ['Persistent_Level:PersistentLevel.LightweightBuildableSubsystem']}).then((objects) => {
-                    this.saveBinary        += this.writeActor(objects[0]);
+                    this.saveBinary        += this.writeActor(objects[0], levelSaveVersion);
                     tempSaveBinaryLength   += this.currentEntityLength;
 
-                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, 0, tempSaveBinaryLength);
+                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, 0, tempSaveBinaryLength);
                 });
             }
             else
@@ -206,7 +206,7 @@ export default class SaveParser_Write
                 this.saveBinary            += this.writeInt(objectKeys.length, false);
                 tempSaveBinaryLength       += 4; // countObjects
 
-                return this.generateObjectsChunks(currentLevel, objectKeys, collectables, 0, tempSaveBinaryLength);
+                return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, 0, tempSaveBinaryLength);
             }
         }
 
@@ -219,12 +219,12 @@ export default class SaveParser_Write
                         {
                             if(objects[i].outerPathName !== undefined)
                             {
-                                this.saveBinary        += this.writeObject(objects[i]);
+                                this.saveBinary        += this.writeObject(objects[i], levelSaveVersion);
                                 tempSaveBinaryLength   += this.currentEntityLength;
                             }
                             else
                             {
-                                this.saveBinary        += this.writeActor(objects[i]);
+                                this.saveBinary        += this.writeActor(objects[i], levelSaveVersion);
                                 tempSaveBinaryLength   += this.currentEntityLength;
                             }
 
@@ -239,7 +239,7 @@ export default class SaveParser_Write
                             }
                         }
 
-                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, (step + this.stepsLength), tempSaveBinaryLength);
+                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, (step + this.stepsLength), tempSaveBinaryLength);
                 });
             }
 
@@ -304,6 +304,7 @@ export default class SaveParser_Write
             currentLevel            : currentLevel,
             objectKeys              : objectKeys,
             collectables            : collectables,
+            levelSaveVersion        : levelSaveVersion,
             step                    : null,
             tempSaveBinaryLength    : 0
         });
@@ -389,6 +390,11 @@ export default class SaveParser_Write
                     return this.generateEntitiesChunks(entitiesOptions);
                 });
             }
+
+        if(this.header.saveVersion >= 51 && entitiesOptions.levelSaveVersion !== null)
+        {
+            this.saveBinary += this.writeUint(entitiesOptions.levelSaveVersion);
+        }
 
         // Save current level entities
         this.saveBinary        += this.generateCollectablesChunks(entitiesOptions.collectables);
@@ -676,23 +682,72 @@ export default class SaveParser_Write
         this.saveBinary += header;
     }
 
-    writeObject(currentObject)
+    writeObject(currentObject, levelSaveVersion)
     {
         this.currentEntityLength    = 0;
         let object                  = this.writeInt(0, false);
             object                 += this.writeString(currentObject.className, false);
             object                 += this.writeObjectProperty(currentObject, false);
+
+            if(this.header.saveVersion >= 51)
+            {
+                if(levelSaveVersion >= 51 || levelSaveVersion === null)
+                {
+                    if(currentObject.objectFlags !== undefined)
+                    {
+                        object += this.writeUint(currentObject.objectFlags, false);
+                    }
+                    else // Spawning and pasting old objects
+                    {
+                        switch(currentObject.className)
+                        {
+                            case '/Script/FactoryGame.FGPowerConnectionComponent':
+                            case '/Script/FactoryGame.FGPowerInfoComponent':
+                            case '/Script/FactoryGame.FGInventoryComponent':
+                                object += this.writeUint(2883592, false);
+                                break;
+
+                            case '/Script/FactoryGame.FGFactoryConnectionComponent':
+                                object += this.writeUint(2097152, false);
+                                break;
+
+                            case '/Script/FactoryGame.FGPowerCircuit':
+                                object += this.writeUint(0, false);
+                                break;
+
+                            default:
+                                object += this.writeUint(262152, false);
+                        }
+                    }
+                }
+            }
+
             object                 += this.writeString(currentObject.outerPathName, false);
 
         return object;
     }
 
-    writeActor(currentActor)
+    writeActor(currentActor, levelSaveVersion)
     {
         this.currentEntityLength    = 0;
         let actor                   = this.writeInt(1, false);
             actor                  += this.writeString(currentActor.className, false);
             actor                  += this.writeObjectProperty(currentActor, false);
+
+            if(this.header.saveVersion >= 51)
+            {
+                if(levelSaveVersion >= 51 || levelSaveVersion === null)
+                {
+                    if(currentActor.objectFlags !== undefined)
+                    {
+                        actor += this.writeUint(currentActor.objectFlags, false);
+                    }
+                    else // Spawning and pasting old actors, other exists but should not be generated by SCIM
+                    {
+                        actor += this.writeUint(8, false);
+                    }
+                }
+            }
 
             if(currentActor.needTransform !== undefined)
             {
