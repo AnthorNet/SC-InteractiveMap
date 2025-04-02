@@ -24,6 +24,7 @@ export default class SaveParser
         this.objects                = null;
         this.collectables           = null;
 
+        this.lightweightVersion     = 1;
         this.gameStatePathName      = null;
         this.playerHostPathName     = null;
     }
@@ -100,6 +101,7 @@ export default class SaveParser
                 availableSubLevels  : this.availableSubLevels,
 
                 countObjects        : this.countObjects,
+                lightweightVersion  : this.lightweightVersion,
 
                 maxChunkSize        : this.maxChunkSize,
                 PACKAGE_FILE_TAG    : this.PACKAGE_FILE_TAG

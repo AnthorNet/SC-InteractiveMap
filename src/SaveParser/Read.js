@@ -917,6 +917,11 @@ export default class SaveParser_Read
         let objectCount     = 0;
             this.readInt(); // 0
 
+            if(this.header.saveHeaderType >= 14)
+            {
+                this.worker.postMessage({command: 'transferData', data: {lightweightVersion: this.readInt()}});
+            }
+
         let buildableLength = this.readInt();
             for(let i = 0; i < buildableLength; i++)
             {
@@ -929,34 +934,56 @@ export default class SaveParser_Read
                         let lightweightObjectPathName = this.generateFastPathName('LightweightBuildable_' + currentClassName.split('/').pop() + '_', pathNamePool);
                             pathNamePool[lightweightObjectPathName] = true;
 
-                        let lightweightObject = {
-                                className           : currentClassName,
-                                pathName            : lightweightObjectPathName,
-                                transform           : {
-                                    rotation            : [this.readDouble(), this.readDouble(), this.readDouble(), this.readDouble()],
-                                    translation         : [this.readDouble(), this.readDouble(), this.readDouble()],
-                                    scale3d             : [this.readDouble(), this.readDouble(), this.readDouble()]
-                                },
-                                customizationData   : {
-                                    SwatchDesc          : this.readObjectProperty(),
-                                    MaterialDesc        : this.readObjectProperty(),
-                                    PatternDesc         : this.readObjectProperty(),
-                                    SkinDesc            : this.readObjectProperty(),
-                                    PrimaryColor        : {r: this.readFloat(), g:this.readFloat(), b:this.readFloat(), a: this.readFloat()},
-                                    SecondaryColor      : {r: this.readFloat(), g:this.readFloat(), b:this.readFloat(), a: this.readFloat()},
-                                    PaintFinish         : this.readObjectProperty(),
-                                    PatternRotation     : {value: this.readInt8()}
-                                },
-                                properties          : [{
-                                    name            : 'mBuiltWithRecipe',
-                                    value           : this.readObjectProperty()
-                                }]
+                        let lightweightObject                   = { className: currentClassName, pathName: lightweightObjectPathName };
+                            lightweightObject.transform         = {
+                                rotation            : [this.readDouble(), this.readDouble(), this.readDouble(), this.readDouble()],
+                                translation         : [this.readDouble(), this.readDouble(), this.readDouble()],
+                                scale3d             : [this.readDouble(), this.readDouble(), this.readDouble()]
                             };
+
+                            lightweightObject.customizationData = {
+                                SwatchDesc          : this.readObjectProperty(),
+                                MaterialDesc        : this.readObjectProperty(),
+                                PatternDesc         : this.readObjectProperty(),
+                                SkinDesc            : this.readObjectProperty(),
+                                PrimaryColor        : {r: this.readFloat(), g:this.readFloat(), b:this.readFloat(), a: this.readFloat()},
+                                SecondaryColor      : {r: this.readFloat(), g:this.readFloat(), b:this.readFloat(), a: this.readFloat()},
+                                PaintFinish         : this.readObjectProperty(),
+                                PatternRotation     : {value: this.readInt8()}
+                            };
+
+                            lightweightObject.properties        = [{
+                                name            : 'mBuiltWithRecipe',
+                                value           : this.readObjectProperty()
+                            }];
                         let mBlueprintProxy = this.readObjectProperty();
                             if(mBlueprintProxy.pathName !== '')
                             {
                                 lightweightObject.properties.push({ name: 'mBlueprintProxy', value: mBlueprintProxy });
                             }
+
+                        if(this.header.saveHeaderType >= 14)
+                        {
+                            let haveTypeSpecificData = this.readInt();
+                                if(haveTypeSpecificData  === 1)
+                                {
+                                    lightweightObject.typeSpecificData                  = {};
+                                    lightweightObject.typeSpecificData.referenceObject  = this.readObjectProperty()
+                                    lightweightObject.typeSpecificData.properties       = [];
+
+                                    this.readInt() // Length
+                                    while(true)
+                                    {
+                                        let subStructProperty = this.readProperty();
+                                            if(subStructProperty === null)
+                                            {
+                                                break;
+                                            }
+
+                                        lightweightObject.typeSpecificData.properties.push(subStructProperty);
+                                    }
+                                }
+                        }
 
                         // Skip already deleted actors...
                         if(lightweightObject.customizationData.SwatchDesc.pathName === '' || lightweightObject.properties[0].value.pathName === '')

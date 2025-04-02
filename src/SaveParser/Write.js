@@ -20,6 +20,7 @@ export default class SaveParser_Write
         this.levels                 = options.levels;
         this.availableSubLevels     = options.availableSubLevels;
         this.countObjects           = options.countObjects;
+        this.lightweightVersion     = options.lightweightVersion;
 
         this.stepsLength            = 5000;
         this.language               = options.language;
@@ -1111,6 +1112,11 @@ export default class SaveParser_Write
         {
             entity += this.writeInt(0);
 
+            if(this.header.saveHeaderType >= 14)
+            {
+                entity += this.writeInt(this.lightweightVersion);
+            }
+
             return this.postWorkerMessage({command: 'requestLightweightObjectKeys'}).then((dataObjectKeys) => {
                 entity += this.writeInt(Object.keys(dataObjectKeys).length);
 
@@ -1141,40 +1147,69 @@ export default class SaveParser_Write
 
                 for(let i = 0; i < data.length; i++)
                 {
-                    entity                 += this.writeDouble(data[i].transform.rotation[0]);
-                    entity                 += this.writeDouble(data[i].transform.rotation[1]);
-                    entity                 += this.writeDouble(data[i].transform.rotation[2]);
-                    entity                 += this.writeDouble(data[i].transform.rotation[3]);
+                    entity  += this.writeDouble(data[i].transform.rotation[0]);
+                    entity  += this.writeDouble(data[i].transform.rotation[1]);
+                    entity  += this.writeDouble(data[i].transform.rotation[2]);
+                    entity  += this.writeDouble(data[i].transform.rotation[3]);
 
-                    entity                 += this.writeDouble(data[i].transform.translation[0]);
-                    entity                 += this.writeDouble(data[i].transform.translation[1]);
-                    entity                 += this.writeDouble(data[i].transform.translation[2]);
+                    entity  += this.writeDouble(data[i].transform.translation[0]);
+                    entity  += this.writeDouble(data[i].transform.translation[1]);
+                    entity  += this.writeDouble(data[i].transform.translation[2]);
 
-                    entity                 += this.writeDouble(data[i].transform.scale3d[0]);
-                    entity                 += this.writeDouble(data[i].transform.scale3d[1]);
-                    entity                 += this.writeDouble(data[i].transform.scale3d[2]);
+                    entity  += this.writeDouble(data[i].transform.scale3d[0]);
+                    entity  += this.writeDouble(data[i].transform.scale3d[1]);
+                    entity  += this.writeDouble(data[i].transform.scale3d[2]);
 
                     //console.log(data[i].customizationData.SwatchDesc, this.writeObjectProperty(data[i].customizationData.SwatchDesc))
-                    entity                 += this.writeObjectProperty(data[i].customizationData.SwatchDesc);
-                    entity                 += this.writeObjectProperty(data[i].customizationData.MaterialDesc);
-                    entity                 += this.writeObjectProperty(data[i].customizationData.PatternDesc);
-                    entity                 += this.writeObjectProperty(data[i].customizationData.SkinDesc);
+                    entity  += this.writeObjectProperty(data[i].customizationData.SwatchDesc);
+                    entity  += this.writeObjectProperty(data[i].customizationData.MaterialDesc);
+                    entity  += this.writeObjectProperty(data[i].customizationData.PatternDesc);
+                    entity  += this.writeObjectProperty(data[i].customizationData.SkinDesc);
 
-                    entity                 += this.writeFloat(data[i].customizationData.PrimaryColor.r);
-                    entity                 += this.writeFloat(data[i].customizationData.PrimaryColor.g);
-                    entity                 += this.writeFloat(data[i].customizationData.PrimaryColor.b);
-                    entity                 += this.writeFloat(data[i].customizationData.PrimaryColor.a);
+                    entity  += this.writeFloat(data[i].customizationData.PrimaryColor.r);
+                    entity  += this.writeFloat(data[i].customizationData.PrimaryColor.g);
+                    entity  += this.writeFloat(data[i].customizationData.PrimaryColor.b);
+                    entity  += this.writeFloat(data[i].customizationData.PrimaryColor.a);
 
-                    entity                 += this.writeFloat(data[i].customizationData.SecondaryColor.r);
-                    entity                 += this.writeFloat(data[i].customizationData.SecondaryColor.g);
-                    entity                 += this.writeFloat(data[i].customizationData.SecondaryColor.b);
-                    entity                 += this.writeFloat(data[i].customizationData.SecondaryColor.a);
+                    entity  += this.writeFloat(data[i].customizationData.SecondaryColor.r);
+                    entity  += this.writeFloat(data[i].customizationData.SecondaryColor.g);
+                    entity  += this.writeFloat(data[i].customizationData.SecondaryColor.b);
+                    entity  += this.writeFloat(data[i].customizationData.SecondaryColor.a);
 
-                    entity                 += this.writeObjectProperty(data[i].customizationData.PaintFinish);
-                    entity                 += this.writeInt8(data[i].customizationData.PatternRotation.value);
+                    entity  += this.writeObjectProperty(data[i].customizationData.PaintFinish);
+                    entity  += this.writeInt8(data[i].customizationData.PatternRotation.value);
 
-                    entity                 += this.writeObjectProperty(data[i].properties[0].value);
-                    entity                 += this.writeObjectProperty(((data[i].properties[1] !== undefined) ? data[i].properties[1].value : {levelName: '', pathName: ''}));
+                    entity  += this.writeObjectProperty(data[i].properties[0].value);
+                    entity  += this.writeObjectProperty(((data[i].properties[1] !== undefined) ? data[i].properties[1].value : {levelName: '', pathName: ''}));
+
+                    if(this.header.saveHeaderType >= 14 && this.lightweightVersion >= 2)
+                    {
+                        if(data[i].typeSpecificData !== undefined)
+                        {
+                            entity  += this.writeInt(1);
+                            entity  += this.writeObjectProperty(data[i].typeSpecificData.referenceObject);
+
+                            let currentBufferStartingLength = this.currentBufferLength;
+                            let structPropertyBufferLength  = this.currentEntityLength;
+                            let typeSpecificDataProperties  = '';
+                                for(let j = 0; j < data[i].typeSpecificData.properties.length; j++)
+                                {
+                                    typeSpecificDataProperties += this.writeProperty(data[i].typeSpecificData.properties[j]);
+                                }
+                                typeSpecificDataProperties += this.writeString('None');
+
+                                this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+
+                                entity += this.writeInt((this.currentEntityLength - structPropertyBufferLength));
+                                entity += typeSpecificDataProperties;
+
+                            this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
+                        }
+                        else
+                        {
+                            entity  += this.writeInt(0);
+                        }
+                    }
                 }
 
                 let progress        = currentStep / countLightweightObjects * 100;
