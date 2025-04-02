@@ -898,7 +898,6 @@ export default class BaseLayout
             if([
                 '/Game/FactoryGame/Buildable/Factory/TradingPost/BP_StartingPod.BP_StartingPod_C',
                 '/Game/FactoryGame/Character/Player/Char_Player.Char_Player_C',
-                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C',
                 '/Game/FactoryGame/Buildable/Factory/Pipeline/FlowIndicator/Build_PipelineFlowIndicator.Build_PipelineFlowIndicator_C',
 
                 '/Game/FactoryGame/Schematics/Progression/BP_SchematicManager.BP_SchematicManager_C',
@@ -911,6 +910,14 @@ export default class BaseLayout
                 '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C',
 
                 '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C',
+
+                // SIGN POLES
+                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C',
+                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole_Portrait.Build_SignPole_Portrait_C',
+                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole_Small.Build_SignPole_Small_C',
+                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole_Medium.Build_SignPole_Medium_C',
+                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole_Large.Build_SignPole_Large_C',
+                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole_Huge.Build_SignPole_Huge_C',
 
                 // HUB PARTS
                 '/Game/FactoryGame/Buildable/Factory/WorkBench/Build_WorkBenchIntegrated.Build_WorkBenchIntegrated_C',
