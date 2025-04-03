@@ -41,15 +41,20 @@ export default class SubSystem_Collectables
                                         {
                                             if(className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
                                             {
-                                                let dismantled      = false;
-                                                let currentObject   = this.baseLayout.saveGameParser.getTargetObject(this.collectables[className].markers[m].pathName);
-                                                    if(currentObject === null)
+                                                let dismantled = false;
+                                                    if(this.baseLayout.saveGameParser.header.saveVersion >= 51 && this.collectables[className].markers[m].levelName !== undefined)
                                                     {
-                                                        dismantled      = true; //TODO: Use it to reddish the icon...
-                                                        collectedStatus = true;
-                                                        this.collectables[className].used++;
-
-                                                        console.log('dismantled', this.collectables[className].markers[m].pathName)
+                                                        let currentObject   = this.baseLayout.saveGameParser.getTargetObject(this.collectables[className].markers[m].pathName);
+                                                            if(currentObject === null)
+                                                            {
+                                                                console.log(this.collectables[className].markers[m].levelName, this.collectables[className].markers[m].pathName, this.baseLayout.saveGameParser.isSubLevelSpawned(this.collectables[className].markers[m].levelName))
+                                                            }
+                                                            if(currentObject === null && (this.collectables[className].markers[m].levelName === 'Persistent_Level' || this.baseLayout.saveGameParser.isSubLevelSpawned(this.collectables[className].markers[m].levelName)))
+                                                            {
+                                                                dismantled      = true; //TODO: Use it to reddish the icon...
+                                                                collectedStatus = true;
+                                                                this.collectables[className].used++;
+                                                            }
                                                     }
 
                                                 let dataCollected   = parseInt($('.updateLayerState[data-id="' + this.collectables[className].layerId + '"]').attr('data-collected'));

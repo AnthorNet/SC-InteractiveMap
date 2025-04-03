@@ -368,6 +368,19 @@ export default class SaveParser
         return this.collectables;
     }
 
+    isSubLevelSpawned(subLevelName)
+    {
+        for(let i = 0; i < this.levels.length; i++)
+        {
+            if(this.levels[i].name === subLevelName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     /* SAVE MANIPULATION */
     addObject(currentObject)
