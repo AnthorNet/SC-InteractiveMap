@@ -2609,6 +2609,8 @@ export default class SaveParser_Read
                 case '/Script/FicsItNetworks.FINGPUT2DC_Box':
                 case '/Script/FicsItNetworksComputer.FINGPUT2DC_Box':
                 case '/Script/FicsItNetworksComputer.FINGPUT2DC_Text':
+                case '/Script/FicsItNetworksComputer.FINGPUT2DC_PushClipRect':
+                case '/Script/FicsItNetworksComputer.FINGPUT2DC_PopClip':
                 case '/Script/FicsItNetworksLua.FINEventFilter':
                     break;
 
