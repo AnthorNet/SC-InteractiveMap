@@ -99,6 +99,67 @@ export default class Spawn_Megaprint
                 }
             }
 
+            // Fix railroad control switch
+            if(this.baseLayout.saveGameParser.header.saveVersion >= 51 && this.clipboard.saveVersion < 51)
+            {
+                for(let i = 0; i < this.clipboard.data.length; i++)
+                {
+                    if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
+                    {
+                        console.log('Fix old Build_RailroadSwitchControl_C format', this.clipboard.data[i].parent.pathName);
+
+                        delete this.clipboard.data[i].parent.children;
+                        delete this.clipboard.data[i].children;
+
+                        let mControlledConnection = this.baseLayout.getObjectProperty(this.clipboard.data[i].parent, 'mControlledConnection');
+                            this.baseLayout.deleteObjectProperty(this.clipboard.data[i].parent, 'mControlledConnection');
+                            this.clipboard.data[i].parent.properties.push({
+                                    name    : 'mControlledConnections',
+                                    type    : 'Array',
+                                    value   : {
+                                            type    : 'Object',
+                                            values  : [mControlledConnection]
+                                    }
+                            });
+
+                            if(mControlledConnection !== null)
+                            {
+                                let mControlledConnectionPathName   = mControlledConnection.pathName.split('.');
+                                let trackConnectionType             = mControlledConnectionPathName.pop();
+                                    mControlledConnectionPathName   = mControlledConnection.pathName.replace('.' + trackConnectionType, '');
+                                for(let j = 0; j < this.clipboard.data.length; j++)
+                                {
+                                    if(this.clipboard.data[j].parent.pathName === mControlledConnectionPathName)
+                                    {
+                                        for(let k = 0; k < this.clipboard.data[j].children.length; k++)
+                                        {
+                                            if(this.clipboard.data[j].children[k].pathName === mControlledConnection.pathName)
+                                            {
+                                                let mSwitchPosition = this.baseLayout.getObjectProperty(this.clipboard.data[j].children[k], 'mSwitchPosition');
+                                                    this.baseLayout.deleteObjectProperty(this.clipboard.data[j].children[k], 'mSwitchPosition');
+
+                                                this.clipboard.data[i].parent.properties.push({
+                                                    name    : 'mSwitchData',
+                                                    type    : 'Struct',
+                                                    value   : { type: 'SwitchData', values: [{
+                                                        name    : 'position',
+                                                        type    : 'Byte',
+                                                        value   : { enumName: 'None', value: mSwitchPosition }
+                                                    }]}
+                                                });
+
+                                                break;
+                                            }
+                                        }
+
+                                        break;
+                                    }
+                                }
+                            }
+                    }
+                }
+            }
+
             // Fix old itemName to itemName.pathName
             if(this.clipboard.saveVersion < 44)
             {
@@ -165,6 +226,7 @@ export default class Spawn_Megaprint
                         {
                             if(this.clipboard.data[i].parent.properties[j].name === 'mExtractableResource')
                             {
+                                //TODO: Find existing water volume from save
                                 this.clipboard.data[i].parent.properties[j].value = { pathName : 'Persistent_Level:PersistentLevel.FGWaterVolume68_23' };
                             }
                         }

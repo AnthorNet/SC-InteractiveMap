@@ -49,7 +49,7 @@ export default class Modal_Selection
             }
 
             let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
-                if(Building_PowerLine.isPowerline(currentObject) || currentObject.className === '/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C')
+                if(Building_PowerLine.isPowerline(currentObject) || ['/Game/FactoryGame/Character/Player/BP_PlayerState.BP_PlayerState_C', '/Script/FactoryGame.FGDockingStationInfo'].includes(currentObject.className))
                 {
                     continue;
                 }
@@ -1605,6 +1605,8 @@ L.Control.Selection = L.Control.extend({
     },
     _toggleSelection: function(currentForm = 'polygon', childNode = 1)
     {
+        //Modal_Selection.cancel(this.options.baseLayout);
+
         this._map.selection._currentForm    = currentForm;
         this._selecting                     = !this._selecting;
 
