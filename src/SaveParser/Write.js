@@ -2641,14 +2641,17 @@ export default class SaveParser_Write
                     case '/Script/FactoryGame.InventoryItem':
                         if(this.header.saveVersion >= 46)
                         {
-                            saveBinary += this.writeObjectProperty(value.structs[i].unk3);
-                            saveBinary += this.writeInt(value.structs[i].unk4);
-                            saveBinary += this.writeObjectProperty(value.structs[i].unk5);
+                            saveBinary += this.writeInventoryItem(value.structs[i].inventoryItem);
                         }
 
                         break;
                 }
             }
+
+        if(value.buggedString !== undefined)
+        {
+            saveBinary += this.writeString(value.buggedString);
+        }
 
         return saveBinary;
     }

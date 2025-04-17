@@ -2345,6 +2345,10 @@ export default class SaveParser_Read
             this.currentByte    = Math.max(0, startBytes - (debugSize * 2));
             let errorMessage    = 'Cannot readString (' + strLength + '): `' + this.readHex(debugSize * 2) + '`=========`' + this.readHex(debugSize) + '`';
                 console.log(errorMessage);
+                if(this.currentEntityPathName)
+                {
+                    console.log('Error pathName: ' + this.currentEntityPathName);
+                }
                 this.worker.postMessage({command: 'alertParsing'});
                 throw new Error(errorMessage);
         }
@@ -2562,9 +2566,7 @@ export default class SaveParser_Read
                         case '/Script/FactoryGame.InventoryItem':
                             if(this.header.saveVersion >= 46)
                             {
-                                structure.unk3      = this.readObjectProperty();
-                                structure.unk4      = this.readInt();
-                                structure.unk5      = this.readObjectProperty();
+                                structure.inventoryItem = this.readInventoryItem();
                             }
 
                             break;
@@ -2587,6 +2589,19 @@ export default class SaveParser_Read
                     }
 
                     data.structs.push(structure);
+            }
+
+        //TODO: Fix that one?
+        let startingByte    = this.currentByte;
+        let buggedString    = this.readString();
+            if(buggedString !== '')
+            {
+                this.currentByte = startingByte;
+            }
+            else
+            {
+                console.log('readFINLuaProcessorStateStorage bugged empty string: "' + buggedString + '"', this.currentEntityClassName);
+                data.buggedString = buggedString;
             }
 
         return data;
