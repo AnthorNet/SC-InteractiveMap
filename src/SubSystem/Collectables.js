@@ -45,10 +45,6 @@ export default class SubSystem_Collectables
                                                     if(this.baseLayout.saveGameParser.header.saveVersion >= 51 && this.collectables[className].markers[m].levelName !== undefined)
                                                     {
                                                         let currentObject   = this.baseLayout.saveGameParser.getTargetObject(this.collectables[className].markers[m].pathName);
-                                                            if(currentObject === null)
-                                                            {
-                                                                console.log(this.collectables[className].markers[m].levelName, this.collectables[className].markers[m].pathName, this.baseLayout.saveGameParser.isSubLevelSpawned(this.collectables[className].markers[m].levelName))
-                                                            }
                                                             if(currentObject === null && (this.collectables[className].markers[m].levelName === 'Persistent_Level' || this.baseLayout.saveGameParser.isSubLevelSpawned(this.collectables[className].markers[m].levelName)))
                                                             {
                                                                 dismantled      = true; //TODO: Use it to reddish the icon...

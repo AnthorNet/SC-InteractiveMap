@@ -174,7 +174,8 @@ export default class BaseLayout
             playerMinersLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
             playerProductorsLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
             playerPortalsLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], filters: []},
-            playerPadsLayer                         : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], filters: []},
+            playerElevatorsLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], filters: []},
+            playerPadsLayer                         : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
 
             playerBiomassGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
             playerCoalGeneratorsLayer               : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
