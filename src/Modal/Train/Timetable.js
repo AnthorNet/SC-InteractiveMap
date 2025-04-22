@@ -2,6 +2,7 @@
 import BaseLayout_Math                          from '../../BaseLayout/Math.js';
 
 import Building_Locomotive                      from '../../Building/Locomotive.js';
+import Building_RailroadTrack                   from '../../Building/RailroadTrack.js';
 
 export default class Modal_Train_Timetable
 {
@@ -417,49 +418,52 @@ export default class Modal_Train_Timetable
     getRailroadGraphEdges(startRailroadTrack, connectionType  = 'TrackConnection1', currentGraph = {}, alreadyChecked = [])
     {
         let currentRailroad = startRailroadTrack;
-            while(alreadyChecked.includes(currentRailroad.pathName) === false)
+            if(Building_RailroadTrack.isRailroadTrack(currentRailroad))
             {
-                let trackConnection = this.baseLayout.saveGameParser.getTargetObject(currentRailroad.pathName + '.' + connectionType);
-                    if(trackConnection !== null)
-                    {
-                            alreadyChecked.push(currentRailroad.pathName);
-                        let mConnectedComponents = this.baseLayout.getObjectProperty(trackConnection, 'mConnectedComponents');
-                            if(mConnectedComponents !== null)
-                            {
-                                let haveNewComponent = false;
-                                    // Loop components searching for a new path to follow
-                                    for(let i = 0; i < mConnectedComponents.values.length; i++)
-                                    {
-                                        let splittedComponent   = mConnectedComponents.values[i].pathName.split('.');
-                                            connectionType      = (splittedComponent.pop() === 'TrackConnection1') ? 'TrackConnection0' : 'TrackConnection1';
-                                        let newRailwayPathName  = splittedComponent.join('.');
-                                        let graphKey            = currentRailroad.pathName + '||' + newRailwayPathName
-
-                                            // That railway isn't in the path yet!
-                                            if(currentGraph[graphKey] === undefined && newRailwayPathName !== startRailroadTrack.pathName)
-                                            {
-                                                let newRailroad = this.baseLayout.saveGameParser.getTargetObject(newRailwayPathName);
-                                                    if(newRailroad !== null)
-                                                    {
-                                                        // Add new graph distance!
-                                                        let prevSplineData          = BaseLayout_Math.extractSplineData(this.baseLayout, currentRailroad);
-                                                        let nextSplineData          = BaseLayout_Math.extractSplineData(this.baseLayout, newRailroad);
-                                                            currentGraph[graphKey]  = (prevSplineData.distance / 2) + (nextSplineData.distance / 2);
-
-                                                        // Follow the new track
-                                                            currentGraph            = this.getRailroadGraphEdges(newRailroad, connectionType, currentGraph, alreadyChecked);
-                                                            haveNewComponent        = true;
-                                                    }
-                                            }
-                                    }
-
-                                // No new component were found...
-                                if(haveNewComponent === false)
+                while(alreadyChecked.includes(currentRailroad.pathName) === false)
+                {
+                    let trackConnection = this.baseLayout.saveGameParser.getTargetObject(currentRailroad.pathName + '.' + connectionType);
+                        if(trackConnection !== null)
+                        {
+                                alreadyChecked.push(currentRailroad.pathName);
+                            let mConnectedComponents = this.baseLayout.getObjectProperty(trackConnection, 'mConnectedComponents');
+                                if(mConnectedComponents !== null)
                                 {
-                                    return currentGraph;
+                                    let haveNewComponent = false;
+                                        // Loop components searching for a new path to follow
+                                        for(let i = 0; i < mConnectedComponents.values.length; i++)
+                                        {
+                                            let splittedComponent   = mConnectedComponents.values[i].pathName.split('.');
+                                                connectionType      = (splittedComponent.pop() === 'TrackConnection1') ? 'TrackConnection0' : 'TrackConnection1';
+                                            let newRailwayPathName  = splittedComponent.join('.');
+                                            let graphKey            = currentRailroad.pathName + '||' + newRailwayPathName
+
+                                                // That railway isn't in the path yet!
+                                                if(currentGraph[graphKey] === undefined && newRailwayPathName !== startRailroadTrack.pathName)
+                                                {
+                                                    let newRailroad = this.baseLayout.saveGameParser.getTargetObject(newRailwayPathName);
+                                                        if(newRailroad !== null && Building_RailroadTrack.isRailroadTrack(newRailroad))
+                                                        {
+                                                            // Add new graph distance!
+                                                            let prevSplineData          = BaseLayout_Math.extractSplineData(this.baseLayout, currentRailroad);
+                                                            let nextSplineData          = BaseLayout_Math.extractSplineData(this.baseLayout, newRailroad);
+                                                                currentGraph[graphKey]  = (prevSplineData.distance / 2) + (nextSplineData.distance / 2);
+
+                                                            // Follow the new track
+                                                                currentGraph            = this.getRailroadGraphEdges(newRailroad, connectionType, currentGraph, alreadyChecked);
+                                                                haveNewComponent        = true;
+                                                        }
+                                                }
+                                        }
+
+                                    // No new component were found...
+                                    if(haveNewComponent === false)
+                                    {
+                                        return currentGraph;
+                                    }
                                 }
-                            }
-                    }
+                        }
+                }
             }
 
         return currentGraph;

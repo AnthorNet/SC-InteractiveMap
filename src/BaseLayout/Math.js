@@ -1,3 +1,5 @@
+import Building_RailroadTrack                   from '../Building/RailroadTrack.js';
+
 export default class BaseLayout_Math
 {
     static get PI(){ return 3.1415926535897932; }
@@ -366,7 +368,7 @@ export default class BaseLayout_Math
         let mSplineData         = baseLayout.getObjectProperty(currentObject, 'mSplineData');
             if(mSplineData !== null)
             {
-                if(currentObject.className.includes('Train/Track/Build_RailroadTrack'))
+                if(Building_RailroadTrack.isRailroadTrack(currentObject))
                 {
                     nbPoints = 25;
                 }
