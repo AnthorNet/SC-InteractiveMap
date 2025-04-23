@@ -245,26 +245,20 @@ export default class SaveParser_Write
             }
 
 
-        this.currentEntityLength    = 0;
+        this.currentEntityLength = 0;
 
-        if(this.header.saveVersion >= 41)
+        if(collectables.length > 0)
         {
-            if(collectables.length > 0)
+            if(currentLevel === (this.levels.length - 1))
             {
-                this.saveBinary        += this.generateCollectablesChunks(collectables);
-            }
-            else
-            {
-                this.saveBinary        += this.writeInt(0);
+                this.saveBinary += this.writeInt(1);
+                this.saveBinary += this.writeString(this.header.mapName);
             }
         }
-        else
-        {
-            this.saveBinary            += this.generateCollectablesChunks(collectables);
-        }
 
+        this.saveBinary += this.generateCollectablesChunks(collectables);
 
-        tempSaveBinaryLength       += this.currentEntityLength;
+        tempSaveBinaryLength += this.currentEntityLength;
 
         // Add the binary length to the replacer...
         if(this.header.saveVersion >= 41)
@@ -398,7 +392,16 @@ export default class SaveParser_Write
         }
 
         // Save current level entities
-        this.saveBinary        += this.generateCollectablesChunks(entitiesOptions.collectables);
+        if(entitiesOptions.collectables.length > 0)
+        {
+            if(entitiesOptions.currentLevel === (this.levels.length - 1))
+            {
+                this.saveBinary += this.writeInt(1);
+                this.saveBinary += this.writeString(this.header.mapName);
+            }
+        }
+
+        this.saveBinary += this.generateCollectablesChunks(entitiesOptions.collectables);
 
         // Add the binary length to the replacer...
         if(this.header.saveVersion >= 41)

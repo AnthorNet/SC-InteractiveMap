@@ -330,42 +330,22 @@ export default class SaveParser_Read
                 console.timeEnd('Loaded ' + countObjects + ' objects...');
             }
 
-            //TODO: Was it the same early?
-            if(this.header.saveVersion >= 41)
+            // We skip collectables from the degraded mode...
+            if(this.header.saveVersion >= 41 && levelName === 'Level ' + this.header.mapName && this.isDegraded === true)
             {
-                // We skip collectables from the degraded mode...
-                if(levelName === 'Level ' + this.header.mapName && this.isDegraded === true)
-                {
-                    this.currentByte = (objectsBinaryLengthStart + Number(objectsBinaryLength));
-                }
-                else
-                {
-                    if(this.currentByte < (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
-                    {
-                        let countCollectedInBetween = this.readInt();
-                            if(countCollectedInBetween > 0)
-                            {
-                                for(let i = 0; i < countCollectedInBetween; i++)
-                                {
-                                    let collectable = this.readObjectProperty();
-                                        collectables.push(collectable);
-                                }
-                            }
-                    }
-                    else
-                    {
-                        if(this.currentByte === (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
-                        {
-                            this.readInt();
-                        }
-                    }
-                }
+                this.currentByte = (objectsBinaryLengthStart + Number(objectsBinaryLength));
             }
             else
             {
                 let countCollectedInBetween = this.readInt();
                     if(countCollectedInBetween > 0)
                     {
+                        if(levelName === 'Level ' + this.header.mapName)
+                        {
+                            this.readString(); // Persistent_Level
+                            countCollectedInBetween = this.readInt();
+                        }
+
                         for(let i = 0; i < countCollectedInBetween; i++)
                         {
                             let collectable = this.readObjectProperty();
@@ -455,7 +435,7 @@ export default class SaveParser_Read
                 console.timeEnd('Loaded ' + countEntities + ' entities...');
             }
 
-            // That's the levelSaveVersion, but we alrady got it during our leap of faith!
+            // That's the levelSaveVersion, but we already got it during our leap of faith!
             if(levelName !== 'Level ' + this.header.mapName && this.header.saveVersion >= 51)
             {
                 this.readUint();
@@ -464,27 +444,22 @@ export default class SaveParser_Read
             let countCollected = this.readInt();
                 if(countCollected > 0)
                 {
+                    if(levelName === 'Level ' + this.header.mapName)
+                    {
+                        this.readString(); // Persistent_Level
+                        countCollected = this.readInt();
+                    }
+
                     for(let i = 0; i < countCollected; i++)
                     {
                         let collectable = this.readObjectProperty();
+                            //console.log(2, collectable);
                             collectables.push(collectable);
                     }
                 }
 
             this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
         }
-
-        // SKIP LAST COLLECTED - They represent old actor not exisiting in game anymore
-        //TODO: Still correct after update 8?
-        /*
-        let collectablesEnd    = [];
-        let countCollected  = this.readInt();
-            for(let i = 0; i < countCollected; i++)
-            {
-                collectablesEnd.push(this.readObjectProperty({}));
-            }
-            console.log(collectablesEnd)
-        /**/
 
         this.worker.postMessage({command: 'transferData', data: {collectables: [...new Map(collectables.map(item => [item.pathName, item])).values()]}});
         this.worker.postMessage({command: 'transferData', data: {levels: levels}});
