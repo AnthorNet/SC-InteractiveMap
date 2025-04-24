@@ -5,6 +5,7 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
 import Building_PowerLine                       from '../Building/PowerLine.js';
 
+import Modal_Object_ColorSlot                   from '../Modal/Object/ColorSlot.js';
 import Modal_Statistics_Production              from '../Modal/Statistics/Production.js';
 import Modal_Statistics_Storage                 from '../Modal/Statistics/Storage.js';
 
@@ -774,82 +775,13 @@ export default class Modal_Selection
 
     static callbackColorSlot(baseLayout, markers)
     {
-        let playerColors        = baseLayout.buildableSubSystem.getPlayerColorSlots();
-        let selectOptionsColors = [];
-            for(let slotIndex = 0; slotIndex <= SubSystem_Buildable.totalColorSlots; slotIndex++)
-            {
-                let inGameSlot = (slotIndex >= 16) ? slotIndex + 8 : slotIndex;
-                    selectOptionsColors.push({
-                        fullWidth       : ((slotIndex === 0) ? true : false),
-                        primaryColor    : 'rgb(' + playerColors[inGameSlot].primaryColor.r + ', ' + playerColors[inGameSlot].primaryColor.g + ', ' + playerColors[inGameSlot].primaryColor.b + ')',
-                        secondaryColor  : 'rgb(' + playerColors[inGameSlot].secondaryColor.r + ', ' + playerColors[inGameSlot].secondaryColor.g + ', ' + playerColors[inGameSlot].secondaryColor.b + ')',
-                        value           : inGameSlot,
-                        text            : ((slotIndex === 0) ? 'FICSIT Factory' : 'Swatch ' + slotIndex)
-                    });
-            }
-            selectOptionsColors.push({
-                fullWidth       : true,
-                primaryColor    : 'rgb(' + playerColors[16].primaryColor.r + ', ' + playerColors[16].primaryColor.g + ', ' + playerColors[16].primaryColor.b + ')',
-                secondaryColor  : 'rgb(' + playerColors[16].secondaryColor.r + ', ' + playerColors[16].secondaryColor.g + ', ' + playerColors[16].secondaryColor.b + ')',
-                value           : 16,
-                text            : 'FICSIT Foundation'
-            });
-            selectOptionsColors.push({
-                fullWidth       : true,
-                primaryColor    : 'rgb(' + playerColors[18].primaryColor.r + ', ' + playerColors[18].primaryColor.g + ', ' + playerColors[18].primaryColor.b + ')',
-                secondaryColor  : 'rgb(' + playerColors[18].secondaryColor.r + ', ' + playerColors[18].secondaryColor.g + ', ' + playerColors[18].secondaryColor.b + ')',
-                value           : 18,
-                text            : 'Concrete Structure'
-            });
-
-        let playerCustomColor       = baseLayout.buildableSubSystem.getPlayerCustomColor();
-            selectOptionsColors.push({
-                fullWidth       : true,
-                primaryColor    : 'rgb(' + playerCustomColor.primaryColor.r + ', ' + playerCustomColor.primaryColor.g + ', ' + playerCustomColor.primaryColor.b + ')',
-                secondaryColor  : 'rgb(' + playerCustomColor.secondaryColor.r + ', ' + playerCustomColor.secondaryColor.g + ', ' + playerCustomColor.secondaryColor.b + ')',
-                value           : 255,
-                text            : 'Custom Swatch'
-            });
-
-
-
-        // Finishes
-        let finishes = {
-            19: {
-                name    : 'Carbon Steel Finish',
-                image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_SteelFinish_256.png?v=' + baseLayout.scriptVersion
-            },
-            20: {
-                name: 'Caterium Finish',
-                image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_CateriumFinish_256.png?v=' + baseLayout.scriptVersion
-            },
-            21: {
-                name: 'Chrome Finish',
-                image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_ChromeFinish_256.png?v=' + baseLayout.scriptVersion
-            },
-            22: {
-                name: 'Copper Finish',
-                image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_CopperFinish_256.png?v=' + baseLayout.scriptVersion
-            }
-        };
-            for(let i = 19; i <= 22; i++)
-            {
-                let primaryColor = baseLayout.buildableSubSystem.getDefaultPrimaryColorSlot(i);
-                    selectOptionsColors.push({
-                        primaryColor    : 'rgb(' + primaryColor.r + ', ' + primaryColor.g + ', ' + primaryColor.b + ')',
-                        backgroundImage : finishes[i].image,
-                        value           : i,
-                        text            : finishes[i].name
-                    });
-            }
-
         BaseLayout_Modal.form({
             title       : 'You have selected ' + markers.length + ' items',
             container   : '#leafletMap',
             inputs      : [{
                 name            : 'slotIndex',
                 inputType       : 'colorSlots',
-                inputOptions    : selectOptionsColors
+                inputOptions    : Modal_Object_ColorSlot.getOptionColotSlot(baseLayout, null)
             }],
             callback    : function(values)
             {

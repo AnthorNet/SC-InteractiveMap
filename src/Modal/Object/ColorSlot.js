@@ -14,6 +14,27 @@ export default class Modal_Object_ColorSlot
         let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
 
         let slotIndex           = baseLayout.buildableSubSystem.getObjectColorSlot(currentObject);
+
+        BaseLayout_Modal.form({
+            title       : 'Update "<strong>' + buildingData.name + '</strong>" color swatch',
+            container   : '#leafletMap',
+            inputs      : [{
+                name            : 'slotIndex',
+                inputType       : 'colorSlots',
+                inputOptions    : Modal_Object_ColorSlot.getOptionColotSlot(baseLayout, currentObject),
+                value           : slotIndex
+            }],
+            callback    : function(values)
+            {
+                baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(values.slotIndex));
+                marker.relatedTarget.fire('mouseout'); // Trigger a redraw
+            }
+        });
+    }
+
+    static getOptionColotSlot(baseLayout, currentObject)
+    {
+        let buildingData        = (currentObject !== null) ? baseLayout.getBuildingDataFromClassName(currentObject.className) : null;
         let playerColors        = baseLayout.buildableSubSystem.getPlayerColorSlots();
         let selectOptions       = [];
 
@@ -45,7 +66,7 @@ export default class Modal_Object_ColorSlot
             });
         }
 
-        if(buildingData.category === 'foundation')
+        if(buildingData === null || buildingData.category === 'foundation')
         {
             selectOptions.push({
                 fullWidth       : true,
@@ -56,7 +77,7 @@ export default class Modal_Object_ColorSlot
             });
         }
 
-        if(Building_Pipeline.isPipeline(currentObject))
+        if(currentObject !== null && Building_Pipeline.isPipeline(currentObject))
         {
             selectOptions.push({
                 fullWidth       : true,
@@ -66,7 +87,7 @@ export default class Modal_Object_ColorSlot
                 text            : 'FICSIT Pipe'
             });
         }
-        if(buildingData.category === 'foundation' || buildingData.category === 'wall')
+        if(buildingData === null || buildingData.category === 'foundation' || buildingData.category === 'wall')
         {
             selectOptions.push({
                 fullWidth       : true,
@@ -77,22 +98,26 @@ export default class Modal_Object_ColorSlot
             });
         }
 
-        let objectPrimaryColor      = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
-        let objectSecondaryColor    = baseLayout.buildableSubSystem.getObjectSecondaryColor(currentObject);
-            if(slotIndex !== 255)
+        let playerCustomColor       = baseLayout.buildableSubSystem.getPlayerCustomColor();
+        let objectPrimaryColor      = playerCustomColor.primaryColor;
+        let objectSecondaryColor    = playerCustomColor.secondaryColor;
+            if(currentObject !== null)
             {
-                let playerCustomColor       = baseLayout.buildableSubSystem.getPlayerCustomColor();
-                    objectPrimaryColor      = playerCustomColor.primaryColor;
-                    objectSecondaryColor    = playerCustomColor.secondaryColor;
+                let slotIndex               = baseLayout.buildableSubSystem.getObjectColorSlot(currentObject);
+                    if(slotIndex === 255)
+                    {
+                        objectPrimaryColor      = baseLayout.buildableSubSystem.getObjectPrimaryColor(currentObject);
+                        objectSecondaryColor    = baseLayout.buildableSubSystem.getObjectSecondaryColor(currentObject);
+                    }
             }
 
-            selectOptions.push({
-                fullWidth       : true,
-                primaryColor    : 'rgb(' + objectPrimaryColor.r + ', ' + objectPrimaryColor.g + ', ' + objectPrimaryColor.b + ')',
-                secondaryColor  : 'rgb(' + objectSecondaryColor.r + ', ' + objectSecondaryColor.g + ', ' + objectSecondaryColor.b + ')',
-                value           : 255,
-                text            : 'Custom Swatch'
-            });
+        selectOptions.push({
+            fullWidth       : true,
+            primaryColor    : 'rgb(' + objectPrimaryColor.r + ', ' + objectPrimaryColor.g + ', ' + objectPrimaryColor.b + ')',
+            secondaryColor  : 'rgb(' + objectSecondaryColor.r + ', ' + objectSecondaryColor.g + ', ' + objectSecondaryColor.b + ')',
+            value           : 255,
+            text            : 'Custom Swatch'
+        });
 
         // Finishes
         let finishes = {
@@ -101,43 +126,30 @@ export default class Modal_Object_ColorSlot
                 image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_SteelFinish_256.png?v=' + baseLayout.scriptVersion
             },
             20: {
-                name: 'Caterium Finish',
+                name    : 'Caterium Finish',
                 image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_CateriumFinish_256.png?v=' + baseLayout.scriptVersion
             },
             21: {
-                name: 'Chrome Finish',
+                name    : 'Chrome Finish',
                 image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_ChromeFinish_256.png?v=' + baseLayout.scriptVersion
             },
             22: {
-                name: 'Copper Finish',
+                name    : 'Copper Finish',
                 image   : baseLayout.staticUrl + '/img/gameStable1.0/IconDesc_CopperFinish_256.png?v=' + baseLayout.scriptVersion
             }
         };
-            for(let i = 19; i <= 22; i++)
-            {
-                let primaryColor = baseLayout.buildableSubSystem.getDefaultPrimaryColorSlot(i);
-                    selectOptions.push({
-                        primaryColor    : 'rgb(' + primaryColor.r + ', ' + primaryColor.g + ', ' + primaryColor.b + ')',
-                        backgroundImage : finishes[i].image,
-                        value           : i,
-                        text            : finishes[i].name
-                    });
-            }
 
-        BaseLayout_Modal.form({
-            title       : 'Update "<strong>' + buildingData.name + '</strong>" color swatch',
-            container   : '#leafletMap',
-            inputs      : [{
-                name            : 'slotIndex',
-                inputType       : 'colorSlots',
-                inputOptions    : selectOptions,
-                value           : slotIndex
-            }],
-            callback    : function(values)
-            {
-                baseLayout.buildableSubSystem.setObjectColorSlot(currentObject, parseInt(values.slotIndex));
-                marker.relatedTarget.fire('mouseout'); // Trigger a redraw
-            }
-        });
+        for(let i = 19; i <= 22; i++)
+        {
+            let primaryColor = baseLayout.buildableSubSystem.getDefaultPrimaryColorSlot(i);
+                selectOptions.push({
+                    primaryColor    : 'rgb(' + primaryColor.r + ', ' + primaryColor.g + ', ' + primaryColor.b + ')',
+                    backgroundImage : finishes[i].image,
+                    value           : i,
+                    text            : finishes[i].name
+                });
+        }
+
+        return selectOptions;
     }
 }
