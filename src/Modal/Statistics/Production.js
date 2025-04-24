@@ -270,78 +270,85 @@ export default class Modal_Statistics_Production
                                         mPowerProductionExponent = 1.0;
                                     }
                                 let fuelClass                   = this.baseLayout.getObjectProperty(currentObject, 'mCurrentFuelClass');
-
-                                if(fuelClass !== null)
-                                {
-                                    let fuelItem = this.baseLayout.getItemDataFromClassName(fuelClass.pathName);
-
-                                    if(fuelItem !== null && fuelItem.energy !== undefined)
+                                    if(fuelClass !== null)
                                     {
-                                        let fuelConsumed        = (60 / (fuelItem.energy / buildingData.powerGenerated) * Math.pow(clockSpeed, 1 / mPowerProductionExponent));
-                                        let onFuelConsumed      = 0;
-                                        let offFuelConsumed     = 0;
-                                            if(buildingIsOn === true)
+                                        let fuelItem = this.baseLayout.getItemDataFromClassName(fuelClass.pathName);
+                                            if(fuelItem !== null && (fuelItem.energy !== undefined || fuelClass.pathName === '/Game/FactoryGame/Resource/Parts/AlienPowerFuel/Desc_AlienPowerFuel.Desc_AlienPowerFuel_C'))
                                             {
-                                                onFuelConsumed = fuelConsumed;
-                                            }
-                                            else
-                                            {
-                                                offFuelConsumed = fuelConsumed;
-                                            }
+                                                let fuelConsumed = 1;
+                                                    if(fuelClass.pathName === '/Game/FactoryGame/Resource/Parts/AlienPowerFuel/Desc_AlienPowerFuel.Desc_AlienPowerFuel_C')
+                                                    {
+                                                        fuelConsumed = 5;
+                                                    }
+                                                    else
+                                                    {
+                                                        fuelConsumed = (60 / (fuelItem.energy / buildingData.powerGenerated) * Math.pow(clockSpeed, 1 / mPowerProductionExponent));
+                                                    }
 
-                                        if(playerProduction[fuelItem.className] === undefined)
-                                        {
-                                            playerProduction[fuelItem.className] = {
-                                                name        : fuelItem.name,
-                                                image       : fuelItem.image,
-                                                category    : fuelItem.category,
-                                                produced    : 0,
-                                                offProduced : 0,
-                                                consumed    : onFuelConsumed,
-                                                offConsumed : offFuelConsumed
-                                            };
-                                        }
-                                        else
-                                        {
-                                            playerProduction[fuelItem.className].consumed       += onFuelConsumed;
-                                            playerProduction[fuelItem.className].offConsumed    += offFuelConsumed;
-                                        }
+                                                let onFuelConsumed      = 0;
+                                                let offFuelConsumed     = 0;
+                                                    if(buildingIsOn === true)
+                                                    {
+                                                        onFuelConsumed = fuelConsumed;
+                                                    }
+                                                    else
+                                                    {
+                                                        offFuelConsumed = fuelConsumed;
+                                                    }
 
-                                        if(buildingData.supplementalLoadType !== undefined && buildingData.supplementalLoadRatio !== undefined)
-                                        {
-                                            let supplementalLoadConsumed        = 60 * (buildingData.powerGenerated * Math.pow(clockSpeed, 1 / mPowerProductionExponent)) * buildingData.supplementalLoadRatio;
-                                            let onSupplementalLoadConsumed      = 0;
-                                            let offSupplementalLoadConsumed     = 0;
-                                                if(buildingIsOn === true)
+                                                if(playerProduction[fuelItem.className] === undefined)
                                                 {
-                                                    onSupplementalLoadConsumed = supplementalLoadConsumed;
-                                                }
-                                                else
-                                                {
-                                                    offSupplementalLoadConsumed = supplementalLoadConsumed;
-                                                }
-
-                                            let supplementalLoadClassName   = this.baseLayout.itemsData[buildingData.supplementalLoadType].className;
-                                                if(playerProduction[supplementalLoadClassName] === undefined)
-                                                {
-                                                    playerProduction[supplementalLoadClassName] = {
-                                                        name        : this.baseLayout.itemsData[buildingData.supplementalLoadType].name,
-                                                        image       : this.baseLayout.itemsData[buildingData.supplementalLoadType].image,
-                                                        category    : this.baseLayout.itemsData[buildingData.supplementalLoadType].category,
+                                                    playerProduction[fuelItem.className] = {
+                                                        name        : fuelItem.name,
+                                                        image       : fuelItem.image,
+                                                        category    : fuelItem.category,
                                                         produced    : 0,
                                                         offProduced : 0,
-                                                        consumed    : onSupplementalLoadConsumed,
-                                                        offConsumed : offSupplementalLoadConsumed
+                                                        consumed    : onFuelConsumed,
+                                                        offConsumed : offFuelConsumed
                                                     };
                                                 }
                                                 else
                                                 {
-                                                    playerProduction[supplementalLoadClassName].consumed       += onSupplementalLoadConsumed;
-                                                    playerProduction[supplementalLoadClassName].offConsumed    += offSupplementalLoadConsumed;
+                                                    playerProduction[fuelItem.className].consumed       += onFuelConsumed;
+                                                    playerProduction[fuelItem.className].offConsumed    += offFuelConsumed;
                                                 }
-                                        }
+
+                                                if(buildingData.supplementalLoadType !== undefined && buildingData.supplementalLoadRatio !== undefined)
+                                                {
+                                                    let supplementalLoadConsumed        = 60 * (buildingData.powerGenerated * Math.pow(clockSpeed, 1 / mPowerProductionExponent)) * buildingData.supplementalLoadRatio;
+                                                    let onSupplementalLoadConsumed      = 0;
+                                                    let offSupplementalLoadConsumed     = 0;
+                                                        if(buildingIsOn === true)
+                                                        {
+                                                            onSupplementalLoadConsumed = supplementalLoadConsumed;
+                                                        }
+                                                        else
+                                                        {
+                                                            offSupplementalLoadConsumed = supplementalLoadConsumed;
+                                                        }
+
+                                                    let supplementalLoadClassName   = this.baseLayout.itemsData[buildingData.supplementalLoadType].className;
+                                                        if(playerProduction[supplementalLoadClassName] === undefined)
+                                                        {
+                                                            playerProduction[supplementalLoadClassName] = {
+                                                                name        : this.baseLayout.itemsData[buildingData.supplementalLoadType].name,
+                                                                image       : this.baseLayout.itemsData[buildingData.supplementalLoadType].image,
+                                                                category    : this.baseLayout.itemsData[buildingData.supplementalLoadType].category,
+                                                                produced    : 0,
+                                                                offProduced : 0,
+                                                                consumed    : onSupplementalLoadConsumed,
+                                                                offConsumed : offSupplementalLoadConsumed
+                                                            };
+                                                        }
+                                                        else
+                                                        {
+                                                            playerProduction[supplementalLoadClassName].consumed       += onSupplementalLoadConsumed;
+                                                            playerProduction[supplementalLoadClassName].offConsumed    += offSupplementalLoadConsumed;
+                                                        }
+                                                }
+                                            }
                                     }
-                                }
                             }
                         }
                 }
