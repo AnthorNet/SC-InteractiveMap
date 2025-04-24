@@ -331,27 +331,30 @@ export default class SaveParser_Read
             }
 
             // We skip collectables from the degraded mode...
-            if(this.header.saveVersion >= 41 && levelName === 'Level ' + this.header.mapName && this.isDegraded === true)
+            if(levelName === 'Level ' + this.header.mapName && this.isDegraded === true)
             {
                 this.currentByte = (objectsBinaryLengthStart + Number(objectsBinaryLength));
             }
             else
             {
-                let countCollectedInBetween = this.readInt();
-                    if(countCollectedInBetween > 0)
-                    {
-                        if(levelName === 'Level ' + this.header.mapName)
+                if(this.currentByte <= (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
+                {
+                    let countCollectedInBetween = this.readInt();
+                        if(countCollectedInBetween > 0)
                         {
-                            this.readString(); // Persistent_Level
-                            countCollectedInBetween = this.readInt();
-                        }
+                            if(this.header.saveVersion >= 46 && levelName === 'Level ' + this.header.mapName)
+                            {
+                                this.readString(); // Persistent_Level
+                                countCollectedInBetween = this.readInt();
+                            }
 
-                        for(let i = 0; i < countCollectedInBetween; i++)
-                        {
-                            let collectable = this.readObjectProperty();
-                                collectables.push(collectable);
+                            for(let i = 0; i < countCollectedInBetween; i++)
+                            {
+                                let collectable = this.readObjectProperty();
+                                    collectables.push(collectable);
+                            }
                         }
-                    }
+                }
             }
 
             let entitiesBinaryLength    = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
