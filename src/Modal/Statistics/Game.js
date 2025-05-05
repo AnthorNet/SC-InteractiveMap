@@ -75,6 +75,7 @@ export default class Modal_Statistics_Game
         return html.join('');
     }
 
+    //TODO: We could parse them per player on the map...
     parseCrafting()
     {
         let html        = [];
@@ -107,6 +108,7 @@ export default class Modal_Statistics_Game
         return html.join('');
     }
 
+    //TODO: We could parse them per player on the map...
     parseBuilt()
     {
         let html        = [];

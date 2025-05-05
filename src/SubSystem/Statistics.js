@@ -37,12 +37,28 @@ export default class SubSystem_Statistics extends SubSystem
                                 }
                                 else
                                 {
-                                    if(convertedObjects[object.values[i].keyMap.pathName] === undefined)
+                                    // Do we have per player data?
+                                    if(object.values[i].keyMap.pathName.startsWith('Persistent_Level:PersistentLevel.BP_PlayerState_C_'))
                                     {
-                                        convertedObjects[object.values[i].keyMap.pathName] = {};
-                                    }
+                                        for(let k = 0; k < object.values[i].valueMap[j].value.values.length; k++)
+                                        {
+                                            if(convertedObjects[object.values[i].valueMap[j].value.values[k].keyMap.pathName] === undefined)
+                                            {
+                                                convertedObjects[object.values[i].valueMap[j].value.values[k].keyMap.pathName] = 0;
+                                            }
 
-                                    convertedObjects[object.values[i].keyMap.pathName][object.values[i].valueMap[j].name] = object.values[i].valueMap[j].value;
+                                            convertedObjects[object.values[i].valueMap[j].value.values[k].keyMap.pathName] += object.values[i].valueMap[j].value.values[k].valueMap;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if(convertedObjects[object.values[i].keyMap.pathName] === undefined)
+                                        {
+                                            convertedObjects[object.values[i].keyMap.pathName] = {};
+                                        }
+
+                                        convertedObjects[object.values[i].keyMap.pathName][object.values[i].valueMap[j].name] = object.values[i].valueMap[j].value;
+                                    }
                                 }
                             }
 
