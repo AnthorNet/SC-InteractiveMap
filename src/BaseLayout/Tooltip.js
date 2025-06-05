@@ -180,6 +180,8 @@ export default class BaseLayout_Tooltip
                                     case '/Game/FactoryGame/Buildable/Factory/Portal/Build_Portal.Build_Portal_C':
                                     case '/Game/FactoryGame/Buildable/Factory/Portal/Build_PortalSatellite.Build_PortalSatellite_C':
                                         return Building_Portal.getTooltip(this.baseLayout, currentObject, this.genericTooltipBackgroundStyle);
+                                    case '/Game/FactoryGame/Buildable/Building/StackableShelf/Build_StackableShelf.Build_StackableShelf_C':
+                                        return this.setBuildingTooltipContent(currentObject, buildingData);
                                 }
                                 switch(buildingData.category)
                                 {
