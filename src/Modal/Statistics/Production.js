@@ -13,7 +13,7 @@ export default class Modal_Statistics_Production
                 if([
                     'playerRadioactivityLayer', 'playerFogOfWar', 'playerResourceDepositsLayer', 'playerItemsPickupLayer',
                     'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
-                    'playerPillarsLayer', 'playerWalkwaysLayer', 'playerOrientationLayer',
+                    'playerPillarsLayer', 'playerWalkwaysLayer', 'playerAttachmentsLayer', 'playerOrientationLayer',
                     'playerStatuesLayer', 'playerHUBTerminalLayer', 'playerPowerGridLayer'
                 ].includes(layerId))
                 {

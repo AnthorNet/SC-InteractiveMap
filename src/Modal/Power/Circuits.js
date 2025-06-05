@@ -17,7 +17,7 @@ export default class Modal_Power_Circuits
             {
                 if([
                     'playerRadioactivityLayer', 'playerLightsHaloLayer', 'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
-                    'playerProductorsLayer', 'playerPillarsLayer', 'playerWalkwaysLayer', 'playerOrientationLayer',
+                    'playerProductorsLayer', 'playerPillarsLayer', 'playerWalkwaysLayer', 'playerAttachmentsLayer', 'playerOrientationLayer',
                     'playerStatuesLayer', 'playerHUBTerminalLayer',
 
                     'playerVehiculesLayer', 'playerDronesLayer', 'playerBeltsLayer', 'playerPipesLayer', 'playerPipesHyperLayer',

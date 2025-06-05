@@ -16,7 +16,7 @@ export default class Modal_Buildings
             {
                 if([
                     'playerRadioactivityLayer', 'playerFoundationsLayer', 'playerWallsLayer', 'playerCratesLayer',
-                    'playerPillarsLayer', 'playerWalkwaysLayer', 'playerUnknownLayer', 'playerOrientationLayer',
+                    'playerPillarsLayer', 'playerWalkwaysLayer', 'playerAttachmentsLayer', 'playerUnknownLayer', 'playerOrientationLayer',
                     'playerStatuesLayer', 'playerHUBTerminalLayer', 'playerLightsLayer'
                 ].includes(layerId))
                 {
