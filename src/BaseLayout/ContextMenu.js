@@ -482,7 +482,11 @@ export default class BaseLayout_ContextMenu
                 }
 
                 if(
-                       (buildingData.category === 'storage' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/CentralStorage/Build_CentralStorage.Build_CentralStorage_C')
+                       (
+                           buildingData.category === 'storage'
+                        && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/CentralStorage/Build_CentralStorage.Build_CentralStorage_C'
+                        && currentObject.className !== '/Game/FactoryGame/Buildable/Building/StackableShelf/Build_StackableShelf.Build_StackableShelf_C'
+                       )
                     || buildingData.category === 'vehicle'
                     || Building_Locomotive.isLocomotive(currentObject) || Building.isFreightWagon(currentObject)
                     || ['/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStation.Build_TrainDockingStation_C',

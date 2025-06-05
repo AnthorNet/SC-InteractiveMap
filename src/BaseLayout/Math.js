@@ -20,7 +20,7 @@ export default class BaseLayout_Math
     }
 
     // See: https://github.com/EpicGames/UnrealEngine/blob/4.26/Engine/Source/Runtime/Core/Private/Math/UnrealMath.cpp#L598
-    static getUnrealQuaternionToEuler(quaternion)
+    static getQuaternionToEuler(quaternion)
     {
             quaternion              = {x: quaternion[0], y: quaternion[1], z: quaternion[2], w: quaternion[3]};
         let rotatorFromQuat         = {};
@@ -64,11 +64,6 @@ export default class BaseLayout_Math
         rotatorFromQuat.roll            = Math.round(rotatorFromQuat.roll * BaseLayout_Math.eulerPrecision) / BaseLayout_Math.eulerPrecision;
 
         return rotatorFromQuat;
-    }
-
-    static getQuaternionToEuler(quaternion)
-    {
-        return BaseLayout_Math.getUnrealQuaternionToEuler(quaternion);
     }
 
     // See: https://github.com/EpicGames/UnrealEngine/blob/4.26/Engine/Source/Runtime/Core/Private/Math/UnrealMath.cpp#L460

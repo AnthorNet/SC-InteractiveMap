@@ -1231,6 +1231,8 @@ export default class BaseLayout
                     {
                         let currentLayerLength = this.playerLayers[layerId].elements.length;
                             // Remove from map if too much objects?
+                            /*
+                            console.log(layerId)
                             if(['playerFoundationsLayer', 'playerRoofsLayer', 'playerWallsLayer'].includes(layerId) && currentLayerLength > 250000)
                             {
                                 if(this.playerLayers[layerId].layerGroup.hasLayer(this.playerLayers[layerId].subLayer))
@@ -1239,6 +1241,7 @@ export default class BaseLayout
                                     $('.updatePlayerLayerState[data-id=' + layerId + ']').removeClass(window.SCIM.outlineClass);
                                 }
                             }
+                            */
 
                             for(let j = 0; j < currentLayerLength; j++)
                             {
@@ -2817,7 +2820,6 @@ export default class BaseLayout
             }
 
         let layerId = (buildingData !== null && buildingData.mapLayer !== undefined) ? buildingData.mapLayer : 'playerHUBTerminalLayer';
-
             if(baseLayout.playerLayers[layerId].filtersCount !== undefined)
             {
                 if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className] !== undefined)
