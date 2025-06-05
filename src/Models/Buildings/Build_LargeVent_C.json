@@ -1,0 +1,10 @@
+{
+    "/Game/FactoryGame/Buildable/Building/Vent/Build_LargeVent.Build_LargeVent_C": {
+        "scale": 1,
+        "forms": [
+            {
+                "points": [ [-75,-400], [75,-400], [75,400], [-75,400] ]
+            }
+        ]
+    }
+}

@@ -18,12 +18,13 @@ export default class BaseLayout_Polygon
 
     static generateForms(baseLayout, transform, model, options)
     {
-        let center  = [transform.translation[0], transform.translation[1]];
-        let forms   = [];
-        let scale3D = {
-                x       : ((transform.scale3d !== undefined) ? transform.scale3d[0] : 1),
-                y       : ((transform.scale3d !== undefined) ? transform.scale3d[0] : 1),
-                z       : ((transform.scale3d !== undefined) ? transform.scale3d[0] : 1),
+        let center      = [transform.translation[0], transform.translation[1]];
+        let forms       = [];
+        let rotation    = transform.rotation;
+        let scale3D     = {
+                x           : ((transform.scale3d !== undefined) ? transform.scale3d[0] : 1),
+                y           : ((transform.scale3d !== undefined) ? transform.scale3d[0] : 1),
+                z           : ((transform.scale3d !== undefined) ? transform.scale3d[0] : 1),
             };
 
         // Only used for convoyer lift orientation
@@ -31,6 +32,31 @@ export default class BaseLayout_Polygon
         {
             model                               = options.customModel;
             baseLayout.detailedModels[model]    = {forms: [{points: options.customPolygon}]};
+        }
+
+        // Use flat vent if needed...
+        if(['/Game/FactoryGame/Buildable/Building/Vent/Build_LargeFan.Build_LargeFan_C', '/Game/FactoryGame/Buildable/Building/Vent/Build_LargeVent.Build_LargeVent_C'].includes(model))
+        {
+            if(baseLayout.detailedModels['Build_LargeFan_C_FLAT'] === undefined)
+            {
+                baseLayout.detailedModels['Build_LargeFan_C_FLAT'] = {
+                    "scale": 1,
+                    "forms": [
+                        {
+                            "points": [ [-200,-200], [200,-200], [200,200], [-200,200] ]
+                        }
+                    ]
+                }
+            }
+
+            let objectAngle = BaseLayout_Math.getQuaternionToEuler(rotation);
+                if(objectAngle.pitch !== 0)
+                {
+                    objectAngle.pitch   = 0;
+                    objectAngle.roll    = 0;
+                    model               = 'Build_LargeFan_C_FLAT';
+                    rotation            = BaseLayout_Math.getEulerToQuaternion(objectAngle);
+                }
         }
 
         // Prepare high quality model
@@ -93,7 +119,7 @@ export default class BaseLayout_Polygon
                                 center[1] + ((currentModel.forms[i].points[j][1] + currentModelYOffset) * currentModelScale * scale3D.y)
                             ],
                             center,
-                            transform.rotation
+                            rotation
                         )
                     ));
                 }
@@ -129,7 +155,7 @@ export default class BaseLayout_Polygon
                                         center[1] + ((currentModel.forms[i].holes[j][k][1] + currentModelYOffset) * currentModelScale * scale3D.y)
                                     ],
                                     center,
-                                    transform.rotation
+                                    rotation
                                 )
                             ));
                         }
@@ -151,7 +177,7 @@ export default class BaseLayout_Polygon
                             (center[1] - options.yShift) - (((options.length - options.offset) / 2) * scale3D.y)
                         ],
                         center,
-                        transform.rotation,
+                        rotation,
                         options.useOnly2D
                     )
                 ));
@@ -162,7 +188,7 @@ export default class BaseLayout_Polygon
                             (center[1] - options.yShift) - (((options.length - options.offset) / 2) * scale3D.y)
                         ],
                         center,
-                        transform.rotation,
+                        rotation,
                         options.useOnly2D
                     )
                 ));
@@ -173,7 +199,7 @@ export default class BaseLayout_Polygon
                             (center[1] - options.yShift) + (((options.length - options.offset) / 2) * scale3D.y)
                         ],
                         center,
-                        transform.rotation,
+                        rotation,
                         options.useOnly2D
                     )
                 ));
@@ -184,7 +210,7 @@ export default class BaseLayout_Polygon
                             (center[1] - options.yShift) + (((options.length - options.offset) / 2) * scale3D.y)
                         ],
                         center,
-                        transform.rotation,
+                        rotation,
                         options.useOnly2D
                     )
                 ));
