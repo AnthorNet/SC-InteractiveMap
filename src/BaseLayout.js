@@ -4683,6 +4683,12 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/BP_FreightWagon.BP_FreightWagon_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Train/Wagon/Desc_FreightWagon.Desc_FreightWagon_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/JumpPad/Build_JumpPad.Build_JumpPad_C'){ className = '/Game/FactoryGame/Buildable/Factory/JumpPad/Build_JumpPadAdjustable.Build_JumpPadAdjustable_C'; }
 
+        if(className === '/Game/FactoryGame/Buildable/Factory/CA_MergerLift/Build_ConveyorAttachmentMergerLift.Build_ConveyorAttachmentMergerLift_C'){ className = '/Game/FactoryGame/Buildable/Factory/CA_Merger/Build_ConveyorAttachmentMerger.Build_ConveyorAttachmentMerger_C'; }
+        if(className === '/Game/FactoryGame/Buildable/Factory/CA_MergerLiftPriority/Build_ConveyorAttachmentMergerPriorityLift.Build_ConveyorAttachmentMergerPriorityLift_C'){ className = '/Game/FactoryGame/Buildable/Factory/CA_MergerPriority/Build_ConveyorAttachmentMergerPriority.Build_ConveyorAttachmentMergerPriority_C'; }
+        if(className === '/Game/FactoryGame/Buildable/Factory/CA_SplitterLift/Build_ConveyorAttachmentSplitterLift.Build_ConveyorAttachmentSplitterLift_C'){ className = '/Game/FactoryGame/Buildable/Factory/CA_Splitter/Build_ConveyorAttachmentSplitter.Build_ConveyorAttachmentSplitter_C'; }
+        if(className === '/Game/FactoryGame/Buildable/Factory/CA_SplitterLiftSmart/Build_ConveyorAttachmentSplitterSmartLift.Build_ConveyorAttachmentSplitterSmartLift_C'){ className = '/Game/FactoryGame/Buildable/Factory/CA_SplitterSmart/Build_ConveyorAttachmentSplitterSmart.Build_ConveyorAttachmentSplitterSmart_C'; }
+        if(className === '/Game/FactoryGame/Buildable/Factory/CA_SplitterLiftProgrammable/Build_ConveyorAttachmentSplitterProgrammableLift.Build_ConveyorAttachmentSplitterProgrammableLift_C'){ className = '/Game/FactoryGame/Buildable/Factory/CA_SplitterProgrammable/Build_ConveyorAttachmentSplitterProgrammable.Build_ConveyorAttachmentSplitterProgrammable_C'; }
+
         // Create fake angled railings with new width
         if(this.buildingsData.Build_SM_RailingRamp_8x4_01_C === undefined && this.buildingsData.Build_Railing_01_C !== undefined)
         {
