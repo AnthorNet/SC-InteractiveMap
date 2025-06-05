@@ -72,6 +72,7 @@ export default class SaveParser
                     }
                     SaveParser_FicsIt.callADA(baseLayout, currentObject);
             }
+            SaveParser_FicsIt.finalCallADA(baseLayout);
 
             // Prepare available levels
             this.availableSubLevels = [];

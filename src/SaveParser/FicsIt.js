@@ -8,6 +8,8 @@ import Building_MapMarker                       from '../Building/MapMarker.js';
 
 export default class SaveParser_FicsIt
 {
+    static availableElevatorCabins = [];
+
     static getBuggedItemPickup(baseLayout)
     {
         let inGameBuggedSpawnable   = [
@@ -83,9 +85,11 @@ export default class SaveParser_FicsIt
                     return SaveParser_FicsIt.fixGameMode(baseLayout, currentObject);
                 case '/Script/FactoryGame.FGMapManager':
                     return SaveParser_FicsIt.fixMapManager(baseLayout, currentObject);
+
                 case '/Script/FactoryGame.FGDroneStationInfo':
                 case '/Script/FactoryGame.FGWheeledVehicleInfo':
                     return SaveParser_FicsIt.fixObjectConnectedInfo(baseLayout, currentObject);
+
                 case '/Game/FactoryGame/-Shared/Blueprint/BP_RailroadSubsystem.BP_RailroadSubsystem_C':
                     return SaveParser_FicsIt.fixRailroadSubsystem(baseLayout, currentObject);
                 case '/Script/FactoryGame.FGTrainStationIdentifier':
@@ -95,9 +99,11 @@ export default class SaveParser_FicsIt
                     return SaveParser_FicsIt.fixTrainIdentifier(baseLayout, currentObject);
                 case '/Game/FactoryGame/Buildable/Factory/Train/Track/Build_RailroadTrackIntegrated.Build_RailroadTrackIntegrated_C':
                     return SaveParser_FicsIt.fixRailroadTrackIntegrated(baseLayout, currentObject);
+
                 //case '/Script/FactoryGame.FGPipeConnectionFactory':
                 //case '/Script/FactoryGame.FGPipeConnectionComponent':
                 //    return SaveParser_FicsIt.fixPipeConnectionFactory(baseLayout, currentObject);
+
                 case '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C':
                 case '/Game/FactoryGame/Buildable/Factory/PipelineMk2/Build_PipelineMK2.Build_PipelineMK2_C':
                     return SaveParser_FicsIt.fixPipeIndicatorEntity(baseLayout, currentObject);
@@ -113,6 +119,9 @@ export default class SaveParser_FicsIt
                 case '/Game/FactoryGame/Buildable/Factory/CA_Splitter/Build_ConveyorAttachmentSplitter.Build_ConveyorAttachmentSplitter_C':
                 case '/Game/FactoryGame/Buildable/Factory/CA_SplitterSmart/Build_ConveyorAttachmentSplitterSmart.Build_ConveyorAttachmentSplitterSmart_C':
                     return SaveParser_FicsIt.fixMissingConnectedComponents(baseLayout, currentObject);
+
+                case '/Game/FactoryGame/Buildable/Factory/Elevator/Build_Elevator.Build_Elevator_C':
+                    return SaveParser_FicsIt.fixMissingElevator(baseLayout, currentObject);
             }
 
             if(Building.isConveyor(currentObject))
@@ -156,6 +165,24 @@ export default class SaveParser_FicsIt
         }
 
         return currentObject;
+    }
+
+    static finalCallADA(baseLayout)
+    {
+        if(SaveParser_FicsIt.availableElevatorCabins.length > 0)
+        {
+            for(let i = (SaveParser_FicsIt.availableElevatorCabins.length - 1); i >= 0; i--)
+            {
+                let currentElevatorCabin = baseLayout.saveGameParser.getTargetObject(SaveParser_FicsIt.availableElevatorCabins[i]);
+                    if(currentElevatorCabin !== null)
+                    {
+                        console.log('Fixing ghost BP_ElevatorCabin_C "' + currentElevatorCabin.pathName + '"');
+
+                        baseLayout.saveGameParser.deleteObject(currentElevatorCabin.pathName);
+                        SaveParser_FicsIt.availableElevatorCabins.splice(i, 1);
+                    }
+            }
+        }
     }
 
     /*
@@ -624,6 +651,22 @@ export default class SaveParser_FicsIt
                             break;
                         }
                 }
+            }
+
+        return currentObject;
+    }
+
+    /**
+     * We left some ghost elevator cabin, empty our bucket if they still need to exist...
+     */
+    static fixMissingElevator(baseLayout, currentObject)
+    {
+        let mElevatorCabin = baseLayout.getObjectProperty(currentObject, 'mElevatorCabin');
+            if(mElevatorCabin !== null)
+            {
+                SaveParser_FicsIt.availableElevatorCabins = SaveParser_FicsIt.availableElevatorCabins.filter(function(pathName) {
+                    return pathName !== mElevatorCabin.pathName;
+                });
             }
 
         return currentObject;

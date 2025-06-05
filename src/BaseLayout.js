@@ -700,6 +700,12 @@ export default class BaseLayout
                     continue;
                 }
                 /*
+                if(currentObject.className.includes('Cabin'))
+                {
+                    console.log('Cabin', currentObject)
+                }
+                /**/
+                /*
                 if(currentObject.className.includes('Subsystem'))
                 {
                     console.log('Subsystem', currentObject)
@@ -972,6 +978,11 @@ export default class BaseLayout
             }
 
             // Fix some save/games bugs and/or old object conversion
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Elevator/BP_ElevatorCabin.BP_ElevatorCabin_C')
+            {
+                SaveParser_FicsIt.availableElevatorCabins.push(currentObject.pathName);
+                continue;
+            }
             currentObject = SaveParser_FicsIt.callADA(this, currentObject);
                 if(currentObject === null)
                 {
@@ -3120,6 +3131,35 @@ export default class BaseLayout
             if(mInfo !== null)
             {
                 baseLayout.saveGameParser.deleteObject(mInfo.pathName);
+            }
+
+        // Release elevators...
+        let mElevatorCabin = baseLayout.getObjectProperty(currentObject, 'mElevatorCabin');
+            if(mElevatorCabin !== null)
+            {
+                baseLayout.saveGameParser.deleteObject(mElevatorCabin.pathName);
+            }
+        let mFloorStopInfos = baseLayout.getObjectProperty(currentObject, 'mFloorStopInfos');
+            if(mFloorStopInfos !== null)
+            {
+                for(let j = 0; j < mFloorStopInfos.values.length; j++)
+                {
+                    for(let k = 0; k < mFloorStopInfos.values[j].length; k++)
+                    {
+                        if(mFloorStopInfos.values[j][k].name === 'FloorStop')
+                        {
+                            let floorStopObject = baseLayout.saveGameParser.getTargetObject(mFloorStopInfos.values[j][k].value.pathName);
+                                if(floorStopObject !== null)
+                                {
+                                    let floorStopMarker = baseLayout.getMarkerFromPathName(floorStopObject.pathName, layerId);
+                                        if(floorStopMarker !== null)
+                                        {
+                                            baseLayout.deleteGenericBuilding({baseLayout: baseLayout, relatedTarget: floorStopMarker});
+                                        }
+                                }
+                        }
+                    }
+                }
             }
 
         // Delete building from the Blueprint Designer list
