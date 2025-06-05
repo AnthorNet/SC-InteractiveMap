@@ -648,9 +648,44 @@ export default class BaseLayout
                 objectsKeys         = Object.keys(objects);
 
                 // Performance warning!!!
-                if(objectsKeys.length > 500000)  { this.mapStructuresModelsQuality  = 'medium'; }
-                if(objectsKeys.length > 750000)  { this.showPatterns                = false; }
-                if(objectsKeys.length > 1000000) { this.mapStructuresModelsQuality  = 'low'; this.mapModelsQuality  = 'medium'; }
+                if(objectsKeys.length > 500000)
+                {
+                    this.mapStructuresModelsQuality     = 'medium';
+
+                    BaseLayout_Modal.notification({
+                        title   : 'Performance Warning!',
+                        message : 'Too much objects (> ' + new Intl.NumberFormat(this.language).format(500000) + '), switching "Structures Models Quality" to "Outline (Medium)"'
+                    });
+                }
+                if(objectsKeys.length > 750000)
+                {
+                    this.showPatterns                   = false;
+
+                    BaseLayout_Modal.notification({
+                        title   : 'Performance Warning!',
+                        message : 'Too much objects (> ' + new Intl.NumberFormat(this.language).format(750000) + '), switching "Show Patterns?" to "Off" '
+                    });
+                }
+                if(objectsKeys.length > 1000000)
+                {
+                    this.mapStructuresModelsQuality     = 'low';
+                    this.mapModelsQuality               = 'medium';
+
+                    BaseLayout_Modal.notification({
+                        title   : 'Performance Warning!',
+                        message : 'Too much objects (> ' + new Intl.NumberFormat(this.language).format(1000000) + '), switching "Structures Models Quality" to "Square (Low)" and "Buildings Models Quality" to "Outline (Medium)"'
+                    });
+                }
+                if(objectsKeys.length > 1500000)
+                {
+                    this.mapModelsQuality               = 'low';
+                    this.showStructuresOnLoad           = false;
+
+                    BaseLayout_Modal.notification({
+                        title   : 'Performance Warning!',
+                        message : 'Too much objects (> ' + new Intl.NumberFormat(this.language).format(1500000) + '), switching "Buildings Models Quality" to "Square (Low)" and "' + this.translate._('Show structures by default?') + '" to "Off"'
+                    });
+                }
         }
 
         let countObjects            = objectsKeys.length;
