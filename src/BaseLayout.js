@@ -4801,10 +4801,6 @@ export default class BaseLayout
             }
         }
 
-        // Mods
-        if(className === '/Game/InfiniteLogistics/Buildable/InfinitePipeHyper/Build_InfinitePipeHyper.Build_InfinitePipeHyper_C'){ className = '/Game/FactoryGame/Buildable/Factory/PipeHyper/Build_PipeHyper.Build_PipeHyper_C'; }
-        if(className === '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C'){ className = '/Game/FactoryGame/Buildable/Factory/Pipeline/Build_Pipeline.Build_Pipeline_C'; }
-
         for(let i in this.buildingsData)
         {
             if(this.buildingsData[i].className !== undefined && this.buildingsData[i].className === className)
@@ -4814,21 +4810,29 @@ export default class BaseLayout
             }
         }
 
-        if(Building_RailroadTrack.isRailroadTrack({className: className}))
-        {
-            this.buildingDataClassNameHashTable[className] = 'Build_RailroadTrack_C';
-            return this.buildingsData.Build_RailroadTrack_C;
-        }
-        if(Building_Locomotive.isLocomotive({className: className}))
-        {
-            this.buildingDataClassNameHashTable[className] = 'Desc_Locomotive_C';
-            return this.buildingsData.Desc_Locomotive_C;
-        }
-        if(Building.isFreightWagon({className: className}))
-        {
-            this.buildingDataClassNameHashTable[className] = 'Desc_FreightWagon_C';
-            return this.buildingsData.Desc_FreightWagon_C;
-        }
+        // Mostly generic buildings lookup used for mods that aren't correctly registered but still needs special care...
+        let buildingId      = className.split('.').pop();
+        let buildingLookups = {
+                Build_ConveyorBeltMk1_C : Building.isConveyorBelt({className: className}),
+                Build_ConveyorLiftMk1_C : Building.isConveyorLift({className: className}),
+                Build_RailroadTrack_C   : Building_RailroadTrack.isRailroadTrack({className: className}),
+                Desc_Locomotive_C       : Building_Locomotive.isLocomotive({className: className}),
+                Desc_FreightWagon_C     : Building.isFreightWagon({className: className}),
+                Build_Pipeline_C        : Building_Pipeline.isPipeline({className: className}),
+                Build_PipeHyper_C       : Building_HyperTube.isHyperTube({className: className})
+            };
+            for(let buildingLookupId in buildingLookups)
+            {
+                if(buildingLookups[buildingLookupId] === true)
+                {
+                    this.buildingsData[buildingId]                  = JSON.parse(JSON.stringify(this.buildingsData[buildingLookupId]));
+                    this.buildingsData[buildingId].className        = className;
+                    this.buildingsData[buildingId].name             = buildingId + ' (Copied from ' + this.buildingsData[buildingId].name + ')';
+                    this.buildingDataClassNameHashTable[className]  = buildingId;
+
+                    return this.buildingsData[buildingId];
+                }
+            }
 
         return null;
     }

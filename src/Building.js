@@ -101,6 +101,7 @@ export default class Building
              || currentObject.className.startsWith('/Game/CoveredConveyor')
              || currentObject.className.startsWith('/CoveredConveyor')
              || currentObject.className.startsWith('/conveyorbeltmod/lift/')
+             || currentObject.className.startsWith('/FlexSplines/Lift/Flex_Lift')
              || currentObject.className.startsWith('/MkPlus/Buildables/ConveyorLift/Build_ConveyorLift_')
              || currentObject.className.startsWith('/FastConveyors/Buildable/Lifts/Build_FastConveyorLift')
              || currentObject.className.startsWith('/MkPlusLibs/Buildables/ConveyorLift/Build_ConveyorLift_Mk')

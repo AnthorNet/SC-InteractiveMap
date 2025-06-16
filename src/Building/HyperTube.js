@@ -17,6 +17,14 @@ export default class Building_HyperTube
             return true;
         }
 
+        // HyperTube Mod
+        if(
+               currentObject.className === '/Game/InfiniteLogistics/Buildable/InfinitePipeHyper/Build_InfinitePipeHyper.Build_InfinitePipeHyper_C'
+        )
+        {
+            return true;
+        }
+
         return false;
     }
 
