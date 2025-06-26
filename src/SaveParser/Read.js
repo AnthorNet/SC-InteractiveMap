@@ -21,6 +21,9 @@ export default class SaveParser_Read
         this.isDegraded             = false;
         this.degradedMaxRangeLength = 2145386496;
 
+        this.utf8Decoder = new TextDecoder('utf-8');
+        this.utf16Decoder = new TextDecoder('utf-16le');
+
         this.parseSave();
     }
 
@@ -2336,9 +2339,8 @@ export default class SaveParser_Read
         {
             strLength = -strLength - 1;
             // Use Uint16Array and TextDecoder for UTF-16LE
-            const decoder = new TextDecoder('utf-16le');
             const bytes = new Uint8Array(this.bufferView.buffer, this.currentByte, strLength * 2);
-            const string = decoder.decode(bytes);
+            const string = this.utf16Decoder.decode(bytes);
             this.currentByte += strLength * 2 + 2; // +2 for null terminator
             return string;
         }
@@ -2347,9 +2349,8 @@ export default class SaveParser_Read
         {
             strLength = strLength - 1;
             // Use Uint8Array and TextDecoder for UTF-8
-            const decoder = new TextDecoder('utf-8');
             const bytes = new Uint8Array(this.bufferView.buffer, this.currentByte, strLength);
-            const string = decoder.decode(bytes);
+            const string = this.utf8Decoder.decode(bytes);
             this.currentByte += strLength + 1; // +1 for null terminator
 
             return string;
