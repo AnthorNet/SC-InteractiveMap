@@ -779,24 +779,21 @@ export default class Building_Sign
             layoutTemplate  = layoutTemplate.replace(/{{FOREGROUND_COLOR}}/g, foregroundColor);
 
         let emissiveStyle   = '';
-        let mEmissive       = baseLayout.getObjectProperty(currentObject, 'mEmissive');
-            if(mEmissive !== null)
+        let mEmissive       = baseLayout.getObjectProperty(currentObject, 'mEmissive', 1);
+            switch(mEmissive)
             {
-                switch(mEmissive)
-                {
-                    case 1:
-                        emissiveStyle   = 'text-shadow: 0 0 10px ' + foregroundColor + ';filter: brightness(1.5);';
-                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(1.5) blur(0.5px)');
-                        break;
-                    case 2:
-                        emissiveStyle = 'text-shadow: 0 0 20px ' + foregroundColor + ';filter: brightness(2);';
-                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(2) blur(1px)');
-                        break;
-                    case 3:
-                        emissiveStyle = 'text-shadow: 0 0 40px ' + foregroundColor + ';filter: brightness(2.5);';
-                        layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(2.5) blur(1.5px)');
-                        break;
-                }
+                case 1:
+                    emissiveStyle   = 'text-shadow: 0 0 10px ' + foregroundColor + ';filter: brightness(1.5);';
+                    layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(1.5) blur(0.5px)');
+                    break;
+                case 2:
+                    emissiveStyle = 'text-shadow: 0 0 20px ' + foregroundColor + ';filter: brightness(2);';
+                    layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(2) blur(1px)');
+                    break;
+                case 3:
+                    emissiveStyle = 'text-shadow: 0 0 40px ' + foregroundColor + ';filter: brightness(2.5);';
+                    layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  ' brightness(2.5) blur(1.5px)');
+                    break;
             }
             layoutTemplate  = layoutTemplate.replace(/{{EXTRA_FILTER}}/g,  '');
 
@@ -1224,7 +1221,7 @@ export default class Building_Sign
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
         let buildingData    = baseLayout.getBuildingDataFromClassName(currentObject.className);
-        let mEmissive       = baseLayout.getObjectProperty(currentObject, 'mEmissive');
+        let mEmissive       = baseLayout.getObjectProperty(currentObject, 'mEmissive', 1);
 
             BaseLayout_Modal.form({
                 title       : 'Update "<strong>' + buildingData.name + '</strong>" emission strength',
@@ -1242,11 +1239,7 @@ export default class Building_Sign
                 }],
                 callback    : function(values)
                 {
-                    baseLayout.deleteObjectProperty(currentObject, 'mEmissive');
-                    if(parseInt(values.mEmissive) !== 0)
-                    {
-                        baseLayout.setObjectProperty(currentObject, 'mEmissive', parseInt(values.mEmissive), 'Float');
-                    }
+                    baseLayout.setObjectProperty(currentObject, 'mEmissive', parseInt(values.mEmissive), 'Float');
                 }
             });
     }
@@ -1375,7 +1368,7 @@ export default class Building_Sign
             /**/
             if(baseLayout.useDebug === true)
             {
-                options.push({value: 191, text: 'TEST ICON ID'});
+                options.push({value: 852, text: 'TEST ICON ID'});
             }
             /**/
 
