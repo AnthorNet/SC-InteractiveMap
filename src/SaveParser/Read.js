@@ -2334,37 +2334,25 @@ export default class SaveParser_Read
         // UTF16
         if(strLength < 0)
         {
-                strLength   = -strLength - 1;
-            let string      = [];
-
-            for(let i = 0; i < strLength; ++i)
-            {
-                let caracter = String.fromCharCode(
-                        this.bufferView.getUint16(this.currentByte++, true)
-                    );
-                    string.push(caracter);
-                    this.currentByte++;
-            }
-            this.currentByte++;
-            this.currentByte++;
-
-            return string.join('');
+            strLength = -strLength - 1;
+            // Use Uint16Array and TextDecoder for UTF-16LE
+            const decoder = new TextDecoder('utf-16le');
+            const bytes = new Uint8Array(this.bufferView.buffer, this.currentByte, strLength * 2);
+            const string = decoder.decode(bytes);
+            this.currentByte += strLength * 2 + 2; // +2 for null terminator
+            return string;
         }
 
         try
         {
-                strLength   = strLength -1;
-            let string      = [];
+            strLength = strLength - 1;
+            // Use Uint8Array and TextDecoder for UTF-8
+            const decoder = new TextDecoder('utf-8');
+            const bytes = new Uint8Array(this.bufferView.buffer, this.currentByte, strLength);
+            const string = decoder.decode(bytes);
+            this.currentByte += strLength + 1; // +1 for null terminator
 
-            for(let i = 0; i < strLength; i++)
-            {
-                string.push(String.fromCharCode(
-                    this.bufferView.getUint8(this.currentByte++, true)
-                ));
-            }
-            this.currentByte++;
-
-            return string.join('');
+            return string;
         }
         catch(error)
         {
