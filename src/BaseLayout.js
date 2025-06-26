@@ -3969,6 +3969,10 @@ export default class BaseLayout
     getObjectInventory(currentObject, inventoryPropertyName = 'mInventory', raw = false)
     {
         let inventory = this.getObjectProperty(currentObject, inventoryPropertyName);
+            if(inventory === null && currentObject.className === '/Game/FactoryGame/-Shared/Crate/BP_Crate.BP_Crate_C')
+            {
+                inventory = {pathName: currentObject.pathName + '.inventory'};
+            }
             if(inventory !== null)
             {
                 let inventoryObject = this.saveGameParser.getTargetObject(inventory.pathName);
