@@ -158,10 +158,15 @@ export default class GameMap
                             {
                                 for(let caveId in option.markers)
                                 {
-                                    L.polygon(
-                                        option.markers[caveId].points.map((value) => { return this.unproject(value); }),
-                                        {color: 'yellow', weight: 1, interactive: false}
-                                    ).addTo(this.availableLayers[option.layerId]);
+                                    let mainCaveForm = [option.markers[caveId].points.map((value) => { return this.unproject(value); })];
+                                        if(option.markers[caveId].holes !== undefined)
+                                        {
+                                            for(let l = 0; l < option.markers[caveId].holes.length; l++)
+                                            {
+                                                mainCaveForm.push(option.markers[caveId].holes[l].map((value) => { return this.unproject(value); }))
+                                            }
+                                        }
+                                        L.polygon(mainCaveForm, {color: 'yellow', weight: 1, interactive: false}).addTo(this.availableLayers[option.layerId]);
 
                                     if(option.markers[caveId].entrances !== undefined)
                                     {
