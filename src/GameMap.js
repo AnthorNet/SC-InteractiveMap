@@ -435,9 +435,9 @@ export default class GameMap
     setupEvents()
     {
         // Hash
-        this.leafletMap.on("moveend", this._throttle(() => { return this.updateHash(); }, 100, {leading: true, trailing: true}), this);
-        this.leafletMap.on('layeradd', this._throttle(() => { return this.updateHash(); }, 100, {leading: true, trailing: true}), this);
-        this.leafletMap.on('layerremove', this._throttle(() => { return this.updateHash(); }, 100, {leading: true, trailing: true}), this);
+        this.leafletMap.on("moveend", this._throttle(() => { this.updateHash(); }, 100, {leading: true, trailing: true}), this);
+        this.leafletMap.on('layeradd', this._throttle(() => { this.updateHash(); }, 100, {leading: true, trailing: true}), this);
+        this.leafletMap.on('layerremove', this._throttle(() => { this.updateHash(); }, 100, {leading: true, trailing: true}), this);
 
         L.DomEvent.addListener(window, "hashchange", this._throttle(() => { return this.onHashChange(); }, 100, {leading: true, trailing: true}));
 
