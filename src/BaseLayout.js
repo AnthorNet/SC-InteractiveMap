@@ -107,6 +107,7 @@ export default class BaseLayout
         this.buildingsData                      = null;
         this.buildingsCategories                = {};
         this.itemsData                          = null;
+        this.itemClassNames                     = {};
         this.itemsCategories                    = {};
         this.toolsData                          = null;
         this.toolsCategories                    = {};
@@ -424,12 +425,23 @@ export default class BaseLayout
                         this.modsData               = data.modsData;
 
                         this.loadDetailedModels();
+                        this.cacheItemIds();
                     });
                 });
             }
             else
             {
                 this.loadDetailedModels();
+            }
+        });
+    }
+
+    cacheItemIds() {
+        this.itemClassNames = {};
+        Object.entries(this.itemsData).forEach(([itemId, itemData]) => {
+            if(itemData.className)
+            {
+                this.itemClassNames[itemData.className] = itemId;
             }
         });
     }
@@ -4592,12 +4604,11 @@ export default class BaseLayout
             this.itemsData[className].id = className;
             return this.itemsData[className];
         }
-        for(let i in this.itemsData)
-        {
-            if(this.itemsData[i].className !== undefined && this.itemsData[i].className === className)
-            {
-                this.itemsData[i].id = i;
-                return this.itemsData[i];
+        if (this.itemClassNames[className] !== undefined) {
+            const itemId = this.itemClassNames[className];
+            if (this.itemsData[itemId] !== undefined) {
+                this.itemsData[itemId].id = itemId;
+                return this.itemsData[itemId];
             }
         }
         if(this.toolsData[className] !== undefined)
