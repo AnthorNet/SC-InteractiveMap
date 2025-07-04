@@ -48,8 +48,13 @@ export default class SubSystem_Collectables
                                                             if(currentObject === null && (this.collectables[className].markers[m].levelName === 'Persistent_Level' || this.baseLayout.saveGameParser.isSubLevelSpawned(this.collectables[className].markers[m].levelName)))
                                                             {
                                                                 dismantled      = true; //TODO: Use it to reddish the icon...
-                                                                collectedStatus = true;
-                                                                this.collectables[className].used++;
+
+                                                                if(collectedStatus === false)
+                                                                {
+                                                                    collectedStatus = true;
+                                                                    this.baseLayout.collectedHardDrives.setCollected(this.collectables[className].markers[m].pathName);
+                                                                    this.collectables[className].used++;
+                                                                }
                                                             }
                                                     }
 
