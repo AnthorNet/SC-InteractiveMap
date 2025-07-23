@@ -274,10 +274,10 @@ export default class SaveParser_Read
                     }
                     else
                     {
-                            this.currentByte   += objectsBinaryLength;
-                        let entitiesBinaryLength = this.readInt64();
-                            this.currentByte   += entitiesBinaryLength;
-                            levelSaveVersion    = this.readUint();
+                            this.currentByte       += objectsBinaryLength;
+                        let entitiesBinaryLength    = this.readInt64();
+                            this.currentByte       += entitiesBinaryLength;
+                            levelSaveVersion        = this.readUint();
 
                         // Get back to initial state...
                         this.currentByte = objectsBinaryLengthStart;
@@ -1177,7 +1177,7 @@ export default class SaveParser_Read
                     Sentry.setContext('currentProperty', currentProperty);
                 }
 
-                console.log(this.currentEntityClassName, this.currentEntityPathName);
+                console.log('currentEntityClassName', this.currentEntityClassName, 'currentEntityPathName', this.currentEntityPathName);
                 console.log('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.currentByte + ')');
                 throw new Error('Unimplemented type `' + currentProperty.type + '` in Property `' + currentProperty.name + '` (' + this.currentByte + ')');
         }
@@ -1532,7 +1532,10 @@ export default class SaveParser_Read
 
                                 break;
                             }
-                            if(parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')       // Mod: Universal Destroyer/Factory Statistics
+                            if(
+                                    parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C'   // Mod: Universal Destroyer/Factory Statistics
+                                 || parentType === '/Script/NoImpure.NoImpureSubsystem'                 // Mod: NoImpure
+                            )
                             {
                                 mapPropertyKey = {
                                     x: this.readFloat(),
@@ -1585,7 +1588,7 @@ export default class SaveParser_Read
                     switch(currentProperty.value.valueType)
                     {
                         case 'Byte':
-                            if(currentProperty.value.keyType === 'Str')
+                            if(currentProperty.value.keyType === 'Str' || parentType === '/Script/NoImpure.NoImpureSubsystem')
                             {
                                 mapPropertySubProperties    = this.readString();
                             }
@@ -2337,21 +2340,21 @@ export default class SaveParser_Read
         // UTF16
         if(strLength < 0)
         {
-            strLength = -strLength - 1;
+            strLength           = -strLength - 1;
             // Use Uint16Array and TextDecoder for UTF-16LE
-            const bytes = new Uint8Array(this.bufferView.buffer, this.currentByte, strLength * 2);
-            const string = this.utf16Decoder.decode(bytes);
-            this.currentByte += strLength * 2 + 2; // +2 for null terminator
+            const bytes         = new Uint8Array(this.bufferView.buffer, this.currentByte, strLength * 2);
+            const string        = this.utf16Decoder.decode(bytes);
+            this.currentByte   += strLength * 2 + 2; // +2 for null terminator
             return string;
         }
 
         try
         {
-            strLength = strLength - 1;
+            strLength           = strLength - 1;
             // Use Uint8Array and TextDecoder for UTF-8
-            const bytes = new Uint8Array(this.bufferView.buffer, this.currentByte, strLength);
-            const string = this.utf8Decoder.decode(bytes);
-            this.currentByte += strLength + 1; // +1 for null terminator
+            const bytes         = new Uint8Array(this.bufferView.buffer, this.currentByte, strLength);
+            const string        = this.utf8Decoder.decode(bytes);
+            this.currentByte   += strLength + 1; // +1 for null terminator
 
             return string;
         }

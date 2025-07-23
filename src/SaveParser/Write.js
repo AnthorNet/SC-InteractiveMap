@@ -1683,7 +1683,10 @@ export default class SaveParser_Write
 
                         break;
                     }
-                    if(parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')       // Mod: Universal Destroyer/Factory Statistics
+                    if(
+                            parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C'   // Mod: Universal Destroyer/Factory Statistics
+                         || parentType === '/Script/NoImpure.NoImpureSubsystem'                 // Mod: NoImpure
+                    )
                     {
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.x);
                         property += this.writeFloat(currentProperty.value.values[iMapProperty].keyMap.y);
@@ -1719,7 +1722,7 @@ export default class SaveParser_Write
             switch(currentProperty.value.valueType)
             {
                 case 'Byte':
-                    if(currentProperty.value.keyType === 'Str')
+                    if(currentProperty.value.keyType === 'Str' || parentType === '/Script/NoImpure.NoImpureSubsystem')
                     {
                         property += this.writeString(currentProperty.value.values[iMapProperty].valueMap);
                     }
