@@ -2692,7 +2692,7 @@ export default class SaveParser_Write
                 }
             }
 
-            for(let i = 0; i < value.properties; i++)
+            for(let i = 0; i < value.properties.length; i++)
             {
                 saveBinary += this.writeProperty(value.properties[i]);
             }
@@ -2704,12 +2704,22 @@ export default class SaveParser_Write
     writeFIRAnyValue(value)
     {
         let saveBinary  = '';
-            saveBinary += this.writeInt(value.type);
+            saveBinary += this.writeInt8(value.type);
 
             switch(value.type)
             {
+                case 3: // FIR_FLOAT
+                    saveBinary += this.writeDouble(value.value);
+
+                    break;
+
                 case 4: // FIR_STR
                     saveBinary += this.writeString(value.value);
+
+                    break;
+
+                case 8: // FIR_STRUCT
+                    saveBinary += this.writeFINDynamicStructHolder(value.value);
 
                     break;
 

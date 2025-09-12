@@ -2598,6 +2598,8 @@ export default class SaveParser_Read
                 case '/Script/FicsItNetworksComputer.FINGPUT2DC_PushClipRect':
                 case '/Script/FicsItNetworksComputer.FINGPUT2DC_PopClip':
                 case '/Script/FicsItNetworksLua.FINEventFilter':
+                case '/Script/FactoryGame.PrefabSignData':
+
                     break;
 
                 // See: https://github.com/Panakotta00/FicsIt-Networks/blob/e2fda3bb7c3701504e419db43dd221b64e36312e/Source/FicsItNetworks/Public/Computer/FINComputerGPUT2.h#L165
@@ -2665,8 +2667,18 @@ export default class SaveParser_Read
 
             switch(data.type)
             {
+                case 3: // FIR_FLOAT
+                    data.value  = this.readDouble();
+
+                    break;
+
                 case 4: // FIR_STR
                     data.value  = this.readString();
+
+                    break;
+
+                case 8: // FIR_STRUCT
+                    data.value  = this.readFINDynamicStructHolder();
 
                     break;
 
