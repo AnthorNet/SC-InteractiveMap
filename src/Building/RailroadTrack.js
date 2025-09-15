@@ -22,10 +22,11 @@ export default class Building_RailroadTrack
             return true;
         }
 
-        // RailroadTrack Mod
+        // Mods that add railroad track variants
         if(
-                currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C'
-             || currentObject.className === '/StartWithVehicles/Vehicles/Train/Track/Build_CheapRailroadTrack.Build_CheapRailroadTrack_C'
+                currentObject.className === '/FlexSplines/Track/Build_Track.Build_Track_C' //  FlexSplines
+             || currentObject.className === '/StartWithVehicles/Vehicles/Train/Track/Build_CheapRailroadTrack.Build_CheapRailroadTrack_C' // Start With Vehicles
+             || currentObject.className === '/SS_Mod/Builders/Steel/Build_SteelBeam_TrainRail.Build_SteelBeam_TrainRail_C' // Structural Solutions
         )
         {
             return true;
