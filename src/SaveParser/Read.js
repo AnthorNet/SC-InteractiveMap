@@ -1367,6 +1367,14 @@ export default class SaveParser_Read
 
                             break;
 
+                        case 'Vector2D':
+                            currentProperty.value.values.push({
+                                x           : this.readDouble(),
+                                y           : this.readDouble()
+                            });
+
+                            break;
+
                         case 'LinearColor':
                             currentProperty.value.values.push({
                                 r : this.readFloat(),

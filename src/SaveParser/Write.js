@@ -1549,6 +1549,12 @@ export default class SaveParser_Write
 
                             break;
 
+                        case 'Vector2D':
+                            structure += this.writeDouble(currentProperty.value.values[i].x);
+                            structure += this.writeDouble(currentProperty.value.values[i].y);
+
+                            break;
+
                         case 'LinearColor':
                             structure += this.writeFloat(currentProperty.value.values[i].r);
                             structure += this.writeFloat(currentProperty.value.values[i].g);
