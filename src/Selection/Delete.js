@@ -95,13 +95,26 @@ export default class Selection_Delete
                                             '/Game/FactoryGame/Resource/BP_ItemPickup_Spawnable.BP_ItemPickup_Spawnable_C'
                                         ].includes(currentObject.className))
                                         {
-                                            let itemClassName = this.baseLayout.itemsData[this.markers[i].options.itemId].className;
-                                                if(putInCrate[itemClassName] === undefined)
-                                                {
-                                                    putInCrate[itemClassName] = 0;
-                                                }
+                                            if(this.baseLayout.itemsData[this.markers[i].options.itemId] !== undefined)
+                                            {
+                                                let itemClassName = this.baseLayout.itemsData[this.markers[i].options.itemId].className;
+                                                    if(putInCrate[itemClassName] === undefined)
+                                                    {
+                                                        putInCrate[itemClassName] = 0;
+                                                    }
 
-                                            putInCrate[itemClassName] += this.markers[i].options.itemQty;
+                                                putInCrate[itemClassName] += this.markers[i].options.itemQty;
+                                            }
+                                            if(this.baseLayout.toolsData[this.markers[i].options.itemId] !== undefined)
+                                            {
+                                                let toolClassName = this.baseLayout.toolsData[this.markers[i].options.itemId].className;
+                                                    if(putInCrate[toolClassName] === undefined)
+                                                    {
+                                                        putInCrate[toolClassName] = 0;
+                                                    }
+
+                                                putInCrate[toolClassName] += this.markers[i].options.itemQty;
+                                            }
                                         }
                                     }
                             }
