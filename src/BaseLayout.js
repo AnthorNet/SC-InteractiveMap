@@ -3523,7 +3523,7 @@ export default class BaseLayout
                     case '#playerGeneratorsLayer':
                         show = this.showGeneratorsOnLoad;
                         break;
-                    case '#playerBuildingLayer':
+                    case '#playerTransportationLayer':
                         show = this.showTransportationOnLoad;
                         break;
                 }
