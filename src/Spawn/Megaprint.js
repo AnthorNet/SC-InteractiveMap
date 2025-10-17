@@ -112,18 +112,18 @@ export default class Spawn_Megaprint
                         delete this.clipboard.data[i].children;
 
                         let mControlledConnection = this.baseLayout.getObjectProperty(this.clipboard.data[i].parent, 'mControlledConnection');
-                            this.baseLayout.deleteObjectProperty(this.clipboard.data[i].parent, 'mControlledConnection');
-                            this.clipboard.data[i].parent.properties.push({
-                                    name    : 'mControlledConnections',
-                                    type    : 'Array',
-                                    value   : {
-                                            type    : 'Object',
-                                            values  : [mControlledConnection]
-                                    }
-                            });
-
                             if(mControlledConnection !== null)
                             {
+                                this.baseLayout.deleteObjectProperty(this.clipboard.data[i].parent, 'mControlledConnection');
+                                this.clipboard.data[i].parent.properties.push({
+                                        name    : 'mControlledConnections',
+                                        type    : 'Array',
+                                        value   : {
+                                                type    : 'Object',
+                                                values  : [mControlledConnection]
+                                        }
+                                });
+
                                 let mControlledConnectionPathName   = mControlledConnection.pathName.split('.');
                                 let trackConnectionType             = mControlledConnectionPathName.pop();
                                     mControlledConnectionPathName   = mControlledConnection.pathName.replace('.' + trackConnectionType, '');
@@ -155,6 +155,15 @@ export default class Spawn_Megaprint
                                         break;
                                     }
                                 }
+                            }
+                            else
+                            {
+                                this.baseLayout.deleteObjectProperty(this.clipboard.data[i].parent, 'mControlledConnection');
+                                this.clipboard.data[i].parent.properties.push({
+                                        name    : 'mControlledConnections',
+                                        type    : 'Array',
+                                        value   : { type    : 'Object', values  : [] }
+                                });
                             }
                     }
                 }
