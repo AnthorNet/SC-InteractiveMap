@@ -48,11 +48,11 @@ export default class Modal_Object_Pattern
                 {
                     if(values.PatternDesc !== 'NULL')
                     {
-                        currentObject.customizationData.PatternDesc.pathName = values.PatternDesc;
+                        currentObject.customizationData.PatternDesc = {levelName: '', pathName: values.PatternDesc};
                     }
                     else
                     {
-                        currentObject.customizationData.PatternDesc.pathName = '';
+                        delete currentObject.customizationData.PatternDesc;
                     }
                 }
                 else

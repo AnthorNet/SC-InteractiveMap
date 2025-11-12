@@ -7,22 +7,22 @@ export default class SaveParser_Read
 {
     constructor(worker, options)
     {
-        this.worker             = worker;
-        this.objects            = {};
+        this.worker                 = worker;
+        this.objects                = {};
 
-        this.language           = options.language;
+        this.language               = options.language;
 
-        this.arrayBuffer        = options.arrayBuffer;
+        this.arrayBuffer            = options.arrayBuffer;
         // Still used for header try not to shrink it too much as modMetadata can be longer than anticipated...
-        this.bufferView         = new DataView(this.arrayBuffer, 0, Math.min(102400, this.arrayBuffer.byteLength));
-        this.currentByte        = 0;
+        this.bufferView             = new DataView(this.arrayBuffer, 0, Math.min(102400, this.arrayBuffer.byteLength));
+        this.currentByte            = 0;
 
         // Was the save degraded by a faulty dropped item?
         this.isDegraded             = false;
         this.degradedMaxRangeLength = 2145386496;
 
-        this.utf8Decoder = new TextDecoder('utf-8');
-        this.utf16Decoder = new TextDecoder('utf-16le');
+        this.utf8Decoder            = new TextDecoder('utf-8');
+        this.utf16Decoder           = new TextDecoder('utf-16le');
 
         this.parseSave();
     }
@@ -191,7 +191,7 @@ export default class SaveParser_Read
                     if(currentLength + currentChunk.length > this.degradedMaxRangeLength)
                     {
                         this.currentChunks.unshift(currentChunk);
-                        this.worker.postMessage({command: 'alertParsing', source: 'Save game was borked by deleting a bugged dropped item in the save.<br />The current fix is experimental but should most likely fix your save again, if you can please use a backup save.'});
+                        //this.worker.postMessage({command: 'alertParsing', source: 'Save game was borked by deleting a bugged dropped item in the save.<br />The current fix is experimental but should most likely fix your save again, if you can please use a backup save.'});
                         break;
                     }
 
@@ -213,7 +213,7 @@ export default class SaveParser_Read
 
         this.currentByte = (this.header.saveVersion >= 41) ? 8 : 4; // totalInflatedLength
 
-        if(this.header.saveVersion >= 41)
+        if(this.header.saveVersion >= 41 && this.header.isPartitionedWorld === 1)
         {
             let partitions                  = {};
                 partitions.partitionCount   = this.readInt();
@@ -222,10 +222,8 @@ export default class SaveParser_Read
                 partitions.headHex1         = this.readUint();
                 this.readInt();             // 1
                 this.readString();          // None
-
-                partitions.headHex2     = this.readUint();
-
-                partitions.data     = {};
+                partitions.headHex2         = this.readUint();
+                partitions.data             = {};
 
             for(let i = 1; i < partitions.partitionCount; i++)
             {
@@ -240,11 +238,6 @@ export default class SaveParser_Read
                     {
                         let levelName = this.readString();
                             partitions.data[partitionName].levels[levelName] = this.readUint();
-
-                            //if(levelName === '11MSWN6NQ4TW6L7DRTKESBKZM')
-                            {
-                                //console.log(partitionName, levelName, partitions.data[partitionName].levels[levelName], partitions.data[partitionName]);
-                            }
                     }
             }
 
@@ -549,16 +542,23 @@ export default class SaveParser_Read
 
     readEntity(objectKey)
     {
-        this.currentEntitySaveVersion = this.header.saveVersion;
+        this.currentEntityClassName             = this.objects[objectKey].className;
+        this.currentEntityPathName              = this.objects[objectKey].pathName;
+        this.currentEntitySaveVersion           = this.header.saveVersion;
+
         if(this.header.saveVersion >= 41)
         {
-            let entitySaveVersion = this.readInt();
-                if(entitySaveVersion !== this.header.saveVersion)
+            let entitySaveVersion = this.readUint();
+                if(entitySaveVersion !== this.header.saveVersion && entitySaveVersion <= this.header.saveVersion)
                 {
                     this.currentEntitySaveVersion               = entitySaveVersion;
                     this.objects[objectKey].entitySaveVersion   = entitySaveVersion;
                 }
-            this.readInt();//console.log('ENTITY INT2?', this.readInt(), entitySaveVersion)
+            let shouldMigrateObjectRefsToPersistentFlag = this.readUint();
+                if(shouldMigrateObjectRefsToPersistentFlag !== 0)
+                {
+                    this.objects[objectKey].shouldMigrateObjectRefsToPersistentFlag = shouldMigrateObjectRefsToPersistentFlag;
+                }
         }
 
         let entityLength                            = this.readInt();
@@ -568,6 +568,7 @@ export default class SaveParser_Read
         if(this.objects[objectKey] !== undefined && this.objects[objectKey].outerPathName === undefined)
         {
             this.objects[objectKey].entity = this.readObjectProperty();
+            //console.log('this.objects[objectKey].entity', this.objects[objectKey].entity);
 
             let countChild  = this.readInt();
                 if(countChild > 0)
@@ -588,8 +589,6 @@ export default class SaveParser_Read
         }
 
         // Read properties
-        this.currentEntityClassName             = this.objects[objectKey].className;
-        this.currentEntityPathName              = this.objects[objectKey].pathName;
         this.objects[objectKey].properties      = [];
 
         while(true)
@@ -673,7 +672,6 @@ export default class SaveParser_Read
 
             return;
         }
-
 
         // Read Powerline missing bytes
         if(Building.isPowerline(this.objects[objectKey]))
@@ -912,26 +910,68 @@ export default class SaveParser_Read
                     objectCount            += currentBuildableLength;
                     for(let j = 0; j < currentBuildableLength; j++)
                     {
-                        let lightweightObjectPathName = this.generateFastPathName('LightweightBuildable_' + currentClassName.split('/').pop() + '_', pathNamePool);
+                        let lightweightObjectPathName = this.generateFastPathName('LB_' + currentClassName.split('/').pop() + '_', pathNamePool);
                             pathNamePool[lightweightObjectPathName] = true;
 
                         let lightweightObject                   = { className: currentClassName, pathName: lightweightObjectPathName };
                             lightweightObject.transform         = {
                                 rotation            : [this.readDouble(), this.readDouble(), this.readDouble(), this.readDouble()],
-                                translation         : [this.readDouble(), this.readDouble(), this.readDouble()],
-                                scale3d             : [this.readDouble(), this.readDouble(), this.readDouble()]
+                                translation         : [this.readDouble(), this.readDouble(), this.readDouble()]
                             };
 
-                            lightweightObject.customizationData = {
-                                SwatchDesc          : this.readObjectProperty(),
-                                MaterialDesc        : this.readObjectProperty(),
-                                PatternDesc         : this.readObjectProperty(),
-                                SkinDesc            : this.readObjectProperty(),
-                                PrimaryColor        : {r: this.readFloat(), g:this.readFloat(), b:this.readFloat(), a: this.readFloat()},
-                                SecondaryColor      : {r: this.readFloat(), g:this.readFloat(), b:this.readFloat(), a: this.readFloat()},
-                                PaintFinish         : this.readObjectProperty(),
-                                PatternRotation     : {value: this.readInt8()}
-                            };
+                        let scale3d = [this.readDouble(), this.readDouble(), this.readDouble()];
+                            if(scale3d[0] !== 1 || scale3d[1] !== 1 || scale3d[2] !== 1)
+                            {
+                                lightweightObject.transform.scale3d = scale3d;
+                            }
+
+                            lightweightObject.customizationData = {};
+
+                            let swatchDesc = this.readObjectProperty();
+                                if(swatchDesc.levelName !== '' || swatchDesc.pathName !== '')
+                                {
+                                    lightweightObject.customizationData.SwatchDesc = swatchDesc;
+                                }
+                            let materialDesc = this.readObjectProperty();
+                                if(materialDesc.levelName !== '' || materialDesc.pathName !== '')
+                                {
+                                    lightweightObject.customizationData.MaterialDesc = materialDesc;
+                                }
+                            let patternDesc = this.readObjectProperty();
+                                if(patternDesc.levelName !== '' || patternDesc.pathName !== '')
+                                {
+                                    lightweightObject.customizationData.PatternDesc = patternDesc;
+                                }
+                            let skinDesc = this.readObjectProperty();
+                                if(skinDesc.levelName !== '' || skinDesc.pathName !== '')
+                                {
+                                    lightweightObject.customizationData.SkinDesc = skinDesc;
+                                }
+
+                            let primaryColor    = {r: this.readFloat(), g: this.readFloat(), b: this.readFloat(), a: this.readFloat()};
+                                if(primaryColor.r !== 0 || primaryColor.g !== 0 || primaryColor.b !== 0 || primaryColor.a !== 1)
+                                {
+                                    lightweightObject.customizationData.PrimaryColor = primaryColor;
+                                }
+
+                            let secondaryColor  = {r: this.readFloat(), g: this.readFloat(), b: this.readFloat(), a: this.readFloat()};
+                                if(secondaryColor.r !== 0 || secondaryColor.g !== 0 || secondaryColor.b !== 0 || secondaryColor.a !== 1)
+                                {
+                                    lightweightObject.customizationData.SecondaryColor = secondaryColor;
+                                }
+
+
+                            let paintFinish = this.readObjectProperty();
+                                if(paintFinish.levelName !== '' || paintFinish.pathName !== '')
+                                {
+                                    lightweightObject.customizationData.PaintFinish = paintFinish;
+                                }
+
+                            let patternRotation = this.readInt8();
+                                if(patternRotation !== 0)
+                                {
+                                    lightweightObject.customizationData.PatternRotation = {value: patternRotation};
+                                }
 
                             lightweightObject.properties        = [{
                                 name            : 'mBuiltWithRecipe',
@@ -967,7 +1007,7 @@ export default class SaveParser_Read
                         }
 
                         // Skip already deleted actors...
-                        if(lightweightObject.customizationData.SwatchDesc.pathName === '' || lightweightObject.properties[0].value.pathName === '')
+                        if(lightweightObject.customizationData.SwatchDesc === undefined || lightweightObject.customizationData.SwatchDesc.pathName === '' || lightweightObject.properties[0].value.pathName === '')
                         {
                             continue;
                         }

@@ -821,13 +821,21 @@ export default class SaveParser_Write
             if(currentObject.entitySaveVersion !== undefined)
             {
                 this.currentEntitySaveVersion = currentObject.entitySaveVersion;
-                preEntity += this.writeInt(currentObject.entitySaveVersion);
-                preEntity += this.writeInt(1); //TODO: Check what it is?!
+                preEntity += this.writeUint(currentObject.entitySaveVersion);
+
+                if(currentObject.shouldMigrateObjectRefsToPersistentFlag !== undefined)
+                {
+                    preEntity += this.writeUint(currentObject.shouldMigrateObjectRefsToPersistentFlag);
+                }
+                else
+                {
+                    preEntity += this.writeUint(0);
+                }
             }
             else
             {
-                preEntity += this.writeInt(this.header.saveVersion);
-                preEntity += this.writeInt(0); //TODO: Check what it is?!
+                preEntity += this.writeUint(this.header.saveVersion);
+                preEntity += this.writeUint(0);
             }
         }
 
@@ -1159,28 +1167,105 @@ export default class SaveParser_Write
                     entity  += this.writeDouble(data[i].transform.translation[1]);
                     entity  += this.writeDouble(data[i].transform.translation[2]);
 
-                    entity  += this.writeDouble(data[i].transform.scale3d[0]);
-                    entity  += this.writeDouble(data[i].transform.scale3d[1]);
-                    entity  += this.writeDouble(data[i].transform.scale3d[2]);
+                    if(data[i].transform !== undefined && data[i].transform.scale3d !== undefined)
+                    {
+                        entity  += this.writeDouble(data[i].transform.scale3d[0]);
+                        entity  += this.writeDouble(data[i].transform.scale3d[1]);
+                        entity  += this.writeDouble(data[i].transform.scale3d[2]);
+                    }
+                    else
+                    {
+                        entity += this.writeDouble(1);
+                        entity += this.writeDouble(1);
+                        entity += this.writeDouble(1);
+                    }
 
-                    //console.log(data[i].customizationData.SwatchDesc, this.writeObjectProperty(data[i].customizationData.SwatchDesc))
-                    entity  += this.writeObjectProperty(data[i].customizationData.SwatchDesc);
-                    entity  += this.writeObjectProperty(data[i].customizationData.MaterialDesc);
-                    entity  += this.writeObjectProperty(data[i].customizationData.PatternDesc);
-                    entity  += this.writeObjectProperty(data[i].customizationData.SkinDesc);
+                    if(data[i].customizationData !== undefined)
+                    {
+                        if(data[i].customizationData.SwatchDesc !== undefined)
+                        {
+                            entity  += this.writeObjectProperty(data[i].customizationData.SwatchDesc);
+                        }
+                        else
+                        {
+                            entity  += this.writeObjectProperty({levelName: '', pathName: ''});
+                        }
 
-                    entity  += this.writeFloat(data[i].customizationData.PrimaryColor.r);
-                    entity  += this.writeFloat(data[i].customizationData.PrimaryColor.g);
-                    entity  += this.writeFloat(data[i].customizationData.PrimaryColor.b);
-                    entity  += this.writeFloat(data[i].customizationData.PrimaryColor.a);
+                        if(data[i].customizationData.MaterialDesc !== undefined)
+                        {
+                            entity  += this.writeObjectProperty(data[i].customizationData.MaterialDesc);
+                        }
+                        else
+                        {
+                            entity  += this.writeObjectProperty({levelName: '', pathName: ''});
+                        }
 
-                    entity  += this.writeFloat(data[i].customizationData.SecondaryColor.r);
-                    entity  += this.writeFloat(data[i].customizationData.SecondaryColor.g);
-                    entity  += this.writeFloat(data[i].customizationData.SecondaryColor.b);
-                    entity  += this.writeFloat(data[i].customizationData.SecondaryColor.a);
+                        if(data[i].customizationData.PatternDesc !== undefined)
+                        {
+                            entity  += this.writeObjectProperty(data[i].customizationData.PatternDesc);
+                        }
+                        else
+                        {
+                            entity  += this.writeObjectProperty({levelName: '', pathName: ''});
+                        }
 
-                    entity  += this.writeObjectProperty(data[i].customizationData.PaintFinish);
-                    entity  += this.writeInt8(data[i].customizationData.PatternRotation.value);
+                        if(data[i].customizationData.SkinDesc !== undefined)
+                        {
+                            entity  += this.writeObjectProperty(data[i].customizationData.SkinDesc);
+                        }
+                        else
+                        {
+                            entity  += this.writeObjectProperty({levelName: '', pathName: ''});
+                        }
+
+                        if(data[i].customizationData.PrimaryColor !== undefined)
+                        {
+                            entity  += this.writeFloat(data[i].customizationData.PrimaryColor.r);
+                            entity  += this.writeFloat(data[i].customizationData.PrimaryColor.g);
+                            entity  += this.writeFloat(data[i].customizationData.PrimaryColor.b);
+                            entity  += this.writeFloat(data[i].customizationData.PrimaryColor.a);
+                        }
+                        else
+                        {
+                            entity  += this.writeFloat(0);
+                            entity  += this.writeFloat(0);
+                            entity  += this.writeFloat(0);
+                            entity  += this.writeFloat(1);
+                        }
+
+                        if(data[i].customizationData.SecondaryColor !== undefined)
+                        {
+                            entity  += this.writeFloat(data[i].customizationData.SecondaryColor.r);
+                            entity  += this.writeFloat(data[i].customizationData.SecondaryColor.g);
+                            entity  += this.writeFloat(data[i].customizationData.SecondaryColor.b);
+                            entity  += this.writeFloat(data[i].customizationData.SecondaryColor.a);
+                        }
+                        else
+                        {
+                            entity  += this.writeFloat(0);
+                            entity  += this.writeFloat(0);
+                            entity  += this.writeFloat(0);
+                            entity  += this.writeFloat(1);
+                        }
+
+                        if(data[i].customizationData.PaintFinish !== undefined)
+                        {
+                            entity  += this.writeObjectProperty(data[i].customizationData.PaintFinish);
+                        }
+                        else
+                        {
+                            entity  += this.writeObjectProperty({levelName: '', pathName: ''});
+                        }
+
+                        if(data[i].customizationData.PatternRotation !== undefined)
+                        {
+                            entity  += this.writeInt8(data[i].customizationData.PatternRotation.value);
+                        }
+                        else
+                        {
+                            entity  += this.writeInt8(0);
+                        }
+                    }
 
                     entity  += this.writeObjectProperty(data[i].properties[0].value);
                     entity  += this.writeObjectProperty(((data[i].properties[1] !== undefined) ? data[i].properties[1].value : {levelName: '', pathName: ''}));

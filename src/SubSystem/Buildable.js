@@ -138,6 +138,16 @@ export default class SubSystem_Buildable extends SubSystem
                 return {value: currentObject.customizationData[property]};
             }
 
+            // Default values
+            if(property === 'PrimaryColor' || property === 'SecondaryColor')
+            {
+                return {value : {r: 0, g: 0, b: 0, a: 1}};
+            }
+            if(property === 'PatternRotation')
+            {
+                return {value: 0};
+            }
+
             return null;
         }
 
@@ -228,8 +238,6 @@ export default class SubSystem_Buildable extends SubSystem
     {
         if(currentObject.customizationData !== undefined)
         {
-            currentObject.customizationData.PrimaryColor        = {r: 0, g: 0, b: 0, a: 1 };
-            currentObject.customizationData.SecondaryColor      = {r: 0, g: 0, b: 0, a: 1 };
             currentObject.customizationData.SwatchDesc.pathName = this.getSwatchPathNameFromSlotIndex(slotIndex);
         }
         else
