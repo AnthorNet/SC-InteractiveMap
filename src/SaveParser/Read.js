@@ -2004,6 +2004,8 @@ export default class SaveParser_Read
 
                 break;
 
+            case 'PlayerInfoHandle':
+            case 'UniqueNetIdRepl':
             case 'ClientIdentityInfo':
                 currentProperty.value.hex = this.readHex(this.currentPropertyLength);
 

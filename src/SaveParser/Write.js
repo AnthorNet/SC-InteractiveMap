@@ -2133,6 +2133,8 @@ export default class SaveParser_Write
 
                 break;
 
+            case 'PlayerInfoHandle':
+            case 'UniqueNetIdRepl':
             case 'ClientIdentityInfo':
                 property += this.writeHex(currentProperty.value.hex);
 
