@@ -215,7 +215,7 @@ export default class SaveParser
                             continue;
                         }
 
-                        if(this.objectsKeys[i].startsWith('LB_') === false)
+                        if(this.objectsKeys[i].startsWith('LB_') === false && this.objectsKeys[i].startsWith('LightweightBuildable_') === false)
                         {
                             if(data.levelNames !== undefined && this.objects[this.objectsKeys[i]].levelName !== undefined && data.levelNames.includes(this.objects[this.objectsKeys[i]].levelName))
                             {
@@ -250,7 +250,7 @@ export default class SaveParser
                 let currentLightweightObjectKeys = {};
                     for(let i = 0; i < this.countObjects; i++)
                     {
-                        if(this.objects[this.objectsKeys[i]] !== undefined && this.objectsKeys[i].startsWith('LB_') === true)
+                        if(this.objects[this.objectsKeys[i]] !== undefined && (this.objectsKeys[i].startsWith('LB_') === true || this.objectsKeys[i].startsWith('LightweightBuildable_') === true))
                         {
                             if(currentLightweightObjectKeys[this.objects[this.objectsKeys[i]].className] === undefined)
                             {
