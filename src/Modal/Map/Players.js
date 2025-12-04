@@ -80,7 +80,7 @@ export default class Modal_Map_Players
 
                                     let legSlot = this.baseLayout.saveGameParser.getTargetObject(mOwnedPawn.pathName + '.LegsSlot');
                                         inventoryHtml.push('<div style="position: absolute;margin-bottom: -25px;bottom: 10%;left: 10%;">');
-                                        inventoryHtml.push('<strong>LEG</strong>');
+                                        inventoryHtml.push('<strong>LEGS</strong>');
                                         inventoryHtml.push(this.baseLayout.setInventoryTableSlot(this.baseLayout.getObjectTargetInventory(legSlot), 1, 64));
                                         inventoryHtml.push('</div>');
 
