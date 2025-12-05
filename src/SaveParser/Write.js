@@ -16,6 +16,7 @@ export default class SaveParser_Write
         this.maxChunkSize           = options.maxChunkSize;
         this.PACKAGE_FILE_TAG       = options.PACKAGE_FILE_TAG;
 
+        this.dataPackageVersion     = options.dataPackageVersion;
         this.partitions             = options.partitions;
         this.levels                 = options.levels;
         this.availableSubLevels     = options.availableSubLevels;
@@ -74,6 +75,11 @@ export default class SaveParser_Write
             this.saveBinary        += this.writeInt(0, false);
         }
         this.saveBinary        += this.writeInt(0, false);
+
+        if(this.header.saveVersion >= 53)
+        {
+            this.saveBinary        += this.writeDataPackageVersion(this.dataPackageVersion, false);
+        }
 
         // Write grids back...
         if(this.header.saveVersion >= 41)
@@ -149,13 +155,13 @@ export default class SaveParser_Write
                         this.subLevelObjectKeys     = objectKeys;
                         this.subLevelCollectables   = collectables;
 
-                        return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName], this.levels[currentLevel].saveVersion);
+                        return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName], this.levels[currentLevel].saveVersion, this.levels[currentLevel].dataPackageVersion);
                     });
                 });
         }
         else
         {
-            return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName], this.levels[currentLevel].saveVersion);
+            return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName], this.levels[currentLevel].saveVersion, this.levels[currentLevel].dataPackageVersion);
         }
     }
 
@@ -164,12 +170,12 @@ export default class SaveParser_Write
         let currentLevelName = this.levels[this.levels.length - 1].name.replace('Level ', '');
             this.postWorkerMessage({command: 'requestObjectKeys', levelName: currentLevelName}).then((objectKeys) => {
                 this.postWorkerMessage({command: 'requestCollectables', levelName: currentLevelName}).then((collectables) => {
-                    return this.generateObjectsChunks((this.levels.length - 1), objectKeys[currentLevelName], collectables[currentLevelName]);
+                    return this.generateObjectsChunks((this.levels.length - 1), objectKeys[currentLevelName], collectables[currentLevelName], null, this.levels[this.levels.length - 1].dataPackageVersion);
                 });
             });
     }
 
-    generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion = null, step = null, tempSaveBinaryLength = 0)
+    generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion = null, dataPackageVersion = null, step = null, tempSaveBinaryLength = 0)
     {
         if(step === null)
         {
@@ -199,7 +205,7 @@ export default class SaveParser_Write
                     this.saveBinary        += this.writeActor(objects[0], levelSaveVersion);
                     tempSaveBinaryLength   += this.currentEntityLength;
 
-                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, 0, tempSaveBinaryLength);
+                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, dataPackageVersion, 0, tempSaveBinaryLength);
                 });
             }
             else
@@ -207,7 +213,7 @@ export default class SaveParser_Write
                 this.saveBinary            += this.writeInt(objectKeys.length, false);
                 tempSaveBinaryLength       += 4; // countObjects
 
-                return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, 0, tempSaveBinaryLength);
+                return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, dataPackageVersion, 0, tempSaveBinaryLength);
             }
         }
 
@@ -240,7 +246,7 @@ export default class SaveParser_Write
                             }
                         }
 
-                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, (step + this.stepsLength), tempSaveBinaryLength);
+                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, dataPackageVersion, (step + this.stepsLength), tempSaveBinaryLength);
                 });
             }
 
@@ -300,6 +306,7 @@ export default class SaveParser_Write
             objectKeys              : objectKeys,
             collectables            : collectables,
             levelSaveVersion        : levelSaveVersion,
+            dataPackageVersion      : dataPackageVersion,
             step                    : null,
             tempSaveBinaryLength    : 0
         });
@@ -403,9 +410,23 @@ export default class SaveParser_Write
 
         this.saveBinary += this.generateCollectablesChunks(entitiesOptions.collectables);
 
+        if(this.header.saveVersion >= 53)
+        {
+            if(entitiesOptions.dataPackageVersion !== null)
+            {
+                this.saveBinary += this.writeInt(1, false);
+                this.saveBinary += this.writeDataPackageVersion(entitiesOptions.dataPackageVersion, false);
+            }
+            else
+            {
+                this.saveBinary += this.writeInt(0, false);
+            }
+        }
+
         // Add the binary length to the replacer...
         if(this.header.saveVersion >= 41)
         {
+            console.log(this.levels[entitiesOptions.currentLevel].name, entitiesOptions.tempSaveBinaryLength)
             let lo                                      = Number(BigInt(entitiesOptions.tempSaveBinaryLength) & BigInt(0xffffffff));
                 this.saveBinaryValues[entitiesOptions.currentLevel + '-0-entitiesSaveBinaryLength'] = lo;
                 lo                                      = lo >> 8;
@@ -2317,6 +2338,29 @@ export default class SaveParser_Write
         return property;
     }
 
+    writeDataPackageVersion(value, count = true)
+    {
+        let dataPackageVersion   = '';
+            dataPackageVersion  += this.writeInt(value.saveObjectVersionDataVersion, count);
+            dataPackageVersion  += this.writeInt(value.packageFileVersion.UE4Version, count);
+            dataPackageVersion  += this.writeInt(value.packageFileVersion.UE5Version, count);
+            dataPackageVersion  += this.writeInt(value.licenseeVersion, count);
+            dataPackageVersion  += this.writeUint16(value.engineVersion.inMajor, count);
+            dataPackageVersion  += this.writeUint16(value.engineVersion.inMinor, count);
+            dataPackageVersion  += this.writeUint16(value.engineVersion.inPatch, count);
+            dataPackageVersion  += this.writeUint(value.engineVersion.inChangelist, count);
+            dataPackageVersion  += this.writeString(value.engineVersion.inBranch, count);
+
+            dataPackageVersion  += this.writeInt(value.customVersionContainer.length, count);
+            for(let i = 0; i < value.customVersionContainer.length; i++)
+            {
+                dataPackageVersion += this.writeHex(value.customVersionContainer[i].key);
+                dataPackageVersion += this.writeInt(value.customVersionContainer[i].version);
+            }
+
+        return dataPackageVersion;
+    }
+
     writeInventoryItem(value)
     {
         let property = '';
@@ -2439,6 +2483,21 @@ export default class SaveParser_Write
         this.currentEntityLength++;
 
         return String.fromCharCode.apply(null, arrayBuffer);
+    }
+
+    writeUint16(value, count = true)
+    {
+        let arrayBuffer     = new ArrayBuffer(2);
+        let dataView        = new DataView(arrayBuffer);
+            dataView.setUint16(0, value, true);
+
+        if(count === true)
+        {
+            this.currentBufferLength += 2;
+        }
+        this.currentEntityLength += 2;
+
+        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
     }
 
     // https://github.com/feross/buffer/blob/v6.0.3/index.js#L1469

@@ -8,6 +8,7 @@ export default class SaveParser
 {
     constructor(options)
     {
+        this.useDebug               = (options.debug !== undefined) ? options.debug : false;
         this.fileName               = options.fileName;
         this.arrayBuffer            = options.arrayBuffer;
 
@@ -19,6 +20,7 @@ export default class SaveParser
         this.PACKAGE_FILE_TAG       = null;
         this.maxChunkSize           = null;
 
+        this.dataPackageVersion     = null;
         this.partitions             = null;
         this.levels                 = null;
         this.objects                = null;
@@ -53,6 +55,13 @@ export default class SaveParser
 
     save(baseLayout, callback = null)
     {
+        if(this.header.saveVersion >= 53 && this.useDebug === false)
+        {
+            this.onGenericWorkerMessage({command: 'alert', message: 'Due to a new engine version, we cannot support writing back saves yet...'});
+            window.SCIM.hideLoader();
+            return;
+        }
+
         if(this.header.saveVersion >= 29)
         {
             console.time('writeFileSaveAs');
@@ -97,6 +106,7 @@ export default class SaveParser
 
                 header              : this.header,
 
+                dataPackageVersion  : this.dataPackageVersion,
                 partitions          : this.partitions,
                 levels              : this.levels,
                 availableSubLevels  : this.availableSubLevels,
@@ -114,6 +124,7 @@ export default class SaveParser
         else
         {
             this.onGenericWorkerMessage({command: 'alert', message: 'How did you get there!!!! We should not support old save loading...'});
+            window.SCIM.hideLoader();
         }
     }
 

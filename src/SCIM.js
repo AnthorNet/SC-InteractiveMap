@@ -154,6 +154,7 @@ export default class SCIM
                 fileName                    : options.droppedFileName,
                 language                    : this.language,
                 translate                   : this.translate,
+                debug                       : this.debug,
 
                 saveParserReadWorker        : this.saveParserReadWorker,
                 saveParserWriteWorker       : this.saveParserWriteWorker

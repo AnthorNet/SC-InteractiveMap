@@ -213,12 +213,20 @@ export default class SaveParser_Read
 
         this.currentByte = (this.header.saveVersion >= 41) ? 8 : 4; // totalInflatedLength
 
+        // 2025-05-06: Serialize package file version (UE version) and custom versions for serialized object data
+        if(this.header.saveVersion >= 53)
+        {
+            let dataPackageVersion = this.readDataPackageVersion();
+                console.log('dataPackageVersion', dataPackageVersion);
+                this.worker.postMessage({command: 'transferData', data: {dataPackageVersion: dataPackageVersion}});
+        }
+
         if(this.header.saveVersion >= 41 && this.header.isPartitionedWorld === 1)
         {
             let partitions                  = {};
-                partitions.partitionCount   = this.readInt();
-                this.readString();          // None
-                this.readUint();            // 0
+                partitions.partitionCount   = this.readInt();   // 6
+                this.readString();                              // None
+                this.readUint();                                // 0
                 partitions.headHex1         = this.readUint();
                 this.readInt();             // 1
                 this.readString();          // None
@@ -241,7 +249,7 @@ export default class SaveParser_Read
                     }
             }
 
-            //console.log(partitions);
+            //console.log('partitions', partitions);
             this.worker.postMessage({command: 'transferData', data: {partitions: partitions}});
         }
 
@@ -256,7 +264,7 @@ export default class SaveParser_Read
 
             let objectsBinaryLength         = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
             let objectsBinaryLengthStart    = this.currentByte;
-                //console.log('objectsBinaryLength', levelName, objectsBinaryLength, objectsBinaryLengthStart)
+                console.log('objectsBinaryLength', levelName, objectsBinaryLength, objectsBinaryLengthStart)
 
                 // Archengius leap of faith!
                 if(this.header.saveVersion >= 51)
@@ -278,7 +286,6 @@ export default class SaveParser_Read
                 }
 
                 levels.push({name: levelName, saveVersion: levelSaveVersion});
-
             let entitiesToObjects   = [];
             let countObjects        = this.readInt();
                 if(levelName === 'Level ' + this.header.mapName)
@@ -445,7 +452,8 @@ export default class SaveParser_Read
                 {
                     if(levelName === 'Level ' + this.header.mapName)
                     {
-                        this.readString(); // Persistent_Level
+                        console.log('GOING HERE????', this.readString())
+                        //this.readString(); // Persistent_Level
                         countCollected = this.readInt();
                     }
 
@@ -457,6 +465,17 @@ export default class SaveParser_Read
                     }
                 }
 
+            let levelDataPackageVersion = null;
+                if(this.header.saveVersion >= 53)
+                {
+                    let haveLevelDataPackageVersion = this.readInt();
+                        if(haveLevelDataPackageVersion === 1)
+                        {
+                            levelDataPackageVersion = this.readDataPackageVersion();
+                        }
+                }
+
+            levels.push({name: levelName, saveVersion: levelSaveVersion, dataPackageVersion: levelDataPackageVersion});
             this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
         }
 
@@ -1840,6 +1859,18 @@ export default class SaveParser_Read
     {
         currentProperty.value = {type: this.readString()};
         this.skipBytes(17); // 0 0 0 0 + skipByte(1)
+        {
+            console.log('DEFAULT STRUCT', this.readInt(), this.readString(), this.readInt()); // 0?
+            this.currentPropertyLength = this.readInt();
+            //console.log('currentPropertyLength', this.currentPropertyLength); // Length ?
+
+            let readByte = this.readByte();
+                console.log('structReadByte', readByte);
+                if(readByte === 9)
+                {
+                    console.log('structReadByte9', parentType, currentProperty, this.readInt());
+                }
+        }
 
         switch(currentProperty.value.type)
         {
@@ -2251,6 +2282,26 @@ export default class SaveParser_Read
 
         return currentProperty;
     }
+
+    readDataPackageVersion()
+    {
+        let dataPackageVersion                                  = {};
+            dataPackageVersion.saveObjectVersionDataVersion     = this.readInt();
+            // See: https://github.com/EpicGames/UnrealEngine/blob/684b4c133ed87e8050d1fdaa287242f0fe2c1153/Engine/Source/Runtime/Core/Public/UObject/ObjectVersion.h#L761
+            dataPackageVersion.packageFileVersion               = {
+                UE4Version      : this.readInt(),
+                UE5Version      : this.readInt()
+            };
+            dataPackageVersion.licenseeVersion                  = this.readInt();
+            // See: https://github.com/EpicGames/UnrealEngine/blob/684b4c133ed87e8050d1fdaa287242f0fe2c1153/Engine/Source/Runtime/Core/Public/Misc/EngineVersion.h#L19
+            dataPackageVersion.engineVersion                    = {
+                inMajor         : this.readUint16(),
+
+            let count = this.readInt();
+                for(let i = 0; i < count; i++)
+                {
+                    dataPackageVersion.customVersionContainer.push({key: this.readHex(16), version: this.readInt()});
+                }
 
     readInventoryItem(currentProperty = {})
     {
