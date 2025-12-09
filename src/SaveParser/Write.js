@@ -1302,7 +1302,7 @@ export default class SaveParser_Write
                     entity  += this.writeObjectProperty(data[i].properties[0].value);
                     entity  += this.writeObjectProperty(((data[i].properties[1] !== undefined) ? data[i].properties[1].value : {levelName: '', pathName: ''}));
 
-                    if(this.header.saveHeaderType >= 14 && this.lightweightVersion >= 2)
+                    if(this.lightweightVersion >= 2)
                     {
                         if(data[i].typeSpecificData !== undefined)
                         {
@@ -1329,6 +1329,12 @@ export default class SaveParser_Write
                         {
                             entity  += this.writeInt(0);
                         }
+                    }
+
+                    if(this.lightweightVersion >= 3)
+                    {
+                        entity += this.writeByte(data[i].serviceProvider);
+                        entity += this.writeByte(data[i].playerInfoTableIndex);
                     }
                 }
 

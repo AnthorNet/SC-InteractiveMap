@@ -919,24 +919,29 @@ export default class SaveParser_Read
 
     readLightweightBuildableSubsystem(subsystemLength)
     {
-        let startLength     = this.currentByte;
-        let pathNamePool    = {};
-        let objectsToFlush  = {};
-        let objectCount     = 0;
-            this.readInt(); // 0
+        //console.log('readLightweightBuildableSubsystem', subsystemLength);
+        let startLength         = this.currentByte;
+        let pathNamePool        = {};
+        let objectsToFlush      = {};
+        let objectCount         = 0;
+            this.readInt();     // 0
+        let lightweightVersion  = 1;
 
             if(this.header.saveHeaderType >= 14)
             {
-                this.worker.postMessage({command: 'transferData', data: {lightweightVersion: this.readInt()}});
+                lightweightVersion = this.readInt()
+                this.worker.postMessage({command: 'transferData', data: {lightweightVersion: lightweightVersion}});
             }
 
         let buildableLength = this.readInt();
+            //console.log('buildableLength', buildableLength, 'lightweightVersion', lightweightVersion);
             for(let i = 0; i < buildableLength; i++)
             {
                     this.readInt(); // 0
                 let currentClassName        = this.readString();
                 let currentBuildableLength  = this.readInt();
                     objectCount            += currentBuildableLength;
+                    //console.log('currentClassName', currentClassName, currentBuildableLength)
                     for(let j = 0; j < currentBuildableLength; j++)
                     {
                         let lightweightObjectPathName = this.generateFastPathName('LB_' + currentClassName.split('/').pop() + '_', pathNamePool);
@@ -1012,7 +1017,7 @@ export default class SaveParser_Read
                                 lightweightObject.properties.push({ name: 'mBlueprintProxy', value: mBlueprintProxy });
                             }
 
-                        if(this.header.saveHeaderType >= 14)
+                        if(lightweightVersion >= 2)
                         {
                             let haveTypeSpecificData = this.readInt();
                                 if(haveTypeSpecificData  === 1)
@@ -1033,6 +1038,13 @@ export default class SaveParser_Read
                                         lightweightObject.typeSpecificData.properties.push(subStructProperty);
                                     }
                                 }
+                        }
+
+                        // 2025-09-26: Added BuiltBy info for leightweight buildables to make sure that things like foundations that are inherently lightweight dont violate sony TRC
+                        if(lightweightVersion >= 3)
+                        {
+                            lightweightObject.serviceProvider       = this.readByte();
+                            lightweightObject.playerInfoTableIndex  = this.readByte();
                         }
 
                         // Skip already deleted actors...
