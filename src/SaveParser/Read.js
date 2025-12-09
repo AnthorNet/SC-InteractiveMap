@@ -2320,12 +2320,24 @@ export default class SaveParser_Read
             // See: https://github.com/EpicGames/UnrealEngine/blob/684b4c133ed87e8050d1fdaa287242f0fe2c1153/Engine/Source/Runtime/Core/Public/Misc/EngineVersion.h#L19
             dataPackageVersion.engineVersion                    = {
                 inMajor         : this.readUint16(),
+                inMinor         : this.readUint16(),
+                inPatch         : this.readUint16(),
+                inChangelist    : this.readUint(),
+                inBranch        : this.readString()
+            };
+
+            dataPackageVersion.customVersionContainer = [];
 
             let count = this.readInt();
                 for(let i = 0; i < count; i++)
                 {
                     dataPackageVersion.customVersionContainer.push({key: this.readHex(16), version: this.readInt()});
                 }
+
+            //console.log('dataPackageVersion', dataPackageVersion);
+
+        return dataPackageVersion;
+    }
 
     readInventoryItem(currentProperty = {})
     {
@@ -2397,6 +2409,13 @@ export default class SaveParser_Read
     readInt8()
     {
         let data = this.bufferView.getInt8(this.currentByte++, true);
+
+        return data;
+    }
+    readUint16()
+    {
+        let data = this.bufferView.getUint16(this.currentByte, true);
+            this.currentByte += 2;
 
         return data;
     }
