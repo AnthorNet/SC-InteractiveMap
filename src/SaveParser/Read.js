@@ -1108,7 +1108,11 @@ export default class SaveParser_Read
         {
             case 'Bool':
                 currentProperty.value   = this.readByte();
-                currentProperty         = this.readPropertyGUID(currentProperty);
+
+                if(this.currentEntitySaveVersion < 53)
+                {
+                    currentProperty         = this.readPropertyGUID(currentProperty);
+                }
 
                 break;
 
@@ -1379,28 +1383,12 @@ export default class SaveParser_Read
 
                 currentProperty.structureSubType    = this.readString();
 
-                let propertyGuid1 = this.readInt();
-                let propertyGuid2 = this.readInt();
-                let propertyGuid3 = this.readInt();
-                let propertyGuid4 = this.readInt();
-                    if(propertyGuid1 !== 0)
-                    {
-                        currentProperty.propertyGuid1 = propertyGuid1;
-                    }
-                    if(propertyGuid2 !== 0)
-                    {
-                        currentProperty.propertyGuid2 = propertyGuid2;
-                    }
-                    if(propertyGuid3 !== 0)
-                    {
-                        currentProperty.propertyGuid3 = propertyGuid3;
-                    }
-                    if(propertyGuid4 !== 0)
-                    {
-                        currentProperty.propertyGuid4 = propertyGuid4;
-                    }
 
-                this.skipBytes(1);
+                if(this.currentEntitySaveVersion < 53)
+                {
+                    currentProperty.propertyGuid = this.readGUID();
+                    this.skipBytes(1);
+                }
 
                 for(let i = 0; i < currentArrayPropertyCount; i++)
                 {
@@ -1412,7 +1400,7 @@ export default class SaveParser_Read
                             break;
 
                         case 'Guid':
-                            currentProperty.value.values.push(this.readHex(16));
+                            currentProperty.value.values.push(this.readGUID());
 
                             break;
 
@@ -1822,7 +1810,7 @@ export default class SaveParser_Read
                         }
                         if(parentType === '/Script/FactoryGame.FGScannableSubsystem')
                         {
-                            currentProperty.value.values.push({guid: this.readHex(16)});
+                            currentProperty.value.values.push({guid: this.readGUID()});
 
                             break;
                         }
@@ -2021,7 +2009,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Guid':
-                currentProperty.value.guid          = this.readHex(16);
+                currentProperty.value.guid          = this.readGUID();
 
                 break;
 
@@ -2287,10 +2275,36 @@ export default class SaveParser_Read
         let hasPropertyGuid         = this.readByte();
             if(hasPropertyGuid === 1)
             {
-                currentProperty.propertyGuid = this.readHex(16);
+                currentProperty.propertyGuid = this.readGUID();
             }
 
         return currentProperty;
+    }
+    readGUID()
+    {
+        let guid    = {};
+        let A       = this.readUint();
+            if(A !== 0)
+            {
+                guid.a = A;
+            }
+        let B       = this.readUint();
+            if(B !== 0)
+            {
+                guid.b = B;
+            }
+        let C       = this.readUint();
+            if(C !== 0)
+            {
+                guid.c = C;
+            }
+        let D       = this.readUint();
+            if(D !== 0)
+            {
+                guid.d = D;
+            }
+
+        return guid;
     }
 
     readDataPackageVersion()

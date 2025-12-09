@@ -1382,71 +1382,75 @@ export default class SaveParser_Write
         {
             case 'Bool':
                 property += this.writeByte(currentProperty.value, false);
-                property += this.writePropertyGUID(currentProperty);
+
+                if(this.currentEntitySaveVersion < 53)
+                {
+                    property += this.writePropertyGUID(currentProperty, false);
+                }
 
                 break;
 
             case 'Int8':
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeInt8(currentProperty.value);
 
                 break;
 
             case 'Int':
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeInt(currentProperty.value);
 
                 break;
 
             case 'UInt32':
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeUint(currentProperty.value);
 
                 break;
 
             case 'Int64': //TODO: Use 64bit integer
             case 'UInt64':
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeInt64(currentProperty.value);
 
                 break;
 
             case 'Float':
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeFloat(currentProperty.value);
 
                 break;
 
             case 'Double':
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeDouble(currentProperty.value);
 
                 break;
 
             case 'Str':
             case 'Name':
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeString(currentProperty.value);
 
                 break;
 
             case 'Object':
             case 'Interface':
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeObjectProperty(currentProperty.value);
 
                 break;
 
             case 'Enum':
                 property += this.writeString(currentProperty.value.name, false);
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeString(currentProperty.value.value);
 
                 break;
 
             case 'Byte':
                 property += this.writeString(currentProperty.value.enumName, false);
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
 
                 if(currentProperty.value.enumName === 'None')
                 {
@@ -1460,7 +1464,7 @@ export default class SaveParser_Write
                 break;
 
             case 'Text':
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeTextProperty(currentProperty);
                 break;
 
@@ -1480,7 +1484,7 @@ export default class SaveParser_Write
                 break;
 
             case 'SoftObject':
-                property += this.writePropertyGUID(currentProperty);
+                property += this.writePropertyGUID(currentProperty, false);
                 property += this.writeString(currentProperty.value.pathName);
                 property += this.writeString(currentProperty.value.subPathString);
                 property += this.writeInt(0);
@@ -1627,12 +1631,11 @@ export default class SaveParser_Write
                 let structure   = this.writeInt(0);
                     structure  += this.writeString(currentProperty.structureSubType);
 
-                    structure  += this.writeInt( ((currentProperty.propertyGuid1 !== undefined) ? currentProperty.propertyGuid1 : 0) );
-                    structure  += this.writeInt( ((currentProperty.propertyGuid2 !== undefined) ? currentProperty.propertyGuid2 : 0) );
-                    structure  += this.writeInt( ((currentProperty.propertyGuid3 !== undefined) ? currentProperty.propertyGuid3 : 0) );
-                    structure  += this.writeInt( ((currentProperty.propertyGuid4 !== undefined) ? currentProperty.propertyGuid4 : 0) );
-
-                    structure  += this.writeByte(0);
+                    if(this.currentEntitySaveVersion < 53)
+                    {
+                        structure  += this.writeGUID(currentProperty.propertyGuid);
+                        structure  += this.writeByte(0);
+                    }
 
                 let structureSizeLength      = this.currentEntityLength;
 
@@ -1646,7 +1649,7 @@ export default class SaveParser_Write
                             break;
 
                         case 'Guid':
-                            structure += this.writeHex(currentProperty.value.values[i]);
+                            structure += this.writeGUID(currentProperty.value.values[i]);
 
                             break;
 
@@ -1993,7 +1996,7 @@ export default class SaveParser_Write
                     }
                     if(this.header.saveVersion >= 45 && parentType === '/Script/FactoryGame.FGScannableSubsystem')
                     {
-                        property += this.writeHex(currentProperty.value.values[iSetProperty].guid);
+                        property += this.writeGUID(currentProperty.value.values[iSetProperty].guid);
 
                         break;
                     }
@@ -2149,7 +2152,7 @@ export default class SaveParser_Write
                 break;
 
             case 'Guid': // MOD?
-                property += this.writeHex(currentProperty.value.guid);
+                property += this.writeGUID(currentProperty.value.guid);
 
                 break;
 
@@ -2333,20 +2336,30 @@ export default class SaveParser_Write
         return property;
     }
 
-    writePropertyGUID(value)
+    writePropertyGUID(value, count = true)
     {
         let property = '';
             if(value.propertyGuid !== undefined)
             {
-                property += this.writeByte(1, false);
-                property += this.writeHex(value.propertyGuid, false);
+                property += this.writeByte(1, count);
+                property += this.writeGUID(value.propertyGuid, count);
             }
             else
             {
-                property += this.writeByte(0, false);
+                property += this.writeByte(0, count);
             }
 
         return property;
+    }
+    writeGUID(value, count = true)
+    {
+        let guid    = '';
+            guid   += this.writeUint(((value.A !== undefined) ? value.A : 0), count);
+            guid   += this.writeUint(((value.B !== undefined) ? value.B : 0), count);
+            guid   += this.writeUint(((value.C !== undefined) ? value.C : 0), count);
+            guid   += this.writeUint(((value.D !== undefined) ? value.D : 0), count);
+
+        return guid;
     }
 
     writeDataPackageVersion(value, count = true)
