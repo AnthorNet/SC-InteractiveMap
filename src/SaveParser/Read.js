@@ -607,6 +607,11 @@ export default class SaveParser_Read
             return;
         }
 
+        if(this.currentEntitySaveVersion >= 53)
+        {
+            this.readByte(); // 0
+        }
+
         // Read properties
         this.objects[objectKey].properties      = [];
 

@@ -886,6 +886,11 @@ export default class SaveParser_Write
             return preEntity + this.writeInt(this.currentEntityLength) + entity;
         }
 
+        if(this.currentEntitySaveVersion >= 53)
+        {
+            entity += this.writeByte(0);
+        }
+
         entity += this.writeProperties(currentObject, currentObject.className);
         entity += this.writeString('None');
 
