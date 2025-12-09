@@ -368,6 +368,12 @@ export default class SaveParser_Write
                         for(let i = 0; i < countObjects; i++)
                         {
                             this.saveBinary                      += this.writeEntity(objects[i]);
+
+                            if(this.currentEntitySaveVersion >= 53)
+                            {
+                                this.saveBinary += this.writeInt(0);
+                            }
+
                             entitiesOptions.tempSaveBinaryLength += this.currentEntityLength;
 
                             // Force big entities to deflate to avoid memory error (Mainly foliage removal...)

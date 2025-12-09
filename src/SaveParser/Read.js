@@ -374,6 +374,11 @@ export default class SaveParser_Read
                 //console.log(i, entitiesToObjects[i]);
                 this.readEntity(entitiesToObjects[i]);
 
+                if(this.currentEntitySaveVersion >= 53)
+                {
+                    this.readInt(); // 0
+                }
+
                 // Avoid memory error on very large save!
                 objectsToFlush[entitiesToObjects[i]] = this.objects[entitiesToObjects[i]];
                 if(i > 0 && i % 5000 === 0)
