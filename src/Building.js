@@ -65,6 +65,10 @@ export default class Building
              || currentObject.className.startsWith('/MkPlus/Buildables/ConveyorBelt/Build_ConveyorBelt_')
              || currentObject.className.startsWith('/FastConveyors/Buildable/Belts/Build_FastConveyorBelt')
              || currentObject.className.startsWith('/MkPlusLibs/Buildables/ConveyorBelt/Build_ConveyorBelt_Mk')
+             || currentObject.className.startsWith('/TranslucidBelts/Build_TB')
+             || currentObject.className.startsWith('/TranslucidBelts/NoRailing/Build_TB')
+             || currentObject.className.startsWith('/TranslucidBelts/LeftRailing/Build_TB')
+             || currentObject.className.startsWith('/TranslucidBelts/RightRailing/Build_TB')
              || currentObject.className === '/BeltMk6/Buildable/ConveyorBeltMk6/Build_ConveyorBeltMk6.Build_ConveyorBeltMk6_C'
 
         )
@@ -105,6 +109,7 @@ export default class Building
              || currentObject.className.startsWith('/MkPlus/Buildables/ConveyorLift/Build_ConveyorLift_')
              || currentObject.className.startsWith('/FastConveyors/Buildable/Lifts/Build_FastConveyorLift')
              || currentObject.className.startsWith('/MkPlusLibs/Buildables/ConveyorLift/Build_ConveyorLift_Mk')
+             || currentObject.className.startsWith('/TranslucidBelts/Lifts/Lift_')
              || currentObject.className === '/BeltMk6/Buildable/ConveyorLiftMk6/Build_ConveyorLiftMk6.Build_ConveyorLiftMk6_C'
 
         )

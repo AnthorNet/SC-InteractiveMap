@@ -64,6 +64,7 @@ export default class SubSystem_ConveyorChainActor
 
     /**
      * Actually destroy the ChainActor, and converting the belts back to version 44
+     * TODO: Just manage the conveyor chains actor...
      */
     killMe()
     {
