@@ -1376,13 +1376,21 @@ export default class SaveParser_Write
         let propertyStart   = '';
             propertyStart  += this.writeString(currentProperty.name);
             propertyStart  += this.writeString(currentProperty.type + 'Property');
-        let property        = '';
 
+            if(this.currentEntitySaveVersion >= 53)
+            {
+                propertyStart += this.writeInt( ((currentProperty.index !== undefined) ? currentProperty.index : 0), false);
+            }
 
         // Reset to get property length...
+        let property                            = '';
         let startCurrentPropertyBufferLength    = this.currentBufferLength;
             this.currentBufferLength            = 0;
-            property                            = this.writeInt( ((currentProperty.index !== undefined) ? currentProperty.index : 0), false);
+
+            if(this.currentEntitySaveVersion < 53)
+            {
+                property                       += this.writeInt( ((currentProperty.index !== undefined) ? currentProperty.index : 0), false);
+            }
 
         switch(currentProperty.type)
         {

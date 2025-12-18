@@ -1088,33 +1088,34 @@ export default class SaveParser_Read
                 return null;
             }
 
-        //TODO: What is this extra byte that is appearing sometime?
-        let extraByteTest       = this.readByte();
-            if(extraByteTest !== 0)
-            {
-                this.currentByte -= 1;
-            }
-            else
-            {
-                if(typeof Sentry !== 'undefined')
+        currentProperty.type        = this.readString().replace('Property', '');
+
+        if(this.currentEntitySaveVersion >= 53)
+        {
+            let index = this.readInt();
+                //console.log('index', index, parentType)
+                if(index !== 0)
                 {
-                    Sentry.setContext('currentProperty', currentProperty);
-                    if(objectKey !== null)
-                    {
-                        Sentry.setContext('object', this.objects[objectKey]);
-                    }
-                    Sentry.captureMessage('Property extra byte');
+                    currentProperty.index = index;
                 }
+
+            {
+            }
+            {
             }
 
         currentProperty.type        = this.readString().replace('Property', '');
         this.currentPropertyLength  = this.readInt(); // Length of the property, this is calculated when writing back ;)
 
-        let index = this.readInt();
-            if(index !== 0)
-            {
-                currentProperty.index = index;
-            }
+
+        if(this.currentEntitySaveVersion < 53)
+        {
+            let index = this.readInt();
+                if(index !== 0)
+                {
+                    currentProperty.index = index;
+                }
+        }
 
         switch(currentProperty.type)
         {
