@@ -1898,6 +1898,13 @@ export default class SaveParser_Write
 
                     break;
 
+                case 'IntVector':
+                    property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.x);
+                    property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.y);
+                    property += this.writeInt(currentProperty.value.values[iMapProperty].valueMap.z);
+
+                    break;
+
                 case 'Str':
                     if(parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')
                     {

@@ -1702,6 +1702,15 @@ export default class SaveParser_Read
 
                             break;
 
+                        case 'IntVector':
+                            mapPropertySubProperties    = {
+                                x           : this.readInt(),
+                                y           : this.readInt(),
+                                z           : this.readInt()
+                            };
+
+                            break;
+
                         case 'Str':
                             if(parentType === '/BuildGunUtilities/BGU_Subsystem.BGU_Subsystem_C')
                             {
