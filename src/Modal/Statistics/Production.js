@@ -359,10 +359,10 @@ export default class Modal_Statistics_Production
             // Update liquids/gas to m3
             if(playerProduction[itemClassName].category !== undefined && (playerProduction[itemClassName].category === 'liquid' || playerProduction[itemClassName].category === 'gas'))
             {
-                playerProduction[itemClassName].produced    = Math.round(Math.round(playerProduction[itemClassName].produced) / 1000);
-                playerProduction[itemClassName].consumed    = Math.round(Math.round(playerProduction[itemClassName].consumed) / 1000);
-                playerProduction[itemClassName].offProduced = Math.round(Math.round(playerProduction[itemClassName].offProduced) / 1000);
-                playerProduction[itemClassName].offConsumed = Math.round(Math.round(playerProduction[itemClassName].offConsumed) / 1000);
+                playerProduction[itemClassName].produced    = Math.round(playerProduction[itemClassName].produced) / 1000;
+                playerProduction[itemClassName].consumed    = Math.round(playerProduction[itemClassName].consumed) / 1000;
+                playerProduction[itemClassName].offProduced = Math.round(playerProduction[itemClassName].offProduced) / 1000;
+                playerProduction[itemClassName].offConsumed = Math.round(playerProduction[itemClassName].offConsumed) / 1000;
                 playerProduction[itemClassName].unit        = 'm³';
                 playerProduction[itemClassName].style       = 'border-radius: 50%;';
             }
@@ -388,19 +388,19 @@ export default class Modal_Statistics_Production
 
             if(currentItem.offProduced > 0)
             {
-                html.push('<td class="text-right" width="20%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.produced) + currentItem.unit + '/' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.produced + currentItem.offProduced) + currentItem.unit + ' per minute <i class="fas fa-cloud-upload ml-1 text-success"></i></td>');
+                html.push('<td class="text-right" width="30%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.produced) + currentItem.unit + '/' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.produced + currentItem.offProduced) + currentItem.unit + ' per minute <i class="fas fa-cloud-upload ml-1 text-success"></i></td>');
             }
             else
             {
-                html.push('<td class="text-right" width="20%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.produced) + currentItem.unit + ' per minute <i class="fas fa-cloud-upload ml-1 text-success"></i></td>');
+                html.push('<td class="text-right" width="30%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.produced) + currentItem.unit + ' per minute <i class="fas fa-cloud-upload ml-1 text-success"></i></td>');
             }
             if(currentItem.offConsumed > 0)
             {
-                html.push('<td class="text-right" width="20%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.consumed) + currentItem.unit + '/' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.consumed + currentItem.offConsumed) + currentItem.unit + ' per minute <i class="fas fa-cloud-download ml-1 text-danger"></i></td>');
+                html.push('<td class="text-right" width="30%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.consumed) + currentItem.unit + '/' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.consumed + currentItem.offConsumed) + currentItem.unit + ' per minute <i class="fas fa-cloud-download ml-1 text-danger"></i></td>');
             }
             else
             {
-                html.push('<td class="text-right" width="20%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.consumed) + currentItem.unit + ' per minute <i class="fas fa-cloud-download ml-1 text-danger"></i></td>');
+                html.push('<td class="text-right" width="30%">' + new Intl.NumberFormat(this.baseLayout.language).format(currentItem.consumed) + currentItem.unit + ' per minute <i class="fas fa-cloud-download ml-1 text-danger"></i></td>');
             }
 
             html.push('</tr>');

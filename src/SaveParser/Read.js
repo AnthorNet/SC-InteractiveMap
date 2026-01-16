@@ -217,7 +217,7 @@ export default class SaveParser_Read
         if(this.header.saveVersion >= 53)
         {
             let dataPackageVersion = this.readDataPackageVersion();
-                console.log('dataPackageVersion', dataPackageVersion);
+                //console.log('dataPackageVersion', dataPackageVersion);
                 this.worker.postMessage({command: 'transferData', data: {dataPackageVersion: dataPackageVersion}});
         }
 
@@ -264,7 +264,7 @@ export default class SaveParser_Read
 
             let objectsBinaryLength         = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
             let objectsBinaryLengthStart    = this.currentByte;
-                console.log('objectsBinaryLength', levelName, objectsBinaryLength, objectsBinaryLengthStart)
+                //console.log('objectsBinaryLength', levelName, objectsBinaryLength, objectsBinaryLengthStart);
 
                 // Archengius leap of faith!
                 if(this.header.saveVersion >= 51)
@@ -587,7 +587,7 @@ export default class SaveParser_Read
 
         let entityLength                            = this.readInt();
         let startByte                               = this.currentByte;
-            //console.log(this.objects[objectKey].className, this.objects[objectKey].pathName, entityLength);
+            //console.log('entityLength', this.objects[objectKey].className, this.objects[objectKey].pathName, entityLength, this.currentEntitySaveVersion);
 
         if(this.objects[objectKey] !== undefined && this.objects[objectKey].outerPathName === undefined)
         {

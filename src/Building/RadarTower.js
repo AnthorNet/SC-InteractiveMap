@@ -5,16 +5,23 @@ import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 export default class Building_RadarTower
 {
-    static getCoverageRadius()
+    static getCoverageRadius(baseLayout)
     {
-        return 1000 * 100;
+        /*
+        if(baseLayout.saveGameParser.header.saveVersion >= 51)
+        {
+            return 500 * 100; // 500m since 1.1?
+        }
+        /**/
+
+        return 1000 * 100; // 1km
     }
 
     static getCollectablesInCoverageRadius(baseLayout, currentObject)
     {
         let playerCollectables      = baseLayout.satisfactoryMap.collectableMarkers;
         let collectablesInRadius    = {};
-        let currentRadius           = Building_RadarTower.getCoverageRadius();
+        let currentRadius           = Building_RadarTower.getCoverageRadius(baseLayout);
 
             for(let pathName in playerCollectables)
             {
@@ -217,7 +224,7 @@ export default class Building_RadarTower
             {
                 let position    = [baseLayout.satisfactoryMap.unproject([0, 0]), baseLayout.satisfactoryMap.unproject([10000, 0])];
                 let meterWeight = baseLayout.satisfactoryMap.leafletMap.latLngToContainerPoint(position[1]).x - baseLayout.satisfactoryMap.leafletMap.latLngToContainerPoint(position[0]).x;
-                let radius      = Building_RadarTower.getCoverageRadius() / 10000 * meterWeight * 2;
+                let radius      = Building_RadarTower.getCoverageRadius(baseLayout) / 10000 * meterWeight * 2;
 
                     marker.options.radiusMarker = L.circle(baseLayout.satisfactoryMap.unproject(currentObject.transform.translation), {
                         interactive : false,

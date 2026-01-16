@@ -1,6 +1,13 @@
 import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
+/*
+    Amplification slots
+    1	Smelter, Constructor
+    2	Assembler, Foundry, Refinery, Converter
+    4	Manufacturer, Blender, Particle Accelerator, Quantum Encoder
+*/
+
 export default class SubSystem_Overclocking
 {
     constructor(options)

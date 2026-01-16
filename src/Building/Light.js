@@ -20,7 +20,7 @@ export default class Building_Light
                 currentObject.properties.push({
                     name    : 'mLightControlData',
                     type    : 'Struct',
-                    value   : { type: 'LightSourceControlData', values: [] }
+                    value   : { type: 'LightSourceControlData', structGuid: {}, values: [] }
                 });
 
                 mLightControlData = baseLayout.getObjectProperty(currentObject, 'mLightControlData');

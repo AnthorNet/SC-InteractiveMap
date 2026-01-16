@@ -432,7 +432,6 @@ export default class SaveParser_Write
         // Add the binary length to the replacer...
         if(this.header.saveVersion >= 41)
         {
-            console.log(this.levels[entitiesOptions.currentLevel].name, entitiesOptions.tempSaveBinaryLength)
             let lo                                      = Number(BigInt(entitiesOptions.tempSaveBinaryLength) & BigInt(0xffffffff));
                 this.saveBinaryValues[entitiesOptions.currentLevel + '-0-entitiesSaveBinaryLength'] = lo;
                 lo                                      = lo >> 8;
@@ -449,6 +448,8 @@ export default class SaveParser_Write
                 this.saveBinaryValues[entitiesOptions.currentLevel + '-5-entitiesSaveBinaryLength'] = hi;
                 hi                                      = hi >> 8;
                 this.saveBinaryValues[entitiesOptions.currentLevel + '-4-entitiesSaveBinaryLength'] = hi;
+
+            //console.log('entitiesSaveBinaryLength', this.levels[entitiesOptions.currentLevel].name, entitiesOptions.tempSaveBinaryLength);
         }
         else
         {
@@ -1144,6 +1145,8 @@ export default class SaveParser_Write
                     entity += this.writeByte(0);
                 }
         }
+
+        //console.log('currentEntityLength', currentObject.pathName, this.currentEntityLength);
 
         return preEntity + this.writeInt(this.currentEntityLength) + entity;
     }

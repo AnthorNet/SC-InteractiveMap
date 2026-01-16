@@ -9,6 +9,14 @@ import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
     /Script/FactoryGame.FGDroneAction_DockingSequence
     /Script/FactoryGame.FGDroneAction_RequestDocking
     /Script/FactoryGame.FGDroneAction_TraversePath
+
+    Fuel: 50m/s speed
+    Turbo Fuel: 60m/s speed
+    Rocket Fuel: 75m/s speed
+    Battery: 75m/s speed
+    Nuclear Fuel Rod: 90m/s speed
+    Plutonium Fuel Rod: 100m/s speed
+    Ionized Fuel: 100m/s speed
 */
 
 export default class Building_DroneStation
