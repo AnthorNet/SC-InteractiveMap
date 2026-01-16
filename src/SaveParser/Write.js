@@ -1757,27 +1757,9 @@ export default class SaveParser_Write
         property += this.writeString(currentProperty.value.keyType + 'Property', false);
         property += this.writeString(currentProperty.value.valueType + 'Property', false);
         property += this.writeByte(0, false);
-        property += this.writeInt(currentProperty.value.modeType);
-
-        if(currentProperty.value.modeType === 2)
-        {
-            property += this.writeString(currentProperty.value.modeUnk2);
-            property += this.writeString(currentProperty.value.modeUnk3);
-        }
-        if(currentProperty.value.modeType === 3)
-        {
-            property += this.writeHex(currentProperty.value.modeUnk1);
-            property += this.writeString(currentProperty.value.modeUnk2);
-            property += this.writeString(currentProperty.value.modeUnk3);
-        }
-
-        if(parentType === '/KeysForAll/KSUb.KSUb_C' && currentProperty.value.unk1 !== undefined)
-        {
-            property += this.writeString(currentProperty.value.unk1);
-        }
+        property += this.writeModeType(currentProperty.value);
 
         property += this.writeInt(currentMapPropertyCount);
-
         for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
         {
             switch(currentProperty.value.keyType)
@@ -1993,14 +1975,15 @@ export default class SaveParser_Write
     writeSetProperty(currentProperty, parentType)
     {
         let property            = '';
-        let setPropertyLength   = currentProperty.value.values.length;
+        let setPropertyCount    = currentProperty.value.values.length;
 
         property += this.writeString(currentProperty.value.type + 'Property', false);
-        property += this.writeByte(0, false);
-        property += this.writeInt(0);
-        property += this.writeInt(setPropertyLength);
 
-        for(let iSetProperty = 0; iSetProperty < setPropertyLength; iSetProperty++)
+            property += this.writeByte(0, false);
+            property += this.writeModeType(currentProperty.value);
+
+        property += this.writeInt(setPropertyCount);
+        for(let iSetProperty = 0; iSetProperty < setPropertyCount; iSetProperty++)
         {
             switch(currentProperty.value.type)
             {
@@ -2384,6 +2367,25 @@ export default class SaveParser_Write
             guid   += this.writeUint(((value.D !== undefined) ? value.D : 0), count);
 
         return guid;
+    }
+
+    writeModeType(value)
+    {
+        let property = this.writeInt(value.modeType);
+
+            if(value.modeType === 2)
+            {
+                property += this.writeString(value.modeUnk2);
+                property += this.writeString(value.modeUnk3);
+            }
+            if(value.modeType === 3)
+            {
+                property += this.writeHex(value.modeUnk1);
+                property += this.writeString(value.modeUnk2);
+                property += this.writeString(value.modeUnk3);
+            }
+
+        return property;
     }
 
     writeDataPackageVersion(value, count = true)

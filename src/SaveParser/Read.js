@@ -1537,22 +1537,14 @@ export default class SaveParser_Read
             values          : []
         };
 
+        {
+        }
+
         this.skipBytes(1);
-        currentProperty.value.modeType = this.readInt();
+        this.readModeType(currentProperty.value);
 
-        if(currentProperty.value.modeType === 2)
-        {
-            currentProperty.value.modeUnk2 = this.readString();
-            currentProperty.value.modeUnk3 = this.readString();
-        }
-        if(currentProperty.value.modeType === 3)
-        {
-            currentProperty.value.modeUnk1 = this.readHex(9);
-            currentProperty.value.modeUnk2 = this.readString();
-            currentProperty.value.modeUnk3 = this.readString();
-        }
-
-        let currentMapPropertyCount = this.readInt();
+            currentProperty.value.values    = [];
+        let currentMapPropertyCount         = this.readInt();
             for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
             {
                 let mapPropertyKey;
@@ -1807,10 +1799,13 @@ export default class SaveParser_Read
     readSetProperty(currentProperty, parentType)
     {
         currentProperty.value = {type: this.readString().replace('Property', ''), values: []};
-        this.skipBytes(5); // skipByte(1) + 0
+        this.skipBytes(1);
+        this.readModeType(currentProperty.value);
 
-        let setPropertyLength = this.readInt();
-            for(let iSetProperty = 0; iSetProperty < setPropertyLength; iSetProperty++)
+            currentProperty.value.values    = [];
+        let setPropertyCount                = this.readInt();
+            //console.log('setPropertyCount', setPropertyCount)
+            for(let iSetProperty = 0; iSetProperty < setPropertyCount; iSetProperty++)
             {
                 switch(currentProperty.value.type)
                 {
@@ -2327,6 +2322,29 @@ export default class SaveParser_Read
             }
 
         return guid;
+    }
+
+    readModeType(value)
+    {
+        let modeType = this.readInt();
+            if(modeType !== 0)
+            {
+                value.modeType = modeType;
+
+                if(modeType === 2)
+                {
+                    value.modeUnk2 = this.readString();
+                    value.modeUnk3 = this.readString();
+                }
+                if(modeType === 3)
+                {
+                    value.modeUnk1 = this.readHex(9);
+                    value.modeUnk2 = this.readString();
+                    value.modeUnk3 = this.readString();
+                }
+            }
+
+        return value;
     }
 
     readDataPackageVersion()
