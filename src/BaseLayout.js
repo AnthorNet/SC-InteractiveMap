@@ -4816,6 +4816,35 @@ export default class BaseLayout
             }
         }
 
+        // Add KBlueprintDesignPlus support?
+        if(this.buildingsData.BP_BlueprintDesignerMk4_C === undefined && className === '/KBlueprintDesignPlus/BP_BlueprintDesignerMk4.BP_BlueprintDesignerMk4_C')
+        {
+            this.buildingsData.BP_BlueprintDesignerMk4_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_BlueprintDesigner_Mk3_C));
+            this.buildingsData.BP_BlueprintDesignerMk4_C.className  = '/KBlueprintDesignPlus/BP_BlueprintDesignerMk4.BP_BlueprintDesignerMk4_C';
+            this.buildingsData.BP_BlueprintDesignerMk4_C.name       = 'Blueprint Designer Mk.4.1';
+            this.buildingsData.BP_BlueprintDesignerMk4_C.width      = 80;
+            this.buildingsData.BP_BlueprintDesignerMk4_C.length     = 80;
+            this.buildingsData.BP_BlueprintDesignerMk4_C.height     = 64;
+        }
+        if(this.buildingsData.BP_BlueprintDesignerMk5_C === undefined && className === '/KBlueprintDesignPlus/BP_BlueprintDesignerMk5.BP_BlueprintDesignerMk5_C')
+        {
+            this.buildingsData.BP_BlueprintDesignerMk5_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_BlueprintDesigner_Mk3_C));
+            this.buildingsData.BP_BlueprintDesignerMk5_C.className  = '/KBlueprintDesignPlus/BP_BlueprintDesignerMk5.BP_BlueprintDesignerMk5_C';
+            this.buildingsData.BP_BlueprintDesignerMk5_C.name       = 'Blueprint Designer Mk.4.2';
+            this.buildingsData.BP_BlueprintDesignerMk5_C.width      = 96;
+            this.buildingsData.BP_BlueprintDesignerMk5_C.length     = 96;
+            this.buildingsData.BP_BlueprintDesignerMk5_C.height     = 48;
+        }
+        if(this.buildingsData.BP_BlueprintDesignerMk6_C === undefined && className === '/KBlueprintDesignPlus/BP_BlueprintDesignerMk6.BP_BlueprintDesignerMk6_C')
+        {
+            this.buildingsData.BP_BlueprintDesignerMk6_C            = JSON.parse(JSON.stringify(this.buildingsData.Build_BlueprintDesigner_Mk3_C));
+            this.buildingsData.BP_BlueprintDesignerMk6_C.className  = '/KBlueprintDesignPlus/BP_BlueprintDesignerMk6.BP_BlueprintDesignerMk6_C';
+            this.buildingsData.BP_BlueprintDesignerMk6_C.name       = 'Blueprint Designer Mk.5';
+            this.buildingsData.BP_BlueprintDesignerMk6_C.width      = 176;
+            this.buildingsData.BP_BlueprintDesignerMk6_C.length     = 176;
+            this.buildingsData.BP_BlueprintDesignerMk6_C.height     = 96;
+        }
+
         for(let i in this.buildingsData)
         {
             if(this.buildingsData[i].className !== undefined && this.buildingsData[i].className === className)
