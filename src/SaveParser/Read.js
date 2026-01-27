@@ -1388,18 +1388,21 @@ export default class SaveParser_Read
                 break;
 
             case 'Struct':
-                this.readString(); // Same as currentProperty.name
-                this.readString(); // StructProperty
-
-                this.readInt(); // structureSize
-                this.readInt(); // 0
-
-                currentProperty.structureSubType    = this.readString();
-
-
                 if(this.currentEntitySaveVersion < 53)
                 {
-                    currentProperty.propertyGuid = this.readGUID();
+                    this.readString(); // Same as currentProperty.name
+                    this.readString(); // StructProperty
+
+                    this.readInt(); // structureSize
+                    this.readInt(); // 0
+
+                    currentProperty.structureSubType    = this.readString();
+
+                    let guid                            = this.readGUID();
+                        if(Object.keys(guid).length > 0)
+                        {
+                            currentProperty.structSubGuid = guid;
+                        }
                     this.skipBytes(1);
                 }
 

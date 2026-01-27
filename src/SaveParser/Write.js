@@ -1641,16 +1641,25 @@ export default class SaveParser_Write
             case 'Struct':
                 let currentBufferStartingLength     = this.currentBufferLength;
                 let structPropertyBufferLength      = this.currentEntityLength;
-
-                property += this.writeString(currentProperty.name);
-                property += this.writeString('StructProperty');
-
-                let structure   = this.writeInt(0);
-                    structure  += this.writeString(currentProperty.structureSubType);
+                let structure                       = '';
 
                     if(this.currentEntitySaveVersion < 53)
                     {
-                        structure  += this.writeGUID(currentProperty.propertyGuid);
+                        property   += this.writeString(currentProperty.name);
+                        property   += this.writeString('StructProperty');
+
+                        structure  += this.writeInt(0);
+                        structure  += this.writeString(currentProperty.structureSubType);
+
+                        if(currentProperty.structSubGuid !== undefined)
+                        {
+                            structure  += this.writeGUID(currentProperty.structSubGuid);
+                        }
+                        else
+                        {
+                            structure  += this.writeGUID({});
+                        }
+
                         structure  += this.writeByte(0);
                     }
 
