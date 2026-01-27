@@ -1383,6 +1383,11 @@ export default class SaveParser_Write
             if(this.currentEntitySaveVersion >= 53)
             {
                 propertyStart += this.writeInt( ((currentProperty.index !== undefined) ? currentProperty.index : 0), false);
+                let hasCustomData = false;
+                if(hasCustomData === false)
+                {
+                    propertyStart += this.writeInt(0, false);
+                }
             }
 
         // Reset to get property length...

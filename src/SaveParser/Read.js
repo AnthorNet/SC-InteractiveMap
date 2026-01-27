@@ -1095,6 +1095,7 @@ export default class SaveParser_Read
             let index = this.readInt();
                 //console.log('index', index, parentType)
                 if(index !== 0)
+            let hasCustomData = this.readInt();
                 {
                     currentProperty.index = index;
                 }
