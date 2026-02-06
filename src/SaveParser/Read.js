@@ -285,7 +285,6 @@ export default class SaveParser_Read
                     }
                 }
 
-                levels.push({name: levelName, saveVersion: levelSaveVersion});
             let entitiesToObjects   = [];
             let countObjects        = this.readInt();
                 if(levelName === 'Level ' + this.header.mapName)
@@ -1102,9 +1101,6 @@ export default class SaveParser_Read
 
         if(this.currentEntitySaveVersion >= 53)
         {
-            let index = this.readInt();
-                //console.log('index', index, parentType)
-                if(index !== 0)
             let hasCustomData = this.readInt();
                 if(hasCustomData > 2) // DEBUG
                 {
