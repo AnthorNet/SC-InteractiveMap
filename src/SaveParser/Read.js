@@ -2866,6 +2866,11 @@ export default class SaveParser_Read
 
             switch(data.type)
             {
+                case 1: // FIR_BOOL
+                    data.value  = this.readInt();
+
+                    break;
+
                 case 3: // FIR_FLOAT
                     data.value  = this.readDouble();
 

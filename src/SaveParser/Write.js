@@ -2924,6 +2924,11 @@ export default class SaveParser_Write
 
             switch(value.type)
             {
+                case 1: // FIR_BOOL
+                    saveBinary += this.writeInt(value.value);
+
+                    break;
+
                 case 3: // FIR_FLOAT
                     saveBinary += this.writeDouble(value.value);
 
