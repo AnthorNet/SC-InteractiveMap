@@ -1384,6 +1384,14 @@ export default class SaveParser_Write
             {
                 propertyStart += this.writeInt( ((currentProperty.index !== undefined) ? currentProperty.index : 0), false);
                 let hasCustomData = false;
+                    if(['Set', 'Struct'].includes(currentProperty.type))
+                    {
+                        hasCustomData   = true;
+                        propertyStart  += this.writeInt(1, false);
+
+                        propertyStart += this.writeString(currentProperty.value.type + 'Property', false);
+                        propertyStart += this.writePackageName(currentProperty);
+                    }
                 if(hasCustomData === false)
                 {
                     propertyStart += this.writeInt(0, false);
@@ -1991,7 +1999,10 @@ export default class SaveParser_Write
         let property            = '';
         let setPropertyCount    = currentProperty.value.values.length;
 
-        property += this.writeString(currentProperty.value.type + 'Property', false);
+            if(this.currentEntitySaveVersion < 53)
+            {
+                property += this.writeString(currentProperty.value.type + 'Property', false);
+            }
 
             property += this.writeByte(0, false);
             property += this.writeModeType(currentProperty.value);
@@ -2053,12 +2064,40 @@ export default class SaveParser_Write
     writeStructProperty(currentProperty, parentType)
     {
         let property    = '';
-            property   += this.writeString(currentProperty.value.type, false);
-            property   += this.writeInt(0, false);
-            property   += this.writeInt(0, false);
-            property   += this.writeInt(0, false);
-            property   += this.writeInt(0, false);
-            property   += this.writeByte(0, false);
+            if(this.currentEntitySaveVersion < 53)
+            {
+                property += this.writeString(currentProperty.value.type, false);
+
+                if(currentProperty.value.structGuid !== undefined)
+                {
+                    property += this.writeGUID(currentProperty.value.structGuid, false);
+                }
+                else
+                {
+                    property += this.writeGUID({}, false);
+                }
+            }
+
+            if(currentProperty.hasIndex !== undefined)
+            {
+                property   += this.writeByte(currentProperty.hasIndex, false);
+
+                // Possibly array already sorted? See mInventoryStacks
+                if(currentProperty.hasIndex === 8)
+                {
+
+                }
+
+                // Have an index (EG multiple properties with the same name, 0 not being saved, see mLastSafeGroundPositions or mWireInstances)
+                if(currentProperty.hasIndex === 9)
+                {
+                    property   += this.writeInt(currentProperty.index, false);
+                }
+            }
+            else
+            {
+                property   += this.writeByte(0, false);
+            }
 
         switch(currentProperty.value.type)
         {
@@ -2423,6 +2462,23 @@ export default class SaveParser_Write
             }
 
         return dataPackageVersion;
+    }
+
+    writePackageName(currentProperty)
+    {
+        let packageName = '';
+            if(currentProperty.packageName !== undefined)
+            {
+                packageName += this.writeInt(1, false);
+                packageName += this.writeString(currentProperty.packageName, false);
+                packageName += this.writeInt(0, false); // Other than 0?
+            }
+            else
+            {
+                packageName += this.writeInt(0, false);
+            }
+
+        return packageName;
     }
 
     writeInventoryItem(value)

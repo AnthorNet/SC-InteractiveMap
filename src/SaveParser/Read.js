@@ -1111,14 +1111,20 @@ export default class SaveParser_Read
                     console.log('hasCustomData', hasCustomData, currentProperty);
                 }
 
-            {
-            }
-            {
-            }
+                if(hasCustomData === 1)
+                {
 
-        currentProperty.type        = this.readString().replace('Property', '');
+                    if(['Set', 'Struct'].includes(currentProperty.type))
+                    {
+                        currentProperty.value   = {type: this.readString().replace('Property', '')};
+                        currentProperty         = this.readPackageName(currentProperty);
+                    }
+                }
+
+        }
+
         this.currentPropertyLength  = this.readInt(); // Length of the property, this is calculated when writing back ;)
-
+            //console.log(this.currentEntitySaveVersion, 'currentProperty.type', currentProperty.type, this.currentPropertyLength)
 
         if(this.currentEntitySaveVersion < 53)
         {
@@ -1813,7 +1819,11 @@ export default class SaveParser_Read
 
     readSetProperty(currentProperty, parentType)
     {
-        currentProperty.value = {type: this.readString().replace('Property', ''), values: []};
+        if(this.currentEntitySaveVersion < 53)
+        {
+            currentProperty.value = {type: this.readString().replace('Property', '')};
+        }
+
         this.skipBytes(1);
         this.readModeType(currentProperty.value);
 
@@ -1887,20 +1897,34 @@ export default class SaveParser_Read
 
     readStructProperty(currentProperty, parentType)
     {
-        currentProperty.value = {type: this.readString()};
-        this.skipBytes(17); // 0 0 0 0 + skipByte(1)
+        if(this.currentEntitySaveVersion < 53)
         {
-            console.log('DEFAULT STRUCT', this.readInt(), this.readString(), this.readInt()); // 0?
-            this.currentPropertyLength = this.readInt();
-            //console.log('currentPropertyLength', this.currentPropertyLength); // Length ?
+            currentProperty.value       = {type: this.readString()};
 
-            let readByte = this.readByte();
-                console.log('structReadByte', readByte);
-                if(readByte === 9)
+            let guid                    = this.readGUID();
+                if(Object.keys(guid).length > 0)
                 {
-                    console.log('structReadByte9', parentType, currentProperty, this.readInt());
+                    currentProperty.value.structGuid = guid;
                 }
         }
+
+        let hasIndex = this.readByte();
+            if(hasIndex !== 0)
+            {
+                currentProperty.hasIndex = hasIndex;
+
+                // Possibly array already sorted? See mInventoryStacks
+                if(currentProperty.hasIndex === 8)
+                {
+
+                }
+
+                // Have an index (EG multiple properties with the same name, 0 not being saved, see mLastSafeGroundPositions or mWireInstances)
+                if(currentProperty.hasIndex === 9)
+                {
+                    currentProperty.index = this.readInt();
+                }
+            }
 
         switch(currentProperty.value.type)
         {
@@ -2392,6 +2416,24 @@ export default class SaveParser_Read
             //console.log('dataPackageVersion', dataPackageVersion);
 
         return dataPackageVersion;
+    }
+
+    readPackageName(currentProperty = {})
+    {
+
+        let hasPackageName      = this.readInt();
+            if(hasPackageName !== 0)
+            {
+                currentProperty.packageName = this.readString();
+
+                let extraInt = this.readInt();
+                    if(extraInt !== 0)
+                    {
+                        console.log('readPackageName', 'extraInt', extraInt);
+                    }
+            }
+
+        return currentProperty;
     }
 
     readInventoryItem(currentProperty = {})
