@@ -615,6 +615,16 @@ export default class SaveParser_Read
         if(this.currentEntitySaveVersion >= 53)
         {
             this.readByte(); // 0
+            /* MOST LIKELY A GLITCH IN STAGING UPDATES ??? */
+            /*
+            let extraByte = this.readByte();
+
+                if(extraByte !== 0)
+                {
+                    this.currentByte -= 1;
+                    console.log('EXTRABYTE', extraByte, this.objects[objectKey].pathName, entityLength, this.currentEntitySaveVersion)
+                }
+            */
         }
 
         // Read properties
@@ -1096,8 +1106,9 @@ export default class SaveParser_Read
                 //console.log('index', index, parentType)
                 if(index !== 0)
             let hasCustomData = this.readInt();
+                if(hasCustomData > 2) // DEBUG
                 {
-                    currentProperty.index = index;
+                    console.log('hasCustomData', hasCustomData, currentProperty);
                 }
 
             {
