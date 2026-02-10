@@ -1117,6 +1117,27 @@ export default class SaveParser_Read
                     }
                 }
 
+                if(hasCustomData === 2)
+                {
+                    if(currentProperty.type === 'Map')
+                    {
+                            currentProperty.value           = {keyType: this.readString().replace('Property', '')};
+                        let haveKeyInnerType                = this.readInt();
+                            if(haveKeyInnerType === 1)
+                            {
+                                currentProperty.value.keyInnerType      = this.readString();
+                                currentProperty.value.keyPackageName    = this.readPackageName();
+                            }
+
+                            currentProperty.value.valueType = this.readString().replace('Property', '');
+                        let haveValueInnerType              = this.readInt();
+                            if(haveValueInnerType === 1)
+                            {
+                                currentProperty.value.valueInnerType    = this.readString();
+                                currentProperty.value.valuePackageName  = this.readPackageName();
+                            }
+                    }
+                }
         }
 
         this.currentPropertyLength  = this.readInt(); // Length of the property, this is calculated when writing back ;)
@@ -1548,13 +1569,12 @@ export default class SaveParser_Read
 
     readMapProperty(currentProperty, parentType)
     {
-        currentProperty.value = {
-            keyType         : this.readString().replace('Property', ''),
-            valueType       : this.readString().replace('Property', ''),
-            values          : []
-        };
-
+        if(this.currentEntitySaveVersion < 53)
         {
+            currentProperty.value = {
+                keyType         : this.readString().replace('Property', ''),
+                valueType       : this.readString().replace('Property', '')
+            };
         }
 
         this.skipBytes(1);

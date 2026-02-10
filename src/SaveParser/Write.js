@@ -1390,8 +1390,40 @@ export default class SaveParser_Write
                         propertyStart  += this.writeInt(1, false);
 
                         propertyStart += this.writeString(currentProperty.value.type + 'Property', false);
-                        propertyStart += this.writePackageName(currentProperty);
+                        propertyStart += this.writePackageName(currentProperty, false);
                     }
+
+                    if(currentProperty.type === 'Map')
+                    {
+                        hasCustomData   = true;
+                        propertyStart  += this.writeInt(2, false);
+                        propertyStart  += this.writeString(currentProperty.value.keyType + 'Property', false);
+
+                        if(currentProperty.value.keyInnerType !== undefined)
+                        {
+                            propertyStart  += this.writeInt(1, false);
+                            propertyStart  += this.writeString(currentProperty.value.keyInnerType, false);
+                            propertyStart  += this.writePackageName(currentProperty.value.keyPackageName, false);
+                        }
+                        else
+                        {
+                            propertyStart  += this.writeInt(0, false);
+                        }
+
+                        propertyStart  += this.writeString(currentProperty.value.valueType + 'Property', false);
+
+                        if(currentProperty.value.valueInnerType !== undefined)
+                        {
+                            propertyStart  += this.writeInt(1, false);
+                            propertyStart  += this.writeString(currentProperty.value.valueInnerType, false);
+                            propertyStart  += this.writePackageName(currentProperty.value.valuePackageName, false);
+                        }
+                        else
+                        {
+                            propertyStart  += this.writeInt(0, false);
+                        }
+                    }
+
                 if(hasCustomData === false)
                 {
                     propertyStart += this.writeInt(0, false);
@@ -1776,8 +1808,12 @@ export default class SaveParser_Write
         let property                = '';
         let currentMapPropertyCount = currentProperty.value.values.length;
 
-        property += this.writeString(currentProperty.value.keyType + 'Property', false);
-        property += this.writeString(currentProperty.value.valueType + 'Property', false);
+        if(this.currentEntitySaveVersion < 53)
+        {
+            property += this.writeString(currentProperty.value.keyType + 'Property', false);
+            property += this.writeString(currentProperty.value.valueType + 'Property', false);
+        }
+
         property += this.writeByte(0, false);
         property += this.writeModeType(currentProperty.value);
 
@@ -2464,18 +2500,18 @@ export default class SaveParser_Write
         return dataPackageVersion;
     }
 
-    writePackageName(currentProperty)
+    writePackageName(currentProperty, count = true)
     {
         let packageName = '';
             if(currentProperty.packageName !== undefined)
             {
-                packageName += this.writeInt(1, false);
-                packageName += this.writeString(currentProperty.packageName, false);
-                packageName += this.writeInt(0, false); // Other than 0?
+                packageName += this.writeInt(1, count);
+                packageName += this.writeString(currentProperty.packageName, count);
+                packageName += this.writeInt(0, count); // Other than 0?
             }
             else
             {
-                packageName += this.writeInt(0, false);
+                packageName += this.writeInt(0, count);
             }
 
         return packageName;
