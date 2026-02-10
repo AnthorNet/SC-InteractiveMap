@@ -1382,7 +1382,6 @@ export default class SaveParser_Write
 
             if(this.currentEntitySaveVersion >= 53)
             {
-                propertyStart += this.writeInt( ((currentProperty.index !== undefined) ? currentProperty.index : 0), false);
                 let hasCustomData = false;
                     if(currentProperty.type === 'Array')
                     {
@@ -1420,12 +1419,20 @@ export default class SaveParser_Write
                         }
                     }
 
+                    if(currentProperty.type === 'Byte' && currentProperty.value.enumName !== 'None')
+                    {
+                        hasCustomData   = true;
+                        propertyStart  += this.writeInt(1, false);
+
+                        propertyStart  += this.writeString(currentProperty.value.enumName, false);
+                        propertyStart  += this.writePackageName(currentProperty.value.enumPackageName, false);
+                    }
+
                     if(['Set', 'Struct'].includes(currentProperty.type))
                     {
                         hasCustomData   = true;
                         propertyStart  += this.writeInt(1, false);
 
-                        propertyStart += this.writeString(currentProperty.value.type + 'Property', false);
                         propertyStart  += this.writeString(currentProperty.value.type + 'Property', false);
                         propertyStart  += this.writePackageName(currentProperty, false);
                     }
@@ -1548,16 +1555,32 @@ export default class SaveParser_Write
                 break;
 
             case 'Byte':
-                property += this.writeString(currentProperty.value.enumName, false);
-                property += this.writePropertyGUID(currentProperty, false);
-
-                if(currentProperty.value.enumName === 'None')
+                if(this.currentEntitySaveVersion >= 53)
                 {
-                    property += this.writeByte(currentProperty.value.value);
+                    property += this.writeByte(0, false);
+
+                    if(currentProperty.value.enumName !== 'None')
+                    {
+                        property += this.writeString(currentProperty.value.valueName);
+                    }
+                    else
+                    {
+                        property += this.writeByte(currentProperty.value.value);
+                    }
                 }
                 else
                 {
-                    property += this.writeString(currentProperty.value.valueName);
+                    property += this.writeString(currentProperty.value.enumName, false);
+                    property += this.writePropertyGUID(currentProperty, false);
+
+                    if(currentProperty.value.enumName === 'None')
+                    {
+                        property += this.writeByte(currentProperty.value.value);
+                    }
+                    else
+                    {
+                        property += this.writeString(currentProperty.value.valueName);
+                    }
                 }
 
                 break;

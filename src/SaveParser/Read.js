@@ -1098,6 +1098,7 @@ export default class SaveParser_Read
             }
 
         currentProperty.type        = this.readString().replace('Property', '');
+        //console.log(currentProperty.type, currentProperty.name)
 
         if(this.currentEntitySaveVersion >= 53)
         {
@@ -1138,6 +1139,14 @@ export default class SaveParser_Read
 
                                     break;
                             }
+                    }
+
+                    if(currentProperty.type === 'Byte')
+                    {
+                        currentProperty.value   = {
+                            enumName                : this.readString(),
+                            enumPackageName         : this.readPackageName({})
+                        };
                     }
                     if(['Set', 'Struct'].includes(currentProperty.type))
                     {
@@ -1255,22 +1264,41 @@ export default class SaveParser_Read
                 break;
 
             case 'Byte':
-                let enumName            = this.readString(); //TODO
-                    currentProperty     = this.readPropertyGUID(currentProperty);
-
-                if(enumName === 'None')
+                if(this.currentEntitySaveVersion >= 53)
                 {
-                    currentProperty.value = {
-                        enumName    : enumName,
-                        value       : this.readByte()
-                    };
+                    this.skipBytes(1);
+
+                    if(currentProperty.value !== undefined && currentProperty.value.enumName !== undefined)
+                    {
+                        currentProperty.value.valueName = this.readString();
+                    }
+                    else
+                    {
+                        currentProperty.value = {
+                            enumName    : 'None',
+                            value       : this.readByte()
+                        };
+                    }
                 }
                 else
                 {
-                    currentProperty.value = {
-                        enumName    : enumName,
-                        valueName   : this.readString()
-                    };
+                    let enumName            = this.readString();
+                        currentProperty     = this.readPropertyGUID(currentProperty);
+
+                    if(enumName === 'None')
+                    {
+                        currentProperty.value = {
+                            enumName    : enumName,
+                            value       : this.readByte()
+                        };
+                    }
+                    else
+                    {
+                        currentProperty.value = {
+                            enumName    : enumName,
+                            valueName   : this.readString()
+                        };
+                    }
                 }
 
                 break;
