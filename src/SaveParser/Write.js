@@ -1384,13 +1384,50 @@ export default class SaveParser_Write
             {
                 propertyStart += this.writeInt( ((currentProperty.index !== undefined) ? currentProperty.index : 0), false);
                 let hasCustomData = false;
+                    if(currentProperty.type === 'Array')
+                    {
+                        hasCustomData   = true;
+                        propertyStart  += this.writeInt(1, false);
+
+                        propertyStart  += this.writeString(currentProperty.value.type + 'Property', false);
+
+                        switch(currentProperty.value.type)
+                        {
+                            case 'Struct':
+                                propertyStart  += this.writeInt(1, false);
+
+                                propertyStart  += this.writeString(currentProperty.structureSubType, false);
+                                propertyStart  += this.writePackageName(currentProperty.structurePackageName, false);
+
+                                break;
+
+                            case 'Enum':
+                                propertyStart  += this.writeInt(2, false);
+
+                                propertyStart  += this.writeString(currentProperty.enumName, false);
+                                propertyStart  += this.writePackageName(currentProperty.enumPackageName, false);
+
+                                //TODO: Always?
+                                propertyStart  += this.writeString('ByteProperty', false);
+                                propertyStart  += this.writeInt(0, false);
+
+                                break;
+
+                            default:
+                                propertyStart  += this.writeInt(0, false);
+
+                                break;
+                        }
+                    }
+
                     if(['Set', 'Struct'].includes(currentProperty.type))
                     {
                         hasCustomData   = true;
                         propertyStart  += this.writeInt(1, false);
 
                         propertyStart += this.writeString(currentProperty.value.type + 'Property', false);
-                        propertyStart += this.writePackageName(currentProperty, false);
+                        propertyStart  += this.writeString(currentProperty.value.type + 'Property', false);
+                        propertyStart  += this.writePackageName(currentProperty, false);
                     }
 
                     if(currentProperty.type === 'Map')
@@ -1568,15 +1605,19 @@ export default class SaveParser_Write
     writeArrayProperty(currentProperty, parentType)
     {
         let property                    = '';
+            if(this.currentEntitySaveVersion < 53)
+            {
+                property += this.writeString(currentProperty.value.type + 'Property', false);
+            }
+
+        property += this.writeByte(0, false);
+
         let currentArrayPropertyCount   = currentProperty.value.values.length;
             if(currentProperty.name === 'mFogOfWarRawData')
             {
                 currentArrayPropertyCount *= 4;
             }
-
-        property += this.writeString(currentProperty.value.type + 'Property', false);
-        property += this.writeByte(0, false);
-        property += this.writeInt(currentArrayPropertyCount);
+            property += this.writeInt(currentArrayPropertyCount);
 
         switch(currentProperty.value.type)
         {

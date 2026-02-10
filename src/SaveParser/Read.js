@@ -1109,7 +1109,36 @@ export default class SaveParser_Read
 
                 if(hasCustomData === 1)
                 {
+                    if(currentProperty.type === 'Array')
+                    {
+                            currentProperty.value   = {type: this.readString().replace('Property', '')};
+                        let arrayMode               = this.readInt();
+                            switch(arrayMode)
+                            {
+                                case 0: // Default
+                                    break;
 
+                                case 1: // Struct
+                                    currentProperty.structureSubType        = this.readString();
+                                    currentProperty.structurePackageName    = this.readPackageName({});
+
+                                    break;
+
+                                case 2: // Enum
+                                    currentProperty.enumName                = this.readString();
+                                    currentProperty.enumPackageName         = this.readPackageName({});
+
+                                    this.readString();  // ByteProperty
+                                    this.readInt();     // 0
+
+                                    break;
+
+                                default:
+                                    console.log('Unknown ArrayMode', arrayMode);
+
+                                    break;
+                            }
+                    }
                     if(['Set', 'Struct'].includes(currentProperty.type))
                     {
                         currentProperty.value   = {type: this.readString().replace('Property', '')};
@@ -1308,9 +1337,15 @@ export default class SaveParser_Read
 
     readArrayProperty(currentProperty, parentType)
     {
-            currentProperty.value       = {type: this.readString().replace('Property', ''), values: []};
-            this.skipBytes();
-        let currentArrayPropertyCount   = this.readInt();
+        if(this.currentEntitySaveVersion < 53)
+        {
+            currentProperty.value = {type: this.readString().replace('Property', '')};
+        }
+
+        this.skipBytes(1);
+
+            currentProperty.value.values    = [];
+        let currentArrayPropertyCount       = this.readInt();
 
         switch(currentProperty.value.type)
         {
