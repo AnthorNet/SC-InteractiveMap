@@ -55,12 +55,14 @@ export default class SaveParser
 
     save(baseLayout, callback = null)
     {
-        if(this.header.saveVersion >= 53 && this.useDebug === false)
+        /*
+        if(this.header.saveVersion >= 54 && this.useDebug === false)
         {
             this.onGenericWorkerMessage({command: 'alert', message: 'Due to a new engine version, we cannot support writing back saves yet...'});
             window.SCIM.hideLoader();
             return;
         }
+        */
 
         if(this.header.saveVersion >= 29)
         {

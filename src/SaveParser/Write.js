@@ -843,6 +843,8 @@ export default class SaveParser_Write
         let preEntity                   = '';
         let entity                      = '';
 
+        this.currentEntityClassName     = currentObject.className;
+        this.currentEntityPathName      = currentObject.pathName;
         this.currentEntitySaveVersion   = this.header.saveVersion;
         if(this.header.saveVersion >= 41)
         {
@@ -1355,6 +1357,12 @@ export default class SaveParser_Write
         // End of lightweightBuildableSubsystem reconstruction, get back to entities...
         //TODO: May be add a placeholder for lenght in case of a lot of lightweight objects?
         this.saveBinary                      += preEntity + this.writeInt(this.currentEntityLength) + entity;
+        
+        if(this.currentEntitySaveVersion >= 53)
+        {
+            this.saveBinary += this.writeInt(0);
+        }
+
         entitiesOptions.tempSaveBinaryLength += this.currentEntityLength;
         this.pushSaveToChunk();
 
@@ -1874,7 +1882,11 @@ export default class SaveParser_Write
                     }
                 }
 
-                property += this.writeInt(this.currentEntityLength - structureSizeLength);
+                if(this.currentEntitySaveVersion < 53)
+                {
+                    property += this.writeInt(this.currentEntityLength - structureSizeLength);
+                }
+
                 property += structure;
 
                 this.currentBufferLength = currentBufferStartingLength + (this.currentEntityLength - structPropertyBufferLength);
