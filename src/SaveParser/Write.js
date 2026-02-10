@@ -1437,6 +1437,19 @@ export default class SaveParser_Write
                         propertyStart  += this.writePackageName(currentProperty, false);
                     }
 
+                    if(currentProperty.type === 'Enum')
+                    {
+                        hasCustomData   = true;
+                        propertyStart  += this.writeInt(2, false);
+
+                        propertyStart  += this.writeString(currentProperty.value.name, false);
+                        propertyStart  += this.writePackageName(currentProperty.value.enumPackageName, false);
+
+                        //TODO: Always?
+                        propertyStart  += this.writeString('ByteProperty', false);
+                        propertyStart  += this.writeInt(0, false);
+                    }
+
                     if(currentProperty.type === 'Map')
                     {
                         hasCustomData   = true;
@@ -1548,9 +1561,17 @@ export default class SaveParser_Write
                 break;
 
             case 'Enum':
-                property += this.writeString(currentProperty.value.name, false);
-                property += this.writePropertyGUID(currentProperty, false);
-                property += this.writeString(currentProperty.value.value);
+                if(this.currentEntitySaveVersion >= 53)
+                {
+                    property += this.writeByte(0, false);
+                    property += this.writeString(currentProperty.value.value);
+                }
+                else
+                {
+                    property += this.writeString(currentProperty.value.name, false);
+                    property += this.writePropertyGUID(currentProperty, false);
+                    property += this.writeString(currentProperty.value.value);
+                }
 
                 break;
 

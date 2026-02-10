@@ -1148,6 +1148,7 @@ export default class SaveParser_Read
                             enumPackageName         : this.readPackageName({})
                         };
                     }
+
                     if(['Set', 'Struct'].includes(currentProperty.type))
                     {
                         currentProperty.value   = {type: this.readString().replace('Property', '')};
@@ -1157,6 +1158,17 @@ export default class SaveParser_Read
 
                 if(hasCustomData === 2)
                 {
+                    if(currentProperty.type === 'Enum')
+                    {
+                        currentProperty.value   = {
+                            name                    : this.readString(),
+                            enumPackageName         : this.readPackageName({})
+                        };
+
+                        this.readString();  // ByteProperty
+                        this.readInt();     // 0
+                    }
+
                     if(currentProperty.type === 'Map')
                     {
                             currentProperty.value           = {keyType: this.readString().replace('Property', '')};
@@ -1254,12 +1266,20 @@ export default class SaveParser_Read
                 break;
 
             case 'Enum':
-                let enumPropertyName        = this.readString();
-                    currentProperty         = this.readPropertyGUID(currentProperty);
-                    currentProperty.value   = {
-                        name    : enumPropertyName,
-                        value   : this.readString()
-                    };
+                if(this.currentEntitySaveVersion >= 53)
+                {
+                    this.skipBytes(); // 0
+                    currentProperty.value.value = this.readString();
+                }
+                else
+                {
+                    let enumPropertyName        = this.readString();
+                        currentProperty         = this.readPropertyGUID(currentProperty);
+                        currentProperty.value   = {
+                            name    : enumPropertyName,
+                            value   : this.readString()
+                        };
+                }
 
                 break;
 
