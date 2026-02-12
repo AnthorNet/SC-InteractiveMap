@@ -2613,7 +2613,17 @@ export default class SaveParser_Write
             {
                 packageName += this.writeInt(1, count);
                 packageName += this.writeString(currentProperty.packageName, count);
-                packageName += this.writeInt(0, count); // Other than 0?
+
+                if(currentProperty.packageName2 !== undefined)
+                {
+                    packageName += this.writeInt(1, count);
+                    packageName += this.writeString(currentProperty.packageName2, count);
+                    packageName += this.writeString(currentProperty.packageName3, count);
+                }
+                else
+                {
+                    packageName += this.writeInt(0, count);
+                }
             }
             else
             {

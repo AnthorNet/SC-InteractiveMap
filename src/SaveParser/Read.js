@@ -2533,7 +2533,9 @@ export default class SaveParser_Read
                 let extraInt = this.readInt();
                     if(extraInt !== 0)
                     {
-                        console.log('readPackageName', 'extraInt', extraInt);
+                        //TODO: Proper naming? :D
+                        currentProperty.packageName2 = this.readString();
+                        currentProperty.packageName3 = this.readString();
                     }
             }
 
