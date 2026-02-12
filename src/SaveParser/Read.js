@@ -1149,9 +1149,14 @@ export default class SaveParser_Read
                         };
                     }
 
-                    if(['Set', 'Struct'].includes(currentProperty.type))
+                    if(currentProperty.type === 'Set')
                     {
                         currentProperty.value   = {type: this.readString().replace('Property', '')};
+                        currentProperty         = this.readPackageName(currentProperty);
+                    }
+                    if(currentProperty.type === 'Struct')
+                    {
+                        currentProperty.value   = {type: this.readString()};
                         currentProperty         = this.readPackageName(currentProperty);
                     }
                 }

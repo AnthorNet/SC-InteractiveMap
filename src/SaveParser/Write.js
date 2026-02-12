@@ -1357,7 +1357,7 @@ export default class SaveParser_Write
         // End of lightweightBuildableSubsystem reconstruction, get back to entities...
         //TODO: May be add a placeholder for lenght in case of a lot of lightweight objects?
         this.saveBinary                      += preEntity + this.writeInt(this.currentEntityLength) + entity;
-        
+
         if(this.currentEntitySaveVersion >= 53)
         {
             this.saveBinary += this.writeInt(0);
@@ -1436,12 +1436,21 @@ export default class SaveParser_Write
                         propertyStart  += this.writePackageName(currentProperty.value.enumPackageName, false);
                     }
 
-                    if(['Set', 'Struct'].includes(currentProperty.type))
+                    if(currentProperty.type === 'Set')
                     {
                         hasCustomData   = true;
                         propertyStart  += this.writeInt(1, false);
 
                         propertyStart  += this.writeString(currentProperty.value.type + 'Property', false);
+                        propertyStart  += this.writePackageName(currentProperty, false);
+                    }
+
+                    if(currentProperty.type === 'Struct')
+                    {
+                        hasCustomData   = true;
+                        propertyStart  += this.writeInt(1, false);
+
+                        propertyStart  += this.writeString(currentProperty.value.type, false);
                         propertyStart  += this.writePackageName(currentProperty, false);
                     }
 
