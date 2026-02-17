@@ -667,10 +667,11 @@ export default class SubSystem_Buildable extends SubSystem
                     console.log('Creating missing mColorSlots_Data');
 
                     mColorSlots_Data = {
-                        name                : 'mColorSlots_Data',
-                        structureSubType    : 'FactoryCustomizationColorSlot',
-                        type                : 'Array',
-                        value               : {type: 'Struct', values: []}
+                        name                    : 'mColorSlots_Data',
+                        structureSubType        : 'FactoryCustomizationColorSlot',
+                        structurePackageName    : {packageName: '/Script/FactoryGame'},
+                        type                    : 'Array',
+                        value                   : {type: 'Struct', values: []}
                     };
 
                     for(let slotIndex = 0; slotIndex <= (SubSystem_Buildable.totalColorSlots + SubSystem_Buildable.extraColorSlots); slotIndex++)
