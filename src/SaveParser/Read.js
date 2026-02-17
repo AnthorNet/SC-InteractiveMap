@@ -1130,7 +1130,7 @@ export default class SaveParser_Read
                                     currentProperty.enumPackageName         = this.readPackageName({});
 
                                     this.readString();  // ByteProperty
-                                    this.readInt();     // 0
+                                    this.readInt();     // 0 //TODO: Package?
 
                                     break;
 
@@ -1176,21 +1176,19 @@ export default class SaveParser_Read
 
                     if(currentProperty.type === 'Map')
                     {
-                            currentProperty.value           = {keyType: this.readString().replace('Property', '')};
-                        let haveKeyInnerType                = this.readInt();
-                            if(haveKeyInnerType === 1)
+                            currentProperty.value = {
+                                keyType             : this.readString().replace('Property', ''),
+                                keyPackageName      : this.readPackageName(),
+                            };
+
+                            if(currentProperty.value.keyType === 'Enum')
                             {
-                                currentProperty.value.keyInnerType      = this.readString();
-                                currentProperty.value.keyPackageName    = this.readPackageName();
+                                this.readString();  // ByteProperty
+                                this.readInt();     // 0 //TODO: Package?
                             }
 
-                            currentProperty.value.valueType = this.readString().replace('Property', '');
-                        let haveValueInnerType              = this.readInt();
-                            if(haveValueInnerType === 1)
-                            {
-                                currentProperty.value.valueInnerType    = this.readString();
-                                currentProperty.value.valuePackageName  = this.readPackageName();
-                            }
+                            currentProperty.value.valueType         = this.readString().replace('Property', '');
+                            currentProperty.value.valuePackageName  = this.readPackageName();
                     }
                 }
         }
@@ -1665,7 +1663,7 @@ export default class SaveParser_Read
             };
         }
 
-        this.skipBytes(1);
+        this.skipBytes(1); //TODO: Found a 8?!
         this.readModeType(currentProperty.value);
 
             currentProperty.value.values    = [];

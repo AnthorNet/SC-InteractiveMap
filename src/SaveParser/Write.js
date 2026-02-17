@@ -1472,30 +1472,17 @@ export default class SaveParser_Write
                         hasCustomData   = true;
                         propertyStart  += this.writeInt(2, false);
                         propertyStart  += this.writeString(currentProperty.value.keyType + 'Property', false);
+                        propertyStart  += this.writePackageName(currentProperty.value.keyPackageName, false);
 
-                        if(currentProperty.value.keyInnerType !== undefined)
+                        if(currentProperty.value.keyType === 'Enum')
                         {
-                            propertyStart  += this.writeInt(1, false);
-                            propertyStart  += this.writeString(currentProperty.value.keyInnerType, false);
-                            propertyStart  += this.writePackageName(currentProperty.value.keyPackageName, false);
-                        }
-                        else
-                        {
+                            //TODO: Always?
+                            propertyStart  += this.writeString('ByteProperty', false);
                             propertyStart  += this.writeInt(0, false);
                         }
 
                         propertyStart  += this.writeString(currentProperty.value.valueType + 'Property', false);
-
-                        if(currentProperty.value.valueInnerType !== undefined)
-                        {
-                            propertyStart  += this.writeInt(1, false);
-                            propertyStart  += this.writeString(currentProperty.value.valueInnerType, false);
-                            propertyStart  += this.writePackageName(currentProperty.value.valuePackageName, false);
-                        }
-                        else
-                        {
-                            propertyStart  += this.writeInt(0, false);
-                        }
+                        propertyStart  += this.writePackageName(currentProperty.value.valuePackageName, false);
                     }
 
                 if(hasCustomData === false)
