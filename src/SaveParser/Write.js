@@ -416,7 +416,7 @@ export default class SaveParser_Write
 
         this.saveBinary += this.generateCollectablesChunks(entitiesOptions.collectables);
 
-        if(this.header.saveVersion >= 53)
+        if(this.header.saveVersion >= 53 && entitiesOptions.currentLevel !== (this.levels.length - 1))
         {
             if(entitiesOptions.dataPackageVersion !== null)
             {

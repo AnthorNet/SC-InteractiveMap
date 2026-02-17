@@ -470,7 +470,7 @@ export default class SaveParser_Read
                 }
 
             let levelDataPackageVersion = null;
-                if(this.header.saveVersion >= 53)
+                if(this.header.saveVersion >= 53 && levelName !== 'Level ' + this.header.mapName)
                 {
                     let haveLevelDataPackageVersion = this.readInt();
                         if(haveLevelDataPackageVersion === 1)
