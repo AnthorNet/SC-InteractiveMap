@@ -1504,6 +1504,11 @@ export default class SaveParser_Write
         switch(currentProperty.type)
         {
             case 'Bool':
+                if(this.currentEntitySaveVersion >= 53 && currentProperty.value === 1)
+                {
+                    currentProperty.value = 16;
+                }
+
                 property += this.writeByte(currentProperty.value, false);
 
                 if(this.currentEntitySaveVersion < 53)

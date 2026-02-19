@@ -1210,6 +1210,11 @@ export default class SaveParser_Read
             case 'Bool':
                 currentProperty.value   = this.readByte();
 
+                if(this.currentEntitySaveVersion >= 53 && currentProperty.value === 16)
+                {
+                    currentProperty.value = 1;
+                }
+
                 if(this.currentEntitySaveVersion < 53)
                 {
                     currentProperty         = this.readPropertyGUID(currentProperty);
