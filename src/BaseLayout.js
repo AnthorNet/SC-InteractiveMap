@@ -1740,10 +1740,11 @@ export default class BaseLayout
             children                : [],
             properties              : [
                 {
-                    name                : 'mInventoryStacks',
-                    type                : 'Array',
-                    value               : {type: 'Struct', values: []}, // Push items
-                    structureSubType    : 'InventoryStack'
+                    name                    : 'mInventoryStacks',
+                    type                    : 'Array',
+                    value                   : {type: 'Struct', values: []}, // Push items
+                    structureSubType        : 'InventoryStack',
+                    structurePackageName    : {packageName: '/Script/FactoryGame'},
                 },
                 {
                     name                : 'mArbitrarySlotSizes',

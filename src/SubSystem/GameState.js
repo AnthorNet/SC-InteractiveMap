@@ -96,10 +96,11 @@ export default class SubSystem_GameState extends SubSystem
             if(mPlayerGlobalColorPresets === null)
             {
                 this.subSystem.properties.push({
-                    name                : 'mPlayerGlobalColorPresets',
-                    structureSubType    : 'GlobalColorPreset',
-                    type                : 'Array',
-                    value               : {type: 'Struct', values: []}
+                    name                    : 'mPlayerGlobalColorPresets',
+                    structureSubType        : 'GlobalColorPreset',
+                    structurePackageName    : {packageName: '/Script/FactoryGame'},
+                    type                    : 'Array',
+                    value                   : {type: 'Struct', values: []}
                 });
 
                 return this.addPlayerColorPreset(name, primaryColor);
@@ -117,6 +118,7 @@ export default class SubSystem_GameState extends SubSystem
                 {
                     name                        : 'Color',
                     type                        : 'Struct',
+                    packageName                 : '/Script/CoreUObject',
                     value                       : {
                         type                        : 'LinearColor',
                         values                      : primaryColor
@@ -167,10 +169,11 @@ export default class SubSystem_GameState extends SubSystem
                 if(mBuildableLightColorSlots === null)
                 {
                     mBuildableLightColorSlots = {
-                        name                : 'mBuildableLightColorSlots',
-                        structureSubType    : 'LinearColor',
-                        type                : 'Array',
-                        value               : {type: 'Struct', values: []}
+                        name                    : 'mBuildableLightColorSlots',
+                        structureSubType        : 'LinearColor',
+                        structurePackageName    : {packageName: '/Script/CoreUObject'},
+                        type                    : 'Array',
+                        value                   : {type: 'Struct', values: []}
                     };
                     for(let slotIndex = 0; slotIndex < totalColorSlot; slotIndex++)
                     {

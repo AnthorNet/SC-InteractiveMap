@@ -47,9 +47,11 @@ export default class SubSystem_Overclocking
                         if(mInventoryStacks === null)
                         {
                             potentialInventory.properties.push({
-                                name    : "mInventoryStacks",
-                                type    : "Array",
-                                value   : {
+                                name                    : "mInventoryStacks",
+                                type                    : "Array",
+                                structureSubType        : "InventoryStack",
+                                structurePackageName    : {packageName: '/Script/FactoryGame'},
+                                value                   : {
                                         type    : "Struct",
                                         values  : [
                                             [{
@@ -80,8 +82,7 @@ export default class SubSystem_Overclocking
                                                 }
                                             }]
                                         ]
-                                    },
-                                structureSubType: "InventoryStack"
+                                    }
                             });
 
                             console.log('Adding missing mInventoryStacks to: ' + currentObject.pathName);

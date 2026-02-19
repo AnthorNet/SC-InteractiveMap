@@ -237,13 +237,19 @@ export default class Spawn_Image
                     newSupport.properties.push({name: 'mActivePrefabLayout', type: 'Object', value: {levelName: '', pathName: '/Game/FactoryGame/Interface/UI/InGame/Signs/SignLayouts/BPW_Sign1x1_2.BPW_Sign1x1_2_C'}});
                 }
 
-                newSupport.properties.push({name: 'mPrefabTextElementSaveData', type: 'Array', value: {
-                    type    : 'Struct',
-                    values  : [[
-                        {name: 'ElementName', type: 'Str', value: 'Name'},
-                        {name: 'Text', type: 'Str', value: ''},
-                    ]]
-                }, structureSubType: 'PrefabTextElementSaveData'});
+                newSupport.properties.push({
+                    name                    : 'mPrefabTextElementSaveData',
+                    type                    : 'Array',
+                    structureSubType        : 'PrefabTextElementSaveData',
+                    structurePackageName    : {packageName: '/Script/FactoryGame'},
+                    value                   : {
+                        type    : 'Struct',
+                        values  : [[
+                            {name: 'ElementName', type: 'Str', value: 'Name'},
+                            {name: 'Text', type: 'Str', value: ''},
+                        ]]
+                    }
+                });
                 newSupport.properties.push({name: 'mBackgroundColor', type: 'Struct', value: linearColor});
             }
 

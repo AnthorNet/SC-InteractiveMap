@@ -158,10 +158,11 @@ export default class Building_SmartSplitter
                     baseLayout.deleteObjectProperty(currentObject, 'mSortRules');
 
                     let mSortRules = {
-                            name            : 'mSortRules',
-                            type            : 'Array',
-                            value           : {type: 'Struct', values: []},
-                            structureSubType: 'SplitterSortRule'
+                            name                    : 'mSortRules',
+                            type                    : 'Array',
+                            value                   : {type: 'Struct', values: []},
+                            structureSubType        : 'SplitterSortRule',
+                            structurePackageName    : {packageName: '/Script/FactoryGame'}
                         };
                         for(let outputIndex in values)
                         {

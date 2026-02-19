@@ -94,10 +94,11 @@ export default class Spawn_Fauna
                     outerPathName   : pathName, pathName: pathName + '.mInventory',
                     properties      : [
                         {
-                            name                : 'mInventoryStacks',
-                            structureSubType    : 'InventoryStack',
-                            type                : 'Array',
-                            value               : {
+                            name                    : 'mInventoryStacks',
+                            structureSubType        : 'InventoryStack',
+                            structurePackageName    : {packageName: '/Script/FactoryGame'},
+                            type                    : 'Array',
+                            value                   : {
                                 type    : 'Struct',
                                 values  : [[{
                                     name    : 'Item',
