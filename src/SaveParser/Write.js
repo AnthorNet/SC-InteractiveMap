@@ -253,13 +253,10 @@ export default class SaveParser_Write
 
         this.currentEntityLength = 0;
 
-        if(collectables.length > 0)
+        if(this.header.saveVersion >= 46 && currentLevel === (this.levels.length - 1))
         {
-            if(currentLevel === (this.levels.length - 1))
-            {
-                this.saveBinary += this.writeInt(1);
-                this.saveBinary += this.writeString(this.header.mapName);
-            }
+            this.saveBinary += this.writeInt(1);
+            this.saveBinary += this.writeString(this.header.mapName);
         }
 
         this.saveBinary += this.generateCollectablesChunks(collectables);
@@ -405,13 +402,10 @@ export default class SaveParser_Write
         }
 
         // Save current level entities
-        if(entitiesOptions.collectables.length > 0)
+        if(entitiesOptions.currentLevel === (this.levels.length - 1))
         {
-            if(entitiesOptions.currentLevel === (this.levels.length - 1))
-            {
-                this.saveBinary += this.writeInt(1);
-                this.saveBinary += this.writeString(this.header.mapName);
-            }
+            this.saveBinary += this.writeInt(1);
+            this.saveBinary += this.writeString(this.header.mapName);
         }
 
         this.saveBinary += this.generateCollectablesChunks(entitiesOptions.collectables);

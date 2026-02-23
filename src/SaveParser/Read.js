@@ -341,18 +341,19 @@ export default class SaveParser_Read
             {
                 if(this.currentByte <= (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
                 {
+                    if(this.header.saveVersion >= 46 && levelName === 'Level ' + this.header.mapName)
+                    {
+                        this.readInt();     // levelPersistentFlag
+                        this.readString();  // Persistent_Level
+                    }
+
                     let countCollectedInBetween = this.readInt();
                         if(countCollectedInBetween > 0)
                         {
-                            if(this.header.saveVersion >= 46 && levelName === 'Level ' + this.header.mapName)
-                            {
-                                this.readString(); // Persistent_Level
-                                countCollectedInBetween = this.readInt();
-                            }
-
                             for(let i = 0; i < countCollectedInBetween; i++)
                             {
                                 let collectable = this.readObjectProperty();
+                                    //console.log(1, collectable);
                                     collectables.push(collectable);
                             }
                         }
@@ -451,16 +452,15 @@ export default class SaveParser_Read
                 this.readUint();
             }
 
+            if(levelName === 'Level ' + this.header.mapName)
+            {
+                this.readInt();     // levelPersistentFlag
+                this.readString();  // Persistent_Level
+            }
+
             let countCollected = this.readInt();
                 if(countCollected > 0)
                 {
-                    if(levelName === 'Level ' + this.header.mapName)
-                    {
-                        console.log('GOING HERE????', this.readString())
-                        //this.readString(); // Persistent_Level
-                        countCollected = this.readInt();
-                    }
-
                     for(let i = 0; i < countCollected; i++)
                     {
                         let collectable = this.readObjectProperty();
