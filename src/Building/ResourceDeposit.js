@@ -81,7 +81,6 @@ export default class Building_ResourceDeposit
                                         }]);
                                     }
                                 }
-
                         }
                     }
             }

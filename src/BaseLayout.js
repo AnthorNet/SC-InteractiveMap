@@ -711,25 +711,31 @@ export default class BaseLayout
                 {
                     continue;
                 }
-                /*
-                if(currentObject.className.includes('Cabin'))
-                {
-                    console.log('Cabin', currentObject)
-                }
-                /**/
-                /*
-                if(currentObject.className.includes('Subsystem'))
-                {
-                    console.log('Subsystem', currentObject)
-                }
-                /**/
-                /*
-                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/ProjectAssembly/BP_ProjectAssembly.BP_ProjectAssembly_C')
-                {
-                    console.log(currentObject);
-                }
-                /**/
+                //if(currentObject.className.includes('Cabin')){ console.log('Cabin', currentObject); }
+                //if(currentObject.className.includes('Subsystem')){ console.log('Subsystem', currentObject); }
+                //if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/ProjectAssembly/BP_ProjectAssembly.BP_ProjectAssembly_C'){ console.log(currentObject); }
+                //if(currentObject.className.includes('SporeFlower')){ console.log(currentObject); }
                 //if(currentObject.className.includes('Rock')){ console.log(currentObject); }
+                //if(currentObject.className.includes('Pillar')){ console.log(currentObject); }
+                //if(currentObject.className.includes('Gas')){ console.log(currentObject); } // /Game/FactoryGame/VFX/World/GasPerimeter/BP_VolumeGas_01.BP_VolumeGas_01_C ?
+
+            if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C' && this.useRadioactivity === true)
+            {
+                if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined && this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type === 'Desc_OreUranium_C')
+                {
+                    let currentItemData = this.getItemDataFromClassName('Desc_OreUranium_C', false);
+                        if(currentItemData !== null)
+                        {
+                            if(currentItemData.radioactiveDecay !== undefined)
+                            {
+                                this.addRadioactivityDot(currentObject, [{
+                                    qty                 : 96,
+                                    radioactiveDecay    : currentItemData.radioactiveDecay
+                                }]);
+                            }
+                        }
+                }
+            }
 
             // Add menu to nodes/foliages...
             if([
