@@ -67,6 +67,22 @@ export default class Building_ResourceDeposit
                             }
                             baseLayout.playerLayers[layerId].filtersCount[itemId]++;
                         }
+
+                        if(itemId === 'Desc_OreUranium_C' && baseLayout.useRadioactivity === true)
+                        {
+                            let currentItemData = baseLayout.getItemDataFromClassName(itemId, false);
+                                if(currentItemData !== null)
+                                {
+                                    if(currentItemData.radioactiveDecay !== undefined)
+                                    {
+                                        baseLayout.addRadioactivityDot(currentObject, [{
+                                            qty                 : mResourcesLeft,
+                                            radioactiveDecay    : currentItemData.radioactiveDecay
+                                        }]);
+                                    }
+                                }
+
+                        }
                     }
             }
     }
@@ -83,6 +99,13 @@ export default class Building_ResourceDeposit
             }
 
             baseLayout.deleteObjectProperty(currentObject, 'mResourcesLeft');
+
+        if(baseLayout.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName] !== undefined && baseLayout.useRadioactivity === true)
+        {
+            delete baseLayout.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
+            baseLayout.radioactivityLayerNeedsUpdate = true;
+            baseLayout.updateRadioactivityLayer();
+        }
 
         baseLayout.deleteMarkerFromElements('playerResourceDepositsLayer', marker.relatedTarget);
         baseLayout.setBadgeLayerCount('playerResourceDepositsLayer');
