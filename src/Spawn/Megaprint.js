@@ -78,6 +78,29 @@ export default class Spawn_Megaprint
                 }
             }
 
+            // Fix old megaprint to not use new save format when they don't have it
+            if(this.clipboard.saveVersion >= 41 && this.baseLayout.saveGameParser.header.saveVersion > this.clipboard.saveVersion)
+            {
+                for(let i = 0; i < this.clipboard.data.length; i++)
+                {
+                    if(this.clipboard.data[i].parent.entitySaveVersion === undefined)
+                    {
+                        this.clipboard.data[i].parent.entitySaveVersion = this.clipboard.saveVersion;
+                    }
+
+                    if(this.clipboard.data[i].children !== undefined)
+                    {
+                        for(let j = 0; j < this.clipboard.data[i].children.length; j++)
+                        {
+                            if(this.clipboard.data[i].children[j].entitySaveVersion === undefined)
+                            {
+                                this.clipboard.data[i].children[j].entitySaveVersion = this.clipboard.saveVersion;
+                            }
+                        }
+                    }
+                }
+            }
+
             if(this.baseLayout.saveGameParser.header.saveVersion >= 41 && this.clipboard.saveVersion < 41)
             {
                 for(let i = 0; i < this.clipboard.data.length; i++)
