@@ -151,6 +151,21 @@ export default class SubSystem_Fauna
                 }
         }
 
+        if(currentObject.className === '/Game/FactoryGame/Character/Creature/Enemy/Hog/NuclearHog/Char_NuclearHog.Char_NuclearHog_C' && this.baseLayout.useRadioactivity === true)
+        {
+            let currentItemData = this.baseLayout.getItemDataFromClassName('Desc_OreUranium_C', false);
+                if(currentItemData !== null)
+                {
+                    if(currentItemData.radioactiveDecay !== undefined)
+                    {
+                        this.baseLayout.addRadioactivityDot(currentObject, [{
+                            qty                 : 32,
+                            radioactiveDecay    : currentItemData.radioactiveDecay
+                        }]);
+                    }
+                }
+        }
+
         let faunaMarker = L.mapMarker(
                 this.baseLayout.satisfactoryMap.unproject(currentObject.transform.translation),
                 {
@@ -204,6 +219,13 @@ export default class SubSystem_Fauna
                             baseLayout.playerLayers[layerId].count--;
                         }
                 }
+        }
+
+        if(currentObject.className === '/Game/FactoryGame/Character/Creature/Enemy/Hog/NuclearHog/Char_NuclearHog.Char_NuclearHog_C' && this.baseLayout.useRadioactivity === true)
+        {
+            delete baseLayout.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
+            baseLayout.radioactivityLayerNeedsUpdate = true;
+            baseLayout.updateRadioactivityLayer();
         }
 
         let mOwningSpawner = baseLayout.getObjectProperty(currentObject, 'mOwningSpawner');
