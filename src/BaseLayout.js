@@ -2501,7 +2501,31 @@ export default class BaseLayout
                         //TODO: Calculate length based on proper pitch angle...
                         if(buildingData.category === 'beam' && Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.pitch)) === 0)
                         {
-                            let mLength = this.getObjectProperty(currentObject, 'mLength');
+                            if(currentObject.typeSpecificData !== undefined)
+                            {
+                                let BeamLength = this.getObjectProperty(currentObject.typeSpecificData, 'BeamLength');
+                                    if(BeamLength !== null)
+                                    {
+                                        if(Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.roll)) !== 0)
+                                        {
+                                            polygonOptions.length       = BeamLength;
+                                            polygonOptions.xShift       = -BeamLength / 2;
+                                            polygonOptions.useOnly2D    = true;
+                                        }
+                                        else
+                                        {
+                                            polygonOptions.width        = BeamLength;
+                                            polygonOptions.xShift       = -BeamLength / 2;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Connectors...
+                                        polygonOptions.length           = (buildingData.height !== undefined) ? (buildingData.height * 100) : 800;
+                                        polygonOptions.useOnly2D        = true;
+                                    }
+                            }
+                            let mLength = this.getObjectProperty(currentObject, 'mLength'); // Old...
                                 if(mLength !== null)
                                 {
                                     if(Math.round(BaseLayout_Math.clampEulerAxis(objectAngle.roll)) !== 0)
