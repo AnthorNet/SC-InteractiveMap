@@ -1053,7 +1053,14 @@ export default class SaveParser_Read
                         if(lightweightVersion >= 3)
                         {
                             lightweightObject.serviceProvider       = this.readByte();
-                            lightweightObject.playerInfoTableIndex  = this.readByte();
+
+                            if(this.header.saveVersion >= 57)
+                            {
+                                lightweightObject.playerInfoTableIndex  = this.readInt();
+                            }
+                            else{
+                                lightweightObject.playerInfoTableIndex  = this.readByte();
+                            }
                         }
 
                         // Skip already deleted actors...

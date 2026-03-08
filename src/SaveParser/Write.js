@@ -1333,7 +1333,15 @@ export default class SaveParser_Write
                     if(this.lightweightVersion >= 3)
                     {
                         entity += this.writeByte(data[i].serviceProvider);
-                        entity += this.writeByte(data[i].playerInfoTableIndex);
+
+                        if(this.header.saveVersion >= 57)
+                        {
+                            entity += this.writeInt(data[i].playerInfoTableIndex);
+                        }
+                        else
+                        {
+                            entity += this.writeByte(data[i].playerInfoTableIndex);
+                        }
                     }
                 }
 
