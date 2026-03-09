@@ -368,7 +368,15 @@ export default class SaveParser_Write
 
                             if(this.currentEntitySaveVersion >= 53)
                             {
-                                this.saveBinary += this.writeInt(0);
+                                if(objects[i].dataPackageVersion !== undefined)
+                                {
+                                    this.saveBinary += this.writeInt(1);
+                                    this.saveBinary += this.writeDataPackageVersion(objects[i].dataPackageVersion);
+                                }
+                                else
+                                {
+                                    this.saveBinary += this.writeInt(0);
+                                }
                             }
 
                             entitiesOptions.tempSaveBinaryLength += this.currentEntityLength;

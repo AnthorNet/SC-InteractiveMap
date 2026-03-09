@@ -376,7 +376,12 @@ export default class SaveParser_Read
 
                 if(this.currentEntitySaveVersion >= 53)
                 {
-                    this.readInt(); // 0
+                    let haveDataPackageVersion = this.readInt();
+                        if(haveDataPackageVersion !== 0)
+                        {
+                            this.objects[entitiesToObjects[i]].dataPackageVersion = this.readDataPackageVersion();
+                            //console.log('ENTITY DATA PACKAGE NAME?', entitiesToObjects[i], this.objects[entitiesToObjects[i]]);
+                        }
                 }
 
                 // Avoid memory error on very large save!
@@ -1201,7 +1206,7 @@ export default class SaveParser_Read
         }
 
         this.currentPropertyLength  = this.readInt(); // Length of the property, this is calculated when writing back ;)
-            //console.log(this.currentEntitySaveVersion, 'currentProperty.type', currentProperty.type, this.currentPropertyLength)
+            //console.log('currentPropertyLength', this.currentEntitySaveVersion, 'currentProperty.type', currentProperty.type, this.currentPropertyLength)
 
         if(this.currentEntitySaveVersion < 53)
         {
@@ -2534,7 +2539,6 @@ export default class SaveParser_Read
 
     readPackageName(currentProperty = {})
     {
-
         let hasPackageName      = this.readInt();
             if(hasPackageName !== 0)
             {
