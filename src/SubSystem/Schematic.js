@@ -8,7 +8,10 @@ export default class SubSystem_Schematic extends SubSystem
 {
     constructor(options)
     {
-        options.pathName            = 'Persistent_Level:PersistentLevel.schematicManager';
+        options.pathName            = [
+            'Persistent_Level:PersistentLevel.SchematicManager',
+            'Persistent_Level:PersistentLevel.schematicManager'
+        ];
         super(options);
 
         this.collectedSchematics    = new Schematics({language: this.baseLayout.language});
