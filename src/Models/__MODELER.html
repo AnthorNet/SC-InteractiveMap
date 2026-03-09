@@ -6,7 +6,7 @@
     </head>
     <body onload="clear_canvas()">
         <div style="float:left">
-            <canvas id="jPolygon" width="0" height="0" style="cursor:crosshair" data-imgsrc="__model.jpg" onmousedown="point_it(event)" onmousemove="show_it(event)" oncontextmenu="return false;">
+            <canvas id="jPolygon" width="0" height="0" style="cursor:crosshair" data-imgsrc="__model.png" onmousedown="point_it(event)" onmousemove="show_it(event)" oncontextmenu="return false;">
                 Your browser does not support the HTML5 canvas tag.
             </canvas>
         </div>
@@ -42,8 +42,8 @@
                 s2_y = p3['y'] - p2['y'];
 
                 var s, t;
-                s = (-s1_y * (p0['x'] - p2['x']) + s1_x * (p0['y'] - p2['y'])) / (-s2_x * s1_y + s1_x * s2_y);
-                t = ( s2_x * (p0['y'] - p2['y']) - s2_y * (p0['x'] - p2['x'])) / (-s2_x * s1_y + s1_x * s2_y);
+                    s = (-s1_y * (p0['x'] - p2['x']) + s1_x * (p0['y'] - p2['y'])) / (-s2_x * s1_y + s1_x * s2_y);
+                    t = ( s2_x * (p0['y'] - p2['y']) - s2_y * (p0['x'] - p2['x'])) / (-s2_x * s1_y + s1_x * s2_y);
 
                 if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
                 {
@@ -146,14 +146,17 @@
                 p3['x'] = x;
                 p3['y'] = y;
 
-                for(var i=0; i<perimeter.length-1; i++){
+                for(var i=0; i<perimeter.length-1; i++)
+                {
                     p0['x'] = perimeter[i]['x'];
                     p0['y'] = perimeter[i]['y'];
                     p1['x'] = perimeter[i+1]['x'];
                     p1['y'] = perimeter[i+1]['y'];
-                    if(p1['x'] == p2['x'] && p1['y'] == p2['y']){ continue; }
-                    if(p0['x'] == p3['x'] && p0['y'] == p3['y']){ continue; }
-                    if(line_intersects(p0,p1,p2,p3)==true){
+                    
+                    if(p1['x'] === p2['x'] && p1['y'] === p2['y']){ continue; }
+                    if(p0['x'] === p3['x'] && p0['y'] === p3['y']){ continue; }
+                    if(line_intersects(p0,p1,p2,p3) === true)
+                    {
                         return true;
                     }
                 }
