@@ -634,7 +634,6 @@ export default class SaveParser_Read
 
         // Read properties
         this.objects[objectKey].properties      = [];
-
         while(true)
         {
             let property = this.readProperty(this.objects[objectKey].className, objectKey);
@@ -1116,93 +1115,101 @@ export default class SaveParser_Read
         if(this.currentEntitySaveVersion >= 53)
         {
             let hasCustomData = this.readInt();
-                if(hasCustomData > 2) // DEBUG
+                switch(hasCustomData)
                 {
-                    console.log('hasCustomData', hasCustomData, currentProperty);
-                }
+                    case 0: // Default
 
-                if(hasCustomData === 1)
-                {
-                    if(currentProperty.type === 'Array')
-                    {
+                        break;
+
+                    case 1:
+                        if(currentProperty.type === 'Array')
+                        {
+                                currentProperty.value   = {type: this.readString().replace('Property', '')};
+                            let arrayMode               = this.readInt();
+                                switch(arrayMode)
+                                {
+                                    case 0: // Default
+
+                                        break;
+
+                                    case 1: // Struct
+                                        currentProperty.structureSubType        = this.readString();
+                                        currentProperty.structurePackageName    = this.readPackageName({});
+
+                                        break;
+
+                                    case 2: // Enum
+                                        currentProperty.enumName                = this.readString();
+                                        currentProperty.enumPackageName         = this.readPackageName({});
+
+                                        this.readString();  // ByteProperty
+                                        this.readInt();     // 0 //TODO: Package?
+
+                                        break;
+
+                                    default:
+                                        console.log('Unknown ArrayMode', arrayMode);
+
+                                        break;
+                                }
+                        }
+
+                        if(currentProperty.type === 'Byte')
+                        {
+                            currentProperty.value   = {
+                                enumName                : this.readString(),
+                                enumPackageName         : this.readPackageName({})
+                            };
+                        }
+
+                        if(currentProperty.type === 'Set')
+                        {
                             currentProperty.value   = {type: this.readString().replace('Property', '')};
-                        let arrayMode               = this.readInt();
-                            switch(arrayMode)
-                            {
-                                case 0: // Default
-                                    break;
+                            currentProperty         = this.readPackageName(currentProperty);
+                        }
+                        if(currentProperty.type === 'Struct')
+                        {
+                            currentProperty.value   = {type: this.readString()};
+                            currentProperty         = this.readPackageName(currentProperty);
+                        }
 
-                                case 1: // Struct
-                                    currentProperty.structureSubType        = this.readString();
-                                    currentProperty.structurePackageName    = this.readPackageName({});
+                        break;
 
-                                    break;
-
-                                case 2: // Enum
-                                    currentProperty.enumName                = this.readString();
-                                    currentProperty.enumPackageName         = this.readPackageName({});
-
-                                    this.readString();  // ByteProperty
-                                    this.readInt();     // 0 //TODO: Package?
-
-                                    break;
-
-                                default:
-                                    console.log('Unknown ArrayMode', arrayMode);
-
-                                    break;
-                            }
-                    }
-
-                    if(currentProperty.type === 'Byte')
-                    {
-                        currentProperty.value   = {
-                            enumName                : this.readString(),
-                            enumPackageName         : this.readPackageName({})
-                        };
-                    }
-
-                    if(currentProperty.type === 'Set')
-                    {
-                        currentProperty.value   = {type: this.readString().replace('Property', '')};
-                        currentProperty         = this.readPackageName(currentProperty);
-                    }
-                    if(currentProperty.type === 'Struct')
-                    {
-                        currentProperty.value   = {type: this.readString()};
-                        currentProperty         = this.readPackageName(currentProperty);
-                    }
-                }
-
-                if(hasCustomData === 2)
-                {
-                    if(currentProperty.type === 'Enum')
-                    {
-                        currentProperty.value   = {
-                            name                    : this.readString(),
-                            enumPackageName         : this.readPackageName({})
-                        };
-
-                        this.readString();  // ByteProperty
-                        this.readInt();     // 0
-                    }
-
-                    if(currentProperty.type === 'Map')
-                    {
-                            currentProperty.value = {
-                                keyType             : this.readString().replace('Property', ''),
-                                keyPackageName      : this.readPackageName(),
+                    case 2:
+                        if(currentProperty.type === 'Enum')
+                        {
+                            currentProperty.value   = {
+                                name                    : this.readString(),
+                                enumPackageName         : this.readPackageName({})
                             };
 
-                            if(currentProperty.value.keyType === 'Enum')
-                            {
-                                this.readString();  // ByteProperty
-                                this.readInt();     // 0 //TODO: Package?
-                            }
+                            this.readString();  // ByteProperty
+                            this.readInt();     // 0
+                        }
 
-                            currentProperty.value.valueType         = this.readString().replace('Property', '');
-                            currentProperty.value.valuePackageName  = this.readPackageName();
-                    }
+                        if(currentProperty.type === 'Map')
+                        {
+                                currentProperty.value = {
+                                    keyType             : this.readString().replace('Property', ''),
+                                    keyPackageName      : this.readPackageName(),
+                                };
+
+                                if(currentProperty.value.keyType === 'Enum')
+                                {
+                                    this.readString();  // ByteProperty
+                                    this.readInt();     // 0 //TODO: Package?
+                                }
+
+                                currentProperty.value.valueType         = this.readString().replace('Property', '');
+                                currentProperty.value.valuePackageName  = this.readPackageName();
+                        }
+
+                        break;
+
+                    default:
+                        console.log('hasCustomData', hasCustomData, currentProperty);
+
+                        break;
                 }
         }
 
