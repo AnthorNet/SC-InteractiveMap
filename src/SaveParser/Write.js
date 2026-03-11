@@ -155,13 +155,27 @@ export default class SaveParser_Write
                         this.subLevelObjectKeys     = objectKeys;
                         this.subLevelCollectables   = collectables;
 
-                        return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName], this.levels[currentLevel].saveVersion, this.levels[currentLevel].dataPackageVersion);
+                        return this.generateObjectsChunks(
+                            currentLevel,
+                            this.subLevelObjectKeys[currentLevelName],
+                            this.subLevelCollectables[currentLevelName],
+                            this.levels[currentLevel].saveVersion,
+                            this.levels[currentLevel].levelPersistentFlag,
+                            this.levels[currentLevel].dataPackageVersion
+                        );
                     });
                 });
         }
         else
         {
-            return this.generateObjectsChunks(currentLevel, this.subLevelObjectKeys[currentLevelName], this.subLevelCollectables[currentLevelName], this.levels[currentLevel].saveVersion, this.levels[currentLevel].dataPackageVersion);
+            return this.generateObjectsChunks(
+                currentLevel,
+                this.subLevelObjectKeys[currentLevelName],
+                this.subLevelCollectables[currentLevelName],
+                this.levels[currentLevel].saveVersion,
+                this.levels[currentLevel].levelPersistentFlag,
+                this.levels[currentLevel].dataPackageVersion
+            );
         }
     }
 
@@ -170,12 +184,19 @@ export default class SaveParser_Write
         let currentLevelName = this.levels[this.levels.length - 1].name.replace('Level ', '');
             this.postWorkerMessage({command: 'requestObjectKeys', levelName: currentLevelName}).then((objectKeys) => {
                 this.postWorkerMessage({command: 'requestCollectables', levelName: currentLevelName}).then((collectables) => {
-                    return this.generateObjectsChunks((this.levels.length - 1), objectKeys[currentLevelName], collectables[currentLevelName], null, this.levels[this.levels.length - 1].dataPackageVersion);
+                    return this.generateObjectsChunks(
+                        (this.levels.length - 1),
+                        objectKeys[currentLevelName],
+                        collectables[currentLevelName],
+                        null,
+                        this.levels[this.levels.length - 1].levelPersistentFlag,
+                        this.levels[this.levels.length - 1].dataPackageVersion
+                    );
                 });
             });
     }
 
-    generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion = null, dataPackageVersion = null, step = null, tempSaveBinaryLength = 0)
+    generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion = null, levelPersistentFlag = null, dataPackageVersion = null, step = null, tempSaveBinaryLength = 0)
     {
         if(step === null)
         {
@@ -205,7 +226,7 @@ export default class SaveParser_Write
                     this.saveBinary        += this.writeActor(objects[0], levelSaveVersion);
                     tempSaveBinaryLength   += this.currentEntityLength;
 
-                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, dataPackageVersion, 0, tempSaveBinaryLength);
+                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, levelPersistentFlag, dataPackageVersion, 0, tempSaveBinaryLength);
                 });
             }
             else
@@ -213,7 +234,7 @@ export default class SaveParser_Write
                 this.saveBinary            += this.writeInt(objectKeys.length, false);
                 tempSaveBinaryLength       += 4; // countObjects
 
-                return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, dataPackageVersion, 0, tempSaveBinaryLength);
+                return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, levelPersistentFlag, dataPackageVersion, 0, tempSaveBinaryLength);
             }
         }
 
@@ -246,20 +267,33 @@ export default class SaveParser_Write
                             }
                         }
 
-                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, dataPackageVersion, (step + this.stepsLength), tempSaveBinaryLength);
+                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, levelPersistentFlag, dataPackageVersion, (step + this.stepsLength), tempSaveBinaryLength);
                 });
             }
 
 
         this.currentEntityLength = 0;
 
-        if(this.header.saveVersion >= 46 && currentLevel === (this.levels.length - 1))
+        if(this.header.saveVersion >= 46)
         {
-            this.saveBinary += this.writeInt(1);
-            this.saveBinary += this.writeString(this.header.mapName);
+            if(currentLevel === (this.levels.length - 1))
+            {
+                if(levelPersistentFlag === 1)
+                {
+                    this.saveBinary += this.writeInt(1);
+                    this.saveBinary += this.writeString(this.header.mapName);
+                }
+                else
+                {
+                    this.saveBinary += this.writeInt(0);
+                }
+            }
         }
 
-        this.saveBinary += this.generateCollectablesChunks(collectables);
+        if(collectables.length > 0)
+        {
+            this.saveBinary += this.generateCollectablesChunks(collectables);
+        }
 
         tempSaveBinaryLength += this.currentEntityLength;
 
@@ -409,25 +443,21 @@ export default class SaveParser_Write
             this.saveBinary += this.writeUint(entitiesOptions.levelSaveVersion);
         }
 
-        // Save current level entities
-        if(entitiesOptions.currentLevel === (this.levels.length - 1))
+        if(entitiesOptions.currentLevel !== (this.levels.length - 1))
         {
-            this.saveBinary += this.writeInt(1);
-            this.saveBinary += this.writeString(this.header.mapName);
-        }
+            this.saveBinary += this.generateCollectablesChunks(entitiesOptions.collectables);
 
-        this.saveBinary += this.generateCollectablesChunks(entitiesOptions.collectables);
-
-        if(this.header.saveVersion >= 53 && entitiesOptions.currentLevel !== (this.levels.length - 1))
-        {
-            if(entitiesOptions.dataPackageVersion !== null)
+            if(this.header.saveVersion >= 53)
             {
-                this.saveBinary += this.writeInt(1, false);
-                this.saveBinary += this.writeDataPackageVersion(entitiesOptions.dataPackageVersion, false);
-            }
-            else
-            {
-                this.saveBinary += this.writeInt(0, false);
+                if(entitiesOptions.dataPackageVersion !== null)
+                {
+                    this.saveBinary += this.writeInt(1, false);
+                    this.saveBinary += this.writeDataPackageVersion(entitiesOptions.dataPackageVersion, false);
+                }
+                else
+                {
+                    this.saveBinary += this.writeInt(0, false);
+                }
             }
         }
 

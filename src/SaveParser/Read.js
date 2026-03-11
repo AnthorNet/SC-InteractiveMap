@@ -261,6 +261,8 @@ export default class SaveParser_Read
         {
             let levelName                   = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
             let levelSaveVersion            = null;
+            let levelPersistentFlag         = null;
+            let levelDataPackageVersion     = null;
 
             let objectsBinaryLength         = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
             let objectsBinaryLengthStart    = this.currentByte;
@@ -339,14 +341,17 @@ export default class SaveParser_Read
             }
             else
             {
-                if(this.currentByte <= (objectsBinaryLengthStart + Number(objectsBinaryLength) - 4))
+                if(this.header.saveVersion >= 46 && levelName === 'Level ' + this.header.mapName)
                 {
-                    if(this.header.saveVersion >= 46 && levelName === 'Level ' + this.header.mapName)
+                    levelPersistentFlag = this.readInt();
+                    if(levelPersistentFlag !== 0)
                     {
-                        this.readInt();     // levelPersistentFlag
                         this.readString();  // Persistent_Level
                     }
+                }
 
+                if(this.currentByte < (objectsBinaryLengthStart + Number(objectsBinaryLength)))
+                {
                     let countCollectedInBetween = this.readInt();
                         if(countCollectedInBetween > 0)
                         {
@@ -371,7 +376,6 @@ export default class SaveParser_Read
 
             for(let i = 0; i < countEntities; i++)
             {
-                //console.log(i, entitiesToObjects[i]);
                 this.readEntity(entitiesToObjects[i]);
 
                 if(this.currentEntitySaveVersion >= 53)
@@ -457,25 +461,20 @@ export default class SaveParser_Read
                 this.readUint();
             }
 
-            if(levelName === 'Level ' + this.header.mapName)
+            if(levelName !== 'Level ' + this.header.mapName)
             {
-                this.readInt();     // levelPersistentFlag
-                this.readString();  // Persistent_Level
-            }
-
-            let countCollected = this.readInt();
-                if(countCollected > 0)
-                {
-                    for(let i = 0; i < countCollected; i++)
+                let countCollected = this.readInt();
+                    if(countCollected > 0)
                     {
-                        let collectable = this.readObjectProperty();
-                            //console.log(2, collectable);
-                            collectables.push(collectable);
+                        for(let i = 0; i < countCollected; i++)
+                        {
+                            let collectable = this.readObjectProperty();
+                                //console.log(2, collectable);
+                                collectables.push(collectable);
+                        }
                     }
-                }
 
-            let levelDataPackageVersion = null;
-                if(this.header.saveVersion >= 53 && levelName !== 'Level ' + this.header.mapName)
+                if(this.header.saveVersion >= 53)
                 {
                     let haveLevelDataPackageVersion = this.readInt();
                         if(haveLevelDataPackageVersion === 1)
@@ -483,8 +482,9 @@ export default class SaveParser_Read
                             levelDataPackageVersion = this.readDataPackageVersion();
                         }
                 }
+            }
 
-            levels.push({name: levelName, saveVersion: levelSaveVersion, dataPackageVersion: levelDataPackageVersion});
+            levels.push({name: levelName, saveVersion: levelSaveVersion, levelPersistentFlag: levelPersistentFlag, dataPackageVersion: levelDataPackageVersion});
             this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
         }
 
@@ -585,6 +585,7 @@ export default class SaveParser_Read
             let shouldMigrateObjectRefsToPersistentFlag = this.readUint();
                 if(shouldMigrateObjectRefsToPersistentFlag !== 0)
                 {
+                    //console.log('shouldMigrateObjectRefsToPersistentFlag', this.currentEntityPathName, shouldMigrateObjectRefsToPersistentFlag)
                     this.objects[objectKey].shouldMigrateObjectRefsToPersistentFlag = shouldMigrateObjectRefsToPersistentFlag;
                 }
         }
