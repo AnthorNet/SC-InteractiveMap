@@ -58,7 +58,7 @@ export default class Building_FrackingSmasher
 
                 let connectedContent    = [];
                 let unconnectedContent  = [];
-                let extractorRates      = {impure: 30000, normal: 60000, pure: 120000};
+                let extractorRates      = {RP_Inpure: 30000, RP_Normal: 60000, RP_Pure: 120000};
                     if(baseLayout.buildingsData.Build_FrackingExtractor_C !== undefined)
                     {
                         extractorRates = baseLayout.buildingsData.Build_FrackingExtractor_C.extractionRate;

@@ -66,6 +66,7 @@ import Building_RadarTower                      from './Building/RadarTower.js';
 import Building_RailroadSwitchControl           from './Building/RailroadSwitchControl.js';
 import Building_RailroadTrack                   from './Building/RailroadTrack.js';
 import Building_ResourceDeposit                 from './Building/ResourceDeposit.js';
+import Building_ResourceNode                    from './Building/ResourceNode.js';
 import Building_Sign                            from './Building/Sign.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
 
@@ -623,10 +624,10 @@ export default class BaseLayout
 
     renderObjects()
     {
-        // Switch some collectables to 0 opacity
+        // Switch some collectables to 0 opacity (Not pillars or rocks as they only appears when destroyed now...)
         for(let pathName in this.satisfactoryMap.collectableMarkers)
         {
-            if(['sporeFlowers', 'smallRocks', 'largeRocks'].includes(this.satisfactoryMap.collectableMarkers[pathName].options.layerId))
+            if(['sporeFlowers'].includes(this.satisfactoryMap.collectableMarkers[pathName].options.layerId))
             {
                 this.satisfactoryMap.collectableMarkers[pathName].removeFrom(
                     this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[pathName].options.layerId]
@@ -737,15 +738,21 @@ export default class BaseLayout
                 }
             }
 
-            // Add menu to nodes/foliages...
+            // Add menu to spore flowers/pillars/rocks...
             if([
-                '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C',
-                '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C',
                 '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C',
 
                 '/Game/FactoryGame/World/Hazard/SporeCloudPlant/BP_SporeFlower.BP_SporeFlower_C',
+
                 '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleSmallRock.BP_DestructibleSmallRock_C',
-                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleLargeRock.BP_DestructibleLargeRock_C'
+                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleFlatRock.BP_DestructibleFlatRock_C',
+                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleLargeRock.BP_DestructibleLargeRock_C',
+
+                '/Game/FactoryGame/World/Environment/Rock/GasPillar/Mesh/BP_GasPillar_01.BP_GasPillar_01_C',
+                '/Game/FactoryGame/World/Environment/Rock/GasPillar/Mesh/BP_GasPillar_02.BP_GasPillar_02_C',
+                '/Game/FactoryGame/World/Environment/Rock/GasPillar/Mesh/BP_GasPillar_03.BP_GasPillar_03_C',
+                '/Game/FactoryGame/World/Environment/Rock/GasPillar/Mesh/BP_GasPillar_04.BP_GasPillar_04_C',
+                '/Game/FactoryGame/World/Environment/Rock/GasPillar/Mesh/BP_GasPillar_05.BP_GasPillar_05_C'
             ].includes(currentObject.className))
             {
                 if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
@@ -753,10 +760,10 @@ export default class BaseLayout
                     this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName = currentObject.pathName;
                     this.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(this);
 
-                    if(['sporeFlowers', 'smallRocks', 'largeRocks'].includes(this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId))
                     {
-                        let mHasBeenFractured = this.getObjectProperty(currentObject, 'mHasBeenFractured');
-                            if(mHasBeenFractured === null || this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId === 'sporeFlowers')
+                        let mHasBeenFractured       = this.getObjectProperty(currentObject, 'mHasBeenFractured');
+                        let mDestructibleActorState = this.getObjectProperty(currentObject, 'mDestructibleActorState');
+                            if((mHasBeenFractured === null && mDestructibleActorState === null) || this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId === 'sporeFlowers')
                             {
                                 this.satisfactoryMap.collectableMarkers[currentObject.pathName].addTo(
                                     this.satisfactoryMap.availableLayers[this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId]
@@ -777,6 +784,13 @@ export default class BaseLayout
                 continue;
             }
 
+            if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C' || currentObject.className === '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C')
+            {
+                Building_ResourceNode.add(this, currentObject);
+                continue;
+            }
+
+
             // Mod nodes
             if([
                 // Refined Power
@@ -785,51 +799,7 @@ export default class BaseLayout
                 '/FicsitFarming/World/ResourceNodes/Dirt/BP_DirtNode.BP_DirtNode_C'
             ].includes(currentObject.className))
             {
-                if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] === undefined)
-                {
-                    $('#mods_resource_nodes').show();
-
-                    let nodeType    = currentObject.className.split('.').pop();
-                    let nodePurity  = 'impure';
-                    let mNodePurity = this.getObjectProperty(currentObject, 'mNodePurity');
-                        if(mNodePurity !== null)
-                        {
-                            console.log('mNodePurity', mNodePurity);
-                        }
-                    let layoutId    = nodeType + '_' + nodePurity.charAt(0).toUpperCase() + nodePurity.slice(1);
-                        if(this.satisfactoryMap.availableLayers[layoutId] === undefined)
-                        {
-                            this.satisfactoryMap.availableLayers[layoutId] = L.layerGroup();
-                        }
-
-                    let button      = $('.updateLayerState[data-type="' + nodeType + '"][data-purity="' + nodePurity + '"]');
-                        button.attr('data-total', parseInt(button.attr('data-total')) + 1);
-                        button.find('.badge').html(new Intl.NumberFormat(this.language).format(parseInt(button.attr('data-total'))));
-                        button.parent().parent().parent().show();
-
-                    let currentMarkerOptions    = {
-                            pathName    : currentObject.pathName,
-                            color       : button.attr('data-outside'),
-                            fillColor   : button.attr('data-inside'),
-                            icon        : button.attr('data-image')
-                        };
-                    let tooltip                 = '<div class="d-flex" style="border: 25px solid #7f7f7f;border-image: url(' + this.staticUrl + '/js/InteractiveMap/img/genericTooltipBackground.png) 25 repeat;background: #7f7f7f;margin: -7px;color: #FFFFFF;text-shadow: 1px 1px 1px #000000;line-height: 16px;font-size: 12px;">\
-                                                    <div class="justify-content-center align-self-center w-100 text-center" style="margin: -10px 0;">\
-                                                        ' + ((button.attr('data-original-title') !== undefined) ? button.attr('data-original-title') : button.attr('title')) + '\
-                                                    </div>\
-                                                </div>';
-                    let currentMarker           = L.mapMarker(this.satisfactoryMap.unproject(currentObject.transform.translation), currentMarkerOptions)
-                                                    .bindTooltip(tooltip)
-                                                    .addTo(this.satisfactoryMap.availableLayers[layoutId]);
-
-                        this.satisfactoryMap.collectableMarkers[currentObject.pathName]                     = currentMarker;
-                        this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId     = layoutId;
-                        this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName    = currentObject.pathName;
-                        this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.purity      = nodePurity;
-                }
-
-                this.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(this);
-
+                Building_ResourceNode.addModded(this, currentObject);
                 continue;
             }
             //if(currentObject.className.includes('Node')){ console.log(currentObject); }

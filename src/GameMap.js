@@ -1,6 +1,8 @@
 /* global L, Intl */
 import BaseLayout_Modal                         from './BaseLayout/Modal.js';
 
+import Building_ResourceNode                    from './Building/ResourceNode.js';
+
 import Lib_MapMarker                            from './Lib/L.MapMarker.js';
 
 export default class GameMap
@@ -67,6 +69,7 @@ export default class GameMap
         this.collectedHardDrives        = new HardDrives({ language: this.language });
         this.localStorage               = this.collectedHardDrives.getLocaleStorage();
         this.mapOptions                 = null;
+        this.mapColors                  = {}; // Cache color and image to dynamically rerender nodes
         this.activeLayers               = null;
 
         this.showInternalCoordinates    = (this.localStorage !== null && this.localStorage.getItem('mapInternalCoordinates') !== null) ? (this.localStorage.getItem('mapInternalCoordinates') === 'true') : true;
@@ -300,15 +303,38 @@ export default class GameMap
                                 if(option.type !== undefined){ currentMarkerOptions.type = option.type; }
                                 else{ if(options.type !== undefined){ currentMarkerOptions.type = options.type; } }
 
-                                if(option.purity !== undefined){ currentMarkerOptions.purity = option.purity; }
+                                if(option.purity !== undefined)
+                                {
+                                    currentMarkerOptions.purity = option.purity;
+
+                                    if(this.mapColors[currentMarkerOptions.type] === undefined)
+                                    {
+                                        this.mapColors[currentMarkerOptions.type] = {};
+                                    }
+                                    if(this.mapColors[currentMarkerOptions.type][currentMarkerOptions.purity] === undefined)
+                                    {
+                                        this.mapColors[currentMarkerOptions.type][currentMarkerOptions.purity] = {
+                                            layerId         : option.layerId,
+                                            name            : option.name,
+                                            outsideColor    : option.outsideColor,
+                                            insideColor     : option.insideColor,
+                                            icon            : option.icon
+                                        };
+                                    }
+                                }
                                 if(marker.core !== undefined){ currentMarkerOptions.core = marker.core; }
 
                                 let currentMarker = null;
-                                    if(option.layerId === 'sporeFlowers' || option.layerId === 'pillars' || option.layerId === 'smallRocks' || option.layerId === 'largeRocks')
+                                    if(option.layerId === 'sporeFlowers' || option.layerId === 'pillars' || option.layerId === 'smallRocks' || option.layerId === 'largeRocks' || option.layerId === 'largeRocks')
                                     {
-                                        currentMarkerOptions.radius = 0.6;
-                                        currentMarkerOptions.color  = '#9cbc7d';
+                                        currentMarkerOptions.radius = 0.4;
+                                        currentMarkerOptions.color  = '#41a5a3';
 
+                                        if(option.type === 'pillars')
+                                        {
+                                            currentMarkerOptions.radius = 0.6;
+                                            currentMarkerOptions.color = '#bee597';
+                                        }
                                         if(option.layerId === 'smallRocks')
                                         {
                                             currentMarkerOptions.radius = 0.1;
@@ -318,11 +344,6 @@ export default class GameMap
                                         {
                                             currentMarkerOptions.radius = 0.3;
                                             currentMarkerOptions.color  = '#555555';
-                                        }
-
-                                        if(option.type === 'pillars')
-                                        {
-                                            currentMarkerOptions.color = '#bee597';
                                         }
 
                                         currentMarker = L.circle(this.unproject([marker.x, marker.y]), currentMarkerOptions);
@@ -951,65 +972,9 @@ export default class GameMap
                 }
             }
 
-            if(options.purity !== undefined)
+            if(options.purity !== undefined && options.type !== 'Desc_Geyser_C')
             {
-                if(options.type !== 'Desc_Geyser_C') // Avoid geysers
-                {
-                    let purityModifier = 1;
-                        if(options.purity === 'impure')
-                        {
-                            purityModifier = 0.5;
-                        }
-                        if(options.purity === 'pure')
-                        {
-                            purityModifier = 2;
-                        }
-
-                    tooltip.push('<table class="table table-bordered table-sm mt-3 mb-0 border-0"><thead><tr><th class="border-top-0 border-left-0"></th><th>50%</th><th>100%</th><th>150%</th><th>200%</th><th>250%</th></tr></thead><tbody>');
-                    if(['Desc_LiquidOil_C', 'Desc_LiquidOilWell_C', 'Desc_Water_C', 'Desc_NitrogenGas_C'].includes(options.type))
-                    {
-                        let defaultSpeed    = 120;
-                        let buildingName    = 'Oil Extractor';
-
-                            if(['Desc_Water_C', 'Desc_NitrogenGas_C', 'Desc_LiquidOilWell_C'].includes(options.type))
-                            {
-                                defaultSpeed    = 60;
-                                buildingName    = 'Resource Well Extractor';
-                            }
-
-                        tooltip.push('<tr>');
-                        tooltip.push('<td>' + buildingName + '</td>');
-
-                        for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
-                        {
-                            tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + 'm³ / min</td>');
-                        }
-
-                        tooltip.push('</tr>');
-                    }
-                    else
-                    {
-                        for(let mk = 1; mk <= 3; mk++)
-                        {
-                            let defaultSpeed = mk * 60;
-                                if(mk === 3)
-                                {
-                                    defaultSpeed = 240;
-                                }
-
-                            tooltip.push('<tr>');
-                            tooltip.push('<td>Miner Mk' + mk + '</td>');
-
-                            for(let clockSpeed = 50; clockSpeed <= 250; clockSpeed += 50)
-                            {
-                                tooltip.push('<td>' + new Intl.NumberFormat(this.language).format(Math.round(purityModifier * defaultSpeed * (clockSpeed / 100))) + ' / min</td>');
-                            }
-
-                            tooltip.push('</tr>');
-                        }
-                    }
-                    tooltip.push('</tbody></table>');
-                }
+                tooltip.push(Building_ResourceNode.getExtractionTable(options));
             }
 
         if(tooltip.length > 0)

@@ -21,6 +21,7 @@ import Building_Production                      from '../Building/Production.js'
 import Building_RadarTower                      from '../Building/RadarTower.js';
 import Building_RailroadSwitchControl           from '../Building/RailroadSwitchControl.js';
 import Building_ResourceDeposit                 from '../Building/ResourceDeposit.js';
+import Building_ResourceNode                    from '../Building/ResourceNode.js';
 import Building_Sign                            from '../Building/Sign.js';
 import Building_SmartSplitter                   from '../Building/SmartSplitter.js';
 import Building_SpaceElevator                   from '../Building/SpaceElevator.js';
@@ -251,6 +252,9 @@ export default class BaseLayout_ContextMenu
                     case '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C':
                     case '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C':
                     case '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C':
+                        contextMenu = Building_ResourceNode.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                        break;
+
                     case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
                     case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
                         contextMenu.push({
@@ -259,19 +263,13 @@ export default class BaseLayout_ContextMenu
                             callback    : this.baseLayout.teleportPlayer
                         });
 
-                        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C' || currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C')
+                        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C')
                         {
                             if(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
                             {
-                                let contextMenuText = ((this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type === 'Desc_LiquidOil_C') ? 'Spawn an Oil Extractor' : 'Spawn a Miner');
-                                    if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C')
-                                    {
-                                        contextMenuText = 'Spawn a Geothermal Generator';
-                                    }
-
                                 contextMenu.push('-');
                                 contextMenu.push({
-                                    text    : contextMenuText,
+                                    text    : 'Spawn a Geothermal Generator',
                                     callback: Modal_Node_SpawnAround.getHTML
                                 });
                             }
@@ -361,7 +359,11 @@ export default class BaseLayout_ContextMenu
                         callback    : this.baseLayout.updateObjectProductionPausedStatus
                     });
 
-                    if(buildingData.category !== 'light' && buildingData.category !== 'tower' && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C')
+                    if(
+                            buildingData.category !== 'light' && buildingData.category !== 'tower'
+                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/ResourceSink/Build_ResourceSink.Build_ResourceSink_C'
+                         && currentObject.className !== '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C'
+                    )
                     {
                         if(this.baseLayout.unlockSubSystem.haveOverclocking() === true)
                         {
@@ -928,7 +930,7 @@ export default class BaseLayout_ContextMenu
                 if([
                     '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C',
                     '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageBlueprint.Build_StorageBlueprint_C',
-                    '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C',
+                    //'/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C',
                     '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C'
                 ].includes(currentObject.className) === false)
                 {
