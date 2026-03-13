@@ -893,25 +893,33 @@ export default class GameMap
                 let explodedPathName = options.pathName.split('.');
                     tooltip.push('<strong>' + options.name + ' (' + explodedPathName.pop() + ')</strong><br />');
 
-                if(window.SCIM.baseLayout !== null)
-                {
-                    let currentObject = window.SCIM.baseLayout.saveGameParser.getTargetObject(options.pathName);
-                        if(currentObject === null)
-                        {
-                            if(options.levelName !== undefined)
+                    if(window.SCIM.baseLayout !== null)
+                    {
+                        let currentObject = window.SCIM.baseLayout.saveGameParser.getTargetObject(options.pathName);
+                            if(currentObject === null)
                             {
-                                if(options.levelName === 'Persistent_Level' || window.SCIM.baseLayout.saveGameParser.isSubLevelSpawned(options.levelName) === true)
+                                if(options.levelName !== undefined)
                                 {
-                                    tooltip.push('<strong class="text-danger">That drop-pod was dismantled.</strong><br />');
+                                    if(options.levelName === 'Persistent_Level' || window.SCIM.baseLayout.saveGameParser.isSubLevelSpawned(options.levelName) === true)
+                                    {
+                                        tooltip.push('<strong class="text-danger">That drop-pod was dismantled.</strong><br />');
+                                    }
+                                    else
+                                    {
+                                        tooltip.push('<strong class="text-danger">That drop-pod was not yet spawned in-game.</strong><br />');
+                                    }
                                 }
-                                else
-                                {
-                                    tooltip.push('<strong class="text-danger">That drop-pod was not yet spawned in-game.</strong><br />');
-                                }
-                            }
 
-                        }
-                }
+                            }
+                            else
+                            {
+                                let mIsDismantled = window.SCIM.baseLayout.getObjectProperty(currentObject, 'mIsDismantled');
+                                    if(mIsDismantled !== null)
+                                    {
+                                        tooltip.push('<strong class="text-danger">That drop-pod was dismantled.</strong><br />');
+                                    }
+                            }
+                    }
 
                 if(options.powerNeeded !== undefined)
                 {

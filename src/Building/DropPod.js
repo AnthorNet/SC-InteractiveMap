@@ -57,19 +57,23 @@ export default class Building_DropPod
      */
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
-        let hasBeenOpened = baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
-            contextMenu.push({
-                text    : ((hasBeenOpened === 1) ? '<strong class="text-danger">Close</strong>' : '<strong class="text-success">Open</strong>') + ' drop-pod',
-                callback: Building_DropPod.toggleHasBeenOpened
-            });
-
-            if(hasBeenOpened === 1)
+        let mIsDismantled = baseLayout.getObjectProperty(currentObject, 'mIsDismantled');
+            if(mIsDismantled === null)
             {
-                let hasBeenLooted = baseLayout.getObjectProperty(currentObject, 'mHasBeenLooted', 0);
+                let hasBeenOpened = baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);
                     contextMenu.push({
-                        text    : ((hasBeenLooted === 1) ? '<strong class="text-success">Add Hard Drive</strong>' : '<strong class="text-danger">Remove Hard Drive</strong>'),
-                        callback: Building_DropPod.toggleHasBeenLooted
+                        text    : ((hasBeenOpened === 1) ? '<strong class="text-danger">Close</strong>' : '<strong class="text-success">Open</strong>') + ' drop-pod',
+                        callback: Building_DropPod.toggleHasBeenOpened
                     });
+
+                    if(hasBeenOpened === 1)
+                    {
+                        let hasBeenLooted = baseLayout.getObjectProperty(currentObject, 'mHasBeenLooted', 0);
+                            contextMenu.push({
+                                text    : ((hasBeenLooted === 1) ? '<strong class="text-success">Add Hard Drive</strong>' : '<strong class="text-danger">Remove Hard Drive</strong>'),
+                                callback: Building_DropPod.toggleHasBeenLooted
+                            });
+                    }
             }
 
         return contextMenu;
