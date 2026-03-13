@@ -456,21 +456,49 @@ export default class SubSystem_Schematic extends SubSystem
             {
                 for(let k = 0; k < currentSchematic.scannerPairs.length; k++)
                 {
-                    if(currentSchematic.scannerPairs[k] === '/Game/FactoryGame/Resource/RawResources/Geyser/Desc_Geyser.Desc_Geyser_C')
+                    switch(currentSchematic.scannerPairs[k])
                     {
-                        unlocks.push('Resource Scanner: Geyser');
+                        case '/Game/FactoryGame/Resource/RawResources/Geyser/Desc_Geyser.Desc_Geyser_C':
+                            unlocks.push('Resource Scanner: Geyser');
+                            break;
+                        default:
+                            let currentRecipe = this.baseLayout.getItemDataFromClassName(currentSchematic.scannerPairs[k]);
+                                if(currentRecipe !== null)
+                                {
+                                    unlocks.push('Resource Scanner: ' + currentRecipe.name);
+                                }
+                                else
+                                {
+                                    unlocks.push('Resource Scanner: ' + currentSchematic.scannerPairs[k]);
+                                }
                     }
-                    else
+                }
+            }
+            if(currentSchematic.objectScanner !== undefined)
+            {
+                for(let k = 0; k < currentSchematic.objectScanner.length; k++)
+                {
+                    switch(currentSchematic.objectScanner[k])
                     {
-                        let currentRecipe = this.baseLayout.getItemDataFromClassName(currentSchematic.scannerPairs[k]);
-                            if(currentRecipe !== null)
-                            {
-                                unlocks.push('Resource Scanner: ' + currentRecipe.name);
-                            }
-                            else
-                            {
-                                unlocks.push('Resource Scanner: ' + currentSchematic.scannerPairs[k]);
-                            }
+                        case '/Game/FactoryGame/Character/Creature/CreatureDescriptors/Desc_HostileCreature.Desc_HostileCreature_C':
+                            unlocks.push('Object Scanner: Hostile Creature');
+                            break;
+                        case '/Game/FactoryGame/World/Benefit/BerryBush/Desc_BerryBush.Desc_BerryBush_C':
+                            unlocks.push('Object Scanner: Berry Bush');
+                            break;
+                        case '/Game/FactoryGame/World/Benefit/NutBush/Desc_NutBush.Desc_NutBush_C':
+                            unlocks.push('Object Scanner: Nut Bush');
+                            break;
+                        default:
+                            let currentRecipe = this.baseLayout.getItemDataFromClassName(currentSchematic.objectScanner[k]);
+                                if(currentRecipe !== null)
+                                {
+                                    unlocks.push('Object Scanner: ' + currentRecipe.name);
+                                }
+                                else
+                                {
+                                    unlocks.push('Object Scanner: ' + currentSchematic.objectScanner[k]);
+                                }
                     }
                 }
             }
