@@ -29,6 +29,7 @@ import Building_TradingPost                     from '../Building/TradingPost.js
 import Building_TrainStation                    from '../Building/TrainStation.js';
 import Building_TruckStation                    from '../Building/TruckStation.js';
 import Building_Vehicle                         from '../Building/Vehicle.js';
+import Building_VehiclePath                     from '../Building/VehiclePath.js';
 
 import Modal_Debug                              from '../Modal/Debug.js';
 import Modal_Map_Paste                          from '../Modal/Map/Paste.js';
@@ -410,6 +411,10 @@ export default class BaseLayout_ContextMenu
                     contextMenu = Building_Light.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
 
+                if(Building_VehiclePath.isVehiclePath(currentObject))
+                {
+                    contextMenu = Building_VehiclePath.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                }
                 if(Building_Locomotive.isLocomotive(currentObject))
                 {
                     contextMenu = Building_Locomotive.addContextMenu(this.baseLayout, currentObject, contextMenu);
@@ -589,7 +594,7 @@ export default class BaseLayout_ContextMenu
                     '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C',
                     '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageBlueprint.Build_StorageBlueprint_C',
                     '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C'
-                ].includes(currentObject.className) === false)
+                ].includes(currentObject.className) === false && Building_VehiclePath.isVehiclePath(currentObject) === false)
                 {
                     contextMenu.push({
                         icon        : 'fa-arrows-alt',
@@ -932,7 +937,7 @@ export default class BaseLayout_ContextMenu
                     '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageBlueprint.Build_StorageBlueprint_C',
                     //'/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C',
                     '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C'
-                ].includes(currentObject.className) === false)
+                ].includes(currentObject.className) === false && Building_VehiclePath.isVehiclePath(currentObject) === false)
                 {
                     contextMenu.push('-');
                     contextMenu.push({

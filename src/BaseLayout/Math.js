@@ -353,14 +353,14 @@ export default class BaseLayout_Math
     }
     */
 
-    static extractSplineData(baseLayout, currentObject)
+    static extractSplineData(baseLayout, currentObject, propertyName = 'mSplineData')
     {
         let nbPoints            = 5;
         let splineDistance      = 0;
         let pointsCoordinates   = [];
         let points              = [];
 
-        let mSplineData         = baseLayout.getObjectProperty(currentObject, 'mSplineData');
+        let mSplineData         = baseLayout.getObjectProperty(currentObject, propertyName);
             if(mSplineData !== null)
             {
                 if(Building_RailroadTrack.isRailroadTrack(currentObject))

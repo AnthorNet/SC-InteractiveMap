@@ -1,4 +1,5 @@
 import Building                                 from '../Building.js';
+import Building_VehiclePath                     from '../Building/VehiclePath.js';
 
 import Modal_Vehicle_TrackData                  from '../Modal/Vehicle/TrackData.js';
 

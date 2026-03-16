@@ -69,6 +69,7 @@ import Building_ResourceDeposit                 from './Building/ResourceDeposit
 import Building_ResourceNode                    from './Building/ResourceNode.js';
 import Building_Sign                            from './Building/Sign.js';
 import Building_Vehicle                         from './Building/Vehicle.js';
+import Building_VehiclePath                     from './Building/VehiclePath.js';
 
 import Building_DigitalStorage_NetworkCable     from './Building/DigitalStorage/NetworkCable.js';
 
@@ -176,8 +177,9 @@ export default class BaseLayout
             playerCratesLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerInformationLayer', elements: [], count: 0},
             playerMinersLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
             playerProductorsLayer                   : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
+            playerStoragesLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
             playerPortalsLayer                      : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], filters: []},
-            playerElevatorsLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], filters: []},
+            playerElevatorsLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
             playerPadsLayer                         : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
 
             playerBiomassGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
@@ -187,8 +189,7 @@ export default class BaseLayout
             playerGeoThermalGeneratorsLayer         : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
             playerStorageGeneratorsLayer            : {layerGroup: null, subLayer: null, mainDivId: '#playerGeneratorsLayer', elements: []},
 
-            playerStoragesLayer                     : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], filters: []},
-
+            playerVehiclesPathLayer                 : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], distance: 0, filters: []},
             playerVehiculesLayer                    : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0, filters: []},
             playerDronesLayer                       : {layerGroup: null, subLayer: null, mainDivId: '#playerTransportationLayer', elements: [], count: 0/*, filters: []*/},
             playerBeltsLayer                        : {layerGroup: null, subLayer: null, mainDivId: '#playerBuildingLayer', elements: [], distance: 0, filters: []},
@@ -781,6 +782,17 @@ export default class BaseLayout
                             }
                     }
                 }
+                else
+                {
+                    /*
+                    if(this.useDebug === true)
+                    {
+                        L.circle(this.satisfactoryMap.unproject(currentObject.transform.translation), {radius: 0.6, color: '#FF0000', pathName: currentObject.pathName}).addTo(
+                            this.satisfactoryMap.availableLayers[((currentObject.className.includes('Pillar')) ? 'pillars' : 'largeRocks')]
+                        ).bindContextMenu(this);
+                    }
+                    /**/
+                }
 
                 continue;
             }
@@ -843,6 +855,11 @@ export default class BaseLayout
                         }
                     }
 
+                continue;
+            }
+
+            if(currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/VehiclePath/Build_VehiclePathNode_Default.Build_VehiclePathNode_Default_C' || currentObject.className === '/Game/FactoryGame/Buildable/Vehicle/VehiclePath/Build_VehiclePathNode_DockingStation.Build_VehiclePathNode_DockingStation_C')
+            {
                 continue;
             }
 
@@ -1151,6 +1168,10 @@ export default class BaseLayout
         if(Building_RailroadTrack.isRailroadTrack(currentObject))
         {
             return resolve(Building_RailroadTrack.add(this, currentObject));
+        }
+        if(Building_VehiclePath.isVehiclePath(currentObject))
+        {
+            return resolve(Building_VehiclePath.add(this, currentObject));
         }
 
         // Add fauna
