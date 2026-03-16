@@ -2335,7 +2335,8 @@ export default class BaseLayout
                             group       : itemsCategories[category],
                             dataContent : '<img src="' + this.itemsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.itemsData[i].name,
                             value       : this.itemsData[i].className,
-                            text        : this.itemsData[i].name
+                            text        : this.itemsData[i].name,
+                            stack       : this.itemsData[i].stack
                         });
                     }
                 }
@@ -2354,7 +2355,8 @@ export default class BaseLayout
                             group       : 'Tools - ' + ((this.toolsData[i].category === 'ficsmas') ? itemsCategories[this.toolsData[i].category] : this.toolsCategories[this.toolsData[i].category]),
                             dataContent : '<img src="' + this.toolsData[i].image + '" style="width: 24px;" class="mr-1" /> ' + this.toolsData[i].name,
                             value       : this.toolsData[i].className,
-                            text        : this.toolsData[i].name
+                            text        : this.toolsData[i].name,
+                            stack       : this.toolsData[i].stack
                         });
                     }
                 }

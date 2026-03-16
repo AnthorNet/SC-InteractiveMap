@@ -36,6 +36,7 @@ export default class BaseLayout_Modal
             formGroup       : '<div class="form-group"></div>',
             input           : {
                 text            : '<input class="form-control text-center" autocomplete="off" type="text">',
+                number          : '<input class="form-control text-center" autocomplete="off" type="number">',
                 textArea        : '<textarea class="form-control text-center" autocomplete="off" rows="5"></textarea>',
                 toggle          : '<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" value="1"><label class="custom-control-label">Toggle label</label></div>',
                 select          : '<select class="form-control"></select>',
@@ -379,6 +380,14 @@ export default class BaseLayout_Modal
             if(selectPickers.length > 0)
             {
                 $(selectPickers).selectpicker({liveSearch: true, container: 'body'});
+                $(selectPickers).on('changed.bs.select', function (e){
+                    let selectedOption  = $(e.target).find('option[value="' + $(e.target).val() + '"]');
+                    let dataStack       = selectedOption.attr('data-stack');
+                        if(dataStack !== undefined)
+                        {
+                            console.log($(e.target), dataStack)
+                        }
+                });
 
                 let updateHeight = $(selectPickers).attr('data-height');
                     if(updateHeight === 'true')
@@ -440,6 +449,10 @@ export default class BaseLayout_Modal
                                 if(option.dataContent !== undefined)
                                 {
                                     optionEl.attr('data-content', option.dataContent);
+                                }
+                                if(option.stack !== undefined)
+                                {
+                                    optionEl.attr('data-stack', option.stack);
                                 }
 
                                 element.append(optionEl);
@@ -568,6 +581,7 @@ export default class BaseLayout_Modal
 
         // Add form group and label
         let group = $(BaseLayout_Modal.templates.formGroup);
+            group.attr('data-type', options.inputType);
             if(options.label !== undefined && ['inventoryItem', 'toggle'].includes(options.inputType) === false)
             {
                 group.prepend('<label>' + options.label + '</label>');
@@ -701,13 +715,14 @@ export default class BaseLayout_Modal
         if(options.inputType === 'inventoryItem')
         {
             input = $('<div class="input-group"></div>').append(input);
-            input.prepend('<div class="input-group-prepend"><span class="input-group-text text-center" style="width: 60px;display: inline-block;">' + options.label + '</span></div>');
+            input.prepend('<div class="input-group-prepend"><span class="input-group-text text-center" style="width: ' + ((options.labelWidth !== undefined) ? options.labelWidth : 60) + 'px;display: inline-block;">' + options.label + '</span></div>');
 
             if(options.qty !== undefined)
             {
-                let qty = $(BaseLayout_Modal.templates.input.text);
+                let qty = $(((options.maxQty !== undefined) ? BaseLayout_Modal.templates.input.number : BaseLayout_Modal.templates.input.text));
                     qty.attr('name', 'QTY_' + options.name);
                     qty.val(options.qty);
+                    if((options.maxQty !== undefined)) { qty.attr('min', '0'); qty.attr('max', options.maxQty); }
                     qty.css('min-width', '80px').css('width', '80px').css('flex-grow', '0');
 
                     input.find('.input-group-prepend').after(qty);
