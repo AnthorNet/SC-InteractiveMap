@@ -181,7 +181,7 @@ export default class Building_RadarTower
                                         name            : itemData.name,
                                         image           : itemData.image,
                                         qty             : collectablesInRadius[className].qty,
-                                        backgroundColor : ((collectablesInRadius[className].purity === 'pure') ? '#80b139' : ((collectablesInRadius[className].purity === 'normal') ? '#f26418' : '#d23430'))
+                                        backgroundColor : ((collectablesInRadius[className].purity === 'RP_Pure') ? '#80b139' : ((collectablesInRadius[className].purity === 'RP_Normal') ? '#f26418' : '#d23430'))
                                     });
                             }
                             else

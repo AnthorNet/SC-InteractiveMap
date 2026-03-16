@@ -58,6 +58,7 @@ export default class Building_Pipeline
                currentObject.className === '/Game/InfiniteLogistics/Buildable/InfinitePipeline/Build_InfinitePipeline.Build_InfinitePipeline_C'
             || currentObject.className === '/PipeFluidColor/Build_PipeColor.Build_PipeColor_C'
             || currentObject.className === '/PipeFluidColor/Build_PipeColor_2.Build_PipeColor_2_C'
+            || currentObject.className.startsWith('/VanillaUpgrades_PeakEfficiency/Buildables/PipelineMk')
         )
         {
             return true;

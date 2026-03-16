@@ -69,8 +69,8 @@ export default class Building
              || currentObject.className.startsWith('/TranslucidBelts/NoRailing/Build_TB')
              || currentObject.className.startsWith('/TranslucidBelts/LeftRailing/Build_TB')
              || currentObject.className.startsWith('/TranslucidBelts/RightRailing/Build_TB')
+             || currentObject.className.startsWith('/VanillaUpgrades_PeakEfficiency/Buildables/ConveyorMk')
              || currentObject.className === '/BeltMk6/Buildable/ConveyorBeltMk6/Build_ConveyorBeltMk6.Build_ConveyorBeltMk6_C'
-
         )
         {
             return true;

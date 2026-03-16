@@ -71,7 +71,7 @@ export default class Building_ResourceNode
             let mNodePurity = baseLayout.getObjectProperty(currentObject, 'mNodePurity');
                 if(mNodePurity !== null)
                 {
-                    console.log('mNodePurity', mNodePurity);
+                    nodePurity = mNodePurity.valueName;
                 }
             let layerId     = nodeType + '_' + nodePurity.charAt(0).toUpperCase() + nodePurity.slice(1);
                 if(baseLayout.satisfactoryMap.availableLayers[layerId] === undefined)

@@ -212,7 +212,7 @@ export default class BaseLayout_Tooltip
     setBuildingExtractionTooltipContent(currentObject, buildingData)
     {
         let itemType                = null;
-        let purity                  = 'normal';
+        let purity                  = 'RP_Normal';
         let extractionRate          = 60;
         let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
 
@@ -320,7 +320,7 @@ export default class BaseLayout_Tooltip
     {
         let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
         let itemType                = null;
-        let purity                  = 'normal';
+        let purity                  = 'RP_Normal';
 
             if(extractResourceNode !== null && this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
             {

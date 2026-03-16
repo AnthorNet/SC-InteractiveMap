@@ -198,7 +198,7 @@ export default class Modal_Buildings
                                 case 'extraction':
                                     let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
                                     let itemType                = null;
-                                    let purity                  = 'normal';
+                                    let purity                  = 'RP_Normal';
 
                                         if(extractResourceNode !== null && this.baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
                                         {

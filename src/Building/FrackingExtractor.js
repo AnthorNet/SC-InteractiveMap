@@ -27,7 +27,7 @@ export default class Building_FrackingExtractor
     {
         let extractResourceNode     = baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
         let itemType                = null;
-        let purity                  = 'normal';
+        let purity                  = 'RP_Normal';
 
             if(extractResourceNode !== null && baseLayout.satisfactoryMap.collectableMarkers[extractResourceNode.pathName] !== undefined)
             {

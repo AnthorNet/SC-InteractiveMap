@@ -86,7 +86,7 @@ export default class Modal_Statistics_Production
                             if(buildingData.category === 'extraction')
                             {
                                 let extractResourceNode     = this.baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
-                                let purity                  = 'normal';
+                                let purity                  = 'RP_Normal';
 
                                 if(extractResourceNode !== null)
                                 {
