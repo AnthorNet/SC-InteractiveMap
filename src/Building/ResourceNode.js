@@ -1,8 +1,9 @@
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
+
 import Modal_Node_SpawnAround                   from '../Modal/Node/SpawnAround.js';
 
 export default class Building_ResourceNode
 {
-
     /*
      * ADD
      */
@@ -131,7 +132,110 @@ export default class Building_ResourceNode
             }
         }
 
+        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C' && baseLayout.saveGameParser.header.saveVersion >= 58)
+        {
+            contextMenu.push('-');
+            contextMenu.push({
+                text    : 'Update resource type',
+                callback: Building_ResourceNode.updateResource
+            });
+            contextMenu.push({
+                text    : 'Update resource purity',
+                callback: Building_ResourceNode.updatePurity
+            });
+        }
+
         return contextMenu;
+    }
+
+    /**
+     * MODALS
+     */
+    static updateResource(marker)
+    {
+        let baseLayout              = marker.baseLayout;
+        let currentObject           = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let mResourceClassOverride  = baseLayout.getObjectProperty(currentObject, 'mResourceClassOverride');
+            if(mResourceClassOverride === null)
+            {
+                mResourceClassOverride = { levelName: '', pathName: baseLayout.itemsData[baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type].className};
+            }
+
+        let availableResources = [];
+            for(let itemId in baseLayout.itemsData)
+            {
+                if(baseLayout.itemsData[itemId].category === 'ore')
+                {
+                    availableResources.push({
+                        dataContent : '<img src="' + baseLayout.itemsData[itemId].image + '" style="width: 24px;" class="mr-1" />  ' + baseLayout.itemsData[itemId].name,
+                        value       : baseLayout.itemsData[itemId].className,
+                        text        : baseLayout.itemsData[itemId].name
+                    });
+                }
+            }
+
+            BaseLayout_Modal.form({
+                title       : 'Update resource type',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mResourceClassOverride',
+                    inputType   : 'selectPicker',
+                    inputOptions: availableResources,
+                    value       : mResourceClassOverride.pathName
+                }],
+                callback    : function(values)
+                {
+                    baseLayout.deleteObjectProperty(currentObject, 'mResourceClassOverride');
+                    currentObject.properties.push({
+                        name    : 'mResourceClassOverride',
+                        type    : 'Object',
+                        value   : {levelName: '', pathName: values.mResourceClassOverride}
+                    });
+
+                    return Building_ResourceNode.add(baseLayout, currentObject);
+                }
+            });
+    }
+
+    static updatePurity(marker)
+    {
+        let baseLayout              = marker.baseLayout;
+        let currentObject           = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let mPurityOverride         = baseLayout.getObjectProperty(currentObject, 'mPurityOverride');
+            if(mPurityOverride === null)
+            {
+                mPurityOverride = { valueName: baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.purity};
+            }
+
+        BaseLayout_Modal.form({
+            title       : 'Update resource purity',
+            container   : '#leafletMap',
+            inputs      : [{
+                name        : 'mPurityOverride',
+                inputType   : 'selectPicker',
+                inputOptions: [
+                    { value: 'RP_Inpure', text: 'Impure' },
+                    { value: 'RP_Normal', text: 'Normal' },
+                    { value: 'RP_Pure', text: 'Pure' }
+                ],
+                value       : mPurityOverride.valueName
+            }],
+            callback    : function(values)
+            {
+                baseLayout.deleteObjectProperty(currentObject, 'mPurityOverride');
+                currentObject.properties.push({
+                    name    : 'mPurityOverride',
+                    type    : 'Byte',
+                    value   : {
+                        enumName        : 'EResourcePurity',
+                        enumPackageName : { packageName: '/Script/FactoryGame' },
+                        valueName       : values.mPurityOverride
+                    }
+                });
+
+                return Building_ResourceNode.add(baseLayout, currentObject);
+            }
+        });
     }
 
     /**
