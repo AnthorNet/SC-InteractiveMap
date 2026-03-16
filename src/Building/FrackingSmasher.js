@@ -30,14 +30,10 @@ export default class Building_FrackingSmasher
     static getTooltip(baseLayout, currentObject, buildingData)
     {
         let clockSpeed  = baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
-        let powerUsed   = buildingData.powerUsed * clockSpeed;
+        let powerUsed   = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
             if(baseLayout.saveGameParser.header.saveVersion >= 33)
             {
-                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
-            }
-            else
-            {
-                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+                powerUsed = buildingData.powerUsed * baseLayout.gameStateSubSystem.getEnergyCostMultiplier() * Math.pow(clockSpeed, 1.321929);
             }
 
         let satellites  = Building_FrackingSmasher.getSatellites(baseLayout, currentObject);

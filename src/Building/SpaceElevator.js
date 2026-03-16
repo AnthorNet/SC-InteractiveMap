@@ -5,7 +5,7 @@ import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 export default class Building_SpaceElevator
 {
     /*
-     * Found it :)
+    Found it :)
     baseLayout.saveGameParser.objects["Persistent_Level:PersistentLevel.GamePhaseManager"].properties[4].name = "mIsGameCompleted"
 
         mSpaceElevatorState => {
@@ -289,8 +289,9 @@ export default class Building_SpaceElevator
      */
     static getTooltip(baseLayout, currentObject, buildingData)
     {
-        let content             = [];
-        let nextPhaseName       = Building_SpaceElevator.getNextPhase(baseLayout);
+        let content                     = [];
+        let spacePartsCostMultiplier    = baseLayout.gameStateSubSystem.getSpacePartsCostMultiplier();
+        let nextPhaseName               = Building_SpaceElevator.getNextPhase(baseLayout);
             if(nextPhaseName !== null)
             {
                 let nextPhase   = Building_SpaceElevator.availablePhases[nextPhaseName];
@@ -318,8 +319,8 @@ export default class Building_SpaceElevator
                                             content.push(itemData.name + '<br />');
                                         }
 
-                                        content.push(new Intl.NumberFormat(baseLayout.language).format(((itemsCost !== null && itemsCost[itemClass] !== undefined) ? itemsCost[itemClass] : 0)) + ' / ' + new Intl.NumberFormat(baseLayout.language).format(nextPhase.cost[itemClass]));
-                                        content.push('<div class="progress"><div class="progress-bar" style="width: ' + (((itemsCost !== null && itemsCost[itemClass] !== undefined) ? itemsCost[itemClass] : 0) / nextPhase.cost[itemClass]) + '%"></div></div>')
+                                        content.push(new Intl.NumberFormat(baseLayout.language).format(((itemsCost !== null && itemsCost[itemClass] !== undefined) ? itemsCost[itemClass] : 0)) + ' / ' + new Intl.NumberFormat(baseLayout.language).format(nextPhase.cost[itemClass] * spacePartsCostMultiplier));
+                                        content.push('<div class="progress"><div class="progress-bar" style="width: ' + (((itemsCost !== null && itemsCost[itemClass] !== undefined) ? itemsCost[itemClass] : 0) / nextPhase.cost[itemClass] * spacePartsCostMultiplier) + '%"></div></div>')
                                     content.push('</td>');
                                 content.push('</tr></table>');
                             content.push('</div>');

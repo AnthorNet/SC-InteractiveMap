@@ -14,11 +14,55 @@ export default class SubSystem_GameState extends SubSystem
         super(options);
 
         this.updateTetrominoLeaderBoard();
+
+        //console.log(this.subSystem)
+        // mNodeRandomization / mNodePuritySettings / mNodeRandomizationSeed
     }
 
     getPublicTodoList()
     {
         return this.baseLayout.getObjectProperty(this.subSystem, 'mPublicTodoList');
+    }
+
+    /**
+     * Advanced game settings
+     */
+    getEnergyCostMultiplier()
+    {
+        let mEnergyCostMultiplier = this.baseLayout.getObjectProperty(this.subSystem, 'mEnergyCostMultiplier');
+            if(mEnergyCostMultiplier !== null)
+            {
+                return parseFloat(mEnergyCostMultiplier);
+            }
+
+        return 1;
+    }
+
+    getInputPartsCostMultiplier()
+    {
+        let mPartsCostMultiplier = this.baseLayout.getObjectProperty(this.subSystem, 'mPartsCostMultiplier');
+            if(mPartsCostMultiplier !== null)
+            {
+                return parseFloat(mPartsCostMultiplier);
+            }
+
+        return 1;
+    }
+
+    getOutputPartsMultiplier()
+    {
+        return 1; // Just in case ^^
+    }
+
+    getSpacePartsCostMultiplier()
+    {
+        let mSpacePartsCostMultiplier = this.baseLayout.getObjectProperty(this.subSystem, 'mSpacePartsCostMultiplier');
+            if(mSpacePartsCostMultiplier !== null)
+            {
+                return parseFloat(mSpacePartsCostMultiplier);
+            }
+
+        return 1;
     }
 
     /**

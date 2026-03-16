@@ -306,7 +306,7 @@ export default class SubSystem_Circuit extends SubSystem
                                 if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
                                 {
                                     let productionBoost             = this.baseLayout.overclockingSubSystem.getProductionBoost(currentComponent);
-                                        statistics.maxConsumption  += buildingData.powerUsed * Math.pow(clockSpeed, 1.321929) * Math.pow(productionBoost, 2);
+                                        statistics.maxConsumption  += buildingData.powerUsed * this.baseLayout.gameStateSubSystem.getEnergyCostMultiplier() * Math.pow(clockSpeed, 1.321929) * Math.pow(productionBoost, 2);
                                 }
                                 else
                                 {

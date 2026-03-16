@@ -192,11 +192,11 @@ export default class Modal_Statistics_Production
 
                                         if(buildingIsOn === true)
                                         {
-                                            productionRatio = 60 / craftingTime * recipeItem.produce[className];
+                                            productionRatio = 60 / craftingTime * recipeItem.produce[className] * this.baseLayout.gameStateSubSystem.getOutputPartsMultiplier();
                                         }
                                         else
                                         {
-                                            offProductionRatio = 60 / craftingTime * recipeItem.produce[className];
+                                            offProductionRatio = 60 / craftingTime * recipeItem.produce[className] * this.baseLayout.gameStateSubSystem.getOutputPartsMultiplier();
                                         }
 
                                         if(playerProduction[className] === undefined)
@@ -229,11 +229,11 @@ export default class Modal_Statistics_Production
 
                                         if(buildingIsOn === true)
                                         {
-                                            recipeConsumed = (60 / craftingTime * recipeItem.ingredients[className]);
+                                            recipeConsumed = (60 / craftingTime * recipeItem.ingredients[className] * this.baseLayout.gameStateSubSystem.getInputPartsCostMultiplier());
                                         }
                                         else
                                         {
-                                            offRecipeConsumed = (60 / craftingTime * recipeItem.ingredients[className]);
+                                            offRecipeConsumed = (60 / craftingTime * recipeItem.ingredients[className] * this.baseLayout.gameStateSubSystem.getInputPartsCostMultiplier());
                                         }
 
                                         if(playerProduction[className] === undefined)

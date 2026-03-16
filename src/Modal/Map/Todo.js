@@ -79,11 +79,11 @@ export default class Modal_Map_Todo
                                             {
                                                 if(todoIngredients[className] === undefined)
                                                 {
-                                                    todoIngredients[className]  = currentRecipe.ingredients[className];
+                                                    todoIngredients[className]  = currentRecipe.ingredients[className] * this.baseLayout.gameStateSubSystem.getInputPartsCostMultiplier();
                                                 }
                                                 else
                                                 {
-                                                    todoIngredients[className] += currentRecipe.ingredients[className];
+                                                    todoIngredients[className] += currentRecipe.ingredients[className] * this.baseLayout.gameStateSubSystem.getInputPartsCostMultiplier();
                                                 }
                                             }
                                         }

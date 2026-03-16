@@ -249,7 +249,7 @@ export default class BaseLayout_Tooltip
             powerUsed           = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
             if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
             {
-                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
+                powerUsed = buildingData.powerUsed * this.baseLayout.gameStateSubSystem.getEnergyCostMultiplier() * Math.pow(clockSpeed, 1.321929);
             }
 
             extractionRate     *= clockSpeed;
@@ -342,14 +342,10 @@ export default class BaseLayout_Tooltip
 
         let craftingTime        = 60 / buildingData.extractionRate[purity];
         let clockSpeed          = this.baseLayout.overclockingSubSystem.getClockSpeed(currentObject);
-        let powerUsed           = buildingData.powerUsed * clockSpeed;
+        let powerUsed           = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
             if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
             {
-                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929);
-            }
-            else
-            {
-                powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
+                powerUsed = buildingData.powerUsed * this.baseLayout.gameStateSubSystem.getEnergyCostMultiplier() * Math.pow(clockSpeed, 1.321929);
             }
         let productionRatio     = buildingData.extractionRate[purity] * clockSpeed;
 
@@ -631,7 +627,7 @@ export default class BaseLayout_Tooltip
                 powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.6);
                 if(this.baseLayout.saveGameParser.header.saveVersion >= 33)
                 {
-                    powerUsed = buildingData.powerUsed * Math.pow(clockSpeed, 1.321929) * Math.pow(productionBoost, 2);
+                    powerUsed = buildingData.powerUsed * this.baseLayout.gameStateSubSystem.getEnergyCostMultiplier() * Math.pow(clockSpeed, 1.321929) * Math.pow(productionBoost, 2);
                 }
             }
             else
@@ -700,16 +696,16 @@ export default class BaseLayout_Tooltip
                                 content.push(this.baseLayout.getInventoryImage(currentInventoryIn, 40));
                             content.push('</td><td class="align-middle pl-2 text-left">');
 
-                                let consumptionRatio = 60 / craftingTime * recipeItem.ingredients[itemClassName];
+                                let consumptionRatio = 60 / craftingTime * recipeItem.ingredients[itemClassName] * this.baseLayout.gameStateSubSystem.getInputPartsCostMultiplier();
 
                                     if(currentItem.category === 'liquid' || currentItem.category === 'gas')
                                     {
-                                        content.push('<strong style="white-space: normal;">' + +(Math.round((recipeItem.ingredients[itemClassName] / 1000) * 100) / 100) + 'm³ ' + currentItem.name + '</strong><br />');
+                                        content.push('<strong style="white-space: normal;">' + +(Math.round((recipeItem.ingredients[itemClassName] * this.baseLayout.gameStateSubSystem.getInputPartsCostMultiplier() / 1000) * 100) / 100) + 'm³ ' + currentItem.name + '</strong><br />');
                                         content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio / 1000 * 100) / 100) + 'm³</strong> per minute</span>');
                                     }
                                     else
                                     {
-                                        content.push('<strong style="white-space: normal;">' + recipeItem.ingredients[itemClassName] + ' ' + currentItem.name + '</strong><br />');
+                                        content.push('<strong style="white-space: normal;">' + recipeItem.ingredients[itemClassName] * this.baseLayout.gameStateSubSystem.getInputPartsCostMultiplier() + ' ' + currentItem.name + '</strong><br />');
                                         content.push('<span class="small"><strong class="text-warning">' + +(Math.round(consumptionRatio * 100) / 100) + '</strong> per minute</span>');
                                     }
 
@@ -804,16 +800,16 @@ export default class BaseLayout_Tooltip
                                 content.push(this.baseLayout.getInventoryImage(currentInventoryOut, 40));
                             content.push('</td><td class="align-middle pl-2 text-left">');
 
-                            let productionRatio = 60 / craftingTime * recipeItem.produce[itemClassName] * productionBoost;
+                            let productionRatio = 60 / craftingTime * recipeItem.produce[itemClassName] * this.baseLayout.gameStateSubSystem.getOutputPartsMultiplier() * productionBoost;
 
                                 if(currentItem.category === 'liquid' || currentItem.category === 'gas')
                                 {
-                                    content.push('<strong style="white-space: normal;">' + +(Math.round((recipeItem.produce[itemClassName] / 1000) * 100) / 100) + 'm³ ' + currentItem.name + '</strong><br />');
+                                    content.push('<strong style="white-space: normal;">' + +(Math.round((recipeItem.produce[itemClassName] * this.baseLayout.gameStateSubSystem.getOutputPartsMultiplier() / 1000) * 100) / 100) + 'm³ ' + currentItem.name + '</strong><br />');
                                     content.push('<span class="small"><strong class="text-warning">' + +(Math.round(productionRatio / 1000 * 100) / 100) + 'm³</strong> per minute</span>');
                                 }
                                 else
                                 {
-                                    content.push('<strong style="white-space: normal;">' + recipeItem.produce[itemClassName] + ' ' + currentItem.name + '</strong><br />');
+                                    content.push('<strong style="white-space: normal;">' + recipeItem.produce[itemClassName] * this.baseLayout.gameStateSubSystem.getOutputPartsMultiplier() + ' ' + currentItem.name + '</strong><br />');
                                     content.push('<span class="small"><strong class="text-warning">' + +(Math.round(productionRatio * 100) / 100) + '</strong> per minute</span>');
                                 }
 
