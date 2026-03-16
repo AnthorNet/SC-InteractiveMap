@@ -358,7 +358,7 @@ export default class SaveParser_Read
                             for(let i = 0; i < countCollectedInBetween; i++)
                             {
                                 let collectable = this.readObjectProperty();
-                                    //console.log(1, collectable);
+                                    //console.log(1, levelName, collectable);
                                     collectables.push(collectable);
                             }
                         }
@@ -469,7 +469,7 @@ export default class SaveParser_Read
                         for(let i = 0; i < countCollected; i++)
                         {
                             let collectable = this.readObjectProperty();
-                                //console.log(2, collectable);
+                                //console.log(2, levelName, collectable);
                                 collectables.push(collectable);
                         }
                     }

@@ -760,6 +760,7 @@ export default class BaseLayout
                     this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName = currentObject.pathName;
                     this.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(this);
 
+                    if(['sporeFlowers', 'smallRocks', 'largeRocks', 'pillars'].includes(this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.layerId))
                     {
                         let mHasBeenFractured       = this.getObjectProperty(currentObject, 'mHasBeenFractured');
                         let mDestructibleActorState = this.getObjectProperty(currentObject, 'mDestructibleActorState');
@@ -4373,7 +4374,7 @@ export default class BaseLayout
                         }
                         else
                         {
-                            baseLayout.setObjectProperty(currentObjectPowerInfo, 'mTargetConsumption', buildingData.powerUsed, 'Float');
+                            baseLayout.setObjectProperty(currentObjectPowerInfo, 'mTargetConsumption', buildingData.powerUsed * baseLayout.gameStateSubSystem.getEnergyCostMultiplier(), 'Float');
                         }
                     }
             }
@@ -4694,6 +4695,7 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C'){ className = '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Tractor/Desc_Tractor.Desc_Tractor_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Truck/Desc_Truck.Desc_Truck_C'; }
+        if(className === '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_FluidTruck.BP_FluidTruck_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Truck/Desc_FluidTruck.Desc_FluidTruck_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Explorer/BP_Explorer.BP_Explorer_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Explorer/Desc_Explorer.Desc_Explorer_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Testa_BP_WB.Testa_BP_WB_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Cyberwagon/Desc_CyberWagon.Desc_CyberWagon_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C'){ className = '/Game/FactoryGame/Buildable/Factory/DroneStation/Desc_DroneTransport.Desc_DroneTransport_C'; }

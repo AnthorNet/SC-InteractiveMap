@@ -9,7 +9,10 @@ export default class SubSystem_Vehicle extends SubSystem
         options.pathName        = 'Persistent_Level:PersistentLevel.VehicleSubsystem';
         super(options);
 
-        //console.log(this.subSystem)
+        // /Game/FactoryGame/Buildable/Vehicle/VehiclePath/Build_VehiclePathNode_DockingStation.Build_VehiclePathNode_DockingStation_C
+        // /Game/FactoryGame/Buildable/Vehicle/VehiclePath/Build_VehiclePathNode_Default.Build_VehiclePathNode_Default_C
+
+        console.log(this.subSystem)
     }
 
     getVehicleTrackData(currentObject)
