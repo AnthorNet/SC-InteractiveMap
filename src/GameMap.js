@@ -237,6 +237,24 @@ export default class GameMap
                                 this.collectedHardDrives.setCollectedHardDrives(option.markers);
                             }
 
+                            if(options.type !== undefined && option.purity !== undefined)
+                            {
+                                if(this.mapColors[options.type] === undefined)
+                                {
+                                    this.mapColors[options.type] = {};
+                                }
+                                if(this.mapColors[options.type][option.purity] === undefined)
+                                {
+                                    this.mapColors[options.type][option.purity] = {
+                                        layerId         : option.layerId,
+                                        name            : option.name,
+                                        outsideColor    : option.outsideColor,
+                                        insideColor     : option.insideColor,
+                                        icon            : option.icon
+                                    };
+                                }
+                            }
+
                             for(let l = 0; l < option.markers.length; l++)
                             {
                                 let marker  = option.markers[l];
@@ -306,21 +324,6 @@ export default class GameMap
                                 if(option.purity !== undefined)
                                 {
                                     currentMarkerOptions.purity = option.purity;
-
-                                    if(this.mapColors[currentMarkerOptions.type] === undefined)
-                                    {
-                                        this.mapColors[currentMarkerOptions.type] = {};
-                                    }
-                                    if(this.mapColors[currentMarkerOptions.type][currentMarkerOptions.purity] === undefined)
-                                    {
-                                        this.mapColors[currentMarkerOptions.type][currentMarkerOptions.purity] = {
-                                            layerId         : option.layerId,
-                                            name            : option.name,
-                                            outsideColor    : option.outsideColor,
-                                            insideColor     : option.insideColor,
-                                            icon            : option.icon
-                                        };
-                                    }
                                 }
                                 if(marker.core !== undefined){ currentMarkerOptions.core = marker.core; }
 

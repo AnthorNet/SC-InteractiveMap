@@ -19,6 +19,8 @@ export default class Building_ResourceNode
                 if(mResourceClassOverride !== null || mPurityOverride !== null)
                 {
                     let markerOptions           = JSON.parse(JSON.stringify(baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options));
+                    let customType              = markerOptions.type;
+
                         markerOptions.lastCheck = baseLayout.saveGameParser.header.buildVersion;
                         baseLayout.satisfactoryMap.availableLayers[markerOptions.layerId].removeLayer(baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName]);
 
@@ -29,7 +31,13 @@ export default class Building_ResourceNode
                     if(mResourceClassOverride !== null)
                     {
                         let newmResourceClassOverride   = mResourceClassOverride.pathName.split('.');
-                            markerOptions.type          = newmResourceClassOverride.pop();
+                            customType                  = newmResourceClassOverride.pop();
+                            if(currentObject.className === '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C' && customType === 'Desc_LiquidOil_C')
+                            {
+                                customType  = 'Desc_LiquidOilWell_C';
+                            }
+
+                            markerOptions.type          = customType;
                     }
 
                     if(mPurityOverride !== null)
@@ -37,16 +45,16 @@ export default class Building_ResourceNode
                         markerOptions.purity    = mPurityOverride.valueName;
                     }
 
-                    if(baseLayout.satisfactoryMap.mapColors[markerOptions.type] !== undefined && baseLayout.satisfactoryMap.mapColors[markerOptions.type][markerOptions.purity] !== undefined)
+                    if(baseLayout.satisfactoryMap.mapColors[customType] !== undefined && baseLayout.satisfactoryMap.mapColors[customType][markerOptions.purity] !== undefined)
                     {
-                        markerOptions.layerId   = baseLayout.satisfactoryMap.mapColors[markerOptions.type][markerOptions.purity].layerId;
-                        markerOptions.name      = baseLayout.satisfactoryMap.mapColors[markerOptions.type][markerOptions.purity].name;
-                        markerOptions.color     = baseLayout.satisfactoryMap.mapColors[markerOptions.type][markerOptions.purity].outsideColor;
-                        markerOptions.fillColor = baseLayout.satisfactoryMap.mapColors[markerOptions.type][markerOptions.purity].insideColor;
-                        markerOptions.icon      = baseLayout.satisfactoryMap.mapColors[markerOptions.type][markerOptions.purity].icon;
+                        markerOptions.layerId   = baseLayout.satisfactoryMap.mapColors[customType][markerOptions.purity].layerId;
+                        markerOptions.name      = baseLayout.satisfactoryMap.mapColors[customType][markerOptions.purity].name;
+                        markerOptions.color     = baseLayout.satisfactoryMap.mapColors[customType][markerOptions.purity].outsideColor;
+                        markerOptions.fillColor = baseLayout.satisfactoryMap.mapColors[customType][markerOptions.purity].insideColor;
+                        markerOptions.icon      = baseLayout.satisfactoryMap.mapColors[customType][markerOptions.purity].icon;
                     }
 
-                    let newButton       = $('.updateLayerState[data-type="' + markerOptions.type + '"][data-purity="' + markerOptions.purity + '"]');
+                    let newButton       = $('.updateLayerState[data-type="' + customType + '"][data-purity="' + markerOptions.purity + '"]');
                         newButton.attr('data-total', parseInt(newButton.attr('data-total')) + 1);
                         newButton.find('.badge').html(new Intl.NumberFormat(baseLayout.language).format(parseInt(newButton.attr('data-total'))));
 
@@ -120,7 +128,7 @@ export default class Building_ResourceNode
             callback    : baseLayout.teleportPlayer
         });
 
-        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C' || currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C')
+        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C')
         {
             if(baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
             {
@@ -132,7 +140,7 @@ export default class Building_ResourceNode
             }
         }
 
-        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C' && baseLayout.saveGameParser.header.saveVersion >= 58)
+        if(baseLayout.saveGameParser.header.saveVersion >= 58)
         {
             contextMenu.push('-');
             contextMenu.push({
