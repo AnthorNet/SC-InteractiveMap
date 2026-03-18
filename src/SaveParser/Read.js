@@ -394,7 +394,7 @@ export default class SaveParser_Read
                         if(haveDataPackageVersion !== 0)
                         {
                             this.objects[entitiesToObjects[i]].dataPackageVersion = this.readDataPackageVersion();
-                            //console.log('ENTITY DATA PACKAGE NAME?', entitiesToObjects[i], this.objects[entitiesToObjects[i]]);
+                            //console.log('ENTITY DATA PACKAGE NAME?', entitiesToObjects[i], this.objects[entitiesToObjects[i]], this.objects[entitiesToObjects[i]].dataPackageVersion);
                         }
                 }
 
@@ -1306,7 +1306,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Enum':
-                if(this.currentEntitySaveVersion >= 53)
+                if(this.currentEntitySaveVersion >= 53 && hadEntityExtraByte === false)
                 {
                     this.skipBytes(); // 0
                     currentProperty.value.value = this.readString();
@@ -1370,7 +1370,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Array':
-                currentProperty         = this.readArrayProperty(currentProperty, parentType);
+                currentProperty         = this.readArrayProperty(currentProperty, parentType, hadEntityExtraByte);
 
                 break;
 
@@ -1423,9 +1423,9 @@ export default class SaveParser_Read
         return currentProperty;
     }
 
-    readArrayProperty(currentProperty, parentType)
+    readArrayProperty(currentProperty, parentType, hadEntityExtraByte = false)
     {
-        if(this.currentEntitySaveVersion < 53)
+        if(this.currentEntitySaveVersion < 53 || hadEntityExtraByte === true)
         {
             currentProperty.value = {type: this.readString().replace('Property', '')};
         }
@@ -1546,7 +1546,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Struct':
-                if(this.currentEntitySaveVersion < 53)
+                if(this.currentEntitySaveVersion < 53 || hadEntityExtraByte === true)
                 {
                     this.readString(); // Same as currentProperty.name
                     this.readString(); // StructProperty
@@ -1649,7 +1649,7 @@ export default class SaveParser_Read
                                 let subStructProperties = [];
                                     while(true)
                                     {
-                                        let subStructProperty = this.readProperty(currentProperty.structureSubType);
+                                        let subStructProperty = this.readProperty(currentProperty.structureSubType, null, hadEntityExtraByte);
                                             if(subStructProperty === null)
                                             {
                                                 break;
