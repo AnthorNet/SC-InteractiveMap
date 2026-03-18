@@ -721,24 +721,6 @@ export default class BaseLayout
                 //if(currentObject.className.includes('Pillar')){ console.log(currentObject); }
                 //if(currentObject.className.includes('Gas')){ console.log(currentObject); } // /Game/FactoryGame/VFX/World/GasPerimeter/BP_VolumeGas_01.BP_VolumeGas_01_C ?
 
-            if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C' && this.useRadioactivity === true)
-            {
-                if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined && this.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type === 'Desc_OreUranium_C')
-                {
-                    let currentItemData = this.getItemDataFromClassName('Desc_OreUranium_C', false);
-                        if(currentItemData !== null)
-                        {
-                            if(currentItemData.radioactiveDecay !== undefined)
-                            {
-                                this.addRadioactivityDot(currentObject, [{
-                                    qty                 : 96,
-                                    radioactiveDecay    : currentItemData.radioactiveDecay
-                                }]);
-                            }
-                        }
-                }
-            }
-
             // Add menu to spore flowers/pillars/rocks...
             if([
                 '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C',

@@ -7,12 +7,23 @@ export default class Building_ResourceNode
     /*
      * ADD
      */
-    static add(baseLayout, currentObject)
+    static add(baseLayout, currentObject, updateRadioactivityLayer = false)
     {
         if(baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
         {
             baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.pathName = currentObject.pathName;
             baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(baseLayout);
+
+            if(baseLayout.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName] !== undefined && baseLayout.useRadioactivity === true)
+            {
+                delete baseLayout.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
+                baseLayout.radioactivityLayerNeedsUpdate = true;
+
+                if(updateRadioactivityLayer === true)
+                {
+                    baseLayout.updateRadioactivityLayer();
+                }
+            }
 
             let mResourceClassOverride  = baseLayout.getObjectProperty(currentObject, 'mResourceClassOverride');
             let mPurityOverride         = baseLayout.getObjectProperty(currentObject, 'mPurityOverride');
@@ -27,6 +38,8 @@ export default class Building_ResourceNode
                     let oldButton       = $('.updateLayerState[data-type="' + markerOptions.type + '"][data-purity="' + markerOptions.purity + '"]');
                         oldButton.attr('data-total', parseInt(oldButton.attr('data-total')) - 1);
                         oldButton.find('.badge').html(new Intl.NumberFormat(baseLayout.language).format(parseInt(oldButton.attr('data-total'))));
+
+                        //if()
 
                     if(mResourceClassOverride !== null)
                     {
@@ -66,6 +79,26 @@ export default class Building_ResourceNode
                     baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] = newMarker;
                     baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].bindContextMenu(baseLayout);
                 }
+
+            if(baseLayout.useRadioactivity === true && baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type === 'Desc_OreUranium_C')
+            {
+                let currentItemData = baseLayout.getItemDataFromClassName('Desc_OreUranium_C', false);
+                    if(currentItemData !== null)
+                    {
+                        if(currentItemData.radioactiveDecay !== undefined)
+                        {
+                            baseLayout.addRadioactivityDot(currentObject, [{
+                                qty                 : 96,
+                                radioactiveDecay    : currentItemData.radioactiveDecay
+                            }]);
+
+                            if(updateRadioactivityLayer === true)
+                            {
+                                baseLayout.updateRadioactivityLayer();
+                            }
+                        }
+                    }
+            }
         }
     }
 
@@ -166,13 +199,22 @@ export default class Building_ResourceNode
         let mResourceClassOverride  = baseLayout.getObjectProperty(currentObject, 'mResourceClassOverride');
             if(mResourceClassOverride === null)
             {
-                mResourceClassOverride = { levelName: '', pathName: baseLayout.itemsData[baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type].className};
+                let itemType = baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type;
+                    if(itemType === 'Desc_LiquidOilWell_C')
+                    {
+                        itemType = 'Desc_LiquidOil_C';
+                    }
+                mResourceClassOverride = { levelName: '', pathName: baseLayout.itemsData[itemType].className};
             }
 
         let availableResources = [];
             for(let itemId in baseLayout.itemsData)
             {
-                if(baseLayout.itemsData[itemId].category === 'ore')
+                if(
+                        itemId === 'Desc_LiquidOil_C'
+                     || (baseLayout.itemsData[itemId].category === 'ore' && currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C')
+                     || ((itemId === 'Desc_Water_C' || itemId === 'Desc_NitrogenGas_C') && currentObject.className === '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C')
+                )
                 {
                     availableResources.push({
                         dataContent : '<img src="' + baseLayout.itemsData[itemId].image + '" style="width: 24px;" class="mr-1" />  ' + baseLayout.itemsData[itemId].name,
@@ -200,7 +242,7 @@ export default class Building_ResourceNode
                         value   : {levelName: '', pathName: values.mResourceClassOverride}
                     });
 
-                    return Building_ResourceNode.add(baseLayout, currentObject);
+                    return Building_ResourceNode.add(baseLayout, currentObject, true);
                 }
             });
     }
