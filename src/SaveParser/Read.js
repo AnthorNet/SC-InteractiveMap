@@ -362,11 +362,21 @@ export default class SaveParser_Read
                                     collectables.push(collectable);
                             }
                         }
+
+                    // Still an extra int?! Most likely an old SCIM glitch...
+                    if(this.currentByte < (objectsBinaryLengthStart + Number(objectsBinaryLength)))
+                    {
+                        this.currentByte = (objectsBinaryLengthStart + Number(objectsBinaryLength));
+                        console.log('Skip SCIM extra int in collectable 1...');
+                    }
                 }
             }
 
-            let entitiesBinaryLength    = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
-            let countEntities           = this.readInt();
+            let entitiesBinaryLength        = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
+            let entitiesBinaryLengthStart   = this.currentByte;
+                //console.log('entitiesBinaryLength', levelName, entitiesBinaryLength, entitiesBinaryLengthStart);
+
+            let countEntities               = this.readInt();
                 if(levelName === 'Level ' + this.header.mapName)
                 {
                     console.time('Loaded ' + countEntities + ' entities...');
@@ -617,26 +627,28 @@ export default class SaveParser_Read
             return;
         }
 
-        if(this.currentEntitySaveVersion >= 53)
-        {
-            this.readByte(); // 0
-            /* MOST LIKELY A GLITCH IN STAGING UPDATES ??? */
-            /*
-            let extraByte = this.readByte();
-
-                if(extraByte !== 0)
-                {
-                    this.currentByte -= 1;
-                    console.log('EXTRABYTE', extraByte, this.objects[objectKey].pathName, entityLength, this.currentEntitySaveVersion)
-                }
-            */
-        }
+        let hadEntityExtraByte = false;
+            if(this.currentEntitySaveVersion >= 53)
+            {
+                //this.readByte(); // 0
+                let extraByte = this.readByte();
+                    if(extraByte !== 0)
+                    {
+                        this.currentByte    -= 1;
+                        hadEntityExtraByte   = true;
+                        console.log('EXTRABYTE', extraByte, this.objects[objectKey].pathName, entityLength, this.currentEntitySaveVersion);
+                        //console.log(this.objects[objectKey].transform.translation)
+                        //delete this.objects[objectKey];
+                        //this.currentByte = startByte + entityLength;
+                        //return;
+                    }
+            }
 
         // Read properties
         this.objects[objectKey].properties      = [];
         while(true)
         {
-            let property = this.readProperty(this.objects[objectKey].className, objectKey);
+            let property = this.readProperty(this.objects[objectKey].className, objectKey, hadEntityExtraByte);
                 if(property === null)
                 {
                     break;
@@ -1100,7 +1112,7 @@ export default class SaveParser_Read
     /*
      * Properties types
      */
-    readProperty(parentType = null, objectKey = null)
+    readProperty(parentType = null, objectKey = null, hadEntityExtraByte = false)
     {
         let currentProperty         = {};
             currentProperty.name    = this.readString();
@@ -1112,7 +1124,7 @@ export default class SaveParser_Read
         currentProperty.type        = this.readString().replace('Property', '');
         //console.log(currentProperty.type, currentProperty.name)
 
-        if(this.currentEntitySaveVersion >= 53)
+        if(this.currentEntitySaveVersion >= 53 && hadEntityExtraByte === false)
         {
             let hasCustomData = this.readInt();
                 switch(hasCustomData)
@@ -1207,7 +1219,7 @@ export default class SaveParser_Read
                         break;
 
                     default:
-                        console.log('hasCustomData', hasCustomData, currentProperty);
+                        console.log('hasCustomData', hasCustomData, currentProperty, hadEntityExtraByte, this.currentEntityPathName);
 
                         break;
                 }
@@ -1216,7 +1228,7 @@ export default class SaveParser_Read
         this.currentPropertyLength  = this.readInt(); // Length of the property, this is calculated when writing back ;)
             //console.log('currentPropertyLength', this.currentEntitySaveVersion, 'currentProperty.type', currentProperty.type, this.currentPropertyLength)
 
-        if(this.currentEntitySaveVersion < 53)
+        if(this.currentEntitySaveVersion < 53 || hadEntityExtraByte === true)
         {
             let index = this.readInt();
                 if(index !== 0)
@@ -1235,7 +1247,7 @@ export default class SaveParser_Read
                     currentProperty.value = 1;
                 }
 
-                if(this.currentEntitySaveVersion < 53)
+                if(this.currentEntitySaveVersion < 53 || hadEntityExtraByte === true)
                 {
                     currentProperty         = this.readPropertyGUID(currentProperty);
                 }
@@ -1383,7 +1395,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Struct':
-                currentProperty         = this.readStructProperty(currentProperty, parentType);
+                currentProperty         = this.readStructProperty(currentProperty, parentType, hadEntityExtraByte);
 
                 break;
 
@@ -2022,9 +2034,9 @@ export default class SaveParser_Read
         return currentProperty;
     }
 
-    readStructProperty(currentProperty, parentType)
+    readStructProperty(currentProperty, parentType, hadEntityExtraByte = false)
     {
-        if(this.currentEntitySaveVersion < 53)
+        if(this.currentEntitySaveVersion < 53 || hadEntityExtraByte === true)
         {
             currentProperty.value       = {type: this.readString()};
 
@@ -2212,7 +2224,7 @@ export default class SaveParser_Read
                         }
                 }
 
-                currentProperty.value.properties    = [this.readProperty()];
+                currentProperty.value.properties    = [this.readProperty(null, null, hadEntityExtraByte)];
 
                 break;
 
@@ -2299,7 +2311,7 @@ export default class SaveParser_Read
                     currentProperty.value.values = [];
                     while(true)
                     {
-                        let subStructProperty = this.readProperty(currentProperty.value.type);
+                        let subStructProperty = this.readProperty(currentProperty.value.type, null, hadEntityExtraByte);
                             if(subStructProperty === null)
                             {
                                 break;
