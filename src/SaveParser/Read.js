@@ -216,9 +216,8 @@ export default class SaveParser_Read
         // 2025-05-06: Serialize package file version (UE version) and custom versions for serialized object data
         if(this.header.saveVersion >= 53)
         {
-            let dataPackageVersion = this.readDataPackageVersion();
-                //console.log('dataPackageVersion', dataPackageVersion);
-                this.worker.postMessage({command: 'transferData', data: {dataPackageVersion: dataPackageVersion}});
+            this.saveDataPackageVersion = this.readDataPackageVersion();
+            this.worker.postMessage({command: 'transferData', data: {dataPackageVersion: this.saveDataPackageVersion}});
         }
 
         if(this.header.saveVersion >= 41 && this.header.isPartitionedWorld === 1)
@@ -259,10 +258,11 @@ export default class SaveParser_Read
 
         for(let j = 0; j <= nbLevels; j++)
         {
-            let levelName                   = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
-            let levelSaveVersion            = null;
-            let levelPersistentFlag         = null;
-            let levelDataPackageVersion     = null;
+            let levelName                       = (j === nbLevels) ? 'Level ' + this.header.mapName : this.readString();
+                this.currentLevelSaveVersion    = this.header.saveVersion;
+                this.currentLevelUE5Version     = 1000;
+            let levelPersistentFlag             = null;
+            let levelDataPackageVersion         = null;
 
             let objectsBinaryLength         = (this.header.saveVersion >= 41) ? this.readInt64() : this.readInt();
             let objectsBinaryLengthStart    = this.currentByte;
@@ -273,19 +273,38 @@ export default class SaveParser_Read
                 {
                     if(levelName === 'Level ' + this.header.mapName)
                     {
-                        levelSaveVersion = this.header.saveVersion;
+                        this.currentLevelSaveVersion    = this.header.saveVersion;
+
+                        if(this.header.saveVersion >= 53)
+                        {
+                            this.currentLevelUE5Version     = this.saveDataPackageVersion.packageFileVersion.UE5Version;
+                        }
                     }
                     else
                     {
-                            this.currentByte       += objectsBinaryLength;
-                        let entitiesBinaryLength    = this.readInt64();
-                            this.currentByte       += entitiesBinaryLength;
-                            levelSaveVersion        = this.readUint();
+                            this.currentByte               += objectsBinaryLength;
+                        let entitiesBinaryLength            = this.readInt64();
+                            this.currentByte               += entitiesBinaryLength;
+                            this.currentLevelSaveVersion    = this.readUint();
+
+                            let countCollected = this.readInt();
+                                if(countCollected > 0){ for(let i = 0; i < countCollected; i++){ this.readObjectProperty(); } }
+
+                            if(this.header.saveVersion >= 53)
+                            {
+                                let haveLevelDataPackageVersion = this.readInt();
+                                    if(haveLevelDataPackageVersion === 1)
+                                    {
+                                        levelDataPackageVersion     = this.readDataPackageVersion();
+                                        this.currentLevelUE5Version = levelDataPackageVersion.packageFileVersion.UE5Version;
+                                    }
+                            }
 
                         // Get back to initial state...
                         this.currentByte = objectsBinaryLengthStart;
                     }
                 }
+                //console.log('levelSaveVersion', this.currentLevelSaveVersion);
 
             let entitiesToObjects   = [];
             let countObjects        = this.readInt();
@@ -302,12 +321,12 @@ export default class SaveParser_Read
                     switch(objectType)
                     {
                         case 0:
-                            let object                          = this.readObject(levelSaveVersion);
+                            let object                          = this.readObject();
                                 this.objects[object.pathName]   = object;
                                 entitiesToObjects[i]            = object.pathName;
                             break;
                         case 1:
-                            let actor                           = this.readActor(levelSaveVersion);
+                            let actor                           = this.readActor();
                                 this.objects[actor.pathName]    = actor;
                                 entitiesToObjects[i]            = actor.pathName;
 
@@ -465,14 +484,14 @@ export default class SaveParser_Read
                 console.timeEnd('Loaded ' + countEntities + ' entities...');
             }
 
-            // That's the levelSaveVersion, but we already got it during our leap of faith!
-            if(levelName !== 'Level ' + this.header.mapName && this.header.saveVersion >= 51)
-            {
-                this.readUint();
-            }
-
             if(levelName !== 'Level ' + this.header.mapName)
             {
+                // That's the levelSaveVersion, but we already got it during our leap of faith!
+                if(this.header.saveVersion >= 51)
+                {
+                    this.readUint();
+                }
+
                 let countCollected = this.readInt();
                     if(countCollected > 0)
                     {
@@ -494,7 +513,7 @@ export default class SaveParser_Read
                 }
             }
 
-            levels.push({name: levelName, saveVersion: levelSaveVersion, levelPersistentFlag: levelPersistentFlag, dataPackageVersion: levelDataPackageVersion});
+            levels.push({name: levelName, saveVersion: this.currentLevelSaveVersion, levelPersistentFlag: levelPersistentFlag, dataPackageVersion: levelDataPackageVersion});
             this.worker.postMessage({command: 'transferData', key: 'objects', data: objectsToFlush});
         }
 
@@ -507,13 +526,13 @@ export default class SaveParser_Read
     /*
      * Main objects
      */
-    readObject(levelSaveVersion)
+    readObject()
     {
         let object                  = {};
             object.className        = this.readString();
             object                  = this.readObjectProperty(object);
 
-            if(levelSaveVersion >= 51)
+            if(this.currentLevelSaveVersion >= 51)
             {
                 object.objectFlags = this.readUint();
             }
@@ -523,13 +542,13 @@ export default class SaveParser_Read
         return object;
     }
 
-    readActor(levelSaveVersion)
+    readActor()
     {
         let actor               = {};
             actor.className     = this.readString();
             actor               = this.readObjectProperty(actor);
 
-            if(levelSaveVersion >= 51)
+            if(this.currentLevelSaveVersion >= 51)
             {
                 actor.objectFlags = this.readUint();
             }
@@ -583,6 +602,10 @@ export default class SaveParser_Read
         this.currentEntityClassName             = this.objects[objectKey].className;
         this.currentEntityPathName              = this.objects[objectKey].pathName;
         this.currentEntitySaveVersion           = this.header.saveVersion;
+        if(this.currentLevelSaveVersion !== this.header.saveVersion && this.currentLevelSaveVersion <= this.header.saveVersion)
+        {
+            this.currentEntitySaveVersion       = this.currentLevelSaveVersion;
+        }
 
         if(this.header.saveVersion >= 41)
         {
@@ -602,7 +625,20 @@ export default class SaveParser_Read
 
         let entityLength                            = this.readInt();
         let startByte                               = this.currentByte;
-            //console.log('entityLength', this.objects[objectKey].className, this.objects[objectKey].pathName, entityLength, this.currentEntitySaveVersion);
+            //console.log('entityLength', this.objects[objectKey].className, this.objects[objectKey].pathName, entityLength, this.currentEntitySaveVersion, this.currentLevelUE5Version);
+
+            if(this.currentEntitySaveVersion >= 53)
+            {
+                this.currentByte += entityLength;
+                let haveDataPackageVersion = this.readInt();
+                    if(haveDataPackageVersion !== 0)
+                    {
+                        let entityDataPackageVersion    = this.readDataPackageVersion();
+                            this.currentLevelUE5Version = entityDataPackageVersion.packageFileVersion.UE5Version;
+                    }
+
+                this.currentByte = startByte;
+            }
 
         if(this.objects[objectKey] !== undefined && this.objects[objectKey].outerPathName === undefined)
         {
@@ -627,28 +663,16 @@ export default class SaveParser_Read
             return;
         }
 
-        let hadEntityExtraByte = false;
-            if(this.currentEntitySaveVersion >= 53)
-            {
-                //this.readByte(); // 0
-                let extraByte = this.readByte();
-                    if(extraByte !== 0)
-                    {
-                        this.currentByte    -= 1;
-                        hadEntityExtraByte   = true;
-                        console.log('EXTRABYTE', extraByte, this.objects[objectKey].pathName, entityLength, this.currentEntitySaveVersion);
-                        //console.log(this.objects[objectKey].transform.translation)
-                        //delete this.objects[objectKey];
-                        //this.currentByte = startByte + entityLength;
-                        //return;
-                    }
-            }
+        if(this.header.saveVersion >= 53 && this.currentLevelUE5Version >= 1011)
+        {
+            this.readByte(); // 0
+        }
 
         // Read properties
         this.objects[objectKey].properties      = [];
         while(true)
         {
-            let property = this.readProperty(this.objects[objectKey].className, objectKey, hadEntityExtraByte);
+            let property = this.readProperty(this.objects[objectKey].className, objectKey);
                 if(property === null)
                 {
                     break;
@@ -1112,7 +1136,7 @@ export default class SaveParser_Read
     /*
      * Properties types
      */
-    readProperty(parentType = null, objectKey = null, hadEntityExtraByte = false)
+    readProperty(parentType = null, objectKey = null)
     {
         let currentProperty         = {};
             currentProperty.name    = this.readString();
@@ -1124,7 +1148,7 @@ export default class SaveParser_Read
         currentProperty.type        = this.readString().replace('Property', '');
         //console.log(currentProperty.type, currentProperty.name)
 
-        if(this.currentEntitySaveVersion >= 53 && hadEntityExtraByte === false)
+        if(this.header.saveVersion >= 53 && this.currentLevelUE5Version >= 1011)
         {
             let hasCustomData = this.readInt();
                 switch(hasCustomData)
@@ -1219,7 +1243,7 @@ export default class SaveParser_Read
                         break;
 
                     default:
-                        console.log('hasCustomData', hasCustomData, currentProperty, hadEntityExtraByte, this.currentEntityPathName);
+                        console.log('hasCustomData', hasCustomData, currentProperty, this.currentEntityPathName);
 
                         break;
                 }
@@ -1228,7 +1252,7 @@ export default class SaveParser_Read
         this.currentPropertyLength  = this.readInt(); // Length of the property, this is calculated when writing back ;)
             //console.log('currentPropertyLength', this.currentEntitySaveVersion, 'currentProperty.type', currentProperty.type, this.currentPropertyLength)
 
-        if(this.currentEntitySaveVersion < 53 || hadEntityExtraByte === true)
+        if(this.currentLevelUE5Version < 1011)
         {
             let index = this.readInt();
                 if(index !== 0)
@@ -1242,12 +1266,12 @@ export default class SaveParser_Read
             case 'Bool':
                 currentProperty.value   = this.readByte();
 
-                if(this.currentEntitySaveVersion >= 53 && currentProperty.value === 16)
+                if(currentProperty.value === 16)
                 {
                     currentProperty.value = 1;
                 }
 
-                if(this.currentEntitySaveVersion < 53 || hadEntityExtraByte === true)
+                if(this.currentLevelUE5Version < 1011)
                 {
                     currentProperty         = this.readPropertyGUID(currentProperty);
                 }
@@ -1306,7 +1330,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Enum':
-                if(this.currentEntitySaveVersion >= 53 && hadEntityExtraByte === false)
+                if(this.header.saveVersion >= 53 && this.currentLevelUE5Version >= 1011)
                 {
                     this.skipBytes(); // 0
                     currentProperty.value.value = this.readString();
@@ -1324,7 +1348,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Byte':
-                if(this.currentEntitySaveVersion >= 53)
+                if(this.currentEntitySaveVersion >= 53 && this.currentLevelUE5Version >= 1011)
                 {
                     this.skipBytes(1);
 
@@ -1370,7 +1394,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Array':
-                currentProperty         = this.readArrayProperty(currentProperty, parentType, hadEntityExtraByte);
+                currentProperty         = this.readArrayProperty(currentProperty, parentType);
 
                 break;
 
@@ -1395,7 +1419,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Struct':
-                currentProperty         = this.readStructProperty(currentProperty, parentType, hadEntityExtraByte);
+                currentProperty         = this.readStructProperty(currentProperty, parentType);
 
                 break;
 
@@ -1423,9 +1447,9 @@ export default class SaveParser_Read
         return currentProperty;
     }
 
-    readArrayProperty(currentProperty, parentType, hadEntityExtraByte = false)
+    readArrayProperty(currentProperty, parentType)
     {
-        if(this.currentEntitySaveVersion < 53 || hadEntityExtraByte === true)
+        if(this.currentLevelUE5Version < 1011)
         {
             currentProperty.value = {type: this.readString().replace('Property', '')};
         }
@@ -1546,7 +1570,7 @@ export default class SaveParser_Read
                 break;
 
             case 'Struct':
-                if(this.currentEntitySaveVersion < 53 || hadEntityExtraByte === true)
+                if(this.currentLevelUE5Version < 1011)
                 {
                     this.readString(); // Same as currentProperty.name
                     this.readString(); // StructProperty
@@ -1649,7 +1673,7 @@ export default class SaveParser_Read
                                 let subStructProperties = [];
                                     while(true)
                                     {
-                                        let subStructProperty = this.readProperty(currentProperty.structureSubType, null, hadEntityExtraByte);
+                                        let subStructProperty = this.readProperty(currentProperty.structureSubType);
                                             if(subStructProperty === null)
                                             {
                                                 break;
@@ -1692,7 +1716,7 @@ export default class SaveParser_Read
 
     readMapProperty(currentProperty, parentType)
     {
-        if(this.currentEntitySaveVersion < 53)
+        if(this.currentLevelUE5Version < 1011)
         {
             currentProperty.value = {
                 keyType         : this.readString().replace('Property', ''),
@@ -2034,9 +2058,9 @@ export default class SaveParser_Read
         return currentProperty;
     }
 
-    readStructProperty(currentProperty, parentType, hadEntityExtraByte = false)
+    readStructProperty(currentProperty, parentType)
     {
-        if(this.currentEntitySaveVersion < 53 || hadEntityExtraByte === true)
+        if(this.currentLevelUE5Version < 1011)
         {
             currentProperty.value       = {type: this.readString()};
 
@@ -2224,7 +2248,7 @@ export default class SaveParser_Read
                         }
                 }
 
-                currentProperty.value.properties    = [this.readProperty(null, null, hadEntityExtraByte)];
+                currentProperty.value.properties    = [this.readProperty()];
 
                 break;
 
@@ -2311,7 +2335,7 @@ export default class SaveParser_Read
                     currentProperty.value.values = [];
                     while(true)
                     {
-                        let subStructProperty = this.readProperty(currentProperty.value.type, null, hadEntityExtraByte);
+                        let subStructProperty = this.readProperty(currentProperty.value.type);
                             if(subStructProperty === null)
                             {
                                 break;
@@ -2534,6 +2558,8 @@ export default class SaveParser_Read
                 UE4Version      : this.readInt(),
                 UE5Version      : this.readInt()
             };
+            //console.log(dataPackageVersion.packageFileVersion)
+
             dataPackageVersion.licenseeVersion                  = this.readInt();
             // See: https://github.com/EpicGames/UnrealEngine/blob/684b4c133ed87e8050d1fdaa287242f0fe2c1153/Engine/Source/Runtime/Core/Public/Misc/EngineVersion.h#L19
             dataPackageVersion.engineVersion                    = {

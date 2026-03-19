@@ -146,6 +146,12 @@ export default class SaveParser_Write
                 currentLevelName = currentLevelName[0].split('.').pop();
             }
 
+        let levelUE5Version = 1000;
+            if(this.levels[currentLevel].dataPackageVersion !== null)
+            {
+                levelUE5Version = this.levels[currentLevel].dataPackageVersion.packageFileVersion.UE5Version;
+            }
+
         if(currentLevel % 100 === 0)
         {
             let currentSubLevels = this.availableSubLevels.slice(currentLevel, Math.min((currentLevel + 100), this.availableSubLevels.length));
@@ -160,6 +166,7 @@ export default class SaveParser_Write
                             this.subLevelObjectKeys[currentLevelName],
                             this.subLevelCollectables[currentLevelName],
                             this.levels[currentLevel].saveVersion,
+                            levelUE5Version,
                             this.levels[currentLevel].levelPersistentFlag,
                             this.levels[currentLevel].dataPackageVersion
                         );
@@ -173,6 +180,7 @@ export default class SaveParser_Write
                 this.subLevelObjectKeys[currentLevelName],
                 this.subLevelCollectables[currentLevelName],
                 this.levels[currentLevel].saveVersion,
+                levelUE5Version,
                 this.levels[currentLevel].levelPersistentFlag,
                 this.levels[currentLevel].dataPackageVersion
             );
@@ -188,15 +196,15 @@ export default class SaveParser_Write
                         (this.levels.length - 1),
                         objectKeys[currentLevelName],
                         collectables[currentLevelName],
-                        null,
-                        this.levels[this.levels.length - 1].levelPersistentFlag,
-                        this.levels[this.levels.length - 1].dataPackageVersion
+                        this.header.saveVersion,
+                        this.dataPackageVersion.packageFileVersion.UE5Version,
+                        this.levels[this.levels.length - 1].levelPersistentFlag
                     );
                 });
             });
     }
 
-    generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion = null, levelPersistentFlag = null, dataPackageVersion = null, step = null, tempSaveBinaryLength = 0)
+    generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion = null, levelUE5Version = null, levelPersistentFlag = null, dataPackageVersion = null, step = null, tempSaveBinaryLength = 0)
     {
         if(step === null)
         {
@@ -226,7 +234,17 @@ export default class SaveParser_Write
                     this.saveBinary        += this.writeActor(objects[0], levelSaveVersion);
                     tempSaveBinaryLength   += this.currentEntityLength;
 
-                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, levelPersistentFlag, dataPackageVersion, 0, tempSaveBinaryLength);
+                    return this.generateObjectsChunks(
+                        currentLevel,
+                        objectKeys,
+                        collectables,
+                        levelSaveVersion,
+                        levelUE5Version,
+                        levelPersistentFlag,
+                        dataPackageVersion,
+                        0,
+                        tempSaveBinaryLength
+                    );
                 });
             }
             else
@@ -234,7 +252,17 @@ export default class SaveParser_Write
                 this.saveBinary            += this.writeInt(objectKeys.length, false);
                 tempSaveBinaryLength       += 4; // countObjects
 
-                return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, levelPersistentFlag, dataPackageVersion, 0, tempSaveBinaryLength);
+                return this.generateObjectsChunks(
+                    currentLevel,
+                    objectKeys,
+                    collectables,
+                    levelSaveVersion,
+                    levelUE5Version,
+                    levelPersistentFlag,
+                    dataPackageVersion,
+                    0,
+                    tempSaveBinaryLength
+                );
             }
         }
 
@@ -267,7 +295,17 @@ export default class SaveParser_Write
                             }
                         }
 
-                    return this.generateObjectsChunks(currentLevel, objectKeys, collectables, levelSaveVersion, levelPersistentFlag, dataPackageVersion, (step + this.stepsLength), tempSaveBinaryLength);
+                    return this.generateObjectsChunks(
+                        currentLevel,
+                        objectKeys,
+                        collectables,
+                        levelSaveVersion,
+                        levelUE5Version,
+                        levelPersistentFlag,
+                        dataPackageVersion,
+                        (step + this.stepsLength),
+                        tempSaveBinaryLength
+                    );
                 });
             }
 
@@ -337,6 +375,7 @@ export default class SaveParser_Write
             objectKeys              : objectKeys,
             collectables            : collectables,
             levelSaveVersion        : levelSaveVersion,
+            levelUE5Version         : levelUE5Version,
             dataPackageVersion      : dataPackageVersion,
             step                    : null,
             tempSaveBinaryLength    : 0
@@ -373,7 +412,7 @@ export default class SaveParser_Write
                 entitiesOptions.tempSaveBinaryLength   += (entitiesOptions.objectKeys.length + 1) * 8;
 
                 return this.postWorkerMessage({command: 'requestObjects', objectKeys: ['Persistent_Level:PersistentLevel.LightweightBuildableSubsystem']}).then((objects) => {
-                    let entityReturn = this.writeEntity(objects[0]);
+                    let entityReturn = this.writeEntity(objects[0], entitiesOptions.levelUE5Version);
                         return this.writeLightweightBuildableSubsystem(entityReturn.preEntity, entityReturn.entity, entitiesOptions);
                 });
             }
@@ -398,7 +437,13 @@ export default class SaveParser_Write
                     let countObjects = objects.length;
                         for(let i = 0; i < countObjects; i++)
                         {
-                            this.saveBinary                      += this.writeEntity(objects[i]);
+                            let entityUE5Version = entitiesOptions.levelUE5Version;
+                                if(objects[i].dataPackageVersion !== undefined)
+                                {
+                                    entityUE5Version = objects[i].dataPackageVersion.packageFileVersion.UE5Version;
+                                }
+
+                            this.saveBinary += this.writeEntity(objects[i], entityUE5Version);
 
                             if(this.currentEntitySaveVersion >= 53)
                             {
@@ -870,7 +915,7 @@ export default class SaveParser_Write
         return actor;
     }
 
-    writeEntity(currentObject)
+    writeEntity(currentObject, entityUE5Version)
     {
         let preEntity                   = '';
         let entity                      = '';
@@ -878,6 +923,8 @@ export default class SaveParser_Write
         this.currentEntityClassName     = currentObject.className;
         this.currentEntityPathName      = currentObject.pathName;
         this.currentEntitySaveVersion   = this.header.saveVersion;
+        this.currentEntityUE5Version    = entityUE5Version;
+
         if(this.header.saveVersion >= 41)
         {
             if(currentObject.entitySaveVersion !== undefined)
@@ -927,7 +974,7 @@ export default class SaveParser_Write
             return preEntity + this.writeInt(this.currentEntityLength) + entity;
         }
 
-        if(this.currentEntitySaveVersion >= 53)
+        if(this.currentEntitySaveVersion >= 53 && this.currentEntityUE5Version >= 1011)
         {
             entity += this.writeByte(0);
         }
@@ -1428,7 +1475,7 @@ export default class SaveParser_Write
             propertyStart  += this.writeString(currentProperty.name);
             propertyStart  += this.writeString(currentProperty.type + 'Property');
 
-            if(this.currentEntitySaveVersion >= 53)
+            if(this.currentEntitySaveVersion >= 53 && this.currentEntityUE5Version >= 1011)
             {
                 let hasCustomData = false;
                     if(currentProperty.type === 'Array')
@@ -1536,7 +1583,7 @@ export default class SaveParser_Write
         let startCurrentPropertyBufferLength    = this.currentBufferLength;
             this.currentBufferLength            = 0;
 
-            if(this.currentEntitySaveVersion < 53)
+            if(this.currentEntityUE5Version < 1011)
             {
                 property                       += this.writeInt( ((currentProperty.index !== undefined) ? currentProperty.index : 0), false);
             }
@@ -1544,14 +1591,14 @@ export default class SaveParser_Write
         switch(currentProperty.type)
         {
             case 'Bool':
-                if(this.currentEntitySaveVersion >= 53 && currentProperty.value === 1)
+                if(this.currentEntitySaveVersion >= 53 && currentProperty.value === 1) //TODO: Not sure... with the new levelUE5Version
                 {
                     currentProperty.value = 16;
                 }
 
                 property += this.writeByte(currentProperty.value, false);
 
-                if(this.currentEntitySaveVersion < 53)
+                if(this.currentEntityUE5Version < 1011)
                 {
                     property += this.writePropertyGUID(currentProperty, false);
                 }
@@ -1610,7 +1657,7 @@ export default class SaveParser_Write
                 break;
 
             case 'Enum':
-                if(this.currentEntitySaveVersion >= 53)
+                if(this.currentEntitySaveVersion >= 53 && this.currentEntityUE5Version >= 1011)
                 {
                     property += this.writeByte(0, false);
                     property += this.writeString(currentProperty.value.value);
@@ -1625,7 +1672,7 @@ export default class SaveParser_Write
                 break;
 
             case 'Byte':
-                if(this.currentEntitySaveVersion >= 53)
+                if(this.currentEntitySaveVersion >= 53 && this.currentEntityUE5Version >= 1011)
                 {
                     property += this.writeByte(0, false);
 
@@ -1698,7 +1745,7 @@ export default class SaveParser_Write
     writeArrayProperty(currentProperty, parentType)
     {
         let property                    = '';
-            if(this.currentEntitySaveVersion < 53)
+            if(this.currentEntityUE5Version < 1011)
             {
                 property += this.writeString(currentProperty.value.type + 'Property', false);
             }
@@ -1822,7 +1869,7 @@ export default class SaveParser_Write
                 let structPropertyBufferLength      = this.currentEntityLength;
                 let structure                       = '';
 
-                    if(this.currentEntitySaveVersion < 53)
+                    if(this.currentEntityUE5Version < 1011)
                     {
                         property   += this.writeString(currentProperty.name);
                         property   += this.writeString('StructProperty');
@@ -1923,7 +1970,7 @@ export default class SaveParser_Write
                     }
                 }
 
-                if(this.currentEntitySaveVersion < 53)
+                if(this.currentEntityUE5Version < 1011)
                 {
                     property += this.writeInt(this.currentEntityLength - structureSizeLength);
                 }
@@ -1946,7 +1993,7 @@ export default class SaveParser_Write
         let property                = '';
         let currentMapPropertyCount = currentProperty.value.values.length;
 
-        if(this.currentEntitySaveVersion < 53)
+        if(this.currentEntityUE5Version < 1011)
         {
             property += this.writeString(currentProperty.value.keyType + 'Property', false);
             property += this.writeString(currentProperty.value.valueType + 'Property', false);
@@ -2173,7 +2220,7 @@ export default class SaveParser_Write
         let property            = '';
         let setPropertyCount    = currentProperty.value.values.length;
 
-            if(this.currentEntitySaveVersion < 53)
+            if(this.currentEntityUE5Version < 1011)
             {
                 property += this.writeString(currentProperty.value.type + 'Property', false);
             }
@@ -2238,7 +2285,7 @@ export default class SaveParser_Write
     writeStructProperty(currentProperty, parentType)
     {
         let property    = '';
-            if(this.currentEntitySaveVersion < 53)
+            if(this.currentEntityUE5Version < 1011)
             {
                 property += this.writeString(currentProperty.value.type, false);
 
