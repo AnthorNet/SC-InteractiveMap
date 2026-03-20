@@ -62,11 +62,44 @@ export default class SubSystem_ConveyorChainActor
         return beltInventory;
     }
 
-    /**
-     * Actually destroy the ChainActor, and converting the belts back to version 44
-     * TODO: Just manage the conveyor chains actor...
-     */
-    killMe()
+    updateConveyorPosition(currentObject, newTansform)
+    {
+        if(this.conveyorChainActor !== null)
+        {
+            for(let i = 0; i < this.conveyorChainActor.extra.mConveyors.length; i++)
+            {
+                if(currentObject.pathName === this.conveyorChainActor.extra.mConveyors[i].mConveyorBase.pathName)
+                {
+                    if(i === 0)
+                    {
+                        this.conveyorChainActor.transform = newTansform;
+                    }
+
+                    // Copy spline data over the chain actor...
+                    let conveyorSplineData = this.baseLayout.getObjectProperty(currentObject, 'mSplineData');
+                        if(conveyorSplineData !== null)
+                        {
+                            this.conveyorChainActor.extra.mConveyors[i].splineData = [];
+
+                            for(let j = 0; j < conveyorSplineData.values.length; j++)
+                            {
+                                let arriveTangent   = this.baseLayout.getObjectProperty({properties: conveyorSplineData.values[j]}, 'ArriveTangent');
+                                let leaveTangent    = this.baseLayout.getObjectProperty({properties: conveyorSplineData.values[j]}, 'LeaveTangent');
+                                let location        = this.baseLayout.getObjectProperty({properties: conveyorSplineData.values[j]}, 'Location');
+
+                                this.conveyorChainActor.extra.mConveyors[i].splineData.push({
+                                    arriveTangent   : arriveTangent.values,
+                                    leaveTangent    : leaveTangent.values,
+                                    location        : location.values
+                                });
+                            }
+                        }
+                }
+            }
+        }
+    }
+
+    deleteConveyorChainActor()
     {
         if(this.conveyorChainActor !== null)
         {
@@ -85,7 +118,35 @@ export default class SubSystem_ConveyorChainActor
                             }
 
                         this.baseLayout.deleteObjectProperty(currentObject, 'mConveyorChainActor');
-                        currentObject.entitySaveVersion = 44;
+                    }
+            }
+
+            this.baseLayout.saveGameParser.deleteObject(this.conveyorChainActor.pathName);
+        }
+    }
+
+    clearInventory(currentObject)
+    {
+        if(this.conveyorChainActor !== null)
+        {
+            for(let i = 0; i < this.conveyorChainActor.extra.mConveyors.length; i++)
+            {
+                let currentConveyor = this.baseLayout.saveGameParser.getTargetObject(this.conveyorChainActor.extra.mConveyors[i].mConveyorBase.pathName);
+                    if(currentConveyor !== null)
+                    {
+                        if(currentObject.pathName !== this.conveyorChainActor.extra.mConveyors[i].mConveyorBase.pathName)
+                        {
+                            let conveyorBase    = this.getConveyorBase(currentConveyor.pathName);
+                            let beltItems       = this.getBeltItems(currentConveyor.pathName);
+                                for(let j = 0; j < beltItems.length; j++)
+                                {
+                                    let oldItemFormat = JSON.parse(JSON.stringify(beltItems[j]));
+                                        oldItemFormat.position -= conveyorBase.StartsAtLength;
+                                        currentConveyor.extra.items.push(oldItemFormat);
+                                }
+                        }
+
+                        this.baseLayout.deleteObjectProperty(currentConveyor, 'mConveyorChainActor');
                     }
             }
 

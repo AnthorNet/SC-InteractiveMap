@@ -2890,8 +2890,7 @@ export default class BaseLayout
             if(mConveyorChainActor !== null)
             {
                 let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: baseLayout, pathName: mConveyorChainActor.pathName});
-                    conveyorChainActorSubsystem.killMe();
-                    baseLayout.deleteObjectProperty(currentObject, 'mConveyorChainActor')
+                    conveyorChainActorSubsystem.deleteConveyorChainActor();
             }
 
         // Clear blueprintProxy

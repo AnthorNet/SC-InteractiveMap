@@ -104,7 +104,7 @@ export default class Selection_MoveTo
                                 if(mConveyorChainActor !== null)
                                 {
                                     let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: this.baseLayout, pathName: mConveyorChainActor.pathName});
-                                        conveyorChainActorSubsystem.killMe();
+                                        conveyorChainActorSubsystem.updateConveyorPosition(currentObject, newTransform);
                                 }
 
                             let haveProxy = this.baseLayout.blueprintSubSystem.haveProxy(currentObject);

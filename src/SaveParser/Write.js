@@ -197,7 +197,7 @@ export default class SaveParser_Write
                         objectKeys[currentLevelName],
                         collectables[currentLevelName],
                         this.header.saveVersion,
-                        this.dataPackageVersion.packageFileVersion.UE5Version,
+                        ((this.header.saveVersion >= 53) ? this.dataPackageVersion.packageFileVersion.UE5Version : null),
                         this.levels[this.levels.length - 1].levelPersistentFlag
                     );
                 });

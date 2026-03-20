@@ -123,7 +123,7 @@ export default class Selection_Rotate
                                 if(mConveyorChainActor !== null)
                                 {
                                     let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: this.baseLayout, pathName: mConveyorChainActor.pathName});
-                                        conveyorChainActorSubsystem.killMe();
+                                        conveyorChainActorSubsystem.updateConveyorPosition(currentObject, refreshProperties.transform);
                                 }
 
                             let haveProxy = this.baseLayout.blueprintSubSystem.haveProxy(currentObject);

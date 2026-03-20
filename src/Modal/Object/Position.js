@@ -197,7 +197,7 @@ export default class Modal_Object_Position
                     if(mConveyorChainActor !== null)
                     {
                         let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: baseLayout, pathName: mConveyorChainActor.pathName});
-                            conveyorChainActorSubsystem.killMe();
+                            conveyorChainActorSubsystem.updateConveyorPosition(currentObject, newTransform);
                     }
 
                 if(teleportPlayer !== false)

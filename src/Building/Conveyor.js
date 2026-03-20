@@ -405,7 +405,7 @@ export default class Building_Conveyor extends Building
             if(mConveyorChainActor !== null)
             {
                 let conveyorChainActorSubsystem = new SubSystem_ConveyorChainActor({baseLayout: baseLayout, pathName: mConveyorChainActor.pathName});
-                    conveyorChainActorSubsystem.killMe();
+                    conveyorChainActorSubsystem.clearInventory(currentObject);
             }
 
         currentObject.extra.items = [];
