@@ -25,11 +25,12 @@ export default class Modal_Map_GameRules
             if(gameRules !== null)
             {
                 let mIsCreativeModeEnabled = this.baseLayout.getObjectProperty(gameState, 'mIsCreativeModeEnabled');
-
+                    html.push('<div class="form-group">');
                         html.push('<div class="custom-control custom-switch">');
                         html.push('<input type="checkbox" class="custom-control-input" name="inputIsCreativeModeEnabled" id="inputIsCreativeModeEnabled" ' + ((mIsCreativeModeEnabled !== null) ? 'checked' : '') + ' />');
-                        html.push('<label class="custom-control-label" for="inputIsCreativeModeEnabled">' + this.baseLayout.translate._('Activate Advanced Game Settings') + '</label>');
+                        html.push('<label class="custom-control-label" for="inputIsCreativeModeEnabled">' + this.baseLayout.translate._('Activate Creative Mode') + '</label>');
                         html.push('</div>');
+                    html.push('</div>');
             }
 
             html.push('</div><div class="col-6">');
@@ -44,23 +45,22 @@ export default class Modal_Map_GameRules
         }
 
         html.push('<h4>' + this.baseLayout.translate._('Gameplay (For all players):') + '</h4>');
-        html.push('<div class="row"><div class="col-6">');
+        html.push('<div class="row"><div class="col-4">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch">');
             html.push('<input type="checkbox" class="custom-control-input" name="inputCheatNoCost" id="inputCheatNoCost" ' + ((mCheatNoCost === 1) ? 'checked' : '') + ' />');
             html.push('<label class="custom-control-label" for="inputCheatNoCost">' + this.baseLayout.translate._('No Build Cost') + '</label>');
             html.push('</div>');
         html.push('</div>');
-        html.push('</div><div class="col-6">');
+        html.push('</div><div class="col-4">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch">');
             html.push('<input type="checkbox" class="custom-control-input" name="inputCheatNoPower" id="inputCheatNoPower" ' + ((mCheatNoPower === 1) ? 'checked' : '') + ' />');
             html.push('<label class="custom-control-label" for="inputCheatNoPower">' + this.baseLayout.translate._('No Power Cost') + '</label>');
             html.push('</div>');
         html.push('</div>');
-        html.push('</div></div>');
-
-        html.push('<div class="row"><div class="col-6">');
+        html.push('</div>');
+        html.push('<div class="col-4">');
         html.push('<div class="form-group">');
             html.push('<div class="custom-control custom-switch">');
             html.push('<input type="checkbox" class="custom-control-input" name="inputCheatNoFuel" id="inputCheatNoFuel" ' + ((mCheatNoFuel === 1) ? 'checked' : '') + ' />');
@@ -69,9 +69,66 @@ export default class Modal_Map_GameRules
         html.push('</div>');
         html.push('</div></div>');
 
-        if(gameRules !== null)
+        if(this.baseLayout.saveGameParser.header.saveVersion >= 58)
         {
             html.push('<hr class="border-secondary" />');
+
+            let mSpacePartsCostMultiplier   = parseFloat(this.baseLayout.getObjectProperty(gameState, 'mSpacePartsCostMultiplier', 1));
+                html.push('<div class="row"><div class="col-6">');
+                    html.push('<label class="form-label" for="inputSpacePartsCostMultiplier">' + this.baseLayout.translate._('Space Elevator Deliverable Cost Multiplier') + '</label>');
+                html.push('</div><div class="col-6">');
+                    html.push('<select class="form-control" name="inputSpacePartsCostMultiplier" id="inputSpacePartsCostMultiplier">');
+                        html.push('<option value="0.25"' + ((mSpacePartsCostMultiplier === 0.25) ? ' selected' : '') + '>0.25</option>');
+                        html.push('<option value="0.5"' + ((mSpacePartsCostMultiplier === 0.5) ? ' selected' : '') + '>0.5</option>');
+                        html.push('<option value="0.75"' + ((mSpacePartsCostMultiplier === 0.75) ? ' selected' : '') + '>0.75</option>');
+                        html.push('<option value="1"' + ((mSpacePartsCostMultiplier === 1) ? ' selected' : '') + '>1 (Default)</option>');
+                        html.push('<option value="2"' + ((mSpacePartsCostMultiplier === 2) ? ' selected' : '') + '>2</option>');
+                        html.push('<option value="5"' + ((mSpacePartsCostMultiplier === 5) ? ' selected' : '') + '>5</option>');
+                        html.push('<option value="10"' + ((mSpacePartsCostMultiplier === 10) ? ' selected' : '') + '>10</option>');
+                        html.push('<option value="25"' + ((mSpacePartsCostMultiplier === 25) ? ' selected' : '') + '>25</option>');
+                        html.push('<option value="50"' + ((mSpacePartsCostMultiplier === 50) ? ' selected' : '') + '>50</option>');
+                        html.push('<option value="100"' + ((mSpacePartsCostMultiplier === 100) ? ' selected' : '') + '>100</option>');
+                    html.push('</select>');
+                html.push('</div></div>');
+
+            let mPartsCostMultiplier        = parseFloat(this.baseLayout.getObjectProperty(gameState, 'mPartsCostMultiplier', 1));
+                html.push('<div class="row"><div class="col-6">');
+                    html.push('<label class="form-label" for="inputPartsCostMultiplier">' + this.baseLayout.translate._('Recipe Parts Cost Multiplier') + '</label>');
+                html.push('</div><div class="col-6">');
+                    html.push('<select class="form-control" name="inputPartsCostMultiplier" id="inputPartsCostMultiplier">');
+                        html.push('<option value="0.25"' + ((mPartsCostMultiplier === 0.25) ? ' selected' : '') + '>0.25</option>');
+                        html.push('<option value="0.5"' + ((mPartsCostMultiplier === 0.5) ? ' selected' : '') + '>0.5</option>');
+                        html.push('<option value="0.75"' + ((mPartsCostMultiplier === 0.75) ? ' selected' : '') + '>0.75</option>');
+                        html.push('<option value="1"' + ((mPartsCostMultiplier === 1) ? ' selected' : '') + '>1 (Default)</option>');
+                        html.push('<option value="1.25"' + ((mPartsCostMultiplier === 1.25) ? ' selected' : '') + '>1.25</option>');
+                        html.push('<option value="1.5"' + ((mPartsCostMultiplier === 1.5) ? ' selected' : '') + '>1.5</option>');
+                        html.push('<option value="1.75"' + ((mPartsCostMultiplier === 1.75) ? ' selected' : '') + '>1.75</option>');
+                        html.push('<option value="2"' + ((mPartsCostMultiplier === 2) ? ' selected' : '') + '>2</option>');
+                    html.push('</select>');
+                html.push('</div></div>');
+
+            let mEnergyCostMultiplier       = parseFloat(this.baseLayout.getObjectProperty(gameState, 'mEnergyCostMultiplier', 1));
+                html.push('<div class="row"><div class="col-6">');
+                    html.push('<label class="form-label" for="inputEnergyCostMultiplier">' + this.baseLayout.translate._('Power Consumption Multiplier') + '</label>');
+                html.push('</div><div class="col-6">');
+                    html.push('<select class="form-control" name="inputEnergyCostMultiplier" id="inputEnergyCostMultiplier">');
+                        html.push('<option value="0.25"' + ((mEnergyCostMultiplier === 0.25) ? ' selected' : '') + '>0.25</option>');
+                        html.push('<option value="0.5"' + ((mEnergyCostMultiplier === 0.5) ? ' selected' : '') + '>0.5</option>');
+                        html.push('<option value="0.75"' + ((mEnergyCostMultiplier === 0.75) ? ' selected' : '') + '>0.75</option>');
+                        html.push('<option value="1"' + ((mEnergyCostMultiplier === 1) ? ' selected' : '') + '>1 (Default)</option>');
+                        html.push('<option value="2"' + ((mEnergyCostMultiplier === 2) ? ' selected' : '') + '>2</option>');
+                        html.push('<option value="5"' + ((mEnergyCostMultiplier === 5) ? ' selected' : '') + '>5</option>');
+                    html.push('</select>');
+                html.push('</div></div>');
+        }
+
+        if(gameRules !== null)
+        {
+            let mIsCreativeModeEnabled = this.baseLayout.getObjectProperty(gameState, 'mIsCreativeModeEnabled');
+                html.push('<div id="mIsCreativeModeEnabledOptions"' + ((mIsCreativeModeEnabled !== null) ? '' : ' style="display: none;"') + '>');
+
+            html.push('<hr class="border-secondary" />');
+            html.push('<h4>' + this.baseLayout.translate._('Unlocks:') + '</h4>');
 
             let mNoUnlockCost               = this.baseLayout.getObjectProperty(gameRules, 'mNoUnlockCost');
             let mUnlockInstantAltRecipes    = this.baseLayout.getObjectProperty(gameRules, 'mUnlockInstantAltRecipes');
@@ -155,6 +212,7 @@ export default class Modal_Map_GameRules
                 html.push('</div>');
             }
 
+            html.push('</div>')
             html.push('</div>');
 
             $('#statisticsModalRules span[data-toggle="tab"]').on('show.bs.tab', (e) => {
@@ -204,6 +262,36 @@ export default class Modal_Map_GameRules
                 }
             }
 
+            if(this.baseLayout.saveGameParser.header.saveVersion >= 58)
+            {
+                if($('#inputSpacePartsCostMultiplier').val() !== 1)
+                {
+                    this.baseLayout.setObjectProperty(gameState, 'mSpacePartsCostMultiplier', $('#inputSpacePartsCostMultiplier').val(), 'Float');
+                }
+                else
+                {
+                    this.baseLayout.deleteObjectProperty(gameState, 'mSpacePartsCostMultiplier');
+                }
+
+                if($('#inputPartsCostMultiplier').val() !== 1)
+                {
+                    this.baseLayout.setObjectProperty(gameState, 'mPartsCostMultiplier', $('#inputPartsCostMultiplier').val(), 'Float');
+                }
+                else
+                {
+                    this.baseLayout.deleteObjectProperty(gameState, 'mPartsCostMultiplier');
+                }
+
+                if($('#inputEnergyCostMultiplier').val() !== 1)
+                {
+                    this.baseLayout.setObjectProperty(gameState, 'mEnergyCostMultiplier', $('#inputEnergyCostMultiplier').val(), 'Float');
+                }
+                else
+                {
+                    this.baseLayout.deleteObjectProperty(gameState, 'mEnergyCostMultiplier');
+                }
+            }
+
             if(gameRules !== null)
             {
                 this.baseLayout.saveGameParser.header.mapOptions = this.baseLayout.saveGameParser.header.mapOptions.replaceAll('?enableAdvancedGameSettings', '');
@@ -215,6 +303,8 @@ export default class Modal_Map_GameRules
 
                     this.baseLayout.setObjectProperty(gameState, 'mIsCreativeModeEnabled', (($('#inputHasInitialized').is(':checked') === true) ? 1 : 0), 'Bool');
                     this.baseLayout.setObjectProperty(gameRules, 'mHasInitialized', (($('#inputHasInitialized').is(':checked') === true) ? 1 : 0), 'Bool');
+
+                    $('#mIsCreativeModeEnabledOptions').show();
                 }
                 else
                 {
@@ -235,6 +325,7 @@ export default class Modal_Map_GameRules
                             this.baseLayout.deleteObjectProperty(mPlayerRules, 'GodMode');
                     }
 
+                    $('#mIsCreativeModeEnabledOptions').hide();
                 }
 
                 if($('#inputNoUnlockCost').is(':checked') === true)
