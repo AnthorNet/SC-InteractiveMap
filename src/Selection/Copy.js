@@ -141,7 +141,6 @@ export default class Selection_Copy
                                     }
 
                                 this.baseLayout.deleteObjectProperty(newDataObject.parent, 'mConveyorChainActor');
-                                newDataObject.parent.entitySaveVersion = 44;
                             }
                     }
 
