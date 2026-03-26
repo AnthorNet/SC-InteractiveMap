@@ -59,11 +59,12 @@ export default class Modal_Debug
         }
 
         let extraProperties = [
-                'mOwningSpawner', 'mInfo', 'mStationDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn',
+                'mOwningSpawner', 'mInfo', 'mStationDrone', 'mDockedDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn',
                 'mSignPoles', 'mFlowIndicator', 'mBottomSnappedConnection', 'mTopSnappedConnection',
                 'mHubTerminal', 'mWorkBench', 'mLocker', 'mGenerators', 'mBlueprintProxy', 'mExtractableResource',
                 'mLinkedPortal', 'mConveyorChainActor', 'mElevatorCabin',
-                'mTargetNodeLinkedList', 'mTargetList', 'mStartNode', 'mEndNode'
+                'mTargetNodeLinkedList', 'mTargetList', 'mStartNode', 'mEndNode',
+                'mVehicleIdentifier', 'mDockingPathNode'
             ];
             for(let i = 0; i < extraProperties.length; i++)
             {

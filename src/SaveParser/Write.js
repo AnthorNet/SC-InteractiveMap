@@ -2635,10 +2635,10 @@ export default class SaveParser_Write
     writeGUID(value, count = true)
     {
         let guid    = '';
-            guid   += this.writeUint(((value.A !== undefined) ? value.A : 0), count);
-            guid   += this.writeUint(((value.B !== undefined) ? value.B : 0), count);
-            guid   += this.writeUint(((value.C !== undefined) ? value.C : 0), count);
-            guid   += this.writeUint(((value.D !== undefined) ? value.D : 0), count);
+            guid   += this.writeUint(((value.a !== undefined) ? value.a : 0), count);
+            guid   += this.writeUint(((value.b !== undefined) ? value.b : 0), count);
+            guid   += this.writeUint(((value.c !== undefined) ? value.c : 0), count);
+            guid   += this.writeUint(((value.d !== undefined) ? value.d : 0), count);
 
         return guid;
     }

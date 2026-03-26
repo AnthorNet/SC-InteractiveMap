@@ -2502,25 +2502,25 @@ export default class SaveParser_Read
     readGUID()
     {
         let guid    = {};
-        let A       = this.readUint();
-            if(A !== 0)
+        let a       = this.readUint();
+            if(a !== 0)
             {
-                guid.a = A;
+                guid.a = a;
             }
-        let B       = this.readUint();
-            if(B !== 0)
+        let b       = this.readUint();
+            if(b !== 0)
             {
-                guid.b = B;
+                guid.b = b;
             }
-        let C       = this.readUint();
-            if(C !== 0)
+        let c       = this.readUint();
+            if(c !== 0)
             {
-                guid.c = C;
+                guid.c = c;
             }
-        let D       = this.readUint();
-            if(D !== 0)
+        let d       = this.readUint();
+            if(d !== 0)
             {
-                guid.d = D;
+                guid.d = d;
             }
 
         return guid;
