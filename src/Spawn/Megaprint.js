@@ -722,6 +722,27 @@ export default class Spawn_Megaprint
                         }
                     }
 
+                    // Drone destination/home exists?
+                    if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
+                    {
+                        let mCurrentDestinationStation = this.baseLayout.getObjectProperty(this.clipboard.data[i].parent, 'mCurrentDestinationStation');
+                            if(mCurrentDestinationStation !== null)
+                            {
+                                if(pathNameConversion[mCurrentDestinationStation.pathName] === undefined)
+                                {
+                                    this.baseLayout.deleteObjectProperty(this.clipboard.data[i].parent, 'mCurrentDestinationStation');
+                                }
+                            }
+                        let mHomeStation = this.baseLayout.getObjectProperty(this.clipboard.data[i].parent, 'mHomeStation');
+                            if(mHomeStation !== null)
+                            {
+                                if(pathNameConversion[mHomeStation.pathName] === undefined)
+                                {
+                                    this.baseLayout.deleteObjectProperty(this.clipboard.data[i].parent, 'mHomeStation');
+                                }
+                            }
+                    }
+
                     // Properties
                     if(this.clipboard.data[i].parent.properties !== undefined && this.clipboard.data[i].parent.properties.length > 0)
                     {

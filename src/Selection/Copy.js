@@ -147,20 +147,31 @@ export default class Selection_Copy
 
                 // Need some extra linked properties?
                 //TODO: Check mPairedStation?
-                let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone', 'mSignPoles', 'mFlowIndicator', 'mBlueprintProxy', 'mElevatorCabin'];
+                let extraProperties = ['mRailroadTrack', 'mInfo', 'mStationDrone', 'mDockedDrone', 'mSignPoles', 'mFlowIndicator', 'mBlueprintProxy', 'mElevatorCabin'];
                     for(let j = 0; j < extraProperties.length; j++)
                     {
                         let extraProperty   = this.baseLayout.getObjectProperty(currentObject, extraProperties[j]);
                             if(extraProperty !== null)
                             {
-                                if(extraProperty.pathName !== undefined && extraProperty.values === undefined)
-                                {
-                                    extraProperty.values = [{pathName: extraProperty.pathName}];
-                                }
+                                let pathNameToCheck = [];
+                                    if(extraProperty.pathName !== undefined)
+                                    {
+                                        pathNameToCheck.push(extraProperty.pathName);
+                                    }
+                                    if(extraProperty.values !== undefined)
+                                    {
+                                        for(let k = 0; k < extraProperty.values.length; k++)
+                                        {
+                                            if(pathNameToCheck.includes(extraProperty.values[k].pathName) === false)
+                                            {
+                                                pathNameToCheck.push(extraProperty.values[k].pathName);
+                                            }
+                                        }
+                                    }
 
-                                for(let k = 0; k < extraProperty.values.length; k++)
+                                for(let k = 0; k < pathNameToCheck.length; k++)
                                 {
-                                    let extraPropertyObject = this.baseLayout.saveGameParser.getTargetObject(extraProperty.values[k].pathName);
+                                    let extraPropertyObject = this.baseLayout.saveGameParser.getTargetObject(pathNameToCheck[k]);
                                         if(extraPropertyObject !== null)
                                         {
                                             let extraPropertyNewObject          = {};
@@ -178,21 +189,17 @@ export default class Selection_Copy
                                                 }
 
                                                 // Removes drone action to reset it
-                                                if(extraPropertyNewObject.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
+                                                if(extraPropertyNewObject.parent.className === '/Game/FactoryGame/Buildable/Factory/DroneStation/BP_DroneTransport.BP_DroneTransport_C')
                                                 {
-                                                    this.baseLayout.setObjectProperty(extraPropertyNewObject.parent, 'mCurrentDockingState', {
-                                                        type    : 'DroneDockingStateInfo',
-                                                        values  : [
-                                                            {
-                                                                name    : 'State',
-                                                                type    : 'Enum',
-                                                                value   : {
-                                                                    name    : 'EDroneDockingState',
-                                                                    value   : 'EDroneDockingState::DS_DOCKED'
-                                                                }
-                                                            }
-                                                        ]
-                                                    }, 'Struct');
+                                                    /*
+                                                    let mCurrentDockingState = this.baseLayout.getObjectProperty(extraPropertyNewObject.parent, 'mCurrentDockingState');
+                                                        if(mCurrentDockingState !== null)
+                                                        {
+                                                            mCurrentDockingState.values[0].value.value = 'EDroneDockingState::DS_DOCKED';
+                                                        }
+                                                    */
+
+                                                    this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mCurrentDockingState');
                                                     this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mCurrentAction');
                                                     this.baseLayout.deleteObjectProperty(extraPropertyNewObject.parent, 'mActionsToExecute');
                                                     extraPropertyNewObject.parent.extra = {unk1 :0, unk2 :0, mActiveAction: [], mActionQueue: []};
