@@ -287,11 +287,11 @@ export default class SaveParser_Read
                             this.currentByte               += entitiesBinaryLength;
                             this.currentLevelSaveVersion    = this.readUint();
 
-                            let countCollected = this.readInt();
-                                if(countCollected > 0){ for(let i = 0; i < countCollected; i++){ this.readObjectProperty(); } }
-
                             if(this.header.saveVersion >= 53)
                             {
+                                let countCollected = this.readInt();
+                                    if(countCollected > 0){ for(let i = 0; i < countCollected; i++){ this.readObjectProperty(); } }
+
                                 let haveLevelDataPackageVersion = this.readInt();
                                     if(haveLevelDataPackageVersion === 1)
                                     {
@@ -304,7 +304,7 @@ export default class SaveParser_Read
                         this.currentByte = objectsBinaryLengthStart;
                     }
                 }
-                //console.log('levelSaveVersion', this.currentLevelSaveVersion);
+                //console.log('levelSaveVersion', levelName, this.currentLevelSaveVersion);
 
             let entitiesToObjects   = [];
             let countObjects        = this.readInt();
@@ -317,7 +317,7 @@ export default class SaveParser_Read
             for(let i = 0; i < countObjects; i++)
             {
                 let objectType = this.readInt();
-                    //console.log(levelName, countObjects, i, objectType);
+                    //console.log(levelName, i, countObjects, objectType);
                     switch(objectType)
                     {
                         case 0:
@@ -3002,8 +3002,9 @@ export default class SaveParser_Read
                 case '/Script/FicsItNetworks.FINGPUT2DC_Box':
                 case '/Script/FicsItNetworksComputer.FINGPUT2DC_Box':
                 case '/Script/FicsItNetworksComputer.FINGPUT2DC_Text':
-                case '/Script/FicsItNetworksComputer.FINGPUT2DC_PushClipRect':
                 case '/Script/FicsItNetworksComputer.FINGPUT2DC_PopClip':
+                case '/Script/FicsItNetworksComputer.FINGPUT2DC_PushClipRect':
+                case '/Script/FicsItNetworksComputer.FINGPUT2DC_PushTransform':
                 case '/Script/FicsItNetworksLua.FINEventFilter':
                 case '/Script/FactoryGame.PrefabSignData':
 
