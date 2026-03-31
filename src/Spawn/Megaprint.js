@@ -99,6 +99,28 @@ export default class Spawn_Megaprint
                         }
                     }
                 }
+
+                if(this.clipboard.hiddenConnections !== undefined)
+                {
+                    for(let pathName in this.clipboard.hiddenConnections)
+                    {
+                        if(this.clipboard.hiddenConnections[pathName].entitySaveVersion === undefined)
+                        {
+                            this.clipboard.hiddenConnections[pathName].entitySaveVersion = this.clipboard.saveVersion;
+                        }
+                    }
+                }
+
+                if(this.clipboard.powerCircuits !== undefined)
+                {
+                    for(let pathName in this.clipboard.powerCircuits)
+                    {
+                        if(this.clipboard.powerCircuits[pathName].entitySaveVersion === undefined)
+                        {
+                            this.clipboard.powerCircuits[pathName].entitySaveVersion = this.clipboard.saveVersion;
+                        }
+                    }
+                }
             }
 
             if(this.baseLayout.saveGameParser.header.saveVersion >= 41 && this.clipboard.saveVersion < 41)
@@ -561,7 +583,7 @@ export default class Spawn_Megaprint
                     let oldPathName         = this.clipboard.hiddenConnections[pathName].pathName.split('.');
                     let extension           = oldPathName.pop();
 
-                        if(extension.includes('_'))
+                        if(extension.includes('_') || extension.includes('ThirdRail'))
                         {
                             oldPathName.push(extension);
                         }
@@ -571,8 +593,8 @@ export default class Spawn_Megaprint
                     if(pathNameConversion[oldPathName] === undefined)
                     {
                         let newPathName         = this.baseLayout.generateFastPathName({
-                            className: this.clipboard.hiddenConnections[pathName].className,
-                            pathName: oldPathName
+                            className   : this.clipboard.hiddenConnections[pathName].className,
+                            pathName    : oldPathName
                         });
 
                             while(pathNameToConvert[newPathName] !== undefined)
@@ -1043,6 +1065,11 @@ export default class Spawn_Megaprint
                         properties              : [{name: 'mPipeNetworkID', type: 'Int', value: newPipeNetworkID}],
                         entity                  : {levelName: '', pathName: ''}
                     };
+
+                    if(this.clipboard.saveVersion >= 41 && this.baseLayout.saveGameParser.header.saveVersion > this.clipboard.saveVersion)
+                    {
+                        newPipeNetwork.entitySaveVersion = this.clipboard.saveVersion;
+                    }
 
                     if(this.clipboard.pipes[pipeNetworkID].fluid !== null)
                     {

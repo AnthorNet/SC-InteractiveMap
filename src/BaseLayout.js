@@ -4993,11 +4993,26 @@ export default class BaseLayout
 
     generateFastPathName(currentObject)
     {
-        let pathName    = JSON.parse(JSON.stringify(currentObject.pathName.split('_')));
-            pathName.pop();
-            pathName.push(Math.floor(Math.random() * Math.floor(2147483647)));
+        let pathName    = JSON.parse(JSON.stringify(currentObject.pathName));
+        let newPathName = pathName;
+            if(currentObject.pathName.includes('ThirdRail'))
+            {
+                pathName    = pathName.split('ThirdRail');
+                pathName.pop();
+                pathName.push(Math.floor(Math.random() * Math.floor(2147483647)));
 
-        let newPathName = pathName.join('_');
+                newPathName = pathName.join('ThirdRail');
+            }
+            else
+            {
+                pathName    = pathName.split('_');
+                pathName.pop();
+                pathName.push(Math.floor(Math.random() * Math.floor(2147483647)));
+
+                newPathName = pathName.join('_');
+            }
+
+
 
             if(this.saveGameParser.getTargetObject(newPathName) !== null)
             {

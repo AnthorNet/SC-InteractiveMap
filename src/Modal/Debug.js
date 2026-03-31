@@ -64,38 +64,46 @@ export default class Modal_Debug
                 'mHubTerminal', 'mWorkBench', 'mLocker', 'mGenerators', 'mBlueprintProxy', 'mExtractableResource',
                 'mLinkedPortal', 'mConveyorChainActor', 'mElevatorCabin',
                 'mTargetNodeLinkedList', 'mTargetList', 'mStartNode', 'mEndNode',
-                'mVehicleIdentifier', 'mDockingPathNode'
+                'mVehicleIdentifier', 'mDockingPathNode', 'mTrackGraphID'
             ];
             for(let i = 0; i < extraProperties.length; i++)
             {
                 let extraProperty = baseLayout.getObjectProperty(currentObject, extraProperties[i]);
                     if(extraProperty !== null)
                     {
-                        if(['mSignPoles', 'mActionsToExecute', 'mGenerators'].includes(extraProperties[i]))
+                        switch(extraProperties[i])
                         {
-                            for(let j = 0; j < extraProperty.values.length; j++)
-                            {
-                                extraPathName.push(extraProperty.values[j].pathName);
-                            }
-                        }
-                        else
-                        {
-                            extraPathName.push(extraProperty.pathName);
+                            case 'mTrackGraphID':
+                                console.log(extraProperty, baseLayout.railroadSubSystem)
+                                break;
 
-                            if(extraProperties[i] === 'mOwnedPawn')
-                            {
-                                let mOwnedPawn = baseLayout.saveGameParser.getTargetObject(extraProperty.pathName);
-                                    if(mOwnedPawn !== null)
-                                    {
-                                        if(mOwnedPawn.children !== undefined)
+                            case 'mSignPoles':
+                            case 'mActionsToExecute':
+                            case 'mGenerators':
+                                for(let j = 0; j < extraProperty.values.length; j++)
+                                {
+                                    extraPathName.push(extraProperty.values[j].pathName);
+                                }
+
+                                break;
+
+                            default:
+                                extraPathName.push(extraProperty.pathName);
+
+                                if(extraProperties[i] === 'mOwnedPawn')
+                                {
+                                    let mOwnedPawn = baseLayout.saveGameParser.getTargetObject(extraProperty.pathName);
+                                        if(mOwnedPawn !== null)
                                         {
-                                            for(let j = 0; j < mOwnedPawn.children.length; j++)
+                                            if(mOwnedPawn.children !== undefined)
                                             {
-                                                extraPathName.push(mOwnedPawn.children[j].pathName);
+                                                for(let j = 0; j < mOwnedPawn.children.length; j++)
+                                                {
+                                                    extraPathName.push(mOwnedPawn.children[j].pathName);
+                                                }
                                             }
                                         }
-                                    }
-                            }
+                                }
                         }
                     }
             }

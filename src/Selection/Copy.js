@@ -282,6 +282,8 @@ export default class Selection_Copy
 
             for(let i = (this.clipboard.data.length - 1); i >= 0; i--)
             {
+                this.baseLayout.deleteObjectProperty(this.clipboard.data[i].parent, 'mTrackGraphID');
+
                 if(this.clipboard.data[i].parent.className === '/Game/FactoryGame/Buildable/Factory/Train/SwitchControl/Build_RailroadSwitchControl.Build_RailroadSwitchControl_C')
                 {
                     let mControlledConnection = this.baseLayout.getObjectProperty(this.clipboard.data[i].parent, 'mControlledConnection');
