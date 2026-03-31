@@ -328,7 +328,7 @@ export default class SaveParser_FicsIt
             for(let j = (currentObject.children.length - 1); j >= 0; j--)
             {
                 let currentChildren = baseLayout.saveGameParser.getTargetObject(currentObject.children[j].pathName);
-                    if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGPowerConnectionComponent')
+                    if(currentChildren !== null && currentChildren.className === '/Script/FactoryGame.FGPowerConnectionComponent' && currentChildren.pathName.includes('ThirdRail') === false)
                     {
                         if(currentChildren.properties.length === 0)
                         {

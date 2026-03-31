@@ -610,6 +610,7 @@ export default class SaveParser_Read
         if(this.header.saveVersion >= 41)
         {
             let entitySaveVersion = this.readUint();
+                //console.log('entitySaveVersion', entitySaveVersion);
                 if(entitySaveVersion !== this.header.saveVersion && entitySaveVersion <= this.header.saveVersion)
                 {
                     this.currentEntitySaveVersion               = entitySaveVersion;
@@ -661,6 +662,23 @@ export default class SaveParser_Read
         {
             this.objects[objectKey].shouldBeNulled = true;
             return;
+        }
+
+        if(this.currentEntitySaveVersion < 53)
+        {
+            this.currentLevelUE5Version = 1000;
+        }
+
+        // Possible SCIM fix?
+        if(this.currentEntitySaveVersion === 53 && this.currentLevelUE5Version === 1000)
+        {
+            let extraByte = this.readByte(); // 0
+                this.currentByte--;
+                if(extraByte === 0)
+                {
+                    this.currentLevelUE5Version = 1011;
+                    console.log('Fix wrong currentLevelUE5Version');
+                }
         }
 
         if(this.header.saveVersion >= 53 && this.currentLevelUE5Version >= 1011)

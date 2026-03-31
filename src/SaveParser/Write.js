@@ -948,6 +948,11 @@ export default class SaveParser_Write
             }
         }
 
+        if(this.currentEntitySaveVersion < 53) // Downgrade...
+        {
+            this.currentEntityUE5Version = entityUE5Version = 1000;
+        }
+
         this.currentEntityLength    = 0;
 
         if(currentObject.outerPathName === undefined)
