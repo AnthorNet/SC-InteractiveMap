@@ -5249,13 +5249,21 @@ export default class BaseLayout
                         {
                             Building_RailroadSwitchControl.bindTooltip(this, currentObject, tooltipOptions);
                         }
+                        if(Building_Conveyor.isConveyorBelt(currentObject) || Building_HyperTube.isHyperTube(currentObject))
+                        {
+                            Building_Conveyor.bindTooltip(this, currentObject, tooltipOptions);
+                        }
                         if(Building_RailroadTrack.isRailroadTrack(currentObject))
                         {
                             Building_RailroadTrack.bindTooltip(this, currentObject, tooltipOptions);
                         }
-                        if(Building_Conveyor.isConveyorBelt(currentObject) || Building_HyperTube.isHyperTube(currentObject))
+                        if(Building_VehiclePath.isVehiclePath(currentObject))
                         {
-                            Building_Conveyor.bindTooltip(this, currentObject, tooltipOptions);
+                            Building_VehiclePath.bindTooltip(this, currentObject, tooltipOptions);
+                        }
+                        if(Building_Vehicle.isVehicle(currentObject))
+                        {
+                            Building_Vehicle.bindTooltip(this, currentObject, tooltipOptions);
                         }
                     }
                 }
@@ -5285,13 +5293,21 @@ export default class BaseLayout
                 {
                     Building_RailroadSwitchControl.unbindTooltip(this, currentObject);
                 }
+                if(Building_Conveyor.isConveyorBelt(currentObject) || Building_HyperTube.isHyperTube(currentObject))
+                {
+                    Building_Conveyor.unbindTooltip(this, currentObject);
+                }
                 if(Building_RailroadTrack.isRailroadTrack(currentObject))
                 {
                     Building_RailroadTrack.unbindTooltip(this, currentObject);
                 }
-                if(Building_Conveyor.isConveyorBelt(currentObject) || Building_HyperTube.isHyperTube(currentObject))
+                if(Building_VehiclePath.isVehiclePath(currentObject))
                 {
-                    Building_Conveyor.unbindTooltip(this, currentObject);
+                    Building_VehiclePath.unbindTooltip(this, currentObject);
+                }
+                if(Building_Vehicle.isVehicle(currentObject))
+                {
+                    Building_Vehicle.unbindTooltip(this, currentObject);
                 }
             }
 

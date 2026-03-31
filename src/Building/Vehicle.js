@@ -164,5 +164,32 @@ export default class Building_Vehicle extends Building
 
         return contextMenu;
     }
+
+    /**
+     * TOOLTIP
+     */
+    static bindTooltip(baseLayout, currentObject, tooltipOptions)
+    {
+        /*
+        let mCurrentVehiclePathSegment = baseLayout.getObjectProperty(currentObject, 'mCurrentVehiclePathSegment');
+            if(mCurrentVehiclePathSegment !== null)
+            {
+                tooltipOptions.direction    = 'bottom';
+                Building_VehiclePath.bindTooltip(baseLayout, baseLayout.saveGameParser.getTargetObject(mCurrentVehiclePathSegment.pathName), tooltipOptions);
+
+                console.log(mCurrentVehiclePathSegment)
+            }
+        */
+    }
+    static unbindTooltip(baseLayout, currentObject)
+    {
+        /*
+        let mCurrentVehiclePathSegment = baseLayout.getObjectProperty(currentObject, 'mCurrentVehiclePathSegment');
+            if(mCurrentVehiclePathSegment !== null)
+            {
+                Building_VehiclePath.unbindTooltip(baseLayout, baseLayout.saveGameParser.getTargetObject(mCurrentVehiclePathSegment.pathName));
+            }
+        */
+    }
 }
 

@@ -25,6 +25,81 @@ export default class Building_VehiclePath
         return false;
     }
 
+    static getConnectedPaths(baseLayout, currentObject)
+    {
+        let mStartNode  = baseLayout.getObjectProperty(currentObject, 'mStartNode');
+        let mEndNode    = baseLayout.getObjectProperty(currentObject, 'mEndNode');
+        if(mStartNode !== null || mEndNode !== null)
+        {
+            let connectedPaths = [];
+                if(mStartNode !== null)
+                {
+                    let startNode = baseLayout.saveGameParser.getTargetObject(mStartNode.pathName);
+                        if(startNode !== null)
+                        {
+                            let mArrivingConnections = baseLayout.getObjectProperty(startNode, 'mArrivingConnections');
+                                if(mArrivingConnections !== null)
+                                {
+                                    for(let i = 0; i < mArrivingConnections.values.length; i++)
+                                    {
+                                        if(connectedPaths.includes(mArrivingConnections.values[i].pathName) === false)
+                                        {
+                                            connectedPaths.push(mArrivingConnections.values[i].pathName);
+                                        }
+                                    }
+                                }
+
+                            let mLeavingConnections = baseLayout.getObjectProperty(startNode, 'mLeavingConnections');
+                                if(mLeavingConnections !== null)
+                                {
+                                    for(let i = 0; i < mLeavingConnections.values.length; i++)
+                                    {
+                                        if(connectedPaths.includes(mLeavingConnections.values[i].pathName) === false)
+                                        {
+                                            connectedPaths.push(mLeavingConnections.values[i].pathName);
+                                        }
+                                    }
+                                }
+                        }
+                }
+
+                if(mEndNode !== null)
+                {
+                    let endNode = baseLayout.saveGameParser.getTargetObject(mEndNode.pathName);
+                        if(endNode !== null)
+                        {
+                            let mArrivingConnections = baseLayout.getObjectProperty(endNode, 'mArrivingConnections');
+                                if(mArrivingConnections !== null)
+                                {
+                                    for(let i = 0; i < mArrivingConnections.values.length; i++)
+                                    {
+                                        if(connectedPaths.includes(mArrivingConnections.values[i].pathName) === false)
+                                        {
+                                            connectedPaths.push(mArrivingConnections.values[i].pathName);
+                                        }
+                                    }
+                                }
+
+                            let mLeavingConnections = baseLayout.getObjectProperty(endNode, 'mLeavingConnections');
+                                if(mLeavingConnections !== null)
+                                {
+                                    for(let i = 0; i < mLeavingConnections.values.length; i++)
+                                    {
+                                        if(connectedPaths.includes(mLeavingConnections.values[i].pathName) === false)
+                                        {
+                                            connectedPaths.push(mLeavingConnections.values[i].pathName);
+                                        }
+                                    }
+                                }
+                        }
+                }
+
+            return connectedPaths;
+        }
+
+        return null;
+    }
+
     /*
      * ADD
      */
@@ -39,8 +114,7 @@ export default class Building_VehiclePath
                     pathName    : currentObject.pathName,
                     weight      : 300,
                     color       : Building_Vehicle.trackDataColor,
-                    opacity     : 0.3,
-                    dashArray   : '15 5'
+                    opacity     : 0.3
                 }
             );
 
@@ -67,5 +141,65 @@ export default class Building_VehiclePath
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
         return contextMenu;
+    }
+
+    /**
+     * TOOLTIP
+     */
+    static bindTooltip(baseLayout, currentObject, tooltipOptions)
+    {
+        tooltipOptions.direction    = 'bottom';
+
+        let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, 'playerVehiclesPathLayer');
+            if(marker !== null)
+            {
+                marker.setStyle({color: '#0000FF', opacity: 0.8});
+            }
+        let connectedPaths = Building_VehiclePath.getConnectedPaths(baseLayout, currentObject);
+            if(connectedPaths !== null)
+            {
+                for(let i = 0; i < connectedPaths.length; i++)
+                {
+                    if(connectedPaths[i] !== currentObject.pathName)
+                    {
+                        let connectedPath = baseLayout.saveGameParser.getTargetObject(connectedPaths[i]);
+                            if(connectedPath !== null)
+                            {
+                                let marker = baseLayout.getMarkerFromPathName(connectedPaths[i], 'playerVehiclesPathLayer');
+                                    if(marker !== null)
+                                    {
+                                        marker.setStyle({color: '#00FF00', opacity: 0.8});
+                                    }
+                            }
+                    }
+                }
+            }
+    }
+    static unbindTooltip(baseLayout, currentObject)
+    {
+        let marker = baseLayout.getMarkerFromPathName(currentObject.pathName, 'playerVehiclesPathLayer');
+            if(marker !== null)
+            {
+                marker.setStyle({color: Building_Vehicle.trackDataColor, opacity: 0.3});
+            }
+        let connectedPaths = Building_VehiclePath.getConnectedPaths(baseLayout, currentObject);
+            if(connectedPaths !== null)
+            {
+                for(let i = 0; i < connectedPaths.length; i++)
+                {
+                    if(connectedPaths[i] !== currentObject.pathName)
+                    {
+                        let connectedPath = baseLayout.saveGameParser.getTargetObject(connectedPaths[i]);
+                            if(connectedPath !== null)
+                            {
+                                let marker = baseLayout.getMarkerFromPathName(connectedPaths[i], 'playerVehiclesPathLayer');
+                                    if(marker !== null)
+                                    {
+                                        marker.setStyle({color: Building_Vehicle.trackDataColor, opacity: 0.3});
+                                    }
+                            }
+                    }
+                }
+            }
     }
 }
