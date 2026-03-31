@@ -74,7 +74,20 @@ export default class Modal_Debug
                         switch(extraProperties[i])
                         {
                             case 'mTrackGraphID':
-                                console.log(extraProperty, baseLayout.railroadSubSystem)
+                                let mTrackGraphs = baseLayout.getObjectProperty(baseLayout.railroadSubSystem.subSystem, 'mTrackGraphs');
+                                    if(mTrackGraphs !== null)
+                                    {
+                                        for(let j = 0; j < mTrackGraphs.values.length; j++)
+                                        {
+                                            if(mTrackGraphs.values[j].keyMap === extraProperty)
+                                            {
+                                                for(let k = 0; k < mTrackGraphs.values[j].valueMap.length; k++)
+                                                {
+                                                    extraPathName.push(mTrackGraphs.values[j].valueMap[k].value.pathName);
+                                                }
+                                            }
+                                        }
+                                    }
                                 break;
 
                             case 'mSignPoles':
