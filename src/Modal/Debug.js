@@ -59,7 +59,7 @@ export default class Modal_Debug
         }
 
         let extraProperties = [
-                'mOwningSpawner', 'mInfo', 'mStationDrone', 'mDockedDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn',
+                'mOwningSpawner', 'mInfo', 'mStationIdentifier', 'mStationDrone', 'mDockedDrone', 'mCurrentAction', 'mActionsToExecute', 'mOwnedPawn',
                 'mSignPoles', 'mFlowIndicator', 'mBottomSnappedConnection', 'mTopSnappedConnection',
                 'mHubTerminal', 'mWorkBench', 'mLocker', 'mGenerators', 'mBlueprintProxy', 'mExtractableResource',
                 'mLinkedPortal', 'mConveyorChainActor', 'mElevatorCabin',
