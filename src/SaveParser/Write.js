@@ -2536,24 +2536,26 @@ export default class SaveParser_Write
 
         switch(currentProperty.historyType)
         {
-            // HISTORYTYPE_BASE
-            case 0:
+            case 0:         // HISTORYTYPE_BASE
                 property += this.writeString(currentProperty.namespace);
                 property += this.writeString(currentProperty.key);
                 property += this.writeString(currentProperty.value);
 
                 break;
 
-            // HISTORYTYPE_NAMEDFORMAT
-            case 1:
-            // HISTORYTYPE_ARGUMENTFORMAT
-            case 3:
+            case 1:         // HISTORYTYPE_NAMEDFORMAT
+            case 2:         // HISTORYTYPE_ORDEREDFORMAT
+            case 3:         // HISTORYTYPE_ARGUMENTFORMAT
                 property += this.writeTextProperty(currentProperty.sourceFmt);
                 property += this.writeInt(currentProperty.argumentsCount);
 
                 for(let i = 0; i < currentProperty.argumentsCount; i++)
                 {
-                    property += this.writeString(currentProperty.arguments[i].name);
+                    if(currentProperty.arguments[i].name !== undefined)
+                    {
+                        property += this.writeString(currentProperty.arguments[i].name);
+                    }
+
                     property += this.writeByte(currentProperty.arguments[i].valueType);
 
                     switch(currentProperty.arguments[i].valueType)
@@ -2571,16 +2573,14 @@ export default class SaveParser_Write
                 break;
 
             // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2268
-            // HISTORYTYPE_TRANSFORM
-            case 10:
+            case 10:        // HISTORYTYPE_TRANSFORM
                 property += this.writeTextProperty(currentProperty.sourceText);
                 property += this.writeByte(currentProperty.transformType);
 
                 break;
 
             // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L2463
-            //HISTORYTYPE_STRINGTABLEENTRY
-            case 11:
+            case 11:        //HISTORYTYPE_STRINGTABLEENTRY
                 property += this.writeString(currentProperty.tableId);
                 property += this.writeString(currentProperty.textKey);
 

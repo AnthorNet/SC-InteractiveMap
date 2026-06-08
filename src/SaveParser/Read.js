@@ -669,6 +669,13 @@ export default class SaveParser_Read
             this.currentLevelUE5Version = 1000;
         }
 
+        /*
+        if(this.objects[objectKey].pathName === 'Persistent_Level:PersistentLevel.FGPipeNetwork_679866293')
+        {
+            console.log(this.currentEntitySaveVersion, this.currentLevelUE5Version)
+        }
+        */
+
         // Possible SCIM fix?
         if(this.currentEntitySaveVersion === 53 && this.currentLevelUE5Version === 1000)
         {
@@ -2411,6 +2418,7 @@ export default class SaveParser_Read
 
             // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L1354
             case 1:                             // HISTORYTYPE_NAMEDFORMAT
+            case 2:                             // HISTORYTYPE_ORDEREDFORMAT
             case 3:                             // HISTORYTYPE_ARGUMENTFORMAT
                 currentProperty.sourceFmt       = this.readTextProperty({});
 
@@ -2420,7 +2428,10 @@ export default class SaveParser_Read
                 for(let i = 0; i < currentProperty.argumentsCount; i++)
                 {
                     let currentArgumentsData                = {};
-                        currentArgumentsData.name           = this.readString();
+                        if(currentProperty.historyType !== 2)
+                        {
+                            currentArgumentsData.name           = this.readString();
+                        }
                         currentArgumentsData.valueType      = this.readByte();
 
                         switch(currentArgumentsData.valueType)
