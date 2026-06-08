@@ -33,6 +33,22 @@ export default class Building_TruckStation
 
     static getSign(baseLayout, currentObject)
     {
+        // 1.2
+        let mStationIdentifier = baseLayout.getObjectProperty(currentObject, 'mStationIdentifier');
+            if(mStationIdentifier !== null)
+            {
+                let stationIdentifier = baseLayout.saveGameParser.getTargetObject(mStationIdentifier.pathName);
+                    if(stationIdentifier !== null)
+                    {
+                        let mStationName = baseLayout.getObjectProperty(stationIdentifier, 'mStationName');
+                            if(mStationName !== null && mStationName !== undefined)
+                            {
+                                return mStationName;
+                            }
+                    }
+            }
+
+        // Old...
         let mInfo = Building_TruckStation.getInformation(baseLayout, currentObject);
             if(mInfo !== null)
             {
@@ -43,7 +59,7 @@ export default class Building_TruckStation
                     }
             }
 
-        return 'DockingStation';
+        return 'Truck Station';
     }
 
     /**
@@ -81,6 +97,42 @@ export default class Building_TruckStation
                 }],
                 callback    : function(values)
                 {
+                    // 1.2
+                    let mStationIdentifier = baseLayout.getObjectProperty(currentObject, 'mStationIdentifier');
+                        if(mStationIdentifier !== null)
+                        {
+                            let stationIdentifier = baseLayout.saveGameParser.getTargetObject(mStationIdentifier.pathName);
+                                if(stationIdentifier !== null)
+                                {
+                                    baseLayout.deleteObjectProperty(stationIdentifier, 'mStationName');
+
+                                    if(values.mBuildingTag !== '')
+                                    {
+                                        stationIdentifier.properties.push({
+                                            name                        : 'mStationName',
+                                            type                        : 'Text',
+                                            flags                       : 18,
+                                            historyType                 : 255,
+                                            hasCultureInvariantString   : 1,
+                                            value                       : values.mBuildingTag
+                                        });
+                                    }
+                                    else
+                                    {
+                                        stationIdentifier.properties.push({
+                                            name        : 'mStationName',
+                                            type        : 'Text',
+                                            flags       : 0,
+                                            historyType : 11,
+                                            tableId     : 'Buildables_Data',
+                                            textKey     : 'Transport/RoadVehicles/Infrastructure/TruckStation'
+                                        });
+                                    }
+
+                                    return;
+                                }
+                        }
+
                     if(values.mBuildingTag !== '')
                     {
                         let mInfo = Building_TruckStation.getInformation(baseLayout, currentObject);
