@@ -2278,6 +2278,24 @@ export default class SaveParser_Read
                 break;
 
             case 'PlayerInfoHandle':
+                if(this.header.saveVersion == 57)
+                {
+                    this.readByte();
+                    this.readInt();
+                }
+                if(this.header.saveVersion >= 57)
+                {
+                    currentProperty.value.serviceProvider               = this.readByte();
+                    currentProperty.value.playerInfoTableIndex          = this.readInt();
+                }
+                else
+                {
+                    currentProperty.value.serviceProvider               = this.readByte();
+                    currentProperty.value.legacyPlayerInfoTableIndex    = this.readByte();
+                }
+
+                break;
+
             case 'UniqueNetIdRepl':
             case 'ClientIdentityInfo':
                 currentProperty.value.hex = this.readHex(this.currentPropertyLength);

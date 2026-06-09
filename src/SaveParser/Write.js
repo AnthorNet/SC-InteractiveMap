@@ -2455,6 +2455,31 @@ export default class SaveParser_Write
                 break;
 
             case 'PlayerInfoHandle':
+                if(currentProperty.value.serviceProvider !== undefined)
+                {
+                    if(this.header.saveVersion == 57)
+                    {
+                        property += this.writeByte(currentProperty.value.serviceProvider);
+                        property += this.writeInt(currentProperty.value.playerInfoTableIndex);
+                    }
+                    if(this.header.saveVersion >= 57)
+                    {
+                        property += this.writeByte(currentProperty.value.serviceProvider);
+                        property += this.writeInt(currentProperty.value.playerInfoTableIndex);
+                    }
+                    else
+                    {
+                        property += this.writeByte(currentProperty.value.serviceProvider);
+                        property += this.writeByte(currentProperty.value.legacyPlayerInfoTableIndex);
+                    }
+                }
+                else // In case of old megaprints...
+                {
+                    property += this.writeHex(currentProperty.value.hex);
+                }
+
+                break;
+
             case 'UniqueNetIdRepl':
             case 'ClientIdentityInfo':
                 property += this.writeHex(currentProperty.value.hex);
