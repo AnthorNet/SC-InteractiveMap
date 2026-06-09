@@ -51,6 +51,12 @@ export default class Spawn_Megaprint
                 console.log('PASTE', this.clipboard);
             }
 
+            if(this.clipboard.saveVersion < 53 && this.baseLayout.saveGameParser.header.saveVersion > 53)
+            {
+                BaseLayout_Modal.alert('Due to the new save format, it is not possible to paste old megaprints into new 1.2 saves.');
+                return;
+            }
+
             console.time('pasteOnFoundation');
             $('#liveLoader').show()
                             .find('.progress-bar').css('width', '0%');
@@ -474,6 +480,7 @@ export default class Spawn_Megaprint
                             else
                             {
                                 minZ = Math.min(minZ, this.clipboard.data[i].parent.transform.translation[2]); // OTHER ARE PLACED FROM BOTTOM
+                                //console.log(this.clipboard.data[i].parent.className, minZ)
                             }
 
                             /* CHECK IF TRANSLATION SUM EQUALS 0, MEANING MOST LIKELY A SCRIPT THAT SHOUD BE EXCLUDED
@@ -1000,7 +1007,7 @@ export default class Spawn_Megaprint
 
                         if(pathNameConversion[currentHiddenConnections.pathName.join('.')] !== undefined)
                         {
-                            if(extension.includes('_'))
+                            if(extension.includes('_') || extension.includes('ThirdRail'))
                             {
                                 currentHiddenConnections.pathName   = pathNameConversion[currentHiddenConnections.pathName.join('.')];
                             }
