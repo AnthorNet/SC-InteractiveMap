@@ -599,20 +599,27 @@ export default class Spawn_Megaprint
 
                     if(pathNameConversion[oldPathName] === undefined)
                     {
-                        let newPathName         = this.baseLayout.generateFastPathName({
-                            className   : this.clipboard.hiddenConnections[pathName].className,
-                            pathName    : oldPathName
-                        });
+                        if(extension.includes('ThirdRail'))
+                        {
+                            pathNameConversion[pathName] = this.baseLayout.railroadSubSystem.addNewThirdRail();
+                        }
+                        else
+                        {
+                            let newPathName         = this.baseLayout.generateFastPathName({
+                                className   : this.clipboard.hiddenConnections[pathName].className,
+                                pathName    : oldPathName
+                            });
 
-                            while(pathNameToConvert[newPathName] !== undefined)
-                            {
-                                newPathName = this.baseLayout.generateFastPathName({
-                                    className   : this.clipboard.hiddenConnections[pathName].className,
-                                    pathName    : oldPathName
-                                });
-                            }
+                                while(pathNameToConvert[newPathName] !== undefined)
+                                {
+                                    newPathName = this.baseLayout.generateFastPathName({
+                                        className   : this.clipboard.hiddenConnections[pathName].className,
+                                        pathName    : oldPathName
+                                    });
+                                }
 
-                            pathNameConversion[pathName] = newPathName;
+                                pathNameConversion[pathName] = newPathName;
+                        }
                     }
                 }
             }

@@ -209,6 +209,73 @@ export default class SubSystem_Railroad extends SubSystem
 
 
 
+    getTrackGraphs()
+    {
+        let mTrackGraphs = this.baseLayout.getObjectProperty(this.subSystem, 'mTrackGraphs');
+            if(mTrackGraphs === null)
+            {
+
+                this.subSystem.properties.push({
+                    name    : 'mTrackGraphs',
+                    type    : 'Map',
+                    value   : {
+                        keyType             : 'Int',
+                        keyPackageName      : {},
+                        valueType           : 'Struct',
+                        valuePackageName    : {
+                            packageName         : 'TrackGraph',
+                            packageName2        : '/Script/FactoryGame',
+                            packageName3        : ''
+                        },
+                        values              : []
+                    }
+                });
+
+                mTrackGraphs = this.baseLayout.getObjectProperty(this.subSystem, 'mTrackGraphs');
+            }
+
+        return mTrackGraphs;
+    }
+
+    getThirdRailMax()
+    {
+        let thirdRailMax    = 0;
+        let mTrackGraphs    = this.getTrackGraphs();
+            for(let i = 0; i < mTrackGraphs.values.length; i++)
+            {
+                thirdRailMax = Math.max(thirdRailMax, mTrackGraphs.values[i].keyMap);
+            }
+
+        return thirdRailMax;
+    }
+
+    addNewThirdRail()
+    {
+        let maxThirdRailId  = 0;
+        let mTrackGraphs    = this.getTrackGraphs();
+            if(mTrackGraphs.values.length > 0)
+            {
+                maxThirdRailId = this.getThirdRailMax() + 1;
+            }
+
+        mTrackGraphs.values.push({
+            keyMap      : maxThirdRailId,
+            valueMap    : [{
+                name        : 'ThirdRail',
+                type        : 'Object',
+                value       : { pathName: 'Persistent_Level:PersistentLevel.RailroadSubsystem.ThirdRail' + maxThirdRailId }
+            }]
+        });
+
+        if(this.subSystem.children === undefined)
+        {
+            this.subSystem.children = [];
+        }
+
+        return 'Persistent_Level:PersistentLevel.RailroadSubsystem.ThirdRail' + maxThirdRailId;
+    }
+
+
 
     unlinkRailroadTrackConnections(currentObject)
     {
