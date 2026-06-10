@@ -678,14 +678,18 @@ export default class SubSystem_Buildable extends SubSystem
                     {
                         let slotData = [
                             {
-                                name    : 'PrimaryColor',
-                                type    : 'Struct',
-                                value   : {type: 'LinearColor', values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))}
+                                name        : 'PrimaryColor',
+                                type        : 'Struct',
+                                value       : {type: 'LinearColor', values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))},
+                                packageName : '/Script/CoreUObject',
+                                hasIndex    : 8
                             },
                             {
-                                name    : 'SecondaryColor',
-                                type    : 'Struct',
-                                value   : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))}
+                                name        : 'SecondaryColor',
+                                type        : 'Struct',
+                                value       : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))},
+                                packageName : '/Script/CoreUObject',
+                                hasIndex    : 8
                             }
                         ];
 
