@@ -2708,7 +2708,7 @@ export default class SaveParser_Write
             dataPackageVersion  += this.writeInt(value.customVersionContainer.length, count);
             for(let i = 0; i < value.customVersionContainer.length; i++)
             {
-                dataPackageVersion += this.writeHex(value.customVersionContainer[i].key);
+                dataPackageVersion += this.writeGUID(value.customVersionContainer[i].key);
                 dataPackageVersion += this.writeInt(value.customVersionContainer[i].version);
             }
 

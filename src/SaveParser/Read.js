@@ -216,7 +216,16 @@ export default class SaveParser_Read
         // 2025-05-06: Serialize package file version (UE version) and custom versions for serialized object data
         if(this.header.saveVersion >= 53)
         {
-            this.saveDataPackageVersion = this.readDataPackageVersion();
+            this.saveDataPackageVersion = this.readDataPackageVersion(this.header.mapName);
+
+            // Ensure that we have the correct package if we add some text properties
+            let fEditorObjectVersion        = {key: {a: 3836766445, b: 4103357161, c: 2721176075, d: 776387393}, version: 40};
+            let isFoundFEditorObjectVersion = this.saveDataPackageVersion.customVersionContainer.find((value) => JSON.stringify(value) ===  JSON.stringify(fEditorObjectVersion));
+                if(isFoundFEditorObjectVersion === undefined)
+                {
+                    this.saveDataPackageVersion.customVersionContainer.push(fEditorObjectVersion);
+                }
+
             this.worker.postMessage({command: 'transferData', data: {dataPackageVersion: this.saveDataPackageVersion}});
         }
 
@@ -295,7 +304,7 @@ export default class SaveParser_Read
                                 let haveLevelDataPackageVersion = this.readInt();
                                     if(haveLevelDataPackageVersion === 1)
                                     {
-                                        levelDataPackageVersion     = this.readDataPackageVersion();
+                                        levelDataPackageVersion     = this.readDataPackageVersion(levelName);
                                         this.currentLevelUE5Version = levelDataPackageVersion.packageFileVersion.UE5Version;
                                     }
                             }
@@ -508,7 +517,7 @@ export default class SaveParser_Read
                     let haveLevelDataPackageVersion = this.readInt();
                         if(haveLevelDataPackageVersion === 1)
                         {
-                            levelDataPackageVersion = this.readDataPackageVersion();
+                            levelDataPackageVersion = this.readDataPackageVersion(levelName);
                         }
                 }
             }
@@ -2546,8 +2555,16 @@ export default class SaveParser_Read
 
         return currentProperty;
     }
-    readGUID()
+
+    // See: https://github.com/EpicGames/UnrealEngine/blob/260bb2e1c5610b31c63a36206eedd289409c5f11/Engine/Source/Runtime/Core/Private/Misc/Guid.cpp#L65
+    readGUID(raw = true)
     {
+        // FGuid FEditorObjectVersion::GUID(0xE4B068ED, 0xF49442E9, 0xA231DA0B, 0x2E46BB41);
+        // E4B068ED-F494-42E9-A231-DA0B2E46BB41
+        // {a: 3836766445, b: 4103357161, c: 2721176075, d: 776387393}
+        // console.log(parseInt(3836766445).toString(16)str.substring(0, 3))
+        // parseInt(hexString, 16); -> to write...
+
         let guid    = {};
         let a       = this.readUint();
             if(a !== 0)
@@ -2596,7 +2613,7 @@ export default class SaveParser_Read
         return value;
     }
 
-    readDataPackageVersion()
+    readDataPackageVersion(levelName = null)
     {
         let dataPackageVersion                                  = {};
             dataPackageVersion.saveObjectVersionDataVersion     = this.readInt();
@@ -2622,10 +2639,12 @@ export default class SaveParser_Read
             let count = this.readInt();
                 for(let i = 0; i < count; i++)
                 {
-                    dataPackageVersion.customVersionContainer.push({key: this.readHex(16), version: this.readInt()});
+                    let customVersion = {key: this.readGUID(), version: this.readInt()};
+                        dataPackageVersion.customVersionContainer.push(customVersion);
                 }
 
-            //console.log('dataPackageVersion', dataPackageVersion);
+            //console.log('dataPackageVersion', dataPackageVersion, levelName);
+            //console.log('customVersionContainer', dataPackageVersion.customVersionContainer, levelName);
 
         return dataPackageVersion;
     }
