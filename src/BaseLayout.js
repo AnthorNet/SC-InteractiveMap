@@ -2849,7 +2849,7 @@ export default class BaseLayout
 
                         if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className] === 0)
                         {
-                            $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((currentObject.className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : currentObject.className) + '"]').hide();
+                            $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + currentObject.className + '"]').hide();
                         }
                     }
                 }
@@ -2940,7 +2940,7 @@ export default class BaseLayout
                                                 if(baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance <= 0)
                                                 {
                                                     baseLayout.playerLayers[layerId].filtersCount[currentObject.className].distance = 0;
-                                                    $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((currentObject.className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : currentObject.className) + '"]').hide();
+                                                    $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + currentObject.className + '"]').hide();
                                                 }
                                             }
                                         }
@@ -3872,7 +3872,7 @@ export default class BaseLayout
                                     let currentObject = this.saveGameParser.getTargetObject(currentMarker.options.pathName);
                                         if(currentObject !== null)
                                         {
-                                            let filterStatus = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((currentObject.className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : currentObject.className) + '"]').hasClass("btn-warning");
+                                            let filterStatus = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + currentObject.className + '"]').hasClass("btn-warning");
                                                 if(filterStatus)
                                                 {
                                                     currentSubLayer.addLayer(currentMarker);
@@ -4248,7 +4248,7 @@ export default class BaseLayout
             for(let className in this.playerLayers[layerId].filtersCount)
             {
                 // Show filter icons
-                let filterIcon      = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : className) + '"]');
+                let filterIcon      = $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + className + '"]');
                 let showByDefault   = filterIcon.attr('data-default');
                     if(showByDefault !== undefined && showByDefault === 'false')
                     {
@@ -4273,14 +4273,14 @@ export default class BaseLayout
                         currentLayerSuffix  = '<small><em>km</em></small>';
                     }
 
-                    $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : className) + '"] > .badge-layer').html(
+                    $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + className + '"] > .badge-layer').html(
                         new Intl.NumberFormat(this.language)
                                 .format(currentLayerLength) + currentLayerSuffix
                     );
                 }
                 else
                 {
-                    $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + ((className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C') ? '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C' : className) + '"] > .badge-layer').html(
+                    $('.updatePlayerLayerState[data-id=' + layerId + '] .updatePlayerLayerFilter[data-filter="' + className + '"] > .badge-layer').html(
                         new Intl.NumberFormat(this.language)
                                 .format(this.playerLayers[layerId].filtersCount[className])// + currentLayerSuffix
                     );
@@ -4694,7 +4694,6 @@ export default class BaseLayout
         if(className === '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorIntegratedBiomass.Build_GeneratorIntegratedBiomass_C'){ className = '/Game/FactoryGame/Buildable/Factory/GeneratorBiomass/Build_GeneratorBiomass_Automated.Build_GeneratorBiomass_Automated_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C'){ className = '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StoragePlayer.Build_StoragePlayer_C'; }
         if(className === '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageBlueprint.Build_StorageBlueprint_C'){ className = '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StoragePlayer.Build_StoragePlayer_C'; }
-        if(className === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C'){ className = '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Tractor/BP_Tractor.BP_Tractor_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Tractor/Desc_Tractor.Desc_Tractor_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_Truck.BP_Truck_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Truck/Desc_Truck.Desc_Truck_C'; }
         if(className === '/Game/FactoryGame/Buildable/Vehicle/Truck/BP_FluidTruck.BP_FluidTruck_C'){ className = '/Game/FactoryGame/Buildable/Vehicle/Truck/Desc_FluidTruck.Desc_FluidTruck_C'; }

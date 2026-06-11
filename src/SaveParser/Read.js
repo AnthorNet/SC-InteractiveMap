@@ -1023,6 +1023,10 @@ export default class SaveParser_Read
             {
                     this.readInt(); // 0
                 let currentClassName        = this.readString();
+                    if(currentClassName === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C')
+                    {
+                        currentClassName = '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C';
+                    }
                 let currentBuildableLength  = this.readInt();
                     objectCount            += currentBuildableLength;
                     //console.log('currentClassName', currentClassName, currentBuildableLength)
