@@ -1490,17 +1490,22 @@ export default class SaveParser_Write
 
                         propertyStart  += this.writeString(currentProperty.value.type + 'Property', false);
 
-                        switch(currentProperty.value.type)
+                        if(currentProperty.structureSubType !== undefined)
                         {
-                            case 'Struct':
-                                propertyStart  += this.writeInt(1, false);
+                            propertyStart  += this.writeInt(1, false);
 
-                                propertyStart  += this.writeString(currentProperty.structureSubType, false);
-                                propertyStart  += this.writePackageName(currentProperty.structurePackageName, false);
+                            if(currentProperty.structureSubType === undefined)
+                            {
+                                console.log(parentType, currentProperty)
+                            }
 
-                                break;
-
-                            case 'Enum':
+                            propertyStart  += this.writeString(currentProperty.structureSubType, false);
+                            propertyStart  += this.writePackageName(currentProperty.structurePackageName, false);
+                        }
+                        else
+                        {
+                            if(currentProperty.enumName !== undefined)
+                            {
                                 propertyStart  += this.writeInt(2, false);
 
                                 propertyStart  += this.writeString(currentProperty.enumName, false);
@@ -1509,13 +1514,11 @@ export default class SaveParser_Write
                                 //TODO: Always?
                                 propertyStart  += this.writeString('ByteProperty', false);
                                 propertyStart  += this.writeInt(0, false);
-
-                                break;
-
-                            default:
+                            }
+                            else
+                            {
                                 propertyStart  += this.writeInt(0, false);
-
-                                break;
+                            }
                         }
                     }
 
