@@ -96,7 +96,7 @@ export default class Spawn_Fauna
                         {
                             name                    : 'mInventoryStacks',
                             structureSubType        : 'InventoryStack',
-                            structurePackageName    : {packageName: '/Script/FactoryGame'},
+                            structureSubPackageName : {packageName: '/Script/FactoryGame'},
                             type                    : 'Array',
                             value                   : {
                                 type    : 'Struct',

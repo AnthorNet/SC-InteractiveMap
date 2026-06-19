@@ -1477,113 +1477,125 @@ export default class SaveParser_Write
     writeProperty(currentProperty, parentType = null)
     {
         let propertyStart   = '';
-            propertyStart  += this.writeString(currentProperty.name);
             propertyStart  += this.writeString(currentProperty.type + 'Property');
 
             if(this.currentEntitySaveVersion >= 53 && this.currentEntityUE5Version >= 1011)
             {
-                let hasCustomData = false;
+                // Convert the old format to the correct one (Megaprints...)...
+                //TODO: Migrate every functions not using typeNameNodes
+                if(currentProperty.typeNameNodes === undefined)
+                {
+                    currentProperty.typeNameNodes = [];
+
                     if(currentProperty.type === 'Array')
                     {
-                        hasCustomData   = true;
-                        propertyStart  += this.writeInt(1, false);
-
-                        propertyStart  += this.writeString(currentProperty.value.type + 'Property', false);
-
                         if(currentProperty.structureSubType !== undefined)
                         {
-                            propertyStart  += this.writeInt(1, false);
-
-                            if(currentProperty.structureSubType === undefined)
-                            {
-                                console.log(parentType, currentProperty)
-                            }
-
-                            propertyStart  += this.writeString(currentProperty.structureSubType, false);
-                            propertyStart  += this.writePackageName(currentProperty.structurePackageName, false);
+                            currentProperty.typeNameNodes = [{
+                                name    : currentProperty.value.type + 'Property',
+                                nodes   : [{
+                                    name    : currentProperty.structureSubType,
+                                    nodes   : [{name: ((currentProperty.structureSubPackageName !== undefined) ? currentProperty.structureSubPackageName.packageName : currentProperty.structurePackageName.packageName)}]
+                                }]
+                            }];
                         }
                         else
                         {
                             if(currentProperty.enumName !== undefined)
                             {
-                                propertyStart  += this.writeInt(2, false);
-
-                                propertyStart  += this.writeString(currentProperty.enumName, false);
-                                propertyStart  += this.writePackageName(currentProperty.enumPackageName, false);
-
-                                //TODO: Always?
-                                propertyStart  += this.writeString('ByteProperty', false);
-                                propertyStart  += this.writeInt(0, false);
+                                currentProperty.typeNameNodes = [{
+                                    name    : currentProperty.value.type + 'Property',
+                                    nodes   : [{
+                                        name    : currentProperty.enumName,
+                                        nodes   : [{name: currentProperty.enumPackageName.packageName}, {name: 'ByteProperty'}]
+                                    }]
+                                }];
                             }
                             else
                             {
-                                propertyStart  += this.writeInt(0, false);
+                                currentProperty.typeNameNodes = [{name    : currentProperty.value.type + 'Property'}];
                             }
                         }
                     }
 
                     if(currentProperty.type === 'Byte' && currentProperty.value.enumName !== 'None')
                     {
-                        hasCustomData   = true;
-                        propertyStart  += this.writeInt(1, false);
-
-                        propertyStart  += this.writeString(currentProperty.value.enumName, false);
-                        propertyStart  += this.writePackageName(currentProperty.value.enumPackageName, false);
+                        currentProperty.typeNameNodes = [{
+                            name    : currentProperty.value.enumName,
+                            nodes   : [{name: currentProperty.value.enumPackageName.packageName}]
+                        }];
                     }
 
                     if(currentProperty.type === 'Set')
                     {
-                        hasCustomData   = true;
-                        propertyStart  += this.writeInt(1, false);
-
-                        propertyStart  += this.writeString(currentProperty.value.type + 'Property', false);
-                        propertyStart  += this.writePackageName(currentProperty, false);
+                        currentProperty.typeNameNodes = [{
+                            name    : currentProperty.value.type + 'Property',
+                            nodes   : [{name: currentProperty.setPackageName.packageName}]
+                        }];
                     }
 
                     if(currentProperty.type === 'Struct')
                     {
-                        hasCustomData   = true;
-                        propertyStart  += this.writeInt(1, false);
+                        currentProperty.typeNameNodes = [{name: currentProperty.value.type}];
 
-                        propertyStart  += this.writeString(currentProperty.value.type, false);
-                        propertyStart  += this.writePackageName(currentProperty, false);
+                        if(currentProperty.structurePackageName !== undefined)
+                        {
+                            currentProperty.typeNameNodes[0].nodes = [{name: currentProperty.structurePackageName.packageName}];
+                        }
+                        if(currentProperty.packageName !== undefined)
+                        {
+                            currentProperty.typeNameNodes[0].nodes = [{name: currentProperty.packageName}];
+                        }
+
                     }
 
                     if(currentProperty.type === 'Enum')
                     {
-                        hasCustomData   = true;
-                        propertyStart  += this.writeInt(2, false);
-
-                        propertyStart  += this.writeString(currentProperty.value.name, false);
-                        propertyStart  += this.writePackageName(currentProperty.value.enumPackageName, false);
-
-                        //TODO: Always?
-                        propertyStart  += this.writeString('ByteProperty', false);
-                        propertyStart  += this.writeInt(0, false);
+                        currentProperty.typeNameNodes = [{
+                            name    : currentProperty.value.name,
+                            nodes   : [{
+                                name    : currentProperty.value.enumPackageName.packageName,
+                        }]},
+                        {name: 'ByteProperty'}];
                     }
 
                     if(currentProperty.type === 'Map')
                     {
-                        hasCustomData   = true;
-                        propertyStart  += this.writeInt(2, false);
-                        propertyStart  += this.writeString(currentProperty.value.keyType + 'Property', false);
-                        propertyStart  += this.writePackageName(currentProperty.value.keyPackageName, false);
+                        currentProperty.typeNameNodes = [
+                            {name    : currentProperty.value.keyType + 'Property'},
+                            {name    : currentProperty.value.valueType + 'Property'}
+                        ];
+
+                        if(currentProperty.value.keyPackageName.packageName !== undefined)
+                        {
+                            currentProperty.typeNameNodes[0].nodes = [
+                                {
+                                    name    : currentProperty.value.keyPackageName.packageName,
+                                    nodes   : [{name: currentProperty.value.keyPackageName.packageName2}]
+                                }
+                            ];
+                        }
+
+                        if(currentProperty.value.valuePackageName.packageName !== undefined)
+                        {
+                            currentProperty.typeNameNodes[1].nodes = [
+                                {
+                                    name    : currentProperty.value.valuePackageName.packageName,
+                                    nodes   : [{name: currentProperty.value.valuePackageName.packageName2}]
+                                }
+                            ];
+                        }
 
                         if(currentProperty.value.keyType === 'Enum')
                         {
-                            //TODO: Always?
-                            propertyStart  += this.writeString('ByteProperty', false);
-                            propertyStart  += this.writeInt(0, false);
+                            currentProperty.typeNameNodes[0].nodes.push({name: 'ByteProperty'});
                         }
-
-                        propertyStart  += this.writeString(currentProperty.value.valueType + 'Property', false);
-                        propertyStart  += this.writePackageName(currentProperty.value.valuePackageName, false);
                     }
-
-                if(hasCustomData === false)
-                {
-                    propertyStart += this.writeInt(0, false);
                 }
+
+                //console.log(currentProperty, currentProperty.typeNameNodes)
+
+                propertyStart  += this.writePropertyTypeNameNodes(currentProperty.typeNameNodes, false);
             }
 
         // Reset to get property length...
@@ -1747,7 +1759,7 @@ export default class SaveParser_Write
         let propertyLength              = parseInt(this.currentBufferLength) || 0; // Prevent NaN
             this.currentBufferLength    = startCurrentPropertyBufferLength + propertyLength;
 
-        return propertyStart + this.writeInt(propertyLength) + property;
+        return this.writeString(currentProperty.name) + propertyStart + this.writeInt(propertyLength) + property;
     }
 
     writeArrayProperty(currentProperty, parentType)
@@ -1884,15 +1896,7 @@ export default class SaveParser_Write
 
                         structure  += this.writeInt(0);
                         structure  += this.writeString(currentProperty.structureSubType);
-
-                        if(currentProperty.structSubGuid !== undefined)
-                        {
-                            structure  += this.writeGUID(currentProperty.structSubGuid);
-                        }
-                        else
-                        {
-                            structure  += this.writeGUID({});
-                        }
+                        structure  += this.writeGUID(currentProperty.structSubGuid);
 
                         structure  += this.writeByte(0);
                     }
@@ -2296,15 +2300,7 @@ export default class SaveParser_Write
             if(this.currentEntityUE5Version < 1011)
             {
                 property += this.writeString(currentProperty.value.type, false);
-
-                if(currentProperty.value.structGuid !== undefined)
-                {
-                    property += this.writeGUID(currentProperty.value.structGuid, false);
-                }
-                else
-                {
-                    property += this.writeGUID({}, false);
-                }
+                property += this.writeGUID(currentProperty.value.structGuid, false);
             }
 
             if(currentProperty.hasIndex !== undefined)
@@ -2718,31 +2714,26 @@ export default class SaveParser_Write
         return dataPackageVersion;
     }
 
-    writePackageName(currentProperty, count = true)
-    {
-        let packageName = '';
-            if(currentProperty.packageName !== undefined)
-            {
-                packageName += this.writeInt(1, count);
-                packageName += this.writeString(currentProperty.packageName, count);
 
-                if(currentProperty.packageName2 !== undefined)
+
+    writePropertyTypeNameNodes(typeNameNodes, count = true)
+    {
+        let value = this.writeInt(typeNameNodes.length, count);
+            for(let i = 0; i < typeNameNodes.length; i++)
+            {
+                value  += this.writeString(typeNameNodes[i].name, count);
+
+                if(typeNameNodes[i].nodes !== undefined)
                 {
-                    packageName += this.writeInt(1, count);
-                    packageName += this.writeString(currentProperty.packageName2, count);
-                    packageName += this.writeString(currentProperty.packageName3, count);
+                    value  += this.writePropertyTypeNameNodes(typeNameNodes[i].nodes, count);
                 }
                 else
                 {
-                    packageName += this.writeInt(0, count);
+                    value  += this.writeInt(0, count);
                 }
             }
-            else
-            {
-                packageName += this.writeInt(0, count);
-            }
 
-        return packageName;
+        return value;
     }
 
     writeInventoryItem(value)
@@ -3284,3 +3275,11 @@ self.onmessage = function(e){
         return new SaveParser_Write(self, e.data);
     }
 };
+
+// Output console as Hex making it easier to compare diff save in case of bugs...
+console.hex = (d) => console.log((Object(d).buffer instanceof ArrayBuffer ? new Uint8Array(d.buffer) :
+typeof d === 'string' ? (new TextEncoder('utf-8')).encode(d) :
+new Uint8ClampedArray(d)).reduce((p, c, i, a) => p + (i % 16 === 0 ? i.toString(16).padStart(6, 0) + '  ' : ' ') +
+c.toString(16).padStart(2, 0) + (i === a.length - 1 || i % 16 === 15 ?
+' '.repeat((15 - i % 16) * 3) + Array.from(a).splice(i - i % 16, 16).reduce((r, v) =>
+r + (v > 31 && v < 127 || v > 159 ? String.fromCharCode(v) : '.'), '  ') + '\n' : ''), ''));

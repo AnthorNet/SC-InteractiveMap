@@ -1184,11 +1184,52 @@ export default class SaveParser_Read
             }
 
         currentProperty.type        = this.readString().replace('Property', '');
-        //console.log(currentProperty.type, currentProperty.name)
+        //console.log(parentType, currentProperty.type, currentProperty.name)
 
         if(this.header.saveVersion >= 53 && this.currentLevelUE5Version >= 1011)
         {
-            let hasCustomData = this.readInt();
+            currentProperty.typeNameNodes = this.readPropertyTypeNameNodes();
+
+            if(
+                    currentProperty.type    === 'Array'
+                 || currentProperty.type    === 'Set'
+                 || currentProperty.type    === 'Struct'
+            )
+            {
+                currentProperty.value = {type: currentProperty.typeNameNodes[0].name.replace('Property', '')};
+            }
+
+            if(currentProperty.type === 'Array')
+            {
+                if(currentProperty.value.type === 'Struct')
+                {
+                    currentProperty.structureSubType    = currentProperty.typeNameNodes[0].nodes[0].name;
+                }
+                if(currentProperty.value.type === 'Enum')
+                {
+                    currentProperty.enumName            = currentProperty.typeNameNodes[0].nodes[0].name;
+                }
+            }
+
+            if(currentProperty.type === 'Byte' && currentProperty.typeNameNodes.length > 0)
+            {
+                currentProperty.value = {enumName: currentProperty.typeNameNodes[0].name.replace('Property', '')};
+            }
+
+            if(currentProperty.type === 'Enum')
+            {
+                currentProperty.value = {name: currentProperty.typeNameNodes[0].name.replace('Property', '')};
+            }
+
+            if(currentProperty.type === 'Map')
+            {
+                currentProperty.value = {
+                    keyType     : currentProperty.typeNameNodes[0].name.replace('Property', ''),
+                    valueType   : currentProperty.typeNameNodes[1].name.replace('Property', '')
+                };
+            }
+            /*
+            let hasCustomData = 0; //this.readInt();
                 switch(hasCustomData)
                 {
                     case 0: // Default
@@ -1208,13 +1249,13 @@ export default class SaveParser_Read
 
                                     case 1: // Struct
                                         currentProperty.structureSubType        = this.readString();
-                                        currentProperty.structurePackageName    = this.readPackageName({});
+                                        currentProperty.structureSubPackageName = this.readPackageName();
 
                                         break;
 
                                     case 2: // Enum
                                         currentProperty.enumName                = this.readString();
-                                        currentProperty.enumPackageName         = this.readPackageName({});
+                                        currentProperty.enumPackageName         = this.readPackageName();
 
                                         this.readString();  // ByteProperty
                                         this.readInt();     // 0 //TODO: Package?
@@ -1232,19 +1273,19 @@ export default class SaveParser_Read
                         {
                             currentProperty.value   = {
                                 enumName                : this.readString(),
-                                enumPackageName         : this.readPackageName({})
+                                enumPackageName         : this.readPackageName()
                             };
                         }
 
                         if(currentProperty.type === 'Set')
                         {
-                            currentProperty.value   = {type: this.readString().replace('Property', '')};
-                            currentProperty         = this.readPackageName(currentProperty);
+                            currentProperty.value                   = {type: this.readString().replace('Property', '')};
+                            currentProperty.setPackageName          = this.readPackageName();
                         }
                         if(currentProperty.type === 'Struct')
                         {
-                            currentProperty.value   = {type: this.readString()};
-                            currentProperty         = this.readPackageName(currentProperty);
+                            currentProperty.value                   = {type: this.readString()};
+                            currentProperty.structurePackageName    = this.readPackageName();
                         }
 
                         break;
@@ -1285,6 +1326,7 @@ export default class SaveParser_Read
 
                         break;
                 }
+            */
         }
 
         this.currentPropertyLength  = this.readInt(); // Length of the property, this is calculated when writing back ;)
@@ -1447,7 +1489,7 @@ export default class SaveParser_Read
                 break;
 
             case 'SoftObject':
-                currentProperty                 = this.readPropertyGUID(currentProperty);
+                currentProperty         = this.readPropertyGUID(currentProperty);
                 currentProperty.value   = {
                     pathName        : this.readString(),
                     subPathString   : this.readString()
@@ -1617,12 +1659,8 @@ export default class SaveParser_Read
                     this.readInt(); // 0
 
                     currentProperty.structureSubType    = this.readString();
+                    currentProperty.structSubGuid       = this.readGUID();
 
-                    let guid                            = this.readGUID();
-                        if(Object.keys(guid).length > 0)
-                        {
-                            currentProperty.structSubGuid = guid;
-                        }
                     this.skipBytes(1);
                 }
 
@@ -1767,7 +1805,7 @@ export default class SaveParser_Read
 
             currentProperty.value.values    = [];
         let currentMapPropertyCount         = this.readInt();
-            for(let iMapProperty = 0; iMapProperty < currentMapPropertyCount; iMapProperty++)
+            for(let iMapPropertyIndex = 0; iMapPropertyIndex < currentMapPropertyCount; iMapPropertyIndex++)
             {
                 let mapPropertyKey;
                 let mapPropertySubProperties    = [];
@@ -2009,7 +2047,7 @@ export default class SaveParser_Read
                             throw new Error('Unimplemented valueType `' + currentProperty.value.valueType + '` in MapProperty `' + currentProperty.name + '`');
                     }
 
-                currentProperty.value.values[iMapProperty]    = {
+                currentProperty.value.values[iMapPropertyIndex]    = {
                     keyMap      : mapPropertyKey,
                     valueMap    : mapPropertySubProperties
                 };
@@ -2100,13 +2138,8 @@ export default class SaveParser_Read
     {
         if(this.currentLevelUE5Version < 1011)
         {
-            currentProperty.value       = {type: this.readString()};
-
-            let guid                    = this.readGUID();
-                if(Object.keys(guid).length > 0)
-                {
-                    currentProperty.value.structGuid = guid;
-                }
+            currentProperty.value               = {type: this.readString()};
+            currentProperty.value.structGuid    = this.readGUID();
         }
 
         let hasIndex = this.readByte();
@@ -2561,7 +2594,7 @@ export default class SaveParser_Read
     }
 
     // See: https://github.com/EpicGames/UnrealEngine/blob/260bb2e1c5610b31c63a36206eedd289409c5f11/Engine/Source/Runtime/Core/Private/Misc/Guid.cpp#L65
-    readGUID(raw = true)
+    readGUID()
     {
         // FGuid FEditorObjectVersion::GUID(0xE4B068ED, 0xF49442E9, 0xA231DA0B, 0x2E46BB41);
         // E4B068ED-F494-42E9-A231-DA0B2E46BB41
@@ -2653,23 +2686,22 @@ export default class SaveParser_Read
         return dataPackageVersion;
     }
 
-    readPackageName(currentProperty = {})
+    readPropertyTypeNameNodes(nodes = [])
     {
-        let hasPackageName      = this.readInt();
-            if(hasPackageName !== 0)
+        let childCount = this.readInt();
+            for(let i = 0; i < childCount; i++)
             {
-                currentProperty.packageName = this.readString();
-
-                let extraInt = this.readInt();
-                    if(extraInt !== 0)
+                let currentNode = {name: this.readString()};
+                let childNodes  = this.readPropertyTypeNameNodes();
+                    if(childNodes.length > 0)
                     {
-                        //TODO: Proper naming? :D
-                        currentProperty.packageName2 = this.readString();
-                        currentProperty.packageName3 = this.readString();
+                        currentNode.nodes = childNodes;
                     }
+
+                nodes.push(currentNode);
             }
 
-        return currentProperty;
+        return nodes;
     }
 
     readInventoryItem(currentProperty = {})
@@ -3203,3 +3235,11 @@ export default class SaveParser_Read
 self.onmessage = function(e){
     return new SaveParser_Read(self, e.data);
 };
+
+// Output console as Hex making it easier to compare diff save in case of bugs...
+console.hex = (d) => console.log((Object(d).buffer instanceof ArrayBuffer ? new Uint8Array(d.buffer) :
+typeof d === 'string' ? (new TextEncoder('utf-8')).encode(d) :
+new Uint8ClampedArray(d)).reduce((p, c, i, a) => p + (i % 16 === 0 ? i.toString(16).padStart(6, 0) + '  ' : ' ') +
+c.toString(16).padStart(2, 0) + (i === a.length - 1 || i % 16 === 15 ?
+' '.repeat((15 - i % 16) * 3) + Array.from(a).splice(i - i % 16, 16).reduce((r, v) =>
+r + (v > 31 && v < 127 || v > 159 ? String.fromCharCode(v) : '.'), '  ') + '\n' : ''), ''));

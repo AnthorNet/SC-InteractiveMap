@@ -162,7 +162,7 @@ export default class Building_SmartSplitter
                             type                    : 'Array',
                             value                   : {type: 'Struct', values: []},
                             structureSubType        : 'SplitterSortRule',
-                            structurePackageName    : {packageName: '/Script/FactoryGame'}
+                            structureSubPackageName : {packageName: '/Script/FactoryGame'}
                         };
                         for(let outputIndex in values)
                         {

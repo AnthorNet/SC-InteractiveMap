@@ -50,7 +50,7 @@ export default class SubSystem_Overclocking
                                 name                    : "mInventoryStacks",
                                 type                    : "Array",
                                 structureSubType        : "InventoryStack",
-                                structurePackageName    : {packageName: '/Script/FactoryGame'},
+                                structureSubPackageName : {packageName: '/Script/FactoryGame'},
                                 value                   : {
                                         type    : "Struct",
                                         values  : [

@@ -136,6 +136,8 @@ export default class SaveParser
     {
         switch(data.command)
         {
+            case 'console': // Bypass worker console not detailed...
+                return console.log('WORKER CONSOLE', data.message);
             case 'alert':
                 return BaseLayout_Modal.alert(data.message);
             case 'alertParsing':

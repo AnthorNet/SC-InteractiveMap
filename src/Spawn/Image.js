@@ -241,7 +241,7 @@ export default class Spawn_Image
                     name                    : 'mPrefabTextElementSaveData',
                     type                    : 'Array',
                     structureSubType        : 'PrefabTextElementSaveData',
-                    structurePackageName    : {packageName: '/Script/FactoryGame'},
+                    structureSubPackageName : {packageName: '/Script/FactoryGame'},
                     value                   : {
                         type    : 'Struct',
                         values  : [[

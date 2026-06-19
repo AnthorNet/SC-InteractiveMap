@@ -669,7 +669,7 @@ export default class SubSystem_Buildable extends SubSystem
                     mColorSlots_Data = {
                         name                    : 'mColorSlots_Data',
                         structureSubType        : 'FactoryCustomizationColorSlot',
-                        structurePackageName    : {packageName: '/Script/FactoryGame'},
+                        structureSubPackageName : {packageName: '/Script/FactoryGame'},
                         type                    : 'Array',
                         value                   : {type: 'Struct', values: []}
                     };
@@ -678,18 +678,18 @@ export default class SubSystem_Buildable extends SubSystem
                     {
                         let slotData = [
                             {
-                                name        : 'PrimaryColor',
-                                type        : 'Struct',
-                                value       : {type: 'LinearColor', values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))},
-                                packageName : '/Script/CoreUObject',
-                                hasIndex    : 8
+                                name                    : 'PrimaryColor',
+                                type                    : 'Struct',
+                                value                   : {type: 'LinearColor', values: JSON.parse(JSON.stringify(this.getDefaultPrimaryColorSlot(slotIndex, true)))},
+                                structurePackageName    : {packageName: '/Script/CoreUObject'},
+                                hasIndex                : 8
                             },
                             {
-                                name        : 'SecondaryColor',
-                                type        : 'Struct',
-                                value       : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))},
-                                packageName : '/Script/CoreUObject',
-                                hasIndex    : 8
+                                name                    : 'SecondaryColor',
+                                type                    : 'Struct',
+                                value                   : {type: 'LinearColor', values : JSON.parse(JSON.stringify(this.getDefaultSecondaryColorSlot(slotIndex, true)))},
+                                structurePackageName    : {packageName: '/Script/CoreUObject'},
+                                hasIndex                : 8
                             }
                         ];
 

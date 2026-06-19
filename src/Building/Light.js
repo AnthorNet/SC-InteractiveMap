@@ -17,9 +17,21 @@ export default class Building_Light
         let mLightControlData = baseLayout.getObjectProperty(currentObject, 'mLightControlData');
             if(mLightControlData === null)
             {
+                console.log('Creating missing mLightControlData');
                 currentObject.properties.push({
                     name    : 'mLightControlData',
                     type    : 'Struct',
+                    typeNameNodes: [
+                        {
+                            name: "LightSourceControlData",
+                            nodes: [
+                                {
+                                    name: "/Script/FactoryGame",
+                                    nodes: []
+                                }
+                            ]
+                        }
+                    ],
                     value   : { type: 'LightSourceControlData', structGuid: {}, values: [] }
                 });
 

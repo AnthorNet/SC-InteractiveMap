@@ -142,7 +142,7 @@ export default class SubSystem_GameState extends SubSystem
                 this.subSystem.properties.push({
                     name                    : 'mPlayerGlobalColorPresets',
                     structureSubType        : 'GlobalColorPreset',
-                    structurePackageName    : {packageName: '/Script/FactoryGame'},
+                    structureSubPackageName : {packageName: '/Script/FactoryGame'},
                     type                    : 'Array',
                     value                   : {type: 'Struct', values: []}
                 });
@@ -162,7 +162,7 @@ export default class SubSystem_GameState extends SubSystem
                 {
                     name                        : 'Color',
                     type                        : 'Struct',
-                    packageName                 : '/Script/CoreUObject',
+                    structurePackageName        : {packageName: '/Script/CoreUObject'},
                     value                       : {
                         type                        : 'LinearColor',
                         values                      : primaryColor
@@ -215,7 +215,7 @@ export default class SubSystem_GameState extends SubSystem
                     mBuildableLightColorSlots = {
                         name                    : 'mBuildableLightColorSlots',
                         structureSubType        : 'LinearColor',
-                        structurePackageName    : {packageName: '/Script/CoreUObject'},
+                        structureSubPackageName : {packageName: '/Script/CoreUObject'},
                         type                    : 'Array',
                         value                   : {type: 'Struct', values: []}
                     };
