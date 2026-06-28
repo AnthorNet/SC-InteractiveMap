@@ -2458,8 +2458,6 @@ export default class SaveParser_Read
 
     /*
     // ETextHistoryType
-    const HISTORYTYPE_ORDEREDFORMAT = 2;
-    const HISTORYTYPE_ASNUMBER = 4;
     const HISTORYTYPE_ASPERCENT = 5;
     const HISTORYTYPE_ASCURRENCY = 6;
     const HISTORYTYPE_ASDATE = 7;
@@ -2522,6 +2520,35 @@ export default class SaveParser_Read
                         }
 
                     currentProperty.arguments.push(currentArgumentsData);
+                }
+
+                break;
+
+            // See: https://github.com/EpicGames/UnrealEngine/blob/4.25/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp#L1578
+            case 4: // HISTORYTYPE_ASNUMBER
+                currentProperty.valueType   = this.readByte();
+                switch(currentProperty.valueType)
+                {
+                    case 0: // FORMATARGUMENTTYPE_INT
+                        currentProperty.argumentValue       = this.readInt();
+                        currentProperty.argumentValueUnk    = this.readInt();
+                        currentProperty.argumentValueUnk1   = this.readInt();
+                        currentProperty.argumentValueUnk2   = this.readInt();
+                        break;
+                    case 4: // FORMATARGUMENTTYPE_TEXT
+                        currentProperty.argumentValue       = this.readTextProperty({});
+                        break;
+                    case 1: // FORMATARGUMENTTYPE_UINT
+                    case 5: // FORMATARGUMENTTYPE_GENDER
+                    case 2: // FORMATARGUMENTTYPE_FLOAT
+                    case 3: // FORMATARGUMENTTYPE_DOUBLE
+                    default:
+                        this.worker.postMessage({command: 'alertParsing'});
+                        if(typeof Sentry !== 'undefined')
+                        {
+                            Sentry.setContext('currentProperty', currentProperty);
+                        }
+                        throw new Error('Unimplemented FormatArgumentType `' + currentProperty.valueType + '` in TextProperty `' + currentProperty.name + '`');
                 }
 
                 break;

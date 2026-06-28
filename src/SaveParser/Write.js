@@ -1896,7 +1896,7 @@ export default class SaveParser_Write
 
                         structure  += this.writeInt(0);
                         structure  += this.writeString(currentProperty.structureSubType);
-                        structure  += this.writeGUID(currentProperty.structSubGuid);
+                        structure  += this.writeGUID(((currentProperty.structSubGuid !== undefined) ? currentProperty.structSubGuid : {}));
 
                         structure  += this.writeByte(0);
                     }
@@ -2300,7 +2300,7 @@ export default class SaveParser_Write
             if(this.currentEntityUE5Version < 1011)
             {
                 property += this.writeString(currentProperty.value.type, false);
-                property += this.writeGUID(currentProperty.value.structGuid, false);
+                property += this.writeGUID(((currentProperty.value.structGuid !== undefined) ? currentProperty.value.structGuid : {}), false);
             }
 
             if(currentProperty.hasIndex !== undefined)
@@ -2592,6 +2592,24 @@ export default class SaveParser_Write
                             property += this.writeTextProperty(currentProperty.arguments[i].argumentValue);
                             break;
                     }
+                }
+
+                break;
+
+            case 4: // HISTORYTYPE_ASNUMBER
+                property += this.writeByte(currentProperty.valueType);
+
+                switch(currentProperty.valueType)
+                {
+                    case 0: // FORMATARGUMENTTYPE_INT
+                        property += this.writeInt(currentProperty.argumentValue);
+                        property += this.writeInt(currentProperty.argumentValueUnk);
+                        property += this.writeInt(currentProperty.argumentValueUnk1);
+                        property += this.writeInt(currentProperty.argumentValueUnk2);
+                        break;
+                    case 4: // FORMATARGUMENTTYPE_TEXT
+                        property += this.writeTextProperty(currentProperty.argumentValue);
+                        break;
                 }
 
                 break;
