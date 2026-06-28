@@ -1006,8 +1006,17 @@ export default class SaveParser_Write
         if(Building.isConveyorChainActor(currentObject))
         {
             entity += this.writeInt(currentObject.extra.count);
-            entity += this.writeObjectProperty(currentObject.extra.mConveyors[0].mConveyorBase); // mFirstConveyor
-            entity += this.writeObjectProperty(currentObject.extra.mConveyors[currentObject.extra.mConveyors.length - 1].mConveyorBase); // mLastConveyor
+
+            if(currentObject.extra.mConveyors.length > 0)
+            {
+                entity += this.writeObjectProperty(currentObject.extra.mConveyors[0].mConveyorBase); // mFirstConveyor
+                entity += this.writeObjectProperty(currentObject.extra.mConveyors[currentObject.extra.mConveyors.length - 1].mConveyorBase); // mLastConveyor
+            }
+            else
+            {
+                entity += this.writeObjectProperty({levelName: '', pathName: ''});
+                entity += this.writeObjectProperty({levelName: '', pathName: ''});
+            }
 
             entity += this.writeInt(currentObject.extra.mConveyors.length);
             for(let i = 0; i < currentObject.extra.mConveyors.length; i++)
