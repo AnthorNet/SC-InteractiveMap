@@ -1279,8 +1279,16 @@ export default class SaveParser_Write
             let currentClassName        = Object.keys(lightweightBuildableSubsystemObjectKeys)[0];
             let requestedObjectKeys     = lightweightBuildableSubsystemObjectKeys[currentClassName];
                 entity                 += this.writeInt(0);
-                entity                 += this.writeString(currentClassName);
-                //entity                 += this.writeInt(requestedObjectKeys.length);
+
+                if(currentClassName === '/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTurn.Build_WalkwayTurn_C')
+                {
+                    entity             += this.writeString('/Game/FactoryGame/Buildable/Building/Walkway/Build_WalkwayTrun.Build_WalkwayTrun_C');
+                }
+                else
+                {
+                    entity             += this.writeString(currentClassName);
+                }
+
                 delete lightweightBuildableSubsystemObjectKeys[currentClassName];
 
             return this.postWorkerMessage({command: 'requestObjects', objectKeys: requestedObjectKeys}).then((data) => {
