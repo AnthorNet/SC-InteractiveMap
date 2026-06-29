@@ -72,6 +72,10 @@ export default class Modal_Map_Hotbars
                                                     {
                                                         hotbarJson[0].values.push(currentShortcut.properties);
                                                     }
+                                                    else
+                                                    {
+                                                        hotbarJson[0].values.push(null);
+                                                    }
                                             }
                                         }
                                 }
@@ -102,23 +106,30 @@ export default class Modal_Map_Hotbars
                                             {
                                                 for(let j = 0; j < mShortcuts.values.length; j++)
                                                 {
-                                                    let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mShortcuts.values[j].pathName);
-                                                        if(currentShortcut !== null)
-                                                        {
-                                                            currentShortcut.properties = JSON.parse(JSON.stringify(this.clipboard[0].values[j]));
-                                                        }
-                                                        else
-                                                        {
-                                                            let newShortCutPathName = this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.BP_PlayerState_C_' + playerStatePathName.split('_').pop() + '.FGPlayerHotbar_' + currentHotbar.pathName.split('_').pop() + '.FGRecipeShortcut_XXX'});
-                                                            let newShortCut         = {
-                                                                    className       : '/Script/FactoryGame.FGRecipeShortcut',
-                                                                    pathName        : newShortCutPathName,
-                                                                    outerPathName   : currentHotbar.pathName,
-                                                                    properties      : JSON.parse(JSON.stringify(this.clipboard[0].values[j]))
-                                                                };
-                                                                this.baseLayout.saveGameParser.addObject(newShortCut);
-                                                                mShortcuts.values[j].pathName = newShortCutPathName;
-                                                        }
+                                                    if(this.clipboard[0].values[j] === null)
+                                                    {
+                                                        mShortcuts.values[j].pathName = '';
+                                                    }
+                                                    else
+                                                    {
+                                                        let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mShortcuts.values[j].pathName);
+                                                            if(currentShortcut !== null)
+                                                            {
+                                                                currentShortcut.properties = JSON.parse(JSON.stringify(this.clipboard[0].values[j]));
+                                                            }
+                                                            else
+                                                            {
+                                                                let newShortCutPathName = this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.BP_PlayerState_C_' + playerStatePathName.split('_').pop() + '.FGPlayerHotbar_' + currentHotbar.pathName.split('_').pop() + '.FGRecipeShortcut_XXX'});
+                                                                let newShortCut         = {
+                                                                        className       : '/Script/FactoryGame.FGRecipeShortcut',
+                                                                        pathName        : newShortCutPathName,
+                                                                        outerPathName   : currentHotbar.pathName,
+                                                                        properties      : JSON.parse(JSON.stringify(this.clipboard[0].values[j]))
+                                                                    };
+                                                                    this.baseLayout.saveGameParser.addObject(newShortCut);
+                                                                    mShortcuts.values[j].pathName = newShortCutPathName;
+                                                            }
+                                                    }
                                                 }
                                             }
                                     }
@@ -187,6 +198,10 @@ export default class Modal_Map_Hotbars
                                                             {
                                                                 hotbarJson[i].values.push(currentShortcut.properties);
                                                             }
+                                                            else
+                                                            {
+                                                                hotbarJson[i].values.push(null);
+                                                            }
                                                     }
                                                 }
                                         }
@@ -220,24 +235,31 @@ export default class Modal_Map_Hotbars
                                                 {
                                                     for(let j = 0; j < mShortcuts.values.length; j++)
                                                     {
-                                                        let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mShortcuts.values[j].pathName);
-                                                            if(currentShortcut !== null)
-                                                            {
-                                                                currentShortcut.properties = JSON.parse(JSON.stringify(this.clipboard[i].values[j]));
-                                                            }
-                                                            else
-                                                            {
-                                                                let newShortCutPathName = this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.BP_PlayerState_C_' + playerStatePathName.split('_').pop() + '.FGPlayerHotbar_' + currentHotbar.pathName.split('_').pop() + '.FGRecipeShortcut_XXX'});
-                                                                let newShortCut         = {
-                                                                        className       : '/Script/FactoryGame.FGRecipeShortcut',
-                                                                        pathName        : newShortCutPathName,
-                                                                        outerPathName   : currentHotbar.pathName,
-                                                                        properties      : JSON.parse(JSON.stringify(this.clipboard[i].values[j]))
-                                                                    };
-                                                                    this.baseLayout.saveGameParser.addObject(newShortCut);
-                                                                    mShortcuts.values[j].pathName = newShortCutPathName;
-                                                                    //console.log(newShortCut)
-                                                            }
+                                                        if(this.clipboard[i].values[j] === null)
+                                                        {
+                                                            mShortcuts.values[j].pathName = '';
+                                                        }
+                                                        else
+                                                        {
+                                                            let currentShortcut = this.baseLayout.saveGameParser.getTargetObject(mShortcuts.values[j].pathName);
+                                                                if(currentShortcut !== null)
+                                                                {
+                                                                    currentShortcut.properties = JSON.parse(JSON.stringify(this.clipboard[i].values[j]));
+                                                                }
+                                                                else
+                                                                {
+                                                                    let newShortCutPathName = this.baseLayout.generateFastPathName({pathName: 'Persistent_Level:PersistentLevel.BP_PlayerState_C_' + playerStatePathName.split('_').pop() + '.FGPlayerHotbar_' + currentHotbar.pathName.split('_').pop() + '.FGRecipeShortcut_XXX'});
+                                                                    let newShortCut         = {
+                                                                            className       : '/Script/FactoryGame.FGRecipeShortcut',
+                                                                            pathName        : newShortCutPathName,
+                                                                            outerPathName   : currentHotbar.pathName,
+                                                                            properties      : JSON.parse(JSON.stringify(this.clipboard[i].values[j]))
+                                                                        };
+                                                                        this.baseLayout.saveGameParser.addObject(newShortCut);
+                                                                        mShortcuts.values[j].pathName = newShortCutPathName;
+                                                                        //console.log(newShortCut)
+                                                                }
+                                                        }
                                                     }
                                                 }
                                         }
