@@ -6,6 +6,7 @@ import Building_Conveyor                        from '../Building/Conveyor.js';
 import Building_Door                            from '../Building/Door.js';
 import Building_DroneStation                    from '../Building/DroneStation.js';
 import Building_DropPod                         from '../Building/DropPod.js';
+import Building_GeneratorGeoThermal             from '../Building/GeneratorGeoThermal.js';
 import Building_HyperTube                       from '../Building/HyperTube.js';
 import Building_Light                           from '../Building/Light.js';
 import Building_Locomotive                      from '../Building/Locomotive.js';
@@ -359,6 +360,10 @@ export default class BaseLayout_ContextMenu
                         className   : 'Building_PowerSwitch_turn' + ((this.baseLayout.getBuildingIsOn(currentObject) === false) ? 'On' : 'Off'),
                         callback    : this.baseLayout.updateObjectProductionPausedStatus
                     });
+
+                    if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/GeneratorGeoThermal/Build_GeneratorGeoThermal.Build_GeneratorGeoThermal_C') {
+                        contextMenu = Building_GeneratorGeoThermal.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                    }
 
                     if(
                             buildingData.category !== 'light' && buildingData.category !== 'tower'

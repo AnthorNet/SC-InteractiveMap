@@ -1,3 +1,5 @@
+/* global parseFloat */
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 export default class Building_GeneratorGeoThermal
@@ -83,5 +85,47 @@ export default class Building_GeneratorGeoThermal
         content.push(BaseLayout_Tooltip.getStandByPanel(baseLayout, currentObject, 217, 415, 244, 345));
 
         return '<div style="width: 500px;height: 308px;background: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_GeothermalBG.png?v=' + baseLayout.scriptVersion + ') no-repeat;margin: -7px;">' + content.join('') + '</div>';
+    }
+
+    /**
+     * CONTEXT MENU
+     */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        contextMenu.push({
+            icon        : 'fa-clock',
+            text        : 'Update variable power production cycle offset',
+            callback    : Building_GeneratorGeoThermal.updateVariablePowerProductionCycleOffset
+        });
+        // contextMenu.push('-'); // added by caller
+
+        return contextMenu;
+    }
+
+    /**
+     * MODALS
+     */
+    static updateVariablePowerProductionCycleOffset(marker) {
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+        let mVariablePowerProductionCycleOffset = baseLayout.getObjectProperty(currentObject, 'mVariablePowerProductionCycleOffset');
+
+        BaseLayout_Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" variable power production cycle offset',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mVariablePowerProductionCycleOffset',
+                    inputType   : 'number',
+                    min         : 0,
+                    max         : 60,
+                    value       : mVariablePowerProductionCycleOffset
+                }],
+                callback    : function(values)
+                {
+                    baseLayout.setObjectProperty(currentObject, 'mVariablePowerProductionCycleOffset', parseFloat(values.mVariablePowerProductionCycleOffset) % 60, 'Float');
+                }
+        });
     }
 }
