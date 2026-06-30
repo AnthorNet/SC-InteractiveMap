@@ -161,13 +161,21 @@ export default class Building_ResourceNode
             callback    : baseLayout.teleportPlayer
         });
 
-        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C')
+        if(baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
         {
-            if(baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
+            if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C')
             {
                 contextMenu.push('-');
                 contextMenu.push({
                     text    : ((baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.type === 'Desc_LiquidOil_C') ? 'Spawn an Oil Extractor' : 'Spawn a Miner'),
+                    callback: Modal_Node_SpawnAround.getHTML
+                });
+            }
+            if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C')
+            {
+                contextMenu.push('-');
+                contextMenu.push({
+                    text    : 'Spawn a Geothermal Generator',
                     callback: Modal_Node_SpawnAround.getHTML
                 });
             }
@@ -176,10 +184,15 @@ export default class Building_ResourceNode
         if(baseLayout.saveGameParser.header.saveVersion >= 58)
         {
             contextMenu.push('-');
-            contextMenu.push({
-                text    : 'Update resource type',
-                callback: Building_ResourceNode.updateResource
-            });
+
+            if(currentObject.className !== '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C')
+            {
+                contextMenu.push({
+                    text    : 'Update resource type',
+                    callback: Building_ResourceNode.updateResource
+                });
+            }
+
             contextMenu.push({
                 text    : 'Update resource purity',
                 callback: Building_ResourceNode.updatePurity

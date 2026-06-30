@@ -36,16 +36,29 @@ export default class Building_GeneratorGeoThermal
             let maxBaseProduction   = Math.round(mBaseProduction * 100) / 100;
 
             let resourceNode        = baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
-                if(resourceNode !== null)
+                if(resourceNode !== null && buildingData !== null)
                 {
+                    let currentPurity   = 'RP_Normal';
+                        if(buildingData.powerGenerated[baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity] !== undefined)
+                        {
+                            currentPurity = baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity;
+                        }
+                    let mPurityOverride = baseLayout.getObjectProperty(currentObject, 'mPurityOverride');
+                        if(mPurityOverride !== null)
+                        {
+                            currentPurity = mPurityOverride.valueName;
+                        }
+
+                    minBaseProduction   = buildingData.powerGenerated[currentPurity][0];
+                    maxBaseProduction   = buildingData.powerGenerated[currentPurity][1];
+
                     if(baseLayout.satisfactoryMap.collectableMarkers !== undefined && baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
                     {
                         if(baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity !== undefined)
                         {
                             if(buildingData !== null && buildingData.powerGenerated[baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity] !== undefined)
                             {
-                                minBaseProduction   = buildingData.powerGenerated[baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][0];
-                                maxBaseProduction   = buildingData.powerGenerated[baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity][1];
+
                             }
                         }
                     }

@@ -253,10 +253,10 @@ export default class BaseLayout_ContextMenu
                     case '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C':
                     case '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C':
                     case '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C':
+                    case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
                         contextMenu = Building_ResourceNode.addContextMenu(this.baseLayout, currentObject, contextMenu);
                         break;
 
-                    case '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C':
                     case '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C':
                         contextMenu.push({
                             icon        : 'fa-portal-exit',
@@ -264,22 +264,7 @@ export default class BaseLayout_ContextMenu
                             callback    : this.baseLayout.teleportPlayer
                         });
 
-                        if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C')
-                        {
-                            if(this.baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
-                            {
-                                contextMenu.push('-');
-                                contextMenu.push({
-                                    text    : 'Spawn a Geothermal Generator',
-                                    callback: Modal_Node_SpawnAround.getHTML
-                                });
-                            }
-                        }
-
-                        if(currentObject.className === '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C')
-                        {
-                            contextMenu = Building_DropPod.addContextMenu(this.baseLayout, currentObject, contextMenu);
-                        }
+                        contextMenu = Building_DropPod.addContextMenu(this.baseLayout, currentObject, contextMenu);
                         break;
                 }
 
@@ -290,6 +275,10 @@ export default class BaseLayout_ContextMenu
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/RadarTower/Build_RadarTower.Build_RadarTower_C')
                 {
                     contextMenu = Building_RadarTower.addContextMenu(this.baseLayout, currentObject, contextMenu);
+                }
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/TradingPost/Build_TradingPost.Build_TradingPost_C')
+                {
+                    contextMenu = Building_TradingPost.addContextMenu(this.baseLayout, currentObject, contextMenu);
                 }
                 if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Portal/Build_Portal.Build_Portal_C' || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Portal/Build_PortalSatellite.Build_PortalSatellite_C')
                 {

@@ -723,8 +723,6 @@ export default class BaseLayout
 
             // Add menu to spore flowers/pillars/rocks...
             if([
-                '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C',
-
                 '/Game/FactoryGame/World/Hazard/SporeCloudPlant/BP_SporeFlower.BP_SporeFlower_C',
 
                 '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleSmallRock.BP_DestructibleSmallRock_C',
@@ -779,7 +777,7 @@ export default class BaseLayout
                 continue;
             }
 
-            if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C' || currentObject.className === '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C')
+            if(currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNode.BP_ResourceNode_C' || currentObject.className === '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C' || currentObject.className === '/Game/FactoryGame/Resource/BP_ResourceNodeGeyser.BP_ResourceNodeGeyser_C')
             {
                 Building_ResourceNode.add(this, currentObject);
                 continue;
