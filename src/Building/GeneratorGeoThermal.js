@@ -1,3 +1,4 @@
+import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import BaseLayout_Tooltip                       from '../BaseLayout/Tooltip.js';
 
 export default class Building_GeneratorGeoThermal
@@ -51,17 +52,6 @@ export default class Building_GeneratorGeoThermal
 
                     minBaseProduction   = buildingData.powerGenerated[currentPurity][0];
                     maxBaseProduction   = buildingData.powerGenerated[currentPurity][1];
-
-                    if(baseLayout.satisfactoryMap.collectableMarkers !== undefined && baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName] !== undefined)
-                    {
-                        if(baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity !== undefined)
-                        {
-                            if(buildingData !== null && buildingData.powerGenerated[baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity] !== undefined)
-                            {
-
-                            }
-                        }
-                    }
                 }
 
             content.push('<div style="position: absolute;margin-top: 35px;left: 0px;width: 40px;text-align: center;font-size: 10px;">' + minBaseProduction + '</div>');
@@ -96,5 +86,77 @@ export default class Building_GeneratorGeoThermal
         content.push(BaseLayout_Tooltip.getStandByPanel(baseLayout, currentObject, 217, 415, 244, 345));
 
         return '<div style="width: 500px;height: 308px;background: url(' + baseLayout.staticUrl + '/js/InteractiveMap/img/TXUI_GeothermalBG.png?v=' + baseLayout.scriptVersion + ') no-repeat;margin: -7px;">' + content.join('') + '</div>';
+    }
+
+    /**
+     * CONTEXT MENU
+     */
+    static addContextMenu(baseLayout, currentObject, contextMenu)
+    {
+        contextMenu.push({
+            icon        : 'fa-clock',
+            text        : 'Update variable power production cycle offset',
+            callback    : Building_GeneratorGeoThermal.updateVariablePowerProductionCycleOffset
+        });
+
+        return contextMenu;
+    }
+
+    /**
+     * MODALS
+     */
+    static updateVariablePowerProductionCycleOffset(marker) {
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let buildingData        = baseLayout.getBuildingDataFromClassName(currentObject.className);
+
+        let mVariablePowerProductionCycleOffset = baseLayout.getObjectProperty(currentObject, 'mVariablePowerProductionCycleOffset');
+
+        BaseLayout_Modal.form({
+                title       : 'Update "<strong>' + buildingData.name + '</strong>" variable power production cycle offset',
+                container   : '#leafletMap',
+                inputs      : [{
+                    name        : 'mVariablePowerProductionCycleOffset',
+                    inputType   : 'number',
+                    min         : 0,
+                    max         : 60,
+                    value       : Math.round(mVariablePowerProductionCycleOffset)
+                }],
+                callback    : function(values)
+                {
+                    baseLayout.setObjectProperty(currentObject, 'mVariablePowerProductionCycleOffset', values.mVariablePowerProductionCycleOffset, 'Float');
+
+                    // Update baseProduction
+                    let powerInfo       = baseLayout.saveGameParser.getTargetObject(currentObject.pathName + '.powerInfo');
+                    let mBaseProduction = baseLayout.getObjectProperty(powerInfo, 'mBaseProduction', 0);
+                        if(mBaseProduction !== null)
+                        {
+                            let minBaseProduction   = Math.round(mBaseProduction * 100) / 100;
+                            let maxBaseProduction   = Math.round(mBaseProduction * 100) / 100;
+
+                            let resourceNode        = baseLayout.getObjectProperty(currentObject, 'mExtractableResource');
+                                if(resourceNode !== null && buildingData !== null)
+                                {
+                                    let currentPurity   = 'RP_Normal';
+                                        if(buildingData.powerGenerated[baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity] !== undefined)
+                                        {
+                                            currentPurity = baseLayout.satisfactoryMap.collectableMarkers[resourceNode.pathName].options.purity;
+                                        }
+                                    let mPurityOverride = baseLayout.getObjectProperty(currentObject, 'mPurityOverride');
+                                        if(mPurityOverride !== null)
+                                        {
+                                            currentPurity = mPurityOverride.valueName;
+                                        }
+
+                                    minBaseProduction   = buildingData.powerGenerated[currentPurity][0];
+                                    maxBaseProduction   = buildingData.powerGenerated[currentPurity][1];
+                                }
+
+                            let powerProductionCyclePercentage  = values.mVariablePowerProductionCycleOffset / 60 * 100;
+                            let baseProduction                  = ((maxBaseProduction - minBaseProduction) * (powerProductionCyclePercentage / 100)) + minBaseProduction;
+                                baseLayout.setObjectProperty(powerInfo, 'mBaseProduction', baseProduction);
+                        }
+                }
+        });
     }
 }
