@@ -221,7 +221,7 @@ export default class SubSystem_Fauna
                 }
         }
 
-        if(currentObject.className === '/Game/FactoryGame/Character/Creature/Enemy/Hog/NuclearHog/Char_NuclearHog.Char_NuclearHog_C' && this.baseLayout.useRadioactivity === true)
+        if(currentObject.className === '/Game/FactoryGame/Character/Creature/Enemy/Hog/NuclearHog/Char_NuclearHog.Char_NuclearHog_C' && baseLayout.useRadioactivity === true)
         {
             delete baseLayout.playerLayers.playerRadioactivityLayer.elements[currentObject.pathName];
             baseLayout.radioactivityLayerNeedsUpdate = true;
