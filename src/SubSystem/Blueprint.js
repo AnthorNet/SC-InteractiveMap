@@ -45,6 +45,18 @@ export default class SubSystem_Blueprint extends SubSystem
             }
     }
 
+    static detachBlueprint(marker)
+    {
+        let baseLayout          = marker.baseLayout;
+        let currentObject       = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+            if(currentObject !== null)
+            {
+                return baseLayout.blueprintSubSystem.deleteFromProxy(currentObject);
+            }
+
+        return;
+    }
+
     deleteFromProxy(currentObject)
     {
         let mBlueprintProxy = this.haveProxy(currentObject);
@@ -65,6 +77,7 @@ export default class SubSystem_Blueprint extends SubSystem
                         }
                     }
 
+                    this.baseLayout.deleteObjectProperty(currentObject, 'mBlueprintProxy');
                     this.clearEmptyProxies();
                 }
             }

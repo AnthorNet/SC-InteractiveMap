@@ -41,6 +41,8 @@ import Modal_Object_Pattern                     from '../Modal/Object/Pattern.js
 import Modal_Object_Position                    from '../Modal/Object/Position.js';
 import Modal_Object_SpawnAround                 from '../Modal/Object/SpawnAround.js';
 
+import SubSystem_Blueprint                      from '../SubSystem/Blueprint.js';
+
 export default class BaseLayout_ContextMenu
 {
     constructor(options)
@@ -944,6 +946,18 @@ export default class BaseLayout_ContextMenu
             }
         }
 
+        if(this.baseLayout.blueprintSubSystem.haveProxy(currentObject))
+        {
+            if(contextMenu.length > 0)
+            {
+                contextMenu.push('-');
+            }
+
+            contextMenu.push({
+                icon        : 'fa-microchip',
+                text        : this.baseLayout.translate._('Detach from Blueprint'),
+                callback    : SubSystem_Blueprint.detachBlueprint
+            });
         if(contextMenu.length > 0)
         {
             contextMenu.push('-');

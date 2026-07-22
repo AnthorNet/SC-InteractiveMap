@@ -145,6 +145,7 @@ export default class Modal_Selection
         let haveStorageCategory                 = false;
         let haveFluidStorageCategory            = false;
         let haveGeneratorCategory               = false;
+        let haveBlueprintProxies                = false;
 
             if(markers !== null && markers.length > 0)
             {
@@ -156,6 +157,11 @@ export default class Modal_Selection
                             let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
                                 if(currentObject !== null)
                                 {
+                                    if(baseLayout.blueprintSubSystem.haveProxy(currentObject))
+                                    {
+                                        haveBlueprintProxies = true;
+                                    }
+
                                     if([
                                         '/Game/FactoryGame/Resource/BP_ResourceDeposit.BP_ResourceDeposit_C',
                                         '/Script/FactoryGame.FGItemPickup_Spawnable',
@@ -308,6 +314,11 @@ export default class Modal_Selection
 
                 inputOptions.push({group: 'Megaprints', text: 'Add "Foundation 8m x 2m" helpers on selection boundaries', value: 'helpers'});
                 inputOptions.push({group: 'Megaprints', text: 'Copy selected items', value: 'copy'});
+
+                if(haveBlueprintProxies === true)
+                {
+                    inputOptions.push({group: 'Blueprints', text: 'Detach selected items', value: 'detachBlueprint'});
+                }
 
                 if (haveProductionCategory === true || haveExtractionCategory === true || haveGeneratorCategory === true)
                 {
@@ -771,6 +782,20 @@ export default class Modal_Selection
         });
     }
 
+    static callbackDetachBlueprint(baseLayout, markers)
+    {
+        for(let i = 0; i < markers.length; i++)
+        {
+            if(markers[i].options.pathName !== undefined)
+            {
+                let currentObject = baseLayout.saveGameParser.getTargetObject(markers[i].options.pathName);
+                    if(currentObject !== null)
+                    {
+                        baseLayout.blueprintSubSystem.deleteFromProxy(currentObject);
+                    }
+            }
+        }
+    }
 
 
     static callbackColorSlot(baseLayout, markers)
