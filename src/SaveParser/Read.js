@@ -2369,6 +2369,13 @@ export default class SaveParser_Read
 
                 break;
 
+            case 'SoftClassPath':
+                currentProperty.value.packageName   = this.readString();
+                currentProperty.value.assetName     = this.readString();
+                currentProperty.value.subPathString = this.readString();
+
+                break;
+
             case 'SlateBrush': // MOD?
                 currentProperty.value.unk1          = this.readString();
 

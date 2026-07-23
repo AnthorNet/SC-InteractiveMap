@@ -2507,6 +2507,13 @@ export default class SaveParser_Write
 
                 break;
 
+            case 'SoftClassPath':
+                property += this.writeString(currentProperty.value.packageName);
+                property += this.writeString(currentProperty.value.assetName);
+                property += this.writeString(currentProperty.value.subPathString);
+
+                break;
+
             case 'SlateBrush': // MOD?
                 property += this.writeString(currentProperty.value.unk1);
 
