@@ -236,6 +236,10 @@ export default class GameMap
                             {
                                 this.collectedHardDrives.setCollectedHardDrives(option.markers);
                             }
+                            if(option.layerId === 'crashDebris' && this.mapColors.crashDebris === undefined)
+                            {
+                                this.mapColors.crashDebris = option;
+                            }
 
                             if(options.type !== undefined && option.purity !== undefined)
                             {

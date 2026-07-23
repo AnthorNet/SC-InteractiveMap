@@ -861,6 +861,41 @@ export default class BaseLayout
                 continue;
             }
 
+            // Add crash debris before drop pods...
+            if([
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_CrashSiteDebris.BP_CrashSiteDebris_C',
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_01.BP_DebrisActor_01_C',
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_02.BP_DebrisActor_02_C',
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_03.BP_DebrisActor_03_C'
+            ].includes(currentObject.className) && this.satisfactoryMap.availableLayers.crashDebris !== undefined)
+            {
+                let mIsDismantled = this.getObjectProperty(currentObject, 'mIsDismantled');
+                    if(mIsDismantled === null)
+                    {
+                        let crashSiteDebrisMarker = L.mapMarker(
+                            this.satisfactoryMap.unproject(currentObject.transform.translation),
+                            {
+                                pathName    : currentObject.pathName,
+                                color       : this.satisfactoryMap.mapColors.crashDebris.outsideColor,
+                                fillColor   : this.satisfactoryMap.mapColors.crashDebris.insideColor,
+                                icon        : this.satisfactoryMap.mapColors.crashDebris.icon
+                            }
+                        );
+                        crashSiteDebrisMarker.addTo(this.satisfactoryMap.availableLayers.crashDebris);
+                        crashSiteDebrisMarker.bindContextMenu(this);
+
+                        let crashSiteButton = $('.updateLayerState[data-id="crashDebris"]');
+                        let dataCollected   = parseInt($('.updateLayerState[data-id="crashDebris"]').attr('data-collected')) + 1;
+                            crashSiteButton.show();
+                            crashSiteButton.attr('data-collected', dataCollected);
+                            crashSiteButton.find('.badge').html(new Intl.NumberFormat(this.language).format(dataCollected));
+                    }
+            }
+            else
+            {
+                if(currentObject.className.includes('BP_DebrisActor')){ console.log('BP_DebrisActor', currentObject); }
+            }
+
             // Store collectables total
             if([
                 '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C',
