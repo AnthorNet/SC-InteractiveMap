@@ -620,7 +620,7 @@ export default class SaveParser_Read
         {
             let entitySaveVersion = this.readUint();
                 //console.log('entitySaveVersion', entitySaveVersion);
-                if(entitySaveVersion !== this.header.saveVersion && entitySaveVersion <= this.header.saveVersion)
+                if((entitySaveVersion !== this.header.saveVersion || entitySaveVersion !== this.currentLevelSaveVersion) && entitySaveVersion <= this.header.saveVersion)
                 {
                     this.currentEntitySaveVersion               = entitySaveVersion;
                     this.objects[objectKey].entitySaveVersion   = entitySaveVersion;
