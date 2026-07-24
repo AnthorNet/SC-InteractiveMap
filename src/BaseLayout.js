@@ -866,7 +866,8 @@ export default class BaseLayout
                 '/Game/FactoryGame/World/Benefit/DropPod/BP_CrashSiteDebris.BP_CrashSiteDebris_C',
                 '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_01.BP_DebrisActor_01_C',
                 '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_02.BP_DebrisActor_02_C',
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_03.BP_DebrisActor_03_C'
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_03.BP_DebrisActor_03_C',
+                '/Game/FactoryGame/World/Benefit/DropPod/BP_Ship.BP_Ship_C'
             ].includes(currentObject.className) && this.satisfactoryMap.availableLayers.crashDebris !== undefined)
             {
                 let mIsDismantled = this.getObjectProperty(currentObject, 'mIsDismantled');
