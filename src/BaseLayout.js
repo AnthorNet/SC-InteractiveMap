@@ -2577,42 +2577,13 @@ export default class BaseLayout
                         let dataCollected   = parseInt($('.updateLayerState[data-id="' + nodeLayerId + '"]').attr('data-collected')) + 1;
                         let dataTotal       = parseInt($('.updateLayerState[data-id="' + nodeLayerId + '"]').attr('data-total'));
 
-                        // Two nodes...
-                        //TODO: Check coordinates...
-                        if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625' || extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614')
-                        {
-                            dataCollected++;
-                        }
-
                         if(this.showNodesOnMiners === false)
                         {
                             this.satisfactoryMap.availableLayers[nodeLayerId].removeLayer(this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName]);
-
-                            // Two nodes...
-                            //TODO: Check coordinates...
-                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625' && this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614'] !== undefined)
-                            {
-                                this.satisfactoryMap.availableLayers[nodeLayerId].removeLayer(this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614']);
-                            }
-                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614' && this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625'] !== undefined)
-                            {
-                                this.satisfactoryMap.availableLayers[nodeLayerId].removeLayer(this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625']);
-                            }
                         }
                         else
                         {
                             this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].setOpacity(window.SCIM.collectedOpacity);
-
-                            // Two nodes...
-                            //TODO: Check coordinates...
-                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode625' && this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614'] !== undefined)
-                            {
-                                this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode614'].setOpacity(window.SCIM.collectedOpacity);
-                            }
-                            if(extractResourceNode.pathName === 'Persistent_Level:PersistentLevel.BP_ResourceNode614' && this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625'] !== undefined)
-                            {
-                                this.satisfactoryMap.collectableMarkers['Persistent_Level:PersistentLevel.BP_ResourceNode625'].setOpacity(window.SCIM.collectedOpacity);
-                            }
                         }
 
                         this.satisfactoryMap.collectableMarkers[extractResourceNode.pathName].options.extractorPathName = currentObject.pathName;
