@@ -4,7 +4,7 @@ import Modal_CentralStorage                     from '../Modal/CentralStorage.js
 
 export default class SubSystem_CentralStorage extends SubSystem
 {
-    static get defaultUploadRate(){ return 30; }
+    static get defaultUploadRate(){ return 15; }
     static get defaultMaxStack(){ return 1; }
 
     constructor(options)
@@ -34,7 +34,7 @@ export default class SubSystem_CentralStorage extends SubSystem
     {
         if(this.baseLayout.schematicSubSystem.havePurchasedSchematics('/Game/FactoryGame/Schematics/Research/AlienTech_RS/Research_Alien_CentralUploadBoost_04.Research_Alien_CentralUploadBoost_04_C'))
         {
-            return 150;
+            return 240;
         }
         if(this.baseLayout.schematicSubSystem.havePurchasedSchematics('/Game/FactoryGame/Schematics/Research/AlienTech_RS/Research_Alien_CentralUploadBoost_03.Research_Alien_CentralUploadBoost_03_C'))
         {
@@ -42,11 +42,11 @@ export default class SubSystem_CentralStorage extends SubSystem
         }
         if(this.baseLayout.schematicSubSystem.havePurchasedSchematics('/Game/FactoryGame/Schematics/Research/AlienTech_RS/Research_Alien_CentralUploadBoost_02.Research_Alien_CentralUploadBoost_02_C'))
         {
-            return 90;
+            return 60;
         }
         if(this.baseLayout.schematicSubSystem.havePurchasedSchematics('/Game/FactoryGame/Schematics/Research/AlienTech_RS/Research_Alien_CentralUploadBoost_01.Research_Alien_CentralUploadBoost_01_C'))
         {
-            return 60;
+            return 30;
         }
 
         return SubSystem_CentralStorage.defaultUploadRate;
