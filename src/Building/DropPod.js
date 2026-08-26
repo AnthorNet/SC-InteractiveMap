@@ -1,5 +1,40 @@
 export default class Building_DropPod
 {
+    static get availableCrashSiteDebris(){ return [
+        '/Game/FactoryGame/World/Benefit/DropPod/BP_CrashSiteDebris.BP_CrashSiteDebris_C',
+        '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_01.BP_DebrisActor_01_C',
+        '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_02.BP_DebrisActor_02_C',
+        '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_03.BP_DebrisActor_03_C',
+        '/Game/FactoryGame/World/Benefit/DropPod/BP_Ship.BP_Ship_C'
+    ]; }
+
+    static dismantleCrashSite(marker)
+    {
+        let baseLayout      = marker.baseLayout;
+        let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
+        let mIsDismantled   = baseLayout.getObjectProperty(currentObject, 'mIsDismantled', 0);
+            if(mIsDismantled === 0)
+            {
+                baseLayout.setObjectProperty(currentObject, 'mIsDismantled', 1, 'Bool');
+                baseLayout.satisfactoryMap.availableLayers.crashDebris.removeLayer(marker.relatedTarget);
+
+                let crashSiteButton = $('.updateLayerState[data-id="crashDebris"]');
+                let dataCollected   = parseInt($('.updateLayerState[data-id="crashDebris"]').attr('data-collected')) - 1;
+                    if(dataCollected > 0)
+                    {
+                        crashSiteButton.show();
+                        crashSiteButton.attr('data-collected', dataCollected);
+                        crashSiteButton.find('.badge').html(new Intl.NumberFormat(this.language).format(dataCollected));
+                    }
+                    else
+                    {
+                        crashSiteButton.hide();
+                        crashSiteButton.attr('data-collected', 0);
+                        crashSiteButton.find('.badge').html(0);
+                    }
+            }
+    }
+
     static toggleHasBeenOpened(marker)
     {
         let baseLayout      = marker.baseLayout;
@@ -58,6 +93,25 @@ export default class Building_DropPod
     static addContextMenu(baseLayout, currentObject, contextMenu)
     {
         let mIsDismantled = baseLayout.getObjectProperty(currentObject, 'mIsDismantled');
+            if(Building_DropPod.availableCrashSiteDebris.includes(currentObject.className))
+            {
+                contextMenu.push({
+                    icon        : baseLayout.satisfactoryMap.mapColors.crashDebris.icon,
+                    text        : 'Crash Site Debris'
+                });
+
+                if(mIsDismantled === null)
+                {
+                    contextMenu.push({
+                        icon        : 'fa-trash-alt',
+                        text        : 'Dismantle',
+                        callback    : Building_DropPod.dismantleCrashSite
+                    });
+                }
+
+                return contextMenu;
+            }
+
             if(mIsDismantled === null)
             {
                 let hasBeenOpened = baseLayout.getObjectProperty(currentObject, 'mHasBeenOpened', 0);

@@ -40,6 +40,7 @@ import Modal_Object_CustomColor                 from '../Modal/Object/CustomColo
 import Modal_Object_Pattern                     from '../Modal/Object/Pattern.js';
 import Modal_Object_Position                    from '../Modal/Object/Position.js';
 import Modal_Object_SpawnAround                 from '../Modal/Object/SpawnAround.js';
+import Modal_Player_Equipments                  from '../Modal/Player/Equipments.js';
 
 import SubSystem_Blueprint                      from '../SubSystem/Blueprint.js';
 
@@ -105,6 +106,13 @@ export default class BaseLayout_ContextMenu
                             text    : 'Edit inventory',
                             callback: this.baseLayout.editPlayerStorageBuildingInventory
                         });
+                        /*
+                        contextMenu.push({
+                            icon    : 'fa-tools',
+                            text    : 'Edit equipments',
+                            callback: Modal_Player_Equipments.getHTML
+                        });
+                        */
                         break;
                     case '/Game/FactoryGame/Equipment/Decoration/BP_Decoration.BP_Decoration_C':
                         let mDecorationDescriptor           = this.baseLayout.getObjectProperty(currentObject, 'mDecorationDescriptor');
@@ -944,6 +952,11 @@ export default class BaseLayout_ContextMenu
                     });
                 }
             }
+            
+            if(Building_DropPod.availableCrashSiteDebris.includes(currentObject.className))
+            {
+                contextMenu = Building_DropPod.addContextMenu(this.baseLayout, currentObject, contextMenu);
+            }
         }
 
         if(this.baseLayout.blueprintSubSystem.haveProxy(currentObject))
@@ -958,6 +971,8 @@ export default class BaseLayout_ContextMenu
                 text        : this.baseLayout.translate._('Detach from Blueprint'),
                 callback    : SubSystem_Blueprint.detachBlueprint
             });
+        }
+
         if(contextMenu.length > 0)
         {
             contextMenu.push('-');

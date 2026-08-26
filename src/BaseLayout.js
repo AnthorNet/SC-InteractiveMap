@@ -53,6 +53,7 @@ import Modal_Trains                             from './Modal/Trains.js';
 import Building                                 from './Building.js';
 import Building_Beacon                          from './Building/Beacon.js';
 import Building_Conveyor                        from './Building/Conveyor.js';
+import Building_DropPod                         from './Building/DropPod.js';
 import Building_FrackingExtractor               from './Building/FrackingExtractor.js';
 import Building_FrackingSmasher                 from './Building/FrackingSmasher.js';
 import Building_HyperTube                       from './Building/HyperTube.js';
@@ -862,13 +863,7 @@ export default class BaseLayout
             }
 
             // Add crash debris before drop pods...
-            if([
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_CrashSiteDebris.BP_CrashSiteDebris_C',
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_01.BP_DebrisActor_01_C',
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_02.BP_DebrisActor_02_C',
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_DebrisActor_03.BP_DebrisActor_03_C',
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_Ship.BP_Ship_C'
-            ].includes(currentObject.className) && this.satisfactoryMap.availableLayers.crashDebris !== undefined)
+            if(Building_DropPod.availableCrashSiteDebris.includes(currentObject.className) && this.satisfactoryMap.availableLayers.crashDebris !== undefined)
             {
                 let mIsDismantled = this.getObjectProperty(currentObject, 'mIsDismantled');
                     if(mIsDismantled === null)
@@ -891,10 +886,6 @@ export default class BaseLayout
                             crashSiteButton.attr('data-collected', dataCollected);
                             crashSiteButton.find('.badge').html(new Intl.NumberFormat(this.language).format(dataCollected));
                     }
-            }
-            else
-            {
-                if(currentObject.className.includes('BP_DebrisActor')){ console.log('BP_DebrisActor', currentObject); }
             }
 
             // Store collectables total
