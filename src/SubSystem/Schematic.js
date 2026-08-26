@@ -3,6 +3,7 @@ import Modal_Map_Players                         from '../Modal/Map/Players.js';
 import Building_MAM                             from '../Building/MAM.js';
 
 import SubSystem                                from '../SubSystem.js';
+import SubSystem_RecipeManager                  from '../SubSystem/RecipeManager.js';
 
 export default class SubSystem_Schematic extends SubSystem
 {
@@ -297,11 +298,11 @@ export default class SubSystem_Schematic extends SubSystem
             // Handle unlocked recipes
             if(currentSchematic.recipes !== undefined)
             {
-                let recipeManager = this.baseLayout.saveGameParser.getTargetObject('Persistent_Level:PersistentLevel.recipeManager');
+                let recipeManager = new SubSystem_RecipeManager({baseLayout: this.baseLayout});
                     if(recipeManager !== null)
                     {
-                        let mAvailableRecipes               = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableRecipes');
-                        let mAvailableCustomizationRecipes  = this.baseLayout.getObjectProperty(recipeManager, 'mAvailableCustomizationRecipes');
+                        let mAvailableRecipes               = recipeManager.getAvailableRecipes();
+                        let mAvailableCustomizationRecipes  = recipeManager.getAvailableCustomizationRecipes();
 
                             switch(currentStatus)
                             {
