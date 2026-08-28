@@ -22,7 +22,7 @@ export default class Modal_CentralStorage
         {
             for(let i = 0; i < mStoredItems.values.length; i++)
             {
-                html.push(this.getInventoryLine(mStoredItems.values[i], i));
+                html.push(this.getInventoryLine(mStoredItems.values[i], i, mStoredItems.values.length));
             }
         }
 
@@ -31,7 +31,7 @@ export default class Modal_CentralStorage
             $('#genericModal').modal('show').modal('handleUpdate');
 
             $('#genericModal .modal-body input').on('change keyup', (e) => {
-                let div     = $(e.target).closest('table').parent()
+                let div     = $(e.target).closest('table').parent();
                 let index   = div.attr('data-depot-id');
                 let value   = $(e.target).val();
 
@@ -46,10 +46,20 @@ export default class Modal_CentralStorage
                     div.find('.progress-bar').css('width', (parseInt(value) / parseInt($(e.target).attr('max')) * 100) + '%');
                 }, 250);
             });
+
+            $('#genericModal .modal-body .btn-delete').click((e) => {
+                let div     = $(e.target).closest('table').parent();
+                let index   = div.attr('data-depot-id');
+                    div.remove();
+                    mStoredItems.values.splice(index, 1);
+
+                $(e.currentTarget).tooltip('dispose');
+                this.parse();
+            });
         }, 250);
     }
 
-    getInventoryLine(value, index)
+    getInventoryLine(value, index, count)
     {
         let html            = [];
         let itemClassName   = null;
@@ -88,13 +98,20 @@ export default class Modal_CentralStorage
                         html.push('<td class="align-middle text-right" width="200">');
                             html.push('<div class="input-group"><input type="number" class="form-control text-center" value="' + itemAmount + '" min="0" max="' + maxStack + '"><span class="input-group-text" id="basic-addon2"> / ' + maxStack + '</span></div>');
                         html.push('</td>');
+                        html.push('<td class="align-middle text-right" width="1">');
+                            html.push('<span class="btn btn-danger ml-1 btn-delete" data-hover="tooltip" title="Remove from Dimensional Depot"><i class="fas fa-trash"></i></span>');
+                        html.push('</td>');
                     html.push('</tr>');
                     html.push('</table>');
 
                     let currentProgress = Math.min(100, Math.round(itemAmount / maxStack * 10000) / 100);
                         html.push('<div class="progress rounded-sm mt-2" style="height: 15px;"><div class="progress-bar bg-warning" style="width: ' + currentProgress + '%"></div></div>');
 
-                    html.push('<hr class="bg-warning" />');
+                    if(index < (count - 1))
+                    {
+                        html.push('<hr class="bg-warning" />');
+                    }
+
                 html.push('</div>');
             }
 
