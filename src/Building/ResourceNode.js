@@ -39,8 +39,6 @@ export default class Building_ResourceNode
                         oldButton.attr('data-total', parseInt(oldButton.attr('data-total')) - 1);
                         oldButton.find('.badge').html(new Intl.NumberFormat(baseLayout.language).format(parseInt(oldButton.attr('data-total'))));
 
-                        //if()
-
                     if(mResourceClassOverride !== null)
                     {
                         let newmResourceClassOverride   = mResourceClassOverride.pathName.split('.');
@@ -254,6 +252,41 @@ export default class Building_ResourceNode
                         type    : 'Object',
                         value   : {levelName: '', pathName: values.mResourceClassOverride}
                     });
+
+                    // We need to update all Fracking Satellite
+                    if(currentObject.className === '/Game/FactoryGame/Resource/BP_FrackingSatellite.BP_FrackingSatellite_C')
+                    {
+                        if(baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined && baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.core !== undefined)
+                        {
+                            let frackingCorePathName = baseLayout.satisfactoryMap.collectableMarkers[currentObject.pathName].options.core;
+                                for(let testPathName in baseLayout.satisfactoryMap.collectableMarkers)
+                                {
+                                    if(baseLayout.satisfactoryMap.collectableMarkers[testPathName].options.core !== undefined && baseLayout.satisfactoryMap.collectableMarkers[testPathName].options.core === frackingCorePathName)
+                                    {
+                                        let currentFrackingSatellite = baseLayout.saveGameParser.getTargetObject(baseLayout.satisfactoryMap.collectableMarkers[testPathName].options.pathName);
+                                            baseLayout.deleteObjectProperty(currentFrackingSatellite, 'mResourceClassOverride');
+                                            currentFrackingSatellite.properties.push({
+                                                name    : 'mResourceClassOverride',
+                                                type    : 'Object',
+                                                value   : {levelName: '', pathName: values.mResourceClassOverride}
+                                            });
+
+                                        Building_ResourceNode.add(baseLayout, currentFrackingSatellite, true);
+                                    }
+                                }
+
+                            let frackingCoreObject = baseLayout.saveGameParser.getTargetObject(frackingCorePathName);
+                                if(frackingCoreObject !== null)
+                                {
+                                    baseLayout.deleteObjectProperty(frackingCoreObject, 'mResourceClassOverride');
+                                    frackingCoreObject.properties.push({
+                                        name    : 'mResourceClassOverride',
+                                        type    : 'Object',
+                                        value   : {levelName: '', pathName: values.mResourceClassOverride}
+                                    });
+                                }
+                        }
+                    }
 
                     return Building_ResourceNode.add(baseLayout, currentObject, true);
                 }
