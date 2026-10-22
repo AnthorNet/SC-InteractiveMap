@@ -55,6 +55,36 @@ export default class SubSystem_Circuit extends SubSystem
 
     getObjectCircuit(currentObject, powerConnection = '.PowerConnection')
     {
+        if(this.useObjectCircuitIndex === true && this.subSystem !== null && this.subSystem.extra.circuits !== undefined)
+        {
+            if(this.objectCircuitIndex === null || this.objectCircuitIndex === undefined)
+            {
+                this.buildObjectCircuitIndex();
+            }
+
+            let index   = this.objectCircuitIndex;
+            let best    = index.get(currentObject.pathName);
+            let other   = index.get(currentObject.pathName + powerConnection);
+                if(other !== undefined && (best === undefined || other < best))
+                {
+                    best = other;
+                }
+
+                if(currentObject.children !== undefined && powerConnection === '.PowerConnection')
+                {
+                    for(let j = 0; j < currentObject.children.length; j++)
+                    {
+                        let child = index.get(currentObject.children[j].pathName);
+                            if(child !== undefined && (best === undefined || child < best))
+                            {
+                                best = child;
+                            }
+                    }
+                }
+
+            return (best !== undefined) ? this.subSystem.extra.circuits[best] : null;
+        }
+
         if(this.subSystem !== null && this.subSystem.extra.circuits !== undefined)
         {
             for(let i = 0; i < this.subSystem.extra.circuits.length; i++)
@@ -455,6 +485,47 @@ export default class SubSystem_Circuit extends SubSystem
                     }
                 }
         }
+    }
+
+    /*
+     * RENDER CACHING
+     */
+    startRenderObjectsIndex()
+    {
+        this.useObjectCircuitIndex  = true;
+        this.objectCircuitIndex     = null;
+    }
+
+    stopRenderObjectsIndex()
+    {
+        this.useObjectCircuitIndex  = false;
+        this.objectCircuitIndex     = null;
+    }
+
+    buildObjectCircuitIndex()
+    {
+        let index = new Map();
+            for(let i = 0; i < this.subSystem.extra.circuits.length; i++)
+            {
+                let currentSubCircuit = this.baseLayout.saveGameParser.getTargetObject(this.subSystem.extra.circuits[i].pathName);
+                    if(currentSubCircuit !== null)
+                    {
+                        let mComponents = this.baseLayout.getObjectProperty(currentSubCircuit, 'mComponents');
+                            if(mComponents !== null)
+                            {
+                                for(let j = 0; j < mComponents.values.length; j++)
+                                {
+                                    // Keep the FIRST circuit (same priority as the original scan)
+                                    if(index.has(mComponents.values[j].pathName) === false)
+                                    {
+                                        index.set(mComponents.values[j].pathName, i);
+                                    }
+                                }
+                            }
+                    }
+            }
+
+        this.objectCircuitIndex = index;
     }
 
     /**

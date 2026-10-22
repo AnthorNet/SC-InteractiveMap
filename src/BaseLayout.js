@@ -659,6 +659,8 @@ export default class BaseLayout
     {
         if(objectsKeys === null)
         {
+            this.circuitSubSystem.startRenderObjectsIndex();
+
             let objects             = this.saveGameParser.getObjects();
                 objectsKeys         = Object.keys(objects);
 
@@ -1043,6 +1045,7 @@ export default class BaseLayout
                 }
         }
 
+        this.circuitSubSystem.stopRenderObjectsIndex();
         console.timeEnd('renderObjects');
 
         this.minAltitude                = Number.MAX_SAFE_INTEGER;
