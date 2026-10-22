@@ -101,117 +101,115 @@ export default class BaseLayout_Polygon
                 currentModel.formsLength = currentModel.forms.length;
             }
 
-            for(let i = 0; i < currentModel.formsLength; i++)
-            {
-                let currentForm         = [];
-                let currentPoints       = [];
-                    if(currentModel.forms[i].pointsLength === undefined)
-                    {
-                        currentModel.forms[i].pointsLength = currentModel.forms[i].points.length;
-                    }
-
-                for(let j = 0; j < currentModel.forms[i].pointsLength; j++)
+            let rotationMatrix = BaseLayout_Math.getRotationMatrix(rotation, false);
+                for(let i = 0; i < currentModel.formsLength; i++)
                 {
-                    currentPoints.push(baseLayout.satisfactoryMap.unproject(
-                        BaseLayout_Math.getPointRotation(
-                            [
-                                center[0] + ((currentModel.forms[i].points[j][0] + currentModelXOffset) * currentModelScale * scale3D.x),
-                                center[1] + ((currentModel.forms[i].points[j][1] + currentModelYOffset) * currentModelScale * scale3D.y)
-                            ],
-                            center,
-                            rotation
-                        )
-                    ));
-                }
-
-                currentForm.push(currentPoints);
-
-                // Only deals with form holes in high quality
-                if(
-                        currentModel.forms[i].holes !== undefined
-                    && ((baseLayout.mapModelsQuality === 'high' && isStructureModel === false) || (baseLayout.mapStructuresModelsQuality === 'high' && isStructureModel === true) || options.isPattern !== undefined)
-                )
-                {
-                   if(currentModel.forms[i].holesLength === undefined)
-                    {
-                        currentModel.forms[i].holesLength = currentModel.forms[i].holes.length;
-                    }
-
-                    for(let j = 0; j < currentModel.forms[i].holesLength; j++)
-                    {
-                        let currentHole = [];
-
-                        if(currentModel.forms[i].holes[j].holeLength === undefined)
+                    let currentForm         = [];
+                    let currentPoints       = [];
+                        if(currentModel.forms[i].pointsLength === undefined)
                         {
-                            currentModel.forms[i].holes[j].holeLength = currentModel.forms[i].holes[j].length;
+                            currentModel.forms[i].pointsLength = currentModel.forms[i].points.length;
                         }
 
-                        for(let k = 0; k < currentModel.forms[i].holes[j].holeLength; k++)
+                    for(let j = 0; j < currentModel.forms[i].pointsLength; j++)
+                    {
+                        currentPoints.push(baseLayout.satisfactoryMap.unproject(
+                            BaseLayout_Math.rotatePoint(
+                                [
+                                    center[0] + ((currentModel.forms[i].points[j][0] + currentModelXOffset) * currentModelScale * scale3D.x),
+                                    center[1] + ((currentModel.forms[i].points[j][1] + currentModelYOffset) * currentModelScale * scale3D.y)
+                                ],
+                                center,
+                                rotationMatrix
+                            )
+                        ));
+                    }
+
+                    currentForm.push(currentPoints);
+
+                    // Only deals with form holes in high quality
+                    if(
+                            currentModel.forms[i].holes !== undefined
+                        && ((baseLayout.mapModelsQuality === 'high' && isStructureModel === false) || (baseLayout.mapStructuresModelsQuality === 'high' && isStructureModel === true) || options.isPattern !== undefined)
+                    )
+                    {
+                       if(currentModel.forms[i].holesLength === undefined)
                         {
-                            currentHole.push(baseLayout.satisfactoryMap.unproject(
-                                BaseLayout_Math.getPointRotation(
-                                    [
-                                        center[0] + ((currentModel.forms[i].holes[j][k][0] + currentModelXOffset) * currentModelScale * scale3D.x),
-                                        center[1] + ((currentModel.forms[i].holes[j][k][1] + currentModelYOffset) * currentModelScale * scale3D.y)
-                                    ],
-                                    center,
-                                    rotation
-                                )
-                            ));
+                            currentModel.forms[i].holesLength = currentModel.forms[i].holes.length;
                         }
 
-                        currentForm.push(currentHole);
-                    }
-                }
+                        for(let j = 0; j < currentModel.forms[i].holesLength; j++)
+                        {
+                            let currentHole = [];
 
-                forms.push(currentForm);
-            }
+                            if(currentModel.forms[i].holes[j].holeLength === undefined)
+                            {
+                                currentModel.forms[i].holes[j].holeLength = currentModel.forms[i].holes[j].length;
+                            }
+
+                            for(let k = 0; k < currentModel.forms[i].holes[j].holeLength; k++)
+                            {
+                                currentHole.push(baseLayout.satisfactoryMap.unproject(
+                                    BaseLayout_Math.rotatePoint(
+                                        [
+                                            center[0] + ((currentModel.forms[i].holes[j][k][0] + currentModelXOffset) * currentModelScale * scale3D.x),
+                                            center[1] + ((currentModel.forms[i].holes[j][k][1] + currentModelYOffset) * currentModelScale * scale3D.y)
+                                        ],
+                                        center,
+                                        rotationMatrix
+                                    )
+                                ));
+                            }
+
+                            currentForm.push(currentHole);
+                        }
+                    }
+
+                    forms.push(currentForm);
+                }
         }
         else
         {
-            let currentPoints = [];
+            let rotationMatrix2D    = BaseLayout_Math.getRotationMatrix(rotation, options.useOnly2D);
+            let currentPoints       = [];
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
-                    BaseLayout_Math.getPointRotation(
+                    BaseLayout_Math.rotatePoint(
                         [
                             (center[0] - options.xShift) - (((options.width - options.offset) / 2) * scale3D.x),
                             (center[1] - options.yShift) - (((options.length - options.offset) / 2) * scale3D.y)
                         ],
                         center,
-                        rotation,
-                        options.useOnly2D
+                        rotationMatrix2D
                     )
                 ));
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
-                    BaseLayout_Math.getPointRotation(
+                    BaseLayout_Math.rotatePoint(
                         [
                             (center[0] - options.xShift) + (((options.width - options.offset) / 2) * scale3D.x),
                             (center[1] - options.yShift) - (((options.length - options.offset) / 2) * scale3D.y)
                         ],
                         center,
-                        rotation,
-                        options.useOnly2D
+                        rotationMatrix2D
                     )
                 ));
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
-                    BaseLayout_Math.getPointRotation(
+                    BaseLayout_Math.rotatePoint(
                         [
                             (center[0] - options.xShift) + (((options.width - options.offset) / 2) * scale3D.x),
                             (center[1] - options.yShift) + (((options.length - options.offset) / 2) * scale3D.y)
                         ],
                         center,
-                        rotation,
-                        options.useOnly2D
+                        rotationMatrix2D
                     )
                 ));
                 currentPoints.push(baseLayout.satisfactoryMap.unproject(
-                    BaseLayout_Math.getPointRotation(
+                    BaseLayout_Math.rotatePoint(
                         [
                             (center[0] - options.xShift) - (((options.width - options.offset) / 2) * scale3D.x),
                             (center[1] - options.yShift) + (((options.length - options.offset) / 2) * scale3D.y)
                         ],
                         center,
-                        rotation,
-                        options.useOnly2D
+                        rotationMatrix2D
                     )
                 ));
 

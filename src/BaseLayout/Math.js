@@ -114,6 +114,12 @@ export default class BaseLayout_Math
 
     static getPointRotation(position, center, rotation, useOnly2D = false)
     {
+        return BaseLayout_Math.rotatePoint(position, center, BaseLayout_Math.getRotationMatrix(rotation, useOnly2D));
+    }
+
+    // Quaternion > Euler > matrix is the expensive part: compute it ONCE per object, then reuse it for every vertex
+    static getRotationMatrix(rotation, useOnly2D = false)
+    {
         let eulerAngle  = BaseLayout_Math.getQuaternionToEuler(rotation);
         let degToRad    = BaseLayout_Math.PI / 180;
         let cosYaw      = Math.cos(eulerAngle.yaw * degToRad);
@@ -121,37 +127,36 @@ export default class BaseLayout_Math
 
         if(useOnly2D === true)
         {
-            return [
-                center[0] + (cosYaw * (position[0] - center[0])) - (sinYaw * (position[1] - center[1])),
-                center[1] + (sinYaw * (position[0] - center[0])) + (cosYaw * (position[1] - center[1]))
-            ];
+            return {Axx: cosYaw, Axy: -sinYaw, Ayx: sinYaw, Ayy: cosYaw};
         }
 
         // Constraint PITCH/ROLL to avoid too malformed polygons
-        if(Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch)) > 60 && Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch)) < 90)
-        {
-            eulerAngle.pitch = 60;
-        }
-        if(Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch)) >= 90 && Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch)) < 120)
-        {
-            eulerAngle.pitch = 120;
-        }
-        if(Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) > 60 && Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) < 90)
-        {
-            eulerAngle.roll = 60;
-        }
-        if(Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) >= 90 && Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) < 120)
-        {
-            eulerAngle.roll = 120;
-        }
-        if(Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) < -60 && Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) > -90)
-        {
-            eulerAngle.roll = -60;
-        }
-        if(Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) <= -90 && Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll)) > -120)
-        {
-            eulerAngle.roll = -120;
-        }
+        let clampedPitch    = Math.round(BaseLayout_Math.clampEulerAxis(eulerAngle.pitch));
+        let normalizedRoll  = Math.round(BaseLayout_Math.normalizeEulerAxis(eulerAngle.roll));
+            if(clampedPitch > 60 && clampedPitch < 90)
+            {
+                eulerAngle.pitch = 60;
+            }
+            if(clampedPitch >= 90 && clampedPitch < 120)
+            {
+                eulerAngle.pitch = 120;
+            }
+            if(normalizedRoll > 60 && normalizedRoll < 90)
+            {
+                eulerAngle.roll = 60;
+            }
+            if(normalizedRoll >= 90 && normalizedRoll < 120)
+            {
+                eulerAngle.roll = 120;
+            }
+            if(normalizedRoll < -60 && normalizedRoll > -90)
+            {
+                eulerAngle.roll = -60;
+            }
+            if(normalizedRoll <= -90 && normalizedRoll > -120)
+            {
+                eulerAngle.roll = -120;
+            }
 
         // Calculation
         let cosPitch    = Math.cos(eulerAngle.pitch * degToRad);
@@ -160,15 +165,22 @@ export default class BaseLayout_Math
         let cosRoll     = Math.cos(eulerAngle.roll * degToRad);
         let sinRoll     = Math.sin(eulerAngle.roll * degToRad);
 
-        let Axx         = cosYaw * cosPitch;
-        let Axy         = (cosYaw * sinPitch * sinRoll) - (sinYaw * cosRoll);
+        return {
+            Axx : cosYaw * cosPitch,
+            Axy : (cosYaw * sinPitch * sinRoll) - (sinYaw * cosRoll),
+            Ayx : sinYaw * cosPitch,
+            Ayy : (sinYaw * sinPitch * sinRoll) + (cosYaw * cosRoll)
+        };
+    }
 
-        let Ayx         = sinYaw * cosPitch;
-        let Ayy         = (sinYaw * sinPitch * sinRoll) + (cosYaw * cosRoll);
+    static rotatePoint(position, center, matrix)
+    {
+        let dx = position[0] - center[0];
+        let dy = position[1] - center[1];
 
         return [
-            center[0] + (Axx * (position[0] - center[0])) + (Axy * (position[1] - center[1])),
-            center[1] + (Ayx * (position[0] - center[0])) + (Ayy * (position[1] - center[1]))
+            center[0] + (matrix.Axx * dx) + (matrix.Axy * dy),
+            center[1] + (matrix.Ayx * dx) + (matrix.Ayy * dy)
         ];
     }
 
