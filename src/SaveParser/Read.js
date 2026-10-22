@@ -73,12 +73,11 @@ export default class SaveParser_Read
             // We should now unzip the body!
             if(this.header.saveVersion >= 29)
             {
-                // Remove the header...
-                this.arrayBuffer        = this.arrayBuffer.slice(this.currentByte);
+                this.bodyBytes          = new Uint8Array(this.arrayBuffer, this.currentByte);
 
                 this.handledByte        = 0;
                 this.currentByte        = 0;
-                this.maxByte            = this.arrayBuffer.byteLength;
+                this.maxByte            = this.bodyBytes.byteLength;
 
                 this.PACKAGE_FILE_TAG   = null;
                 this.maxChunkSize       = null;
@@ -107,8 +106,8 @@ export default class SaveParser_Read
             // Read chunk info size...
             let preHeader           = 0;
             let headerLength        = (this.header.saveVersion >= 41) ? 49 : 48;
-            let chunkHeader         = new DataView(this.arrayBuffer.slice(preHeader, (preHeader + headerLength)));
-                this.currentByte    = (preHeader + headerLength);
+            let chunkHeader         = new DataView(this.bodyBytes.buffer, this.bodyBytes.byteOffset + this.currentByte + preHeader, headerLength);
+                this.currentByte   += (preHeader + headerLength);
                 this.handledByte   += (preHeader + headerLength);
 
             if(this.PACKAGE_FILE_TAG === null)
@@ -131,13 +130,9 @@ export default class SaveParser_Read
             }
 
             let currentChunkSize    = chunkHeader.getUint32(((this.header.saveVersion >= 41) ? 17 : 16), true); // 16 before update 8, compression format was added, should always be 3
-            let currentChunk        = this.arrayBuffer.slice(this.currentByte, this.currentByte + currentChunkSize);
+            let currentChunk        = this.bodyBytes.subarray(this.currentByte, this.currentByte + currentChunkSize);
                 this.handledByte   += currentChunkSize;
                 this.currentByte   += currentChunkSize;
-
-            // Free memory from previous chunk...
-            this.arrayBuffer            = this.arrayBuffer.slice(this.currentByte);
-            this.currentByte            = 0;
 
             // Inflate!
             try {
@@ -167,6 +162,8 @@ export default class SaveParser_Read
         }
 
         delete this.arrayBuffer;
+        delete this.bodyBytes;
+        
         console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
         this.worker.postMessage({command: 'loaderMessage', message: 'Merging inflated chunks...'});
 
@@ -678,13 +675,6 @@ export default class SaveParser_Read
             this.currentLevelUE5Version = 1000;
         }
 
-        /*
-        if(this.objects[objectKey].pathName === 'Persistent_Level:PersistentLevel.FGPipeNetwork_679866293')
-        {
-            console.log(this.currentEntitySaveVersion, this.currentLevelUE5Version)
-        }
-        */
-
         // Possible SCIM fix?
         if(this.currentEntitySaveVersion === 53 && this.currentLevelUE5Version === 1000)
         {
@@ -707,6 +697,7 @@ export default class SaveParser_Read
         while(true)
         {
             let property = this.readProperty(this.objects[objectKey].className, objectKey);
+                //console.log('property', property);
                 if(property === null)
                 {
                     break;
@@ -3251,11 +3242,12 @@ export default class SaveParser_Read
      */
     generateFastPathName(pathNamePattern, pathNamePool = {})
     {
-        let pathName    = JSON.parse(JSON.stringify(pathNamePattern.split('_')));
-            pathName.pop();
-            pathName.push(Math.floor(Math.random() * Math.floor(2147483647)));
-
-        let newPathName = pathName.join('_');
+        //let pathName    = JSON.parse(JSON.stringify(pathNamePattern.split('_')));
+        //    pathName.pop();
+        //    pathName.push(Math.floor(Math.random() * Math.floor(2147483647)));
+        //
+        //let newPathName = pathName.join('_');
+        let newPathName = pathNamePattern.slice(0, pathNamePattern.lastIndexOf('_') + 1) + Math.floor(Math.random() * 2147483647);
             if(pathNamePool[newPathName] !== undefined)
             {
                 console.log('Collision detected', newPathName);
