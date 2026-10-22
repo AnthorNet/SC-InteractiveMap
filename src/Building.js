@@ -250,4 +250,26 @@ export default class Building
 
         return false;
     }
+
+    /**
+     * BLUEPRINT DESIGNER
+     */
+    static get availableBlueprintDesigners()
+    {
+        return [
+            '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner.Build_BlueprintDesigner_C',
+            '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner_Mk2.Build_BlueprintDesigner_Mk2_C',
+            '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner_Mk3.Build_BlueprintDesigner_Mk3_C'
+        ];
+    }
+
+    static isBlueprintDesigner(currentObject)
+    {
+        if(Building.availableBlueprintDesigners.includes(currentObject.className))
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

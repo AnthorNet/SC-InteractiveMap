@@ -3205,11 +3205,7 @@ export default class BaseLayout
 
 
         // Delete buildings affected to the Blueprint Designer
-        if([
-            '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner.Build_BlueprintDesigner_C',
-            '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner_Mk2.Build_BlueprintDesigner_Mk2_C',
-            '/Game/FactoryGame/Buildable/Factory/BlueprintDesigner/Build_BlueprintDesigner_Mk3.Build_BlueprintDesigner_Mk3_C'
-        ].includes(currentObject.className))
+        if(Building.isBlueprintDesigner(currentObject))
         {
             let mBuildables = baseLayout.getObjectProperty(currentObject, 'mBuildables');
                 if(mBuildables !== null)
