@@ -9,7 +9,7 @@ export default class SubSystem_Buildable extends SubSystem
     static get totalColorSlots(){ return 18; }
     static get extraColorSlots(){ return 9; }
 
-    static get swatchDesc(){ return {
+    static get swatchDesc(){ return SubSystem_Buildable._swatchDescCache || (SubSystem_Buildable._swatchDescCache = {
           0: '/Game/FactoryGame/Buildable/-Shared/Customization/PaintFinishes/Metals/PaintFinishDesc_Unpainted.PaintFinishDesc_Unpainted_C',
          16: '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_FoundationOverride.SwatchDesc_FoundationOverride_C',
          18: '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Concrete.SwatchDesc_Concrete_C',
@@ -29,7 +29,25 @@ export default class SubSystem_Buildable extends SubSystem
          27: '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_ProjectAssembly.SwatchDesc_ProjectAssembly_C',
 
         255: '/Game/FactoryGame/Buildable/-Shared/Customization/Swatches/SwatchDesc_Custom.SwatchDesc_Custom_C'
-    }; }
+    }); }
+
+    static get swatchDescSlots()
+    {
+        if(SubSystem_Buildable._swatchDescSlotsCache === undefined)
+        {
+            let slots = new Map();
+                for(let slotIndex of Object.keys(SubSystem_Buildable.swatchDesc))
+                {
+                    if(slots.has(SubSystem_Buildable.swatchDesc[slotIndex]) === false)
+                    {
+                        slots.set(SubSystem_Buildable.swatchDesc[slotIndex], slotIndex);
+                    }
+                }
+            SubSystem_Buildable._swatchDescSlotsCache = slots;
+        }
+
+        return SubSystem_Buildable._swatchDescSlotsCache;
+    }
 
     static get primaryColors(){ return [
         {r: 0.9529410004615784,     g: 0.3019610047340393,      b: 0.06666699796915054,     a: 1}, // Default (0)
@@ -177,7 +195,7 @@ export default class SubSystem_Buildable extends SubSystem
             if(SwatchDesc !== null)
             {
                 let currentSwatchDesc   = SwatchDesc.value.pathName;
-                let slotIndex           = Object.keys(SubSystem_Buildable.swatchDesc).find(key => SubSystem_Buildable.swatchDesc[key] === currentSwatchDesc);
+                let slotIndex           = SubSystem_Buildable.swatchDescSlots.get(currentSwatchDesc);
                     if(slotIndex !== undefined)
                     {
                         return parseInt(slotIndex);
