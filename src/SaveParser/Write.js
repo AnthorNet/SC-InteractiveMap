@@ -1,5 +1,5 @@
 /* global Intl, self, Promise, Sentry */
-import pako                                     from '../Lib/pako.esm.js';
+import { zlibSync }                             from '../Lib/fflate.esm.js';
 
 import Building                                 from '../Building.js';
 
@@ -631,7 +631,7 @@ export default class SaveParser_Write
             }
             else
             {
-                let output = pako.deflate(input);
+                let output = zlibSync(input);
                     chunk.output            = output;
                     chunk.compressedLength  = output.byteLength;
             }
@@ -709,7 +709,7 @@ export default class SaveParser_Write
                         }
                     }
 
-                    currentChunk.output             = pako.deflate(currentChunk.output);
+                    currentChunk.output             = zlibSync(currentChunk.output);
                     currentChunk.compressedLength   = currentChunk.output.byteLength;
                 }
 

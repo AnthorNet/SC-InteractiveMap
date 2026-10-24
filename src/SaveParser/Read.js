@@ -1,5 +1,5 @@
 /* global Sentry, Intl, self */
-import pako                                     from '../Lib/pako.esm.js';
+import { unzlibSync }                           from '../Lib/fflate.esm.js';
 
 import Building                                 from '../Building.js';
 
@@ -138,7 +138,7 @@ export default class SaveParser_Read
             try {
                 // Inflate current chunk
                 let currentInflatedChunk    = null;
-                    currentInflatedChunk    = pako.inflate(currentChunk);
+                    currentInflatedChunk    = unzlibSync(currentChunk);
                     this.currentChunks.push(currentInflatedChunk);
             }
             catch(error)
@@ -146,7 +146,7 @@ export default class SaveParser_Read
                 this.worker.postMessage({command: 'alert', message: 'Something went wrong while trying to inflate your savegame. It seems to be related to adblock and we are looking into it.'});
                 if(typeof Sentry !== 'undefined')
                 {
-                    Sentry.setContext('pako', pako);
+                    Sentry.setContext('inflate', {library: 'fflate'});
                 }
 
                 console.log(error);
@@ -163,7 +163,7 @@ export default class SaveParser_Read
 
         delete this.arrayBuffer;
         delete this.bodyBytes;
-        
+
         console.log('Inflated: ' + this.currentChunks.length + ' chunks...');
         this.worker.postMessage({command: 'loaderMessage', message: 'Merging inflated chunks...'});
 

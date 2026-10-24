@@ -7,7 +7,7 @@ import BaseLayout_Modal                         from '../BaseLayout/Modal.js';
 import Building_PowerLine                       from '../Building/PowerLine.js';
 import Building_Vehicle                         from '../Building/Vehicle.js';
 
-import pako                                     from '../Lib/pako.esm.js';
+import { zlibSync, unzlibSync, strToU8, strFromU8 } from '../Lib/fflate.esm.js';
 import saveAs                                   from '../Lib/FileSaver.js';
 
 export default class Spawn_Megaprint
@@ -221,7 +221,7 @@ export default class Spawn_Megaprint
             }
 
             // Fix old itemName to itemName.pathName
-            if(this.clipboard.saveVersion < 44)
+            //if(this.clipboard.saveVersion < 44) // Had to remove that check since converters don't do them...
             {
                 for(let i = 0; i < this.clipboard.data.length; i++)
                 {
@@ -1410,7 +1410,12 @@ export default class Spawn_Megaprint
                             }
 
                             this.baseLayout.addElementToLayer(results[j].layer, results[j].marker);
-                            this.arrangeLayers.push(results[j].layer);
+
+                            if(this.arrangeLayers.includes(results[j].layer) === false)
+                            {
+                                this.arrangeLayers.push(results[j].layer);
+                            }
+
 
                             if(results[j].layer === 'playerVehiculesLayer')
                             {
@@ -1445,8 +1450,10 @@ export default class Spawn_Megaprint
         // Rearrange layer orders!
         for(let layerId in this.baseLayout.playerLayers)
         {
-            if(this.baseLayout.playerLayers[layerId].subLayer !== null/* && arrangeLayers.includes(layerId)*/)
+            if(this.baseLayout.playerLayers[layerId].subLayer !== null)
             {
+                // TODO: Why filters are shown after redraw?!
+                //console.log(this.arrangeLayers)
                 if(this.arrangeLayers.includes(layerId))
                 {
                     this.baseLayout.setBadgeLayerCount(layerId);
@@ -1599,7 +1606,7 @@ L.Control.ClipboardControl = L.Control.extend({
         $('#clipboardControlModal .downloadButton').on('click', function(e){
             saveAs(
                 new Blob(
-                    [pako.deflate(JSON.stringify(baseLayout.clipboard))],
+                    [zlibSync(strToU8(JSON.stringify(baseLayout.clipboard)))],
                     {type: "application/octet-stream; charset=utf-8"}
                 ), "megaprint-calculator.cbp"
             );
@@ -1620,7 +1627,7 @@ L.Control.ClipboardControl = L.Control.extend({
                                 let restored = null;
                                     try
                                     {
-                                        restored = JSON.parse(pako.inflate(reader.result, { to: 'string' }));
+                                        restored = JSON.parse(strFromU8(unzlibSync(new Uint8Array(reader.result))));
                                     }
                                     catch(error)
                                     {
