@@ -1,6 +1,11 @@
 /*
  * Also hold basic className from buildings to reduce the SaveParsing module size...
  */
+
+const isConveyorBeltCache   = new Map();
+const isConveyorLiftCache   = new Map();
+const isPowerlineCache      = new Map();
+
 export default class Building
 {
     /*
@@ -48,6 +53,18 @@ export default class Building
 
     static isConveyorBelt(currentObject)
     {
+        let result = isConveyorBeltCache.get(currentObject.className);
+            if(result === undefined)
+            {
+                result = Building.isConveyorBeltRaw(currentObject);
+                isConveyorBeltCache.set(currentObject.className, result);
+            }
+
+        return result;
+    }
+
+    static isConveyorBeltRaw(currentObject)
+    {
         if(Building.availableConveyorBelts.includes(currentObject.className))
         {
             return true;
@@ -91,6 +108,18 @@ export default class Building
 
     static isConveyorLift(currentObject)
     {
+        let result = isConveyorLiftCache.get(currentObject.className);
+            if(result === undefined)
+            {
+                result = Building.isConveyorLiftRaw(currentObject);
+                isConveyorLiftCache.set(currentObject.className, result);
+            }
+
+        return result;
+    }
+
+    static isConveyorLiftRaw(currentObject)
+    {
         if(Building.availableConveyorLifts.includes(currentObject.className))
         {
             return true;
@@ -132,6 +161,18 @@ export default class Building
     }
 
     static isPowerline(currentObject)
+    {
+        let result = isPowerlineCache.get(currentObject.className);
+            if(result === undefined)
+            {
+                result = Building.isPowerlineRaw(currentObject);
+                isPowerlineCache.set(currentObject.className, result);
+            }
+
+        return result;
+    }
+
+    static isPowerlineRaw(currentObject)
     {
         if(Building.availablePowerlines.includes(currentObject.className))
         {
