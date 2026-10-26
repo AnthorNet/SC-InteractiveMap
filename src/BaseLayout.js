@@ -1180,6 +1180,26 @@ export default class BaseLayout
     addLayers(i = 0)
     {
         let layersKeys = Object.keys(this.playerLayers);
+            // Fill every layer while it is NOT attached to the map, and attach them all at the very end.
+            // Otherwise each frame we wait between two layers redraws everything added so far (~0.2s per layer on big saves).
+            if(i === 0)
+            {
+                this.layersAttachedAfterLoading = [];
+
+                for(let k = 0; k < layersKeys.length; k++)
+                {
+                    let currentLayer = this.playerLayers[layersKeys[k]];
+                        if(layersKeys[k] !== 'playerRadioactivityLayer' && layersKeys[k] !== 'playerFogOfWar' && layersKeys[k] !== 'playerPositionLayer' && currentLayer.elements !== undefined)
+                        {
+                            if(currentLayer.layerGroup !== null && currentLayer.subLayer !== null && currentLayer.layerGroup.hasLayer(currentLayer.subLayer))
+                            {
+                                currentLayer.layerGroup.removeLayer(currentLayer.subLayer);
+                                this.layersAttachedAfterLoading.push(currentLayer);
+                            }
+                        }
+                }
+            }
+
             for(i; i < layersKeys.length; i++)
             {
                 let layerId = layersKeys[i];
@@ -1225,6 +1245,18 @@ export default class BaseLayout
             }
 
         console.timeEnd('addMapLayers');
+
+        // Attach the filled layers to the map, same order as they were filled (keeps the drawing order)
+        console.time('addMapLayersAttachedAfterLoading');
+        if(this.layersAttachedAfterLoading !== undefined)
+        {
+            for(let k = 0; k < this.layersAttachedAfterLoading.length; k++)
+            {
+                this.layersAttachedAfterLoading[k].layerGroup.addLayer(this.layersAttachedAfterLoading[k].subLayer);
+            }
+            delete this.layersAttachedAfterLoading;
+        }
+        console.timeEnd('addMapLayersAttachedAfterLoading');
 
         return new Promise((resolve) => {
             $('#loaderProgressBar .progress-bar').css('width', '100%');
