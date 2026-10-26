@@ -1174,7 +1174,7 @@ export default class SaveParser_Read
                 return null;
             }
 
-        currentProperty.type        = this.readString().replace('Property', '');
+        currentProperty.type        = this.stripPropertySuffix(this.readString());
         //console.log(parentType, currentProperty.type, currentProperty.name)
 
         if(this.header.saveVersion >= 53 && this.currentLevelUE5Version >= 1011)
@@ -3240,6 +3240,23 @@ export default class SaveParser_Read
     /*
      * UTILITIES
      */
+    stripPropertySuffix(type)
+    {
+        if(this.propertySuffixCache === undefined)
+        {
+            this.propertySuffixCache = new Map();
+        }
+
+        let stripped = this.propertySuffixCache.get(type);
+            if(stripped === undefined)
+            {
+                stripped = type.replace('Property', '');
+                this.propertySuffixCache.set(type, stripped);
+            }
+
+        return stripped;
+    }
+
     formatNumber(number)
     {
         if(this.numberFormat === undefined)
