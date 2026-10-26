@@ -1,6 +1,7 @@
 /* global L, Promise, Intl, Sentry, parseFloat */
 import SaveParser_FicsIt                        from './SaveParser/FicsIt.js';
 
+import BaseLayout_ClassNameSets                 from './BaseLayout/ClassNameSets.js';
 import BaseLayout_ContextMenu                   from './BaseLayout/ContextMenu.js';
 import BaseLayout_History                       from './BaseLayout/History.js';
 import BaseLayout_Math                          from './BaseLayout/Math.js';
@@ -716,6 +717,12 @@ export default class BaseLayout
                 {
                     continue;
                 }
+                // Skip
+                if(BaseLayout_ClassNameSets.skipped.has(currentObject.className))
+                {
+                    continue;
+                }
+
                 //if(currentObject.className.includes('Cabin')){ console.log('Cabin', currentObject); }
                 //if(currentObject.className.includes('Subsystem')){ console.log('Subsystem', currentObject); }
                 //if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/ProjectAssembly/BP_ProjectAssembly.BP_ProjectAssembly_C'){ console.log(currentObject); }
@@ -725,19 +732,7 @@ export default class BaseLayout
                 //if(currentObject.className.includes('Gas')){ console.log(currentObject); } // /Game/FactoryGame/VFX/World/GasPerimeter/BP_VolumeGas_01.BP_VolumeGas_01_C ?
 
             // Add menu to spore flowers/pillars/rocks...
-            if([
-                '/Game/FactoryGame/World/Hazard/SporeCloudPlant/BP_SporeFlower.BP_SporeFlower_C',
-
-                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleSmallRock.BP_DestructibleSmallRock_C',
-                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleFlatRock.BP_DestructibleFlatRock_C',
-                '/Game/FactoryGame/Equipment/C4Dispenser/BP_DestructibleLargeRock.BP_DestructibleLargeRock_C',
-
-                '/Game/FactoryGame/World/Environment/Rock/GasPillar/Mesh/BP_GasPillar_01.BP_GasPillar_01_C',
-                '/Game/FactoryGame/World/Environment/Rock/GasPillar/Mesh/BP_GasPillar_02.BP_GasPillar_02_C',
-                '/Game/FactoryGame/World/Environment/Rock/GasPillar/Mesh/BP_GasPillar_03.BP_GasPillar_03_C',
-                '/Game/FactoryGame/World/Environment/Rock/GasPillar/Mesh/BP_GasPillar_04.BP_GasPillar_04_C',
-                '/Game/FactoryGame/World/Environment/Rock/GasPillar/Mesh/BP_GasPillar_05.BP_GasPillar_05_C'
-            ].includes(currentObject.className))
+            if(BaseLayout_ClassNameSets.environment.has(currentObject.className))
             {
                 if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
                 {
@@ -788,12 +783,7 @@ export default class BaseLayout
 
 
             // Mod nodes
-            if([
-                // Refined Power
-                '/RefinedPower/World/ResourceNodes/Thorium/BP_Thorium.BP_Thorium_C',
-                // Ficsit Farming
-                '/FicsitFarming/World/ResourceNodes/Dirt/BP_DirtNode.BP_DirtNode_C'
-            ].includes(currentObject.className))
+            if(BaseLayout_ClassNameSets.modNodes.has(currentObject.className))
             {
                 Building_ResourceNode.addModded(this, currentObject);
                 continue;
@@ -891,17 +881,7 @@ export default class BaseLayout
             }
 
             // Store collectables total
-            if([
-                '/Game/FactoryGame/World/Benefit/NutBush/BP_NutBush.BP_NutBush_C',
-                '/Game/FactoryGame/World/Benefit/BerryBush/BP_BerryBush.BP_BerryBush_C',
-                '/Game/FactoryGame/World/Benefit/Mushroom/BP_Shroom_01.BP_Shroom_01_C',
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal.BP_Crystal_C',
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk2.BP_Crystal_mk2_C',
-                '/Game/FactoryGame/Resource/Environment/Crystal/BP_Crystal_mk3.BP_Crystal_mk3_C',
-                '/Game/FactoryGame/Prototype/WAT/BP_WAT1.BP_WAT1_C',
-                '/Game/FactoryGame/Prototype/WAT/BP_WAT2.BP_WAT2_C',
-                '/Game/FactoryGame/World/Benefit/DropPod/BP_DropPod.BP_DropPod_C'
-            ].includes(currentObject.className))
+            if(BaseLayout_ClassNameSets.worldBenefit.has(currentObject.className))
             {
                 if(this.satisfactoryMap.collectableMarkers[currentObject.pathName] !== undefined)
                 {
@@ -944,52 +924,9 @@ export default class BaseLayout
                 this.playerStatistics.collectables[currentObject.className].items.push(currentObject.pathName);
             }
 
-            if([
-                '/RefinedPower/World/ResourceNodes/WaterTurbine/BP_WaterTurbineNode_Medium.BP_WaterTurbineNode_Medium_C',
-                '/RefinedPower/World/ResourceNodes/WaterTurbine/BP_WaterTurbineNode_Fast.BP_WaterTurbineNode_Fast_C'
-            ].includes(currentObject.className))
+            if(BaseLayout_ClassNameSets.modWaterTurbine.has(currentObject.className))
             {
                 continue; // Too much so skip...
-            }
-
-            // Skip
-            if([
-                '/Game/FactoryGame/Buildable/Factory/TradingPost/BP_StartingPod.BP_StartingPod_C',
-                '/Game/FactoryGame/Character/Player/Char_Player.Char_Player_C',
-                '/Game/FactoryGame/Buildable/Factory/Pipeline/FlowIndicator/Build_PipelineFlowIndicator.Build_PipelineFlowIndicator_C',
-
-                '/Game/FactoryGame/Schematics/Progression/BP_SchematicManager.BP_SchematicManager_C',
-                '/Game/FactoryGame/Recipes/Research/BP_ResearchManager.BP_ResearchManager_C',
-                '/Game/FactoryGame/Unlocks/BP_UnlockSubsystem.BP_UnlockSubsystem_C',
-                '/Game/FactoryGame/Events/BP_EventSubsystem.BP_EventSubsystem_C',
-
-                '/Game/FactoryGame/Schematics/Progression/BP_GamePhaseManager.BP_GamePhaseManager_C',
-
-                '/Game/FactoryGame/Buildable/Factory/PipeHyper/FGPipeConnectionComponentHyper.FGPipeConnectionComponentHyper_C',
-
-                '/Game/FactoryGame/Resource/BP_FrackingCore.BP_FrackingCore_C',
-
-                // SIGN POLES
-                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C',
-                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole_Portrait.Build_SignPole_Portrait_C',
-                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole_Small.Build_SignPole_Small_C',
-                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole_Medium.Build_SignPole_Medium_C',
-                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole_Large.Build_SignPole_Large_C',
-                '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole_Huge.Build_SignPole_Huge_C',
-
-                // HUB PARTS
-                '/Game/FactoryGame/Buildable/Factory/WorkBench/Build_WorkBenchIntegrated.Build_WorkBenchIntegrated_C',
-                '/Game/FactoryGame/Buildable/Factory/Mam/Build_MamIntegrated.Build_MamIntegrated_C',
-                '/Game/FactoryGame/Buildable/Factory/HubTerminal/Build_HubTerminal.Build_HubTerminal_C',
-                '/Game/FactoryGame/Prototype/TetrominoRecipeDesigner/Build_TetrominoGame_Computer.Build_TetrominoGame_Computer_C',
-
-                '/Game/FactoryGame/Buildable/Vehicle/BP_VehicleTargetPoint.BP_VehicleTargetPoint_C',
-
-                // MODS
-                '/Game/EfficiencyCheckerMod/Buildings/EfficiencyChecker/Build_Pipeline_Stub.Build_Pipeline_Stub_C'
-            ].includes(currentObject.className))
-            {
-                continue;
             }
 
             // Fix some save/games bugs and/or old object conversion
@@ -1115,13 +1052,12 @@ export default class BaseLayout
             return resolve({layer: 'playerPositionLayer', marker: this.players[currentObject.pathName].addMarker()});
         }
 
-        // Skip on pasting
-        if(['/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C', '/Game/FactoryGame/Buildable/Factory/Pipeline/FlowIndicator/Build_PipelineFlowIndicator.Build_PipelineFlowIndicator_C'].includes(currentObject.className))
-        {
-            return resolve(null);
-        }
-        // Skip, was a closed beta bug...
-        if(currentObject.className === '/Script/FactoryGame.FGAmmoTypeHoming')
+        // Skip on pasting, or closed beta bug
+        if(
+                currentObject.className === '/Game/FactoryGame/Buildable/Factory/SignPole/Build_SignPole.Build_SignPole_C'
+             || currentObject.className === '/Game/FactoryGame/Buildable/Factory/Pipeline/FlowIndicator/Build_PipelineFlowIndicator.Build_PipelineFlowIndicator_C'
+             || currentObject.className === '/Script/FactoryGame.FGAmmoTypeHoming'
+        )
         {
             return resolve(null);
         }
@@ -1556,18 +1492,11 @@ export default class BaseLayout
     {
         this.setupSubLayer('playerItemsPickupLayer', false);
         let itemId      = 'Desc_SpitterParts_C';
-            if([
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_HogParts.BP_HogParts_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_CliffHogParts.BP_CliffHogParts_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_AlphaHogParts.BP_AlphaHogParts_C',
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_NuclearHogParts.BP_NuclearHogParts_C'
-            ].includes(currentObject.className))
+            if(BaseLayout_ClassNameSets.animalParts.has(currentObject.className))
             {
                 itemId  = 'Desc_HogParts_C';
             }
-            if([
-                '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C'
-            ].includes(currentObject.className))
+            if(currentObject.className === '/Game/FactoryGame/Resource/Environment/AnimalParts/BP_StingerParts.BP_StingerParts_C')
             {
                 itemId  = 'Desc_StingerParts_C';
             }
@@ -2115,7 +2044,7 @@ export default class BaseLayout
     {
         let baseLayout      = marker.baseLayout;
         let currentObject   = baseLayout.saveGameParser.getTargetObject(marker.relatedTarget.options.pathName);
-            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C', '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'].includes(currentObject.className))
+            if(BaseLayout_ClassNameSets.fluidStorage.has(currentObject.className))
             {
                 // Buffer only have the fluidBox, the fluid is handled with the pipe network ;)
                 return baseLayout.fillPlayerStorageBuildingInventory(currentObject, null);
@@ -2166,51 +2095,52 @@ export default class BaseLayout
         for(let i = 0; i < storageObjects.length; i++)
         {
             let buildingData    = this.getBuildingDataFromClassName(storageObjects[i].className);
-
-            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
-            {
-                if(buildingData !== null && buildingData.maxFluid !== undefined)
+                if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
                 {
-                    this.setObjectProperty(storageObjects[i], 'mFluidBox', {type: "FluidBox", value: buildingData.maxFluid / 1000}, 'Struct');
+                    let storage           = this.getObjectProperty(storageObjects[i], 'mInventory');
+                        if(storage !== null)
+                        {
+                            let storageObject = this.saveGameParser.getTargetObject(storage.pathName);
+                                if(storageObject !== null)
+                                {
+                                    let mInventoryStacks = this.getObjectProperty(storageObject, 'mInventoryStacks');
+                                        if(mInventoryStacks !== null)
+                                        {
+                                            let value = mInventoryStacks.values[0][0].value;
+                                                if(value.itemName.pathName === '')
+                                                {
+                                                    let currentPipeNetwork = this.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
+                                                        if(currentPipeNetwork !== null)
+                                                        {
+                                                            let mFluidDescriptor = this.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
+                                                                if(mFluidDescriptor !== null)
+                                                                {
+                                                                    value.itemName.pathName = mFluidDescriptor.pathName;
+                                                                }
+                                                        }
+                                                }
+                                                if(buildingData !== null && buildingData.maxFluid !== undefined)
+                                                {
+                                                    value.properties = [{name: 'NumItems', type: 'Int', value: buildingData.maxFluid}];
+                                                }
+                                        }
+                                }
+                        }
+
+                        continue;
                 }
-
-                continue;
-            }
-
-            if(currentObject.className === '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C')
-            {
-                let storage           = this.getObjectProperty(storageObjects[i], 'mInventory');
-                    if(storage !== null)
+                else
+                {
+                    if(BaseLayout_ClassNameSets.fluidStorage.has(currentObject.className))
                     {
-                        let storageObject = this.saveGameParser.getTargetObject(storage.pathName);
-                            if(storageObject !== null)
-                            {
-                                let mInventoryStacks = this.getObjectProperty(storageObject, 'mInventoryStacks');
-                                    if(mInventoryStacks !== null)
-                                    {
-                                        let value = mInventoryStacks.values[0][0].value;
-                                            if(value.itemName.pathName === '')
-                                            {
-                                                let currentPipeNetwork = this.pipeNetworkSubSystem.getObjectPipeNetwork(currentObject);
-                                                    if(currentPipeNetwork !== null)
-                                                    {
-                                                        let mFluidDescriptor = this.getObjectProperty(currentPipeNetwork, 'mFluidDescriptor');
-                                                            if(mFluidDescriptor !== null)
-                                                            {
-                                                                value.itemName.pathName = mFluidDescriptor.pathName;
-                                                            }
-                                                    }
-                                            }
-                                            if(buildingData !== null && buildingData.maxFluid !== undefined)
-                                            {
-                                                value.properties = [{name: 'NumItems', type: 'Int', value: buildingData.maxFluid}];
-                                            }
-                                    }
-                            }
-                    }
+                        if(buildingData !== null && buildingData.maxFluid !== undefined)
+                        {
+                            this.setObjectProperty(storageObjects[i], 'mFluidBox', {type: "FluidBox", value: buildingData.maxFluid / 1000}, 'Struct');
+                        }
 
-                    continue;
-            }
+                        continue;
+                    }
+                }
 
             // Skip fluid Freight Wagon
             if(Building.isFreightWagon(storageObjects[i]))
@@ -2293,7 +2223,7 @@ export default class BaseLayout
 
         for(let i = 0; i < storageObjects.length; i++)
         {
-            if(['/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C', '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C'].includes(currentObject.className))
+            if(currentObject.className !== '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C' && BaseLayout_ClassNameSets.fluidStorage.has(currentObject.className))
             {
                 baseLayout.setObjectProperty(storageObjects[i], 'mFluidBox', {type: "FluidBox", value: 0}, 'Struct');
                 continue;
@@ -2334,11 +2264,7 @@ export default class BaseLayout
 
         if(currentObject !== null)
         {
-            if(Building_Pipeline.isPipeline(currentObject) === false && [
-                '/Game/FactoryGame/Buildable/Factory/StorageTank/Build_PipeStorageTank.Build_PipeStorageTank_C',
-                '/Game/FactoryGame/Buildable/Factory/IndustrialFluidContainer/Build_IndustrialTank.Build_IndustrialTank_C',
-                '/Game/FactoryGame/Buildable/Factory/Train/Station/Build_TrainDockingStationLiquid.Build_TrainDockingStationLiquid_C'
-            ].includes(currentObject.className) === false)
+            if(Building_Pipeline.isPipeline(currentObject) === false && BaseLayout_ClassNameSets.fluidStorage.has(currentObject.className) === false)
             {
                 isFluidInventory = false;
                 delete itemsCategories.liquid;
