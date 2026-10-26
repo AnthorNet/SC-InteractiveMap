@@ -2856,6 +2856,59 @@ export default class SaveParser_Read
             return '';
         }
 
+        // Fast path: short ASCII strings (property names, types, class names...)
+        // Interned by content: no Uint8Array view, no TextDecoder call, and identical strings share one instance.
+        // (<= 32 chars: names and types repeat; pathNames and level names are longer and nearly unique, caching them only costs)
+        if(strLength > 0 && strLength <= 33 && strLength <= (this.maxByte - this.currentByte))
+        {
+            if(this.shortStringBuffer !== this.bufferView.buffer)
+            {
+                this.shortStringBuffer  = this.bufferView.buffer;
+                this.shortStringBytes   = new Uint8Array(this.shortStringBuffer);
+            }
+            if(this.shortStringCache === undefined){ this.shortStringCache = new Map(); }
+
+            let bytes   = this.shortStringBytes;
+            let base    = this.bufferView.byteOffset + this.currentByte;
+            let length  = strLength - 1; // Null terminator
+            let hash    = length;
+            let isAscii = true;
+                for(let i = 0; i < length; i++)
+                {
+                    let byte = bytes[base + i];
+                        if(byte > 127){ isAscii = false; break; }
+                    hash = (Math.imul(hash, 31) + byte) | 0;
+                }
+
+            if(isAscii === true)
+            {
+                let string = this.shortStringCache.get(hash);
+                    if(string !== undefined)
+                    {
+                        // Hash collision guard
+                        if(string.length !== length){ string = undefined; }
+                        else
+                        {
+                            for(let i = 0; i < length; i++)
+                            {
+                                if(string.charCodeAt(i) !== bytes[base + i]){ string = undefined; break; }
+                            }
+                        }
+                    }
+                    if(string === undefined)
+                    {
+                        string = this.utf8Decoder.decode(bytes.subarray(base, base + length));
+                        if(this.shortStringCache.size < 50000 && this.shortStringCache.has(hash) === false)
+                        {
+                            this.shortStringCache.set(hash, string);
+                        }
+                    }
+
+                this.currentByte += strLength;
+                return string;
+            }
+        }
+
         // Range error!
         if(strLength > (this.maxByte - this.currentByte))
         {
