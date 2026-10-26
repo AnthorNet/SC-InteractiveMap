@@ -3,6 +3,9 @@ import { zlibSync }                             from '../Lib/fflate.esm.js';
 
 import Building                                 from '../Building.js';
 
+const writeScratchBytes     = new Uint8Array(8);
+const writeScratchView      = new DataView(writeScratchBytes.buffer);
+
 export default class SaveParser_Write
 {
     constructor(worker, options)
@@ -2887,26 +2890,20 @@ export default class SaveParser_Write
         return value;
     }
 
-    // https://github.com/feross/buffer/blob/v6.0.3/index.js#L1440
     writeInt8(value, count = true)
     {
-        let arrayBuffer     = new Uint8Array(1);
-            arrayBuffer[0]  = (value & 0xff);
-
         if(count === true)
         {
             this.currentBufferLength++;
         }
         this.currentEntityLength++;
 
-        return String.fromCharCode.apply(null, arrayBuffer);
+        return String.fromCharCode(value & 0xff);
     }
 
     writeUint16(value, count = true)
     {
-        let arrayBuffer     = new ArrayBuffer(2);
-        let dataView        = new DataView(arrayBuffer);
-            dataView.setUint16(0, value, true);
+        writeScratchView.setUint16(0, value, true);
 
         if(count === true)
         {
@@ -2914,32 +2911,23 @@ export default class SaveParser_Write
         }
         this.currentEntityLength += 2;
 
-        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+        return String.fromCharCode(writeScratchBytes[0], writeScratchBytes[1]);
     }
 
-    // https://github.com/feross/buffer/blob/v6.0.3/index.js#L1469
     writeInt(value, count = true)
     {
-        let arrayBuffer     = new Uint8Array(4);
-            arrayBuffer[3]  = (value >>> 24);
-            arrayBuffer[2]  = (value >>> 16);
-            arrayBuffer[1]  = (value >>> 8);
-            arrayBuffer[0]  = (value & 0xff);
-
         if(count === true)
         {
             this.currentBufferLength += 4;
         }
         this.currentEntityLength += 4;
 
-        return String.fromCharCode.apply(null, arrayBuffer);
+        return String.fromCharCode(value & 0xff, (value >>> 8) & 0xff, (value >>> 16) & 0xff, (value >>> 24) & 0xff);
     }
 
     writeUint(value, count = true)
     {
-        let arrayBuffer     = new ArrayBuffer(4);
-        let dataView        = new DataView(arrayBuffer);
-            dataView.setUint32(0, value, true);
+        writeScratchView.setUint32(0, value, true);
 
         if(count === true)
         {
@@ -2947,14 +2935,12 @@ export default class SaveParser_Write
         }
         this.currentEntityLength += 4;
 
-        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+        return String.fromCharCode(writeScratchBytes[0], writeScratchBytes[1], writeScratchBytes[2], writeScratchBytes[3]);
     }
 
     writeInt64(value, count = true)
     {
-        let arrayBuffer     = new ArrayBuffer(8);
-        let dataView        = new DataView(arrayBuffer);
-            dataView.setBigInt64(0, BigInt(value), true);
+        writeScratchView.setBigInt64(0, BigInt(value), true);
 
         if(count === true)
         {
@@ -2962,14 +2948,12 @@ export default class SaveParser_Write
         }
         this.currentEntityLength += 8;
 
-        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+        return String.fromCharCode(writeScratchBytes[0], writeScratchBytes[1], writeScratchBytes[2], writeScratchBytes[3], writeScratchBytes[4], writeScratchBytes[5], writeScratchBytes[6], writeScratchBytes[7]);
     }
 
     writeUint64(value, count = true)
     {
-        let arrayBuffer     = new ArrayBuffer(8);
-        let dataView        = new DataView(arrayBuffer);
-            dataView.setBigUint64(0, value, true);
+        writeScratchView.setBigUint64(0, value, true);
 
         if(count === true)
         {
@@ -2977,14 +2961,12 @@ export default class SaveParser_Write
         }
         this.currentEntityLength += 8;
 
-        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+        return String.fromCharCode(writeScratchBytes[0], writeScratchBytes[1], writeScratchBytes[2], writeScratchBytes[3], writeScratchBytes[4], writeScratchBytes[5], writeScratchBytes[6], writeScratchBytes[7]);
     }
 
     writeFloat(value, count = true)
     {
-        let arrayBuffer     = new ArrayBuffer(4);
-        let dataView        = new DataView(arrayBuffer);
-            dataView.setFloat32(0, value, true);
+        writeScratchView.setFloat32(0, value, true);
 
         if(count === true)
         {
@@ -2992,13 +2974,11 @@ export default class SaveParser_Write
         }
         this.currentEntityLength += 4;
 
-        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+        return String.fromCharCode(writeScratchBytes[0], writeScratchBytes[1], writeScratchBytes[2], writeScratchBytes[3]);
     }
     writeDouble(value, count = true)
     {
-        let arrayBuffer     = new ArrayBuffer(8);
-        let dataView        = new DataView(arrayBuffer);
-            dataView.setFloat64(0, value, true);
+        writeScratchView.setFloat64(0, value, true);
 
         if(count === true)
         {
@@ -3006,7 +2986,7 @@ export default class SaveParser_Write
         }
         this.currentEntityLength += 8;
 
-        return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+        return String.fromCharCode(writeScratchBytes[0], writeScratchBytes[1], writeScratchBytes[2], writeScratchBytes[3], writeScratchBytes[4], writeScratchBytes[5], writeScratchBytes[6], writeScratchBytes[7]);
     }
 
     writeString(value, count = true)
@@ -3017,12 +2997,35 @@ export default class SaveParser_Write
                 return this.writeInt(0, count);
             }
 
+        if(this.shortStringCache === undefined){ this.shortStringCache = new Map(); }
+
+        // Short ASCII strings: complete encoding (length + chars + terminator) cached by value
+        if(stringLength <= 32)
+        {
+            let cached = this.shortStringCache.get(value);
+                if(cached !== undefined)
+                {
+                    if(count === true)
+                    {
+                        this.currentBufferLength += stringLength + 5;
+                    }
+                    this.currentEntityLength += stringLength + 5;
+
+                    return cached;
+                }
+        }
+
         // UTF8
         if(/^[\x00-\x7F]*$/.test(value) === true)
         {
             let saveBinary  = this.writeInt(stringLength + 1, count);
                 saveBinary += value;
                 saveBinary += this.writeByte(0, count);
+
+                if(stringLength <= 32 && this.shortStringCache.size < 50000)
+                {
+                    this.shortStringCache.set(saveBinary);
+                }
 
             if(count === true)
             {
