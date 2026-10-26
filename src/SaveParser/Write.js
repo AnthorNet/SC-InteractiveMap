@@ -131,7 +131,7 @@ export default class SaveParser_Write
         if(currentLevel % 25 === 0)
         {
             let progress = currentLevel / this.levels.length * 100;
-                this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s sub-levels (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format((this.levels.length - 1)), Math.round(progress)]});
+                this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s sub-levels (%2$s%)...', replace: [this.formatNumber((this.levels.length - 1)), Math.round(progress)]});
                 this.worker.postMessage({command: 'loaderProgress', percentage: (progress * 0.08)});
         }
 
@@ -288,7 +288,7 @@ export default class SaveParser_Write
                             if(i % 1000 === 0 && currentLevel === (this.levels.length - 1))
                             {
                                 let progress = step / objectKeys.length * 100;
-                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s objects (%2$s%)...', replace: [this.formatNumber(objectKeys.length), Math.round(progress)]});
                                     this.worker.postMessage({command: 'loaderProgress', percentage: 8 + (progress * 0.30)});
 
                                 this.pushSaveToChunk();
@@ -470,7 +470,7 @@ export default class SaveParser_Write
                             if(i % 1000 === 0 && entitiesOptions.currentLevel === (this.levels.length - 1))
                             {
                                 let progress = entitiesOptions.step / entitiesOptions.objectKeys.length * 100;
-                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(entitiesOptions.objectKeys.length), Math.round(progress)]});
+                                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s entities (%2$s%)...', replace: [this.formatNumber(entitiesOptions.objectKeys.length), Math.round(progress)]});
                                     this.worker.postMessage({command: 'loaderProgress', percentage: (58 + (progress * 0.38))});
 
                                 this.pushSaveToChunk();
@@ -1266,7 +1266,7 @@ export default class SaveParser_Write
                     countLightweightObjects += dataObjectKeys[className].length;
                 }
 
-                this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s lightweight objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countLightweightObjects), 0]});
+                this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s lightweight objects (%2$s%)...', replace: [this.formatNumber(countLightweightObjects), 0]});
                 this.worker.postMessage({command: 'loaderProgress', percentage: 38});
 
                 return this.writeLightweightBuildableSubsystem(preEntity, entity, entitiesOptions, dataObjectKeys, currentStep, countLightweightObjects);
@@ -1454,7 +1454,7 @@ export default class SaveParser_Write
 
                 let progress        = currentStep / countLightweightObjects * 100;
                     currentStep    += data.length;
-                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s lightweight objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countLightweightObjects), Math.round(progress)]});
+                    this.worker.postMessage({command: 'loaderMessage', message: 'Compiling %1$s lightweight objects (%2$s%)...', replace: [this.formatNumber(countLightweightObjects), Math.round(progress)]});
                     this.worker.postMessage({command: 'loaderProgress', percentage: (38 + (progress * 0.20))});
 
                 return this.writeLightweightBuildableSubsystem(preEntity, entity, entitiesOptions, lightweightBuildableSubsystemObjectKeys, currentStep, countLightweightObjects);
@@ -3304,6 +3304,19 @@ export default class SaveParser_Write
             }
 
             return saveBinary;
+    }
+
+    /*
+     * UTILITIES
+     */
+    formatNumber(number)
+    {
+        if(this.numberFormat === undefined)
+        {
+            this.numberFormat = new Intl.NumberFormat(this.language);
+        }
+
+        return this.numberFormat.format(number);
     }
 };
 

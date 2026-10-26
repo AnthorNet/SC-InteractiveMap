@@ -349,7 +349,7 @@ export default class SaveParser_Read
                 // Only show progress for the main level
                 if(i % 2500 === 0 && levelName === 'Level ' + this.header.mapName)
                 {
-                    this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s objects (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countObjects), Math.round(i / countObjects * 100)]});
+                    this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s objects (%2$s%)...', replace: [this.formatNumber(countObjects), Math.round(i / countObjects * 100)]});
                     this.worker.postMessage({command: 'loaderProgress', percentage: (30 + (i / countObjects * 10))});
                 }
             }
@@ -438,7 +438,7 @@ export default class SaveParser_Read
                 // Only show progress for the main level
                 if(i % 2500 === 0 && levelName === 'Level ' + this.header.mapName)
                 {
-                    this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s entities (%2$s%)...', replace: [new Intl.NumberFormat(this.language).format(countEntities), Math.round(i / countEntities * 100)]});
+                    this.worker.postMessage({command: 'loaderMessage', message: 'Parsing %1$s entities (%2$s%)...', replace: [this.formatNumber(countEntities), Math.round(i / countEntities * 100)]});
                     this.worker.postMessage({command: 'loaderProgress', percentage: (50 + (i / countEntities * 10))});
 
                     // Try to fill up the data view with the remaining chunks...
@@ -3240,6 +3240,16 @@ export default class SaveParser_Read
     /*
      * UTILITIES
      */
+    formatNumber(number)
+    {
+        if(this.numberFormat === undefined)
+        {
+            this.numberFormat = new Intl.NumberFormat(this.language);
+        }
+
+        return this.numberFormat.format(number);
+    }
+
     generateFastPathName(pathNamePattern, pathNamePool = {})
     {
         //let pathName    = JSON.parse(JSON.stringify(pathNamePattern.split('_')));
