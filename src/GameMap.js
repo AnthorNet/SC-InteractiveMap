@@ -1046,20 +1046,35 @@ export default class GameMap
      */
     convertToRasterCoordinates(coordinates)
     {
-        let x               = parseFloat(coordinates[0]) || 0;
-        let y               = parseFloat(coordinates[1]) || 0;
+        let x               = (typeof coordinates[0] === 'number') ? coordinates[0] : parseFloat(coordinates[0]);
+        let y               = (typeof coordinates[1] === 'number') ? coordinates[1] : parseFloat(coordinates[1]);
+            x               = x || 0;
+            y               = y || 0;
 
-        let xMax            = Math.abs(this.mappingBoundWest) + Math.abs(this.mappingBoundEast);
-        let yMax            = Math.abs(this.mappingBoundNorth) + Math.abs(this.mappingBoundSouth);
+        // Constants only depend on the map bounds: cache them
+        let c               = this.rasterConstants;
+            if(c === undefined || c.size !== this.backgroundSize || c.east !== this.mappingBoundEast || c.west !== this.mappingBoundWest || c.north !== this.mappingBoundNorth || c.south !== this.mappingBoundSouth)
+            {
+                let xMax    = Math.abs(this.mappingBoundWest) + Math.abs(this.mappingBoundEast);
+                let yMax    = Math.abs(this.mappingBoundNorth) + Math.abs(this.mappingBoundSouth);
+                    c       = this.rasterConstants = {
+                        size    : this.backgroundSize,
+                        east    : this.mappingBoundEast,
+                        west    : this.mappingBoundWest,
+                        north   : this.mappingBoundNorth,
+                        south   : this.mappingBoundSouth,
+                        xOffset : xMax - this.mappingBoundEast,
+                        yOffset : yMax - this.mappingBoundNorth,
+                        xRatio  : Math.abs(this.backgroundSize) / xMax,
+                        yRatio  : Math.abs(this.backgroundSize) / yMax
+                    };
+            }
 
-        let xRatio          = Math.abs(this.backgroundSize) / xMax;
-        let yRatio          = Math.abs(this.backgroundSize) / yMax;
-
-            x = ((xMax - this.mappingBoundEast) + x) * xRatio;
-            y = (((yMax - this.mappingBoundNorth) + y) * yRatio) - this.backgroundSize;
+            x = (c.xOffset + x) * c.xRatio;
+            y = ((c.yOffset + y) * c.yRatio) - this.backgroundSize;
 
         return [x, y];
-    }
+     }
 
     convertToGameCoordinates(coordinates)
     {
